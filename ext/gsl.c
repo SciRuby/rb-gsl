@@ -54,6 +54,12 @@ static VALUE rb_gsl_object_info(VALUE obj)
   return rb_str_new2(buf);
 }
 
+static VALUE rb_gsl_not_implemeted(VALUE obj)
+{
+  rb_raise(rb_eNotImpError, "%s#dup is not implemented", rb_class2name(CLASS_OF(obj)));
+  return Qnil;
+}
+
 void Init_rb_gsl()
 {
   VALUE mgsl;
@@ -62,6 +68,10 @@ void Init_rb_gsl()
   cGSL_Object = rb_define_class_under(mgsl, "Object", rb_cObject);
   rb_define_method(cGSL_Object, "inspect", rb_gsl_object_inspect, 0);
   rb_define_method(cGSL_Object, "info", rb_gsl_object_info, 0);
+  // Override Object#dup to prevent invalid dup-ing of GSL_Objects.
+  // Subclasses (e.g. GSL::Vector) must provide their own implementation of
+  // #dup if desired.
+  rb_define_method(cGSL_Object, "dup", rb_gsl_not_implemeted, 0);
 
   rb_gsl_define_intern(mgsl);
 
