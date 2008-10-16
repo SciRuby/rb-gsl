@@ -28,6 +28,13 @@
          irb(main):004:0> Stats::mean(v)
          => 4.0
 
+--- GSL::Vector#tss
+    Returns the total sum of squares about (({self.mean})).
+    (Requires GSL 1.11)
+--- GSL::Vector#tss_m(mean)
+    Returns the total sum of squares about ((|mean|)).
+    (Requires GSL 1.11)
+
 --- GSL::Stats::variance_m(v[, mean])
 --- GSL::Vector#variance_m([mean])
     Variance of ((|v|)) relative to the given value of ((|mean|)).

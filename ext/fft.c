@@ -12,17 +12,15 @@
 #include "rb_gsl_config.h"
 #include "rb_gsl_fft.h"
 
-VALUE mgsl_fft_complex;
-VALUE mgsl_fft, mgsl_fft_real, mgsl_fft_halfcomplex;
-VALUE cgsl_cparray;
-VALUE cgsl_fft_wavetable, cgsl_fft_workspace;
-VALUE cgsl_fft_wavetable_factor;
+VALUE mgsl_fft;
+VALUE cgsl_fft_wavetable;
 VALUE cgsl_fft_complex_wavetable, cgsl_fft_complex_workspace;
 VALUE cgsl_fft_real_wavetable, cgsl_fft_halfcomplex_wavetable;
 VALUE cgsl_fft_real_workspace;
-VALUE cgsl_vector_halfcomplex;
 
-static GSL_FFT_Workspace* GSL_FFT_Workspace_new(size_t n);
+extern VALUE cgsl_vector_int;
+extern VALUE cgsl_vector_complex;
+
 static void GSL_FFT_Workspace_free(GSL_FFT_Workspace *space);
 
 static VALUE rb_gsl_fft_complex_wavetable_new(VALUE klass, VALUE n)
@@ -53,12 +51,6 @@ static void GSL_FFT_Wavetable_free(GSL_FFT_Wavetable *table)
   gsl_fft_complex_wavetable_free((gsl_fft_complex_wavetable *) table);
 }
 
-static GSL_FFT_Workspace* GSL_FFT_Workspace_new(size_t n)
-{
-  CHECK_FIXNUM(n);
-  return (GSL_FFT_Workspace *) gsl_fft_complex_workspace_alloc(n);
-}
-
 static VALUE rb_gsl_fft_complex_workspace_new(VALUE klass, VALUE n)
 {
   CHECK_FIXNUM(n);
@@ -78,191 +70,37 @@ static void GSL_FFT_Workspace_free(GSL_FFT_Workspace *space)
   gsl_fft_complex_workspace_free((gsl_fft_complex_workspace *) space);
 }
   
-VALUE rb_gsl_vector_new(int argc, VALUE *argv, VALUE klass);
-VALUE rb_gsl_permutation_new(VALUE klass, VALUE nn);
-static void get_stride_n(int argc, VALUE *argv, int argstart, gsl_vector *v,
-			 size_t *stride, size_t *n);
-
-static VALUE cparray_get(VALUE obj, VALUE ii)
-{
-  gsl_vector *v = NULL;
-  gsl_complex *c = NULL;
-  size_t i;
-  CHECK_FIXNUM(ii);
-  CHECK_VECTOR(obj);
-  Data_Get_Struct(obj, gsl_vector, v);
-  i = FIX2INT(ii);
-  c = ALLOC(gsl_complex);
-  GSL_SET_REAL(c, gsl_vector_get(v, 2*i));
-  GSL_SET_IMAG(c, gsl_vector_get(v, 2*i+1));
-  return Data_Wrap_Struct(cgsl_complex, 0, free, c); 
-}
-
-static VALUE cparray_set(int argc, VALUE *argv, VALUE obj)
-{
-  gsl_vector *v = NULL;
-  gsl_complex *c = NULL;
-  size_t i;
-  if (argc < 2) rb_raise(rb_eArgError, "too few arguments");
-  CHECK_VECTOR(obj);
-  CHECK_FIXNUM(argv[0]);
-  i = FIX2INT(argv[0]);
-  Data_Get_Struct(obj, gsl_vector, v);
-  if (rb_obj_is_kind_of(argv[1], cgsl_complex)) {
-    Data_Get_Struct(argv[1], gsl_complex, c);
-    gsl_vector_set(v, 2*i, GSL_REAL(*c));
-    gsl_vector_set(v, 2*i+1, GSL_IMAG(*c));
-    return obj;
-  }
-  switch (TYPE(argv[1])) {
-  case T_ARRAY:
-    gsl_vector_set(v, 2*i, NUM2DBL(rb_ary_entry(argv[1], 0)));
-    gsl_vector_set(v, 2*i+1, NUM2DBL(rb_ary_entry(argv[1], 1)));
-    break;
-  case T_FLOAT:
-  case T_FIXNUM:
-  case T_BIGNUM:
-    gsl_vector_set(v, 2*i, NUM2DBL(argv[1]));
-    break;
-  default:
-    rb_raise(rb_eTypeError, "wrong type arguments");
-    break;
-  }
-  return obj;
-}
-
-static VALUE cparray_real(VALUE obj, VALUE ii)
-{
-  gsl_vector *v = NULL;
-  CHECK_VECTOR(obj);
-  CHECK_FIXNUM(ii);
-  Data_Get_Struct(obj, gsl_vector, v);
-  return rb_float_new(gsl_vector_get(v, 2*FIX2INT(ii)));
-}
-
-static VALUE cparray_re(VALUE obj)
-{
-  gsl_vector *v = NULL;
-  gsl_vector_view *vv = NULL;
-  Data_Get_Struct(obj, gsl_vector, v);
-  vv = gsl_vector_view_alloc();
-  *vv = gsl_vector_subvector_with_stride(v, 0, 2, v->size/2);
-  return Data_Wrap_Struct(cgsl_vector_view, 0, gsl_vector_view_free, vv);
-}
-
-static VALUE cparray_im(VALUE obj)
-{
-  gsl_vector *v = NULL;
-  gsl_vector_view *vv = NULL;
-  Data_Get_Struct(obj, gsl_vector, v);
-  vv = gsl_vector_view_alloc();
-  *vv = gsl_vector_subvector_with_stride(v, 1, 2, v->size/2);
-  return Data_Wrap_Struct(cgsl_vector_view, 0, gsl_vector_view_free, vv);
-}
-
-static VALUE cparray_set_real(VALUE obj, VALUE ii, VALUE val)
-{
-  gsl_vector *v = NULL;
-  CHECK_VECTOR(obj);
-  CHECK_FIXNUM(ii);
-  Need_Float(val);
-  Data_Get_Struct(obj, gsl_vector, v);
-  gsl_vector_set(v, 2*FIX2INT(ii), NUM2DBL(val));
-  return obj;
-}
-
-static VALUE cparray_imag(VALUE obj, VALUE ii)
-{
-  gsl_vector *v = NULL;
-  CHECK_VECTOR(obj);
-  CHECK_FIXNUM(ii);
-  Data_Get_Struct(obj, gsl_vector, v);
-  return rb_float_new(gsl_vector_get(v, 2*FIX2INT(ii)+1));
-}
-
-static VALUE cparray_set_imag(VALUE obj, VALUE ii, VALUE val)
-{
-  gsl_vector *v = NULL;
-  CHECK_VECTOR(obj);
-  CHECK_FIXNUM(ii);
-  Need_Float(val);
-  Data_Get_Struct(obj, gsl_vector, v);
-  gsl_vector_set(v, 2*FIX2INT(ii)+1, NUM2DBL(val));
-  return obj;
-}
-
-static VALUE get_cpary_stride_n(int argc, VALUE *argv, VALUE obj,
+static VALUE get_complex_stride_n(int argc, VALUE *argv, VALUE obj,
+			       gsl_vector_complex **vin,
 			       gsl_complex_packed_array *data, size_t *stride, size_t *n)
 {
-  gsl_vector *v = NULL;
-  int itmp = 0;
-  VALUE ary;
-  switch (TYPE(obj)) {
-  case T_MODULE:
-  case T_CLASS:
-  case T_OBJECT:
-    if (argc < 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 1)",
-			   argc);
-    if (obj == mgsl_fft_complex) {
-      if (CLASS_OF(argv[0]) != cgsl_cparray)
-	rb_raise(rb_eTypeError, "wrong argument type %s (expected PackedArray)",
-		 rb_class2name(CLASS_OF(argv[0])));
-    }
-    CHECK_VECTOR(argv[0]);
-    Data_Get_Struct(argv[0], gsl_vector, v);
-    ary = argv[0];
-    itmp = 1;
-    break;
-  default:
-    CHECK_VECTOR(obj);
-    Data_Get_Struct(obj, gsl_vector, v);
-    ary = obj;
-    itmp = 0;
-    break;
-  }
+  gsl_vector_complex *v = NULL;
+
+  // obj must be a GSL::Vector::Complex
+  CHECK_VECTOR_COMPLEX(obj);
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+
+  if(vin) *vin = v;
   *data = (gsl_complex_packed_array) v->data;
 
-  switch (argc-itmp) {
-  case 0:
-    *stride = v->stride;
-    *n = v->size/2;
-    break;
-  case 1:
-    CHECK_FIXNUM(argv[itmp]);
-    *n = FIX2INT(argv[itmp]);
-    *stride = v->stride;
-    break;
-  default:
-    CHECK_FIXNUM(argv[itmp]);
-    CHECK_FIXNUM(argv[itmp+1]);
-    *stride = FIX2INT(argv[itmp]);
-    *n = FIX2INT(argv[itmp+1]);
-    break;
-  }
-  return ary;
-}
-
-static void get_stride_n(int argc, VALUE *argv, int argstart, gsl_vector *v,
-			 size_t *stride, size_t *n)
-{
-  switch (argc-argstart) {
+  switch (argc) {
   case 0:
     *stride = v->stride;
     *n = v->size;
     break;
   case 1:
-    CHECK_FIXNUM(argv[argstart]);
+    CHECK_FIXNUM(argv[0]);
+    *n = FIX2INT(argv[0]);
     *stride = v->stride;
-    *n = FIX2INT(argv[argstart]);
     break;
   default:
-    CHECK_FIXNUM(argv[argstart]);
-    CHECK_FIXNUM(argv[argstart+1]);
-    *stride = FIX2INT(argv[argstart]);
-    *n = FIX2INT(argv[argstart+1]);
+    CHECK_FIXNUM(argv[0]);
+    CHECK_FIXNUM(argv[1]);
+    *stride = FIX2INT(argv[0]);
+    *n = FIX2INT(argv[1]);
     break;
   }
-  return;
+  return obj;
 }
 
 static VALUE rb_fft_complex_radix2(int argc, VALUE *argv, VALUE obj,
@@ -271,14 +109,14 @@ static VALUE rb_fft_complex_radix2(int argc, VALUE *argv, VALUE obj,
 {
   size_t stride, n;
   gsl_complex_packed_array data;
-  gsl_vector *v;
+  gsl_vector_complex *vin, *vout;
   VALUE ary;
-  ary = get_cpary_stride_n(argc, argv, obj, &data, &stride, &n);
+  ary = get_complex_stride_n(argc, argv, obj, &vin, &data, &stride, &n);
   if (flag == RB_GSL_FFT_COPY) {
-    v = gsl_vector_alloc(2*n);
-    memcpy(v->data, data, sizeof(double)*2*n);
-    (*trans)(v->data, stride, n);
-    return Data_Wrap_Struct(cgsl_cparray, 0, gsl_vector_free, v);
+    vout = gsl_vector_complex_alloc(n);
+    gsl_vector_complex_memcpy(vout, vin); 
+    (*trans)(vout->data, stride, n);
+    return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vout);
   } else { /* in-place */
     (*trans)(data, stride, n);
     return ary;
@@ -302,14 +140,14 @@ static VALUE rb_gsl_fft_complex_radix2_transform(int argc, VALUE *argv, VALUE ob
   size_t stride, n;
   gsl_complex_packed_array data;
   gsl_fft_direction sign;
-  gsl_vector *v;
+  gsl_vector_complex *vin, *vout;
   CHECK_FIXNUM(argv[argc-1]);
   sign = FIX2INT(argv[argc-1]);
-  get_cpary_stride_n(argc-1, argv, obj, &data, &stride, &n);
-  v = gsl_vector_alloc(2*n);
-  memcpy(v->data, data, sizeof(double)*2*n);
-  gsl_fft_complex_radix2_transform(v->data, stride, n, sign);
-  return Data_Wrap_Struct(cgsl_cparray, 0, gsl_vector_free, v);
+  get_complex_stride_n(argc-1, argv, obj, &vin, &data, &stride, &n);
+  vout = gsl_vector_complex_alloc(n);
+  gsl_vector_complex_memcpy(vout, vin); 
+  gsl_fft_complex_radix2_transform(vout->data, stride, n, sign);
+  return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vout);
 }
 
 static VALUE rb_gsl_fft_complex_radix2_transform2(int argc, VALUE *argv, VALUE obj)
@@ -320,7 +158,7 @@ static VALUE rb_gsl_fft_complex_radix2_transform2(int argc, VALUE *argv, VALUE o
   VALUE ary;
   CHECK_FIXNUM(argv[argc-1]);
   sign = FIX2INT(argv[argc-1]);
-  ary = get_cpary_stride_n(argc-1, argv, obj, &data, &stride, &n);
+  ary = get_complex_stride_n(argc-1, argv, obj, NULL, &data, &stride, &n);
   gsl_fft_complex_radix2_transform(data, stride, n, sign);
   return ary;
 }
@@ -368,15 +206,15 @@ static VALUE rb_gsl_fft_complex_radix2_dif_transform(int argc, VALUE *argv, VALU
 {
   size_t stride, n;
   gsl_complex_packed_array data;
-  gsl_vector *v;
+  gsl_vector_complex *vin, *vout;
   gsl_fft_direction sign;
   CHECK_FIXNUM(argv[argc-1]);
   sign = FIX2INT(argv[argc-1]);
-  get_cpary_stride_n(argc-1, argv, obj, &data, &stride, &n);
-  v = gsl_vector_alloc(2*n);
-  memcpy(v->data, data, sizeof(double)*2*n);
-  gsl_fft_complex_radix2_dif_transform(v->data, stride, n, sign);
-  return Data_Wrap_Struct(cgsl_cparray, 0, gsl_vector_free, v);
+  get_complex_stride_n(argc-1, argv, obj, &vin, &data, &stride, &n);
+  vout = gsl_vector_complex_alloc(n);
+  gsl_vector_complex_memcpy(vout, vin); 
+  gsl_fft_complex_radix2_dif_transform(vout->data, stride, n, sign);
+  return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vout);
 }
 
 /* in-place */
@@ -388,7 +226,7 @@ static VALUE rb_gsl_fft_complex_radix2_dif_transform2(int argc, VALUE *argv, VAL
   VALUE ary;
   CHECK_FIXNUM(argv[argc-1]);
   sign = FIX2INT(argv[argc-1]);
-  ary = get_cpary_stride_n(argc-1, argv, obj, &data, &stride, &n);
+  ary = get_complex_stride_n(argc-1, argv, obj, NULL, &data, &stride, &n);
   gsl_fft_complex_radix2_dif_transform(data, stride, n, sign);
   return ary;
 }
@@ -419,14 +257,6 @@ static VALUE rb_gsl_fft_complex_radix2_dif_inverse2(int argc, VALUE *argv, VALUE
 			       RB_GSL_FFT_INPLACE);
 }
 
-static VALUE rb_GSL_FFT_Wavetable_new(VALUE klass, VALUE n)
-{
-  GSL_FFT_Wavetable *table;
-  CHECK_FIXNUM(n);
-  table = (GSL_FFT_Wavetable *) gsl_fft_complex_wavetable_alloc(FIX2INT(n));
-  return Data_Wrap_Struct(klass, 0, GSL_FFT_Wavetable_free, table);
-}
-
 static VALUE rb_GSL_FFT_Wavetable_n(VALUE obj)
 {
   GSL_FFT_Wavetable *table;
@@ -444,20 +274,12 @@ static VALUE rb_GSL_FFT_Wavetable_nf(VALUE obj)
 static VALUE rb_GSL_FFT_Wavetable_factor(VALUE obj)
 {
   GSL_FFT_Wavetable *table;
-  gsl_permutation *p;
+  gsl_vector_int *v;
   size_t i;
   Data_Get_Struct(obj, GSL_FFT_Wavetable, table);
-  p = gsl_permutation_alloc(64);
-  for (i = 0; i < table->nf; i++) p->data[i] = table->factor[i];
-  return Data_Wrap_Struct(cgsl_fft_wavetable_factor, 0, gsl_permutation_free, p);
-}
-
-static VALUE rb_GSL_FFT_Workspace_new(VALUE klass, VALUE n)
-{
-  GSL_FFT_Workspace *space;
-  CHECK_FIXNUM(n);
-  space = GSL_FFT_Workspace_new(FIX2INT(n));
-  return Data_Wrap_Struct(klass, 0, GSL_FFT_Workspace_free, space);
+  v = gsl_vector_int_alloc(table->nf);
+  for (i = 0; i < table->nf; i++) gsl_vector_int_set(v, i, table->factor[i]);
+  return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free, v);
 }
 
 enum {
@@ -469,46 +291,24 @@ enum {
 
 static void gsl_fft_free(int flag, GSL_FFT_Wavetable *table,
 			 GSL_FFT_Workspace *space);
-static int gsl_fft_get_argv(int argc, VALUE *argv, VALUE obj,
-			    gsl_complex_packed_array *data, size_t *stride,
-			    size_t *n, gsl_fft_complex_wavetable **table,
-			    gsl_fft_complex_workspace **space);
 
-static int gsl_fft_get_argv(int argc, VALUE *argv, VALUE obj,
+// Parse argc, argv.  obj must be GSL::Vector::Complex.
+static int gsl_fft_get_argv_complex(int argc, VALUE *argv, VALUE obj,
+			    gsl_vector_complex ** vin,
 			    gsl_complex_packed_array *data, size_t *stride,
 			    size_t *n, gsl_fft_complex_wavetable **table,
 			    gsl_fft_complex_workspace **space)
 {
   int flag = NONE_OF_TWO, flagtmp, i, itmp = argc, itmp2 = 0, ccc;
   int flagw = 0;
-  gsl_vector *v = NULL;
 
-  switch (TYPE(obj)) {
-  case T_MODULE:
-  case T_CLASS:
-  case T_OBJECT:
-    if (argc < 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 1)",
-			   argc);
-    if (obj == mgsl_fft_complex) {
-      if (CLASS_OF(argv[0]) != cgsl_cparray)
-	rb_raise(rb_eTypeError, "wrong argument type %s (expected PackedArray)",
-		 rb_class2name(CLASS_OF(argv[0])));
-    }
-    CHECK_VECTOR(argv[0]);
-    Data_Get_Struct(argv[0], gsl_vector, v);
-    itmp2 = 1;
-    break;
-  default:
-    CHECK_VECTOR(obj);
-    Data_Get_Struct(obj, gsl_vector, v);
-    break;
-  }
+  CHECK_VECTOR_COMPLEX(obj);
+
   ccc = argc;
   flagtmp = 0;
   flagw = 0;
   for (i = argc-1; i >= itmp2; i--) {
-    if (rb_obj_is_kind_of(argv[i], cgsl_fft_workspace)
-	|| rb_obj_is_kind_of(argv[i], cgsl_fft_complex_workspace)) {
+    if (rb_obj_is_kind_of(argv[i], cgsl_fft_complex_workspace)) {
       Data_Get_Struct(argv[i], gsl_fft_complex_workspace, *space);
       flagtmp = 1;
       flagw = 1;
@@ -519,15 +319,14 @@ static int gsl_fft_get_argv(int argc, VALUE *argv, VALUE obj,
   }
   flagtmp = 0;
   for (i = itmp-1; i >= itmp2; i--) {
-    if (rb_obj_is_kind_of(argv[i], cgsl_fft_wavetable)
-	|| rb_obj_is_kind_of(argv[i], cgsl_fft_complex_wavetable)) {
+    if (rb_obj_is_kind_of(argv[i], cgsl_fft_complex_wavetable)) {
       Data_Get_Struct(argv[i], gsl_fft_complex_wavetable, *table);
       flagtmp = 1;
       ccc--;
       break;
     }
   }
-  get_cpary_stride_n(ccc, argv, obj, data, stride, n);
+  get_complex_stride_n(ccc, argv, obj, vin, data, stride, n);
   if (flagw == 0) {
     *space = gsl_fft_complex_workspace_alloc(*n);
     flag += ALLOC_SPACE;
@@ -545,7 +344,8 @@ static int gsl_fft_get_argv(int argc, VALUE *argv, VALUE obj,
   return flag;
 }
 
-static int gsl_fft_get_argv2(int argc, VALUE *argv, VALUE obj,
+// Parse argc, argv.  obj must be GSL::Vector of real data
+static int gsl_fft_get_argv_real(int argc, VALUE *argv, VALUE obj,
 			     double **ptr, size_t *stride,
 			     size_t *n, gsl_fft_real_wavetable **table,
 			     gsl_fft_real_workspace **space, int *naflag)
@@ -553,24 +353,9 @@ static int gsl_fft_get_argv2(int argc, VALUE *argv, VALUE obj,
   int flag = NONE_OF_TWO, flagtmp, i, itmp = argc, itmp2 = 0, ccc;
   int flagw = 0;
   *naflag = 0;
-  switch (TYPE(obj)) {
-  case T_MODULE:
-  case T_CLASS:
-  case T_OBJECT:
-    if (argc < 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 1)",
-			   argc);
-    if (obj == mgsl_fft_complex) {
-      if (CLASS_OF(argv[0]) != cgsl_cparray)
-	rb_raise(rb_eTypeError, "wrong argument type %s (expected PackedArray)",
-		 rb_class2name(CLASS_OF(argv[0])));
-    }
-    *ptr = get_ptr_double3(argv[0], n, stride, naflag);
-    itmp2 = 1;
-    break;
-  default:
-    *ptr = get_ptr_double3(obj, n, stride, naflag);
-    break;
-  }
+
+  *ptr = get_ptr_double3(obj, n, stride, naflag);
+
   ccc = argc;
   flagtmp = 0;
   flagw = 0;
@@ -610,31 +395,17 @@ static int gsl_fft_get_argv2(int argc, VALUE *argv, VALUE obj,
   return flag;
 }
 
-static int gsl_fft_get_argv3(int argc, VALUE *argv, VALUE obj,
+// Parse argc, argv.  obj must be GSL::Vector of halfcomplex data
+static int gsl_fft_get_argv_halfcomplex(int argc, VALUE *argv, VALUE obj,
 			   double **ptr, size_t *stride,
 			    size_t *n, gsl_fft_halfcomplex_wavetable **table,
 			    gsl_fft_real_workspace **space, int *naflag)
 {
   int flag = NONE_OF_TWO, flagtmp, i, itmp = argc, itmp2 = 0, ccc;
   int flagw = 0;
-  switch (TYPE(obj)) {
-  case T_MODULE:
-  case T_CLASS:
-  case T_OBJECT:
-    if (argc < 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 1)",
-			   argc);
-    if (obj == mgsl_fft_complex) {
-      if (CLASS_OF(argv[0]) != cgsl_cparray)
-	rb_raise(rb_eTypeError, "wrong argument type %s (expected PackedArray)",
-		 rb_class2name(CLASS_OF(argv[0])));
-    }
-    *ptr = get_ptr_double3(argv[0], n, stride, naflag);
-    itmp2 = 1;
-    break;
-  default:
-    *ptr = get_ptr_double3(obj, n, stride, naflag);
-    break;
-  }
+
+  *ptr = get_ptr_double3(obj, n, stride, naflag);
+
   ccc = argc;
   flagtmp = 0;
   flagw = 0;
@@ -694,18 +465,6 @@ static void gsl_fft_free(int flag, GSL_FFT_Wavetable *table,
   }
 }
 
-static VALUE rb_gsl_fft_getary(int argc, VALUE *argv, VALUE obj)
-{
-  switch (TYPE(obj)) {
-  case T_MODULE: case T_CLASS: case T_OBJECT:
-    return argv[0];
-    break;
-  default:
-    return obj;
-    break;
-  }
-}
-
 static VALUE rb_fft_complex_trans(int argc, VALUE *argv, VALUE obj,
 				  int (*transform)(gsl_complex_packed_array, 
 						   size_t, size_t, 
@@ -716,20 +475,20 @@ static VALUE rb_fft_complex_trans(int argc, VALUE *argv, VALUE obj,
   int flag = 0, status;
   size_t stride, n;
   gsl_complex_packed_array data;
-  gsl_vector *v;
+  gsl_vector_complex *vin, *vout;
   gsl_fft_complex_wavetable *table = NULL;
   gsl_fft_complex_workspace *space = NULL;
-  flag = gsl_fft_get_argv(argc, argv, obj, &data, &stride, &n, &table, &space);
+  flag = gsl_fft_get_argv_complex(argc, argv, obj, &vin, &data, &stride, &n, &table, &space);
   if (sss == RB_GSL_FFT_COPY) {
-    v = gsl_vector_alloc(2*n);
-    memcpy(v->data, data, sizeof(double)*2*n);
-    status = (*transform)(v->data, stride, n, table, space);
+    vout = gsl_vector_complex_alloc(n);
+    gsl_vector_complex_memcpy(vout, vin);
+    status = (*transform)(vout->data, stride, n, table, space);
     gsl_fft_free(flag, (GSL_FFT_Wavetable *) table, (GSL_FFT_Workspace *) space);
-    return Data_Wrap_Struct(cgsl_cparray, 0, gsl_vector_free, v);
+    return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vout);
   } else {    /* in-place */
     status = (*transform)(data, stride, n, table, space);
     gsl_fft_free(flag, (GSL_FFT_Wavetable *) table, (GSL_FFT_Workspace *) space);
-    return rb_gsl_fft_getary(argc, argv, obj);
+    return obj;
   }
 }
 
@@ -749,19 +508,19 @@ static VALUE rb_gsl_fft_complex_transform(int argc, VALUE *argv, VALUE obj)
 {
   int flag = 0, status;
   size_t stride, n;
-  gsl_vector *v;
+  gsl_vector_complex *vin, *vout;
   gsl_fft_direction sign;
   gsl_complex_packed_array data;
   gsl_fft_complex_wavetable *table = NULL;
   gsl_fft_complex_workspace *space = NULL;
   CHECK_FIXNUM(argv[argc-1]);
   sign = FIX2INT(argv[argc-1]);
-  flag = gsl_fft_get_argv(argc-1, argv, obj, &data, &stride, &n, &table, &space);
-  v = gsl_vector_alloc(2*n);
-  memcpy(v->data, data, sizeof(double)*2*n);
-  status = gsl_fft_complex_transform(v->data, stride, n, table, space, sign);
+  flag = gsl_fft_get_argv_complex(argc-1, argv, obj, &vin, &data, &stride, &n, &table, &space);
+  vout = gsl_vector_complex_alloc(n);
+  gsl_vector_complex_memcpy(vout, vin);
+  status = gsl_fft_complex_transform(vout->data, stride, n, table, space, sign);
   gsl_fft_free(flag, (GSL_FFT_Wavetable *) table, (GSL_FFT_Workspace *) space);
-  return Data_Wrap_Struct(cgsl_cparray, 0, gsl_vector_free, v);
+  return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vout);
 }
 
 /* in-place */
@@ -775,10 +534,10 @@ static VALUE rb_gsl_fft_complex_transform2(int argc, VALUE *argv, VALUE obj)
   gsl_fft_complex_workspace *space = NULL;
   CHECK_FIXNUM(argv[argc-1]);
   sign = FIX2INT(argv[argc-1]);
-  flag = gsl_fft_get_argv(argc-1, argv, obj, &data, &stride, &n, &table, &space);
+  flag = gsl_fft_get_argv_complex(argc-1, argv, obj, NULL, &data, &stride, &n, &table, &space);
   status = gsl_fft_complex_transform(data, stride, n, table, space, sign);
   gsl_fft_free(flag, (GSL_FFT_Wavetable *) table, (GSL_FFT_Workspace *) space);
-  return rb_gsl_fft_getary(argc, argv, obj);
+  return obj;
 }
 
 static VALUE rb_gsl_fft_complex_backward(int argc, VALUE *argv, VALUE obj)
@@ -805,49 +564,30 @@ static VALUE rb_gsl_fft_complex_inverse2(int argc, VALUE *argv, VALUE obj)
 			      RB_GSL_FFT_INPLACE);
 }
 
+// Parse argc, argv.  obj must be GSL::Vector of real or halfcomplex data
 static VALUE get_ptr_stride_n(int argc, VALUE *argv, VALUE obj,
 			     double **ptr, size_t *stride, size_t *n, int *flag)
 {
-  int itmp = 0;
-  VALUE ary;
   *flag = 0;
-  switch (TYPE(obj)) {
-  case T_MODULE:
-  case T_CLASS:
-  case T_OBJECT:
-    if (argc < 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 1)",
-			   argc);
-    if (obj == mgsl_fft_complex) {
-      if (CLASS_OF(argv[0]) != cgsl_cparray)
-	rb_raise(rb_eTypeError, "wrong argument type %s (expected PackedArray)",
-		 rb_class2name(CLASS_OF(argv[0])));
-    }
-    *ptr = get_ptr_double3(argv[0], n, stride, flag);
-    itmp = 1;
-    ary = argv[0];
-    break;
-  default:
-    *ptr = get_ptr_double3(obj, n, stride, flag);
-    ary = obj;
-    itmp = 0;
-    break;
-  }
-  switch (argc-itmp) {
+
+  *ptr = get_ptr_double3(obj, n, stride, flag);
+
+  switch (argc) {
   case 0:
     /* do nothing */
     break;
   case 1:
-    CHECK_FIXNUM(argv[itmp]);
-    *n = FIX2INT(argv[itmp]);
+    CHECK_FIXNUM(argv[0]);
+    *n = FIX2INT(argv[0]);
     break;
   default:
-    CHECK_FIXNUM(argv[itmp]);
-    CHECK_FIXNUM(argv[itmp+1]);
-    *stride = FIX2INT(argv[itmp]);
-    *n = FIX2INT(argv[itmp+1]);
+    CHECK_FIXNUM(argv[0]);
+    CHECK_FIXNUM(argv[1]);
+    *stride = FIX2INT(argv[0]);
+    *n = FIX2INT(argv[1]);
     break;
   }
-  return ary;
+  return obj;
 }
 
 static VALUE rb_fft_radix2(int argc, VALUE *argv, VALUE obj,
@@ -874,7 +614,7 @@ static VALUE rb_fft_radix2(int argc, VALUE *argv, VALUE obj,
       ptr2 = vnew->data;
       ary = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else {
-      ary = rb_gsl_fft_getary(argc, argv, obj);
+      ary = obj;
       ptr2 = ptr1;
     }
 #ifdef HAVE_NARRAY_H
@@ -885,7 +625,7 @@ static VALUE rb_fft_radix2(int argc, VALUE *argv, VALUE obj,
       ptr2 = NA_PTR_TYPE(ary, double*);
       memcpy(ptr2, ptr1, sizeof(double)*n);
     } else {
-      ary = rb_gsl_fft_getary(argc, argv, obj);
+      ary = obj;
       ptr2 = NA_PTR_TYPE(ary, double*);
     }
 #endif
@@ -898,20 +638,9 @@ static VALUE rb_fft_radix2(int argc, VALUE *argv, VALUE obj,
 
 static void rb_fft_radix2_check_arg(int argc, VALUE obj)
 {
-  switch (TYPE(obj)) {
-  case T_MODULE:
-  case T_CLASS:
-  case T_OBJECT:
-    if (argc != 1 && argc != 3) rb_raise(rb_eArgError, 
-					 "wrong number of arguments (%d for 1 or 3)", argc);
-    break;
-  default:
-    /*    CHECK_VECTOR(obj);*/
-    if (argc != 0 && argc != 2) rb_raise(rb_eArgError, 
-					 "wrong number of arguments (%d for 0 or 2)", argc);
-    break;
-  }
-  return;
+  /*    CHECK_VECTOR(obj);*/
+  if (argc != 0 && argc != 2) rb_raise(rb_eArgError, 
+         "wrong number of arguments (%d for 0 or 2)", argc);
 }
 
 static VALUE rb_gsl_fft_real_radix2_transform(int argc, VALUE *argv, VALUE obj)
@@ -975,7 +704,7 @@ static VALUE rb_fft_real_trans(int argc, VALUE *argv, VALUE obj,
   gsl_fft_real_wavetable *table = NULL;
   gsl_fft_real_workspace *space = NULL;
   VALUE ary;
-  flag = gsl_fft_get_argv2(argc, argv, obj, &ptr1, &stride, &n, &table, &space, &naflag);
+  flag = gsl_fft_get_argv_real(argc, argv, obj, &ptr1, &stride, &n, &table, &space, &naflag);
   if (naflag == 0) {
     if (sss == RB_GSL_FFT_COPY) {
       vnew = gsl_vector_alloc(n);
@@ -984,10 +713,10 @@ static VALUE rb_fft_real_trans(int argc, VALUE *argv, VALUE obj,
       vv.vector.size = n;
       gsl_vector_memcpy(vnew, &vv.vector);
       ptr2 = vnew->data;
-      ary = Data_Wrap_Struct(cgsl_vector_halfcomplex, 0, gsl_vector_free, vnew);
+      ary = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else {
       ptr2 = ptr1;
-      ary = rb_gsl_fft_getary(argc, argv, obj);
+      ary = obj;
     }
 #ifdef HAVE_NARRAY_H
   } else if (naflag == 1) {
@@ -998,7 +727,7 @@ static VALUE rb_fft_real_trans(int argc, VALUE *argv, VALUE obj,
       memcpy(ptr2, ptr1, sizeof(double)*n);
     } else {
       ptr2 = ptr1;
-      ary = rb_gsl_fft_getary(argc, argv, obj);
+      ary = obj;
     }
 #endif
   } else {
@@ -1037,7 +766,7 @@ static VALUE rb_fft_halfcomplex_trans(int argc, VALUE *argv, VALUE obj,
   gsl_fft_halfcomplex_wavetable *table = NULL;
   gsl_fft_real_workspace *space = NULL;
   VALUE ary;
-  flag = gsl_fft_get_argv3(argc, argv, obj, &ptr1, &stride, &n, 
+  flag = gsl_fft_get_argv_halfcomplex(argc, argv, obj, &ptr1, &stride, &n, 
 			   &table, &space, &naflag);
   if (naflag == 0) {
     if (sss == RB_GSL_FFT_COPY) {
@@ -1050,7 +779,7 @@ static VALUE rb_fft_halfcomplex_trans(int argc, VALUE *argv, VALUE obj,
       ary = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else {
       ptr2 = ptr1;
-      ary = rb_gsl_fft_getary(argc, argv, obj);
+      ary = obj;
     }
 #ifdef HAVE_NARRAY_H
   } else if (naflag == 1) {
@@ -1061,7 +790,7 @@ static VALUE rb_fft_halfcomplex_trans(int argc, VALUE *argv, VALUE obj,
       memcpy(ptr2, ptr1, sizeof(double)*n);
     } else {
       ptr2 = ptr1;
-      ary = rb_gsl_fft_getary(argc, argv, obj);
+      ary = obj;
     }
 #endif
   } else {
@@ -1114,77 +843,41 @@ static VALUE rb_gsl_fft_halfcomplex_inverse2(int argc, VALUE *argv, VALUE obj)
 				  RB_GSL_FFT_INPLACE);
 }
 
-static VALUE rb_gsl_fft_real_unpack(int argc, VALUE *argv, VALUE obj)
+static VALUE rb_gsl_fft_real_unpack(VALUE obj)
 {
-  gsl_vector *v, *cpary;
-  size_t stride, n;
+  gsl_vector *v;
+  gsl_vector_complex *vout;
 
-  switch (TYPE(obj)) {
-  case T_MODULE:
-  case T_CLASS:
-  case T_OBJECT:
-    if (argc < 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 1)",
-			   argc);
-    CHECK_VECTOR(argv[0]);
-    Data_Get_Struct(argv[0], gsl_vector, v);
-    get_stride_n(argc-1, argv, 1, v, &stride, &n);
-    break;
-  default:
-    CHECK_VECTOR(obj);
-    Data_Get_Struct(obj, gsl_vector, v);
-    get_stride_n(argc, argv, 0, v, &stride, &n);
-    break;
-  }
-  cpary = gsl_vector_alloc(2*n);
-  gsl_fft_real_unpack(v->data, (gsl_complex_packed_array) cpary->data, stride, n);
-  return Data_Wrap_Struct(cgsl_cparray, 0, gsl_vector_free, cpary);
+  CHECK_VECTOR(obj);
+  Data_Get_Struct(obj, gsl_vector, v);
+
+  vout = gsl_vector_complex_alloc(v->size);
+  gsl_fft_real_unpack(v->data, (gsl_complex_packed_array) vout->data, v->stride, v->size);
+  return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vout);
 }
 
-static VALUE rb_gsl_fft_halfcomplex_unpack(int argc, VALUE *argv, VALUE obj)
+static VALUE rb_gsl_fft_halfcomplex_unpack(VALUE obj)
 {
-  gsl_vector *v, *cpary;
-  size_t stride, n;
-  switch (TYPE(obj)) {
-  case T_MODULE:
-  case T_CLASS:
-  case T_OBJECT:
-    if (argc < 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 1)",
-			   argc);
-    CHECK_VECTOR(argv[0]);
-    Data_Get_Struct(argv[0], gsl_vector, v);
-    get_stride_n(argc-1, argv, 1, v, &stride, &n);
-    break;
-  default:
-    Data_Get_Struct(obj, gsl_vector, v);
-    get_stride_n(argc, argv, 0, v, &stride, &n);
-    break;
-  }
-  cpary = gsl_vector_alloc(2*n);
-  gsl_fft_halfcomplex_unpack(v->data, (gsl_complex_packed_array) cpary->data, stride, n);
-  return Data_Wrap_Struct(cgsl_cparray, 0, gsl_vector_free, cpary);
+  gsl_vector *v;
+  gsl_vector_complex *vout;
+
+  CHECK_VECTOR(obj);
+  Data_Get_Struct(obj, gsl_vector, v);
+
+  vout = gsl_vector_complex_alloc(2*v->size);
+  gsl_fft_halfcomplex_unpack(v->data, (gsl_complex_packed_array) vout->data, v->stride, v->size);
+  return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vout);
 }
 
 /* Convert a halfcomplex data to Numerical Recipes style */
-static VALUE rb_gsl_fft_halfcomplex_to_nrc(int argc, VALUE *argv, VALUE obj)
+static VALUE rb_gsl_fft_halfcomplex_to_nrc(VALUE obj)
 {
   gsl_vector *v, *vnew;
   size_t i, k;
-  switch (TYPE(obj)) {
-  case T_MODULE:
-  case T_CLASS:
-  case T_OBJECT:
-    if (argc != 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)",
-			    argc);
-    CHECK_VECTOR(argv[0]);
-    Data_Get_Struct(argv[0], gsl_vector, v);
-    break;
-  default:
-    if (argc != 0) rb_raise(rb_eArgError, "wrong number of arguments (%d for 0)",
-			    argc);
-    CHECK_VECTOR(obj);
-    Data_Get_Struct(obj, gsl_vector, v);
-    break;
-  }
+
+  CHECK_VECTOR(obj);
+  Data_Get_Struct(obj, gsl_vector, v);
+
   vnew = gsl_vector_alloc(v->size);
   gsl_vector_set(vnew, 0, gsl_vector_get(v, 0));  /* DC */
   gsl_vector_set(vnew, 1, gsl_vector_get(v, v->size/2));  /* Nyquist freq */
@@ -1195,7 +888,7 @@ static VALUE rb_gsl_fft_halfcomplex_to_nrc(int argc, VALUE *argv, VALUE obj)
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
 }
 
-static VALUE rb_gsl_fft_halfcomplex_amp_phase(VALUE module, VALUE obj)
+static VALUE rb_gsl_fft_halfcomplex_amp_phase(VALUE obj)
 {
   gsl_vector *v;
   gsl_vector *amp, *phase;
@@ -1223,19 +916,7 @@ static VALUE rb_gsl_fft_halfcomplex_amp_phase(VALUE module, VALUE obj)
 
 void Init_gsl_fft(VALUE module)
 {
-  VALUE mgsl_fft_complex_radix2, mgsl_fft_real_radix2;
-  VALUE mgsl_fft_halfcomplex_radix2;
-
   mgsl_fft = rb_define_module_under(module, "FFT");
-  mgsl_fft_complex = rb_define_module_under(mgsl_fft, "Complex");
-  mgsl_fft_complex_radix2 = rb_define_module_under(mgsl_fft_complex, "Radix2");
-  mgsl_fft_real = rb_define_module_under(mgsl_fft, "Real");
-  mgsl_fft_real_radix2 = rb_define_module_under(mgsl_fft_real, "Radix2");
-  mgsl_fft_halfcomplex = rb_define_module_under(mgsl_fft, "HalfComplex");
-  mgsl_fft_halfcomplex_radix2 = rb_define_module_under(mgsl_fft_halfcomplex, "Radix2");
-
-  cgsl_vector_halfcomplex = rb_define_class_under(cgsl_vector, "HalfComplex",
-						  cgsl_vector);
 
   /*****/
 
@@ -1244,94 +925,83 @@ void Init_gsl_fft(VALUE module)
   rb_define_const(mgsl_fft, "Backward", INT2FIX(backward));
   rb_define_const(mgsl_fft, "BACKWARD", INT2FIX(backward));
 
-  cgsl_cparray = rb_define_class_under(mgsl_fft_complex, "PackedArray", cgsl_vector);
-
-  rb_define_singleton_method(cgsl_cparray, "alloc", rb_gsl_vector_new, -1);
-
-  rb_define_method(cgsl_cparray, "get", cparray_get, 1);
-  rb_define_alias(cgsl_cparray, "[]", "get");
-  rb_define_method(cgsl_cparray, "real", cparray_real, 1);
-  rb_define_method(cgsl_cparray, "re", cparray_re, 0);
-  rb_define_method(cgsl_cparray, "imag", cparray_imag, 1);
-  rb_define_method(cgsl_cparray, "im", cparray_im, 0);
-  rb_define_method(cgsl_cparray, "set", cparray_set, -1);
-  rb_define_alias(cgsl_cparray, "[]=", "set");
-  rb_define_method(cgsl_cparray, "set_real", cparray_set_real, 2);
-  rb_define_method(cgsl_cparray, "set_imag", cparray_set_imag, 2);
-
-  rb_define_method(cgsl_cparray, "radix2_forward", 
+  /* Transforms for complex vectors */
+  rb_define_method(cgsl_vector_complex, "radix2_forward", 
 		   rb_gsl_fft_complex_radix2_forward, -1);
-  rb_define_method(cgsl_cparray, "radix2_transform", 
+  rb_define_method(cgsl_vector_complex, "radix2_transform", 
 		   rb_gsl_fft_complex_radix2_transform, -1);
-  rb_define_method(cgsl_cparray, "radix2_backward", 
+  rb_define_method(cgsl_vector_complex, "radix2_backward", 
 		   rb_gsl_fft_complex_radix2_backward, -1);
-  rb_define_method(cgsl_cparray, "radix2_inverse", 
+  rb_define_method(cgsl_vector_complex, "radix2_inverse", 
 		   rb_gsl_fft_complex_radix2_inverse, -1);
-  rb_define_method(cgsl_cparray, "radix2_dif_forward", 
+  rb_define_method(cgsl_vector_complex, "radix2_dif_forward", 
 		   rb_gsl_fft_complex_radix2_dif_forward, -1);
-  rb_define_method(cgsl_cparray, "radix2_dif_transform", 
+  rb_define_method(cgsl_vector_complex, "radix2_dif_transform", 
 		   rb_gsl_fft_complex_radix2_dif_transform, -1);
-  rb_define_method(cgsl_cparray, "radix2_dif_backward", 
+  rb_define_method(cgsl_vector_complex, "radix2_dif_backward", 
 		   rb_gsl_fft_complex_radix2_dif_backward, -1);
-  rb_define_method(cgsl_cparray, "radix2_dif_inverse", 
+  rb_define_method(cgsl_vector_complex, "radix2_dif_inverse", 
 		   rb_gsl_fft_complex_radix2_dif_inverse, -1);
 
-  rb_define_method(cgsl_cparray, "radix2_forward!", 
+  /* In-place radix-2 transforms for complex vectors */
+  rb_define_method(cgsl_vector_complex, "radix2_forward!", 
 		   rb_gsl_fft_complex_radix2_forward2, -1);
-  rb_define_method(cgsl_cparray, "radix2_transform!",
+  rb_define_method(cgsl_vector_complex, "radix2_transform!",
 		   rb_gsl_fft_complex_radix2_transform2, -1);
-  rb_define_method(cgsl_cparray, "radix2_backward!", 
+  rb_define_method(cgsl_vector_complex, "radix2_backward!", 
 		   rb_gsl_fft_complex_radix2_backward2, -1);
-  rb_define_method(cgsl_cparray, "radix2_inverse!", 
+  rb_define_method(cgsl_vector_complex, "radix2_inverse!", 
 		   rb_gsl_fft_complex_radix2_inverse2, -1);
-  rb_define_method(cgsl_cparray, "radix2_dif_forward!", 
+  rb_define_method(cgsl_vector_complex, "radix2_dif_forward!", 
 		   rb_gsl_fft_complex_radix2_dif_forward2, -1);
-  rb_define_method(cgsl_cparray, "radix2_dif_transform!",
+  rb_define_method(cgsl_vector_complex, "radix2_dif_transform!",
 		   rb_gsl_fft_complex_radix2_dif_transform2, -1);
-  rb_define_method(cgsl_cparray, "radix2_dif_backward!", 
+  rb_define_method(cgsl_vector_complex, "radix2_dif_backward!", 
 		   rb_gsl_fft_complex_radix2_dif_backward2, -1);
-  rb_define_method(cgsl_cparray, "radix2_dif_inverse!", 
+  rb_define_method(cgsl_vector_complex, "radix2_dif_inverse!", 
 		   rb_gsl_fft_complex_radix2_dif_inverse2, -1);
 
+  // class GSL::FFT::Wavetable < GSL::Object
+  //
+  // Useful since some functionality is shared among
+  // GSL::FFT::Complex::Wavetable
+  // GSL::FFT::Real::Wavetable
+  // GSL::FFT::HalfComplex::Wavetable
   cgsl_fft_wavetable = rb_define_class_under(mgsl_fft, "Wavetable", cGSL_Object);
-  rb_define_singleton_method(cgsl_fft_wavetable, "alloc",
-			     rb_GSL_FFT_Wavetable_new, 1);
+  // No alloc
+  // TODO Make GSL::FFT::Wavetable#initialize private?
   rb_define_method(cgsl_fft_wavetable, "n",
 			     rb_GSL_FFT_Wavetable_n, 0);
   rb_define_method(cgsl_fft_wavetable, "nf",
 			     rb_GSL_FFT_Wavetable_nf, 0);
   rb_define_method(cgsl_fft_wavetable, "factor",
 		   rb_GSL_FFT_Wavetable_factor, 0);
-  cgsl_fft_wavetable_factor = rb_define_class_under(mgsl_fft, 
-						    "WavetableFactor", 
-						    cgsl_permutation);
 
-  cgsl_fft_complex_wavetable = rb_define_class_under(mgsl_fft_complex, "Wavetable",
+  // class GSL::FFT::ComplexWavetable < GSL::FFT::Wavetable
+  cgsl_fft_complex_wavetable = rb_define_class_under(mgsl_fft, "ComplexWavetable",
 						     cgsl_fft_wavetable);
   rb_define_singleton_method(cgsl_fft_complex_wavetable, "alloc",
 			     rb_gsl_fft_complex_wavetable_new, 1);
 
-  cgsl_fft_workspace = rb_define_class_under(mgsl_fft, "Workspace", cGSL_Object);
-  rb_define_singleton_method(cgsl_fft_workspace, "alloc",
-			     rb_GSL_FFT_Workspace_new, 1);
-
-  cgsl_fft_complex_workspace = rb_define_class_under(mgsl_fft_complex, "Workspace", 
-						     cgsl_fft_workspace);
+  // class GSL::FFT::ComplexWorkspace < GSL::Object
+  cgsl_fft_complex_workspace = rb_define_class_under(mgsl_fft, "ComplexWorkspace", 
+						     cGSL_Object);
   rb_define_singleton_method(cgsl_fft_complex_workspace, "alloc",
 			     rb_gsl_fft_complex_workspace_new, 1);
 
-  rb_define_method(cgsl_cparray, "forward", rb_gsl_fft_complex_forward, -1);
-  rb_define_method(cgsl_cparray, "transform", rb_gsl_fft_complex_transform, -1);
-  rb_define_method(cgsl_cparray, "backward", rb_gsl_fft_complex_backward, -1);
-  rb_define_method(cgsl_cparray, "inverse", rb_gsl_fft_complex_inverse, -1);
+  rb_define_method(cgsl_vector_complex, "forward", rb_gsl_fft_complex_forward, -1);
+  rb_define_method(cgsl_vector_complex, "transform", rb_gsl_fft_complex_transform, -1);
+  rb_define_method(cgsl_vector_complex, "backward", rb_gsl_fft_complex_backward, -1);
+  rb_define_method(cgsl_vector_complex, "inverse", rb_gsl_fft_complex_inverse, -1);
 
-  rb_define_method(cgsl_cparray, "forward!", rb_gsl_fft_complex_forward2, -1);
-  rb_define_method(cgsl_cparray, "transform!", rb_gsl_fft_complex_transform2, -1);
-  rb_define_method(cgsl_cparray, "backward!", rb_gsl_fft_complex_backward2, -1);
-  rb_define_method(cgsl_cparray, "inverse!", rb_gsl_fft_complex_inverse2, -1);
+  rb_define_method(cgsl_vector_complex, "forward!", rb_gsl_fft_complex_forward2, -1);
+  rb_define_method(cgsl_vector_complex, "transform!", rb_gsl_fft_complex_transform2, -1);
+  rb_define_method(cgsl_vector_complex, "backward!", rb_gsl_fft_complex_backward2, -1);
+  rb_define_method(cgsl_vector_complex, "inverse!", rb_gsl_fft_complex_inverse2, -1);
 
   /*****/
 
+  // TODO Do these method names need the "real_" and "halfcomplex_" prefixes?
   rb_define_method(cgsl_vector, "real_radix2_transform", 
 		   rb_gsl_fft_real_radix2_transform, -1);
   rb_define_alias(cgsl_vector, "radix2_transform", "real_radix2_transform");
@@ -1347,7 +1017,7 @@ void Init_gsl_fft(VALUE module)
   rb_define_alias(cgsl_vector, "halfcomplex_radix2_backward", 
 		  "real_radix2_backward");
 
-
+  // TODO Do these method names need the "real_" and "halfcomplex_" prefixes?
   rb_define_method(cgsl_vector, "real_radix2_transform!", 
 		   rb_gsl_fft_real_radix2_transform2, -1);
   rb_define_alias(cgsl_vector, "radix2_transform!", "real_radix2_transform!");
@@ -1364,23 +1034,30 @@ void Init_gsl_fft(VALUE module)
 		  "real_radix2_backward!");
 
   /*****/
-  cgsl_fft_real_wavetable = rb_define_class_under(mgsl_fft_real, "Wavetable", 
+
+  // class GSL::FFT::RealWavetable < GSL::FFT::Wavetable
+  cgsl_fft_real_wavetable = rb_define_class_under(mgsl_fft, "RealWavetable", 
 						  cgsl_fft_wavetable);
   rb_define_singleton_method(cgsl_fft_real_wavetable, "alloc",
 			     rb_gsl_fft_real_wavetable_new, 1);
 
-  cgsl_fft_halfcomplex_wavetable = rb_define_class_under(mgsl_fft_halfcomplex, 
-							 "Wavetable", cgsl_fft_wavetable);
+  // class GSL::FFT::HalfComplexWavetable < GSL::FFT::Wavetable
+  cgsl_fft_halfcomplex_wavetable = rb_define_class_under(mgsl_fft, 
+							 "HalfComplexWavetable", cgsl_fft_wavetable);
   rb_define_singleton_method(cgsl_fft_halfcomplex_wavetable, "alloc",
 			     rb_gsl_fft_halfcomplex_wavetable_new, 1);
 
   /*****/
-  cgsl_fft_real_workspace = rb_define_class_under(mgsl_fft_real, "Workspace", 
-						  cgsl_fft_workspace);
+
+  // class GSL::FFT::RealWorkspace < GSL::Object
+  cgsl_fft_real_workspace = rb_define_class_under(mgsl_fft, "RealWorkspace", 
+						  cGSL_Object);
   rb_define_singleton_method(cgsl_fft_real_workspace, "alloc",
 			     rb_gsl_fft_real_workspace_new, 1);
 
   /*****/
+
+  // TODO Do these method names need the "real_" and "halfcomplex_" prefixes?
   rb_define_method(cgsl_vector, "real_transform", rb_gsl_fft_real_transform, -1);
   rb_define_alias(cgsl_vector, "transform", "real_transform");
   rb_define_alias(cgsl_vector, "forward", "real_transform");
@@ -1416,168 +1093,23 @@ void Init_gsl_fft(VALUE module)
   rb_define_alias(cgsl_vector, "inverse!", "halfcomplex_inverse!");
 
   /***/
-  rb_define_method(cgsl_vector, "fft_real_unpack", rb_gsl_fft_real_unpack, -1);
+  rb_define_method(cgsl_vector, "fft_real_unpack", rb_gsl_fft_real_unpack, 0);
   rb_define_alias(cgsl_vector, "real_unpack", "fft_real_unpack");
+  rb_define_alias(cgsl_vector, "real_to_complex", "fft_real_unpack");
+  rb_define_alias(cgsl_vector, "r_to_c", "fft_real_unpack");
+
   rb_define_method(cgsl_vector, "fft_halfcomplex_unpack", 
-		   rb_gsl_fft_halfcomplex_unpack, -1);
+		   rb_gsl_fft_halfcomplex_unpack, 0);
   rb_define_alias(cgsl_vector, "halfcomplex_unpack", "fft_halfcomplex_unpack");
+  rb_define_alias(cgsl_vector, "halfcomplex_to_complex", "fft_halfcomplex_unpack");
+  rb_define_alias(cgsl_vector, "hc_to_c", "fft_halfcomplex_unpack");
 
   /*****/
 
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_forward", 
-			     rb_gsl_fft_complex_radix2_forward, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_transform", 
-			     rb_gsl_fft_complex_radix2_transform, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_backward", 
-			     rb_gsl_fft_complex_radix2_backward, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_inverse", 
-			     rb_gsl_fft_complex_radix2_inverse, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_dif_forward", 
-			     rb_gsl_fft_complex_radix2_dif_forward, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_dif_transform", 
-			     rb_gsl_fft_complex_radix2_dif_transform, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_dif_backward", 
-			     rb_gsl_fft_complex_radix2_dif_backward, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_dif_inverse", 
-			     rb_gsl_fft_complex_radix2_dif_inverse, -1);
-
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "forward", 
-			     rb_gsl_fft_complex_radix2_forward, -1);
- rb_define_singleton_method(mgsl_fft_complex_radix2, "transform", 
-			     rb_gsl_fft_complex_radix2_transform, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "backward", 
-			     rb_gsl_fft_complex_radix2_backward, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "inverse", 
-			     rb_gsl_fft_complex_radix2_inverse, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "dif_forward", 
-			     rb_gsl_fft_complex_radix2_dif_forward, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "dif_transform", 
-			     rb_gsl_fft_complex_radix2_dif_transform, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "dif_backward", 
-			     rb_gsl_fft_complex_radix2_dif_backward, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "dif_inverse", 
-			     rb_gsl_fft_complex_radix2_dif_inverse, -1);
-
-  rb_define_singleton_method(mgsl_fft_complex, "forward", 
-			     rb_gsl_fft_complex_forward, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "transform", 
-			     rb_gsl_fft_complex_transform, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "backward", 
-			     rb_gsl_fft_complex_backward, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "inverse", 
-			     rb_gsl_fft_complex_inverse, -1);
-
-  rb_define_singleton_method(mgsl_fft_real, "radix2_transform",
-			     rb_gsl_fft_real_radix2_transform, -1);
-  rb_define_singleton_method(mgsl_fft_real, "radix2_forward",
-			     rb_gsl_fft_real_radix2_transform, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "radix2_inverse",
-			     rb_gsl_fft_halfcomplex_radix2_inverse, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "radix2_backward",
-			     rb_gsl_fft_halfcomplex_radix2_backward, -1);
-
-  rb_define_singleton_method(mgsl_fft_real_radix2, "transform",
-			     rb_gsl_fft_real_radix2_transform, -1);
-  rb_define_singleton_method(mgsl_fft_real_radix2, "forward",
-			     rb_gsl_fft_real_radix2_transform, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex_radix2, "inverse",
-			     rb_gsl_fft_halfcomplex_radix2_inverse, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex_radix2, "backward",
-			     rb_gsl_fft_halfcomplex_radix2_backward, -1);
-
-  rb_define_singleton_method(mgsl_fft_real, "transform",
-			     rb_gsl_fft_real_transform, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "transform",
-			     rb_gsl_fft_halfcomplex_transform, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "inverse",
-			     rb_gsl_fft_halfcomplex_inverse, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "backward",
-			     rb_gsl_fft_halfcomplex_backward, -1);
-
-  /***/
-
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_forward!", 
-			     rb_gsl_fft_complex_radix2_forward2, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_transform!", 
-			     rb_gsl_fft_complex_radix2_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_backward!", 
-			     rb_gsl_fft_complex_radix2_backward2, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_inverse!", 
-			     rb_gsl_fft_complex_radix2_inverse2, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_dif_forward!", 
-			     rb_gsl_fft_complex_radix2_dif_forward2, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_dif_transform!", 
-			     rb_gsl_fft_complex_radix2_dif_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_dif_backward!", 
-			     rb_gsl_fft_complex_radix2_dif_backward2, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "radix2_dif_inverse!", 
-			     rb_gsl_fft_complex_radix2_dif_inverse2, -1);
-
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "forward!", 
-			     rb_gsl_fft_complex_radix2_forward2, -1);
- rb_define_singleton_method(mgsl_fft_complex_radix2, "transform!", 
-			     rb_gsl_fft_complex_radix2_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "backward!", 
-			     rb_gsl_fft_complex_radix2_backward2, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "inverse!", 
-			     rb_gsl_fft_complex_radix2_inverse2, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "dif_forward!", 
-			     rb_gsl_fft_complex_radix2_dif_forward2, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "dif_transform!", 
-			     rb_gsl_fft_complex_radix2_dif_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "dif_backward!", 
-			     rb_gsl_fft_complex_radix2_dif_backward2, -1);
-  rb_define_singleton_method(mgsl_fft_complex_radix2, "dif_inverse!", 
-			     rb_gsl_fft_complex_radix2_dif_inverse2, -1);
-
-  rb_define_singleton_method(mgsl_fft_complex, "forward!", 
-			     rb_gsl_fft_complex_forward2, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "transform!", 
-			     rb_gsl_fft_complex_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "backward!", 
-			     rb_gsl_fft_complex_backward2, -1);
-  rb_define_singleton_method(mgsl_fft_complex, "inverse!", 
-			     rb_gsl_fft_complex_inverse2, -1);
-
-  rb_define_singleton_method(mgsl_fft_real, "radix2_transform!",
-			     rb_gsl_fft_real_radix2_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_real, "radix2_forward!",
-			     rb_gsl_fft_real_radix2_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "radix2_inverse!",
-			     rb_gsl_fft_halfcomplex_radix2_inverse2, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "radix2_backward!",
-			     rb_gsl_fft_halfcomplex_radix2_backward2, -1);
-
-  rb_define_singleton_method(mgsl_fft_real_radix2, "transform!",
-			     rb_gsl_fft_real_radix2_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_real_radix2, "forward!",
-			     rb_gsl_fft_real_radix2_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex_radix2, "inverse!",
-			     rb_gsl_fft_halfcomplex_radix2_inverse2, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex_radix2, "backward!",
-			     rb_gsl_fft_halfcomplex_radix2_backward2, -1);
-
-  rb_define_singleton_method(mgsl_fft_real, "transform!",
-			     rb_gsl_fft_real_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "transform!",
-			     rb_gsl_fft_halfcomplex_transform2, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "inverse!",
-			     rb_gsl_fft_halfcomplex_inverse2, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "backward!",
-			     rb_gsl_fft_halfcomplex_backward2, -1);
-  /***/
-  rb_define_singleton_method(mgsl_fft_real, "unpack", 
-			     rb_gsl_fft_real_unpack, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "unpack", 
-			     rb_gsl_fft_halfcomplex_unpack, -1);
-
-  /*****/
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "to_nrc_order",
-			     rb_gsl_fft_halfcomplex_to_nrc, -1);
   rb_define_method(cgsl_vector, "to_nrc_order",
-			     rb_gsl_fft_halfcomplex_to_nrc, -1);
+			     rb_gsl_fft_halfcomplex_to_nrc, 0);
 			     
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "amp_phase",
-			     rb_gsl_fft_halfcomplex_amp_phase, 1);
-
+  rb_define_method(cgsl_vector, "halfcomplex_amp_phase",
+			     rb_gsl_fft_halfcomplex_amp_phase, 0);
+  rb_define_alias(cgsl_vector, "hc_amp_phase", "halfcomplex_amp_phase");
 }

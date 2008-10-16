@@ -2,13 +2,13 @@
 require("gsl") 
 
 n = 128
-data = GSL::FFT::Complex::PackedArray.alloc(2*n)
+data = GSL::Vector::Complex.alloc(n)
 
-data.set_real(0, 1.0)
-c = GSL::Complex.alloc(1, 0)
+data[0] = 1.0
+c = GSL::Complex[1, 0]
 for i in 1..10 do
-  data[i] = [1.0, 0.0]
-  data[n-i] = [1.0, 0.0]
+  data[i] = c
+  data[n-i] = c
 end
 
 ffted = data.radix2_forward

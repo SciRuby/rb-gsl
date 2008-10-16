@@ -41,135 +41,143 @@ irb(main):003:0&gt; v.mean
 irb(main):004:0&gt; Stats::mean(v)
 =&gt; 4.0</pre></li>
 </ul></dd>
-<dt><a name="label-4" id="label-4"><code>GSL::Stats::variance_m(<var>v</var>[, <var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::variance_m" -->
-<dt><a name="label-5" id="label-5"><code>GSL::Vector#variance_m([<var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#variance_m" -->
+<dt><a name="label-4" id="label-4"><code>GSL::Vector#tss</code></a></dt><!-- RDLabel: "GSL::Vector#tss" -->
+<dd>
+Returns the total sum of squares about <code>self.mean</code>.
+(Requires GSL 1.11)</dd>
+<dt><a name="label-5" id="label-5"><code>GSL::Vector#tss_m(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#tss_m" -->
+<dd>
+Returns the total sum of squares about <var>mean</var>.
+(Requires GSL 1.11)</dd>
+<dt><a name="label-6" id="label-6"><code>GSL::Stats::variance_m(<var>v</var>[, <var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::variance_m" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Vector#variance_m([<var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#variance_m" -->
 <dd>
 Variance of <var>v</var> relative to the given value of <var>mean</var>.</dd>
-<dt><a name="label-6" id="label-6"><code>GSL::Stats::sd(<var>v</var>[, <var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::sd" -->
-<dt><a name="label-7" id="label-7"><code>GSL::Vector#sd([<var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#sd" -->
+<dt><a name="label-8" id="label-8"><code>GSL::Stats::sd(<var>v</var>[, <var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::sd" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Vector#sd([<var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#sd" -->
 <dd>
 Standard deviation.</dd>
-<dt><a name="label-8" id="label-8"><code>GSL::Stats::variance_with_fixed_mean(<var>v</var>, <var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::variance_with_fixed_mean" -->
-<dt><a name="label-9" id="label-9"><code>GSL::Vector#variance_with_fixed_mean(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#variance_with_fixed_mean" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Stats::variance_with_fixed_mean(<var>v</var>, <var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::variance_with_fixed_mean" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Vector#variance_with_fixed_mean(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#variance_with_fixed_mean" -->
 <dd>
 Unbiased estimate of the variance of <var>v</var> when the population mean 
 <var>mean</var> of the underlying distribution is known <var>a priori</var>.</dd>
-<dt><a name="label-10" id="label-10"><code>GSL::Stats::variance_with_fixed_mean(<var>v</var>, <var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::variance_with_fixed_mean" -->
-<dt><a name="label-11" id="label-11"><code>GSL::Vector#variance_with_fixed_mean(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#variance_with_fixed_mean" -->
-<dt><a name="label-12" id="label-12"><code>GSL::Stats::sd_with_fixed_mean(<var>v</var>, <var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::sd_with_fixed_mean" -->
-<dt><a name="label-13" id="label-13"><code>GSL::Vector#sd_with_fixed_mean(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sd_with_fixed_mean" -->
+<dt><a name="label-12" id="label-12"><code>GSL::Stats::variance_with_fixed_mean(<var>v</var>, <var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::variance_with_fixed_mean" -->
+<dt><a name="label-13" id="label-13"><code>GSL::Vector#variance_with_fixed_mean(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#variance_with_fixed_mean" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Stats::sd_with_fixed_mean(<var>v</var>, <var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::sd_with_fixed_mean" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Vector#sd_with_fixed_mean(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sd_with_fixed_mean" -->
 <dd>
 Unbiased estimate of the variance of <var>v</var> when the population mean 
 <var>mean</var> of the underlying distribution is known <var>a priori</var>.</dd>
 </dl>
-<h2><a name="2" href="#2">2</a> <a name="label-14">Absolute deviation</a></h2><!-- RDLabel: "Absolute deviation" -->
+<h2><a name="2" href="#2">2</a> <a name="label-16">Absolute deviation</a></h2><!-- RDLabel: "Absolute deviation" -->
 
 <dl>
-<dt><a name="label-15" id="label-15"><code>GSL::Stats::absdev(<var>v</var>[, <var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::absdev" -->
-<dt><a name="label-16" id="label-16"><code>GSL::Vector#absdev([<var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#absdev" -->
+<dt><a name="label-17" id="label-17"><code>GSL::Stats::absdev(<var>v</var>[, <var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::absdev" -->
+<dt><a name="label-18" id="label-18"><code>GSL::Vector#absdev([<var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#absdev" -->
 <dd>
 Compute the absolute deviation (from the mean <var>mean</var> if given).</dd>
 </dl>
-<h2><a name="3" href="#3">3</a> <a name="label-17">Higher moments (skewness and kurtosis)</a></h2><!-- RDLabel: "Higher moments (skewness and kurtosis)" -->
+<h2><a name="3" href="#3">3</a> <a name="label-19">Higher moments (skewness and kurtosis)</a></h2><!-- RDLabel: "Higher moments (skewness and kurtosis)" -->
 
 <dl>
-<dt><a name="label-18" id="label-18"><code>GSL::Stats::skew(<var>v</var>[, <var>mean</var>, <var>sd</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::skew" -->
-<dt><a name="label-19" id="label-19"><code>GSL::Vector#skew([<var>mean</var>, <var>sd</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#skew" -->
+<dt><a name="label-20" id="label-20"><code>GSL::Stats::skew(<var>v</var>[, <var>mean</var>, <var>sd</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::skew" -->
+<dt><a name="label-21" id="label-21"><code>GSL::Vector#skew([<var>mean</var>, <var>sd</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#skew" -->
 <dd>
 Skewness</dd>
-<dt><a name="label-20" id="label-20"><code>GSL::Stats::kurtosis(<var>v</var>[, <var>mean</var>, <var>sd</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::kurtosis" -->
-<dt><a name="label-21" id="label-21"><code>GSL::Vector#kurtosis([<var>mean</var>, <var>sd</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#kurtosis" -->
+<dt><a name="label-22" id="label-22"><code>GSL::Stats::kurtosis(<var>v</var>[, <var>mean</var>, <var>sd</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::kurtosis" -->
+<dt><a name="label-23" id="label-23"><code>GSL::Vector#kurtosis([<var>mean</var>, <var>sd</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#kurtosis" -->
 <dd>
 Kurtosis</dd>
 </dl>
-<h2><a name="4" href="#4">4</a> <a name="label-22">Autocorrelation</a></h2><!-- RDLabel: "Autocorrelation" -->
+<h2><a name="4" href="#4">4</a> <a name="label-24">Autocorrelation</a></h2><!-- RDLabel: "Autocorrelation" -->
 
 <dl>
-<dt><a name="label-23" id="label-23"><code>GSL::Stats::lag1_autocorrelation(<var>v</var>[, <var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::lag1_autocorrelation" -->
-<dt><a name="label-24" id="label-24"><code>GSL::Vector#lag1_autocorrelation([<var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#lag1_autocorrelation" -->
+<dt><a name="label-25" id="label-25"><code>GSL::Stats::lag1_autocorrelation(<var>v</var>[, <var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Stats::lag1_autocorrelation" -->
+<dt><a name="label-26" id="label-26"><code>GSL::Vector#lag1_autocorrelation([<var>mean</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#lag1_autocorrelation" -->
 <dd>
 The lag-1 autocorrelation</dd>
 </dl>
-<h2><a name="5" href="#5">5</a> <a name="label-25">Covariance</a></h2><!-- RDLabel: "Covariance" -->
+<h2><a name="5" href="#5">5</a> <a name="label-27">Covariance</a></h2><!-- RDLabel: "Covariance" -->
 
 <dl>
-<dt><a name="label-26" id="label-26"><code>GSL::Stats::covariance(<var>v1</var>, <var>v2</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::covariance" -->
-<dt><a name="label-27" id="label-27"><code>GSL::Stats::covariance_m(<var>v1</var>, <var>v2</var>, <var>mean1</var>, <var>mean2</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::covariance_m" -->
+<dt><a name="label-28" id="label-28"><code>GSL::Stats::covariance(<var>v1</var>, <var>v2</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::covariance" -->
+<dt><a name="label-29" id="label-29"><code>GSL::Stats::covariance_m(<var>v1</var>, <var>v2</var>, <var>mean1</var>, <var>mean2</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::covariance_m" -->
 <dd>
 Covariance of vectors <var>v1, v2</var>.</dd>
 </dl>
-<h2><a name="6" href="#6">6</a> <a name="label-28">Correlation</a></h2><!-- RDLabel: "Correlation" -->
+<h2><a name="6" href="#6">6</a> <a name="label-30">Correlation</a></h2><!-- RDLabel: "Correlation" -->
 
 <dl>
-<dt><a name="label-29" id="label-29"><code>GSL::Stats::correlation(<var>v1</var>, <var>v2</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::correlation" -->
+<dt><a name="label-31" id="label-31"><code>GSL::Stats::correlation(<var>v1</var>, <var>v2</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::correlation" -->
 <dd>
 This efficiently computes the Pearson correlation coefficient between the vectors <var>v1, v2</var>. (&gt;= GSL-1.10)</dd>
 </dl>
-<h2><a name="7" href="#7">7</a> <a name="label-30">Weighted samples</a></h2><!-- RDLabel: "Weighted samples" -->
+<h2><a name="7" href="#7">7</a> <a name="label-32">Weighted samples</a></h2><!-- RDLabel: "Weighted samples" -->
 
 <dl>
-<dt><a name="label-31" id="label-31"><code>GSL::Vector#wmean(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wmean" -->
-<dt><a name="label-32" id="label-32"><code>GSL::Vector#wvariance(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wvariance" -->
-<dt><a name="label-33" id="label-33"><code>GSL::Vector#wsd(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wsd" -->
-<dt><a name="label-34" id="label-34"><code>GSL::Vector#wabsdev(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wabsdev" -->
-<dt><a name="label-35" id="label-35"><code>GSL::Vector#wskew(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wskew" -->
-<dt><a name="label-36" id="label-36"><code>GSL::Vector#wkurtosis(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wkurtosis" -->
+<dt><a name="label-33" id="label-33"><code>GSL::Vector#wmean(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wmean" -->
+<dt><a name="label-34" id="label-34"><code>GSL::Vector#wvariance(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wvariance" -->
+<dt><a name="label-35" id="label-35"><code>GSL::Vector#wsd(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wsd" -->
+<dt><a name="label-36" id="label-36"><code>GSL::Vector#wabsdev(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wabsdev" -->
+<dt><a name="label-37" id="label-37"><code>GSL::Vector#wskew(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wskew" -->
+<dt><a name="label-38" id="label-38"><code>GSL::Vector#wkurtosis(<var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#wkurtosis" -->
 </dl>
-<h2><a name="8" href="#8">8</a> <a name="label-37">Maximum and Minimum values</a></h2><!-- RDLabel: "Maximum and Minimum values" -->
+<h2><a name="8" href="#8">8</a> <a name="label-39">Maximum and Minimum values</a></h2><!-- RDLabel: "Maximum and Minimum values" -->
 
 <dl>
-<dt><a name="label-38" id="label-38"><code>GSL::Stats::max(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::max" -->
-<dt><a name="label-39" id="label-39"><code>GSL::Vector#max</code></a></dt><!-- RDLabel: "GSL::Vector#max" -->
+<dt><a name="label-40" id="label-40"><code>GSL::Stats::max(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::max" -->
+<dt><a name="label-41" id="label-41"><code>GSL::Vector#max</code></a></dt><!-- RDLabel: "GSL::Vector#max" -->
 <dd>
 Return the maximum value in data.</dd>
-<dt><a name="label-40" id="label-40"><code>GSL::Stats::min(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::min" -->
-<dt><a name="label-41" id="label-41"><code>GSL::Vector#min</code></a></dt><!-- RDLabel: "GSL::Vector#min" -->
+<dt><a name="label-42" id="label-42"><code>GSL::Stats::min(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::min" -->
+<dt><a name="label-43" id="label-43"><code>GSL::Vector#min</code></a></dt><!-- RDLabel: "GSL::Vector#min" -->
 <dd>
 Return the minimum value in data.</dd>
-<dt><a name="label-42" id="label-42"><code>GSL::Stats::minmax(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::minmax" -->
-<dt><a name="label-43" id="label-43"><code>GSL::Vectorminmax</code></a></dt><!-- RDLabel: "GSL::Vectorminmax" -->
+<dt><a name="label-44" id="label-44"><code>GSL::Stats::minmax(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::minmax" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Vectorminmax</code></a></dt><!-- RDLabel: "GSL::Vectorminmax" -->
 <dd>
 Find both the minimum and maximum values in <var>data</var> and returns them.</dd>
-<dt><a name="label-44" id="label-44"><code>GSL::Stats::max_index(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::max_index" -->
-<dt><a name="label-45" id="label-45"><code>GSL::Vector#max_index</code></a></dt><!-- RDLabel: "GSL::Vector#max_index" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Stats::max_index(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::max_index" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Vector#max_index</code></a></dt><!-- RDLabel: "GSL::Vector#max_index" -->
 <dd>
 Return the index of the maximum value in <var>data</var>. 
 The maximum value is defined as the value of the element x_i 
 which satisfies x_i &gt;= x_j for all j. 
 When there are several equal maximum elements then the first one is chosen. </dd>
-<dt><a name="label-46" id="label-46"><code>GSL::Stats::min_index(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::min_index" -->
-<dt><a name="label-47" id="label-47"><code>GSL::Vector#min_index</code></a></dt><!-- RDLabel: "GSL::Vector#min_index" -->
+<dt><a name="label-48" id="label-48"><code>GSL::Stats::min_index(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::min_index" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Vector#min_index</code></a></dt><!-- RDLabel: "GSL::Vector#min_index" -->
 <dd>
 Returns the index of the minimum value in <var>data</var>. 
 The minimum value is defined as the value of the element x_i 
 which satisfies x_i &gt;= x_j for all j. 
 When there are several equal minimum elements then the first one is 
 chosen. </dd>
-<dt><a name="label-48" id="label-48"><code>GSL::Stats::minmax_index(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::minmax_index" -->
-<dt><a name="label-49" id="label-49"><code>GSL::Vector#minmax_index</code></a></dt><!-- RDLabel: "GSL::Vector#minmax_index" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Stats::minmax_index(<var>data</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::minmax_index" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Vector#minmax_index</code></a></dt><!-- RDLabel: "GSL::Vector#minmax_index" -->
 <dd>
 Return the indexes of the minimum and maximum values in <var>data</var> 
 in a single pass. </dd>
 </dl>
-<h2><a name="9" href="#9">9</a> <a name="label-50">Median and Percentiles</a></h2><!-- RDLabel: "Median and Percentiles" -->
+<h2><a name="9" href="#9">9</a> <a name="label-52">Median and Percentiles</a></h2><!-- RDLabel: "Median and Percentiles" -->
 
 <dl>
-<dt><a name="label-51" id="label-51"><code>GSL::Stats::median_from_sorted_data(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::median_from_sorted_data" -->
-<dt><a name="label-52" id="label-52"><code>GSL::Vector#median_from_sorted_data</code></a></dt><!-- RDLabel: "GSL::Vector#median_from_sorted_data" -->
+<dt><a name="label-53" id="label-53"><code>GSL::Stats::median_from_sorted_data(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::median_from_sorted_data" -->
+<dt><a name="label-54" id="label-54"><code>GSL::Vector#median_from_sorted_data</code></a></dt><!-- RDLabel: "GSL::Vector#median_from_sorted_data" -->
 <dd>
 Return the median value. The elements of the data must be 
 in ascending numerical order. There are no checks to see whether 
 the data are sorted, so the method <code>GSL::Vector#sort</code> 
 should always be used first.</dd>
-<dt><a name="label-53" id="label-53"><code>GSL::Stats::quantile_from_sorted_data(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::quantile_from_sorted_data" -->
-<dt><a name="label-54" id="label-54"><code>GSL::Vector#quantile_from_sorted_data</code></a></dt><!-- RDLabel: "GSL::Vector#quantile_from_sorted_data" -->
+<dt><a name="label-55" id="label-55"><code>GSL::Stats::quantile_from_sorted_data(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Stats::quantile_from_sorted_data" -->
+<dt><a name="label-56" id="label-56"><code>GSL::Vector#quantile_from_sorted_data</code></a></dt><!-- RDLabel: "GSL::Vector#quantile_from_sorted_data" -->
 <dd>
 Return the quantile value. The elements of the data must be 
 in ascending numerical order. There are no checks to see whether 
 the data are sorted, so the method <code>GSL::Vector#sort</code> 
 should always be used first.</dd>
 </dl>
-<h2><a name="10" href="#10">10</a> <a name="label-55">Example</a></h2><!-- RDLabel: "Example" -->
+<h2><a name="10" href="#10">10</a> <a name="label-57">Example</a></h2><!-- RDLabel: "Example" -->
 
 <pre>#!/usr/bin/env ruby
 require 'gsl'

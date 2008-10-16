@@ -1,34 +1,54 @@
-require("rake/testtask")
-require("rake/clean")
+require 'rubygems'
+require 'rake/gempackagetask'
 
-PROJECT = "Ruby/GSL"
-PROJECT_VERSION = "1.10.0"
-MY_NAME = "Yoshiki Tsunesada"
-MY_EMAIL = "y-tsunesada@mm.em-net.ne.jp"
-PROJECT_SUMMARY = "Ruby extension for GSL, GNU Scientific Library"
-UNIX_NAME = "rb-gsl"
-RUBYFORGE_USER = ENV["RUBYFORGE_USER"] || "ytsunesada"
+spec = Gem::Specification.new do |s|
+  # Basics
+  s.name = 'gsl'
+  s.version = '1.10.3'
+  s.summary = 'Ruby interface to GSL'
+  s.description = 'RubyGSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby'
+  #s.platform = Gem::Platform::Ruby
+  s.required_ruby_version = '>= 1.8.1'
+  s.requirements << 'GSL (http://www.gnu.org/software/gsl/)'
+  # plotlib?
+  s.add_dependency('narray', '>= 0.5.9')
 
-EXT_DIR = "ext"
-HAVE_EXT = File.directory?(EXT_DIR)
-EXTCONF_FILES = EXT_DIR + "/extconf.rb"
-EXT_SOURCES = FileList["#{EXT_DIR}/*.c"] - ["#{EXT_DIR}/block_source", "#{EXT_DIR}/vector_source", "#{EXT_DIR}/matrix_source", "#{EXT_DIR}/tentor_source","#{EXT_DIR}/poly_source.c"]
+  # About
+  s.authors = 'Yoshiki Tsunesada'
+  s.email = 'y-tsunesada@mm.em-net.ne.jp'
+  s.homepage = 'http://rb-gsl.rubyforge.org/'
+  s.rubyforge_project = 'rb-gsl' 
 
-CLOBBER.include("#{EXT_DIR}/*.{so,bundle,dll,o}", "#{EXT_DIR}/Makefile")
-CLOBBER.include(".config")
+  # Files, Libraries, and Extensions
+  s.files = FileList[
+    'README',
+    'VERSION',
+    'Rakefile',
+    'ext/*',
+    'lib/**/*',
+    'include/*'
+  ].to_a
+  s.require_paths = ['lib', 'lib/gsl', 'lib/ool', 'ext']
+  #s.autorequire = nil
+  #s.bindir = 'bin'
+  #s.executables = []
+  #s.default_executable = nil
 
-CONFIG_OPTS = ENV["CONFIG"]
-if HAVE_EXT
-  file_create ".config" do
-    ruby "setup.rb config #{CONFIG_OPTS}"
-  end
+  # C compilation
+  s.extensions = %w[ ext/extconf.rb ]
 
-  desc "Configure and make extension. " +
-    "The CONFIG variable is passed to 'setup.rb config'"
-  task "make-ext" => ".config" do
-    ruby "setup.rb -q setup"
-  end
+  # Documentation TODO
+  #s.rdoc_options = []
+  #s.has_rdoc = false
+  #s.extra_rdoc_files = []
+
+  # Testing TODO
+  #s.test_files = []
 end
 
-task "default" => ["make-ext"]
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.need_zip = true
+  pkg.need_tar = true
+end
 
+task :default => :gem

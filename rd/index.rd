@@ -12,6 +12,13 @@
   * ((<RubyForge|URL:http://rubyforge.org/frs/?group_id=285>))
 
 == Installation
+=== Using the gem command
+RubyGSL may now be installed as a Ruby Gem by simply running (({gem install
+gsl})).  Note that the GSL libraries must already be installed before RubyGSL
+can be installed.
+
+=== Using the setup.rb command
+If you prefer, RubyGSL may still be installed using setup.rb.
    (1) Get and install ((<GSL|URL:http://www.gnu.org/software/gsl/#downloading>)). Make sure the command "gsl-config" is in command search path.
    (2) ((<Download|URL:http://rubyforge.org/frs/?group_id=285>)) Ruby/GSL, ungzip and untar the archive (({rb-gsl-xxx.tar.gz})). 
    (3) ((% % cd rb-gsl-xxx/%))

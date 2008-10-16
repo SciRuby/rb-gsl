@@ -10,8 +10,8 @@ for i in (n/3)...(2*n/3) do
 end
 org = data.clone
 
-rtable = GSL::FFT::Real::Wavetable.alloc(n)
-rwork = GSL::FFT::Real::Workspace.alloc(n)
+rtable = GSL::FFT::RealWavetable.alloc(n)
+rwork = GSL::FFT::RealWorkspace.alloc(n)
   
 data.real_transform!(rtable, rwork)
 
@@ -19,12 +19,11 @@ for i in 11...n do
   data[i] = 0.0
 end
   
-hctable = GSL::FFT::HalfComplex::Wavetable.alloc(n)
+hctable = GSL::FFT::HalfComplexWavetable.alloc(n)
   
-#data2 = ffted.halfcomplex_inverse(hctable, rwork)
-#data2 = ffted.halfcomplex_inverse()
-#data2 = ffted.ifft
-#data2 = GSL::FFT::HalfComplex.inverse(ffted)
+#data.halfcomplex_inverse!(hctable, rwork)
+#data.halfcomplex_inverse!()
+#data.ifft!
 #data.halfcomplex_inverse!(hctable, rwork)
 data.ifft!(hctable, rwork)
 

@@ -44,14 +44,33 @@
       => #<GSL::Vector::Complex:0x6bfbac>
 
 --- GSL::Vector::Complex#set(i, z)
+--- GSL::Vector::Complex#set(i, re, im)
+--- GSL::Vector::Complex#set(i, [re, im])
 --- GSL::Vector::Complex#[]=(i, z)
-    Sets the value of the ((|i|))-th element of a complex vector ((|self|)) to ((|z|)).
+--- GSL::Vector::Complex#[]=(i, re, im)
+--- GSL::Vector::Complex#[]=(i, [re, im])
+    Sets the value of the ((|i|))-th element of a complex vector ((|self|)) to
+    ((|z|)) or (({GSL::Complex[re,im]})).  The forms taking two real values
+    allow the passing of nil to keep the correponding component of element
+    ((|i|)) unchanged.
 
 === Initializing vector elements
 --- GSL::Vector::Complex#set_all(z)
     Sets all the elements of the complex vector ((|self|)) to the complex ((|z|)).
 --- GSL::Vector::Complex#set_zero
     Sets all the elements of the vector ((|self|)) to zero.
+--- GSL::Vector::Complex#set_real(x)
+--- GSL::Vector::Complex#real=(x)
+--- GSL::Vector::Complex#re=(x)
+    Sets the real component of all elements of the vector ((|self|)) to
+    ((|x|)).  Currently, ((|x|)) must be a scalar, but a future Ruby GSL
+    version could accept a GSL::Vector.
+--- GSL::Vector::Complex#set_imag(x)
+--- GSL::Vector::Complex#imag=(x)
+--- GSL::Vector::Complex#im=(x)
+    Sets the imaginary component of all elements of the vector ((|self|)) to
+    ((|x|)).  Currently, ((|x|)) must be a scalar, but a future Ruby GSL
+    version could accept a GSL::Vector.
 
 === Vector properties
 --- GSL::Vector::Complex#size
@@ -61,6 +80,33 @@
 --- GSL::Vector::Complex#each
 --- GSL::Vector::Complex#each_index
 
+=== Arithmetic
+--- GSL::Vector::Complex#+(other)
+--- GSL::Vector::Complex#-(other)
+--- GSL::Vector::Complex#*(other)
+--- GSL::Vector::Complex#/(other)
+--- GSL::Vector::Complex#add(other)
+--- GSL::Vector::Complex#sub(other)
+--- GSL::Vector::Complex#mul(other)
+--- GSL::Vector::Complex#div(other)
+    Returns a new GSL::Vector::Complex instance containing the result of the
+    appropriate arithmetic operation on ((|self|)) and ((|other|)).  The inputs
+    are unchanged.  The ((|other|)) parameter may be a scalar,
+    ((<GSL::Vector|URL:vector.html>)), or
+    ((<GSL::Vector::Complex|URL:vector_complex.html>)).
+
+--- GSL::Vector::Complex#+=(other)
+--- GSL::Vector::Complex#-=(other)
+--- GSL::Vector::Complex#*=(other)
+--- GSL::Vector::Complex#/=(other)
+--- GSL::Vector::Complex#add!(other)
+--- GSL::Vector::Complex#sub!(other)
+--- GSL::Vector::Complex#mul!(other)
+--- GSL::Vector::Complex#div!(other)
+    Modifies ((|self|)) in place to contain the result of the appropriate
+    arithmetic operation on ((|self|)) and ((|other|)).  The ((|other|))
+    parameter may be a scalar, GSL::Vector, or GSL::Vector::Complex.
+
 === Reading and writing vectors
 --- GSL::Vector::Complex#fwite(io)
 --- GSL::Vector::Complex#fread(io)
@@ -68,6 +114,12 @@
 --- GSL::Vector::Complex#fscanf(io)
 
 === Functions
+--- GSL::Vector::Complex#conj
+    Returns a new GSL::Vector::Complex that is the complex conjugate of ((|self|)).
+
+--- GSL::Vector::Complex#conj!
+    Conjugates ((|self|)) in place and returns ((|self|)).
+
 --- GSL::Vector::Complex#arg
 --- GSL::Vector::Complex#phase
     Calculates the squared argument of each of the complex elements of the vector ((|self|)), and returns a real vector.
@@ -114,6 +166,35 @@
 --- GSL::Vector::Complex#arcsech
 --- GSL::Vector::Complex#arccsch
 --- GSL::Vector::Complex#arccoth
+
+=== Statistics
+--- GSL::Vector::Complex#sum
+    Returns a GSL::Complex object representing the sum of all elements of ((|self|)).
+--- GSL::Vector::Complex#mean
+    Returns a GSL::Complex object representing the mean of all elements of ((|self|)).
+--- GSL::Vector::Complex#tss
+    Returns the total sum of squares about (({self.mean})).  This is a real
+    number, i.e. a Float.
+--- GSL::Vector::Complex#tss_m(mean)
+    Returns the total sum of squares about ((|mean|)).  This is a real number,
+    i.e. a Float.
+--- GSL::Vector::Complex#variance
+    Returns the variance of ((|self|)).  This is a real number, i.e. a Float.
+--- GSL::Vector::Complex#variance_m(mean)
+    Returns the variance of ((|self|)) around ((|mean|)).  This is a real
+    number, i.e. a Float.
+--- GSL::Vector::Complex#variance_fm(mean)
+    Returns the variance of ((|self|)) around the fixed mean ((|mean|)).  This
+    is a real number, i.e. a Float.
+--- GSL::Vector::Complex#sd
+    Returns the standard deviation of ((|self|)).  This is a real number, i.e.
+    a Float.
+--- GSL::Vector::Complex#sd_m(mean)
+    Returns the standard deviation of ((|self|)) around ((|mean|)).  This is a
+    real number, i.e. a Float.
+--- GSL::Vector::Complex#sd_fm(mean)
+    Returns the standard deviation of ((|self|)) around the fixed mean
+    ((|mean|)).  This is a real number, i.e. a Float.
 
 == Data Conversions
 --- GSL::Vector#to_complex

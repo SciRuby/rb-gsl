@@ -100,7 +100,6 @@ static void rbgsl_calc_conv_corr_c(const double *data1, const double *data2,
 
 }
 
-/* Singleton method, GSL::FFT::HalfComplex */
 static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
         enum FFT_CONV_CORR flag1,
         enum FFT_CONV_CORR flag2)
@@ -117,23 +116,23 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
   gsl_vector *vtmp1 = NULL, *vtmp2 = NULL;
   VALUE ary;
   switch (argc) {
-  case 4:
-    data1 = get_ptr_double3(argv[0], &size1, &stride1, &naflag1);
-    data2 = get_ptr_double3(argv[1], &size2, &stride2, &naflag2);
-    CHECK_WAVETABLE(argv[2]);
-    Data_Get_Struct(argv[2], gsl_fft_halfcomplex_wavetable, table);
-    CHECK_WORKSPACE(argv[3]);
-    Data_Get_Struct(argv[3], gsl_fft_real_workspace, space);
-    break;
   case 3:
-    data1 = get_ptr_double3(argv[0], &size1, &stride1, &naflag1);
-    data2 = get_ptr_double3(argv[1], &size2, &stride2, &naflag2);
-    if (WAVETABLE_P(argv[2])) {
-      Data_Get_Struct(argv[2], gsl_fft_halfcomplex_wavetable, table);
+    data1 = get_ptr_double3(obj, &size1, &stride1, &naflag1);
+    data2 = get_ptr_double3(argv[0], &size2, &stride2, &naflag2);
+    CHECK_WAVETABLE(argv[1]);
+    Data_Get_Struct(argv[1], gsl_fft_halfcomplex_wavetable, table);
+    CHECK_WORKSPACE(argv[2]);
+    Data_Get_Struct(argv[2], gsl_fft_real_workspace, space);
+    break;
+  case 2:
+    data1 = get_ptr_double3(obj, &size1, &stride1, &naflag1);
+    data2 = get_ptr_double3(argv[0], &size2, &stride2, &naflag2);
+    if (WAVETABLE_P(argv[1])) {
+      Data_Get_Struct(argv[1], gsl_fft_halfcomplex_wavetable, table);
       space = gsl_fft_real_workspace_alloc(size1);
       flagw = 1;
-    } else if (WORKSPACE_P(argv[2])) {
-      Data_Get_Struct(argv[2], gsl_fft_real_workspace, space);
+    } else if (WORKSPACE_P(argv[1])) {
+      Data_Get_Struct(argv[1], gsl_fft_real_workspace, space);
       table = gsl_fft_halfcomplex_wavetable_alloc(size1);
       flagt = 1;
     } else {
@@ -143,16 +142,16 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
          rb_class2name(CLASS_OF(argv[2])));
     }
     break;
-  case 2:
-    data1 = get_ptr_double3(argv[0], &size1, &stride1, &naflag1);
-    data2 = get_ptr_double3(argv[1], &size2, &stride2, &naflag2);
+  case 1:
+    data1 = get_ptr_double3(obj, &size1, &stride1, &naflag1);
+    data2 = get_ptr_double3(argv[0], &size2, &stride2, &naflag2);
     table = gsl_fft_halfcomplex_wavetable_alloc(size1);
     space = gsl_fft_real_workspace_alloc(size1);
     flagt = 1;
     flagw = 1;
     break;
   default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2-4)", argc);
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1-3)", argc);
   }
 
   switch (naflag1*naflag2) {
@@ -163,7 +162,7 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
       ary = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
       break;
     default:      
-      ary = Data_Wrap_Struct(cgsl_vector_halfcomplex, 0, gsl_vector_free, v);
+      ary = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
       break;
     }
     data3 = v->data;
@@ -237,13 +236,14 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
   return ary;
 }
 
-/* Singleton method, GSL::FFT::Real */
+/* GSL::Vector#convolve */
 static VALUE rb_gsl_fft_real_convolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj, 
           RB_GSL_FFT_REAL,
           RB_GSL_FFT_CONVOLVE);
 }
+/* GSL::Vector#deconvolve */
 static VALUE rb_gsl_fft_real_deconvolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj, 
@@ -251,7 +251,7 @@ static VALUE rb_gsl_fft_real_deconvolve(int argc, VALUE *argv, VALUE obj)
             RB_GSL_FFT_DECONVOLVE);
 }
 
-/* Singleton method, GSL::FFT::Real */
+/* GSL::Vector#correlate */
 static VALUE rb_gsl_fft_real_correlate(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj, 
@@ -259,20 +259,21 @@ static VALUE rb_gsl_fft_real_correlate(int argc, VALUE *argv, VALUE obj)
             RB_GSL_FFT_CORRELATE);
 }
 
-/* Singleton method, GSL::FFT::HalfComplex */
+/* GSL::Vector#halfcomplex_convolve */
 static VALUE rb_gsl_fft_halfcomplex_convolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj, 
           RB_GSL_FFT_HALFCOMPLEX,
           RB_GSL_FFT_CONVOLVE);
 }
+/* GSL::Vector#halfcomplex_deconvolve */
 static VALUE rb_gsl_fft_halfcomplex_deconvolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj, 
             RB_GSL_FFT_HALFCOMPLEX,
             RB_GSL_FFT_DECONVOLVE);
 }
-/* Singleton method, GSL::FFT::HalfComplex */
+/* GSL::Vector#halfcomplex_correlate */
 static VALUE rb_gsl_fft_halfcomplex_correlate(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj, 
@@ -282,18 +283,21 @@ static VALUE rb_gsl_fft_halfcomplex_correlate(int argc, VALUE *argv, VALUE obj)
 
 void Init_gsl_signal(VALUE module)
 {
-  rb_define_singleton_method(mgsl_fft_real, "convolve",
-			     rb_gsl_fft_real_convolve, -1);
-  rb_define_singleton_method(mgsl_fft_real, "deconvolve",
-			     rb_gsl_fft_real_deconvolve, -1);			     
-  rb_define_singleton_method(mgsl_fft_real, "correlate",
-			     rb_gsl_fft_real_correlate, -1);	
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "convolve",
-			     rb_gsl_fft_halfcomplex_convolve, -1);
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "deconvolve",
-			     rb_gsl_fft_halfcomplex_deconvolve, -1);			     
-  rb_define_singleton_method(mgsl_fft_halfcomplex, "correlate",
-			     rb_gsl_fft_halfcomplex_correlate, -1);			     
+  rb_define_method(cgsl_vector, "real_convolve", rb_gsl_fft_real_convolve, -1);
+  rb_define_method(cgsl_vector, "real_deconvolve", rb_gsl_fft_real_deconvolve, -1);			     
+  rb_define_method(cgsl_vector, "real_correlate", rb_gsl_fft_real_correlate, -1);	
+
+  rb_define_alias(cgsl_vector, "convolve", "real_convolve");
+  rb_define_alias(cgsl_vector, "deconvolve", "real_deconvolve");
+  rb_define_alias(cgsl_vector, "correlate", "real_correlate");
+
+  rb_define_method(cgsl_vector, "halfcomplex_convolve", rb_gsl_fft_halfcomplex_convolve, -1);
+  rb_define_method(cgsl_vector, "halfcomplex_deconvolve", rb_gsl_fft_halfcomplex_deconvolve, -1);			     
+  rb_define_method(cgsl_vector, "halfcomplex_correlate", rb_gsl_fft_halfcomplex_correlate, -1);			     
+
+  rb_define_alias(cgsl_vector, "hc_convolve", "halfcomplex_convolve");
+  rb_define_alias(cgsl_vector, "hc_deconvolve", "halfcomplex_deconvolve");
+  rb_define_alias(cgsl_vector, "hc_correlate", "halfcomplex_correlate");
 }
 
 #undef WAVETABLE_P

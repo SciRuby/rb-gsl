@@ -116,6 +116,9 @@ def check_version(configfile)
       configfile.printf("#ifndef GSL_CONST_OLD\n#define GSL_CONST_OLD\n#endif\n")
     end
 
+    if ver >= "1.11"
+      configfile.printf("#ifndef GSL_1_11_LATER\n#define GSL_1_11_LATER\n#endif\n")
+    end    
   end
 end
 
@@ -218,6 +221,16 @@ end
 
 #narray_config = dir_config("narray")
 narray_config = dir_config('narray',$sitearchdir,$sitearchdir)
+# Try to find narray with RubyGems
+begin
+  require 'rubygems'
+  na_gemspec=Gem.searcher.find('narray.h')
+  if na_gemspec
+    narray_config = File.join(na_gemspec.full_gem_path, na_gemspec.require_path)
+    $CPPFLAGS = " -I#{narray_config} "+$CPPFLAGS
+  end
+rescue LoadError
+end
 have_narray_h = have_header("narray.h")
 if narray_config
   if RUBY_PLATFORM =~ /cygwin|mingw/
@@ -237,19 +250,19 @@ end
 
 File.open("../lib/gsl.rb", "w") do |file|
   if have_narray_h
-    file.print("require\(\"narray\"\)\n")
+    file.print("require('narray')\n")
   end
-#  file.print("require\(\"rb_gsl\"\)\ninclude GSL\n")
-  file.print("require\(\"rb_gsl\"\)\n")  
-  file.print("require\(\"gsl/oper.rb\"\)\n")
+#  file.print("require('rb_gsl')\ninclude GSL\n")
+  file.print("require('rb_gsl')\n")  
+  file.print("require('gsl/oper.rb')\n")
 end
 
 File.open("../lib/rbgsl.rb", "w") do |file|
   if have_narray_h
-    file.print("require\(\"narray\"\)\n")
+    file.print("require('narray')\n")
   end
-  file.print("require\(\"rb_gsl\"\)\n")
-  file.print("require\(\"gsl/oper.rb\"\)\n")
+  file.print("require('rb_gsl')\n")
+  file.print("require('gsl/oper.rb')\n")
 end
 
 srcs = Dir.glob("*.c") - ["vector_source.c", "matrix_source.c", "tensor_source.c", "poly_source.c", "block_source.c"]

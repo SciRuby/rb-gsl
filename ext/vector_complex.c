@@ -200,6 +200,7 @@ static VALUE rb_gsl_vector_complex_set(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector_complex *v = NULL;
   gsl_complex tmp, *z = &tmp;
+  VALUE vre, vim;
   size_t i;
   if (argc < 2) rb_raise(rb_eArgError, "wrong number of arguments");
   Data_Get_Struct(obj, gsl_vector_complex, v);
@@ -208,8 +209,11 @@ static VALUE rb_gsl_vector_complex_set(int argc, VALUE *argv, VALUE obj)
       if (i >= v->size) break;
       switch (TYPE(argv[i])) {
       case T_ARRAY:
-	tmp.dat[0] = NUM2DBL(rb_ary_entry(argv[i], 0));
-	tmp.dat[1] = NUM2DBL(rb_ary_entry(argv[i], 1));
+	tmp = gsl_vector_complex_get(v, i);
+	vre = rb_ary_entry(argv[i],0);
+	vim = rb_ary_entry(argv[i],1);
+	if (!NIL_P(vre)) GSL_SET_REAL(&tmp, NUM2DBL(vre));
+	if (!NIL_P(vim)) GSL_SET_IMAG(&tmp, NUM2DBL(vim));
 	break;
       case T_FLOAT:
       case T_FIXNUM:
@@ -235,8 +239,11 @@ static VALUE rb_gsl_vector_complex_set(int argc, VALUE *argv, VALUE obj)
     } else {
       switch(TYPE(argv[1])) {
       case T_ARRAY:
-	tmp.dat[0] = NUM2DBL(rb_ary_entry(argv[1], 0));
-	tmp.dat[1] = NUM2DBL(rb_ary_entry(argv[1], 1));
+	tmp = gsl_vector_complex_get(v, i);
+	vre = rb_ary_entry(argv[1],0);
+	vim = rb_ary_entry(argv[1],1);
+	if (!NIL_P(vre)) GSL_SET_REAL(&tmp, NUM2DBL(vre));
+	if (!NIL_P(vim)) GSL_SET_IMAG(&tmp, NUM2DBL(vim));
 	break;
       case T_FLOAT:
       case T_FIXNUM:
@@ -277,14 +284,14 @@ static VALUE rb_gsl_vector_complex_set_all(int argc, VALUE *argv, VALUE obj)
     } else {
       switch(TYPE(argv[0])) {
       case T_ARRAY:
-	tmp.dat[0] = NUM2DBL(rb_ary_entry(argv[0], 0));
-	tmp.dat[1] = NUM2DBL(rb_ary_entry(argv[0], 1));
+	tmp = gsl_complex_rect(
+	    NUM2DBL(rb_ary_entry(argv[0], 0)),
+	    NUM2DBL(rb_ary_entry(argv[0], 1)));
 	break;
       case T_FLOAT:
       case T_FIXNUM:
       case T_BIGNUM:
-	tmp.dat[0] = NUM2DBL(argv[0]);
-	tmp.dat[1] = 0.0;
+	tmp = gsl_complex_rect(NUM2DBL(argv[0]), 0.0);
 	break;
       default:
 	rb_raise(rb_eTypeError, 
@@ -412,6 +419,61 @@ static VALUE rb_gsl_vector_complex_set_basis(VALUE obj, VALUE ii)
   Data_Get_Struct(obj, gsl_vector_complex, v);
   gsl_vector_complex_set_basis(v, FIX2INT(ii));
   return obj;
+}
+
+static VALUE rb_gsl_vector_complex_to_s(VALUE obj)
+{
+  gsl_vector_complex *v = NULL;
+  char buf[64];
+  size_t i;
+  VALUE str;
+  gsl_complex * z;
+
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  if (v->size == 0) return rb_str_new2("[ ]");
+  str = rb_str_new2("[ ");
+  if (VECTOR_COMPLEX_COL_P(obj)) {
+    for (i = 0; i < v->size; i++) {
+      if (i != 0) {
+	rb_str_cat(str, "  ", 2);
+      }
+      z = GSL_COMPLEX_AT(v, i);
+      sprintf(buf, "[%4.3e %4.3e]", GSL_REAL(*z), GSL_IMAG(*z));
+      if (i != v->size-1) strcat(buf, "\n");
+      rb_str_cat(str, buf, strlen(buf));
+      if (i >= 10 && i != v->size-1) {
+	rb_str_cat(str, "  ...", 5);
+	break;
+      }
+    }
+  } else {
+    z = GSL_COMPLEX_AT(v, 0);
+    sprintf(buf, "[%4.3e %4.3e]", GSL_REAL(*z), GSL_IMAG(*z));
+    rb_str_cat(str, buf, strlen(buf));
+    for (i = 1; i < v->size; i++) {
+      z = GSL_COMPLEX_AT(v, i);
+      sprintf(buf, " [%4.3e %4.3e]", GSL_REAL(*z), GSL_IMAG(*z));
+      rb_str_cat(str, buf, strlen(buf));
+      if (i >= 10 && i != v->size-1) {
+	rb_str_cat(str, " ...", 4);
+	break;
+      }
+    }
+  }
+  rb_str_cat(str, " ]", 2);
+  return str;
+}
+
+static VALUE rb_gsl_vector_complex_inspect(VALUE obj)
+{
+  VALUE str;
+  char buf[128];
+  gsl_vector_complex *v;
+
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  sprintf(buf, "#<%s[%lu]:%#x>\n", rb_class2name(CLASS_OF(obj)), v->size, NUM2UINT(rb_obj_id(obj)));
+  str = rb_str_new2(buf);
+  return rb_str_concat(str, rb_gsl_vector_complex_to_s(obj));
 }
 
 /*static VALUE rb_gsl_vector_complex_fprintf(VALUE obj, VALUE io, VALUE format)*/
@@ -543,6 +605,56 @@ static VALUE rb_gsl_vector_complex_imag(VALUE obj)
     return Data_Wrap_Struct(cgsl_vector_view, 0, gsl_vector_view_free, vv);
   else
     return Data_Wrap_Struct(cgsl_vector_col_view, 0, gsl_vector_view_free, vv);
+}
+
+static VALUE rb_gsl_vector_complex_set_real(VALUE obj, VALUE val)
+{
+  gsl_vector_complex *v = NULL;
+  gsl_vector_view vv;
+  double d = NUM2DBL(val);
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  vv = gsl_vector_complex_real(v);
+  gsl_vector_set_all(&vv.vector, d);
+  return obj;
+}
+
+static VALUE rb_gsl_vector_complex_set_imag(VALUE obj, VALUE val)
+{
+  gsl_vector_complex *v = NULL;
+  gsl_vector_view vv;
+  double d = NUM2DBL(val);
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  vv = gsl_vector_complex_imag(v);
+  gsl_vector_set_all(&vv.vector, d);
+  return obj;
+}
+
+static VALUE rb_gsl_vector_complex_conj(VALUE obj)
+{
+  size_t i;
+  gsl_vector_complex *vin = NULL;
+  gsl_vector_complex *vout = NULL;
+  Data_Get_Struct(obj, gsl_vector_complex, vin);
+  vout = gsl_vector_complex_alloc(vin->size);
+  for(i=0; i<vin->size; i++) {
+    gsl_vector_complex_set(vout, i,
+        gsl_complex_conjugate(
+          gsl_vector_complex_get(vin, i)));
+  }
+  return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vout);
+}
+
+static VALUE rb_gsl_vector_complex_conj_bang(VALUE obj)
+{
+  size_t i;
+  gsl_vector_complex *v = NULL;
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  for(i=0; i<v->size; i++) {
+    gsl_vector_complex_set(v, i,
+        gsl_complex_conjugate(
+          gsl_vector_complex_get(v, i)));
+  }
+  return obj;
 }
 
 static VALUE rb_gsl_vector_complex_to_a(VALUE obj)
@@ -788,6 +900,10 @@ enum {
   GSL_VECTOR_COMPLEX_SUB,
   GSL_VECTOR_COMPLEX_MUL,
   GSL_VECTOR_COMPLEX_DIV,
+  GSL_VECTOR_COMPLEX_ADD_BANG,
+  GSL_VECTOR_COMPLEX_SUB_BANG,
+  GSL_VECTOR_COMPLEX_MUL_BANG,
+  GSL_VECTOR_COMPLEX_DIV_BANG,
 };
 
 static VALUE rb_gsl_vector_complex_arithmetics(int flag, VALUE obj, VALUE bb);
@@ -798,6 +914,24 @@ static VALUE rb_gsl_vector_complex_arithmetics(int flag, VALUE obj, VALUE bb)
   gsl_vector_complex *cv = NULL, *cvnew = NULL, *cb = NULL;
   gsl_complex *c = NULL, z;
   Data_Get_Struct(obj, gsl_vector_complex, cv);
+  switch (flag) {
+  case GSL_VECTOR_COMPLEX_ADD:
+  case GSL_VECTOR_COMPLEX_SUB:
+  case GSL_VECTOR_COMPLEX_MUL:
+  case GSL_VECTOR_COMPLEX_DIV:
+    cvnew = make_vector_complex_clone(cv);
+    obj = Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, cvnew);
+    break;
+  case GSL_VECTOR_COMPLEX_ADD_BANG:
+  case GSL_VECTOR_COMPLEX_SUB_BANG:
+  case GSL_VECTOR_COMPLEX_MUL_BANG:
+  case GSL_VECTOR_COMPLEX_DIV_BANG:
+    cvnew = cv;
+    break;
+  default:
+    rb_raise(rb_eRuntimeError, "unknown operation");
+    break;
+  }
   switch (TYPE(bb)) {
   case T_FLOAT:
   case T_FIXNUM:
@@ -805,27 +939,16 @@ static VALUE rb_gsl_vector_complex_arithmetics(int flag, VALUE obj, VALUE bb)
     z = gsl_complex_rect(NUM2DBL(bb), 0.0);
     switch (flag) {
     case GSL_VECTOR_COMPLEX_ADD:
-      cvnew = make_vector_complex_clone(cv);
       gsl_vector_complex_add_constant(cvnew, z);
-      return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, cvnew);
       break;
     case GSL_VECTOR_COMPLEX_SUB:
-      cvnew = make_vector_complex_clone(cv);
       gsl_vector_complex_add_constant(cvnew, gsl_complex_negative(z));
-      return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, cvnew);
       break;
     case GSL_VECTOR_COMPLEX_MUL:
-      cvnew = make_vector_complex_clone(cv);
       gsl_vector_complex_scale(cvnew, z);
-      return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, cvnew);
       break;
     case GSL_VECTOR_COMPLEX_DIV:
-      cvnew = make_vector_complex_clone(cv);
       gsl_vector_complex_scale(cvnew, gsl_complex_inverse(z));
-      return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, cvnew);
-      break;
-    default:
-      rb_raise(rb_eRuntimeError, "unknown operation");
       break;
     }
     break;
@@ -835,90 +958,57 @@ static VALUE rb_gsl_vector_complex_arithmetics(int flag, VALUE obj, VALUE bb)
       cb = vector_to_complex(b);
       switch (flag) {
       case GSL_VECTOR_COMPLEX_ADD:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_add(cvnew, cb);
 	break;
       case GSL_VECTOR_COMPLEX_SUB:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_sub(cvnew, cb);
 	break;
       case GSL_VECTOR_COMPLEX_MUL:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_mul(cvnew, cb);
 	break;
       case GSL_VECTOR_COMPLEX_DIV:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_div(cvnew, cb);
-	break;
-      default:
-	rb_raise(rb_eRuntimeError, "unknown operation");
 	break;
       }
       gsl_vector_complex_free(cb);
-      if (VECTOR_COMPLEX_ROW_P(obj)) 
-	return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
-      else
-	return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cvnew);
     } else if (VECTOR_COMPLEX_P(bb)) {
       Data_Get_Struct(bb, gsl_vector_complex, cb);
       switch (flag) {
       case GSL_VECTOR_COMPLEX_ADD:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_add(cvnew, cb);
 	break;
       case GSL_VECTOR_COMPLEX_SUB:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_sub(cvnew, cb);
 	break;
       case GSL_VECTOR_COMPLEX_MUL:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_mul(cvnew, cb);
 	break;
       case GSL_VECTOR_COMPLEX_DIV:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_div(cvnew, cb);
 	break;
-      default:
-	rb_raise(rb_eRuntimeError, "unknown operation");
-	break;
       }
-      if (VECTOR_COMPLEX_ROW_P(obj)) 
-	return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
-      else
-	return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cvnew);
     } else if (COMPLEX_P(bb)) {
       Data_Get_Struct(bb, gsl_complex, c);
       switch (flag) {
       case GSL_VECTOR_COMPLEX_ADD:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_add_constant(cvnew, *c);
 	break;
       case GSL_VECTOR_COMPLEX_SUB:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_add_constant(cvnew, gsl_complex_negative(*c));
 	break;
       case GSL_VECTOR_COMPLEX_MUL:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_scale(cvnew, *c);
 	break;
       case GSL_VECTOR_COMPLEX_DIV:
-	cvnew = make_vector_complex_clone(cv);
 	gsl_vector_complex_scale(cvnew, gsl_complex_inverse(*c));
 	break;
-      default:
-	rb_raise(rb_eRuntimeError, "unknown operation");
-	break;
       }
-      if (VECTOR_COMPLEX_ROW_P(obj))
-	return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
-      else
-	return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cvnew);
     } else {
       rb_raise(rb_eTypeError, "wrong type argument %s", rb_class2name(CLASS_OF(bb)));
     }
     break;
   }
-  return Qnil;
+  return obj;
 }
 
 static VALUE rb_gsl_vector_complex_add(VALUE obj, VALUE bb)
@@ -950,6 +1040,26 @@ static VALUE rb_gsl_vector_complex_mul(VALUE obj, VALUE bb)
 static VALUE rb_gsl_vector_complex_div(VALUE obj, VALUE bb)
 {
   return rb_gsl_vector_complex_arithmetics(GSL_VECTOR_COMPLEX_DIV, obj, bb);
+}
+
+static VALUE rb_gsl_vector_complex_add_bang(VALUE obj, VALUE bb)
+{
+  return rb_gsl_vector_complex_arithmetics(GSL_VECTOR_COMPLEX_ADD_BANG, obj, bb);
+}
+
+static VALUE rb_gsl_vector_complex_sub_bang(VALUE obj, VALUE bb)
+{
+  return rb_gsl_vector_complex_arithmetics(GSL_VECTOR_COMPLEX_SUB_BANG, obj, bb);
+}
+
+static VALUE rb_gsl_vector_complex_mul_bang(VALUE obj, VALUE bb)
+{
+  return rb_gsl_vector_complex_arithmetics(GSL_VECTOR_COMPLEX_MUL_BANG, obj, bb);
+}
+
+static VALUE rb_gsl_vector_complex_div_bang(VALUE obj, VALUE bb)
+{
+  return rb_gsl_vector_complex_arithmetics(GSL_VECTOR_COMPLEX_DIV_BANG, obj, bb);
 }
 
 static VALUE rb_gsl_vector_complex_coerce(VALUE obj, VALUE other)
@@ -1080,26 +1190,6 @@ static VALUE rb_gsl_vector_complex_uminus(VALUE obj)
   return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);
 }
 
-static VALUE rb_gsl_vector_complex_scale_bang(VALUE obj, VALUE s)
-{
-  gsl_vector_complex *m;
-  gsl_complex c, *z = &c;
-  Data_Get_Struct(obj, gsl_vector_complex, m);
-  switch (TYPE(s)) {
-  case T_FIXNUM:
-  case T_FLOAT:
-    GSL_SET_REAL(z, NUM2DBL(s));
-    GSL_SET_IMAG(z, 0.0);
-    break;
-  default:
-    CHECK_COMPLEX(s);
-    Data_Get_Struct(s, gsl_complex, z);
-    break;
-  }
-  gsl_vector_complex_scale(m, *z);
-  return obj;
-}
-
 /*****/
 static VALUE rb_gsl_vector_complex_XXX(VALUE obj, double (*f)(gsl_complex))
 {
@@ -1196,6 +1286,210 @@ static VALUE rb_gsl_vector_complex_log_b(VALUE obj, VALUE a)
 {
   return rb_gsl_vector_complex_XXXz2(obj, a, gsl_complex_log_b);
 }
+
+/* gsl_vector_complex_sum */
+static gsl_complex rb_gsl_vector_complex_sum_gsl(gsl_vector_complex * v)
+{
+  size_t i;
+  gsl_complex z = gsl_complex_rect(0.0,0.0);
+
+  for(i=0; i<v->size; i++) {
+    z = gsl_complex_add(z, gsl_vector_complex_get(v,i));
+  }
+  return z;
+}
+
+/* gsl_vector_complex_mean */
+static gsl_complex rb_gsl_vector_complex_mean_gsl(gsl_vector_complex * v)
+{
+  gsl_complex z = rb_gsl_vector_complex_sum_gsl(v);
+  return gsl_complex_div_real(z, (double)v->size);
+}
+
+/* gsl_vector_complex_tss_m */
+static double rb_gsl_vector_complex_tss_m_gsl(gsl_vector_complex * v, gsl_complex mean)
+{
+  size_t i;
+  double tss = 0.0;
+
+  for(i=0; i<v->size; i++) {
+    tss += gsl_complex_abs2(gsl_complex_sub(gsl_vector_complex_get(v,i), mean));
+  }
+  return tss;
+}
+
+/* gsl_vector_complex_variance_m */
+static double rb_gsl_vector_complex_variance_m_gsl(gsl_vector_complex * v, gsl_complex mean)
+{
+  double tss = rb_gsl_vector_complex_tss_m_gsl(v, mean);
+  return tss / (double)(v->size - 1);
+}
+
+/* gsl_vector_complex_variance_with_fixed_mean */
+static double rb_gsl_vector_complex_variance_fm_gsl(gsl_vector_complex * v, gsl_complex mean)
+{
+  double tss = rb_gsl_vector_complex_tss_m_gsl(v, mean);
+  return tss / (double)(v->size);
+}
+
+/* gsl_vector_complex_sd_m */
+static double rb_gsl_vector_complex_sd_m_gsl(gsl_vector_complex * v, gsl_complex mean)
+{
+  double var = rb_gsl_vector_complex_variance_m_gsl(v, mean);
+  return sqrt(var);
+}
+
+/* gsl_vector_complex_sd_with_fixed_mean */
+static double rb_gsl_vector_complex_sd_fm_gsl(gsl_vector_complex * v, gsl_complex mean)
+{
+  double var = rb_gsl_vector_complex_variance_fm_gsl(v, mean);
+  return sqrt(var);
+}
+
+/* gsl_vector_complex_tss */
+static double rb_gsl_vector_complex_tss_gsl(gsl_vector_complex * v)
+{
+  gsl_complex mean = rb_gsl_vector_complex_mean_gsl(v);
+  return rb_gsl_vector_complex_tss_m_gsl(v, mean);
+}
+
+/* gsl_vector_complex_variance */
+static double rb_gsl_vector_complex_variance_gsl(gsl_vector_complex * v)
+{
+  double tss = rb_gsl_vector_complex_tss_gsl(v);
+  return tss / (double)(v->size - 1);
+}
+
+/* gsl_vector_complex_sd */
+static double rb_gsl_vector_complex_sd_gsl(gsl_vector_complex * v)
+{
+  double var = rb_gsl_vector_complex_variance_gsl(v);
+  return sqrt(var);
+}
+
+/* Wrapper around stats funcs with prototype like
+ * "gsl_complex func(gsl_vector_complex *v)"
+ * (e.g. sum and mean)
+ */
+static VALUE rb_gsl_vector_complex_z_stats_v(VALUE obj,
+    gsl_complex (*func)(gsl_vector_complex*))
+{
+  gsl_vector_complex * v;
+  gsl_complex * zp;
+  VALUE zv;
+
+  CHECK_VECTOR_COMPLEX(obj);
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+
+  zv = Data_Make_Struct(cgsl_complex, gsl_complex, 0, free, zp); 
+  *zp = func(v);
+
+  return zv;
+}
+
+/* Wrapper around stats funcs with prototype like
+ * "double func(gsl_vector_complex *v)"
+ * (e.g. tss, variance, sd)
+ */
+static VALUE rb_gsl_vector_complex_d_stats_v(VALUE obj,
+    double (*func)(gsl_vector_complex*))
+{
+  gsl_vector_complex * v;
+  double d;
+
+  CHECK_VECTOR_COMPLEX(obj);
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+
+  d = func(v);
+
+  return rb_float_new(d);
+}
+
+/* Wrapper around stats funcs with prototype like
+ * "double func(gsl_vector_complex *v, gsl_complex z)"
+ * (e.g. tss_m, variance_m, sd_m, variance_fm, sd_fm)
+ */
+static VALUE rb_gsl_vector_complex_d_stats_v_z(VALUE obj, VALUE arg,
+    double (*func)(gsl_vector_complex*, gsl_complex))
+{
+  gsl_vector_complex * v;
+  gsl_complex z;
+  gsl_complex * zp;
+  double d;
+
+  CHECK_VECTOR_COMPLEX(obj);
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+
+
+  switch (TYPE(arg)) {
+  case T_FLOAT:
+  case T_FIXNUM:
+  case T_BIGNUM:
+    z = gsl_complex_rect(NUM2DBL(arg), 0.0);
+    zp = &z;
+    break;
+  default:
+    CHECK_COMPLEX(arg);
+    Data_Get_Struct(arg, gsl_complex, zp);
+    break;
+  }
+
+  d = func(v,*zp);
+
+  return rb_float_new(d);
+}
+
+static VALUE rb_gsl_vector_complex_sum(VALUE obj)
+{
+  return rb_gsl_vector_complex_z_stats_v(obj, rb_gsl_vector_complex_sum_gsl);
+}
+
+static VALUE rb_gsl_vector_complex_mean(VALUE obj)
+{
+  return rb_gsl_vector_complex_z_stats_v(obj, rb_gsl_vector_complex_mean_gsl);
+}
+
+static VALUE rb_gsl_vector_complex_tss_m(VALUE obj, VALUE arg)
+{
+  return rb_gsl_vector_complex_d_stats_v_z(obj, arg, rb_gsl_vector_complex_tss_m_gsl);
+}
+
+static VALUE rb_gsl_vector_complex_variance_m(VALUE obj, VALUE arg)
+{
+  return rb_gsl_vector_complex_d_stats_v_z(obj, arg, rb_gsl_vector_complex_variance_m_gsl);
+}
+
+static VALUE rb_gsl_vector_complex_variance_fm(VALUE obj, VALUE arg)
+{
+  return rb_gsl_vector_complex_d_stats_v_z(obj, arg, rb_gsl_vector_complex_variance_fm_gsl);
+}
+
+static VALUE rb_gsl_vector_complex_sd_m(VALUE obj, VALUE arg)
+{
+  return rb_gsl_vector_complex_d_stats_v_z(obj, arg, rb_gsl_vector_complex_sd_m_gsl);
+}
+
+static VALUE rb_gsl_vector_complex_sd_fm(VALUE obj, VALUE arg)
+{
+  return rb_gsl_vector_complex_d_stats_v_z(obj, arg, rb_gsl_vector_complex_sd_fm_gsl);
+}
+
+static VALUE rb_gsl_vector_complex_tss(VALUE obj)
+{
+  return rb_gsl_vector_complex_d_stats_v(obj, rb_gsl_vector_complex_tss_gsl);
+}
+
+static VALUE rb_gsl_vector_complex_variance(VALUE obj)
+{
+  return rb_gsl_vector_complex_d_stats_v(obj, rb_gsl_vector_complex_variance_gsl);
+}
+
+static VALUE rb_gsl_vector_complex_sd(VALUE obj)
+{
+  return rb_gsl_vector_complex_d_stats_v(obj, rb_gsl_vector_complex_sd_gsl);
+}
+
+/*****/
 
 static VALUE rb_gsl_vector_complex_sin(VALUE obj)
 {
@@ -1644,10 +1938,11 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "set_zero", rb_gsl_vector_complex_set_zero, 0);
   rb_define_method(cgsl_vector_complex, "set_basis", rb_gsl_vector_complex_set_basis, 1);
 
+  rb_define_method(cgsl_vector_complex, "to_s", rb_gsl_vector_complex_to_s, 0);
   rb_define_method(cgsl_vector_complex, "fprintf", rb_gsl_vector_complex_fprintf, -1);
   rb_define_method(cgsl_vector_complex, "printf", rb_gsl_vector_complex_printf, -1);
   rb_define_method(cgsl_vector_complex, "print", rb_gsl_vector_complex_print, 0);
-  rb_define_method(cgsl_vector_complex, "inspect", rb_gsl_vector_complex_print, 0);
+  rb_define_method(cgsl_vector_complex, "inspect", rb_gsl_vector_complex_inspect, 0);
   rb_define_method(cgsl_vector_complex, "fwrite", rb_gsl_vector_complex_fwrite, 1);
   rb_define_method(cgsl_vector_complex, "fread", rb_gsl_vector_complex_fread, 1);
   rb_define_method(cgsl_vector_complex, "fscanf", rb_gsl_vector_complex_fscanf, 1);
@@ -1656,6 +1951,18 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_alias(cgsl_vector_complex, "re", "real");
   rb_define_method(cgsl_vector_complex, "imag", rb_gsl_vector_complex_imag, 0);
   rb_define_alias(cgsl_vector_complex, "im", "imag");
+
+  rb_define_method(cgsl_vector_complex, "set_real", rb_gsl_vector_complex_set_real, 1);
+  rb_define_alias(cgsl_vector_complex, "real=", "set_real");
+  rb_define_alias(cgsl_vector_complex, "re=", "set_real");
+  rb_define_method(cgsl_vector_complex, "set_imag", rb_gsl_vector_complex_set_imag, 1);
+  rb_define_alias(cgsl_vector_complex, "imag=", "set_imag");
+  rb_define_alias(cgsl_vector_complex, "im=", "set_imag");
+
+  rb_define_method(cgsl_vector_complex, "conj", rb_gsl_vector_complex_conj, 0);
+  rb_define_alias(cgsl_vector_complex, "conjugate", "conj");
+  rb_define_method(cgsl_vector_complex, "conj!", rb_gsl_vector_complex_conj_bang, 0);
+  rb_define_alias(cgsl_vector_complex, "conjugate!", "conj!");
 
   rb_define_method(cgsl_vector_complex, "to_a", rb_gsl_vector_complex_to_a, 0);
   rb_define_method(cgsl_vector_complex, "to_a2", rb_gsl_vector_complex_to_a2, 0);
@@ -1695,15 +2002,24 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "sub", rb_gsl_vector_complex_sub, 1);  
   rb_define_method(cgsl_vector_complex, "mul", rb_gsl_vector_complex_mul, 1);  
   rb_define_method(cgsl_vector_complex, "div", rb_gsl_vector_complex_div, 1);  
+  rb_define_method(cgsl_vector_complex, "add!", rb_gsl_vector_complex_add_bang, 1);  
+  rb_define_method(cgsl_vector_complex, "sub!", rb_gsl_vector_complex_sub_bang, 1);  
+  rb_define_method(cgsl_vector_complex, "mul!", rb_gsl_vector_complex_mul_bang, 1);  
+  rb_define_method(cgsl_vector_complex, "div!", rb_gsl_vector_complex_div_bang, 1);  
 
   rb_define_alias(cgsl_vector_complex, "+", "add");
+  rb_define_alias(cgsl_vector_complex, "+=", "add!");
   rb_define_alias(cgsl_vector_complex, "add_constant", "add");
+  rb_define_alias(cgsl_vector_complex, "add_constant!", "add!");
   rb_define_alias(cgsl_vector_complex, "-", "sub");
+  rb_define_alias(cgsl_vector_complex, "-=", "sub!");
   rb_define_alias(cgsl_vector_complex, "*", "mul");
+  rb_define_alias(cgsl_vector_complex, "*=", "mul!");
   rb_define_alias(cgsl_vector_complex, "scale", "mul");
+  rb_define_alias(cgsl_vector_complex, "scale!", "mul!");
   rb_define_alias(cgsl_vector_complex, "/", "div");
+  rb_define_alias(cgsl_vector_complex, "/=", "div!");
 
-  rb_define_method(cgsl_vector_complex, "scale!", rb_gsl_vector_complex_scale_bang, 1);
   rb_define_method(cgsl_vector_complex, "coerce", rb_gsl_vector_complex_coerce, 1);  
 
   /* 2.Aug.2004 */
@@ -1731,6 +2047,17 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "log", rb_gsl_vector_complex_log, 0);
   rb_define_method(cgsl_vector_complex, "log10", rb_gsl_vector_complex_log10, 0);
   rb_define_method(cgsl_vector_complex, "log_b", rb_gsl_vector_complex_log_b, 1);
+
+  rb_define_method(cgsl_vector_complex, "sum", rb_gsl_vector_complex_sum, 0);
+  rb_define_method(cgsl_vector_complex, "mean", rb_gsl_vector_complex_mean, 0);
+  rb_define_method(cgsl_vector_complex, "tss", rb_gsl_vector_complex_tss, 0);
+  rb_define_method(cgsl_vector_complex, "tss_m", rb_gsl_vector_complex_tss_m, 1);
+  rb_define_method(cgsl_vector_complex, "variance", rb_gsl_vector_complex_variance, 0);
+  rb_define_method(cgsl_vector_complex, "variance_m", rb_gsl_vector_complex_variance_m, 1);
+  rb_define_method(cgsl_vector_complex, "variance_fm", rb_gsl_vector_complex_variance_fm, 1);
+  rb_define_method(cgsl_vector_complex, "sd", rb_gsl_vector_complex_sd, 0);
+  rb_define_method(cgsl_vector_complex, "sd_m", rb_gsl_vector_complex_sd_m, 1);
+  rb_define_method(cgsl_vector_complex, "sd_fm", rb_gsl_vector_complex_sd_fm, 1);
 
   rb_define_method(cgsl_vector_complex, "sin", rb_gsl_vector_complex_sin, 0);
   rb_define_method(cgsl_vector_complex, "cos", rb_gsl_vector_complex_cos, 0);
