@@ -1,0 +1,75 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Complex LU decomposition</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h3><a name="0.1" href="#0.1">0.1</a> <a name="label-0">Complex LU decomposition</a></h3><!-- RDLabel: "Complex LU decomposition" -->
+
+<dl>
+<dt><a name="label-1" id="label-1"><code>GSL::Linalg::Complex::LU_decomp!(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_decomp!" -->
+<dt><a name="label-2" id="label-2"><code>GSL::Linalg::Complex::LU::decomp!(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::decomp!" -->
+<dt><a name="label-3" id="label-3"><code>GSL::Matrix::Complex#LU_decomp!</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#LU_decomp!" -->
+<dt><a name="label-4" id="label-4"><code>GSL::Matrix::Complex#LU_decomp!</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#LU_decomp!" -->
+<dd>
+Factorizes the square matrix <var>A</var> into the LU decomposition PA = LU,
+and returns an array, <var>[perm, signum]</var>. <var>A</var> is changed.</dd>
+<dt><a name="label-5" id="label-5"><code>GSL::Linalg::Complex::LU_decomp(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_decomp" -->
+<dt><a name="label-6" id="label-6"><code>GSL::Linalg::Complex::LU::decomp(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::decomp" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Matrix::Complex#LU_decomp</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#LU_decomp" -->
+<dd>
+Factorizes the square matrix <var>A</var> into the LU decomposition PA = LU,
+and returns an array, <var>[LU, perm, signum]</var>. <var>A</var> is not changed.</dd>
+<dt><a name="label-8" id="label-8"><code>GSL::Linalg::Complex::LU_solve(<var>A</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_solve" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Linalg::Complex::LU::solve(<var>A</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::solve" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Linalg::Complex::LU_solve(<var>A</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_solve" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Matrix::Complex#LU_solve(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#LU_solve" -->
+<dt><a name="label-12" id="label-12"><code>GSL::Linalg::Complex::solve(<var>LU</var>, <var>perm</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::solve" -->
+<dt><a name="label-13" id="label-13"><code>GSL::Linalg::Complex::LU::solve(<var>LU</var>, <var>perm</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::solve" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Linalg::Complex::LU::LUMatirx#solve(<var>perm</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::LUMatirx#solve" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Linalg::Complex::LU_svx(<var>A</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_svx" -->
+<dt><a name="label-16" id="label-16"><code>GSL::Linalg::Complex::LU::svx(<var>A</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::svx" -->
+<dt><a name="label-17" id="label-17"><code>GSL::Linalg::Complex::LU_svx(<var>A</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_svx" -->
+<dt><a name="label-18" id="label-18"><code>GSL::Matrix::Complex#LU_svx(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#LU_svx" -->
+<dt><a name="label-19" id="label-19"><code>GSL::Linalg::Complex::svx(<var>LU</var>, <var>perm</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::svx" -->
+<dt><a name="label-20" id="label-20"><code>GSL::Linalg::Complex::LU::svx(<var>LU</var>, <var>perm</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::svx" -->
+<dt><a name="label-21" id="label-21"><code>GSL::Linalg::Complex::LU::LUMatirx#svx(<var>perm</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::LUMatirx#svx" -->
+<dt><a name="label-22" id="label-22"><code>GSL::Linalg::Complex::LU_refine(<var>A</var>, <var>LU</var>, <var>perm</var>, <var>b</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_refine" -->
+<dt><a name="label-23" id="label-23"><code>GSL::Linalg::Complex::LU_::refine(<var>A</var>, <var>LU</var>, <var>perm</var>, <var>b</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_::refine" -->
+<dt><a name="label-24" id="label-24"><code>GSL::Linalg::Complex::LU_invert(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_invert" -->
+<dt><a name="label-25" id="label-25"><code>GSL::Linalg::Complex::LU::invert(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::invert" -->
+<dt><a name="label-26" id="label-26"><code>GSL::Linalg::Complex::LU_invert(<var>LU</var>, <var>perm</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_invert" -->
+<dt><a name="label-27" id="label-27"><code>GSL::Linalg::Complex::LU::invert(<var>LU</var>, <var>perm</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::invert" -->
+<dt><a name="label-28" id="label-28"><code>GSL::Matrix::Complex#LU_invert</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#LU_invert" -->
+<dt><a name="label-29" id="label-29"><code>GSL::Matrix::Complex#invert</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#invert" -->
+<dt><a name="label-30" id="label-30"><code>GSL::Linalg::Complex::LU::LUMatrix#invert(<var>perm</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::LUMatrix#invert" -->
+<dt><a name="label-31" id="label-31"><code>GSL::Linalg::Complex::LU_det(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_det" -->
+<dt><a name="label-32" id="label-32"><code>GSL::Linalg::Complex::LU::det(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::det" -->
+<dt><a name="label-33" id="label-33"><code>GSL::Linalg::Complex::LU_det(<var>LU</var>, <var>signum</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_det" -->
+<dt><a name="label-34" id="label-34"><code>GSL::Linalg::Complex::LU::det(<var>LU</var>, <var>signum</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::det" -->
+<dt><a name="label-35" id="label-35"><code>GSL::Matrix::Complex#LU_det</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#LU_det" -->
+<dt><a name="label-36" id="label-36"><code>GSL::Matrix::Complex#det</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#det" -->
+<dt><a name="label-37" id="label-37"><code>GSL::Linalg::Complex::LU::LUMatrix#det(<var>signum</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::LUMatrix#det" -->
+<dt><a name="label-38" id="label-38"><code>GSL::Linalg::Complex::LU_lndet(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_lndet" -->
+<dt><a name="label-39" id="label-39"><code>GSL::Linalg::Complex::LU::lndet(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::lndet" -->
+<dt><a name="label-40" id="label-40"><code>GSL::Linalg::Complex::LU_lndet(<var>LU</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_lndet" -->
+<dt><a name="label-41" id="label-41"><code>GSL::Linalg::Complex::LU::lndet(<var>LU</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::lndet" -->
+<dt><a name="label-42" id="label-42"><code>GSL::Matrix::Complex#LU_lndet</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#LU_lndet" -->
+<dt><a name="label-43" id="label-43"><code>GSL::Matrix::Complex#lndet</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#lndet" -->
+<dt><a name="label-44" id="label-44"><code>GSL::Linalg::Complex::LU::LUMatrix#lndet</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::LUMatrix#lndet" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Linalg::Complex::LU_sgndet(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_sgndet" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Linalg::Complex::LU::sgndet(<var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::sgndet" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Linalg::Complex::LU_sgndet(<var>LU</var>, <var>signum</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU_sgndet" -->
+<dt><a name="label-48" id="label-48"><code>GSL::Linalg::Complex::LU::sgndet(<var>LU</var>, <var>signum</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::sgndet" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Matrix::Complex#LU_sgndet</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#LU_sgndet" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Matrix::Complex#sgndet</code></a></dt><!-- RDLabel: "GSL::Matrix::Complex#sgndet" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Linalg::Complex::LU::LUMatrix#sgndet(<var>signum</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Complex::LU::LUMatrix#sgndet" -->
+</dl>
+<p><a href="linalg.html">back</a></p>
+
+</body>
+</html>

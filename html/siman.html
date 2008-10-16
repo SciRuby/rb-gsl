@@ -1,0 +1,104 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Simulated Annealing</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Simulated Annealing</a></h1><!-- RDLabel: "Simulated Annealing" -->
+
+<h3><a name="0.1" href="#0.1">0.1</a> <a name="label-1">Library</a></h3><!-- RDLabel: "Library" -->
+
+<h2><a name="1" href="#1">1</a> <a name="label-2">Module and classes</a></h2><!-- RDLabel: "Module and classes" -->
+
+<ul>
+<li>GSL::
+<ul>
+<li>Siman::  (Module)
+<ul>
+<li>Params (Class)</li>
+<li>Efunc (Class)</li>
+<li>Step (Class)</li>
+<li>Metric (Class)</li>
+<li>Print (Class)</li>
+</ul></li>
+</ul></li>
+</ul>
+<h2><a name="2" href="#2">2</a> <a name="label-3"><code>Siman</code> Module</a></h2><!-- RDLabel: "Siman Module" -->
+
+<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-4">Singleton method</a></h3><!-- RDLabel: "Singleton method" -->
+
+<dl>
+<dt><a name="label-5" id="label-5"><code>GSL::Siman.solve(<var>rng</var>, <var>x0_p</var>, <var>efunc</var>, <var>stepper</var>, <var>metric</var>, <var>printer</var>, <var>params</var>)</code></a></dt><!-- RDLabel: "GSL::Siman.solve" -->
+<dd>
+<p>This performs a simulated annealing search through a given space. 
+The space is specified by providing the functions <var>efunc</var> and <var>metric</var>. 
+The simulated annealing steps are generated using the random number generator 
+<var>rng</var> and the function <var>stepper</var>. The starting configuration of the 
+system should be given by a <code>Vector</code> object <var>x0_p</var>.</p>
+<p>The parameter <var>params</var> controls the run by providing the temperature 
+schedule and other tunable parameters to the algorithm.</p>
+<p>On exit the best result achieved during the search is placed in <var>x0_p</var>. 
+If the annealing process has been successful this should be a good approximation 
+to the optimal point in the space.</p>
+<p>If the function <var>printer</var> is not <code>nil</code>, a debugging log will be printed 
+to stdout with the following columns:</p>
+<pre>number_of_iterations   temperature    x    x-(x0_p)   efunc(x)</pre>
+<p>and the output of <var>printer</var> itself. If <var>printer</var> is <code>nil</code> 
+then no information is printed.</p></dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-6">Example</a></h2><!-- RDLabel: "Example" -->
+
+<pre>#!/usr/bin/env ruby
+require("gsl")
+include GSL::Siman
+
+N_TRIES = 200
+ITERS_FIXED_T = 10
+STEP_SIZE = 10
+K = 1.0
+T_INITIAL = 0.002
+MU_T = 1.005
+T_MIN = 2.0e-6
+
+params = Siman::Params.alloc(N_TRIES, ITERS_FIXED_T, STEP_SIZE, K, T_INITIAL,
+                           MU_T, T_MIN)
+
+efunc = Efunc.alloc { |vx|
+  x = vx[0]
+  s = (x - 1.0)
+  Math::exp(-s*s)*Math::sin(8*x)
+}
+
+metric = Metric.alloc { |vx, vy|
+  (x[0] - y[0]).abs
+}
+
+step = Step.alloc { |rng, vx, step_size|
+  r = rng.uniform
+  old_x = vx[0]
+  a =  r * 2 * step_size - step_size + old_x
+  vx[0] = a
+}
+
+simanprint = Print.alloc { |vx|
+  printf("%12g", vx[0])
+}
+
+x = Vector.alloc([15.5])
+Rng.env_setup()
+rng = Rng.alloc()
+
+#Siman::solve(rng, x, efunc, step, metric, simanprint, params)
+Siman::solve(rng, x, efunc, step, metric, nil, params)
+p x</pre>
+<p><a href="monte.html">prev</a>
+<a href="odeiv.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

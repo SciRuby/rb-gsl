@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Basis Splines</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Basis Splines</a></h1><!-- RDLabel: "Basis Splines" -->
+
+<p>This chapter describes functions for the computation of smoothing basis splines (B-splines). This is only for GSL-1.9 or later.</p>
+<ol>
+<li><a href="bspline.html#1">Overview</a></li>
+<li><a href="bspline.html#2">Initializing the B-splines solver</a></li>
+<li><a href="bspline.html#3">Constructing the knots vector</a></li>
+<li><a href="bspline.html#4">Evaluation of B-splines</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Overview</a></h2><!-- RDLabel: "Overview" -->
+
+<p>B-splines are commonly used as basis functions to fit smoothing curves to large data sets. To do this, the abscissa axis is broken up into some number of intervals, where the endpoints of each interval are called breakpoints. These breakpoints are then converted to knots by imposing various continuity and smoothness conditions at each interface. Given a nondecreasing knot vector t = \{t_0, t_1, \dots, t_{n+k-1\, the n basis splines of order k are defined by for i = 0, \dots, n-1. The common case of cubic B-splines is given by k = 4. The above recurrence relation can be evaluated in a numerically stable way by the de Boor algorithm. </p>
+<p>If we define appropriate knots on an interval [a,b] then the B-spline basis functions form a complete set on that interval. Therefore we can expand a smoothing function as given enough (x_j, f(x_j)) data pairs. The c_i can be readily obtained from a least-squares fit. </p>
+<h2><a name="2" href="#2">2</a> <a name="label-2">Initializing the B-splines solver</a></h2><!-- RDLabel: "Initializing the B-splines solver" -->
+
+<dl>
+<dt><a name="label-3" id="label-3"><code>GSL::BSpline.alloc(<var>k</var>, <var>nbreak</var>)</code></a></dt><!-- RDLabel: "GSL::BSpline.alloc" -->
+<dd>
+This method creates a workspace for computing B-splines of order <var>k</var>. The number of breakpoints is given by <var>nbreak</var>. This leads to <var>n = nbreak + k - 2</var> basis functions. Cubic B-splines are specified by <var>k = 4</var>. The size of the workspace is <var>O(5k + nbreak)</var>. </dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-4">Constructing the knots vector</a></h2><!-- RDLabel: "Constructing the knots vector" -->
+
+<dl>
+<dt><a name="label-5" id="label-5"><code>GSL::BSpline#knots(<var>breakpts</var>)</code></a></dt><!-- RDLabel: "GSL::BSpline#knots" -->
+<dd>
+This method computes the knots associated with the given breakpoints <var>breakpts</var> and returns the knots as a <code>GSL::Vector::View</code> object.</dd>
+<dt><a name="label-6" id="label-6"><code>GSL::BSpline#knots_uniform(<var>a</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::BSpline#knots_uniform" -->
+<dd>
+This method assumes uniformly spaced breakpoints on [<var>a,b</var>] and constructs the corresponding knot vector using the previously specified <var>nbreak</var> parameter. </dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-7">Evaluation of B-splines</a></h2><!-- RDLabel: "Evaluation of B-splines" -->
+
+<dl>
+<dt><a name="label-8" id="label-8"><code>GSL::BSpline#eval(<var>x</var>[, <var>B</var>])</code></a></dt><!-- RDLabel: "GSL::BSpline#eval" -->
+<dd>
+This method evaluates all B-spline basis functions at the position <var>x</var> and stores them in <var>B</var> (if given), so that the ith element of <var>B</var> is <var>B_i(x)</var>. <var>B</var> must be of length <var>n = nbreak + k - 2</var>. If <var>B</var> is not given, a newly created vector is returned.It is far more efficient to compute all of the basis functions at once than to compute them individually, due to the nature of the defining recurrence relation. </dd>
+</dl>
+<p><a href="nonlinearfit.html">prev</a>
+<a href="const.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

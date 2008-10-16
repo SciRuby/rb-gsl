@@ -1,0 +1,345 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Ordinary Differential Equations</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Ordinary Differential Equations</a></h1><!-- RDLabel: "Ordinary Differential Equations" -->
+
+<p>This chapter describes functions for solving ordinary differential equation 
+(ODE) initial value problems. The library provides a variety of low-level 
+methods, such as Runge-Kutta and Bulirsch-Stoer routines, and higher-level 
+components for adaptive step-size control. The components can be combined 
+by the user to achieve the desired solution, with full access to any 
+intermediate steps. </p>
+<p>Contents:</p>
+<ol>
+<li><a href="odeiv.html#1">Classes for ODE solver</a></li>
+<li><a href="odeiv.html#2">Class Descriptions</a>
+<ol>
+<li><a href="odeiv.html#2.1">GSL::Odeiv::System : Defining the ODE System</a></li>
+<li><a href="odeiv.html#2.2">GSL::Odeiv::Step : Stepping Algorithms</a></li>
+<li><a href="odeiv.html#2.3">GSL::Odeiv::Control : Adaptive Step-size Control</a></li>
+<li><a href="odeiv.html#2.4">GSL::Odeiv::Evolve : Evolution</a></li>
+<li><a href="odeiv.html#2.5">GSL::Odeiv::Solver : Higher level interface</a></li>
+</ol></li>
+<li><a href="odeiv.html#3">Examples</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Classes for ODE solver</a></h2><!-- RDLabel: "Classes for ODE solver" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Odeiv::System</code></a></dt><!-- RDLabel: "GSL::Odeiv::System" -->
+<dt><a name="label-3" id="label-3"><code>GSL::Odeiv::Step</code></a></dt><!-- RDLabel: "GSL::Odeiv::Step" -->
+<dt><a name="label-4" id="label-4"><code>GSL::Odeiv::Control</code></a></dt><!-- RDLabel: "GSL::Odeiv::Control" -->
+<dt><a name="label-5" id="label-5"><code>GSL::Odeiv::Evolve</code></a></dt><!-- RDLabel: "GSL::Odeiv::Evolve" -->
+<dd>
+These are GSL structure wrappers.</dd>
+<dt><a name="label-6" id="label-6"><code>GSL::Odeiv::Solver</code></a></dt><!-- RDLabel: "GSL::Odeiv::Solver" -->
+<dd>
+Another higher-level interface to ODE system classes.</dd>
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-7">Class Descriptions</a></h2><!-- RDLabel: "Class Descriptions" -->
+
+<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-2">GSL::Odeiv::System</a></h3><!-- RDLabel: "GSL::Odeiv::System" -->
+
+<dl>
+<dt><a name="label-9" id="label-9"><code>GSL::Odeiv::System.alloc(<var>func</var>, <var>jac</var>, <var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::System.alloc" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Odeiv::System.alloc(<var>func</var>, <var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::System.alloc" -->
+<dd>
+<p>Constructor. This defines a general ODE system with the dimension <var>dim</var>.</p>
+<pre># t: variable (scalar)
+# y: vector
+# dydt: vector
+# params: scalar or an array
+
+func = Proc.new { |t, y, dydt, params|
+  mu = params
+  dydt[0] = y[1]
+  dydt[1] = -y[0] - mu*y[1]*(y[0]*y[0] - 1.0)
+}
+
+# t: scalar
+# y: vector
+# dfdy: matrix, jacobian
+# dfdt: vector
+# params: scalar of an array
+jac = Proc.new { |t, y, dfdy, dfdt, params|
+  mu = params
+  dfdy.set(0, 0, 0.0)
+  dfdy.set(0, 1, 1.0)
+  dfdy.set(1, 0, -2*mu*y[0]*y[1] - 1.0)
+  dfdy.set(1, 1, -mu*(y[0]*y[0] - 1.0))
+  dfdt[0] = 0.0
+  dfdt[1] = 0.0
+}     </pre>
+<pre>sys = GSL:Odeiv::System.alloc(func, jac, dim)   # for "BSIMP" algorithm</pre>
+<p>Note that some of the simpler solver algorithms do not make use of the 
+Jacobian matrix, so it is not always strictly necessary to provide it. 
+Thus the constructor is as</p>
+<pre>sys = GSL:Odeiv::System.alloc(func, nil, dim)   # for others, replaced by nil
+sys = GSL:Odeiv::System.alloc(func, dim)        # or omit</pre></dd>
+<dt><a name="label-11" id="label-11"><code>GSL::Odeiv::System#set(<var>func</var>, <var>jac</var>, <var>parameters</var>...)</code></a></dt><!-- RDLabel: "GSL::Odeiv::System#set" -->
+<dd>
+This method sets or resets the procedures to evaluate the function and jacobian,
+and the constant parameters.</dd>
+<dt><a name="label-12" id="label-12"><code>GSL::Odeiv::System#set_params(...)</code></a></dt><!-- RDLabel: "GSL::Odeiv::System#set_params" -->
+<dd>
+Set the constant parameters of the function.</dd>
+<dt><a name="label-13" id="label-13"><code>GSL::Odeiv::System#function</code></a></dt><!-- RDLabel: "GSL::Odeiv::System#function" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Odeiv::System#func</code></a></dt><!-- RDLabel: "GSL::Odeiv::System#func" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Odeiv::System#jacobian</code></a></dt><!-- RDLabel: "GSL::Odeiv::System#jacobian" -->
+<dt><a name="label-16" id="label-16"><code>GSL::Odeiv::System#jac</code></a></dt><!-- RDLabel: "GSL::Odeiv::System#jac" -->
+<dd>
+Return Proc objects</dd>
+<dt><a name="label-17" id="label-17"><code>GSL::Odeiv::System#dimension</code></a></dt><!-- RDLabel: "GSL::Odeiv::System#dimension" -->
+<dt><a name="label-18" id="label-18"><code>GSL::Odeiv::System#dim</code></a></dt><!-- RDLabel: "GSL::Odeiv::System#dim" -->
+</dl>
+<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-3">GSL::Odeiv::Step</a></h3><!-- RDLabel: "GSL::Odeiv::Step" -->
+
+<p>The lowest level components are the stepping functions which advance a solution from time <var>t</var> to <var>t+h</var> for a fixed step-size <var>h</var> and estimate the resulting local error.</p>
+<dl>
+<dt><a name="label-20" id="label-20"><code>GSL::Odeiv::Step.alloc(<var>T</var>, <var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Step.alloc" -->
+<dd>
+<p>Constructor for a stepping function of an algorithm type <var>T</var> for a system of 
+dimension <var>dim</var>. The algorithms are specified by one of the constants under the 
+<code>GSL::Odeiv::Step</code> class, as</p>
+<ol>
+<li><code>GSL::Odeiv::Step::RK2</code>, Embedded 2nd order Runge-Kutta with 3rd order error estimate.</li>
+<li><code>GSL::Odeiv::Step::RK4</code>, 4th order (classical) Runge-Kutta.</li>
+<li><code>GSL::Odeiv::Step::RKF45</code>, Embedded 4th order Runge-Kutta-Fehlberg method with 5th order error estimate. This method is a good general-purpose integrator.</li>
+<li><code>GSL::Odeiv::Step::RKCK</code>, Embedded 4th order Runge-Kutta Cash-Karp method with 5th order error estimate.</li>
+<li><code>GSL::Odeiv::Step::RK8PD</code>, Embedded 8th order Runge-Kutta Prince-Dormand method with 9th order error estimate.</li>
+<li><code>GSL::Odeiv::Step::RK2IMP</code>, Implicit 2nd order Runge-Kutta at Gaussian points</li>
+<li><code>GSL::Odeiv::Step::RK4IMP</code>, Implicit 4th order Runge-Kutta at Gaussian points</li>
+<li><code>GSL::Odeiv::Step::BSIMP</code>, Implicit Bulirsch-Stoer method of Bader and Deuflhard. This algorithm requires the Jacobian.</li>
+<li><code>GSL::Odeiv::Step::GEAR1</code>, M=1 implicit Gear method</li>
+<li><code>GSL::Odeiv::Step::GEAR2</code>, M=2 implicit Gear method</li>
+<li><code>GSL::Odeiv::Step::RK2SIMP</code> (GSL-1.6)</li>
+</ol>
+<ul>
+<li><p>Ex: </p>
+<pre>step = Odeiv::Step.alloc(Odeiv::Step::RKF45, 2)</pre></li>
+</ul>
+<p>The algorithm types can also be given by a String, same as the C struct name,</p>
+<ol>
+<li>"<code>rk2</code>" or "<code>gsl_odeiv_step_rk2</code>"</li>
+<li>"<code>rk4</code>" or "<code>gsl_odeiv_step_rk4</code>"</li>
+<li>"<code>rkf45</code>" or "<code>gsl_odeiv_step_rkf45</code>"</li>
+<li>"<code>rkck</code>" or "<code>gsl_odeiv_step_rkck</code>"</li>
+<li>"<code>rk8pd</code>" or "<code>gsl_odeiv_step_rk8pd</code>"</li>
+<li>"<code>rk2imp</code>" or "<code>gsl_odeiv_step_rk2imp</code>"</li>
+<li>"<code>rk4imp</code>" or "<code>gsl_odeiv_step_rk4imp</code>"</li>
+<li>"<code>bsimp</code>" or "<code>gsl_odeiv_step_bsimp</code>"</li>
+<li>"<code>gear1</code>" or "<code>gsl_odeiv_step_gear1</code>"</li>
+<li>"<code>gear2</code>" or "<code>gsl_odeiv_step_gear2</code>"</li>
+<li>"<code>rk2simp</code>" or "<code>gsl_odeiv_step_rk2simp</code>" (GSL-1.6)</li>
+</ol>
+<ul>
+<li><p>Ex: </p>
+<pre>step = Odeiv::Step.alloc("bsimp", 4)
+step2 = Odeiv::Step.alloc("gsl_odeiv_step_rkck", 3)</pre></li>
+</ul></dd>
+<dt><a name="label-21" id="label-21"><code>GSL::Odeiv::Step#reset</code></a></dt><!-- RDLabel: "GSL::Odeiv::Step#reset" -->
+<dd>
+This method resets the stepper. It should be used whenever the next use 
+of s will not be a continuation of a previous step.</dd>
+<dt><a name="label-22" id="label-22"><code>GSL::Odeiv::Step#name</code></a></dt><!-- RDLabel: "GSL::Odeiv::Step#name" -->
+<dd>
+<p>Returns the name of the stepper as a String. For example,</p>
+<pre>require("gsl")
+include Odeiv
+s = Step.alloc(Step::RK4, 2)
+printf("step method is '%s'\n", s.name)</pre>
+<p>would print something like step method is 'rk4'.</p></dd>
+<dt><a name="label-23" id="label-23"><code>GSL::Odeiv::Step#order</code></a></dt><!-- RDLabel: "GSL::Odeiv::Step#order" -->
+<dd>
+Returns the order of the stepper on the previous step. 
+This order can vary if the stepper itself is adaptive.</dd>
+<dt><a name="label-24" id="label-24"><code>GSL::Odeiv::Step#apply(<var>t</var>, <var>h</var>, <var>y</var>, <var>yerr</var>, <var>dydt_in</var>, <var>dydt_out</var>, <var>sys</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Step#apply" -->
+<dt><a name="label-25" id="label-25"><code>GSL::Odeiv::Step#apply(<var>t</var>, <var>h</var>, <var>y</var>, <var>yerr</var>, <var>dydt_in</var>, <var>sys</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Step#apply" -->
+<dt><a name="label-26" id="label-26"><code>GSL::Odeiv::Step#apply(<var>t</var>, <var>h</var>, <var>y</var>, <var>yerr</var>, <var>sys</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Step#apply" -->
+<dd>
+This method applies the stepper to the system of equations defined by 
+<var>dydt</var>, using the step size <var>h</var> to advance the system from time 
+<var>t</var> and state <var>y</var> to time <var>t+h</var>. The new state of the system 
+is stored in <var>y</var> on output, with an estimate of the absolute error in 
+each component stored in <var>yerr</var>. If the argument <var>dydt_in</var> is not 
+<code>nil</code> it should be a <a href="vector.html">GSL::Vector</a> object 
+containing the derivatives for the system at time <var>t</var> on input. 
+This is optional as the derivatives will be computed internally if they 
+are not provided, but allows the reuse of existing derivative information. 
+On output the new derivatives of the system at time <var>t+h</var> will be 
+stored in <var>dydt_out</var> if it is not nil.</dd>
+</dl>
+<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-4">GSL::Odeiv::Control</a></h3><!-- RDLabel: "GSL::Odeiv::Control" -->
+
+<dl>
+<dt><a name="label-28" id="label-28"><code>GSL::Odeiv::Control.standard_new(<var>epsabs</var>, <var>epsrel</var>, <var>a_y</var>, <var>a_dydt</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Control.standard_new" -->
+<dt><a name="label-29" id="label-29"><code>GSL::Odeiv::Control.alloc(<var>epsabs</var>, <var>epsrel</var>, <var>a_y</var>, <var>a_dydt</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Control.alloc" -->
+<dd>
+The standard control object is a four parameter heuristic based on 
+absolute and relative errors <var>epsabs</var> and <var>epsrel</var>, and 
+scaling factors <var>a_y</var> and <var>a_dydt</var> for the system state 
+<var>y(t)</var> and derivatives <var>y'(t)</var> respectively.</dd>
+<dt><a name="label-30" id="label-30"><code>GSL::Odeiv::Control.y_new(<var>epsabs</var>, <var>epsrel</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Control.y_new" -->
+<dd>
+This method creates a new control object which will keep the local error 
+on each step within an absolute error of <var>epsabs</var> and relative error 
+of <var>epsrel</var> with respect to the solution <var>y_i(t)</var>. 
+This is equivalent to the standard control object with <var>a_y=1</var> 
+and <var>a_dydt=0</var>.</dd>
+<dt><a name="label-31" id="label-31"><code>GSL::Odeiv::Control.yp_new(<var>epsabs</var>, <var>epsrel</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Control.yp_new" -->
+<dd>
+This method creates a new control object which will keep the local 
+error on each step within an absolute error of <var>epsabs</var> and 
+relative error of <var>epsrel</var> with respect to the derivatives of the 
+solution <var>y'_i(t)</var>. 
+This is equivalent to the standard control object with <var>a_y=0</var> 
+and <var>a_dydt=1</var>.</dd>
+<dt><a name="label-32" id="label-32"><code>GSL::Odeiv::Control.alloc(<var>epsabs</var>, <var>epsrel</var>, <var>a_y</var>, <var>a_dydt</var>, <var>vscale</var>, <var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Control.alloc" -->
+<dd>
+This creates a new control object which uses the same algorithm as 
+<code>GSL::Odeiv::Control.standard_new</code> but with an absolute error which 
+is scaled for each component by the <code>GSL::Vector</code> object <var>vscale</var>.</dd>
+<dt><a name="label-33" id="label-33"><code>GSL::Odeiv::Control#init(<var>epsabs</var>, <var>epsrel</var>, <var>a_y</var>, <var>a_dydt</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Control#init" -->
+<dd>
+This method initializes the controler with the parameters <var>epsabs</var> 
+(absolute error),  <var>epsrel</var> (relative error), <var>a_y</var> 
+(scaling factor for y) and <var>a_dydt</var> (scaling factor for derivatives).</dd>
+<dt><a name="label-34" id="label-34"><code>GSL::Odeiv::Control#name</code></a></dt><!-- RDLabel: "GSL::Odeiv::Control#name" -->
+<dt><a name="label-35" id="label-35"><code>GSL::Odeiv::Control#hadjust(<var>step</var>, <var>y0</var>, <var>yerr</var>, <var>dydt</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Control#hadjust" -->
+<dd>
+This method adjusts the step-size <var>h</var> using the control function 
+object, and the current values of <var>y</var>,  <var>yerr</var> and <var>dydt</var>. 
+The stepping function <var>step</var> is also needed to determine the order 
+of the method. On output, an array of two elements [<var>hadj, status</var>]
+is returned: If the error in the y-values  <var>yerr</var> is found to be 
+too large then the step-size <var>h</var> is reduced and the method returns 
+[<var>hadj, status</var>=<code>GSL::ODEIV::HADJ_DEC</code>]. 
+If the error is sufficiently small then 
+<var>h</var> may be increased and [<var>hadj, status</var>=<code>GSL::ODEIV::HADJ_INC</code>] 
+is returned. 
+The method returns [<var>hadj, status</var>=<code>GSL::ODEIV::HADJ_NIL</code>] if the step-size is 
+unchanged. The goal of the method is to estimate the largest step-size 
+which satisfies the user-specified accuracy requirements for the current 
+point.</dd>
+</dl>
+<h3><a name="2.4" href="#2.4">2.4</a> <a name="label-5">GSL::Odeiv::Evolve</a></h3><!-- RDLabel: "GSL::Odeiv::Evolve" -->
+
+<p>The higher level of the system is the <code>GSL::Evolve</code> class which combines the 
+results of a stepper and controler to reliably advance the solution forward 
+over an interval <code>(t_0, t_1)</code>. If the controler signals that the step-size 
+should be decreased the <code>GSL::Evolve</code> object backs out of the current step and 
+tries the proposed smaller step-size. This process is continued until an 
+acceptable step-size is found.</p>
+<dl>
+<dt><a name="label-37" id="label-37"><code>GSL::Odeiv::Evolve.alloc(<var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Evolve.alloc" -->
+<dd>
+These create a <code>GSL::Evolve</code> object for a system of <var>dim</var> dimensions.</dd>
+<dt><a name="label-38" id="label-38"><code>GSL::Odeiv::Evolve#reset</code></a></dt><!-- RDLabel: "GSL::Odeiv::Evolve#reset" -->
+<dd>
+This method resets the GSL::Evolve object. It should be used whenever 
+the next use of e will not be a continuation of a previous step.</dd>
+<dt><a name="label-39" id="label-39"><code>GSL::Odeiv::Evolve#apply(<var>evolve</var>, <var>control</var>, <var>step</var>, <var>sys</var>, <var>t</var>, <var>t1</var>, <var>h</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Evolve#apply" -->
+<dd>
+This method advances the system <var>sys</var> from time <var>t</var> and position 
+<var>y</var> using the stepping function <var>step</var>. The initial step-size is 
+taken as <var>h</var>. The maximum time <var>t1</var> is guaranteed not to be exceeded by 
+the time-step. On output, an array of three elements is returned,
+[<var>tnext, hnext, status</var>], where <var>tnext</var> is the time advanced, 
+<var>hnext</var> is the step-size
+for the next step, and <var>status</var> is an error code retunred by <code>gsl_odeiv_evolve_apply()</code> function.
+On the final time-step the value of <var>tnext</var> will be set to 
+<var>t1</var> exactly.</dd>
+<dt><a name="label-40" id="label-40"><code>GSL::Odeiv::Evolve#count</code></a></dt><!-- RDLabel: "GSL::Odeiv::Evolve#count" -->
+</dl>
+<h3><a name="2.5" href="#2.5">2.5</a> <a name="label-6">GSL::Odeiv::Solver</a></h3><!-- RDLabel: "GSL::Odeiv::Solver" -->
+
+<p>This is the highest level interface to solve ODE system, 
+which contains System, Step, Control, and Evolve classes.</p>
+<dl>
+<dt><a name="label-42" id="label-42"><code>GSL::Odeiv::Solver.alloc(<var>T</var>, <var>cary</var>, <var>fac</var>, <var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv::Solver.alloc" -->
+<dd>
+This creates a ODE solver with the algorithm type <var>T</var> for the system of dimention <var>dim</var>. Here <var>cary</var> is an array as an argument for the <code>GSL::Odeive:Control</code> constructor.
+<ul>
+<li><p>Ex1</p>
+<pre>solver = Odeiv::Solver.alloc(Odeiv::Step::RKF45, [1e-6, 0.0], func, dim)</pre>
+<ul>
+<li>Type: RKF45,</li>
+<li>Control: epsabs = 1e-6, epsrel = 0.0, a_y = 1, a_dydt = 0</li>
+<li>System: function = <var>func</var>, jacobian = <var>nil</var></li>
+<li>Dimension: dim</li>
+</ul></li>
+<li><p>Ex2:</p>
+<pre>solver = Odeiv::Solver.alloc(Odeiv::Step::BSIMP, [1e-6, 0.0, 1, 0], func, jac, dim)</pre>
+<ul>
+<li>Type: BSIMP,</li>
+<li>Control: epsabs = 1e-6, epsrel = 0.0, a_y = 1, a_dydt = 0</li>
+<li>System: function = <var>func</var>, jacobian = <var>jac</var></li>
+<li>Dimension: dim</li>
+</ul></li>
+</ul></dd>
+<dt><a name="label-43" id="label-43"><code>GSL::Odeiv:::Solver#reset</code></a></dt><!-- RDLabel: "GSL::Odeiv:::Solver#reset" -->
+<dd>
+Reset the solver elements (step, evolve)</dd>
+<dt><a name="label-44" id="label-44"><code>GSL::Odeiv:::Solver#step</code></a></dt><!-- RDLabel: "GSL::Odeiv:::Solver#step" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Odeiv:::Solver#control</code></a></dt><!-- RDLabel: "GSL::Odeiv:::Solver#control" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Odeiv:::Solver#evolve</code></a></dt><!-- RDLabel: "GSL::Odeiv:::Solver#evolve" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Odeiv:::Solver#system</code></a></dt><!-- RDLabel: "GSL::Odeiv:::Solver#system" -->
+<dd>
+Access to the solver elements.</dd>
+<dt><a name="label-48" id="label-48"><code>GSL::Odeiv::System#set_params(...)</code></a></dt><!-- RDLabel: "GSL::Odeiv::System#set_params" -->
+<dd>
+Set the constant parameters of the function to solve.</dd>
+<dt><a name="label-49" id="label-49"><code>GSL::Odeiv:::Solver#apply(<var>t</var>, <var>t1</var>, <var>h</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Odeiv:::Solver#apply" -->
+<dd>
+This method advances the system from time <var>t</var> and position <var>y</var> (<code>GSL::Vector</code> object) using the stepping function. On output, the new time and position are returned as an array [<var>tnext, hnext, status</var>], i.e. <var>t, y</var> themselves are not modified by this method. The maximum time <var>t1</var> is guaranteed not to be exceeded by the time-step. On the final time-step the value of <var>tnext</var> will be set to <var>t1</var> exactly.</dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-50">Example</a></h2><!-- RDLabel: "Example" -->
+
+<p>The following program solves the second-order nonlinear Van der Pol oscillator equation,
+as found in the GSL manual, x"(t) + \mu x'(t) (x(t)^2 - 1) + x(t) = 0, </p>
+<p>This can be converted into a first order system suitable for use with the routines described in this chapter by introducing a separate variable for the velocity, y = x'(t),</p>
+<ul>
+<li>x' = y</li>
+<li><p>y' = -x + \mu y (1-x^2)</p>
+<pre>require("gsl")
+include Odeiv
+
+dim = 2    # dimension of the system
+
+# Proc object to calculate the derivatives
+func = Proc.new { |t, y, dydt, mu|
+  dydt[0] = y[1]
+  dydt[1] = -y[0] - mu*y[1]*(y[0]*y[0] - 1.0)
+}
+
+# Create the solver
+solver = Solver.alloc(Step::RKF45, [1e-6, 0.0], func, dim)
+mu = 10.0
+solver.set_params(mu)
+
+t = 0.0       # initial time
+t1 = 100.0    # end time
+h = 1e-6      # initial step
+y = Vector.alloc([1.0, 0.0])    # initial value
+
+while t &lt; t1
+  t, h, status = solver.apply(t, t1, h, y)
+
+  break if status != GSL::SUCCESS
+
+  printf("%.5e %.5e %.5e %.5e\n", t, y[0], y[1], h)
+end</pre></li>
+</ul>
+<p><a href="siman.html">prev</a>
+<a href="interp.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

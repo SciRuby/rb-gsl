@@ -1,0 +1,369 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Histograms</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Histograms</a></h1><!-- RDLabel: "Histograms" -->
+
+<ol>
+<li><a href="hist.html#1">Histogram allocation</a></li>
+<li><a href="hist.html#2">Copying histograms</a></li>
+<li><a href="hist.html#3">Updating and accessing histogram elements</a></li>
+<li><a href="hist.html#4">Searching histogram ranges</a></li>
+<li><a href="hist.html#5">Histogram Statistics</a></li>
+<li><a href="hist.html#6">Histogram Operations</a></li>
+<li><a href="hist.html#7">Reading and writing histograms</a></li>
+<li><a href="hist.html#8">Extensions</a>
+<ol>
+<li><a href="hist.html#8.1">Histogram Operations</a></li>
+<li><a href="hist.html#8.2">Graph interface</a></li>
+<li><a href="hist.html#8.3">Histogram Fittings</a></li>
+</ol></li>
+<li><a href="hist.html#9">The histogram probability distribution</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Histogram allocation</a></h2><!-- RDLabel: "Histogram allocation" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Histogram.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.alloc" -->
+<dt><a name="label-3" id="label-3"><code>GSL::Histogram.alloc(<var>n</var>, [<var>xmin</var>, <var>xmax</var>])</code></a></dt><!-- RDLabel: "GSL::Histogram.alloc" -->
+<dt><a name="label-4" id="label-4"><code>GSL::Histogram.alloc(<var>n</var>, <var>xmin</var>, <var>xmax</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.alloc" -->
+<dt><a name="label-5" id="label-5"><code>GSL::Histogram.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.alloc" -->
+<dt><a name="label-6" id="label-6"><code>GSL::Histogram.alloc(<var>array</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.alloc" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Histogram.alloc(<var>vector</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.alloc" -->
+<dd>
+<p>Constructor for a histogram object with <var>n</var> bins. </p>
+<p>Examples:</p>
+<ol>
+<li><p>With an integer:</p>
+<pre>h = Histogram.alloc(4)  &lt;--- Histogram of 4 bins.
+                             The range is not defined yet.
+
+          [ bin[0] )[ bin[1] )[ bin[2] )[ bin[3] )
+          |---------|---------|---------|---------|
+       range[0]  range[1]  range[2]  range[3]  range[4]</pre></li>
+<li><p>With an array or a vector:</p>
+<pre>h = Histogram.alloc([1, 3, 7, 9, 20])  &lt;--- Histogram of 4 bins.
+                                          The range is initialized as
+                                          range[0] = 1, range[1] = 3, ..., range[4] = 20.</pre></li>
+<li><p>With size and the range [min, max]:</p>
+<pre>irb(main):004:0&gt; h = Histogram.alloc(5, [0, 5])
+irb(main):005:0&gt; h.range
+=&gt; GSL::Histogram::Range: 
+[ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 ]
+irb(main):006:0&gt; h.bin
+=&gt; GSL::Histogram::Bin: 
+[ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
+irb(main):007:0&gt; h.increment(2.5)
+irb(main):008:0&gt; h.bin
+=&gt; GSL::Histogram::Bin: 
+[ 0.000e+00 0.000e+00 1.000e+00 0.000e+00 0.000e+00 ]</pre></li>
+</ol></dd>
+<dt><a name="label-8" id="label-8"><code>GSL::Histogram.alloc_uniform(<var>n</var>, <var>min</var>, <var>max</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.alloc_uniform" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Histogram.alloc_uniform(<var>n</var>, [<var>min</var>, <var>max</var>])</code></a></dt><!-- RDLabel: "GSL::Histogram.alloc_uniform" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Histogram.equal_bins_p(<var>h1</var>, <var>h2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.equal_bins_p" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Histogram.equal_bins(<var>h1</var>, <var>h2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.equal_bins" -->
+<dd>
+Return 1 if the all of the individual bin ranges of the two histograms 
+are identical, and 0 otherwise.</dd>
+<dt><a name="label-12" id="label-12"><code>GSL::Histogram.equal_bins_p?(<var>h1</var>, <var>h2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.equal_bins_p?" -->
+<dt><a name="label-13" id="label-13"><code>GSL::Histogram.equal_bins?(<var>h1</var>, <var>h2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.equal_bins?" -->
+<dd>
+Return <var>true</var> if the all of the individual bin ranges of the two histograms 
+are identical, and <var>false</var> otherwise.</dd>
+<dt><a name="label-14" id="label-14"><code>GSL::Histogram#set_ranges(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#set_ranges" -->
+<dd>
+This sets the ranges of the existing histogram using a <a href="vector.html">GSL::Vector</a> object.</dd>
+<dt><a name="label-15" id="label-15"><code>GSL::Histogram#set_ranges_uniform(<var>xmin</var>, <var>xmax</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#set_ranges_uniform" -->
+<dt><a name="label-16" id="label-16"><code>GSL::Histogram#set_ranges_uniform([<var>xmin</var>, <var>xmax</var>])</code></a></dt><!-- RDLabel: "GSL::Histogram#set_ranges_uniform" -->
+<dd>
+<p>This method sets the ranges of the existing histogram <var>self</var> 
+to cover the range <var>xmin</var> to <var>xmax</var> uniformly. 
+The values of the histogram bins are reset to zero. 
+The bin ranges are shown as below,</p>
+<pre>bin[0] corresponds to xmin &lt;= x &lt; xmin + d
+bin[1] corresponds to xmin + d &lt;= x &lt; xmin + 2 d
+  ......
+bin[n-1] corresponds to xmin + (n-1)d &lt;= x &lt; xmax</pre>
+<p>where d is the bin spacing, d = (xmax-xmin)/n.</p></dd>
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-17">Copying Histograms</a></h2><!-- RDLabel: "Copying Histograms" -->
+
+<dl>
+<dt><a name="label-18" id="label-18"><code>GSL::Histogram.memcpy(<var>dest</var>, <var>src</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram.memcpy" -->
+<dd>
+Copies the histogram <var>src</var> into the pre-existing histogram <var>dest</var>, 
+making dest into an exact copy of <var>src</var>. 
+The two histograms must be of the same size. </dd>
+<dt><a name="label-19" id="label-19"><code>GSL::Histogram#clone</code></a></dt><!-- RDLabel: "GSL::Histogram#clone" -->
+<dd>
+Returns a newly created histogram which is an exact copy of the histogram 
+<var>self</var>.</dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-20">Updating and accessing histogram elements</a></h2><!-- RDLabel: "Updating and accessing histogram elements" -->
+
+<dl>
+<dt><a name="label-21" id="label-21"><code>GSL::Histogram#increment(<var>x</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#increment" -->
+<dt><a name="label-22" id="label-22"><code>GSL::Histogram#fill(<var>x</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fill" -->
+<dt><a name="label-23" id="label-23"><code>GSL::Histogram#accumulate(<var>x</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#accumulate" -->
+<dd>
+These methods updates the histogram <var>self</var> by adding <var>weight</var>
+(default = 1) to the bin whose range contains the coordinate <var>x</var>.
+If <var>x</var> is an instance of <code>GSL::Vector</code> or <code>Array</code>, 
+all the elements are filled into the histogram.
+If <var>x</var> is less than (greater than) the lower limit (upper limit) 
+of the histogram then none of bins are modified. </dd>
+<dt><a name="label-24" id="label-24"><code>GSL::Histogram#increment2(<var>x</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#increment2" -->
+<dt><a name="label-25" id="label-25"><code>GSL::Histogram#fill2(<var>x</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fill2" -->
+<dt><a name="label-26" id="label-26"><code>GSL::Histogram#accumulate2(<var>x</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#accumulate2" -->
+<dd>
+These methods updates the histogram <var>self</var> by adding <var>weight</var>
+to the bin whose range contains the coordinate <var>x</var>.    
+If <var>x</var> is less than the lower limit, the lowest bin is incremented.
+If <var>x</var> is greater than the upper limit, the highest bin is incremented.</dd>
+<dt><a name="label-27" id="label-27"><code>GSL::Histogram#get(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#get" -->
+<dt><a name="label-28" id="label-28"><code>GSL::Histogram#[i]</code></a></dt><!-- RDLabel: "GSL::Histogram#[i]" -->
+<dd>
+These methods return the contents of the <var>i</var>-th bin of the histogram 
+<var>self</var>.</dd>
+<dt><a name="label-29" id="label-29"><code>GSL::Hiatogram#get_range(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Hiatogram#get_range" -->
+<dd>
+This method finds the upper and lower range limits of the <var>i</var>-th bin 
+of the histogram <var>self</var>, and returns an array [<var>lower, upper</var>].</dd>
+<dt><a name="label-30" id="label-30"><code>GSL::Histogram#range</code></a></dt><!-- RDLabel: "GSL::Histogram#range" -->
+<dd>
+This returns a <code>Vector::View</code> object as a reference to the pointer 
+<code>double *range</code> in the <code>gsl_histogram</code> struct.</dd>
+<dt><a name="label-31" id="label-31"><code>GSL::Histogram#bin</code></a></dt><!-- RDLabel: "GSL::Histogram#bin" -->
+<dd>
+This returns a <code>Vector::View</code> object to access the pointer <code>double *bin</code> in the <code>gsl_histogram</code> struct.</dd>
+<dt><a name="label-32" id="label-32"><code>GSL::Histogram#max</code></a></dt><!-- RDLabel: "GSL::Histogram#max" -->
+<dt><a name="label-33" id="label-33"><code>GSL::Histogram#min</code></a></dt><!-- RDLabel: "GSL::Histogram#min" -->
+<dt><a name="label-34" id="label-34"><code>GSL::Histogram#bins</code></a></dt><!-- RDLabel: "GSL::Histogram#bins" -->
+<dd>
+These methods return the maximum upper and minimum lower range 
+limits and the number of bins of the histogram <var>self</var>.</dd>
+<dt><a name="label-35" id="label-35"><code>GSL::Histogram#reset</code></a></dt><!-- RDLabel: "GSL::Histogram#reset" -->
+<dd>
+This method resets all the bins in the histogram <var>self</var> to zero.</dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-36">Searching histogram ranges</a></h2><!-- RDLabel: "Searching histogram ranges" -->
+
+<dl>
+<dt><a name="label-37" id="label-37"><code>GSL::Histogram#find(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#find" -->
+<dd>
+This method finds and sets the index i to the bin number which 
+covers the coordinate <var>x</var> in the histogram <var>self</var>.</dd>
+</dl>
+<h2><a name="5" href="#5">5</a> <a name="label-38">Histogram Statistics</a></h2><!-- RDLabel: "Histogram Statistics" -->
+
+<dl>
+<dt><a name="label-39" id="label-39"><code>GSL::Histogram#max_val</code></a></dt><!-- RDLabel: "GSL::Histogram#max_val" -->
+<dd>
+This returns the maximum value contained in the histogram bins.</dd>
+<dt><a name="label-40" id="label-40"><code>GSL::Histogram#max_bin</code></a></dt><!-- RDLabel: "GSL::Histogram#max_bin" -->
+<dd>
+This returns the index of the bin containing the maximum value. 
+In the case where several bins contain the same maximum value the 
+smallest index is returned.</dd>
+<dt><a name="label-41" id="label-41"><code>GSL::Histogram#min_val</code></a></dt><!-- RDLabel: "GSL::Histogram#min_val" -->
+<dd>
+This returns the minimum value contained in the histogram bins.</dd>
+<dt><a name="label-42" id="label-42"><code>GSL::Histogram#min_bin</code></a></dt><!-- RDLabel: "GSL::Histogram#min_bin" -->
+<dd>
+This returns the index of the bin containing the minimum value. 
+In the case where several bins contain the same maximum value 
+the smallest index is returned.</dd>
+<dt><a name="label-43" id="label-43"><code>GSL::Histogram#mean</code></a></dt><!-- RDLabel: "GSL::Histogram#mean" -->
+<dd>
+This returns the mean of the histogrammed variable, 
+where the histogram is regarded as a probability distribution. 
+Negative bin values are ignored for the purposes of this calculation. 
+The accuracy of the result is limited by the bin width.</dd>
+<dt><a name="label-44" id="label-44"><code>GSL::Histogram#sigma</code></a></dt><!-- RDLabel: "GSL::Histogram#sigma" -->
+<dd>
+This function returns the standard deviation of the histogrammed variable, 
+where the histogram is regarded as a probability distribution. 
+Negative bin values are ignored for the purposes of this calculation. 
+The accuracy of the result is limited by the bin width.</dd>
+<dt><a name="label-45" id="label-45"><code>GSL::Histogram#sum(<var>istart</var> = <var>0</var>, <var>iend</var> = <var>n</var>-<var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#sum" -->
+<dd>
+The sum of values of the histogram <var>self</var> from the <var>istart</var>-th bin
+to the <var>iend</var>-th bin.</dd>
+</dl>
+<h2><a name="6" href="#6">6</a> <a name="label-46">Histogram Operations</a></h2><!-- RDLabel: "Histogram Operations" -->
+
+<dl>
+<dt><a name="label-47" id="label-47"><code>GSL::Histogram#add(<var>h2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#add" -->
+<dt><a name="label-48" id="label-48"><code>GSL::Histogram#sub(<var>h2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#sub" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Histogram#mul(<var>h2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#mul" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Histogram#div(<var>h2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#div" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Histogram#scale(<var>val</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#scale" -->
+<dt><a name="label-52" id="label-52"><code>GSL::Histogram#shift(<var>val</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#shift" -->
+</dl>
+<h2><a name="7" href="#7">7</a> <a name="label-53">Reading and writing histograms</a></h2><!-- RDLabel: "Reading and writing histograms" -->
+
+<dl>
+<dt><a name="label-54" id="label-54"><code>GSL::Histogram#fwrite(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fwrite" -->
+<dt><a name="label-55" id="label-55"><code>GSL::Histogram#fwrite(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fwrite" -->
+<dt><a name="label-56" id="label-56"><code>GSL::Histogram#fread(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fread" -->
+<dt><a name="label-57" id="label-57"><code>GSL::Histogram#fread(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fread" -->
+<dt><a name="label-58" id="label-58"><code>GSL::Histogram#fprintf(<var>io</var>, <var>range_format</var> = "%<var>e</var>", <var>bin_format</var> = "%<var>e</var>")</code></a></dt><!-- RDLabel: "GSL::Histogram#fprintf" -->
+<dt><a name="label-59" id="label-59"><code>GSL::Histogram#fprintf(<var>filename</var>, <var>range_format</var> = "%<var>e</var>", <var>bin_format</var> = "%<var>e</var>")</code></a></dt><!-- RDLabel: "GSL::Histogram#fprintf" -->
+<dt><a name="label-60" id="label-60"><code>GSL::Histogram#fscanf(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fscanf" -->
+<dt><a name="label-61" id="label-61"><code>GSL::Histogram#fscanf(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fscanf" -->
+</dl>
+<h2><a name="8" href="#8">8</a> <a name="label-62">Extentions</a></h2><!-- RDLabel: "Extentions" -->
+
+<h3><a name="8.1" href="#8.1">8.1</a> <a name="label-63">Histogram operations</a></h3><!-- RDLabel: "Histogram operations" -->
+
+<dl>
+<dt><a name="label-64" id="label-64"><code>GSL::Histogram#normalize</code></a></dt><!-- RDLabel: "GSL::Histogram#normalize" -->
+<dd>
+This methods scales the contents of the bins of histogram <var>self</var> by its
+maximum value.</dd>
+<dt><a name="label-65" id="label-65"><code>GSL::Histogram#rebin(<var>m</var> = <var>2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#rebin" -->
+<dd>
+<p>This method creates a new histogram merging <var>m</var> bins in one in the
+histogram <var>self</var>. This method cannot be used for histograms of 
+non-uniform bin size. If <var>m</var> is not an exact divider of the number 
+of bins of <var>self</var>, the range of the rebinned histogram is extended
+not to lose the entries in the last <var>m-1</var> (at most) bins.</p>
+<p>Example: a histogram <var>h</var> of size 5 with the range [0, 5), binned as</p>
+<pre>GSL::Histogram::Range: 
+[ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 ]
+GSL::Histogram::Bin: 
+[ 0.000e+00 3.000e+00 1.000e+00 1.000e+00 3.000e+00 ]</pre>
+<p>When a new histogram is created merging two bins into one as 
+<code>h2 = h.rebin</code>, then <code>h2</code> looks like</p>
+<pre>GSL::Histogram::Range: 
+[ 0.000e+00 2.000e+00 4.000e+00 6.000e+00 ]
+GSL::Histogram::Bin: 
+[ 3.000e+00 2.000e+00 3.000e+00 ]</pre></dd>
+<dt><a name="label-66" id="label-66"><code>GSL::Histogram#reverse</code></a></dt><!-- RDLabel: "GSL::Histogram#reverse" -->
+<dd>
+This method create a new histogram reversing the order of the range and the bin of 
+histogram <var>self</var>.</dd>
+<dt><a name="label-67" id="label-67"><code>GSL::Histogram#integrate(<var>istart</var> = <var>0</var>, <var>iend</var> = <var>n</var>-<var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#integrate" -->
+<dt><a name="label-68" id="label-68"><code>GSL::Histogram#integrate([<var>istart</var>, <var>iend</var>])</code></a></dt><!-- RDLabel: "GSL::Histogram#integrate" -->
+<dt><a name="label-69" id="label-69"><code>GSL::Histogram#integrate(<var>direction</var> = <var>1</var> <var>or</var> -<var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#integrate" -->
+<dd>
+This method calculates cumulative counts of the histogram <var>self</var>
+from the <var>istart</var>-th bin to the <var>iend</var>-th bin (<var>iend</var> inclusive), 
+and returns a <code>GSL::Histogram::Integral</code> 
+object. If <var>istart &lt;= iend</var> (or <var>direction == 1</var>), 
+the <var>i</var>-th bin value of a 
+<code>GSL::Histogram::Integral</code> object <var>hi</var> created from a 
+<code>GSL::Histogram</code> <var>h</var> is given by <code>hi[i] = hi[i-1] + h[i]</code>.
+If <var>istart &gt; iend</var> (or <var>direction == -1</var>), <code>hi[i] = hi[i+1] = h[i]</code>.</dd>
+<dt><a name="label-70" id="label-70"><code>GSL::Histogram::Integral#differentiate</code></a></dt><!-- RDLabel: "GSL::Histogram::Integral#differentiate" -->
+<dt><a name="label-71" id="label-71"><code>GSL::Histogram::Integral#diff</code></a></dt><!-- RDLabel: "GSL::Histogram::Integral#diff" -->
+</dl>
+<h3><a name="8.2" href="#8.2">8.2</a> <a name="label-72">Graphics</a></h3><!-- RDLabel: "Graphics" -->
+
+<dl>
+<dt><a name="label-73" id="label-73"><code>GSL::Histogram#graph(<var>options</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#graph" -->
+<dd>
+This method uses the GNU plotutils <code>graph</code> to draw the histogram <var>self</var>.
+The options as "-T X -C -l x" etc are given by a String.</dd>
+</dl>
+<h3><a name="8.3" href="#8.3">8.3</a> <a name="label-74">Fitting</a></h3><!-- RDLabel: "Fitting" -->
+
+<dl>
+<dt><a name="label-75" id="label-75"><code>GSL::Histogram#fit_exponential(<var>binstart</var> = <var>0</var>, <var>binend</var> = <var>n</var>-<var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fit_exponential" -->
+<dd>
+This method fits the histogram <var>self</var> to an exponential model 
+<code>h[n] = a exp(b x[n])</code> using  the bins of indices from <var>binstart</var> 
+to <var>binend</var>. The result is returned as an Array of 6 elements,
+<var>[a, b, erra, errb, sumsq, dof]</var>, where
+<ul>
+<li><var>a</var>: scale factor</li>
+<li><var>b</var>: exponent</li>
+<li><var>erra, errb</var>: fitting errors</li>
+<li><var>sumsq</var>: fitting chi-squared (not reduced chi-squared)</li>
+<li><var>dof</var>: degree-of-freedom, the number of bins used minus the number of parameters (2)</li>
+</ul></dd>
+<dt><a name="label-76" id="label-76"><code>GSL::Histogram#fit_power(<var>binstart</var> = <var>0</var>, <var>binend</var> = <var>n</var>-<var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fit_power" -->
+<dd>
+This method fits the histogram <var>self</var> to a power-law model 
+<code>h[n] = a x[n]^b</code> using  the bins of indices from <var>binstart</var> 
+to <var>binend</var>. The result is returned as an Array of 6 elements,
+<var>[a, b, erra, errb, sumsq, dof]</var>.</dd>
+<dt><a name="label-77" id="label-77"><code>GSL::Histogram#fit_gaussian(<var>binstart</var> = <var>0</var>, <var>binend</var> = <var>n</var>-<var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram#fit_gaussian" -->
+<dd>
+<p>This method fits the histogram <var>self</var> to Gaussian distribution
+using the bins of indices from <var>binstart</var> to <var>binend</var>,
+and returns an Array of 8 elements, 
+<var>[sigma, mean, height, errsig, errmean, errhei, sumsq, dof]</var>. </p>
+<p>Example:</p>
+<pre>#!/usr/bin/env ruby
+require("gsl")
+
+N = 10000
+MAX = 8
+rng = Rng.alloc
+
+data = Ran.gaussian(rng, 1.5, N) + 2
+h = Histogram.alloc(100, [-MAX, MAX])
+h.increment(data)
+
+sigma, mean, height, = h.fit_gaussian
+x = Vector.linspace(-MAX, MAX, 100)
+y = height*Ran::gaussian_pdf(x-mean, sigma)
+GSL::graph(h, [x, y], "-T X -C -g 3")</pre></dd>
+</dl>
+<h2><a name="9" href="#9">9</a> <a name="label-78">The histogram probability distribution</a></h2><!-- RDLabel: "The histogram probability distribution" -->
+
+<p>The probability distribution function for a histogram consists of a set of bins 
+which measure the probability of an event falling into a given range of 
+a continuous variable x. A probability distribution function is defined
+by the following class, which actually stores the cumulative probability 
+distribution function. This is the natural quantity for generating samples 
+via the inverse transform method, because there is a one-to-one mapping 
+between the cumulative probability distribution and the range [0,1]. 
+It can be shown that by taking a uniform random number in this 
+range and finding its corresponding coordinate in the cumulative probability 
+distribution we obtain samples with the desired probability distribution.</p>
+<h3><a name="9.1" href="#9.1">9.1</a> <a name="label-79">GSL::Histogram::Pdf class</a></h3><!-- RDLabel: "GSL::Histogram::Pdf class" -->
+
+<dl>
+<dt><a name="label-80" id="label-80"><code>GSL::Histogram::Pdf.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram::Pdf.alloc" -->
+<dt><a name="label-81" id="label-81"><code>GSL::Histogram::Pdf.alloc(<var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram::Pdf.alloc" -->
+<dd>
+Constructors. If a histogram <var>h</var> is given, 
+the probability distribution is initialized with the contents of <var>h</var>.</dd>
+<dt><a name="label-82" id="label-82"><code>GSL::Histogram::Pdf#init(<var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram::Pdf#init" -->
+<dd>
+This initializes the probability distribution <var>self</var> with the contents 
+of the histogram <var>h</var>. </dd>
+<dt><a name="label-83" id="label-83"><code>GSL::Histogram::Pdf#sample(<var>r</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram::Pdf#sample" -->
+<dd>
+<p>This method uses <var>r</var>, a uniform random number between zero and one, 
+to compute a single random sample from the probability distribution <var>self</var>. 
+The algorithm used to compute the sample s is given by the following formula,</p>
+<pre>s = range[i] + delta * (range[i+1] - range[i])</pre>
+<p>where i is the index which satisfies 
+<code>sum[i] &lt;= r &lt; sum[i+1]</code> and <code>delta</code> is <code>(r - sum[i])/(sum[i+1] - sum[i])</code>.</p></dd>
+<dt><a name="label-84" id="label-84"><code>GSL::Histogram::Pdf#n</code></a></dt><!-- RDLabel: "GSL::Histogram::Pdf#n" -->
+<dd>
+This returns the number of bins of the probability distribution function.</dd>
+<dt><a name="label-85" id="label-85"><code>GSL::Histogram:Pdf#range</code></a></dt><!-- RDLabel: "GSL::Histogram:Pdf#range" -->
+<dd>
+This returns a <code>Vector::View</code> object as a reference to the pointer 
+<code>double *range</code> in the <code>gsl_histogram_pdf</code> struct.</dd>
+<dt><a name="label-86" id="label-86"><code>GSL::Histogram:Pdf#sum</code></a></dt><!-- RDLabel: "GSL::Histogram:Pdf#sum" -->
+<dd>
+This returns a <code>Vector::View</code> object as a reference to the pointer 
+<code>double *sum</code> in the <code>gsl_histogram_pdf</code> struct.</dd>
+</dl>
+<p><a href="stats.html">prev</a>
+<a href="hist2d.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

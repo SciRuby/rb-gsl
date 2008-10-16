@@ -1,0 +1,292 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>One dimensional root-finding and the solver classes</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">One dimensional root-finding and the solver classes</a></h1><!-- RDLabel: "One dimensional root-finding and the solver classes" -->
+
+<p>One-dimensional root finding algorithms can be divided into two classes, 
+<var>root bracketing</var> and <var>root polishing</var>. The state for bracketing solvers 
+is held in a <code>GSL::Root::FSolver</code> object. The updating procedure uses only 
+function evaluations (not derivatives). The state for root polishing solvers is 
+held in a <code>GSL::Root::FdfSolver</code> object. The updates require both the function 
+and its derivative (hence the name fdf) to be supplied by the user.</p>
+<p>Contents:</p>
+<ol>
+<li><a href="roots.html#1">Solver classes</a></li>
+<li><a href="roots.html#2">Methods</a>
+<ol>
+<li><a href="roots.html#2.1">Methods to solve equations</a></li>
+<li><a href="roots.html#2.2">GSL::Function_fdf class: Providing the function to solve</a></li>
+<li><a href="roots.html#2.3">Search Stopping Parameters</a></li>
+</ol></li>
+<li><a href="roots.html#3">Higher-level interface</a></li>
+<li><a href="roots.html#4">Example</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Solver classes</a></h2><!-- RDLabel: "Solver classes" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Root::FSolver.alloc(<var>T</var>)</code></a></dt><!-- RDLabel: "GSL::Root::FSolver.alloc" -->
+<dd>
+This creates a equation solver with a root bracketing algorithm of type <var>T</var>. 
+The type <var>T</var> is given by a String or a constant,
+<ul>
+<li><code>"bisection"</code> or <code>GSL::Root::FSolver::BISECION</code></li>
+<li><code>"falsepos"</code> or <code>GSL::Root::FSolver::FALSEPOS</code></li>
+<li><code>"brent"</code> or <code>GSL::Root::FSolver::BRENT</code>.</li>
+</ul>
+<ul>
+<li><p>Ex:</p>
+<pre>include GSL::Root
+s1 = FSolver.alloc("bisection")
+s2 = FSolver.alloc("brent")
+s3 = FSolver.alloc(FSolver::BISECTION)
+s4 = FSolver.alloc(FSolver::BRENT)</pre></li>
+</ul></dd>
+<dt><a name="label-3" id="label-3"><code>GSL::Root::FdfSolver.alloc(<var>T</var>)</code></a></dt><!-- RDLabel: "GSL::Root::FdfSolver.alloc" -->
+<dd>
+This creates a derivative-based solver of type <var>T</var>. 
+The type <var>T</var> is given by a String or a constant,
+<ul>
+<li><code>"newton"</code> or <code>GSL::Root::FdfSolver::NEWTON</code></li>
+<li><code>"secant"</code> or <code>GSL::Root::FdfSolver::SECANT</code></li>
+<li><code>"steffenson"</code> or <code>GSL::Root::FdfSolver::STEFFENSON</code>.</li>
+</ul></dd>
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-4">Methods</a></h2><!-- RDLabel: "Methods" -->
+
+<dl>
+<dt><a name="label-5" id="label-5"><code>GSL::Root::FSolver#set(<var>f</var>, <var>xl</var>, <var>xu</var>)</code></a></dt><!-- RDLabel: "GSL::Root::FSolver#set" -->
+<dd>
+This initialize the solver <var>self</var> to use the function <var>f</var>, 
+and the initial search 
+interval <var>xl, xu</var>. The function to be solved <var>f</var> is given 
+an instanse of the <a href="function.html">GSL::Function</a> class.</dd>
+<dt><a name="label-6" id="label-6"><code>GSL::Root::FdfSolver#set(<var>fdf</var>, <var>r</var>)</code></a></dt><!-- RDLabel: "GSL::Root::FdfSolver#set" -->
+<dd>
+This initializes, or reinitializes, an existing solver <var>self</var> 
+to use the function and derivative <var>fdf</var> and the initial guess <var>r</var>.
+Here <var>fdf</var> is a <code>GSL::Function_fdf</code> object (see below).</dd>
+</dl>
+<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-7">Methods to solve equations</a></h3><!-- RDLabel: "Methods to solve equations" -->
+
+<dl>
+<dt><a name="label-8" id="label-8"><code>GSL::Root::FSolver#iterate</code></a></dt><!-- RDLabel: "GSL::Root::FSolver#iterate" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Root::FdfSolver#iterate</code></a></dt><!-- RDLabel: "GSL::Root::FdfSolver#iterate" -->
+<dd>
+This performs a single iteration of the solver. If the iteration encounters an unexpected problem then an error code will be returned ( <code>GSL::EBADFUNC</code> or 
+<code>GSL::EZERODIV</code> ).</dd>
+<dt><a name="label-10" id="label-10"><code>GSL::Root::FSolver#root</code></a></dt><!-- RDLabel: "GSL::Root::FSolver#root" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Root::FdfSolver#root</code></a></dt><!-- RDLabel: "GSL::Root::FdfSolver#root" -->
+<dd>
+Returns the current estimate of the root.</dd>
+<dt><a name="label-12" id="label-12"><code>GSL::Root::FSolver#name</code></a></dt><!-- RDLabel: "GSL::Root::FSolver#name" -->
+<dt><a name="label-13" id="label-13"><code>GSL::Root::FdfSolver#name</code></a></dt><!-- RDLabel: "GSL::Root::FdfSolver#name" -->
+<dd>
+This returns the name of the algorithm.</dd>
+<dt><a name="label-14" id="label-14"><code>GSL::Root::FSolver#x_lower</code></a></dt><!-- RDLabel: "GSL::Root::FSolver#x_lower" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Root::FSolver#x_upper</code></a></dt><!-- RDLabel: "GSL::Root::FSolver#x_upper" -->
+<dd>
+Return the current bracketing interval for the solver.</dd>
+</dl>
+<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-16">GSL::Function_fdf class: Providing the function to solve</a></h3><!-- RDLabel: "GSL::Function_fdf class: Providing the function to solve" -->
+
+<p>The <code>FSolver</code> object require an instance of the 
+<a href="function.html">GSL::Function</a> class, which is already introduced elsewhere.
+The <code>FdfSolver</code> which uses the root-polishing algorithm requires not only
+the function to solve, but also
+procedures to calculate the derivatives. This is
+given by the <code>GSL::Function_fdf</code> class.</p>
+<dl>
+<dt><a name="label-17" id="label-17"><code>GSL::Function_fdf.alloc()</code></a></dt><!-- RDLabel: "GSL::Function_fdf.alloc" -->
+<dt><a name="label-18" id="label-18"><code>GSL::Function_fdf.alloc(<var>f</var>, <var>df</var>)</code></a></dt><!-- RDLabel: "GSL::Function_fdf.alloc" -->
+<dt><a name="label-19" id="label-19"><code>GSL::Function_fdf.alloc(<var>f</var>, <var>df</var>, <var>fdf</var>)</code></a></dt><!-- RDLabel: "GSL::Function_fdf.alloc" -->
+<dd>
+Constructors. Here <var>f, df</var> are Ruby <code>Proc</code> objects which return a single value.
+The option <var>fdf</var> must return an array which contain the values of the function 
+and its derivative.</dd>
+<dt><a name="label-20" id="label-20"><code>GSL::Function_fdf#set(<var>f</var>, <var>df</var>)</code></a></dt><!-- RDLabel: "GSL::Function_fdf#set" -->
+<dt><a name="label-21" id="label-21"><code>GSL::Function_fdf#set(<var>f</var>, <var>df</var>, <var>fdf</var>)</code></a></dt><!-- RDLabel: "GSL::Function_fdf#set" -->
+<dd>
+This initializes or reinitializes the <code>Function_fdf</code> object <var>self</var> by
+two or three <code>Proc</code> objects <var>f, df</var> and <var>fdf</var>.
+<ul>
+<li><p>ex: A quadratic equation a*x*x + b*x + c = 0:</p>
+<pre># Returns a value of the function
+f = Proc.new { |x, params| 
+  a = params[0]; b = params[1]; c = params[2]
+  (a*x + b)*x + c
+}
+# Calculate the derivative
+df = Proc.new { |x, params| 
+  a = params[0]; b = params[1]
+  2*a*x + b
+}
+
+function_fdf = Function_fdf.alloc(f, df)</pre></li>
+</ul></dd>
+<dt><a name="label-22" id="label-22"><code>GSL::Function_fdf#set(<var>f</var>, <var>df</var>, <var>params</var>...)</code></a></dt><!-- RDLabel: "GSL::Function_fdf#set" -->
+<dt><a name="label-23" id="label-23"><code>GSL::Function_fdf#set(<var>f</var>, <var>df</var>, <var>fdf</var>, <var>params</var>...)</code></a></dt><!-- RDLabel: "GSL::Function_fdf#set" -->
+<dd>
+This sets or resets the procedures and the constant parameters in the function.</dd>
+<dt><a name="label-24" id="label-24"><code>GSL::Function_fdf#set_params(...)</code></a></dt><!-- RDLabel: "GSL::Function_fdf#set_params" -->
+<dd>
+This sets or resets the constant parameters in the function.
+<ul>
+<li><p>Ex: x*x - 5 == 0</p>
+<pre>function_fdf.set_params([1, 0, -5])</pre></li>
+</ul></dd>
+</dl>
+<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-25">Search Stopping Parameters</a></h3><!-- RDLabel: "Search Stopping Parameters" -->
+
+<dl>
+<dt><a name="label-26" id="label-26"><code>GSL::Root::test_interval(<var>xl</var>, <var>xu</var>, <var>epsrel</var>, <var>epsabs</var>)</code></a></dt><!-- RDLabel: "GSL::Root::test_interval" -->
+<dd>
+<p>This function tests for the convergence of the interval 
+<var>[xl, xu]</var> with absolute error <var>epsabs</var> and relative error <var>epsrel</var>. 
+The test returns <code>GSL::SUCCESS</code> if the following condition is achieved,</p>
+<pre>|a - b| &lt; epsabs + epsrel min(|a|,|b|) </pre>
+<p>when the interval x = [a,b] does not include the origin. If the interval includes 
+the origin then min(|a|,|b|) is replaced by zero (which is the minimum value of 
+|x| over the interval). This ensures that the relative error is accurately 
+estimated for roots close to the origin.</p>
+<p>This condition on the interval also implies that any estimate of the root r in 
+the interval satisfies the same condition with respect to the true root r0,</p>
+<pre>|r - r0| &lt; epsabs + epsrel r0</pre>
+<p>assuming that the true root r0 is contained within the interval.</p></dd>
+<dt><a name="label-27" id="label-27"><code>GSL::Root::test_delta(<var>x1</var>, <var>x0</var>, <var>epsrel</var>, <var>epsabs</var>)</code></a></dt><!-- RDLabel: "GSL::Root::test_delta" -->
+<dd>
+<p>This function tests for the convergence of the sequence ..., <var>x0, x1</var> with 
+absolute error <var>epsabs</var> and relative error <var>epsrel</var>. 
+The test returns <code>GSL::SUCCESS</code> if the following condition is achieved,</p>
+<pre>|x_1 - x_0| &lt; epsabs + epsrel |x_1|</pre>
+<p>and returns <code>GSL::CONTINUE</code> otherwise.</p></dd>
+<dt><a name="label-28" id="label-28"><code>GSL::Root::test_residual(<var>f</var>, <var>epsabs</var>)</code></a></dt><!-- RDLabel: "GSL::Root::test_residual" -->
+<dd>
+<p>This function tests the residual value <var>f</var> against the absolute error bound 
+<var>epsabs</var>. The test returns <code>GSL::SUCCESS</code> if the following condition is 
+achieved,</p>
+<pre>|f| &lt; epsabs</pre>
+<p>and returns <code>GSL::CONTINUE</code> otherwise. This criterion is suitable for 
+situations where the precise location of the root, x, is unimportant provided a 
+value can be found where the residual, |f(x)|, is small enough.</p></dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-29">High-level interface</a></h2><!-- RDLabel: "High-level interface" -->
+
+<dl>
+<dt><a name="label-30" id="label-30"><code>GSL::Root:FSolver.solve(<var>func</var>, [<var>xl</var>, <var>xu</var>], [<var>epsabs</var> = <var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>6</var>])</code></a></dt><!-- RDLabel: "GSL::Root:FSolver.solve" -->
+<dd>
+This method try to find a root of the function <var>func</var> between the interval
+<var>[xl, xu]</var>, with the accuracy <var>[epsabs, epsrel]</var> (optional). An array
+of 3 elements is returned, as [<var>root, iterations, status</var>].</dd>
+<dt><a name="label-31" id="label-31"><code>GSL::Root:FdfSolver.solve(<var>func</var>, <var>x0</var>, [<var>epsabs</var> = <var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>6</var>])</code></a></dt><!-- RDLabel: "GSL::Root:FdfSolver.solve" -->
+<dd>
+This method try to find a root of the function <var>func</var> around <var>x0</var>,
+with the accuracy <var>[epsabs, epsrel]</var> (optional).
+An array of 3 elements is returned, as [<var>root, iterations, status</var>].</dd>
+<dt><a name="label-32" id="label-32"><code>GSL::Function#fsolve([<var>xl</var>, <var>xu</var>])</code></a></dt><!-- RDLabel: "GSL::Function#fsolve" -->
+<dt><a name="label-33" id="label-33"><code>GSL::Function#fsolve(<var>xl</var>, <var>xu</var>)</code></a></dt><!-- RDLabel: "GSL::Function#fsolve" -->
+<dd>
+These methods try to find a root of <code>f(x) = 0</code> between the interval
+<var>[xl, xh]</var> using Brent's algorithm.
+An array of 3 elements is returned, as [<var>root, iterations, status</var>].
+<ul>
+<li><p>ex:</p>
+<pre>f = Function.alloc { |x| x*x - 5 }
+f.fsolve([0, 5])             &lt;----- 2.23606797749979</pre></li>
+</ul></dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-34">Example</a></h2><!-- RDLabel: "Example" -->
+
+<p>This example is equivalent to the one found in the GSL manual, 
+using the Brent's algorithm to solve the equation x^2 - 5 = 0.</p>
+<pre>#!/usr/bin/env ruby
+require "gsl"
+
+#solver = Root::FSolver.alloc("bisection")
+#solver = Root::FSolver.alloc("falsepos")
+solver = Root::FSolver.alloc(Root::FSolver::BRENT)
+puts "using #{solver.name} method"
+
+func = GSL::Function.alloc { |x, params|      # Define a function to solve
+  a = params[0]; b = params[1]; c = params[2]
+  (a*x + b)*x + c
+}
+expected = Math::sqrt(5.0)
+
+func.set_params([1, 0, -5])
+
+printf("%5s [%9s, %9s] %9s %10s %9s\n",
+        "iter", "lower", "upper", "root", 
+        "err", "err(est)")
+
+solver.set(func, 0.0, 5.0)              # initialize the solver
+i = 1
+begin
+  status = solver.iterate
+  r = solver.root
+  xl = solver.x_lower
+  xu = solver.x_upper
+  status = Root.test_interval(xl, xu, 0, 0.001)   # Check convergence
+  if status == GSL::SUCCESS
+    printf("Converged:\n")
+  end
+  printf("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
+         i, xl, xu, r, r - expected, xu - xl)
+
+  i += 1
+end while status != GSL::SUCCESS</pre>
+<p>The following is an another version, using the <code>FdfSolver</code> with the Newton-Raphson 
+algorithm.</p>
+<pre>#!/usr/bin/env ruby
+require "gsl"
+
+f = Proc.new { |x, params| 
+  a = params[0]; b = params[1]; c = params[2]
+  (a*x + b)*x + c
+}
+
+df = Proc.new { |x, params| 
+  a = params[0]; b = params[1]
+  2.0*a*x + b
+}
+
+function_fdf = Function_fdf.alloc(f, df)
+params = [1, 0, -5]
+function_fdf.set_params(params)
+
+solver = Root::FdfSolver.alloc(Root::FdfSolver::NEWTON)
+puts "using #{solver.name} method"
+
+expected = Math::sqrt(5.0)
+x = 5.0
+solver.set(function_fdf, x)
+
+printf("%-5s %10s %10s %10s\n", "iter", "root", "err", "err(est)")
+iter = 0
+begin
+  iter += 1
+  status = solver.iterate
+  x0 = x
+  x = solver.root
+
+  status = Root::test_delta(x, x0, 0, 1e-3)
+
+  if status == GSL::SUCCESS
+    printf("Converged:\n")
+  end
+
+  printf("%5d %10.7f %+10.7f %10.7f\n", iter, x, x - expected, x - x0)
+end while status != GSL::SUCCESS</pre>
+<p><a href="dht.html">prev</a>
+<a href="min.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

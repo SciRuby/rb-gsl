@@ -1,0 +1,163 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Monte Carlo Integration</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Monte Carlo Integration</a></h1><!-- RDLabel: "Monte Carlo Integration" -->
+
+<h2><a name="1" href="#1">1</a> <a name="label-1">The GSL::Monte::Function class</a></h2><!-- RDLabel: "The GSL::Monte::Function class" -->
+
+<p>The function to be integrated has its own datatype, the <code>GSL::Monte::Function</code> class.</p>
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Munte::Function.alloc(<var>proc</var>, <var>dim</var>, <var>params</var>)</code></a></dt><!-- RDLabel: "GSL::Munte::Function.alloc" -->
+<dt><a name="label-3" id="label-3"><code>GSL::Munte::Function.alloc(<var>proc</var>, <var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Munte::Function.alloc" -->
+<dd>
+Constructor. The following example shows how to use this:
+<ul>
+<li><p>ex:</p>
+<pre>proc_f = Proc.new { |x, dim, params|
+  a = params[0]; b = params[1]; c = params[2]
+  if dim != 2; raise("dim != 2"); end
+  a*x[0]*x[0] + b*x[0]*x[1] + c*x[1]*x[1]
+}
+dim = 2
+mf = Monte::Function.alloc(proc_f, dim)
+mf.set_params([3, 2, 1])    </pre></li>
+</ul></dd>
+<dt><a name="label-4" id="label-4"><code>GSL::Munte::Function#set(<var>proc</var>, <var>dim</var>, <var>params</var>)</code></a></dt><!-- RDLabel: "GSL::Munte::Function#set" -->
+<dt><a name="label-5" id="label-5"><code>GSL::Munte::Function#set(<var>proc</var>, <var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Munte::Function#set" -->
+<dt><a name="label-6" id="label-6"><code>GSL::Munte::Function#set(<var>proc</var>)</code></a></dt><!-- RDLabel: "GSL::Munte::Function#set" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Munte::Function#set_proc(<var>proc</var>)</code></a></dt><!-- RDLabel: "GSL::Munte::Function#set_proc" -->
+<dt><a name="label-8" id="label-8"><code>GSL::Munte::Function#set_proc(<var>proc</var>, <var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Munte::Function#set_proc" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Munte::Function#set_params(<var>params</var>)</code></a></dt><!-- RDLabel: "GSL::Munte::Function#set_params" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Munte::Function#params</code></a></dt><!-- RDLabel: "GSL::Munte::Function#params" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Munte::Function#eval</code></a></dt><!-- RDLabel: "GSL::Munte::Function#eval" -->
+<dt><a name="label-12" id="label-12"><code>GSL::Munte::Function#call</code></a></dt><!-- RDLabel: "GSL::Munte::Function#call" -->
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-13">Monte Carlo plans, alrgorithms</a></h2><!-- RDLabel: "Monte Carlo plans, alrgorithms" -->
+
+<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-14">PLAIN Monte Carlo</a></h3><!-- RDLabel: "PLAIN Monte Carlo" -->
+
+<dl>
+<dt><a name="label-15" id="label-15"><code>GSL::Monte::Plain.alloc(<var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Monte::Plain.alloc" -->
+<dt><a name="label-16" id="label-16"><code>GSL::Monte::Plain#init</code></a></dt><!-- RDLabel: "GSL::Monte::Plain#init" -->
+</dl>
+<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-17">Miser</a></h3><!-- RDLabel: "Miser" -->
+
+<dl>
+<dt><a name="label-18" id="label-18"><code>GSL::Monte::Miser.alloc(<var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Monte::Miser.alloc" -->
+<dt><a name="label-19" id="label-19"><code>GSL::Monte::Miser#init</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#init" -->
+</dl>
+<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-20">Vegas</a></h3><!-- RDLabel: "Vegas" -->
+
+<dl>
+<dt><a name="label-21" id="label-21"><code>GSL::Monte::Vegas.alloc(<var>dim</var>)</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas.alloc" -->
+<dt><a name="label-22" id="label-22"><code>GSL::Monte::Vegas#init</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#init" -->
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-23">Integration</a></h2><!-- RDLabel: "Integration" -->
+
+<dl>
+<dt><a name="label-24" id="label-24"><code>GSL:Monte::Function#integrate(<var>xl</var>, <var>xu</var>, <var>dim</var>, <var>calls</var>, <var>rng</var>, <var>s</var>)</code></a></dt><!-- RDLabel: "GSL:Monte::Function#integrate" -->
+<dt><a name="label-25" id="label-25"><code>GSL:Monte::Function#integrate(<var>xl</var>, <var>xu</var>, <var>dim</var>, <var>calls</var>, <var>s</var>)</code></a></dt><!-- RDLabel: "GSL:Monte::Function#integrate" -->
+<dt><a name="label-26" id="label-26"><code>GSL:Monte::Function#integrate(<var>xl</var>, <var>xu</var>, <var>calls</var>, <var>rng</var>, <var>s</var>)</code></a></dt><!-- RDLabel: "GSL:Monte::Function#integrate" -->
+<dt><a name="label-27" id="label-27"><code>GSL:Monte::Function#integrate(<var>xl</var>, <var>xu</var>, <var>calls</var>, <var>s</var>)</code></a></dt><!-- RDLabel: "GSL:Monte::Function#integrate" -->
+<dd>
+<p>This method performs Monte-Carlo integration of the function <var>self</var> 
+using the algorithm <var>s</var>, over the <var>dim</var>-dimensional hypercubic 
+region defined by the lower and upper 
+limits in the arrays <var>xl</var> and <var>xu</var>, each of size <var>dim</var>. 
+The integration uses a fixed number of function calls <var>calls</var>.
+The argument <var>rng</var> is a random number generator (optional). If it is not
+given, a new generator is created internally and freed when the calculation
+finishes.</p>
+<p>See sample scripts <code>sample/monte*.rb</code> for more details.</p></dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-28">Accessing internal state of the Monte Carlo classes</a></h2><!-- RDLabel: "Accessing internal state of the Monte Carlo classes" -->
+
+<dl>
+<dt><a name="label-29" id="label-29"><code>GSL::Monte::Miser#estimate_frac</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#estimate_frac" -->
+<dt><a name="label-30" id="label-30"><code>GSL::Monte::Miser#estimate_frac=</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#estimate_frac=" -->
+<dt><a name="label-31" id="label-31"><code>GSL::Monte::Miser#min_calls</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#min_calls" -->
+<dt><a name="label-32" id="label-32"><code>GSL::Monte::Miser#min_calls=</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#min_calls=" -->
+<dt><a name="label-33" id="label-33"><code>GSL::Monte::Miser#min_call_per_bisection</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#min_call_per_bisection" -->
+<dt><a name="label-34" id="label-34"><code>GSL::Monte::Miser#min_calls_per_bisection=</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#min_calls_per_bisection=" -->
+<dt><a name="label-35" id="label-35"><code>GSL::Monte::Miser#alpha</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#alpha" -->
+<dt><a name="label-36" id="label-36"><code>GSL::Monte::Miser#alpha=</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#alpha=" -->
+<dt><a name="label-37" id="label-37"><code>GSL::Monte::Miser#dither</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#dither" -->
+<dt><a name="label-38" id="label-38"><code>GSL::Monte::Miser#dither=</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#dither=" -->
+<dt><a name="label-39" id="label-39"><code>GSL::Monte::Vegas#alpha</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#alpha" -->
+<dt><a name="label-40" id="label-40"><code>GSL::Monte::Vegas#result</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#result" -->
+<dt><a name="label-41" id="label-41"><code>GSL::Monte::Vegas#sigma</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#sigma" -->
+<dt><a name="label-42" id="label-42"><code>GSL::Monte::Vegas#chisq</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#chisq" -->
+<dt><a name="label-43" id="label-43"><code>GSL::Monte::Vegas#iterations</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#iterations" -->
+<dt><a name="label-44" id="label-44"><code>GSL::Monte::Vegas#iterations=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#iterations=" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Monte::Vegas#alpha</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#alpha" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Monte::Vegas#alpha=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#alpha=" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Monte::Vegas#stage</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#stage" -->
+<dt><a name="label-48" id="label-48"><code>GSL::Monte::Vegas#stage=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#stage=" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Monte::Vegas#mode</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#mode" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Monte::Vegas#mode=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#mode=" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Monte::Vegas#verbose</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#verbose" -->
+<dt><a name="label-52" id="label-52"><code>GSL::Monte::Vegas#verbose=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#verbose=" -->
+</dl>
+<h2><a name="5" href="#5">5</a> <a name="label-53">Example</a></h2><!-- RDLabel: "Example" -->
+
+<pre>#!/usr/bin/env ruby
+require("gsl")
+include GSL::Monte
+include Math
+
+proc_f = Proc.new { |k, dim, params|
+  pi = Math::PI
+  a = 1.0/(pi*pi*pi)
+  a/(1.0 - cos(k[0])*cos(k[1])*cos(k[2]))
+}
+
+def display_results(title, result, error)
+  exact = 1.3932039296856768591842462603255
+
+  diff = result - exact
+  printf("%s ==================\n", title);
+  printf("result = % .6f\n", result);
+  printf("sigma  = % .6f\n", error);
+  printf("exact  = % .6f\n", exact);
+  printf("error  = % .6f = %.1g sigma\n", diff, diff.abs/error)
+end
+
+dim = 3
+xl = Vector.alloc(0, 0, 0)
+xu = Vector.alloc(PI, PI, PI)
+G = Monte::Function.alloc(proc_f, dim)
+calls = 500000
+r = GSL::Rng.alloc(Rng::DEFAULT)
+
+plain = Monte::Plain.alloc(dim)
+result, error = G.integrate(xl, xu, dim, calls, r, plain)
+display_results("plain", result, error)
+
+miser = Monte::Miser.alloc(dim)
+result, error = G.integrate(xl, xu, dim, calls, r, miser)
+display_results("miser", result, error)
+
+vegas = Monte::Vegas.alloc(dim)
+result, error = G.integrate(xl, xu, dim, 10000, r, vegas)
+display_results("vegas warm-up", result, error)
+puts("converging...");
+begin
+  result, error = G.integrate(xl, xu, dim, calls/5, r, vegas)
+  printf("result = % .6f sigma = % .6f chisq/dof = %.1f\n", 
+          result, error, vegas.chisq)
+end while (vegas.chisq-1.0).abs &gt; 0.5
+display_results("vegas final", result, error)</pre>
+<p><a href="ntuple.html">prev</a>
+<a href="siman.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

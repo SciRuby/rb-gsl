@@ -1,0 +1,111 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Discrete Hankel Transforms</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Discrete Hankel Transforms</a></h1><!-- RDLabel: "Discrete Hankel Transforms" -->
+
+<p>This chapter describes functions for performing Discrete Hankel Transforms 
+(DHTs). </p>
+<ol>
+<li><a href="dht.html#1">Definitions</a></li>
+<li><a href="dht.html#2">Initialization</a></li>
+<li><a href="dht.html#3">Methods</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Definitions</a></h2><!-- RDLabel: "Definitions" -->
+
+<p>The discrete Hankel transform acts on a vector of sampled data, where the 
+samples are assumed to have been taken at points related to the zeroes of a 
+Bessel function of fixed order; compare this to the case of the discrete 
+Fourier transform, where samples are taken at points related to the zeroes 
+of the sine or cosine function. </p>
+<p>Specifically, let f(t) be a function on the unit interval. Then the finite 
+\nu-Hankel transform of f(t) is defined to be the set of numbers g_m given by, 
+so that, Suppose that f is band-limited in the sense that g_m=0 for m &gt; M.
+Then we have the following fundamental sampling theorem. It is this discrete 
+expression which defines the discrete Hankel transform. The kernel in the 
+summation above defines the matrix of the \nu-Hankel transform of size M-1. 
+The coefficients of this matrix, being dependent on \nu and M, must be 
+precomputed and stored; the <code>GSL::Dht</code> object encapsulates this data. 
+The constructor <code>GSL::Dht.alloc</code> returns a <code>GSL::Dht</code> object 
+which must be properly initialized with <code>GSL::Dht#init</code> before 
+it can be used to perform transforms on data sample vectors, 
+for fixed \nu and M, using the <code>GSL::Dht#apply</code> method. 
+The implementation allows a scaling of the fundamental 
+interval, for convenience, so that one can assume the function is defined on 
+the interval [0,X], rather than the unit interval. </p>
+<p>Notice that by assumption f(t) vanishes at the endpoints of the interval, 
+consistent with the inversion formula and the sampling formula given above. 
+Therefore, this transform corresponds to an orthogonal expansion in 
+eigenfunctions of the Dirichlet problem for the Bessel differential equation. </p>
+<h2><a name="2" href="#2">2</a> <a name="label-2">Initialization</a></h2><!-- RDLabel: "Initialization" -->
+
+<dl>
+<dt><a name="label-3" id="label-3"><code>GSL::Dht.alloc(<var>size</var>)</code></a></dt><!-- RDLabel: "GSL::Dht.alloc" -->
+<dt><a name="label-4" id="label-4"><code>GSL::Dht.alloc(<var>size</var>, <var>nu</var>, <var>xmax</var>)</code></a></dt><!-- RDLabel: "GSL::Dht.alloc" -->
+<dd>
+These methods allocate a Discrete Hankel transform object <code>GSL::Dht</code> 
+of size <var>size</var>.
+If three arguments are given, the object is initialized with the values of
+<var>nu, xmax</var>.</dd>
+<dt><a name="label-5" id="label-5"><code>GSL::Dht#init(<var>nu</var>, <var>xmax</var>)</code></a></dt><!-- RDLabel: "GSL::Dht#init" -->
+<dd>
+This initializes the transform <var>self</var> for the given values of <var>nu</var> and <var>xmax</var>.</dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-6">Methods</a></h2><!-- RDLabel: "Methods" -->
+
+<dl>
+<dt><a name="label-7" id="label-7"><code>GSL::Dht#apply(<var>vin</var>, <var>vout</var>)</code></a></dt><!-- RDLabel: "GSL::Dht#apply" -->
+<dt><a name="label-8" id="label-8"><code>GSL::Dht#apply(<var>vin</var>)</code></a></dt><!-- RDLabel: "GSL::Dht#apply" -->
+<dd>
+This applies the transform <var>self</var> to the vector <var>vin</var> whose size is 
+equal to the size of the transform.</dd>
+<dt><a name="label-9" id="label-9"><code>GSL::Dht#x_sample(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Dht#x_sample" -->
+<dd>
+This method returns the value of the n'th sample point in the unit interval, 
+(j_{nu,n+1}/j_{nu,M}) X. These are the points where the function f(t) is 
+assumed to be sampled.</dd>
+<dt><a name="label-10" id="label-10"><code>GSL::Dht#k_sample(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Dht#k_sample" -->
+<dd>
+This method returns the value of the n'th sample point in "k-space", 
+j_{nu,n+1}/X.</dd>
+<dt><a name="label-11" id="label-11"><code>GSL::Dht#size</code></a></dt><!-- RDLabel: "GSL::Dht#size" -->
+<dd>
+Returns the size of the sample arrays to be transformed</dd>
+<dt><a name="label-12" id="label-12"><code>GSL::Dht#nu</code></a></dt><!-- RDLabel: "GSL::Dht#nu" -->
+<dd>
+Returns the Bessel function order</dd>
+<dt><a name="label-13" id="label-13"><code>GSL::Dht#xmax</code></a></dt><!-- RDLabel: "GSL::Dht#xmax" -->
+<dd>
+Returns the upper limit to the x-sampling domain </dd>
+<dt><a name="label-14" id="label-14"><code>GSL::Dht#kmax</code></a></dt><!-- RDLabel: "GSL::Dht#kmax" -->
+<dd>
+Returns the upper limit to the k-sampling domain </dd>
+<dt><a name="label-15" id="label-15"><code>GSL::Dht#j</code></a></dt><!-- RDLabel: "GSL::Dht#j" -->
+<dd>
+Returns an array of computed J_nu zeros, j_{nu,s} = j[s] 
+as a <code>GSL::Vector::View</code>.</dd>
+<dt><a name="label-16" id="label-16"><code>GSL::Dht#Jjj</code></a></dt><!-- RDLabel: "GSL::Dht#Jjj" -->
+<dd>
+Returns an array of transform numerator, J_nu(j_i j_m / j_N)
+as a <code>GSL::Vector::View</code>.</dd>
+<dt><a name="label-17" id="label-17"><code>GSL::Dht#J2</code></a></dt><!-- RDLabel: "GSL::Dht#J2" -->
+<dd>
+Returns an array of transform numerator, J_nu(j_i j_m / j_N).</dd>
+<dt><a name="label-18" id="label-18"><code>GSL::Dht#coef</code></a></dt><!-- RDLabel: "GSL::Dht#coef" -->
+<dt><a name="label-19" id="label-19"><code>GSL::Dht#coef(<var>n</var>, <var>m</var>)</code></a></dt><!-- RDLabel: "GSL::Dht#coef" -->
+<dd>
+Return the (n,m)-th transform coefficient.</dd>
+</dl>
+<p><a href="sum.html">prev</a>
+<a href="roots.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

@@ -1,0 +1,205 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Complex Numbers</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Complex Numbers</a></h1><!-- RDLabel: "Complex Numbers" -->
+
+<p>Contents:</p>
+<ol>
+<li><a href="complex.html#1">Class methods</a></li>
+<li><a href="complex.html#2">Properties of Complex Numbers</a></li>
+<li><a href="complex.html#3">Complex Arithmetic Operators</a></li>
+<li><a href="complex.html#4">Elementary Complex Functions</a></li>
+<li><a href="complex.html#5">Complex Trigonometric Functions</a></li>
+<li><a href="complex.html#6">Inverse Complex Trigonometric Functions</a></li>
+<li><a href="complex.html#7">Complex Hyperbolic Functions</a></li>
+<li><a href="complex.html#8">Inverse Complex Hyperbolic Functions</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Complex.alloc(<var>re</var>, <var>im</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.alloc" -->
+<dt><a name="label-3" id="label-3"><code>GSL::Complex.rect(<var>re</var>, <var>im</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.rect" -->
+<dt><a name="label-4" id="label-4"><code>GSL::Complex[re, <var>im</var>]</code></a></dt><!-- RDLabel: "GSL::Complex[re, im]" -->
+<dd>
+These create a GSL::Complex object with real and imaginary part <var>re, im</var>.</dd>
+<dt><a name="label-5" id="label-5"><code>GSL::Complex.polar(<var>r</var>, <var>theta</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.polar" -->
+<dd>
+This returns a GSL::Complex object in polar representation, with the amplitude <var>r</var> and the phase (argument) <var>theta</var>.</dd>
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-6">Properties of complex numbers</a></h2><!-- RDLabel: "Properties of complex numbers" -->
+
+<dl>
+<dt><a name="label-7" id="label-7"><code>GSL::Complex#real</code></a></dt><!-- RDLabel: "GSL::Complex#real" -->
+<dt><a name="label-8" id="label-8"><code>GSL::Complex#re</code></a></dt><!-- RDLabel: "GSL::Complex#re" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Complex#REAL</code></a></dt><!-- RDLabel: "GSL::Complex#REAL" -->
+<dd>
+Returns the real part</dd>
+<dt><a name="label-10" id="label-10"><code>GSL::Complex#imag</code></a></dt><!-- RDLabel: "GSL::Complex#imag" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Complex#im</code></a></dt><!-- RDLabel: "GSL::Complex#im" -->
+<dt><a name="label-12" id="label-12"><code>GSL::Complex#IMAG</code></a></dt><!-- RDLabel: "GSL::Complex#IMAG" -->
+<dd>
+Returns the imaginary part</dd>
+<dt><a name="label-13" id="label-13"><code>GSL::Complex#set(<var>re</var>, <var>im</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#set" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Complex#set_complex(<var>re</var>, <var>im</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#set_complex" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Complex#SET_COMPLEX(<var>re</var>, <var>im</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#SET_COMPLEX" -->
+<dd>
+Set the real and imaginary parts of the complex number.</dd>
+<dt><a name="label-16" id="label-16"><code>GSL::Complex#set_real(<var>re</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#set_real" -->
+<dt><a name="label-17" id="label-17"><code>GSL::Complex#set_re(<var>re</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#set_re" -->
+<dt><a name="label-18" id="label-18"><code>GSL::Complex#SET_REAL(<var>re</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#SET_REAL" -->
+<dt><a name="label-19" id="label-19"><code>GSL::Complex#real=(<var>re</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#real=" -->
+<dt><a name="label-20" id="label-20"><code>GSL::Complex#re=(<var>re</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#re=" -->
+<dt><a name="label-21" id="label-21"><code>GSL::Complex#set_imag(<var>im</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#set_imag" -->
+<dt><a name="label-22" id="label-22"><code>GSL::Complex#set_im(<var>im</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#set_im" -->
+<dt><a name="label-23" id="label-23"><code>GSL::Complex#SET_IMAG(<var>im</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#SET_IMAG" -->
+<dt><a name="label-24" id="label-24"><code>GSL::Complex#imag=(<var>im</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#imag=" -->
+<dt><a name="label-25" id="label-25"><code>GSL::Complex#im=(<var>im</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#im=" -->
+<dd>
+Set the real or imaginary parts of the complex number.</dd>
+<dt><a name="label-26" id="label-26"><code>GSL::Complex#arg</code></a></dt><!-- RDLabel: "GSL::Complex#arg" -->
+<dd>
+Returns the argument</dd>
+<dt><a name="label-27" id="label-27"><code>GSL::Complex#abs, <var>abs2</var>, <var>logabs</var></code></a></dt><!-- RDLabel: "GSL::Complex#abs, abs2, logabs" -->
+<dd>
+Returns the magnitude, squared magnitude, and the logarithm of the magnitude</dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-28">Complex arithmetic operators</a></h2><!-- RDLabel: "Complex arithmetic operators" -->
+
+<dl>
+<dt><a name="label-29" id="label-29"><code>GSL::Complex#add(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#add" -->
+<dt><a name="label-30" id="label-30"><code>GSL::Complex#+(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#+" -->
+<dd>
+Return the sum of the complex numbers <var>self</var> and <var>b</var>. </dd>
+<dt><a name="label-31" id="label-31"><code>GSL::Complex#sub(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#sub" -->
+<dt><a name="label-32" id="label-32"><code>GSL::Complex#-(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#-" -->
+<dd>
+Return the difference of the complex numbers <var>self</var> and <var>b</var>. </dd>
+<dt><a name="label-33" id="label-33"><code>GSL::Complex#mul(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#mul" -->
+<dt><a name="label-34" id="label-34"><code>GSL::Complex#*(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#*" -->
+<dd>
+Returns the product of the complex numbers  <var>self</var> and <var>b</var>.</dd>
+<dt><a name="label-35" id="label-35"><code>GSL::Complex#div(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#div" -->
+<dt><a name="label-36" id="label-36"><code>GSL::Complex#/(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#/" -->
+<dd>
+Returns the quotient of the complex numbers  <var>self</var> and <var>b</var>.</dd>
+<dt><a name="label-37" id="label-37"><code>GSL::Complex#add_real</code></a></dt><!-- RDLabel: "GSL::Complex#add_real" -->
+<dt><a name="label-38" id="label-38"><code>GSL::Complex#sub_real</code></a></dt><!-- RDLabel: "GSL::Complex#sub_real" -->
+<dt><a name="label-39" id="label-39"><code>GSL::Complex#mul_real</code></a></dt><!-- RDLabel: "GSL::Complex#mul_real" -->
+<dt><a name="label-40" id="label-40"><code>GSL::Complex#div_real</code></a></dt><!-- RDLabel: "GSL::Complex#div_real" -->
+<dt><a name="label-41" id="label-41"><code>GSL::Complex#add_imag</code></a></dt><!-- RDLabel: "GSL::Complex#add_imag" -->
+<dt><a name="label-42" id="label-42"><code>GSL::Complex#sub_imag</code></a></dt><!-- RDLabel: "GSL::Complex#sub_imag" -->
+<dt><a name="label-43" id="label-43"><code>GSL::Complex#mul_imag</code></a></dt><!-- RDLabel: "GSL::Complex#mul_imag" -->
+<dt><a name="label-44" id="label-44"><code>GSL::Complex#div_imag</code></a></dt><!-- RDLabel: "GSL::Complex#div_imag" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Complex#conjugate</code></a></dt><!-- RDLabel: "GSL::Complex#conjugate" -->
+<dd>
+Returns the complex conjugate of the complex number <var>self</var>.</dd>
+<dt><a name="label-46" id="label-46"><code>GSL::Complex#inverse</code></a></dt><!-- RDLabel: "GSL::Complex#inverse" -->
+<dd>
+Returns the inverse of the complex number <var>self</var>.</dd>
+<dt><a name="label-47" id="label-47"><code>GSL::Complex#negative</code></a></dt><!-- RDLabel: "GSL::Complex#negative" -->
+<dd>
+Returns the negative of the complex number <var>self</var>.</dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-48">Elementary Complex Functions</a></h2><!-- RDLabel: "Elementary Complex Functions" -->
+
+<dl>
+<dt><a name="label-49" id="label-49"><code>GSL::Complex#sqrt</code></a></dt><!-- RDLabel: "GSL::Complex#sqrt" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Complex#pow(<var>az</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#pow" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Complex#pow_real(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#pow_real" -->
+<dt><a name="label-52" id="label-52"><code>GSL::Complex#exp</code></a></dt><!-- RDLabel: "GSL::Complex#exp" -->
+<dt><a name="label-53" id="label-53"><code>GSL::Complex#log</code></a></dt><!-- RDLabel: "GSL::Complex#log" -->
+<dt><a name="label-54" id="label-54"><code>GSL::Complex#log10</code></a></dt><!-- RDLabel: "GSL::Complex#log10" -->
+<dt><a name="label-55" id="label-55"><code>GSL::Complex#log_b(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#log_b" -->
+<dt><a name="label-56" id="label-56"><code>GSL::Complex.sqrt(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.sqrt" -->
+<dt><a name="label-57" id="label-57"><code>GSL::Complex.sqrt_real(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.sqrt_real" -->
+<dt><a name="label-58" id="label-58"><code>GSL::Complex.pow(<var>z</var>, <var>za</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.pow" -->
+<dt><a name="label-59" id="label-59"><code>GSL::Complex.pow_real(<var>z</var>, <var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.pow_real" -->
+<dt><a name="label-60" id="label-60"><code>GSL::Complex.exp(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.exp" -->
+<dt><a name="label-61" id="label-61"><code>GSL::Complex.log(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.log" -->
+<dt><a name="label-62" id="label-62"><code>GSL::Complex.log10(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.log10" -->
+<dt><a name="label-63" id="label-63"><code>GSL::Complex.log_b(<var>z</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.log_b" -->
+</dl>
+<h2><a name="5" href="#5">5</a> <a name="label-64">Complex Trigonometric Functions</a></h2><!-- RDLabel: "Complex Trigonometric Functions" -->
+
+<dl>
+<dt><a name="label-65" id="label-65"><code>GSL::Complex#sin</code></a></dt><!-- RDLabel: "GSL::Complex#sin" -->
+<dt><a name="label-66" id="label-66"><code>GSL::Complex#cos</code></a></dt><!-- RDLabel: "GSL::Complex#cos" -->
+<dt><a name="label-67" id="label-67"><code>GSL::Complex#tan</code></a></dt><!-- RDLabel: "GSL::Complex#tan" -->
+<dt><a name="label-68" id="label-68"><code>GSL::Complex#sec</code></a></dt><!-- RDLabel: "GSL::Complex#sec" -->
+<dt><a name="label-69" id="label-69"><code>GSL::Complex#csc</code></a></dt><!-- RDLabel: "GSL::Complex#csc" -->
+<dt><a name="label-70" id="label-70"><code>GSL::Complex#cot</code></a></dt><!-- RDLabel: "GSL::Complex#cot" -->
+<dt><a name="label-71" id="label-71"><code>GSL::Complex.sin(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.sin" -->
+<dt><a name="label-72" id="label-72"><code>GSL::Complex.cos(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.cos" -->
+<dt><a name="label-73" id="label-73"><code>GSL::Complex.tan(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.tan" -->
+<dt><a name="label-74" id="label-74"><code>GSL::Complex.sec(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.sec" -->
+<dt><a name="label-75" id="label-75"><code>GSL::Complex.csc(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.csc" -->
+<dt><a name="label-76" id="label-76"><code>GSL::Complex.cot(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.cot" -->
+</dl>
+<h2><a name="6" href="#6">6</a> <a name="label-77">Inverse Complex Trigonometric Functions</a></h2><!-- RDLabel: "Inverse Complex Trigonometric Functions" -->
+
+<dl>
+<dt><a name="label-78" id="label-78"><code>GSL::Complex#arcsin</code></a></dt><!-- RDLabel: "GSL::Complex#arcsin" -->
+<dt><a name="label-79" id="label-79"><code>GSL::Complex#arccos</code></a></dt><!-- RDLabel: "GSL::Complex#arccos" -->
+<dt><a name="label-80" id="label-80"><code>GSL::Complex#arctan</code></a></dt><!-- RDLabel: "GSL::Complex#arctan" -->
+<dt><a name="label-81" id="label-81"><code>GSL::Complex#arcsec</code></a></dt><!-- RDLabel: "GSL::Complex#arcsec" -->
+<dt><a name="label-82" id="label-82"><code>GSL::Complex#arccsc</code></a></dt><!-- RDLabel: "GSL::Complex#arccsc" -->
+<dt><a name="label-83" id="label-83"><code>GSL::Complex#arccot</code></a></dt><!-- RDLabel: "GSL::Complex#arccot" -->
+<dt><a name="label-84" id="label-84"><code>GSL::Complex.arcsin(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.arcsin" -->
+<dt><a name="label-85" id="label-85"><code>GSL::Complex.arcsin_real(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.arcsin_real" -->
+<dt><a name="label-86" id="label-86"><code>GSL::Complex.arccos(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.arccos" -->
+<dt><a name="label-87" id="label-87"><code>GSL::Complex.arccos_real(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.arccos_real" -->
+<dt><a name="label-88" id="label-88"><code>GSL::Complex.arctan(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.arctan" -->
+<dt><a name="label-89" id="label-89"><code>GSL::Complex.arcsec(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.arcsec" -->
+<dt><a name="label-90" id="label-90"><code>GSL::Complex.arcsec_real(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.arcsec_real" -->
+<dt><a name="label-91" id="label-91"><code>GSL::Complex.arccsc(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.arccsc" -->
+<dt><a name="label-92" id="label-92"><code>GSL::Complex.arccsc_real(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.arccsc_real" -->
+<dt><a name="label-93" id="label-93"><code>GSL::Complex.arccot(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.arccot" -->
+</dl>
+<h2><a name="7" href="#7">7</a> <a name="label-94">Complex Hyperbolic Functions</a></h2><!-- RDLabel: "Complex Hyperbolic Functions" -->
+
+<dl>
+<dt><a name="label-95" id="label-95"><code>GSL::Complex#sinh</code></a></dt><!-- RDLabel: "GSL::Complex#sinh" -->
+<dt><a name="label-96" id="label-96"><code>GSL::Complex#cosh</code></a></dt><!-- RDLabel: "GSL::Complex#cosh" -->
+<dt><a name="label-97" id="label-97"><code>GSL::Complex#tanh</code></a></dt><!-- RDLabel: "GSL::Complex#tanh" -->
+<dt><a name="label-98" id="label-98"><code>GSL::Complex#sech</code></a></dt><!-- RDLabel: "GSL::Complex#sech" -->
+<dt><a name="label-99" id="label-99"><code>GSL::Complex#csch</code></a></dt><!-- RDLabel: "GSL::Complex#csch" -->
+<dt><a name="label-100" id="label-100"><code>GSL::Complex#coth</code></a></dt><!-- RDLabel: "GSL::Complex#coth" -->
+<dt><a name="label-101" id="label-101"><code>GSL::Complex.sinh(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.sinh" -->
+<dt><a name="label-102" id="label-102"><code>GSL::Complex.cosh(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.cosh" -->
+<dt><a name="label-103" id="label-103"><code>GSL::Complex.tanh(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.tanh" -->
+<dt><a name="label-104" id="label-104"><code>GSL::Complex.sech(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.sech" -->
+<dt><a name="label-105" id="label-105"><code>GSL::Complex.csch(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.csch" -->
+<dt><a name="label-106" id="label-106"><code>GSL::Complex.coth(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex.coth" -->
+</dl>
+<h2><a name="8" href="#8">8</a> <a name="label-107">Inverse Complex Hyperbolic Functions</a></h2><!-- RDLabel: "Inverse Complex Hyperbolic Functions" -->
+
+<dl>
+<dt><a name="label-108" id="label-108"><code>GSL::Complex#arcsinh</code></a></dt><!-- RDLabel: "GSL::Complex#arcsinh" -->
+<dt><a name="label-109" id="label-109"><code>GSL::Complex#arccosh</code></a></dt><!-- RDLabel: "GSL::Complex#arccosh" -->
+<dt><a name="label-110" id="label-110"><code>GSL::Complex#arctanh</code></a></dt><!-- RDLabel: "GSL::Complex#arctanh" -->
+<dt><a name="label-111" id="label-111"><code>GSL::Complex#arcsech</code></a></dt><!-- RDLabel: "GSL::Complex#arcsech" -->
+<dt><a name="label-112" id="label-112"><code>GSL::Complex#arccsch</code></a></dt><!-- RDLabel: "GSL::Complex#arccsch" -->
+<dt><a name="label-113" id="label-113"><code>GSL::Complex#arccoth</code></a></dt><!-- RDLabel: "GSL::Complex#arccoth" -->
+<dt><a name="label-114" id="label-114"><code>GSL::Complex#arcsinh(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#arcsinh" -->
+<dt><a name="label-115" id="label-115"><code>GSL::Complex#arccosh(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#arccosh" -->
+<dt><a name="label-116" id="label-116"><code>GSL::Complex#arccosh_real(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#arccosh_real" -->
+<dt><a name="label-117" id="label-117"><code>GSL::Complex#arctanh(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#arctanh" -->
+<dt><a name="label-118" id="label-118"><code>GSL::Complex#arctanh_real(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#arctanh_real" -->
+<dt><a name="label-119" id="label-119"><code>GSL::Complex#arcsech(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#arcsech" -->
+<dt><a name="label-120" id="label-120"><code>GSL::Complex#arccsch(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#arccsch" -->
+<dt><a name="label-121" id="label-121"><code>GSL::Complex#arccoth(<var>z</var>)</code></a></dt><!-- RDLabel: "GSL::Complex#arccoth" -->
+</dl>
+<p><a href="math.html">prev</a>
+<a href="poly.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

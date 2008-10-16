@@ -1,0 +1,278 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Least-Squares Fitting</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Least-Squares Fitting</a></h1><!-- RDLabel: "Least-Squares Fitting" -->
+
+<p>This chapter describes routines for performing least squares fits to 
+experimental data using linear combinations of functions. The data may be 
+weighted or unweighted, i.e. with known or unknown errors. For weighted data 
+the functions compute the best fit parameters and their associated covariance 
+matrix. For unweighted data the covariance matrix is estimated from the 
+scatter of the points, giving a variance-covariance matrix. </p>
+<p>The functions are divided into separate versions for simple one- or 
+two-parameter regression and multiple-parameter fits. </p>
+<p>Contents:</p>
+<ol>
+<li><a href="fit.html#1">Overview</a></li>
+<li><a href="fit.html#2">Linear regression</a>
+<ol>
+<li><a href="fit.html#2.1">Module functions for linear regression</a></li>
+</ol></li>
+<li><a href="fit.html#3">Linear fitting without a constant term</a></li>
+<li><a href="fit.html#4">Multi-parameter fitting</a>
+<ol>
+<li><a href="fit.html#4.1">GSL::MultiFit::Workspace class</a></li>
+<li><a href="fit.html#4.2">Module functions</a></li>
+<li><a href="fit.html#4.3">Higer level interface</a></li>
+<li><a href="ndlinear.html">NDLINEAR: multi-linear, multi-parameter least squares fitting</a> (GSL extension)</li>
+</ol></li>
+<li><a href="fit.html#5">Examples</a>
+<ol>
+<li><a href="fit.html#5.1">Linear regression</a></li>
+<li><a href="fit.html#5.2">Exponential fitting</a></li>
+<li><a href="fit.html#5.3">Multi-parameter fitting</a></li>
+</ol></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Overview</a></h2><!-- RDLabel: "Overview" -->
+
+<p>Least-squares fits are found by minimizing \chi^2 (chi-squared), the weighted 
+sum of squared residuals over n experimental datapoints (x_i, y_i) for the 
+model Y(c,x), The p parameters of the model are c = {c_0, c_1, Åc}. The weight 
+factors w_i are given by w_i = 1/\sigma_i^2, where \sigma_i is the 
+experimental error on the data-point y_i. The errors are assumed to be 
+gaussian and uncorrelated. For unweighted data the chi-squared sum is computed 
+without any weight factors. </p>
+<p>The fitting routines return the best-fit parameters c and their p \times p 
+covariance matrix. The covariance matrix measures the statistical errors on 
+the best-fit parameters resulting from the errors on the data, \sigma_i, and 
+is defined as C_{ab} = &lt;\delta c_a \delta c_b&gt; where &lt; &gt; denotes an average 
+over the gaussian error distributions of the underlying datapoints. </p>
+<p>The covariance matrix is calculated by error propagation from the data errors 
+\sigma_i. The change in a fitted parameter \delta c_a caused by a small change 
+in the data \delta y_i is given by allowing the covariance matrix to be written
+in terms of the errors on the data, For uncorrelated data the fluctuations of 
+the underlying datapoints satisfy 
+&lt;\delta y_i \delta y_j&gt; = \sigma_i^2 \delta_{ij}, giving a corresponding 
+parameter covariance matrix of When computing the covariance matrix for 
+unweighted data, i.e. data with unknown errors, the weight factors w_i in this 
+sum are replaced by the single estimate w = 1/\sigma^2, where \sigma^2 is the 
+computed variance of the residuals about the 
+best-fit model, \sigma^2 = \sum (y_i - Y(c,x_i))^2 / (n-p). 
+This is referred to as the variance-covariance matrix. </p>
+<p>The standard deviations of the best-fit parameters are given by the square 
+root of the corresponding diagonal elements of the covariance matrix, 
+\sigma_{c_a} = \sqrt{C_{aa}}. The correlation coefficient of the fit 
+parameters c_a and c_b is given by \rho_{ab} = C_{ab} / \sqrt{C_{aa} C_{bb}}. </p>
+<h2><a name="2" href="#2">2</a> <a name="label-2">Linear regression</a></h2><!-- RDLabel: "Linear regression" -->
+
+<p>The functions described in this section can be used to perform least-squares 
+fits to a straight line model, Y = c_0 + c_1 X. For weighted data the best-fit 
+is found by minimizing the weighted sum of squared residuals, chi^2,</p>
+<p>chi^2 = sum_i w_i (y_i - (c0 + c1 x_i))^2</p>
+<p>for the parameters <code>c0, c1</code>. For unweighted data the sum is computed with 
+<code>w_i = 1</code>.</p>
+<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-3">Module functions for linear regression</a></h3><!-- RDLabel: "Module functions for linear regression" -->
+
+<dl>
+<dt><a name="label-4" id="label-4"><code>GSL::Fit::linear(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Fit::linear" -->
+<dd>
+This function computes the best-fit linear regression coefficients (c0,c1) 
+of the model Y = c0 + c1 X for the datasets <var>(x, y)</var>, two vectors of 
+equal length with stride 1. This returns an array of 7 elements, 
+<code>[c0, c1, cov00, cov01, cov11, chisq, status]</code>, where <code>c0, c1</code> are the
+estimated parameters, <code>cov00, cov01, cov11</code> are the variance-covariance 
+matrix elements, <code>chisq</code> is the sum of squares of the residuals, and
+<code>status</code> is the return code from the GSL function <code>gsl_fit_linear()</code>.</dd>
+<dt><a name="label-5" id="label-5"><code>GSL::Fit::wlinear(<var>x</var>, <var>w</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Fit::wlinear" -->
+<dd>
+This function computes the best-fit linear regression coefficients (c0,c1) 
+of the model Y = c_0 + c_1 X for the weighted datasets <var>(x, y)</var>. 
+The vector <var>w</var>, specifies the weight of each datapoint, which is the 
+reciprocal of the variance for each datapoint in <var>y</var>. This returns an
+array of 7 elements, same as the method <code>linear</code>.</dd>
+<dt><a name="label-6" id="label-6"><code>GSL::Fit::linear_est(<var>x</var>, <var>c0</var>, <var>c1</var>, <var>c00</var>, <var>c01</var>, <var>c11</var>)</code></a></dt><!-- RDLabel: "GSL::Fit::linear_est" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Fit::linear_est(<var>x</var>, [<var>c0</var>, <var>c1</var>, <var>c00</var>, <var>c01</var>, <var>c11</var>])</code></a></dt><!-- RDLabel: "GSL::Fit::linear_est" -->
+<dd>
+This function uses the best-fit linear regression coefficients <var>c0,c1</var> and 
+their estimated covariance <var>cov00,cov01,cov11</var> to compute the fitted function 
+and its standard deviation for the model Y = c_0 + c_1 X at the point <var>x</var>.
+The returned value is an array of <code>[y, yerr]</code>.</dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-8">Linear fitting without a constant term</a></h2><!-- RDLabel: "Linear fitting without a constant term" -->
+
+<dl>
+<dt><a name="label-9" id="label-9"><code>GSL::Fit::mul(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Fit::mul" -->
+<dd>
+This function computes the best-fit linear regression coefficient <code>c1</code> 
+of the model Y = c1 X for the datasets <var>(x, y)</var>, two vectors of 
+equal length with stride 1. This returns an array of 4 elements, 
+<code>[c1, cov11, chisq, status]</code>.</dd>
+<dt><a name="label-10" id="label-10"><code>GSL::Fit::wmul(<var>x</var>, <var>w</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Fit::wmul" -->
+<dd>
+This function computes the best-fit linear regression coefficient <code>c1</code> 
+of the model Y = c_1 X for the weighted datasets <code>(x, y)</code>. The vector 
+<var>w</var> specifies the weight of each datapoint. The weight is the reciprocal 
+of the variance for each datapoint in <var>y</var>.</dd>
+<dt><a name="label-11" id="label-11"><code>GSL::Fit::mul_est(<var>x</var>, <var>c1</var>, <var>c11</var>)</code></a></dt><!-- RDLabel: "GSL::Fit::mul_est" -->
+<dt><a name="label-12" id="label-12"><code>GSL::Fit::mul_est(<var>x</var>, [<var>c1</var>, <var>c11</var>])</code></a></dt><!-- RDLabel: "GSL::Fit::mul_est" -->
+<dd>
+This function uses the best-fit linear regression coefficient <var>c1</var> 
+and its estimated covariance <var>cov11</var> to compute the fitted function 
+<code>y</code> and its standard deviation <code>y_err</code> 
+for the model Y = c_1 X at the point <var>x</var>.  
+The returned value is an array of <code>[y, yerr]</code>.</dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-13">Multi-parameter fitting</a></h2><!-- RDLabel: "Multi-parameter fitting" -->
+
+<h3><a name="4.1" href="#4.1">4.1</a> <a name="label-14">GSL::MultiFit::Workspace class</a></h3><!-- RDLabel: "GSL::MultiFit::Workspace class" -->
+
+<dl>
+<dt><a name="label-15" id="label-15"><code>GSL::MultiFit::Workspace.alloc(<var>n</var>, <var>p</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::Workspace.alloc" -->
+<dd>
+This creates a workspace for fitting a model to <var>n</var> 
+observations using <var>p</var> parameters.</dd>
+</dl>
+<h3><a name="4.2" href="#4.2">4.2</a> <a name="label-16">Module functions</a></h3><!-- RDLabel: "Module functions" -->
+
+<dl>
+<dt><a name="label-17" id="label-17"><code>GSL::MultiFit::linear(<var>X</var>, <var>y</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::linear" -->
+<dt><a name="label-18" id="label-18"><code>GSL::MultiFit::linear(<var>X</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::linear" -->
+<dd>
+<p>This function computes the best-fit parameters <code>c</code> of the model <code>y = X c</code> 
+for the observations <var>y</var> and the matrix of predictor variables <var>X</var>. 
+The variance-covariance matrix of the model parameters <code>cov</code> is estimated 
+from the scatter of the observations about the best-fit. The sum of squares 
+of the residuals from the best-fit is also calculated. The returned value is
+an array of 4 elements, <code>[c, cov, chisq, status]</code>, where <code>c</code> is a
+<a href="vector.html">GSL::Vector</a> object which contains the best-fit parameters,
+and <code>cov</code> is the variance-covariance matrix as a 
+<a href="matrix.html">GSL::Matrix</a> object.</p>
+<p>The best-fit is found by singular value decomposition of the matrix <var>X</var> 
+using the workspace provided in <var>work</var> (optional, if not given, it is allocated
+internally). 
+The modified Golub-Reinsch SVD algorithm is used, with column scaling to improve 
+the accuracy of the singular values. Any components which have zero singular 
+value (to machine precision) are discarded from the fit.</p></dd>
+<dt><a name="label-19" id="label-19"><code>GSL::MultiFit::wlinear(<var>X</var>, <var>w</var>, <var>y</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::wlinear" -->
+<dt><a name="label-20" id="label-20"><code>GSL::MultiFit::wlinear(<var>X</var>, <var>w</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::wlinear" -->
+<dd>
+This function computes the best-fit parameters <code>c</code> of the model 
+<code>y = X c</code>  for the observations <var>y</var> and the matrix of predictor 
+variables <var>X</var>.  The covariance matrix of the model parameters 
+<code>cov</code> is estimated from the  weighted data. The weighted sum of
+squares of the residuals from the best-fit is also calculated. 
+The returned value is an array of 4 elements, 
+<code>[c: Vector, cov: Matrix, chisq: Float, status: Fixnum]</code>.
+The best-fit is found by singular value decomposition of the matrix <var>X</var> 
+using the workspace provided in <var>work</var> (optional). Any components 
+which have 
+zero singular value (to machine precision) are discarded from the fit.</dd>
+</dl>
+<h3><a name="4.3" href="#4.3">4.3</a> <a name="label-21">Higer level interface</a></h3><!-- RDLabel: "Higer level interface" -->
+
+<dl>
+<dt><a name="label-22" id="label-22"><code>GSL::MultiFit::polyfit(<var>x</var>, <var>y</var>, <var>order</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::polyfit" -->
+<dd>
+<p>Finds the coefficient of a polynomial of order <var>order</var> 
+that fits the vector data (<var>x, y</var>) in a least-square sense.</p>
+<p>Example:</p>
+<pre>#!/usr/bin/env ruby
+require("gsl")
+
+x = Vector[1, 2, 3, 4, 5]
+y = Vector[5.5, 43.1, 128, 290.7, 498.4]
+# The results are stored in a polynomial "coef"
+coef, err, chisq, status = MultiFit.polyfit(x, y, 3) 
+
+x2 = Vector.linspace(1, 5, 20)
+graph([x, y], [x2, coef.eval(x2)], "-C -g 3 -S 4")</pre></dd>
+</dl>
+<h2><a name="5" href="#5">5</a> <a name="label-23">Examples</a></h2><!-- RDLabel: "Examples" -->
+
+<h3><a name="5.1" href="#5.1">5.1</a> <a name="label-2">Linear regression</a></h3><!-- RDLabel: "Linear regression" -->
+
+<pre>#!/usr/bin/env ruby
+require("gsl")
+include GSL::Fit
+
+n = 4
+x = Vector.alloc(1970, 1980, 1990, 2000)
+y = Vector.alloc(12, 11, 14, 13)
+w = Vector.alloc(0.1, 0.2, 0.3, 0.4)
+
+#for i in 0...n do
+#   printf("%e %e %e\n", x[i], y[i], 1.0/Math::sqrt(w[i]))
+#end
+
+c0, c1, cov00, cov01, cov11, chisq = wlinear(x, w, y)
+
+printf("# best fit: Y = %g + %g X\n", c0, c1);
+printf("# covariance matrix:\n");
+printf("# [ %g, %g\n#   %g, %g]\n", 
+        cov00, cov01, cov01, cov11);
+printf("# chisq = %g\n", chisq);</pre>
+<h3><a name="5.2" href="#5.2">5.2</a> <a name="label-25">Exponential fitting</a></h3><!-- RDLabel: "Exponential fitting" -->
+
+<pre>#!/usr/bin/env ruby
+require("gsl")
+
+# Create data
+r = Rng.alloc("knuthran")
+a = 2.0
+b = -1.0
+sigma = 0.01
+N = 10
+x = Vector.linspace(0, 5, N)
+y = a*Sf::exp(b*x) + sigma*r.gaussian
+
+# Fitting
+a2, b2, = Fit.linear(x, Sf::log(y))
+x2 = Vector.linspace(0, 5, 20)
+A = Sf::exp(a2)
+printf("Expect: a = %f, b = %f\n", a, b)
+printf("Result: a = %f, b = %f\n", A, b2)
+graph([x, y], [x2, A*Sf::exp(b2*x2)], "-C -g 3 -S 4")</pre>
+<h3><a name="5.3" href="#5.3">5.3</a> <a name="label-13">Multi-parameter fitting</a></h3><!-- RDLabel: "Multi-parameter fitting" -->
+
+<pre>#!/usr/bin/env ruby
+require("gsl")
+include GSL::MultiFit
+
+Rng.env_setup()
+
+r = GSL::Rng.alloc(Rng::DEFAULT)
+n = 19
+dim = 3
+X = Matrix.alloc(n, dim)
+y = Vector.alloc(n)
+w = Vector.alloc(n)
+
+a = 0.1
+for i in 0...n
+  y0 = Math::exp(a)
+  sigma = 0.1*y0
+  val = r.gaussian(sigma)
+  X.set(i, 0, 1.0)
+  X.set(i, 1, a)
+  X.set(i, 2, a*a)
+  y[i] = y0 + val
+  w[i] = 1.0/(sigma*sigma)
+  #printf("%g %g %g\n", a, y[i], sigma)
+  a += 0.1
+end
+
+c, cov, chisq, status = MultiFit.wlinear(X, w, y)</pre>
+<p><a href="multimin.html">prev</a>
+<a href="nonlinearfit.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

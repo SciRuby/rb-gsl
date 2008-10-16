@@ -1,0 +1,387 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Numerical Integration</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Numerical Integration</a></h1><!-- RDLabel: "Numerical Integration" -->
+
+<p>Contents:</p>
+<ol>
+<li><a href="integration.html#1">Introduction</a></li>
+<li><a href="integration.html#2">QNG non-adaptive Gauss-Kronrod integration</a></li>
+<li><a href="integration.html#3">QAG adaptive integration</a>
+<ol>
+<li><a href="integration.html#3.1">GSL::Integration::Workspace class</a></li>
+<li><a href="integration.html#3.2">Methods</a></li>
+</ol></li>
+<li><a href="integration.html#4">QAGS adaptive integration with singularities</a></li>
+<li><a href="integration.html#5">QAGP adaptive integration with known singular points</a></li>
+<li><a href="integration.html#6">QAGI adaptive integration on infinite intervals</a></li>
+<li><a href="integration.html#7">QAWC adaptive integration for Cauchy principal values</a></li>
+<li><a href="integration.html#8">QAWS adaptive integration for singular functions</a></li>
+<li><a href="integration.html#9">QAWO adaptive integration for oscillatory functions</a></li>
+<li><a href="integration.html#10">QAWF adaptive integration for Fourier integrals</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Introduction</a></h2><!-- RDLabel: "Introduction" -->
+
+<p>This section describes how to compute numerical integration of a function 
+in one dimension. In Ruby/GSL, all the GSL routines for numerical integration 
+is provided as methods of <a href="function.html">GSL::Function</a> objects.
+For example, a <code>GSL::Function</code> object which represents the sine function 
+<var>sin(x)</var> can be expressed as</p>
+<pre>f = GSL::Function.alloc { |x| sin(x) }</pre>
+<p>To compute numerical integration of <var>sin(x)</var> over the range <var>(a, b)</var>, 
+one can use the methods <var>integrate_xxx</var> or simply <var>xxx</var>, as</p>
+<ul>
+<li><code>f.integrate_xxx([a, b])</code>, or <code>f.xxx([a, b])</code></li>
+<li><code>f.integrate_xxx(a, b)</code>, or <code>f.xxx(a, b)</code></li>
+</ul>
+<h2><a name="2" href="#2">2</a> <a name="label-2">QNG non-adaptive Gauss-Kronrod integration</a></h2><!-- RDLabel: "QNG non-adaptive Gauss-Kronrod integration" -->
+
+<dl>
+<dt><a name="label-3" id="label-3"><code>GSL::Function#integration_qng([<var>a</var>, <var>b</var>], [<var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>])</code></a></dt><!-- RDLabel: "GSL::Function#integration_qng" -->
+<dt><a name="label-4" id="label-4"><code>GSL::Function#qng(...)</code></a></dt><!-- RDLabel: "GSL::Function#qng" -->
+<dt><a name="label-5" id="label-5"><code>GSL::Integration::qng(...)</code></a></dt><!-- RDLabel: "GSL::Integration::qng" -->
+<dd>
+<p>These methods apply the Gauss-Kronrod integration rules in succession until 
+an estimate of the integral of the reciever function (a <code>GSL::Function</code> 
+object) over <var>(a,b)</var> is achieved within the desired absolute and relative 
+error limits, <var>epsabs</var> and <var>epsrel</var> (these are optional, the default
+values are 0,0 and 1e-10 respectively). These methods return an array of
+four elements <code>[result, err, neval, status]</code>, those are the final 
+approximation 
+of the integration, an estimate of the absolute error, the number of function 
+evaluation, and the status which is returned by the GSL 
+<code>integration_qng()</code> function.</p>
+<ul>
+<li><p>Ex: Integrate sin(x) over <var>x = 0 -- 2</var> with accuracies <var>epsabs = 0, epsrel = 1.0e-7</var>.</p>
+<pre>require 'gsl'
+
+f = GSL::Function.alloc { |x| sin(x) }
+ans = f.integration_qng([0, 2], [0, 1.0e-7])   # or shortly f.qng(...)
+p ans[0]   &lt;- result</pre></li>
+</ul>
+<p>For all the methods described in this section, the arguments <var>[epsabs, epsrel]</var> are optional, and the default values are <var>[epsabs = 0.0, epsrel = 1e-10]</var>.</p></dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-6">QAG adaptive integration</a></h2><!-- RDLabel: "QAG adaptive integration" -->
+
+<p>The QAG algorithm is a simple adaptive integration procedure. 
+The integration region is divided into subintervals, and on each iteration 
+the subinterval with the largest estimated error is bisected. 
+This reduces the overall error rapidly, as the subintervals become concentrated
+around local difficulties in the integrand. These subintervals are managed by 
+a GSL::Integration::Workspace object, which handles the memory for the 
+subinterval ranges, results and error estimates.</p>
+<h3><a name="3.1" href="#3.1">3.1</a> <a name="label-7">GSL::Integration::Workspace class</a></h3><!-- RDLabel: "GSL::Integration::Workspace class" -->
+
+<dl>
+<dt><a name="label-8" id="label-8"><code>GSL::Integration::Workspace.alloc(<var>n</var> = <var>1000</var>)</code></a></dt><!-- RDLabel: "GSL::Integration::Workspace.alloc" -->
+<dd>
+This creates a workspace sufficient to hold n double precision intervals, 
+their integration results and error estimates.</dd>
+<dt><a name="label-9" id="label-9"><code>GSL::Integration::Workspace#limit</code></a></dt><!-- RDLabel: "GSL::Integration::Workspace#limit" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Integration::Workspace#size</code></a></dt><!-- RDLabel: "GSL::Integration::Workspace#size" -->
+</dl>
+<h4><a name="3.1.1" href="#3.1.1">3.1.1</a> <a name="label-11">Algorithms which require the workspace</a></h4><!-- RDLabel: "Algorithms which require the workspace" -->
+
+<p>The algorithms described below require <code>gsl_integration_workspace</code> struct
+in C. In Ruby/GSL, the corresponding methods require 
+a <code>GSL::Integration::Workspace</code> object in their arguments. But it is also
+possible to use these methods without workspace arguments: if it 
+is not given, a workspace is created/destroyed internally. Thus
+method calls are as</p>
+<pre>f = GSL::Function.alloc { |x| Math::sin(x)/x }
+p f.qag([a, b])</pre>
+<p>or</p>
+<pre>w = GSL::Integration::Workspace.alloc(limit)
+p f.qag([a, b], w)</pre>
+<p>Explicit uses of a <code>Workspace</code> object reduce C function calls for memory 
+allocations of workspace objects. </p>
+<h3><a name="3.2" href="#3.2">3.2</a> <a name="label-12">Methods</a></h3><!-- RDLabel: "Methods" -->
+
+<dl>
+<dt><a name="label-13" id="label-13"><code>GSL::Function#integration_qag([<var>a</var>, <var>b</var>], <var>key</var> = <var>GSL</var>::<var>Integration</var>::<var>GAUSS61</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qag" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Function#integration_qag([<var>a</var>, <var>b</var>], <var>key</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qag" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Function#integration_qag([<var>a</var>, <var>b</var>], <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qag" -->
+<dt><a name="label-16" id="label-16"><code>GSL::Function#integration_qag([<var>a</var>, <var>b</var>], [<var>epsabs</var>, <var>epsrel</var>], <var>key</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qag" -->
+<dt><a name="label-17" id="label-17"><code>GSL::Function#integration_qag([<var>a</var>, <var>b</var>], [<var>epsabs</var>, <var>epsrel</var>], <var>key</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qag" -->
+<dt><a name="label-18" id="label-18"><code>GSL::Function#qag(...)</code></a></dt><!-- RDLabel: "GSL::Function#qag" -->
+<dt><a name="label-19" id="label-19"><code>GSL::Integration::qag(...)</code></a></dt><!-- RDLabel: "GSL::Integration::qag" -->
+<dd>
+<p>These methods apply an integration rule adaptively until an estimate of the 
+integral of the reciever function over <var>(a,b)</var> is achieved within the 
+desired absolute and relative error limits, <var>epsabs</var> and <var>epsrel</var>.
+One can give a <code>GSL::Integration::Workspace</code> object <var>w</var> with the
+last argument (option: if not given, the workspace is internally allocated and
+freed). The method returns an array with four elements 
+<code>[result, err, neval, status]</code>. 
+The integration rule is determined by the value of key, which should be 
+chosen from the following symbolic names, </p>
+<pre>GSL::Integration::GAUSS15  (key = 1)
+GSL::Integration::GAUSS21  (key = 2)
+GSL::Integration::GAUSS31  (key = 3)
+GSL::Integration::GAUSS41  (key = 4)
+GSL::Integration::GAUSS51  (key = 5)
+GSL::Integration::GAUSS61  (key = 6)</pre>
+<p>corresponding to the 15, 21, 31, 41, 51 and 61 point Gauss-Kronrod rules. The 
+higher-order rules give better accuracy for smooth functions, 
+while lower-order rules save time when the function contains local 
+difficulties, such as discontinuities. </p></dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-20">QAGS adaptive integration with singularities</a></h2><!-- RDLabel: "QAGS adaptive integration with singularities" -->
+
+<p>The presence of an integrable singularity in the integration region causes 
+an adaptive routine to concentrate new subintervals around the singularity. 
+As the subintervals decrease in size the successive approximations to the 
+integral converge in a limiting fashion. This approach to the limit can be 
+accelerated using an extrapolation procedure. 
+The QAGS algorithm combines adaptive bisection with the Wynn epsilon-algorithm 
+to speed up the integration of many types of integrable singularities.</p>
+<dl>
+<dt><a name="label-21" id="label-21"><code>GSL::Function#integration_qags([<var>a</var>, <var>b</var>], [<var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>], <var>limit</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qags" -->
+<dt><a name="label-22" id="label-22"><code>GSL::Function#integration_qags([<var>a</var>, <var>b</var>], [<var>epsabs</var>, <var>epsrel</var>], <var>limit</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qags" -->
+<dt><a name="label-23" id="label-23"><code>GSL::Function#integration_qags([<var>a</var>, <var>b</var>], [<var>epsabs</var>, <var>epsrel</var>], <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qags" -->
+<dt><a name="label-24" id="label-24"><code>GSL::Function#qags(...)</code></a></dt><!-- RDLabel: "GSL::Function#qags" -->
+<dt><a name="label-25" id="label-25"><code>GSL::Integration::qags(...)</code></a></dt><!-- RDLabel: "GSL::Integration::qags" -->
+<dd>
+These methods apply the Gauss-Kronrod 21-point integration rule 
+adaptively until an estimate of the integral over <var>(a,b)</var> is 
+achieved within the desired absolute and relative error limits, 
+<var>epsabs</var> and <var>epsrel</var>. The results are extrapolated using the 
+epsilon-algorithm, which accelerates the convergence of the integral 
+in the presence of discontinuities and integrable singularities. 
+The maximum number of subintervals is given by <var>limit</var>.
+<ul>
+<li><p>ex:</p>
+<pre>proc = Proc.new{ |x, alpha|     # integrant
+  log(alpha*x)/sqrt(x)
+}
+
+# create the function, with the parameter alpha = 1.0
+f = GSL::Function.alloc(proc, 1.0) 
+
+p f.integration_qags(0, 1)</pre></li>
+</ul></dd>
+</dl>
+<h2><a name="5" href="#5">5</a> <a name="label-26">QAGP adaptive integration with known singular points</a></h2><!-- RDLabel: "QAGP adaptive integration with known singular points" -->
+
+<dl>
+<dt><a name="label-27" id="label-27"><code>GSL::Function#integration_qagp(<var>pts</var>, [<var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>], <var>limit</var> = <var>1000</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qagp" -->
+<dt><a name="label-28" id="label-28"><code>GSL::Function#qagp(...)</code></a></dt><!-- RDLabel: "GSL::Function#qagp" -->
+<dt><a name="label-29" id="label-29"><code>GSL::Integration::qagp(...)</code></a></dt><!-- RDLabel: "GSL::Integration::qagp" -->
+<dd>
+<p>These methods apply the adaptive integration algorithm QAGS taking 
+account of the user-supplied locations of singular points. The array 
+<var>pts</var> (a Ruby array or a GSL::Vector object) should contain the 
+endpoints of the integration ranges defined by the integration region a
+nd locations of the singularities. For example, to integrate over the 
+region <var>(a,b)</var> with break-points at x_1, x_2, x_3 
+(where a &lt; x_1 &lt; x_2 &lt; x_3 &lt; b) the following <var>pts</var> array should be used</p>
+<pre>pts[0] = a
+pts[1] = x_1
+pts[2] = x_2
+pts[3] = x_3
+pts[4] = b</pre>
+<p>If you know the locations of the singular points in the integration region then this routine will be faster than QAGS.</p>
+<ul>
+<li><p>ex:</p>
+<pre>f454 = Function.alloc{ |x|
+  x2 = x*x
+  x3 = x2*x
+  x3*log(((x2-1)*(x2-2)).abs)
+}
+pts = [0, 1, sqrt(2), 3]     # range: [0, 3], singular points: [1, sqrt(2)]
+p f454.qagp(pts, 0.0, 1e-3)  # &lt;---- [52.7408061167272, 0.000175570384826074, 20, 0]
+                             # Expect: 61 log(2) + (77/4) log(7) - 27 = 52.7408061167272</pre></li>
+</ul></dd>
+</dl>
+<h2><a name="6" href="#6">6</a> <a name="label-30">QAGI adaptive integration on infinite intervals</a></h2><!-- RDLabel: "QAGI adaptive integration on infinite intervals" -->
+
+<dl>
+<dt><a name="label-31" id="label-31"><code>GSL::Function#integration_qagi([<var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>], <var>limit</var> = <var>1000</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qagi" -->
+<dt><a name="label-32" id="label-32"><code>GSL::Function#qagi(...)</code></a></dt><!-- RDLabel: "GSL::Function#qagi" -->
+<dt><a name="label-33" id="label-33"><code>GSL::Integration::qagi(...)</code></a></dt><!-- RDLabel: "GSL::Integration::qagi" -->
+<dd>
+These methods compute the integral of the function over the infinite 
+interval (-infty,+infty). The integral is mapped onto the interval
+(0,1] using the transformation x = (1-t)/t. It is then integrated using 
+the QAGS algorithm. The normal 21-point Gauss-Kronrod rule of QAGS is 
+replaced by a 15-point rule, because the transformation can generate an 
+integrable singularity at the origin. In this case a lower-order rule is 
+more efficient.
+<ul>
+<li><p>ex</p>
+<pre>f = Function.alloc{ |x| Math::exp(-x*x) }
+exact = Math::sqrt(Math::PI)
+
+result, = f.qagi
+puts("exp(-x*x), x = -infty --- +infty")
+printf("exact  = %.18f\n", exact)
+printf("result = %.18f\n\n", result)</pre></li>
+</ul></dd>
+<dt><a name="label-34" id="label-34"><code>GSL::Function#integration_qagiu(<var>a</var>, <var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>, <var>limit</var> = <var>1000</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qagiu" -->
+<dt><a name="label-35" id="label-35"><code>GSL::Function#integration_qagiu(<var>a</var>, <var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qagiu" -->
+<dt><a name="label-36" id="label-36"><code>GSL::Function#qagiu(...)</code></a></dt><!-- RDLabel: "GSL::Function#qagiu" -->
+<dt><a name="label-37" id="label-37"><code>GSL::Integration::qagiu(...)</code></a></dt><!-- RDLabel: "GSL::Integration::qagiu" -->
+<dd>
+These methods compute the integral of the function over the 
+semi-infinite interval (a,+infty).</dd>
+<dt><a name="label-38" id="label-38"><code>GSL::Function#integration_qagil(<var>b</var>, <var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>, <var>limit</var> = <var>1000</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qagil" -->
+<dt><a name="label-39" id="label-39"><code>GSL::Function#integration_qagil(<var>b</var>, <var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qagil" -->
+<dt><a name="label-40" id="label-40"><code>GSL::Function#integration_qagil(<var>b</var>, [<var>epsabs</var>, <var>epsrel</var>], <var>limit</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qagil" -->
+<dt><a name="label-41" id="label-41"><code>GSL::Function#qagil(...)</code></a></dt><!-- RDLabel: "GSL::Function#qagil" -->
+<dt><a name="label-42" id="label-42"><code>GSL::Integration::qagil(...)</code></a></dt><!-- RDLabel: "GSL::Integration::qagil" -->
+<dd>
+These methods compute the integral of the function over the 
+semi-infinite interval (-infty,b).</dd>
+</dl>
+<h2><a name="7" href="#7">7</a> <a name="label-43">QAWC adaptive integration for Cauchy principal values</a></h2><!-- RDLabel: "QAWC adaptive integration for Cauchy principal values" -->
+
+<dl>
+<dt><a name="label-44" id="label-44"><code>GSL::Function#integration_qawc([<var>a</var>, <var>b</var>], <var>c</var>, [<var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>], <var>limit</var>. <var>1000</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qawc" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Function#qawc(...)</code></a></dt><!-- RDLabel: "GSL::Function#qawc" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Function#qawc(...)</code></a></dt><!-- RDLabel: "GSL::Function#qawc" -->
+<dd>
+These methods compute the Cauchy principal value of the integral over 
+<var>(a,b)</var>, with a singularity at <var>c</var>. The adaptive bisection algorithm 
+of QAG is used, with modifications to ensure that subdivisions do not occur 
+at the singular point <var>x = c</var>. When a subinterval contains the point 
+<var>x = c</var> or is close to it then a special 25-point modified 
+Clenshaw-Curtis rule is used to control the singularity. Further away from 
+the singularity the algorithm uses an ordinary 15-point Gauss-Kronrod 
+integration rule.
+<ul>
+<li><p>ex:</p>
+<pre>require 'gsl'
+f459 = Function.alloc { |x| 1.0/(5.0*x*x*x + 6.0) }
+
+p f459.qawc([-1.0, 5.0], 0, [0.0, 1e-3]) # Expect: log(125/631)/18</pre></li>
+</ul></dd>
+</dl>
+<h2><a name="8" href="#8">8</a> <a name="label-47">QAWS adaptive integration for singular functions</a></h2><!-- RDLabel: "QAWS adaptive integration for singular functions" -->
+
+<p>The QAWS algorithm is designed for integrands with algebraic-logarithmic 
+singularities at the end-points of an integration region. 
+In order to work efficiently the algorithm requires a precomputed 
+table of Chebyshev moments.</p>
+<dl>
+<dt><a name="label-48" id="label-48"><code>GSL::Function#integration_qaws([<var>a</var>, <var>b</var>], <var>table</var>, [<var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>], <var>limit</var> = <var>1000</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qaws" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Function#integration_qaws(<var>a</var>, <var>b</var>, <var>table</var>, <var>epsabs</var>, <var>epsrel</var>, <var>limit</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qaws" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Function#qaws(...)</code></a></dt><!-- RDLabel: "GSL::Function#qaws" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Integration::qaws(...)</code></a></dt><!-- RDLabel: "GSL::Integration::qaws" -->
+<dd>
+<p>These methods compute the integral of the function over the interval 
+<var>(a,b)</var> with the singular weight function </p>
+<pre>(x-a)^alpha (b-x)^beta log^mu (x-a) log^nu (b-x)</pre>
+<p>The parameters <code>[alpha, beta, mu, nu]</code> is given by a Ruby array
+<var>table</var>, or by a <code>GSL::Integration::QAWS_Table</code> object.</p>
+<p>The adaptive bisection algorithm of QAG is used. When a subinterval contains one of the endpoints then a special 25-point modified Clenshaw-Curtis rule is used to control the singularities. For subintervals which do not include the endpoints an ordinary 15-point Gauss-Kronrod integration rule is used.</p>
+<ul>
+<li><p>ex1:</p>
+<pre>f458 = Function.alloc { |x|
+  if x.zero?
+    val = 0.0
+  else
+    u = log(x)
+    v = 1.0 + u*u
+    val = 1.0/(v*v)
+  end
+  val
+}
+table = [0.0, 0.0, 1, 0]
+p f458.qaws([0.0, 1.0], table, [0.0, 1e-10])  # Expect: -0.1892752</pre></li>
+<li><p>ex2:</p>
+<pre>table = Integration::QAWS_Table.alloc(0.0, 0.0, 1, 0)
+p f458.qaws([0.0, 1.0], table, [0.0, 1e-10])</pre></li>
+</ul></dd>
+</dl>
+<h2><a name="9" href="#9">9</a> <a name="label-52">QAWO adaptive integration for oscillatory functions</a></h2><!-- RDLabel: "QAWO adaptive integration for oscillatory functions" -->
+
+<p>The QAWO algorithm is designed for integrands with an oscillatory factor, 
+sin(omega x) or cos(omega x). In order to work efficiently the algorithm 
+requires a table of Chebyshev moments.</p>
+<dl>
+<dt><a name="label-53" id="label-53"><code>GSL::Function#integration_qawo(<var>a</var>, [<var>epsabs</var> = <var>0</var>.<var>0</var>, <var>epsrel</var> = <var>1e</var>-<var>10</var>], <var>limit</var> = <var>1000</var>, <var>w</var>, <var>table</var>, )</code></a></dt><!-- RDLabel: "GSL::Function#integration_qawo" -->
+<dt><a name="label-54" id="label-54"><code>GSL::Function#qawo(...)</code></a></dt><!-- RDLabel: "GSL::Function#qawo" -->
+<dt><a name="label-55" id="label-55"><code>GSL::Integration::qawo(...)</code></a></dt><!-- RDLabel: "GSL::Integration::qawo" -->
+<dd>
+This method uses an adaptive algorithm to compute the integral over 
+<var>[a,b]</var> with the weight function sin(omega x) or cos(omega x) defined by
+the table <var>table</var>.
+<ul>
+<li><p>ex1:</p>
+<pre>require("gsl")
+f456 = Function.alloc { |x|
+  if x.zero?
+    val = 0.0
+  else
+    val = Math::log(x)
+  end
+  val
+}
+table = [10.0*Math::PI, 1.0, Integration::SINE, 1000]
+p f456.qawo(0.0, [0.0, 1e-10], table)</pre></li>
+<li><p>ex2:</p>
+<pre>table = Integration::QAWO_Table.alloc(10.0*Math::PI, 1.0, Integration::SINE, 1000)
+p f456.qawo(0.0, [0.0, 1e-10], table)</pre></li>
+</ul></dd>
+</dl>
+<h2><a name="10" href="#10">10</a> <a name="label-56">QAWF adaptive integration for Fourier integrals</a></h2><!-- RDLabel: "QAWF adaptive integration for Fourier integrals" -->
+
+<dl>
+<dt><a name="label-57" id="label-57"><code>GSL::Function#integration_qawf(<var>a</var>, <var>epsabs</var> = <var>1e</var>-<var>10</var>, <var>limit</var> = <var>1000</var>, <var>w</var>, <var>wc</var>, <var>table</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qawf" -->
+<dt><a name="label-58" id="label-58"><code>GSL::Function#integration_qawf(<var>a</var>, <var>epsabs</var> = <var>1e</var>-<var>10</var>, <var>limit</var> = <var>1000</var>, <var>table</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qawf" -->
+<dt><a name="label-59" id="label-59"><code>GSL::Function#integration_qawf(<var>a</var>, <var>epsabs</var> = <var>1e</var>-<var>10</var>, <var>table</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qawf" -->
+<dt><a name="label-60" id="label-60"><code>GSL::Function#integration_qawf(<var>a</var>, <var>table</var> = <var>1000</var>, <var>table</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qawf" -->
+<dt><a name="label-61" id="label-61"><code>GSL::Function#integration_qawf(<var>a</var>, <var>table</var>)</code></a></dt><!-- RDLabel: "GSL::Function#integration_qawf" -->
+<dt><a name="label-62" id="label-62"><code>GSL::Function#qawf(...)</code></a></dt><!-- RDLabel: "GSL::Function#qawf" -->
+<dt><a name="label-63" id="label-63"><code>GSL::Integration::qawf(...)</code></a></dt><!-- RDLabel: "GSL::Integration::qawf" -->
+<dd>
+<p>This method attempts to compute a Fourier integral of the function over 
+the semi-infinite interval [a,+infty).</p>
+<pre>I = \int_a^{+infty} dx f(x) sin(omega x)
+I = \int_a^{+infty} dx f(x) cos(omega x)</pre>
+<p>The parameter omega is taken from the table <var>table</var> (the length <var>L|</var> 
+can take any value, since it is overridden by this function to a value 
+appropriate for the fourier integration).</p>
+<ul>
+<li><p>ex:</p>
+<pre>f457 = Function.alloc { |x|
+  if x.zero?
+    val = 0.0
+  else
+    val = 1.0/Math::sqrt(x)
+  end
+  val
+}
+table = [PI/2.0, 1.0, GSL::Integration::COSINE, 1000]
+p f457.qawf(0.0, 1e-10, table)     #  0.999999999927979, Expect 1</pre></li>
+</ul>
+<p>In other style:</p>
+<pre>limit = 1000
+table = Integration::QAWO_Table.alloc(PI/2.0, 1.0, GSL::Integration::COSINE, 1000)
+w = Integration::Workspace.alloc          # default n is 1000
+wc = Integration::Workspace.alloc(limit)
+
+p f457.qawf(0.0, table)
+p f457.qawf(0.0, 1e-10, table)
+p f457.qawf(0.0, 1e-10, limit, table)
+p f457.qawf(0.0, limit, table)
+p f457.qawf(0.0, 1e-10, limit, w, wc, table)
+p f457.qawf(0.0, w, wc, table)
+p f457.qawf(0.0, limit, w, wc, table)
+p f457.qawf(0.0, limit, w, table)       # Error
+p f457.qawf(0.0, limit, wc, table)      # Error</pre></dd>
+</dl>
+<p><a href="wavelet.html">prev</a>
+<a href="rng.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

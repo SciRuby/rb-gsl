@@ -1,0 +1,304 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Polynomials</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Polynomials</a></h1><!-- RDLabel: "Polynomials" -->
+
+<p>Contents:</p>
+<ol>
+<li><a href="poly.html#1">Polynomial Evaluation</a></li>
+<li><a href="poly.html#2">Solving polynomial equations</a>
+<ol>
+<li><a href="poly.html#2.1">Quadratic Equations</a></li>
+<li><a href="poly.html#2.2">Cubic Equations</a></li>
+<li><a href="poly.html#2.3">General Polynomial Equations</a></li>
+</ol></li>
+<li><a href="poly.html#3">GSL::Poly Class</a>
+<ol>
+<li><a href="poly.html#3.1">Constructors</a></li>
+<li><a href="poly.html#3.2">Methods</a></li>
+</ol></li>
+<li><a href="poly.html#4">Polynomial Fitting</a></li>
+<li><a href="poly.html#5">Divided-difference representations</a></li>
+<li><a href="poly.html#6">Extensions</a>
+<ol>
+<li><a href="poly.html#6.1">Special Polynomials</a></li>
+<li><a href="poly.html#6.2">Polynomial Operations</a></li>
+</ol></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Polynomial Evaluation</a></h2><!-- RDLabel: "Polynomial Evaluation" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Poly.eval(<var>c</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.eval" -->
+<dd>
+<p>Evaluates the polynomial <var>c[0] + c[1]x + c[2]x^2 + ...</var>. 
+The polynomial coefficients <var>c</var> can be an <code>Array</code>, 
+a <code>GSL::Vector</code>, or an <code>NArray</code>. The evaluation point <var>x</var>
+is a <code>Numeric</code>, <code>Array</code>, <code>GSL::Vector</code> or <code>NArray</code>.</p>
+<p>Ex)</p>
+<pre>irb(main):001:0&gt; require("rbgsl")
+=&gt; true
+irb(main):002:0&gt; GSL::Poly.eval([1, 2, 3], 2)
+=&gt; 17.0
+irb(main):003:0&gt; GSL::Poly.eval(GSL::Vector[1, 2, 3], 2)
+=&gt; 17.0
+irb(main):004:0&gt; GSL::Poly.eval(NArray[1.0, 2, 3], 2)
+=&gt; 17.0
+irb(main):005:0&gt; GSL::Poly.eval([1, 2, 3], [1, 2, 3])
+=&gt; [6.0, 17.0, 34.0]
+irb(main):006:0&gt; GSL::Poly.eval([1, 2, 3], GSL::Vector[1, 2, 3])
+=&gt; GSL::Vector
+[ 6.000e+00 1.700e+01 3.400e+01 ]
+irb(main):007:0&gt; GSL::Poly.eval([1, 2, 3], NArray[1.0, 2, 3])
+=&gt; NArray.float(3):
+[ 6.0, 17.0, 34.0 ]</pre></dd>
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-3">Solving polynomial equations</a></h2><!-- RDLabel: "Solving polynomial equations" -->
+
+<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-4">Quadratic Equations</a></h3><!-- RDLabel: "Quadratic Equations" -->
+
+<dl>
+<dt><a name="label-5" id="label-5"><code>GSL::Poly::solve_quadratic(<var>a</var>, <var>b</var>, <var>c</var>)</code></a></dt><!-- RDLabel: "GSL::Poly::solve_quadratic" -->
+<dt><a name="label-6" id="label-6"><code>GSL::Poly::solve_quadratic([<var>a</var>, <var>b</var>, <var>c</var>])</code></a></dt><!-- RDLabel: "GSL::Poly::solve_quadratic" -->
+<dd>
+<p>Find the real roots of the quadratic equation,</p>
+<pre>a x^2 + b x + c = 0</pre>
+<p>The coefficients are given by 3 numbers, or a Ruby array, 
+or a <code>GSL::Vector</code> object. The roots are returned as a <code>GSL::Vector</code>.</p>
+<ul>
+<li><p>Ex: z^2 - 3z + 2 = 0</p>
+<pre>irb(main):006:0&gt; GSL::Poly::solve_quadratic(1, -3, 2)
+=&gt; GSL::Vector: 
+[ 1.000e+00 2.000e+00 ]</pre></li>
+</ul></dd>
+<dt><a name="label-7" id="label-7"><code>GSL::Poly::complex_solve_quadratic(<var>a</var>, <var>b</var>, <var>c</var>)</code></a></dt><!-- RDLabel: "GSL::Poly::complex_solve_quadratic" -->
+<dt><a name="label-8" id="label-8"><code>GSL::Poly::complex_solve_quadratic([<var>a</var>, <var>b</var>, <var>c</var>])</code></a></dt><!-- RDLabel: "GSL::Poly::complex_solve_quadratic" -->
+<dd>
+<p>Find the complex roots of the quadratic equation,</p>
+<pre>a z^2 + b z + z = 0</pre>
+<p>The coefficients are given by 3 numbers or a Ruby array, or a 
+<code>GSL::Vector</code>.
+The roots are returned as a <code>GSL::Vector::Complex</code> of two elements.</p>
+<ul>
+<li><p>Ex: z^2 - 3z + 2 = 0</p>
+<pre>irb(main):001:0&gt; require("gsl")
+=&gt; true
+irb(main):002:0&gt; GSL::Poly::complex_solve_quadratic(1, -3, 2)
+[ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] ]   
+=&gt; #&lt;GSL::Vector::Complex:0x764014&gt;
+irb(main):003:0&gt; GSL::Poly::complex_solve_quadratic(1, -3, 2).real  &lt;--- Real part
+=&gt; GSL::Vector::View: 
+[ 1.000e+00 2.000e+00 ]</pre></li>
+</ul></dd>
+</dl>
+<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-9">Cubic Equations</a></h3><!-- RDLabel: "Cubic Equations" -->
+
+<dl>
+<dt><a name="label-10" id="label-10"><code>GSL::Poly::solve_cubic(<var>same</var> <var>as</var> <var>solve_quadratic</var>)</code></a></dt><!-- RDLabel: "GSL::Poly::solve_cubic" -->
+<dd>
+<p>This method finds the real roots of the cubic equation,</p>
+<pre>x^3 + a x^2 + b x + c = 0</pre></dd>
+<dt><a name="label-11" id="label-11"><code>GSL::Poly::complex_solve_cubic(<var>same</var> <var>as</var> <var>solve_cubic</var>)</code></a></dt><!-- RDLabel: "GSL::Poly::complex_solve_cubic" -->
+<dd>
+<p>This method finds the complex roots of the cubic equation,</p>
+<pre>z^3 + a z^2 + b z + c = 0</pre></dd>
+</dl>
+<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-12">General Polynomial Equations</a></h3><!-- RDLabel: "General Polynomial Equations" -->
+
+<dl>
+<dt><a name="label-13" id="label-13"><code>GSL::Poly::complex_solve(<var>c0</var>, <var>c1</var>, <var>c2</var>,,, )</code></a></dt><!-- RDLabel: "GSL::Poly::complex_solve" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Poly::solve(<var>c0</var>, <var>c1</var>, <var>c2</var>,,, )</code></a></dt><!-- RDLabel: "GSL::Poly::solve" -->
+<dd>
+Find the complex roots of the polynomial equation. Note that 
+the coefficients are given by "ascending" order.
+<ul>
+<li><p>Ex: x^2 - 3 x + 2 == 0 </p>
+<pre>irb(main):004:0&gt; GSL::Poly::complex_solve(2, -3, 1)    &lt;--- different from Poly::quadratic_solve
+[ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] ]
+=&gt; #&lt;GSL::Vector::Complex:0x75e614&gt;</pre></li>
+</ul></dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-15">GSL::Poly Class</a></h2><!-- RDLabel: "GSL::Poly Class" -->
+
+<p>This class expresses polynomials of arbitrary orders.</p>
+<h3><a name="3.1" href="#3.1">3.1</a> <a name="label-16">Constructors</a></h3><!-- RDLabel: "Constructors" -->
+
+<dl>
+<dt><a name="label-17" id="label-17"><code>GSL::Poly.alloc(<var>c0</var>, <var>c1</var>, <var>c2</var>, ....)</code></a></dt><!-- RDLabel: "GSL::Poly.alloc" -->
+<dt><a name="label-18" id="label-18"><code>GSL::Poly[c0, <var>c1</var>, <var>c2</var>, ....]</code></a></dt><!-- RDLabel: "GSL::Poly[c0, c1, c2, ....]" -->
+<dd>
+<p>This creates an instance of the <code>GSL::Poly</code> class, 
+which represents a polynomial</p>
+<pre>c0 + c1 x + c2 x^2 + ....</pre>
+<p>This class is derived from <code>GSL::Vector</code>.</p>
+<ul>
+<li><p>Ex: x^2 - 3 x + 2</p>
+<pre>poly = GSL::Poly.alloc([2, -3, 1])</pre></li>
+</ul></dd>
+</dl>
+<h3><a name="3.2" href="#3.2">3.2</a> <a name="label-19">Instance Methods</a></h3><!-- RDLabel: "Instance Methods" -->
+
+<dl>
+<dt><a name="label-20" id="label-20"><code>GSL::Poly#eval(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Poly#eval" -->
+<dt><a name="label-21" id="label-21"><code>GSL::Poly#at(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Poly#at" -->
+<dd>
+Evaluates the polynomial 
+c[0] + c[1] x + c[2] x^2 + ... + c[len-1] x^{len-1} 
+using Horner's method for stability. The argument <var>x</var> is a
+<code>Numeric</code>, <code>GSL::Vector, Matrix</code> or an <code>Array</code>.</dd>
+<dt><a name="label-22" id="label-22"><code>GSL::Poly#solve_quadratic</code></a></dt><!-- RDLabel: "GSL::Poly#solve_quadratic" -->
+<dd>
+Solve the quadratic equation.
+<ul>
+<li><p>Ex:  z^2 - 3 z + 2 = 0:</p>
+<pre>irb(main):004:0&gt; a = GSL::Poly[2, -3, 1]
+=&gt; GSL::Poly: 
+[ 2.000e+00 -3.000e+00 1.000e+00 ]
+irb(main):005:0&gt; a.solve_quadratic
+=&gt; GSL::Vector: 
+[ 1.000e+00 2.000e+00 ]</pre></li>
+</ul></dd>
+<dt><a name="label-23" id="label-23"><code>GSL::Poly#solve_cubic</code></a></dt><!-- RDLabel: "GSL::Poly#solve_cubic" -->
+<dd>
+Solve the cubic equation.</dd>
+<dt><a name="label-24" id="label-24"><code>GSL::Poly#complex_solve</code></a></dt><!-- RDLabel: "GSL::Poly#complex_solve" -->
+<dt><a name="label-25" id="label-25"><code>GSL::Poly#solve</code></a></dt><!-- RDLabel: "GSL::Poly#solve" -->
+<dt><a name="label-26" id="label-26"><code>GSL::Poly#roots</code></a></dt><!-- RDLabel: "GSL::Poly#roots" -->
+<dd>
+<p>These methods find the complex roots of the quadratic equation,</p>
+<pre>c0 + c1 z + c2 z^2 + .... = 0</pre>
+<ul>
+<li><p>Ex: z^2 - 3 z + 2 = 0:</p>
+<pre>irb(main):009:0&gt; a = GSL::Poly[2, -3, 1]
+=&gt; GSL::Poly: 
+[ 2.000e+00 -3.000e+00 1.000e+00 ]
+irb(main):010:0&gt; a.solve
+[ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] ]
+=&gt; #&lt;GSL::Vector::Complex:0x35db28&gt;</pre></li>
+</ul></dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-27">Polynomial fitting</a></h2><!-- RDLabel: "Polynomial fitting" -->
+
+<dl>
+<dt><a name="label-28" id="label-28"><code>GSL::Poly.fit(<var>x</var>, <var>y</var>, <var>order</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.fit" -->
+<dt><a name="label-29" id="label-29"><code>GSL::Poly.wfit(<var>x</var>, <var>w</var>, <var>y</var>, <var>order</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.wfit" -->
+<dd>
+<p>Finds the coefficient of a polynomial of order <var>order</var> 
+that fits the vector data (<var>x, y</var>) in a least-square sense.
+This provides a higher-level interface to the method
+<a href="fit.html">GSL::Multifit#linear</a> in a case of polynomial fitting.</p>
+<p>Example:</p>
+<pre>#!/usr/bin/env ruby
+require("rbgsl")
+
+x = GSL::Vector[1, 2, 3, 4, 5]
+y = GSL::Vector[5.5, 43.1, 128, 290.7, 498.4]
+# The results are stored in a polynomial "coef"
+coef, cov, chisq, status = Poly.fit(x, y, 3) 
+
+x2 = GSL::Vector.linspace(1, 5, 20)
+graph([x, y], [x2, coef.eval(x2)], "-C -g 3 -S 4")</pre></dd>
+</dl>
+<h2><a name="5" href="#5">5</a> <a name="label-30">Divided-difference representations</a></h2><!-- RDLabel: "Divided-difference representations" -->
+
+<dl>
+<dt><a name="label-31" id="label-31"><code>GSL::Poly::dd_init(<var>xa</var>, <var>ya</var>)</code></a></dt><!-- RDLabel: "GSL::Poly::dd_init" -->
+<dd>
+This method computes a divided-difference representation of the 
+interpolating polynomial for the points <var>(xa, ya)</var>.</dd>
+<dt><a name="label-32" id="label-32"><code>GSL::Poly::DividedDifference#eval(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Poly::DividedDifference#eval" -->
+<dd>
+This method evaluates the polynomial stored in divided-difference form 
+<var>self</var> at the point <var>x</var>.</dd>
+<dt><a name="label-33" id="label-33"><code>GSL::Poly::DividedDifference#taylor(<var>xp</var>)</code></a></dt><!-- RDLabel: "GSL::Poly::DividedDifference#taylor" -->
+<dd>
+This method converts the divided-difference representation of a polynomial 
+to a Taylor expansion. On output the Taylor coefficients of the polynomial 
+expanded about the point <var>xp</var> are returned.</dd>
+</dl>
+<h2><a name="6" href="#6">6</a> <a name="label-34">Extensions</a></h2><!-- RDLabel: "Extensions" -->
+
+<h3><a name="6.1" href="#6.1">6.1</a> <a name="label-35">Special Polynomials</a></h3><!-- RDLabel: "Special Polynomials" -->
+
+<dl>
+<dt><a name="label-36" id="label-36"><code>GSL::Poly.hermite(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.hermite" -->
+<dd>
+<p>This returns coefficients of the <var>n</var>-th order Hermite polynomial, <var>H(x; n)</var>.
+For order of <var>n</var> &gt;= 3, this method uses the recurrence relation</p>
+<pre>H(x; n+1) = 2 x H(x; n) - 2 n H(x; n-1)</pre>
+<ul>
+<li><p>Ex:</p>
+<pre>irb(main):013:0&gt; GSL::Poly.hermite(2)
+=&gt; GSL::Poly::Int: 
+[ -2 0 4 ]                            &lt;----- 4x^2 - 2
+irb(main):014:0&gt; GSL::Poly.hermite(5)
+=&gt; GSL::Poly::Int: 
+[ 0 120 0 -160 0 32 ]                 &lt;----- 32x^5 - 160x^3 + 120x
+irb(main):015:0&gt; GSL::Poly.hermite(7)
+=&gt; GSL::Poly::Int: 
+[ 0 -1680 0 3360 0 -1344 0 128 ]</pre></li>
+</ul></dd>
+<dt><a name="label-37" id="label-37"><code>GSL::Poly.cheb(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.cheb" -->
+<dt><a name="label-38" id="label-38"><code>GSL::Poly.chebyshev(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.chebyshev" -->
+<dd>
+<p>Return the coefficients of the <var>n</var>-th order Chebyshev polynomial, <var>T(x; n</var>.
+For order of <var>n</var> &gt;= 3, this method uses the recurrence relation</p>
+<pre>T(x; n+1) = 2 x T(x; n) - T(x; n-1)</pre></dd>
+<dt><a name="label-39" id="label-39"><code>GSL::Poly.cheb_II(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.cheb_II" -->
+<dt><a name="label-40" id="label-40"><code>GSL::Poly.chebyshev_II(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.chebyshev_II" -->
+<dd>
+<p>Return the coefficients of the <var>n</var>-th order Chebyshev polynomial of type II,
+<var>U(x; n</var>.</p>
+<pre>U(x; n+1) = 2 x U(x; n) - U(x; n-1)</pre></dd>
+<dt><a name="label-41" id="label-41"><code>GSL::Poly.bell(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.bell" -->
+<dd>
+Bell polynomial</dd>
+<dt><a name="label-42" id="label-42"><code>GSL::Poly.bessel(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.bessel" -->
+<dd>
+Bessel polynomial</dd>
+<dt><a name="label-43" id="label-43"><code>GSL::Poly.laguerre(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Poly.laguerre" -->
+<dd>
+<p>Retunrs the coefficients of the <var>n</var>-th order Laguerre polynomial
+multiplied by n!.</p>
+<p>Ex:</p>
+<pre>rb(main):001:0&gt; require("rbgsl")
+=&gt; true
+irb(main):002:0&gt; GSL::Poly.laguerre(0)
+=&gt; GSL::Poly::Int: 
+[ 1 ]                              &lt;--- 1
+irb(main):003:0&gt; GSL::Poly.laguerre(1)
+=&gt; GSL::Poly::Int: 
+[ 1 -1 ]                           &lt;--- -x + 1
+irb(main):004:0&gt; GSL::Poly.laguerre(2)
+=&gt; GSL::Poly::Int: 
+[ 2 -4 1 ]                         &lt;--- (x^2 - 4x + 2)/2!
+irb(main):005:0&gt; GSL::Poly.laguerre(3)
+=&gt; GSL::Poly::Int:                   
+[ 6 -18 9 -1 ]                     &lt;--- (-x^3 + 9x^2 - 18x + 6)/3!
+irb(main):006:0&gt; GSL::Poly.laguerre(4)
+=&gt; GSL::Poly::Int:  
+[ 24 -96 72 -16 1 ]                &lt;--- (x^4 - 16x^3 + 72x^2 - 96x + 24)/4!</pre></dd>
+</dl>
+<h3><a name="6.2" href="#6.2">6.2</a> <a name="label-44">Polynomial Operations</a></h3><!-- RDLabel: "Polynomial Operations" -->
+
+<dl>
+<dt><a name="label-45" id="label-45"><code>GSL::Poly#conv</code></a></dt><!-- RDLabel: "GSL::Poly#conv" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Poly#deconv</code></a></dt><!-- RDLabel: "GSL::Poly#deconv" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Poly#reduce</code></a></dt><!-- RDLabel: "GSL::Poly#reduce" -->
+<dt><a name="label-48" id="label-48"><code>GSL::Poly#deriv</code></a></dt><!-- RDLabel: "GSL::Poly#deriv" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Poly#integ</code></a></dt><!-- RDLabel: "GSL::Poly#integ" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Poly#compan</code></a></dt><!-- RDLabel: "GSL::Poly#compan" -->
+</dl>
+<p><a href="complex.html">prev</a>
+<a href="sf.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

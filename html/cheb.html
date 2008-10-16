@@ -1,0 +1,103 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Chebyshev Approximations</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Chebyshev Approximations</a></h1><!-- RDLabel: "Chebyshev Approximations" -->
+
+<p>This chapter describes routines for computing Chebyshev approximations to 
+univariate functions. A Chebyshev approximation is a truncation of the series 
+f(x) = \sum c_n T_n(x), 
+where the Chebyshev polynomials T_n(x) = \cos(n \arccos x) 
+provide an orthogonal basis of polynomials on the interval [-1,1] 
+with the weight function 1 / \sqrt{1-x^2}. 
+The first few Chebyshev polynomials are, 
+T_0(x) = 1, T_1(x) = x, T_2(x) = 2 x^2 - 1. 
+For further information see Abramowitz &amp; Stegun, Chapter 22. </p>
+<ol>
+<li><a href="cheb.html#1">GSL::Cheb class</a></li>
+<li><a href="cheb.html#2">Chebyshev Series Evaluation</a></li>
+<li><a href="cheb.html#3">Derivatives and Integrals</a></li>
+<li><a href="cheb.html#4">Examples</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1"><code>GSL::Cheb</code> class</a></h2><!-- RDLabel: "GSL::Cheb class" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Cheb.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Cheb.alloc" -->
+<dd>
+This create an instance of the GSL::Cheb class for a Chebyshev series of order n.</dd>
+<dt><a name="label-3" id="label-3"><code>GSL::Cheb#init(<var>f</var>, <var>a</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Cheb#init" -->
+<dd>
+This computes the Chebyshev approximation the function <var>f</var> over the range (<var>a,b</var>) to the previously specified order. Where <var>f</var> is a <a href="function.html">GSL::Function</a> object. The computation of the Chebyshev approximation is an O(n^2) process, and requires <var>n</var> function evaluations.
+<ul>
+<li><p>ex: Approximate a step function defined in (0, 1) by a Chebyshev series of order 40.</p>
+<pre>f = GSL::Function.alloc { |x|
+  if x &lt; 0.5
+    0.25
+  else
+    0.75
+  end
+}
+
+cs = GSL::Cheb.alloc(40)
+cs.init(f, 0, 1)</pre></li>
+</ul></dd>
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-4">Chebyshev Series Evaluation</a></h2><!-- RDLabel: "Chebyshev Series Evaluation" -->
+
+<dl>
+<dt><a name="label-5" id="label-5"><code>GSL::Cheb#eval(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Cheb#eval" -->
+<dd>
+This evaluates the Chebyshev series at a given point <var>x</var>.</dd>
+<dt><a name="label-6" id="label-6"><code>GSL::Cheb#eval_n(<var>n</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Cheb#eval_n" -->
+<dd>
+This evaluates the Chebyshev series at a given point <var>x</var>, to (at most) the given order <var>n</var>.</dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-7">Derivatives and Integrals</a></h2><!-- RDLabel: "Derivatives and Integrals" -->
+
+<dl>
+<dt><a name="label-8" id="label-8"><code>GSL::Cheb#calc_deriv()</code></a></dt><!-- RDLabel: "GSL::Cheb#calc_deriv" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Cheb#deriv()</code></a></dt><!-- RDLabel: "GSL::Cheb#deriv" -->
+<dd>
+This computes the derivative of the series, and returns a new GSL::Cheb object which contains the computed derivative. The reciever is not changed.</dd>
+<dt><a name="label-10" id="label-10"><code>GSL::Cheb#calc_integ()</code></a></dt><!-- RDLabel: "GSL::Cheb#calc_integ" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Cheb#integ()</code></a></dt><!-- RDLabel: "GSL::Cheb#integ" -->
+<dd>
+This computes the integral of the series, and returns a new GSL::Cheb object which contains the computed integral coefficients. The reciever is not changed.</dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-12">Example</a></h2><!-- RDLabel: "Example" -->
+
+<pre>#!/usr/bin/env ruby
+require("gsl")
+
+f = GSL::Function.alloc { |x|
+  if x &lt; 0.5
+    0.25
+  else
+    0.75
+  end
+}
+
+n = 1000
+order = 40
+cs = GSL::Cheb.alloc(order)
+cs.init(f, 0, 1)
+
+x = Vector.linspace(0, 1, n)
+ff = f.eval(x)
+r10 = cs.eval_n(10, x)
+r40 = cs.eval(x)
+GSL::graph(x, ff, r10, r40)</pre>
+<p>See also the example scripts in <code>examples/cheb/</code>.</p>
+<p><a href="diff.html">prev</a>
+<a href="sum.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

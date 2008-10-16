@@ -1,0 +1,86 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Quasi-Random Sequences</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Quasi-Random Sequences</a></h1><!-- RDLabel: "Quasi-Random Sequences" -->
+
+<p>This chapter describes the quasi-random sequence generator <code>GSL::QRng</code>
+of arbitrary dimensions. A quasi-random sequence progressively covers 
+a d-dimensional space with a set of points that are uniformly distributed. 
+Quasi-random sequences are also known as low-discrepancy sequences.
+The quasi-random sequence generators use an interface that is similar 
+to the interface for random number generators.</p>
+<p>Contents:</p>
+<ol>
+<li><a href="qrng.html#1">Quasi-random number generator initialization</a></li>
+<li><a href="qrng.html#2">Sampling from a quasi-random number generator</a></li>
+<li><a href="qrng.html#3">Auxiliary quasi-random number generator functions</a></li>
+<li><a href="qrng.html#4">Saving and resorting quasi-random number generator state</a></li>
+<li><a href="qrng.html#5">Quasi-random number generator algorithms</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Quasi-random number generator initialization</a></h2><!-- RDLabel: "Quasi-random number generator initialization" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::QRng.alloc(<var>T</var>, <var>d</var>)</code></a></dt><!-- RDLabel: "GSL::QRng.alloc" -->
+<dd>
+This returns a GSL::QRng object, a quasi-random sequence generator of type <var>T</var> and dimension <var>d</var>. </dd>
+<dt><a name="label-3" id="label-3"><code>GSL::QRng::init</code></a></dt><!-- RDLabel: "GSL::QRng::init" -->
+<dd>
+This reinitializes the generator to its starting point. </dd>
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-4">Sampling from a quasi-random number generator</a></h2><!-- RDLabel: "Sampling from a quasi-random number generator" -->
+
+<dl>
+<dt><a name="label-5" id="label-5"><code>GSL::QRng::get(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::QRng::get" -->
+<dd>
+<p>This calculate the next point <var>x</var> from the sequence generator. Here <var>x</var> is an instance of the <a href="vector.html">GSL::Vector</a> class. The space available for <var>x</var> must match the dimension of the generator. The point <var>x</var> will lie in the range 0 &lt; x_i &lt; 1 for each x_i. </p>
+<p>This is used as</p>
+<pre>q = QRng.alloc(QRng::SOBOL, dim)
+v = Vector.alloc(dim)
+for i in 0..1024 do
+  q.get(v)
+  printf("%.5f %.5f\n", v[0], v[1])
+end</pre></dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-6">Auxiliary quasi-random number generator functions</a></h2><!-- RDLabel: "Auxiliary quasi-random number generator functions" -->
+
+<dl>
+<dt><a name="label-7" id="label-7"><code>GSL::QRng::name</code></a></dt><!-- RDLabel: "GSL::QRng::name" -->
+<dd>
+Returns the name of the generator <var>self</var>.</dd>
+<dt><a name="label-8" id="label-8"><code>GSL::QRng::size</code></a></dt><!-- RDLabel: "GSL::QRng::size" -->
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-9">Saving and resorting quasi-random number generator state</a></h2><!-- RDLabel: "Saving and resorting quasi-random number generator state" -->
+
+<dl>
+<dt><a name="label-10" id="label-10"><code>GSL::QRng::clone</code></a></dt><!-- RDLabel: "GSL::QRng::clone" -->
+<dt><a name="label-11" id="label-11"><code>GSL::QRng::duplicate</code></a></dt><!-- RDLabel: "GSL::QRng::duplicate" -->
+<dd>
+Return a newly created generator which is an exact copy of the generator <var>self</var>.</dd>
+</dl>
+<h2><a name="5" href="#5">5</a> <a name="label-12">Quasi-random number generator algorithms</a></h2><!-- RDLabel: "Quasi-random number generator algorithms" -->
+
+<p>In creating a generator by the method <code>GSL::QRng.alloc(T, d)</code>, 
+the algorithm type <var>T</var> is given by a String or a Fixnum constant.
+The following quasi-random sequence algorithms are available,</p>
+<ul>
+<li>"<code>niederreiter_2</code>" (String)</li>
+<li><p><code>GSL::QRng::NIEDERREITER_2</code> (Fixnum)</p>
+<p>The generator of this type uses the algorithm described in Bratley, Fox, Niederreiter, ACM Trans. Model. Comp. Sim. 2, 195 (1992). It is valid up to 12 dimensions.</p></li>
+<li>"<code>sobol</code>" (String)</li>
+<li><p><code>GSL::QRng::SOBOL</code> (Fixnum)</p>
+<p>This generator uses the Sobol sequence described in Antonov, Saleev, USSR Comput. Maths. Math. Phys. 19, 252 (1980). It is valid up to 40 dimensions.</p></li>
+</ul>
+<p><a href="rng.html">prev</a>
+<a href="randist.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

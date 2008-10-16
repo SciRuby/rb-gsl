@@ -1,0 +1,14 @@
+Takeshi Horinouchi
+Masahide Kikkawa 
+Seiya Nishizawa (Patches, NArray supports)
+Arno Erpenbeck (ruby-gsl project)
+Austin Newton
+Jordi Burguet Castell (gsl_tensor)
+Cameron McBride (Patches, vector/block manipulations)
+KOSHIRO Tsuyoshi (patches)
+GSL development team
+zunda (patches)
+Christopher Butler
+Andrea Censi <andrea.censi@dis.uniroma1.it> (Bug report on Vector#*)
+Daigo Moriwaki (Bug report)
+

@@ -1,0 +1,176 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>NArray compatibilities</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">NArray compatibilities</a></h1><!-- RDLabel: "NArray compatibilities" -->
+
+<h3><a name="0.1" href="#0.1">0.1</a> <a name="label-1">Contents:</a></h3><!-- RDLabel: "Contents:" -->
+
+<ol>
+<li><a href="narray.html#1">Data type conversions</a></li>
+<li><a href="narray.html#2">Methods which accepts NArray</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-2">Data type conversions</a></h2><!-- RDLabel: "Data type conversions" -->
+
+<h3><a name="1.1" href="#1.1">1.1</a> <a name="label-3">GSL to NArray</a></h3><!-- RDLabel: "GSL to NArray" -->
+
+<dl>
+<dt><a name="label-4" id="label-4"><code>GSL::Vector#to_na</code></a></dt><!-- RDLabel: "GSL::Vector#to_na" -->
+<dt><a name="label-5" id="label-5"><code>GSL::Vector#to_nvector</code></a></dt><!-- RDLabel: "GSL::Vector#to_nvector" -->
+<dt><a name="label-6" id="label-6"><code>GSL::Matrix#to_na</code></a></dt><!-- RDLabel: "GSL::Matrix#to_na" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Matrix#to_nmatrix</code></a></dt><!-- RDLabel: "GSL::Matrix#to_nmatrix" -->
+<dd>
+Convert GSL objects to NArray. The data contained by the GSL objects
+are copied to a newly allocated memory block of the NArray objects created.</dd>
+<dt><a name="label-8" id="label-8"><code>GSL::Vector#to_na_ref</code></a></dt><!-- RDLabel: "GSL::Vector#to_na_ref" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Vector#to_nvector_ref</code></a></dt><!-- RDLabel: "GSL::Vector#to_nvector_ref" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Matrix#to_na_ref</code></a></dt><!-- RDLabel: "GSL::Matrix#to_na_ref" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Matrix#to_nmatrix_ref</code></a></dt><!-- RDLabel: "GSL::Matrix#to_nmatrix_ref" -->
+<dd>
+<p>Create NArray-ref objects from GSL data. The memory block of the GSL
+objects are shared with the NArray-ref objects.</p>
+<p>Example:</p>
+<pre>irb(main):009:0&gt; v = Vector::Int[0..5]
+=&gt; GSL::Vector::Int
+[ 0 1 2 3 4 5 ]
+irb(main):010:0&gt; na = v.to_nvector_ref
+=&gt; NVector(ref).int(6): 
+[ 0, 1, 2, 3, 4, 5 ]
+irb(main):011:0&gt; na[3] = 999
+=&gt; 999
+irb(main):012:0&gt; v
+=&gt; GSL::Vector::Int
+[ 0 1 2 999 4 5 ]</pre></dd>
+</dl>
+<h3><a name="1.2" href="#1.2">1.2</a> <a name="label-12">NArray to GSL</a></h3><!-- RDLabel: "NArray to GSL" -->
+
+<dl>
+<dt><a name="label-13" id="label-13"><code>NArray#to_gv</code></a></dt><!-- RDLabel: "NArray#to_gv" -->
+<dt><a name="label-14" id="label-14"><code>NArray#to_gm</code></a></dt><!-- RDLabel: "NArray#to_gm" -->
+<dd>
+Convert NArray objects to <code>GSL::Vector</code> or <code>GSL::Matrix</code>. 
+The data contained by the NArray objects
+are copied to a newly allocated memory block of the GSL objects created.</dd>
+<dt><a name="label-15" id="label-15"><code>NArray#to_gv_view</code></a></dt><!-- RDLabel: "NArray#to_gv_view" -->
+<dt><a name="label-16" id="label-16"><code>NArray#to_gm_view</code></a></dt><!-- RDLabel: "NArray#to_gm_view" -->
+<dd>
+<p>Create <code>GSL::Vector::View</code> or <code>GSL::Matrix::View</code> objects from NArray. 
+The memory block of the NArray objects are shared with the View objects.</p>
+<p>Example:</p>
+<pre>irb(main):024:0&gt; na = NArray[0, 1, 2, 3, 4, 5]
+=&gt; NArray.int(6): 
+[ 0, 1, 2, 3, 4, 5 ]
+irb(main):025:0&gt; b = na.to_gv_int_view
+=&gt; GSL::Vector::Int::View
+[ 0 1 2 3 4 5 ]
+irb(main):026:0&gt; b[2] = -99
+=&gt; -99
+irb(main):027:0&gt; na
+=&gt; NArray.int(6): 
+[ 0, 1, -99, 3, 4, 5 ]</pre></dd>
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-17">Methods which accepts NArray</a></h2><!-- RDLabel: "Methods which accepts NArray" -->
+
+<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-18"><code>GSL</code> module</a></h3><!-- RDLabel: "GSL module" -->
+
+<dl>
+<dt><a name="label-19" id="label-19"><code>GSL::graph()</code></a></dt><!-- RDLabel: "GSL::graph" -->
+<dt><a name="label-20" id="label-20"><code>GSL::log1p(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::log1p" -->
+<dt><a name="label-21" id="label-21"><code>GSL::expm1(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::expm1" -->
+<dt><a name="label-22" id="label-22"><code>GSL::hypot(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::hypot" -->
+<dt><a name="label-23" id="label-23"><code>GSL::acosh(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::acosh" -->
+<dt><a name="label-24" id="label-24"><code>GSL::asinh(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::asinh" -->
+<dt><a name="label-25" id="label-25"><code>GSL::atanh(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::atanh" -->
+<dt><a name="label-26" id="label-26"><code>GSL::pow(<var>x</var>, <var>a</var>)</code></a></dt><!-- RDLabel: "GSL::pow" -->
+<dt><a name="label-27" id="label-27"><code>GSL::pow_int(<var>x</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::pow_int" -->
+<dt><a name="label-28" id="label-28"><code>GSL::pow_2(<var>x</var>), ..., <var>GSL</var>::<var>pow_9</var>(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::pow_2" -->
+</dl>
+<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-29"><code>GSL::Sf</code> module</a></h3><!-- RDLabel: "GSL::Sf module" -->
+
+<p><a href="sf.html">Any</a></p>
+<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-30"><code>GSL::Linalg</code> module</a></h3><!-- RDLabel: "GSL::Linalg module" -->
+
+<dl>
+<dt><a name="label-31" id="label-31"><code>GSL::Linalg::LU.decomp(<var>na</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::LU.decomp" -->
+<dt><a name="label-32" id="label-32"><code>GSL::Linalg::LU.solve(<var>lu</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::LU.solve" -->
+<dt><a name="label-33" id="label-33"><code>GSL::Linalg::LU.svx(<var>lu</var>, <var>bx</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::LU.svx" -->
+<dt><a name="label-34" id="label-34"><code>GSL::Linalg::LU.det(<var>lu</var>, <var>sign</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::LU.det" -->
+<dt><a name="label-35" id="label-35"><code>GSL::Linalg::LU.lndet(<var>lu</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::LU.lndet" -->
+<dt><a name="label-36" id="label-36"><code>GSL::Linalg::LU.invert(<var>lu</var>, <var>perm</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::LU.invert" -->
+<dt><a name="label-37" id="label-37"><code>GSL::Linalg::QR.decomp(<var>m</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::QR.decomp" -->
+<dt><a name="label-38" id="label-38"><code>GSL::Linalg::QR.solve(<var>qr</var>, <var>tau</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::QR.solve" -->
+<dt><a name="label-39" id="label-39"><code>GSL::Linalg::QR.svx(<var>qr</var>, <var>tau</var>, <var>bx</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::QR.svx" -->
+<dt><a name="label-40" id="label-40"><code>GSL::Linalg::SV.decomp(<var>m</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::SV.decomp" -->
+<dt><a name="label-41" id="label-41"><code>GSL::Linalg::SV.solve(<var>u</var>, <var>v</var>, <var>s</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::SV.solve" -->
+<dt><a name="label-42" id="label-42"><code>GSL::Linalg::SV.svx(<var>u</var>, <var>v</var>, <var>s</var>, <var>bx</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::SV.svx" -->
+<dt><a name="label-43" id="label-43"><code>GSL::Linalg::Cholesky.decomp(<var>m</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Cholesky.decomp" -->
+<dt><a name="label-44" id="label-44"><code>GSL::Linalg::Cholesky.solve(<var>u</var>, <var>v</var>, <var>s</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Cholesky.solve" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Linalg::Cholesky.svx(<var>u</var>, <var>v</var>, <var>s</var>, <var>bx</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::Cholesky.svx" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Linalg::HH.solve(<var>m</var>, <var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::HH.solve" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Linalg::HH.svx(<var>m</var>, <var>bx</var>)</code></a></dt><!-- RDLabel: "GSL::Linalg::HH.svx" -->
+</dl>
+<h3><a name="2.4" href="#2.4">2.4</a> <a name="label-48"><code>GSL::Eigen</code> module</a></h3><!-- RDLabel: "GSL::Eigen module" -->
+
+<dl>
+<dt><a name="label-49" id="label-49"><code>GSL::Eigen::symm(<var>na</var>)</code></a></dt><!-- RDLabel: "GSL::Eigen::symm" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Eigen::symmv(<var>na</var>)</code></a></dt><!-- RDLabel: "GSL::Eigen::symmv" -->
+</dl>
+<h3><a name="2.5" href="#2.5">2.5</a> <a name="label-51"><code>GSL::FFT</code> module</a></h3><!-- RDLabel: "GSL::FFT module" -->
+
+<p><a href="FFT.html">Many</a></p>
+<h3><a name="2.6" href="#2.6">2.6</a> <a name="label-52"><code>GSL::Function</code> class</a></h3><!-- RDLabel: "GSL::Function class" -->
+
+<dl>
+<dt><a name="label-53" id="label-53"><code>GSL::Function#eval</code></a></dt><!-- RDLabel: "GSL::Function#eval" -->
+<dt><a name="label-54" id="label-54"><code>GSL::Function#deriv_central(<var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Function#deriv_central" -->
+<dt><a name="label-55" id="label-55"><code>GSL::Function#deriv_forward(<var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Function#deriv_forward" -->
+<dt><a name="label-56" id="label-56"><code>GSL::Function#deriv_backward(<var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Function#deriv_backward" -->
+<dt><a name="label-57" id="label-57"><code>GSL::Function#diff_central(<var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Function#diff_central" -->
+<dt><a name="label-58" id="label-58"><code>GSL::Function#diff_forward(<var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Function#diff_forward" -->
+<dt><a name="label-59" id="label-59"><code>GSL::Function#diff_backward(<var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Function#diff_backward" -->
+</dl>
+<h3><a name="2.7" href="#2.7">2.7</a> <a name="label-60"><code>GSL::Ran</code> and <code>GSL::Cdf</code> module</a></h3><!-- RDLabel: "GSL::Ran and GSL::Cdf module" -->
+
+<p><a href="randist.html">Many</a></p>
+<h3><a name="2.8" href="#2.8">2.8</a> <a name="label-61"><code>GSL::Stats</code> module</a></h3><!-- RDLabel: "GSL::Stats module" -->
+
+<p><a href="stats.html">Any</a></p>
+<h3><a name="2.9" href="#2.9">2.9</a> <a name="label-62"><code>GSL::Interp</code> and <code>GSL::Spline</code> class</a></h3><!-- RDLabel: "GSL::Interp and GSL::Spline class" -->
+
+<dl>
+<dt><a name="label-63" id="label-63"><code>GSL::Interp#init</code></a></dt><!-- RDLabel: "GSL::Interp#init" -->
+<dt><a name="label-64" id="label-64"><code>GSL::Interp#eval</code></a></dt><!-- RDLabel: "GSL::Interp#eval" -->
+<dt><a name="label-65" id="label-65"><code>GSL::Spline#init</code></a></dt><!-- RDLabel: "GSL::Spline#init" -->
+<dt><a name="label-66" id="label-66"><code>GSL::Spline#eval</code></a></dt><!-- RDLabel: "GSL::Spline#eval" -->
+</dl>
+<h3><a name="2.10" href="#2.10">2.10</a> <a name="label-67"><code>GSL::Deriv</code> and <code>GSL::Diff</code> module</a></h3><!-- RDLabel: "GSL::Deriv and GSL::Diff module" -->
+
+<dl>
+<dt><a name="label-68" id="label-68"><code>GSL::Deriv.central(<var>f</var>, <var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Deriv.central" -->
+<dt><a name="label-69" id="label-69"><code>GSL::Deriv.forward(<var>f</var>, <var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Deriv.forward" -->
+<dt><a name="label-70" id="label-70"><code>GSL::Deriv.backward(<var>f</var>, <var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Deriv.backward" -->
+<dt><a name="label-71" id="label-71"><code>GSL::Diff.central(<var>f</var>, <var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Diff.central" -->
+<dt><a name="label-72" id="label-72"><code>GSL::Diff.forward(<var>f</var>, <var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Diff.forward" -->
+<dt><a name="label-73" id="label-73"><code>GSL::Diff.backward(<var>f</var>, <var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Diff.backward" -->
+</dl>
+<h3><a name="2.11" href="#2.11">2.11</a> <a name="label-74"><code>GSL::Cheb</code> class</a></h3><!-- RDLabel: "GSL::Cheb class" -->
+
+<dl>
+<dt><a name="label-75" id="label-75"><code>GSL::Cheb#eval(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Cheb#eval" -->
+<dt><a name="label-76" id="label-76"><code>GSL::Cheb#eval_n(<var>n</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Cheb#eval_n" -->
+</dl>
+<h3><a name="2.12" href="#2.12">2.12</a> <a name="label-77"><code>GSL::Wavelet</code> class</a></h3><!-- RDLabel: "GSL::Wavelet class" -->
+
+<p><a href="wavelet.html">Many</a></p>
+<p><a href="tensor.html">prev</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

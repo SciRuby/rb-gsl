@@ -1,0 +1,182 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>BLAS Support</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">BLAS Support</a></h1><!-- RDLabel: "BLAS Support" -->
+
+<p>The following is the list of the methods defined in <code>GSL::Blas</code> module.
+See <a href="http://www.gnu.org/software/gsl/manual/gsl-ref_12.html#SEC212">GSL reference</a> for details.</p>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Level 1</a></h2><!-- RDLabel: "Level 1" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Blas::ddot(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::ddot" -->
+<dt><a name="label-3" id="label-3"><code>GSL::Vector#blas_ddot(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#blas_ddot" -->
+<dt><a name="label-4" id="label-4"><code>GSL::Vector#ddot(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#ddot" -->
+<dt><a name="label-5" id="label-5"><code>GSL::Blas::zdotu(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zdotu" -->
+<dt><a name="label-6" id="label-6"><code>GSL::Vector::Complex#blas_zdotu(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_zdotu" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Vector::Complex#zdotu(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#zdotu" -->
+<dt><a name="label-8" id="label-8"><code>GSL::Blas::zdotc(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zdotc" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Vector::Complex#blas_zdotc(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_zdotc" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Vector::Complex#zdotc(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#zdotc" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Blas::dnrm2(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dnrm2" -->
+<dt><a name="label-12" id="label-12"><code>GSL::Vector#blas_dnrm2</code></a></dt><!-- RDLabel: "GSL::Vector#blas_dnrm2" -->
+<dt><a name="label-13" id="label-13"><code>GSL::Vector#dnrm2</code></a></dt><!-- RDLabel: "GSL::Vector#dnrm2" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Blas::dznrm2(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dznrm2" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Vector::Complex#blas_dznrm2</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_dznrm2" -->
+<dt><a name="label-16" id="label-16"><code>GSL::Vector::Complex#dznrm2</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#dznrm2" -->
+<dt><a name="label-17" id="label-17"><code>GSL::Blas::dasum(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dasum" -->
+<dt><a name="label-18" id="label-18"><code>GSL::Vector#blas_dasum</code></a></dt><!-- RDLabel: "GSL::Vector#blas_dasum" -->
+<dt><a name="label-19" id="label-19"><code>GSL::Vector#dasum</code></a></dt><!-- RDLabel: "GSL::Vector#dasum" -->
+<dt><a name="label-20" id="label-20"><code>GSL::Blas::dzasum(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dzasum" -->
+<dt><a name="label-21" id="label-21"><code>GSL::Vector::Complex#blas_dzasum</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_dzasum" -->
+<dt><a name="label-22" id="label-22"><code>GSL::Vector::Complex#dzasum</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#dzasum" -->
+<dt><a name="label-23" id="label-23"><code>GSL::Blas::idamax(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::idamax" -->
+<dt><a name="label-24" id="label-24"><code>GSL::Vector#blas_idamax</code></a></dt><!-- RDLabel: "GSL::Vector#blas_idamax" -->
+<dt><a name="label-25" id="label-25"><code>GSL::Vector#idamax</code></a></dt><!-- RDLabel: "GSL::Vector#idamax" -->
+<dt><a name="label-26" id="label-26"><code>GSL::Blas::izamax(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::izamax" -->
+<dt><a name="label-27" id="label-27"><code>GSL::Vector::Complex#blas_izamax</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_izamax" -->
+<dt><a name="label-28" id="label-28"><code>GSL::Vector::Complex#izamax</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#izamax" -->
+<dt><a name="label-29" id="label-29"><code>GSL::Blas::dswap(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dswap" -->
+<dt><a name="label-30" id="label-30"><code>GSL::Vector#blas_dswap(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#blas_dswap" -->
+<dt><a name="label-31" id="label-31"><code>GSL::Vector#dswap(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#dswap" -->
+<dt><a name="label-32" id="label-32"><code>GSL::Blas::zswap(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zswap" -->
+<dt><a name="label-33" id="label-33"><code>GSL::Vector::Complex#blas_zswap(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_zswap" -->
+<dt><a name="label-34" id="label-34"><code>GSL::Vector::Complex#zswap(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#zswap" -->
+<dt><a name="label-35" id="label-35"><code>GSL::Blas::dcopy(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dcopy" -->
+<dt><a name="label-36" id="label-36"><code>GSL::Vector#blas_dcopy(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#blas_dcopy" -->
+<dt><a name="label-37" id="label-37"><code>GSL::Vector#dcopy(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#dcopy" -->
+<dt><a name="label-38" id="label-38"><code>GSL::Blas::zcopy(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zcopy" -->
+<dt><a name="label-39" id="label-39"><code>GSL::Vector::Complex#blas_zcopy(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_zcopy" -->
+<dt><a name="label-40" id="label-40"><code>GSL::Vector::Complex#zcopy(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#zcopy" -->
+<dt><a name="label-41" id="label-41"><code>GSL::Blas::daxpy!(<var>a</var>, <var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::daxpy!" -->
+<dt><a name="label-42" id="label-42"><code>GSL::Vector#blas_daxpy!(<var>a</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#blas_daxpy!" -->
+<dt><a name="label-43" id="label-43"><code>GSL::Vector#daxpy!(<var>a</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#daxpy!" -->
+<dt><a name="label-44" id="label-44"><code>GSL::Blas::daxpy(<var>a</var>, <var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::daxpy" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Vector#blas_daxpy(<var>a</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#blas_daxpy" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Vector#daxpy(<var>a</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#daxpy" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Blas::zaxpy!(<var>a</var>, <var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zaxpy!" -->
+<dt><a name="label-48" id="label-48"><code>GSL::Vector::Complex#blas_zaxpy!(<var>a</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_zaxpy!" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Vector::Complex#zaxpy!(<var>a</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#zaxpy!" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Blas::zaxpy(<var>a</var>, <var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zaxpy" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Vector::Complex#blas_zaxpy(<var>a</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_zaxpy" -->
+<dt><a name="label-52" id="label-52"><code>GSL::Vector::Complex#zaxpy(<var>a</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#zaxpy" -->
+<dt><a name="label-53" id="label-53"><code>GSL::Blas::dscal!(<var>a</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dscal!" -->
+<dt><a name="label-54" id="label-54"><code>GSL::Vector#blas_dscal!(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#blas_dscal!" -->
+<dt><a name="label-55" id="label-55"><code>GSL::Vector#dscal!(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#dscal!" -->
+<dt><a name="label-56" id="label-56"><code>GSL::Blas::dscal(<var>a</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dscal" -->
+<dt><a name="label-57" id="label-57"><code>GSL::Vector#blas_dscal(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#blas_dscal" -->
+<dt><a name="label-58" id="label-58"><code>GSL::Vector#dscal(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#dscal" -->
+<dt><a name="label-59" id="label-59"><code>GSL::Blas::zscal!(<var>a</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zscal!" -->
+<dt><a name="label-60" id="label-60"><code>GSL::Vector::Complex#blas_zscal!(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_zscal!" -->
+<dt><a name="label-61" id="label-61"><code>GSL::Vector::Complex#zscal!(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#zscal!" -->
+<dt><a name="label-62" id="label-62"><code>GSL::Blas::zscal(<var>a</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zscal" -->
+<dt><a name="label-63" id="label-63"><code>GSL::Vector::Complex#blas_zscal(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_zscal" -->
+<dt><a name="label-64" id="label-64"><code>GSL::Vector::Complex#zscal(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#zscal" -->
+<dt><a name="label-65" id="label-65"><code>GSL::Blas::zdscal!(<var>a</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zdscal!" -->
+<dt><a name="label-66" id="label-66"><code>GSL::Vector::Complex#blas_zdscal!(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_zdscal!" -->
+<dt><a name="label-67" id="label-67"><code>GSL::Vector::Complex#zdscal!(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#zdscal!" -->
+<dt><a name="label-68" id="label-68"><code>GSL::Blas::zdscal(<var>a</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zdscal" -->
+<dt><a name="label-69" id="label-69"><code>GSL::Vector::Complex#blas_zdscal(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#blas_zdscal" -->
+<dt><a name="label-70" id="label-70"><code>GSL::Vector::Complex#zdscal(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#zdscal" -->
+<dt><a name="label-71" id="label-71"><code>GSL::Blas::drot(<var>x</var>, <var>y</var>, <var>c</var>, <var>s</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::drot" -->
+<dt><a name="label-72" id="label-72"><code>GSL::Blas::drot!(<var>x</var>, <var>y</var>, <var>c</var>, <var>s</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::drot!" -->
+<dt><a name="label-73" id="label-73"><code>GSL::Blas::drotm(<var>x</var>, <var>y</var>, <var>p</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::drotm" -->
+<dt><a name="label-74" id="label-74"><code>GSL::Blas::drotm!(<var>x</var>, <var>y</var>, <var>p</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::drotm!" -->
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-75">Level 2</a></h2><!-- RDLabel: "Level 2" -->
+
+<dl>
+<dt><a name="label-76" id="label-76"><code>GSL::Blas::dgemv(<var>trans</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dgemv" -->
+<dt><a name="label-77" id="label-77"><code>GSL::Blas::dgemv!(<var>trans</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dgemv!" -->
+<dt><a name="label-78" id="label-78"><code>GSL::Blas::zgemv(<var>trans</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zgemv" -->
+<dt><a name="label-79" id="label-79"><code>GSL::Blas::zgemv!(<var>trans</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zgemv!" -->
+<dt><a name="label-80" id="label-80"><code>GSL::Blas::dtrmv(<var>trans</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dtrmv" -->
+<dt><a name="label-81" id="label-81"><code>GSL::Blas::dtrmv!(<var>trans</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dtrmv!" -->
+<dt><a name="label-82" id="label-82"><code>GSL::Blas::ztrmv(<var>trans</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::ztrmv" -->
+<dt><a name="label-83" id="label-83"><code>GSL::Blas::ztrmv!(<var>trans</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::ztrmv!" -->
+<dt><a name="label-84" id="label-84"><code>GSL::Blas::dtrsv(<var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>A</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dtrsv" -->
+<dt><a name="label-85" id="label-85"><code>GSL::Blas::dtrsv!uplo, <var>trans</var>, <var>diag</var>, <var>A</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dtrsv!uplo, trans, diag, A, x)" -->
+<dt><a name="label-86" id="label-86"><code>GSL::Blas::ztrsvuplo, <var>trans</var>, <var>diag</var>, <var>A</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::ztrsvuplo, trans, diag, A, x)" -->
+<dt><a name="label-87" id="label-87"><code>GSL::Blas::ztrsv!uplo, <var>trans</var>, <var>diag</var>, <var>A</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::ztrsv!uplo, trans, diag, A, x)" -->
+<dt><a name="label-88" id="label-88"><code>GSL::Blas::dsymv(<var>uplo</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dsymv" -->
+<dt><a name="label-89" id="label-89"><code>GSL::Blas::dsymv!(<var>uplo</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dsymv!" -->
+<dt><a name="label-90" id="label-90"><code>GSL::Blas::zhemv(<var>uplo</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zhemv" -->
+<dt><a name="label-91" id="label-91"><code>GSL::Blas::zhemv!(<var>uplo</var>, <var>a</var>, <var>A</var>, <var>x</var>, <var>b</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zhemv!" -->
+<dt><a name="label-92" id="label-92"><code>GSL::Blas::dger(<var>a</var>, <var>x</var>, <var>y</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dger" -->
+<dt><a name="label-93" id="label-93"><code>GSL::Blas::dger!(<var>a</var>, <var>x</var>, <var>y</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dger!" -->
+<dt><a name="label-94" id="label-94"><code>GSL::Blas::zgeru(<var>a</var>, <var>x</var>, <var>y</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zgeru" -->
+<dt><a name="label-95" id="label-95"><code>GSL::Blas::zgeru!(<var>a</var>, <var>x</var>, <var>y</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zgeru!" -->
+<dt><a name="label-96" id="label-96"><code>GSL::Blas::zgerc(<var>a</var>, <var>x</var>, <var>y</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zgerc" -->
+<dt><a name="label-97" id="label-97"><code>GSL::Blas::zgerc!(<var>a</var>, <var>x</var>, <var>y</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zgerc!" -->
+<dt><a name="label-98" id="label-98"><code>GSL::Blas::dsyr(<var>uplo</var>, <var>a</var>, <var>x</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dsyr" -->
+<dt><a name="label-99" id="label-99"><code>GSL::Blas::dsyr!(<var>uplo</var>, <var>a</var>, <var>x</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dsyr!" -->
+<dt><a name="label-100" id="label-100"><code>GSL::Blas::zher(<var>uplo</var>, <var>a</var>, <var>x</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zher" -->
+<dt><a name="label-101" id="label-101"><code>GSL::Blas::zher!(<var>uplo</var>, <var>a</var>, <var>x</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zher!" -->
+<dt><a name="label-102" id="label-102"><code>GSL::Blas::dsyr2(<var>uplo</var>, <var>a</var>, <var>x</var>, <var>y</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dsyr2" -->
+<dt><a name="label-103" id="label-103"><code>GSL::Blas::dsyr2!(<var>uplo</var>, <var>a</var>, <var>x</var>, <var>y</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dsyr2!" -->
+<dt><a name="label-104" id="label-104"><code>GSL::Blas::zher2(<var>uplo</var>, <var>a</var>, <var>x</var>, <var>y</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zher2" -->
+<dt><a name="label-105" id="label-105"><code>GSL::Blas::zher2!(<var>uplo</var>, <var>a</var>, <var>x</var>, <var>y</var>, <var>A</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zher2!" -->
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-106">Level 3</a></h2><!-- RDLabel: "Level 3" -->
+
+<dl>
+<dt><a name="label-107" id="label-107"><code>GSL::Blas::dgemm(<var>transA</var>, <var>transB</var>, <var>alpha</var>, <var>A</var>, <var>B</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dgemm" -->
+<dt><a name="label-108" id="label-108"><code>GSL::Blas::dgemm(<var>A</var>, <var>B</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dgemm" -->
+<dt><a name="label-109" id="label-109"><code>GSL::Blas::zgemm(<var>transA</var>, <var>transB</var>, <var>alpha</var>, <var>A</var>, <var>B</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zgemm" -->
+<dt><a name="label-110" id="label-110"><code>GSL::Blas::zgemm(<var>A</var>, <var>B</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zgemm" -->
+<dt><a name="label-111" id="label-111"><code>GSL::Blas::dsymm(<var>transA</var>, <var>transB</var>, <var>alpha</var>, <var>A</var>, <var>B</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dsymm" -->
+<dt><a name="label-112" id="label-112"><code>GSL::Blas::dsymm(<var>A</var>, <var>B</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dsymm" -->
+<dt><a name="label-113" id="label-113"><code>GSL::Blas::zsymm(<var>transA</var>, <var>transB</var>, <var>alpha</var>, <var>A</var>, <var>B</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zsymm" -->
+<dt><a name="label-114" id="label-114"><code>GSL::Blas::zsymm(<var>A</var>, <var>B</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zsymm" -->
+<dt><a name="label-115" id="label-115"><code>GSL::Blas::zhemm(<var>transA</var>, <var>transB</var>, <var>alpha</var>, <var>A</var>, <var>B</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zhemm" -->
+<dt><a name="label-116" id="label-116"><code>GSL::Blas::zhemm(<var>A</var>, <var>B</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zhemm" -->
+<dt><a name="label-117" id="label-117"><code>GSL::Blas::dtrmm(<var>side</var>, <var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>alpha</var>, <var>A</var>, <var>B</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dtrmm" -->
+<dt><a name="label-118" id="label-118"><code>GSL::Blas::ztrmm(<var>side</var>, <var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>alpha</var>, <var>A</var>, <var>B</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::ztrmm" -->
+<dt><a name="label-119" id="label-119"><code>GSL::Blas::dtrsm(<var>side</var>, <var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>alpha</var>, <var>A</var>, <var>B</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dtrsm" -->
+<dt><a name="label-120" id="label-120"><code>GSL::Blas::ztrsm(<var>side</var>, <var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>alpha</var>, <var>A</var>, <var>B</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::ztrsm" -->
+<dt><a name="label-121" id="label-121"><code>GSL::Blas::dsyrk(<var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>alpha</var>, <var>A</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dsyrk" -->
+<dt><a name="label-122" id="label-122"><code>GSL::Blas::zsyrk(<var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>alpha</var>, <var>A</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zsyrk" -->
+<dt><a name="label-123" id="label-123"><code>GSL::Blas::zherk(<var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>alpha</var>, <var>A</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zherk" -->
+<dt><a name="label-124" id="label-124"><code>GSL::Blas::dsyr2k(<var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>alpha</var>, <var>A</var>, <var>B</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::dsyr2k" -->
+<dt><a name="label-125" id="label-125"><code>GSL::Blas::zsyr2k(<var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>alpha</var>, <var>A</var>, <var>B</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zsyr2k" -->
+<dt><a name="label-126" id="label-126"><code>GSL::Blas::zher2k(<var>uplo</var>, <var>trans</var>, <var>diag</var>, <var>alpha</var>, <var>A</var>, <var>B</var>, <var>beta</var>, <var>C</var>)</code></a></dt><!-- RDLabel: "GSL::Blas::zher2k" -->
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-127">Constants</a></h2><!-- RDLabel: "Constants" -->
+
+<dl>
+<dt><a name="label-128" id="label-128"><code>GSL::Blas::CblasRowMajor</code></a></dt><!-- RDLabel: "GSL::Blas::CblasRowMajor" -->
+<dt><a name="label-129" id="label-129"><code>GSL::Blas::RowMajor</code></a></dt><!-- RDLabel: "GSL::Blas::RowMajor" -->
+<dt><a name="label-130" id="label-130"><code>GSL::Blas::CblasColMajor</code></a></dt><!-- RDLabel: "GSL::Blas::CblasColMajor" -->
+<dt><a name="label-131" id="label-131"><code>GSL::Blas::ColMajor</code></a></dt><!-- RDLabel: "GSL::Blas::ColMajor" -->
+<dt><a name="label-132" id="label-132"><code>GSL::Blas::CblasNoTrans</code></a></dt><!-- RDLabel: "GSL::Blas::CblasNoTrans" -->
+<dt><a name="label-133" id="label-133"><code>GSL::Blas::NoTrans</code></a></dt><!-- RDLabel: "GSL::Blas::NoTrans" -->
+<dt><a name="label-134" id="label-134"><code>GSL::Blas::CblasTrans</code></a></dt><!-- RDLabel: "GSL::Blas::CblasTrans" -->
+<dt><a name="label-135" id="label-135"><code>GSL::Blas::Trans</code></a></dt><!-- RDLabel: "GSL::Blas::Trans" -->
+<dt><a name="label-136" id="label-136"><code>GSL::Blas::CblasConjTrans</code></a></dt><!-- RDLabel: "GSL::Blas::CblasConjTrans" -->
+<dt><a name="label-137" id="label-137"><code>GSL::Blas::ConjTrans</code></a></dt><!-- RDLabel: "GSL::Blas::ConjTrans" -->
+<dt><a name="label-138" id="label-138"><code>GSL::Blas::CblasUpper</code></a></dt><!-- RDLabel: "GSL::Blas::CblasUpper" -->
+<dt><a name="label-139" id="label-139"><code>GSL::Blas::Upper</code></a></dt><!-- RDLabel: "GSL::Blas::Upper" -->
+<dt><a name="label-140" id="label-140"><code>GSL::Blas::CblasTrans</code></a></dt><!-- RDLabel: "GSL::Blas::CblasTrans" -->
+<dt><a name="label-141" id="label-141"><code>GSL::Blas::Lower</code></a></dt><!-- RDLabel: "GSL::Blas::Lower" -->
+<dt><a name="label-142" id="label-142"><code>GSL::Blas::CblasNonUnit</code></a></dt><!-- RDLabel: "GSL::Blas::CblasNonUnit" -->
+<dt><a name="label-143" id="label-143"><code>GSL::Blas::NonUnit</code></a></dt><!-- RDLabel: "GSL::Blas::NonUnit" -->
+<dt><a name="label-144" id="label-144"><code>GSL::Blas::CblasUnit</code></a></dt><!-- RDLabel: "GSL::Blas::CblasUnit" -->
+<dt><a name="label-145" id="label-145"><code>GSL::Blas::Unit</code></a></dt><!-- RDLabel: "GSL::Blas::Unit" -->
+<dt><a name="label-146" id="label-146"><code>GSL::Blas::CblasLeft</code></a></dt><!-- RDLabel: "GSL::Blas::CblasLeft" -->
+<dt><a name="label-147" id="label-147"><code>GSL::Blas::Left</code></a></dt><!-- RDLabel: "GSL::Blas::Left" -->
+<dt><a name="label-148" id="label-148"><code>GSL::Blas::CblasRight</code></a></dt><!-- RDLabel: "GSL::Blas::CblasRight" -->
+<dt><a name="label-149" id="label-149"><code>GSL::Blas::Right</code></a></dt><!-- RDLabel: "GSL::Blas::Right" -->
+</dl>
+<p><a href="sort.html">prev</a>
+<a href="linalg.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

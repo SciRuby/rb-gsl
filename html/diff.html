@@ -1,0 +1,129 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Numerical Differentiation</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Numerical Differentiation</a></h1><!-- RDLabel: "Numerical Differentiation" -->
+
+<p>The functions described in this chapter compute numerical derivatives by 
+finite differencing. An adaptive algorithm is used to find the best choice 
+of finite difference and to estimate the error in the derivative. </p>
+<p>Contentes:</p>
+<ol>
+<li><a href="diff.html#1">Deriv methods</a></li>
+<li><a href="diff.html#2">Diff methods</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Deriv methods (for GSL 1.4.90 or later)</a></h2><!-- RDLabel: "Deriv methods (for GSL 1.4.90 or later)" -->
+
+<p>Numerical derivatives should now be calculated using the
+<code>GSL::Deriv.forward, GSL::Deriv.central</code> and <code>GSL::Deriv.backward</code> methods,
+which accept a step-size argument in addition to the position x.  The
+original <code>GSL::Diff</code> methods (without the step-size) are deprecated.</p>
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Deriv.central(<var>f</var>, <var>x</var>, <var>h</var> = <var>1e</var>-<var>8</var>)</code></a></dt><!-- RDLabel: "GSL::Deriv.central" -->
+<dt><a name="label-3" id="label-3"><code>GSL::Function#deriv_central(<var>x</var>, <var>h</var> = <var>1e</var>-<var>8</var>)</code></a></dt><!-- RDLabel: "GSL::Function#deriv_central" -->
+<dd>
+<p>These methods compute the numerical derivative of the function <var>f</var> 
+at the point <var>x</var> using an adaptive central difference algorithm with a 
+step-size of <var>h</var>. If a scalar <var>x</var> is given, the derivative and an 
+estimate of its absolute error are returned as an array, [<var>result, abserr, status</var>].
+If a vector/matrix/array <var>x</var> is given, an array of two elements are returned,
+[<var>result, abserr</var>], here each them is also a vector/matrix/array of the same
+dimension of <var>x</var>.</p>
+<p>The initial value of <var>h</var> is used to estimate an optimal step-size, 
+based on the scaling of the truncation error and round-off error in the 
+derivative calculation. The derivative is computed using a 5-point rule for 
+equally spaced abscissae at x-h, x-h/2, x, x+h/2, x, with an error estimate 
+taken from the difference between the 5-point rule and the corresponding 3-point 
+rule x-h, x, x+h. Note that the value of the function at x does not contribute 
+to the derivative calculation, so only 4-points are actually used.</p></dd>
+<dt><a name="label-4" id="label-4"><code>GSL::Deriv.forward(<var>f</var>, <var>x</var>, <var>h</var> = <var>1e</var>-<var>8</var>)</code></a></dt><!-- RDLabel: "GSL::Deriv.forward" -->
+<dt><a name="label-5" id="label-5"><code>GSL::Function#deriv_forward(<var>x</var>, <var>h</var> = <var>1e</var>-<var>8</var>)</code></a></dt><!-- RDLabel: "GSL::Function#deriv_forward" -->
+<dd>
+<p>These methods compute the numerical derivative of the function <var>f</var> at 
+the point <var>x</var> using an adaptive forward difference algorithm with a step-size 
+of <var>h</var>. The function is evaluated only at points greater than <var>x</var>, 
+and never at <var>x</var> itself. The derivative and an estimate of its absolute error 
+are returned as an array, [<var>result, abserr</var>]. 
+These methods should be used if f(x) has a 
+discontinuity at <var>x</var>, or is undefined for values less than <var>x</var>.</p>
+<p>The initial value of <var>h</var> is used to estimate an optimal step-size, based on the 
+scaling of the truncation error and round-off error in the derivative calculation. 
+The derivative at x is computed using an "open" 4-point rule for equally spaced 
+abscissae at x+h/4, x+h/2, x+3h/4, x+h, with an error estimate taken from the 
+difference between the 4-point rule and the corresponding 2-point rule x+h/2, x+h.</p></dd>
+<dt><a name="label-6" id="label-6"><code>GSL::Deriv.backward(<var>f</var>, <var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Deriv.backward" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Function#deriv_backward(<var>x</var>, <var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Function#deriv_backward" -->
+<dd>
+<p>These methods compute the numerical derivative of the function <var>f</var> at the 
+point <var>x</var> using an adaptive backward difference algorithm with a step-size 
+of <var>h</var>. The function is evaluated only at points less than <var>x</var>, 
+and never at <var>x</var> itself. The derivative and an estimate of its absolute error 
+are returned as an array, [<var>result, abserr</var>]. 
+This function should be used if f(x) has a discontinuity at <var>x</var>, 
+or is undefined for values greater than <var>x</var>.</p>
+<p>These methods are equivalent to calling the method <code>forward</code> 
+with a negative step-size.</p></dd>
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-8">Diff Methods (obsolete)</a></h2><!-- RDLabel: "Diff Methods (obsolete)" -->
+
+<dl>
+<dt><a name="label-9" id="label-9"><code>GSL::Diff.central(<var>f</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Diff.central" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Function#diff_central(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Function#diff_central" -->
+<dd>
+These compute the numerical derivative of the function <var>f</var> ( <a href="function.html">GSL::Function</a> object) at the point <var>x</var> 
+using an adaptive central difference algorithm. The result is returned as an array 
+which contains the derivative and an estimate of its absolute error.</dd>
+<dt><a name="label-11" id="label-11"><code>GSL::Diff.forward(<var>f</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Diff.forward" -->
+<dt><a name="label-12" id="label-12"><code>GSL::Function#diff_forward(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Function#diff_forward" -->
+<dd>
+These compute the numerical derivative of the function at the point x using an adaptive forward difference algorithm. </dd>
+<dt><a name="label-13" id="label-13"><code>GSL::Diff.backward(<var>f</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Diff.backward" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Function#diff_backward(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Function#diff_backward" -->
+<dd>
+These compute the numerical derivative of the function at the point x using an adaptive backward difference algorithm. </dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-15">Example</a></h2><!-- RDLabel: "Example" -->
+
+<pre>#!/usr/bin/env ruby
+require "rbgsl"
+
+f = GSL::Function.alloc { |x|
+  pow(x, 1.5)
+}
+
+printf ("f(x) = x^(3/2)\n");
+
+x = 2.0
+h = 1e-8
+result, abserr = f.deriv_central(x, h)
+printf("x = 2.0\n");
+printf("f'(x) = %.10f +/- %.10f\n", result, abserr);
+printf("exact = %.10f\n\n", 1.5 * Math::sqrt(2.0));
+
+x = 0.0
+result, abserr = Deriv.forward(f, x, h) # equivalent to f.deriv_forward(x, h)
+printf("x = 0.0\n");
+printf("f'(x) = %.10f +/- %.10f\n", result, abserr);
+printf("exact = %.10f\n", 0.0);</pre>
+<p>The results are</p>
+<pre>f(x) = x^(3/2)
+x = 2.0
+f'(x) = 2.1213203120 +/- 0.0000004064
+exact = 2.1213203436
+
+x = 0.0
+f'(x) = 0.0000000160 +/- 0.0000000339
+exact = 0.0000000000</pre>
+<p><a href="interp.html">prev</a>
+<a href="cheb.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

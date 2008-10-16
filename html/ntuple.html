@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>N-tuples</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">N-tuples</a></h1><!-- RDLabel: "N-tuples" -->
+
+<p>This chapter describes functions for creating and manipulating ntuples, 
+sets of values associated with events. The ntuples are stored in files. 
+Their values can be extracted in any combination and booked in a histogram using 
+a selection function.</p>
+<p>The values to be stored are held in a <a href="vector.html">GSL::Vector</a> or 
+a <a href="matrix.html">GSL::Matrix</a> object,
+and an ntuple is created associating this object with a file. 
+The values are then written to the file (normally inside a loop) using 
+the ntuple functions described below.</p>
+<p>A histogram can be created from ntuple data by providing a selection function 
+and a value function. The selection function specifies whether an event should 
+be included in the subset to be analyzed or not. The value function computes 
+the entry to be added to the histogram for each event.</p>
+<h2><a name="1" href="#1">1</a> <a name="label-1">The <code>GSL::Ntuple</code> class</a></h2><!-- RDLabel: "The GSL::Ntuple class" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Ntuple.create(<var>filename</var>, <var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Ntuple.create" -->
+<dt><a name="label-3" id="label-3"><code>GSL::Ntuple.alloc(<var>filename</var>, <var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Ntuple.alloc" -->
+<dd>
+These create a new write-only ntuple file <var>filename</var> for ntuples. </dd>
+</dl>
+<p>Any existing file with the same name is truncated to zero length and overwritten. 
+A preexisting <code>Vector</code> object <var>v</var> for the current ntuple data must be supplied:
+this is used to copy ntuples in and out of the file.</p>
+<dl>
+<dt><a name="label-4" id="label-4"><code>GSL::Ntuple.open(<var>filename</var>, <var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Ntuple.open" -->
+<dd>
+This opens an existing ntuple file <var>filename</var> for reading. A preexisting</dd>
+</dl>
+<p><code>Vector</code> object <var>v</var> for the current ntuple data must be supplied.</p>
+<h2><a name="2" href="#2">2</a> <a name="label-5">Writing and reading ntuples</a></h2><!-- RDLabel: "Writing and reading ntuples" -->
+
+<dl>
+<dt><a name="label-6" id="label-6"><code>GSL::Ntuple#write</code></a></dt><!-- RDLabel: "GSL::Ntuple#write" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Ntuple#bookdata</code></a></dt><!-- RDLabel: "GSL::Ntuple#bookdata" -->
+<dd>
+This method writes the current ntuple data to the corresponding file.</dd>
+<dt><a name="label-8" id="label-8"><code>GSL::Ntuple#read</code></a></dt><!-- RDLabel: "GSL::Ntuple#read" -->
+<dd>
+This method reads the current row of the ntuple file.</dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-9">Histogramming ntuple values</a></h2><!-- RDLabel: "Histogramming ntuple values" -->
+
+<p>Once an ntuple has been created its contents can be histogrammed in various ways using 
+the function gsl_ntuple_project. Two user-defined functions must be provided, a function 
+to select events and a function to compute scalar values. The selection function and the 
+value function both accept the ntuple row as a first argument and other parameters as a 
+second argument.</p>
+<dl>
+<dt><a name="label-10" id="label-10"><code>GSL::Ntuple::SelectFn.alloc {<var>block</var>}</code></a></dt><!-- RDLabel: "GSL::Ntuple::SelectFn.alloc" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Ntuple::SelectFn.alloc(<var>proc</var>)</code></a></dt><!-- RDLabel: "GSL::Ntuple::SelectFn.alloc" -->
+<dt><a name="label-12" id="label-12"><code>GSL::Ntuple::ValueFn.alloc {<var>block</var>}</code></a></dt><!-- RDLabel: "GSL::Ntuple::ValueFn.alloc" -->
+<dt><a name="label-13" id="label-13"><code>GSL::Ntuple::ValueFn.alloc(<var>proc</var>)</code></a></dt><!-- RDLabel: "GSL::Ntuple::ValueFn.alloc" -->
+<dd>
+Constructors for selection functions and value functions.
+The selection function shoud return a non-zero value for each ntuple row that 
+is to be included in the histogram. The value function should return the value to
+be added to the histogram for the ntuple row.</dd>
+<dt><a name="label-14" id="label-14"><code>GSL::Ntuple::SelectFn#set_params(<var>params</var>)</code></a></dt><!-- RDLabel: "GSL::Ntuple::SelectFn#set_params" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Ntuple::ValueFn#set_params(<var>params</var>)</code></a></dt><!-- RDLabel: "GSL::Ntuple::ValueFn#set_params" -->
+<dd>
+Set the parameters of the functions, by an array <var>params</var>.</dd>
+<dt><a name="label-16" id="label-16"><code>GSL::Ntuple.project(<var>h</var>, <var>n</var>, <var>valfn</var>, <var>selfn</var>)</code></a></dt><!-- RDLabel: "GSL::Ntuple.project" -->
+<dd>
+These methods updates the histogram <var>h</var> from the ntuple <var>n</var> using 
+the functions <var>valfn</var> and <var>selfn</var>. For each ntuple row where the selection 
+function <var>selen</var> is non-zero the corresponding value of that row is computed 
+using the function value_func<var>valfn</var> and added to the histogram <var>h</var>. 
+Those ntuple rows where <var>selfn</var> returns zero are ignored. New entries are added 
+to the histogram, so subsequent calls can be used to accumulate further data in the 
+same histogram.</dd>
+</dl>
+<p><a href="hist2d.html">prev</a>
+<a href="monte.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

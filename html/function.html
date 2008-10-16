@@ -1,0 +1,95 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>GSL::Function class</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">GSL::Function class</a></h1><!-- RDLabel: "GSL::Function class" -->
+
+<h2><a name="1" href="#1">1</a> <a name="label-1">Class Methods</a></h2><!-- RDLabel: "Class Methods" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Function.alloc</code></a></dt><!-- RDLabel: "GSL::Function.alloc" -->
+<dd>
+<p>Constructor.</p>
+<ul>
+<li><p>ex:</p>
+<pre>require("gsl")
+f = GSL::Function.alloc { |x| sin(x) }</pre></li>
+</ul>
+<p>The value of the function is calculated by the method <code>Function#eval</code>, as</p>
+<pre>p f.eval(x)</pre>
+<p>The function can have parameters of arbitrary numbers. Here is an
+example in case of exponential function <code>f(x; a, b) = a*exp(-b*x)</code>.</p>
+<pre>f = GSL::Function.alloc { |x, params|    # x: a scalar, params: an array
+  a = params[0]; b = params[1]
+  a*exp(-b*x)
+}</pre>
+<p>To evaluate the function <code>f(x) = 2*exp(-3*x)</code>, </p>
+<pre>f.set_params([2, 3])
+f.eval(x)</pre></dd>
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-3">Methods</a></h2><!-- RDLabel: "Methods" -->
+
+<dl>
+<dt><a name="label-4" id="label-4"><code>GSL::Function#eval(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Function#eval" -->
+<dt><a name="label-5" id="label-5"><code>GSL::Function#call(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Function#call" -->
+<dt><a name="label-6" id="label-6"><code>GSL::Function#at(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Function#at" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Function#[x]</code></a></dt><!-- RDLabel: "GSL::Function#[x]" -->
+<dd>
+<p>These methods return a value of the function at <var>x</var>.</p>
+<pre>p f.eval(2.5)
+p f.call(2.5)
+p f[2.5]</pre>
+<p>The argument <var>x</var> can be a scalar, a Vector, Matrix, Array or Range.</p></dd>
+<dt><a name="label-8" id="label-8"><code>GSL::Function#set { |<var>x</var>| ... }</code></a></dt><!-- RDLabel: "GSL::Function#set" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Function#set(<var>proc</var>, <var>params</var>)</code></a></dt><!-- RDLabel: "GSL::Function#set" -->
+<dd>
+<p>This method sets or resets the procedure of <var>self</var>, as</p>
+<pre>f = GSL::Function.alloc { |x| sin(x) }
+p f.eval(1.0)               &lt;- sin(1.0)
+f.set { |x| cos(x) }
+p f.eval(1.0)               &lt;- cos(1.0)</pre></dd>
+<dt><a name="label-10" id="label-10"><code>GSL::Function#set_params(<var>params</var>)</code></a></dt><!-- RDLabel: "GSL::Function#set_params" -->
+<dd>
+This set the constant parameters of the function.</dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-11">Graph</a></h2><!-- RDLabel: "Graph" -->
+
+<dl>
+<dt><a name="label-12" id="label-12"><code>GSL::Function#graph(<var>x</var>[, <var>options</var>])</code></a></dt><!-- RDLabel: "GSL::Function#graph" -->
+<dd>
+<p>This method uses <code>GNU graph</code> to plot the function <var>self</var>.
+The argument <var>x</var> is given by a <code>GSL::Vector</code> or an <code>Array</code>.</p>
+<p>Ex: Plot sin(x)</p>
+<pre>f = Function.alloc { |x| Math::sin(x) }
+x = Vector.linspace(0, 2*M_PI, 50)
+f.graph(x, "-T X -g 3 -C -L 'sin(x)'")</pre></dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-13">Example</a></h2><!-- RDLabel: "Example" -->
+
+<p>A quadratic function, f(x) = x^2 + 2x + 3.</p>
+<pre>irb(main):001:0&gt; require("gsl")
+=&gt; true
+irb(main):002:0&gt; f = Function.alloc { |x, param| x*x + param[0]*x + param[1] } 
+=&gt; #&lt;GSL::Function:0x6e8eb0&gt;
+irb(main):003:0&gt; f.set_params(2, 3)
+=&gt; #&lt;GSL::Function:0x6e8eb0&gt;
+irb(main):004:0&gt; f.eval(2)                             &lt;--- Scalar
+=&gt; 11
+irb(main):005:0&gt; f.eval(1..4)                          &lt;--- Range
+=&gt; [6.0, 11.0, 18.0, 27.0]
+irb(main):006:0&gt; f.eval([1, 2, 3])                     &lt;--- Array
+=&gt; [6.0, 11.0, 18.0]
+irb(main):007:0&gt; f.eval(Matrix.alloc([1, 2], [3, 4]))    &lt;--- GSL::Matrix
+[ 6.000e+00 1.100e+01 
+  1.800e+01 2.700e+01 ]
+=&gt; #&lt;GSL::Matrix:0x6dd1b4&gt;</pre>
+<p><a href="index.html">back</a></p>
+
+</body>
+</html>

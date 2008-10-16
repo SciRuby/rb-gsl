@@ -1,0 +1,206 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Discrete Wavelet Transforms</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Discrete Wavelet Transforms</a></h1><!-- RDLabel: "Discrete Wavelet Transforms" -->
+
+<p>This chapter describes functions for performing Discrete Wavelet Transforms 
+(DWTs). 
+The library includes wavelets for real data in both one and two dimensions. </p>
+<p>Contents:</p>
+<ol>
+<li><a href="wavelet.html#1">Definitions</a></li>
+<li><a href="wavelet.html#2">Initialization</a></li>
+<li><a href="wavelet.html#3">Transform methods</a>
+<ol>
+<li><a href="wavelet.html#3.1">Wavelet transforms in one dimension</a></li>
+<li><a href="wavelet.html#3.2">Wavelet transforms in two dimension</a></li>
+</ol></li>
+<li><a href="wavelet.html#4">Examples</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Definitions</a></h2><!-- RDLabel: "Definitions" -->
+
+<p>The continuous wavelet transform and its inverse are defined by the relations,
+and,
+where the basis functionspsi_{s,tau} are obtained by scaling and translation 
+from a single function, referred to as the mother wavelet.</p>
+<p>The discrete version of the wavelet transform acts on evenly sampled data, 
+with fixed scaling and translation steps (s, tau). The frequency and time 
+axes are sampled dyadically on scales of 2^j through a level parameter j. 
+The resulting family of functions {psi_{j,n}} constitutes an orthonormal 
+basis for square-integrable signals.</p>
+<p>The discrete wavelet transform is an O(N) algorithm, and is also referred to as 
+the fast wavelet transform.</p>
+<h2><a name="2" href="#2">2</a> <a name="label-2">Initialization</a></h2><!-- RDLabel: "Initialization" -->
+
+<dl>
+<dt><a name="label-3" id="label-3"><code>GSL::Wavelet.alloc(<var>type</var>, <var>k</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.alloc" -->
+<dt><a name="label-4" id="label-4"><code>GSL::Wavelet.alloc(<var>type</var>, <var>k</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.alloc" -->
+<dd>
+<p>This function allocates and initializes a wavelet object of type <var>type</var>. 
+The parameter <var>k</var> selects the specific member of the wavelet family. </p>
+<p>The wavelet types are given by a constant (Fixnum) or a string as followings.</p>
+<ul>
+<li><code>GSL::Wavelet::DAUBECHIES</code>, or <code>"daubechies"</code></li>
+<li><code>GSL::Wavelet::DAUBECHIES_CENTERED</code>, or <code>"daubechies_centered"</code></li>
+<li><code>GSL::Wavelet::HAAR</code>, or <code>"haar"</code></li>
+<li><code>GSL::Wavelet::HAAR_CENTERED</code>, or <code>"haar_centered"</code></li>
+<li><code>GSL::Wavelet::BSPLINE</code>, or <code>"bspline"</code></li>
+<li><code>GSL::Wavelet::BSPLINE_CENTERED</code>, or <code>"bspline_centered"</code></li>
+</ul>
+<p>The centered forms of the wavelets align the coefficients of the various 
+sub-bands on edges. Thus the resulting visualization of the coefficients 
+of the wavelet transform in the phase plane is easier to understand.</p></dd>
+<dt><a name="label-5" id="label-5"><code>GSL::Wavelet#name</code></a></dt><!-- RDLabel: "GSL::Wavelet#name" -->
+<dd>
+This method returns a String of the name of the wavelet family for <var>self</var>.</dd>
+<dt><a name="label-6" id="label-6"><code>GSL::Wavelet::Workspace.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet::Workspace.alloc" -->
+<dd>
+The GSL::Wavelet::Workspace object contains scratch space of the same size as 
+the input data, for holding intermediate results during the transform.
+This method allocates a workspace for the discrete wavelet transform. 
+To perform a one-dimensional transform on <var>n</var> elements, a workspace of 
+size <var>n</var> must be provided. For two-dimensional transforms of n-by-n 
+matrices it is sufficient to allocate a workspace of size <var>n</var>, 
+since the transform operates on individual rows and columns.</dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-7">Transform Methods</a></h2><!-- RDLabel: "Transform Methods" -->
+
+<h3><a name="3.1" href="#3.1">3.1</a> <a name="label-8">Wavelet transforms in one dimension</a></h3><!-- RDLabel: "Wavelet transforms in one dimension" -->
+
+<dl>
+<dt><a name="label-9" id="label-9"><code>GSL::Wavelet.transform(<var>w</var>, <var>v</var>, <var>dir</var> = <var>GSL</var>::<var>Wavelet</var>::<var>FORWARD</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Wavelet.transform(<var>w</var>, <var>v</var>, <var>dir</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Wavelet.transform(<var>w</var>, <var>v</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform" -->
+<dt><a name="label-12" id="label-12"><code>GSL::Wavelet.transform(<var>w</var>, <var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform" -->
+<dt><a name="label-13" id="label-13"><code>GSL::Wavelet#transform(<var>v</var>, <var>dir</var> = <var>GSL</var>::<var>Wavelet</var>::<var>FORWARD</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Wavelet#transform(<var>v</var>, <var>dir</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Wavelet#transform(<var>v</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform" -->
+<dt><a name="label-16" id="label-16"><code>GSL::Wavelet#transform(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform" -->
+<dt><a name="label-17" id="label-17"><code>GSL::Wavelet.transform_forward(<var>w</var>, <var>v</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform_forward" -->
+<dt><a name="label-18" id="label-18"><code>GSL::Wavelet.transform_forward(<var>w</var>, <var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform_forward" -->
+<dt><a name="label-19" id="label-19"><code>GSL::Wavelet#transform_forward(<var>v</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform_forward" -->
+<dt><a name="label-20" id="label-20"><code>GSL::Wavelet#transform_forward(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform_forward" -->
+<dt><a name="label-21" id="label-21"><code>GSL::Wavelet.transform_inverse(<var>w</var>, <var>v</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform_inverse" -->
+<dt><a name="label-22" id="label-22"><code>GSL::Wavelet.transform_inverse(<var>w</var>, <var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform_inverse" -->
+<dt><a name="label-23" id="label-23"><code>GSL::Wavelet#transform_inverse(<var>v</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform_inverse" -->
+<dt><a name="label-24" id="label-24"><code>GSL::Wavelet#transform_inverse(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform_inverse" -->
+<dt><a name="label-25" id="label-25"><code>GSL::Vector#wavelet_transform(<var>w</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector#wavelet_transform" -->
+<dt><a name="label-26" id="label-26"><code>GSL::Vector#wavelet_transform_forward(<var>w</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector#wavelet_transform_forward" -->
+<dt><a name="label-27" id="label-27"><code>GSL::Vector#wavelet_transform_inverse(<var>w</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector#wavelet_transform_inverse" -->
+<dd>
+<p>These methods compute forward and inverse discrete wavelet transforms 
+of the vector <var>v</var>. The length of the transform is restricted to powers 
+of two. For the transform version of the function the argument dir can be 
+either GSL::Wavelet::FORWARD (+1) or GSL::Wavelet::BACKWARD (-1). 
+A workspace <var>work</var> can be omitted.</p>
+<p>If <var>v</var> is a <code>GSL::Matrix</code> object, methods for 2d-transforms
+are called.</p>
+<p>For the forward transform, the elements of the original vector are replaced by 
+the discrete wavelet transform f_i -&gt; w_{j,k} in a packed triangular storage 
+layout, where j is the index of the level j = 0 ... J-1 and k is the index of 
+the coefficient within each level, k = 0 ... (2^j)-1. The total number of 
+levels is J = log_2(n). </p>
+<p>These methods return a transformed data, and the input vector is not changed.</p></dd>
+</dl>
+<h3><a name="3.2" href="#3.2">3.2</a> <a name="label-28">Wavelet transforms in two dimension</a></h3><!-- RDLabel: "Wavelet transforms in two dimension" -->
+
+<dl>
+<dt><a name="label-29" id="label-29"><code>GSL::Wavelet.transform(<var>same</var> <var>as</var> <var>the</var> <var>methods</var> <var>for</var> <var>one</var> <var>dimensional</var> <var>transforms</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform" -->
+<dt><a name="label-30" id="label-30"><code>GSL::Wavelet.transform_matrix()</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform_matrix" -->
+<dt><a name="label-31" id="label-31"><code>GSL::Wavelet2d.transform()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d.transform" -->
+<dt><a name="label-32" id="label-32"><code>GSL::Wavelet#transform(<var>same</var> <var>as</var> <var>the</var> <var>methods</var> <var>for</var> <var>one</var> <var>dimensional</var> <var>transforms</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform" -->
+<dt><a name="label-33" id="label-33"><code>GSL::Wavelet#transform_matrix()</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform_matrix" -->
+<dt><a name="label-34" id="label-34"><code>GSL::Wavelet2d#transform()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d#transform" -->
+<dt><a name="label-35" id="label-35"><code>GSL::Wavelet.transform_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform_forward" -->
+<dt><a name="label-36" id="label-36"><code>GSL::Wavelet.transform_matrix_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform_matrix_forward" -->
+<dt><a name="label-37" id="label-37"><code>GSL::Wavelet2d.transform_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d.transform_forward" -->
+<dt><a name="label-38" id="label-38"><code>GSL::Wavelet#transform_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform_forward" -->
+<dt><a name="label-39" id="label-39"><code>GSL::Wavelet#transform_matrix_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform_matrix_forward" -->
+<dt><a name="label-40" id="label-40"><code>GSL::Wavelet2d#transform_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d#transform_forward" -->
+<dt><a name="label-41" id="label-41"><code>GSL::Wavelet.transform_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform_inverse" -->
+<dt><a name="label-42" id="label-42"><code>GSL::Wavelet.transform_matrix_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet.transform_matrix_inverse" -->
+<dt><a name="label-43" id="label-43"><code>GSL::Wavelet2d.transform_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d.transform_inverse" -->
+<dt><a name="label-44" id="label-44"><code>GSL::Wavelet#transform_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform_inverse" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Wavelet#transform_matrix_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet#transform_matrix_inverse" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Wavelet2d#transform_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d#transform_inverse" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Wavelet.nstransform(<var>same</var> <var>as</var> <var>the</var> <var>methods</var> <var>for</var> <var>one</var> <var>dimensional</var> <var>nstransforms</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet.nstransform" -->
+<dt><a name="label-48" id="label-48"><code>GSL::Wavelet.nstransform_matrix()</code></a></dt><!-- RDLabel: "GSL::Wavelet.nstransform_matrix" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Wavelet2d.nstransform()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d.nstransform" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Wavelet#nstransform(<var>same</var> <var>as</var> <var>the</var> <var>methods</var> <var>for</var> <var>one</var> <var>dimensional</var> <var>nstransforms</var>)</code></a></dt><!-- RDLabel: "GSL::Wavelet#nstransform" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Wavelet#nstransform_matrix()</code></a></dt><!-- RDLabel: "GSL::Wavelet#nstransform_matrix" -->
+<dt><a name="label-52" id="label-52"><code>GSL::Wavelet2d#nstransform()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d#nstransform" -->
+<dt><a name="label-53" id="label-53"><code>GSL::Wavelet.nstransform_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet.nstransform_forward" -->
+<dt><a name="label-54" id="label-54"><code>GSL::Wavelet.nstransform_matrix_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet.nstransform_matrix_forward" -->
+<dt><a name="label-55" id="label-55"><code>GSL::Wavelet2d.nstransform_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d.nstransform_forward" -->
+<dt><a name="label-56" id="label-56"><code>GSL::Wavelet#nstransform_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet#nstransform_forward" -->
+<dt><a name="label-57" id="label-57"><code>GSL::Wavelet#nstransform_matrix_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet#nstransform_matrix_forward" -->
+<dt><a name="label-58" id="label-58"><code>GSL::Wavelet2d#nstransform_forward()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d#nstransform_forward" -->
+<dt><a name="label-59" id="label-59"><code>GSL::Wavelet.nstransform_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet.nstransform_inverse" -->
+<dt><a name="label-60" id="label-60"><code>GSL::Wavelet.nstransform_matrix_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet.nstransform_matrix_inverse" -->
+<dt><a name="label-61" id="label-61"><code>GSL::Wavelet2d.nstransform_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d.nstransform_inverse" -->
+<dt><a name="label-62" id="label-62"><code>GSL::Wavelet#nstransform_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet#nstransform_inverse" -->
+<dt><a name="label-63" id="label-63"><code>GSL::Wavelet#nstransform_matrix_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet#nstransform_matrix_inverse" -->
+<dt><a name="label-64" id="label-64"><code>GSL::Wavelet2d#nstransform_inverse()</code></a></dt><!-- RDLabel: "GSL::Wavelet2d#nstransform_inverse" -->
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-65">Example</a></h2><!-- RDLabel: "Example" -->
+
+<pre>#!/usr/bin/env ruby
+require("gsl")
+
+n = 256
+nc = 20
+
+data = Vector.alloc(n)
+data.fscanf("ecg.dat")
+
+w = GSL::Wavelet.alloc("daubechies", 4)
+work = GSL::Wavelet::Workspace.alloc(n)
+
+##### Choose as you like...
+data2 = w.transform(data, Wavelet::FORWARD, work)
+#data2 = w.transform(data, work)
+#data2 = w.transform(data)
+#data2 = w.transform(data, Wavelet::FORWARD)
+#data2 = w.transform_forward(data, work)
+#data2 = w.transform_forward(data)
+#data2 = Wavelet.transform(w, data, Wavelet::FORWARD, work)
+#data2 = Wavelet.transform(w, data, Wavelet::FORWARD)
+#data2 = Wavelet.transform(w, data, work)
+#data2 = Wavelet.transform_forward(w, data)
+#data2 = data.wavelet_transform(w, Wavelet::FORWARD, work)
+#data2 = data.wavelet_transform_forward(w, work)
+
+perm = data2.abs.sort_index
+
+i = 0
+while (i + nc) &lt; n
+  data2[perm[i]] = 0.0
+  i += 1  
+end
+
+#data3 = w.transform(data2, Wavelet::BACKWARD, work)
+#data3 = w.transform(data2, Wavelet::BACKWARD)
+#data3 = w.transform_inverse(data2, work)
+#data3 = w.transform_inverse(data2)
+#data3 = Wavelet.transform(w, data2, Wavelet::BACKWARD, work)
+#data3 = Wavelet.transform(w, data2, Wavelet::BACKWARD)
+#data3 = Wavelet.transform_inverse(w, data2, work)
+data3 = Wavelet.transform_inverse(w, data2)
+#data3 = data2.wavelet_transform(w, Wavelet::BACKWARD, work)
+#data3 = data2.wavelet_transform_inverse(w, work)
+
+#If you have GNU graph utility...
+GSL::graph(nil, data, data3, "-T X -C -g 3")</pre>
+<p><a href="fft.html">prev</a>
+<a href="integration.html">next</a></p>
+<p><a href="index.html">back</a></p>
+
+</body>
+</html>

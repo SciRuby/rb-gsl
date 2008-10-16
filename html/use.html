@@ -1,0 +1,274 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Using Ruby/GSL</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Using Ruby/GSL</a></h1><!-- RDLabel: "Using Ruby/GSL" -->
+
+<h2><a name="1" href="#1">1</a> <a name="label-1">Installation</a></h2><!-- RDLabel: "Installation" -->
+
+<p>See <a href="index.html">here</a>.</p>
+<h2><a name="2" href="#2">2</a> <a name="label-2">Load the library</a></h2><!-- RDLabel: "Load the library" -->
+
+<p>Put at the head of your scripts,</p>
+<pre>require("gsl")</pre>
+<h2><a name="3" href="#3">3</a> <a name="label-3">Naming conventions, C Structs and Ruby Classes</a></h2><!-- RDLabel: "Naming conventions, C Structs and Ruby Classes" -->
+
+<p>Most of the GSL data types, functions or constants are named as <code>gsl_xxx</code> or <code>GSL_XXX</code>. 
+In Ruby/GSL, the prefix <code>gsl_</code> is replaced by the module identifier <code>GSL::</code>, 
+where <code>GSL</code> is the top level module of Ruby/GSL,
+and the Ruby classes are defined for each of the GSL C structs under the <code>GSL</code> module.
+According to the Ruby manner, the name of each class begins with a capital. For example,</p>
+<ul>
+<li>Struct <code>gsl_vector</code> ---&gt; Ruby class <code>GSL::Vector</code>
+<ul>
+<li>Function call as <code>v = gsl_vector_alloc(5);</code> ---&gt; Class method <code>v = GSL::Vector.alloc(5)</code></li>
+<li>Function call as <code>gsl_vector_set(v, i, 1.5);</code> ---&gt; Method <code>v.set(i, 1.5)</code> or <code>v[i] = 1.5</code></li>
+</ul></li>
+<li>Constant <code>GSL_SUCCESS</code> ---&gt; Ruby module constant <code>GSL::SUCCESS</code></li>
+<li>Function <code>gsl_sf_bessel_J0(x)</code> ---&gt;
+<ul>
+<li>Submodule <code>GSL::Sf</code></li>
+<li>Module function <code>GSL::Sf::bessel_J0(x)</code>
+<ul>
+<li><code>GSL::Sf::Bessel::J0(x)</code> is also OK, where <code>J0(x)</code> is a module function of the sub-sub-module <code>GSL::Sf::Bessel</code>.</li>
+</ul></li>
+</ul></li>
+<li>Function <code>gsl_linalg_LU_decomp</code> ---&gt;
+<ul>
+<li>Module <code>GSL::Linalg::LU</code>
+<ul>
+<li>Singleton method <code>GSL::Linalg::LU_decomp</code></li>
+<li>Submodule <code>GSL::Linalg::LU</code>
+<ul>
+<li>Singleton method <code>GSL::Linalg::LU.decomp</code></li>
+</ul></li>
+</ul></li>
+<li>Method <code>GSL::Matrix#LU_decomp</code></li>
+</ul></li>
+</ul>
+<h2><a name="4" href="#4">4</a> <a name="label-4">Examples</a></h2><!-- RDLabel: "Examples" -->
+
+<p>See the directories "examples/" and "tests/".</p>
+<p>Some of the examples use the <code>graph</code> utility to show the results. The <code>graph</code>
+utility is included in the <a href="http://www.gnu.org/software/plotutils/plotutils.html">GNU plotutils</a> package. Windows-cygwin binaries of <code>GNU plotutils</code> and 
+related packages are available from 
+<a href="http://rustam.uwp.edu/support">here</a>.</p>
+<h2><a name="5" href="#5">5</a> <a name="label-5">Modules and Classes</a></h2><!-- RDLabel: "Modules and Classes" -->
+
+<p>The following is the list of Ruby/GSL modules and classes, &lt;Name&gt; (&lt;Module or Class&gt;)</p>
+<ul>
+<li>GSL (Module) 
+<ul>
+<li>Complex (Class) </li>
+<li>Poly (Class) 
+<ul>
+<li>Workspace (Class)</li>
+<li>DividedDifferenceRepresentation (Class)</li>
+<li>Taylor (Class)</li>
+</ul></li>
+<li>Sf (Module) 
+<ul>
+<li>Result (Class)</li>
+</ul></li>
+<li>Block (Class)
+<ul>
+<li>Int (Class)</li>
+<li>Byte (Class)</li>
+<li>Index &lt; Permutation</li>
+</ul></li>
+<li>Vector (Class) 
+<ul>
+<li>View &lt; Vector</li>
+<li>Complex (Class)
+<ul>
+<li>View &lt; Vector::Complex</li>
+</ul></li>
+</ul></li>
+<li>Matrix (Class) 
+<ul>
+<li>View &lt; Matrix (Class)</li>
+<li>Complex (Class)
+<ul>
+<li>View &lt; Matrix::Complex</li>
+</ul></li>
+</ul></li>
+<li>Permutation (Class) </li>
+<li>Combination (Class) </li>
+<li>Linalg (Module) 
+<ul>
+<li>LU (Module)</li>
+<li>QR (Module)</li>
+<li>QRPT (Module)</li>
+<li>LQ (Module)</li>
+<li>LQPT (Module)</li>
+<li>SV (Module)</li>
+<li>Cholesky (Module)</li>
+<li>Symmtd (Module)</li>
+<li>HH (Module)</li>
+</ul></li>
+<li>Eigen (Module)
+<ul>
+<li>EigenValues &lt; Vector</li>
+<li>EigenVectors &lt; Matrix</li>
+<li>Symm (Module)
+<ul>
+<li>Workspace (Class)</li>
+</ul></li>
+<li>Symmv (Module)
+<ul>
+<li>Workspace (Class)</li>
+</ul></li>
+<li>Unsymm (Module)
+<ul>
+<li>Workspace (Class)</li>
+</ul></li>
+<li>Unsymmv (Module)
+<ul>
+<li>Workspace (Class)</li>
+</ul></li>
+<li>Herm (Module)
+<ul>
+<li>Workspace (Class)</li>
+</ul></li>
+<li>Hermv (Module)
+<ul>
+<li>Workspace (Class)</li>
+</ul></li>
+</ul></li>
+<li>FFT (Module) 
+<ul>
+<li>Complex (Module)
+<ul>
+<li>PackedArray (Class)</li>
+<li>Wavetable (Class)</li>
+<li>Workspace (Class)</li>
+</ul></li>
+<li>Real (Module)
+<ul>
+<li>Wavetable (Class)</li>
+<li>Workspace (Class)      </li>
+</ul></li>
+<li>HalfComplex (Module)
+<ul>
+<li>Wavetable (Class)</li>
+</ul></li>
+<li>Wavetable (Class)</li>
+<li>WavetableFactor (Class)</li>
+<li>Workspace (Class)</li>
+</ul></li>
+<li>Wavelet (Class)
+<ul>
+<li>Wavelet2d &lt; Wavelet</li>
+</ul></li>
+<li>Function (Class)</li>
+<li>Function_fdf (Class)</li>
+<li>Integration (Module)
+<ul>
+<li>Workspace</li>
+<li>QAWS_Table</li>
+<li>QAWO_Table</li>
+</ul></li>
+<li>Rng (Class) </li>
+<li>QRng (Class)</li>
+<li>Ran (Module)</li>
+<li>Stats (Module) </li>
+<li>Histogram (Class) 
+<ul>
+<li>Integral &lt; Histogram</li>
+<li>Pdf (Class)</li>
+</ul></li>
+<li>Histogram2d (Class)</li>
+<li>N-tuples 
+<ul>
+<li>SelectFn (Class)</li>
+<li>ValueFn (Class)</li>
+</ul></li>
+<li>Monte (Module)
+<ul>
+<li>Function (Class)</li>
+<li>Plain (Class)</li>
+<li>Miser (Class)</li>
+<li>Vegas (Class)</li>
+</ul></li>
+<li>Siman (Module)
+<ul>
+<li>Efunc (Class)</li>
+<li>Step (Class)</li>
+<li>Metric (Class)</li>
+<li>Print (Class)</li>
+<li>Params (Class)</li>
+<li>Solver (Class)</li>
+</ul></li>
+<li>Odeiv (Module)
+<ul>
+<li>Control (Class)</li>
+<li>Evolve (Class)</li>
+<li>System (Class)</li>
+<li>Solver (Class)</li>
+</ul></li>
+<li>Interp (Class)
+<ul>
+<li>Accel (Class)</li>
+</ul></li>
+<li>Spline (Class)</li>
+<li>Diff (Module) </li>
+<li>Deriv (Module)</li>
+<li>Cheb (Class) </li>
+<li>Sum (Module) 
+<ul>
+<li>Levin_u (Class)</li>
+<li>Levin_utrunc (Class)</li>
+</ul></li>
+<li>Dht (Class) </li>
+<li>Root (Module)
+<ul>
+<li>Solver (Class)</li>
+<li>FdfSolver (Class)</li>
+</ul></li>
+<li>Min(Module) 
+<ul>
+<li>FMinimizer (Class)</li>
+</ul></li>
+<li>MultiRoot (Module)
+<ul>
+<li>Function (Class)</li>
+<li>FSolver (Class)</li>
+<li>Function_fdf (Class)</li>
+<li>FdfSolver (Class)</li>
+</ul></li>
+<li>MultiMin (Module) 
+<ul>
+<li>Function (Class)</li>
+<li>FMinimizer (Class)</li>
+<li>Function_fdf (Class)</li>
+<li>FdfMinimizer (Class)</li>
+</ul></li>
+<li>Fit (Module) </li>
+<li>MultiFit (Module)
+<ul>
+<li>Workspace (Class)</li>
+<li>Solver (Class)</li>
+<li>Function_fdf (Class)</li>
+<li>FdfSolver (Class)</li>
+</ul></li>
+<li>CONST (Module) 
+<ul>
+<li>MKSA (Module)</li>
+<li>CGSM (Module)</li>
+<li>NUM (Module)</li>
+</ul></li>
+</ul></li>
+</ul>
+<p><a href="intro.html">prev</a>
+<a href="ehandling.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

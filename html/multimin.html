@@ -1,0 +1,306 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Multidimensional Minimization</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Multidimensional Minimization</a></h1><!-- RDLabel: "Multidimensional Minimization" -->
+
+<p>This chapter describes routines for finding minima of arbitrary 
+multidimensional functions. The library provides low level components for a 
+variety of iterative minimizers and convergence tests. These can be combined 
+by the user to achieve the desired solution, while providing full access to 
+the intermediate steps of the algorithms. Each class of methods uses the 
+same framework, so that you can switch between minimizers at runtime without 
+needing to recompile your program. Each instance of a minimizer keeps track 
+of its own state, allowing the minimizers to be used in multi-threaded 
+programs. </p>
+<p>Contents:</p>
+<ol>
+<li><a href="multimin.html#1">Overview</a></li>
+<li><a href="multimin.html#2">Caveats</a></li>
+<li><a href="multimin.html#3">Initializing the Multidimensional Minimizer</a></li>
+<li><a href="multimin.html#4">Providing a function to minimize</a></li>
+<li><a href="multimin.html#5">Iteration</a></li>
+<li><a href="multimin.html#6">Stopping Criteria</a></li>
+<li><a href="multimin.html#7">Examples</a>
+<ol>
+<li><a href="multimin.html#7.1">FdfMinimizer</a></li>
+<li><a href="multimin.html#7.2">FMinimizer</a></li>
+</ol></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Overview</a></h2><!-- RDLabel: "Overview" -->
+
+<p>The problem of multidimensional minimization requires finding a point x such 
+that the scalar function, takes a value which is lower than at any neighboring 
+point. For smooth functions the gradient g = \nabla f vanishes at the minimum. 
+In general there are no bracketing methods available for the minimization of 
+n-dimensional functions. The algorithms proceed from an initial guess using a 
+search algorithm which attempts to move in a downhill direction. </p>
+<p>Algorithms making use of the gradient of the function perform a 
+one-dimensional line minimisation along this direction until the lowest point 
+is found to a suitable tolerance. The search direction is then updated with 
+local information from the function and its derivatives, and the whole process 
+repeated until the true n-dimensional minimum is found. </p>
+<p>The Nelder-Mead Simplex algorithm applies a different strategy. It maintains 
+n+1 trial parameter vectors as the vertices of a n-dimensional simplex. 
+In each iteration step it tries to improve the worst vertex by a simple 
+geometrical transformation until the size of the simplex falls below a given 
+tolerance. </p>
+<p>Both types of algorithms use a standard framework. The user provides a 
+high-level driver for the algorithms, and the library provides the individual 
+functions necessary for each of the steps. There are three main phases of the 
+iteration. The steps are, </p>
+<ul>
+<li>initialize minimizer state, s, for algorithm T </li>
+<li>update s using the iteration T </li>
+<li>test s for convergence, and repeat iteration if necessary </li>
+</ul>
+<p>Each iteration step consists either of an improvement to the line-minimisation 
+in the current direction or an update to the search direction itself. The 
+state for the minimizers is held in a <code>GSL::MultiMin::FdfMinimizer</code> or 
+a <code>GSL::MultiMin::FMinimizer</code> object.</p>
+<h2><a name="2" href="#2">2</a> <a name="label-2">Caveats</a></h2><!-- RDLabel: "Caveats" -->
+
+<p>Note that the minimization algorithms can only search for one local minimum 
+at a time. When there are several local minima in the search area, the first 
+minimum to be found will be returned; however it is difficult to predict which 
+of the minima this will be. In most cases, no error will be reported if you 
+try to find a local minimum in an area where there is more than one. </p>
+<p>It is also important to note that the minimization algorithms find local 
+minima; there is no way to determine whether a minimum is a global minimum of 
+the function in question. </p>
+<h2><a name="3" href="#3">3</a> <a name="label-3">Initializing the Multidimensional Minimizer</a></h2><!-- RDLabel: "Initializing the Multidimensional Minimizer" -->
+
+<dl>
+<dt><a name="label-4" id="label-4"><code>GSL::MultiMin::FdfMinimizer.alloc(<var>type</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer.alloc" -->
+<dt><a name="label-5" id="label-5"><code>GSL::MultiMin::FMinimizer.alloc(<var>type</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin::FMinimizer.alloc" -->
+<dd>
+These method create a minimizer of type <var>type</var> for an <var>n</var>-dimension function. 
+The type is given by a name of the algorithm, or by a Ruby constant.
+<ul>
+<li><code>GSL::MultiMin::FdfMinimizer::CONJUGATE_FR</code> or <code>"conjugate_fr"</code></li>
+<li><code>GSL::MultiMin::FdfMinimizer::CONJUGATE_PR</code> or <code>"conjugate_pr"</code></li>
+<li><code>GSL::MultiMin::FdfMinimizer::VECTOR_BFGS</code> or <code>"vector_bfgs"</code></li>
+<li><code>GSL::MultiMin::FdfMinimizer::VECTOR_BFGS2</code> or <code>"vector_bfgs2"</code> (GSL-1.9 or later)</li>
+<li><code>GSL::MultiMin::FdfMinimizer::STEEPEST_DESCENT</code> or <code>"steepest_descent"</code></li>
+<li><code>GSL::MultiMin::FMinimizer::NMSIMPLEX</code> or <code>"nmsimplex"</code></li>
+<li><p>ex:</p>
+<pre>include GSL::MultiMin
+m1 = FdfMinimizer.alloc(FdfMinimizer::CONJUGATE_FR, 2)
+m2 = FdfMinimizer.alloc("steepest_descent", 4)
+m3 = FMinimizer.alloc(FMinimizer::NMSIMPLEX, 3)
+m4 = FMinimizer.alloc("nmsimplex", 2)</pre></li>
+</ul></dd>
+<dt><a name="label-6" id="label-6"><code>GSL::MultiMin::FdfMinimizer#set(<var>func</var>, <var>x</var>, <var>step_size</var>, <var>tol</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer#set" -->
+<dd>
+This method initializes the minimizer <var>self</var> to minimize the function 
+<var>fdf</var> (the <code>GSL::MultiMin::Function_fdf</code> class, see below) starting from 
+the initial point <var>x</var> (<code>GSL::Vector</code>). The size of the first trial step is 
+given by <var>step_size</var> (<code>Vector</code>). The accuracy of the line minimization is 
+specified by <var>tol</var>.</dd>
+<dt><a name="label-7" id="label-7"><code>GSL::MultiMin::FMinimizer#set(<var>func</var>, <var>x</var>, <var>step_size</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin::FMinimizer#set" -->
+<dd>
+This method initializes the minimizer <var>self</var> to minimize the function <var>func</var>, 
+starting from the initial point <var>x</var> (Vector). The size of the initial trial steps 
+is given in vector <var>step_size</var>.</dd>
+<dt><a name="label-8" id="label-8"><code>GSL::MultiMin::FdfMinimizer#name</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer#name" -->
+<dt><a name="label-9" id="label-9"><code>GSL::MultiMin::FMinimizer#name</code></a></dt><!-- RDLabel: "GSL::MultiMin::FMinimizer#name" -->
+<dd>
+These return the name of the minimizer <var>self</var>.</dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-10">Providing a function to minimize</a></h2><!-- RDLabel: "Providing a function to minimize" -->
+
+<p>You must provide a parametric function of <code>n</code> variables for the minimizers to 
+operate on. You may also need to provide a routine which calculates the gradient of the 
+function. In order to allow for general parameters the functions are defined by the 
+classes, <code>GSL::MultiMin::Function_fdf</code> and <code>GSL::MultiMin::Function</code>.</p>
+<dl>
+<dt><a name="label-11" id="label-11"><code>GSL::MultiMin:Function_fdf.alloc(<var>proc_f</var>, <var>proc_df</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin:Function_fdf.alloc" -->
+<dt><a name="label-12" id="label-12"><code>GSL::MultiMin:Function_fdf.alloc(<var>proc_f</var>, <var>proc_df</var>, <var>proc_fdf</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin:Function_fdf.alloc" -->
+<dt><a name="label-13" id="label-13"><code>GSL::MultiMin:Function_fdf#set_procs(<var>proc_f</var>, <var>proc_df</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin:Function_fdf#set_procs" -->
+<dt><a name="label-14" id="label-14"><code>GSL::MultiMin:Function_fdf#set_procs(<var>proc_f</var>, <var>proc_df</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin:Function_fdf#set_procs" -->
+<dt><a name="label-15" id="label-15"><code>GSL::MultiMin:Function_fdf#set_procs(<var>proc_f</var>, <var>proc_df</var>, <var>proc_fdf</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin:Function_fdf#set_procs" -->
+<dt><a name="label-16" id="label-16"><code>GSL::MultiMin:Function_fdf#set_params(<var>params</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin:Function_fdf#set_params" -->
+<dd>
+<p>See example below.</p>
+<pre>include GSL::MultiMin
+
+my_f = Proc.new { |v, params|
+  x = v[0]; y = v[1]
+  p0 = params[0]; p1 = params[1]
+  10.0*(x - p0)*(x - p0) + 20.0*(y - p1)*(y - p1) + 30.0
+}
+
+my_df = Proc.new { |v, params, df|
+  x = v[0]; y = v[1]
+  p0 = params[0]; p1 = params[1]
+  df[0] = 20.0*(x-p0)
+  df[1] = 40.0*(y-p1)
+}
+
+my_func = Function_fdf.alloc(my_f, my_df, 2)
+my_func.set_params([1.0, 2.0])      # parameters</pre></dd>
+<dt><a name="label-17" id="label-17"><code>GSL::MultiMin:Function.alloc(<var>proc_f</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin:Function.alloc" -->
+<dt><a name="label-18" id="label-18"><code>GSL::MultiMin:Function#set_proc(<var>proc_f</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin:Function#set_proc" -->
+<dt><a name="label-19" id="label-19"><code>GSL::MultiMin:Function#set_proc(<var>proc_f</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin:Function#set_proc" -->
+<dt><a name="label-20" id="label-20"><code>GSL::MultiMin:Function#set_params(<var>params</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin:Function#set_params" -->
+<dd>
+<p>See example below.</p>
+<pre>include GSL::MultiMin
+
+np = 2
+my_f = Proc.alloc { |v, params|
+  x = v[0]; y = v[1]
+  p0 = params[0]; p1 = params[1]
+  10.0*(x - p0)*(x - p0) + 20.0*(y - p1)*(y - p1) + 30.0
+}
+
+my_func = Function.alloc(my_f, np)
+my_func.set_params([1.0, 2.0])      # parameters</pre></dd>
+</dl>
+<h2><a name="5" href="#5">5</a> <a name="label-21">Iteration</a></h2><!-- RDLabel: "Iteration" -->
+
+<dl>
+<dt><a name="label-22" id="label-22"><code>GSL::MultiMin::FdfMinimizer#iterate</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer#iterate" -->
+<dt><a name="label-23" id="label-23"><code>GSL::MultiMin::FMinimizer#iterate</code></a></dt><!-- RDLabel: "GSL::MultiMin::FMinimizer#iterate" -->
+<dd>
+These methods perform a single iteration of the minimizer <var>self</var>. 
+If the iteration encounters an unexpected problem then an error code will be returned.
+The minimizer maintains a current best estimate of the minimum at all times. 
+This information can be accessed with the following methods,</dd>
+<dt><a name="label-24" id="label-24"><code>GSL::MultiMin::FdfMinimizer#x</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer#x" -->
+<dt><a name="label-25" id="label-25"><code>GSL::MultiMin::FdfMinimizer#minimum</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer#minimum" -->
+<dt><a name="label-26" id="label-26"><code>GSL::MultiMin::FdfMinimizer#gradient</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer#gradient" -->
+<dt><a name="label-27" id="label-27"><code>GSL::MultiMin::FMinimizer#x</code></a></dt><!-- RDLabel: "GSL::MultiMin::FMinimizer#x" -->
+<dt><a name="label-28" id="label-28"><code>GSL::MultiMin::FMinimizer#minimum</code></a></dt><!-- RDLabel: "GSL::MultiMin::FMinimizer#minimum" -->
+<dt><a name="label-29" id="label-29"><code>GSL::MultiMin::FMinimizer#size</code></a></dt><!-- RDLabel: "GSL::MultiMin::FMinimizer#size" -->
+<dd>
+These method return the current best estimate of the location of the minimum, 
+the value of the function at that point, its gradient, and minimizer specific 
+characteristic size for the minimizer <var>self</var>.</dd>
+<dt><a name="label-30" id="label-30"><code>GSL::MultiMin::FdfMinimizer#restart</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer#restart" -->
+<dd>
+This method resets the minimizer <var>self</var> to use the current point as a new 
+starting point.</dd>
+</dl>
+<h2><a name="6" href="#6">6</a> <a name="label-31">Stopping Criteria</a></h2><!-- RDLabel: "Stopping Criteria" -->
+
+<p>A minimization procedure should stop when one of the following conditions is true:</p>
+<ul>
+<li>A minimum has been found to within the user-specified precision.</li>
+<li>A user-specified maximum number of iterations has been reached.</li>
+<li>An error has occurred.</li>
+</ul>
+<p>The handling of these conditions is under user control. The methods below allow the 
+user to test the precision of the current result.</p>
+<dl>
+<dt><a name="label-32" id="label-32"><code>GSL::MultiMin::FdfMinimizer#test_gradient(<var>epsabs</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer#test_gradient" -->
+<dt><a name="label-33" id="label-33"><code>GSL::MultiMin::FdfMinimizer.test_gradient(<var>g</var>, <var>epsabs</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer.test_gradient" -->
+<dd>
+<p>These method test the norm of the gradient <var>g</var> against the absolute tolerance 
+<var>epsabs</var>. The gradient of a multidimensional function goes to zero at a minimum. 
+The tests return <code>GSL::SUCCESS</code> if the following condition is achieved,</p>
+<pre>|g| &lt; epsabs</pre>
+<p>and returns <code>GSL::CONTINUE</code> otherwise. A suitable choice of <var>epsabs</var> can 
+be made from the desired accuracy in the function for small variations in <code>x</code>. 
+The relationship between these quantities is given by <code>\delta f = g \delta x</code>.</p></dd>
+<dt><a name="label-34" id="label-34"><code>GSL::MultiMin::FdfMinimizer#test_size(<var>epsabs</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer#test_size" -->
+<dt><a name="label-35" id="label-35"><code>GSL::MultiMin::FdfMinimizer.test_size(<var>size</var>, <var>epsabs</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin::FdfMinimizer.test_size" -->
+<dd>
+These method test the minimizer specific characteristic <var>size</var> 
+(if applicable to the used minimizer) against absolute tolerance <var>epsabs</var>. 
+The tests return (<code>GSL::SUCCESS</code> if the size is smaller than tolerance, 
+otherwise <code>GSL::CONTINUE</code> is returned.</dd>
+</dl>
+<h2><a name="7" href="#7">7</a> <a name="label-36">Examples</a></h2><!-- RDLabel: "Examples" -->
+
+<h3><a name="7.1" href="#7.1">7.1</a> <a name="label-37">FdfMinimizer</a></h3><!-- RDLabel: "FdfMinimizer" -->
+
+<pre>#!/usr/bin/env ruby
+require("gsl")
+include GSL::MultiMin
+
+my_f = Proc.new { |v, params|
+  x = v[0]; y = v[1]
+  p0 = params[0]; p1 = params[1]
+  10.0*(x - p0)*(x - p0) + 20.0*(y - p1)*(y - p1) + 30.0
+}
+
+my_df = Proc.new { |v, params, df|
+  x = v[0]; y = v[1]
+  p0 = params[0]; p1 = params[1]
+  df[0] = 20.0*(x-p0)
+  df[1] = 40.0*(y-p1)
+}
+
+my_func = Function_fdf.alloc(my_f, my_df, 2)
+my_func.set_params([1.0, 2.0])      # parameters
+
+x = Vector.alloc(5.0, 7.0)          # starting point
+
+minimizer = FdfMinimizer.alloc("conjugate_fr", 2)
+minimizer.set(my_func, x, 0.01, 1e-4)
+
+iter = 0
+begin
+  iter += 1
+  status = minimizer.iterate()
+  status = minimizer.test_gradient(1e-3)
+  if status == GSL::SUCCESS
+    puts("Minimum found at")
+  end
+  x = minimizer.x
+  f = minimizer.f
+  printf("%5d %.5f %.5f %10.5f\n", iter, x[0], x[1], f)
+end while status == GSL::CONTINUE and iter &lt; 100</pre>
+<h3><a name="7.2" href="#7.2">7.2</a> <a name="label-38">FMinimizer</a></h3><!-- RDLabel: "FMinimizer" -->
+
+<pre>#!/usr/bin/env ruby
+require("gsl")
+include GSL::MultiMin
+
+np = 2
+
+my_f = Proc.new { |v, params|
+  x = v[0]; y = v[1]
+  p0 = params[0]; p1 = params[1]
+  10.0*(x - p0)*(x - p0) + 20.0*(y - p1)*(y - p1) + 30.0
+}
+
+my_func = Function.alloc(my_f, np)
+my_func.set_params([1.0, 2.0])      # parameters
+
+x = Vector.alloc([5, 7])
+ss = Vector.alloc(np)
+ss.set_all(1.0)
+
+minimizer = FMinimizer.alloc("nmsimplex", np)
+minimizer.set(my_func, x, ss)
+
+iter = 0
+begin
+  iter += 1
+  status = minimizer.iterate()
+  status = minimizer.test_size(1e-2)
+  if status == GSL::SUCCESS
+    puts("converged to minimum at")
+  end
+  x = minimizer.x
+  printf("%5d ", iter);
+  for i in 0...np do
+    printf("%10.3e ", x[i])
+  end
+  printf("f() = %7.3f size = %.3f\n", minimizer.fval, minimizer.size);
+end while status == GSL::CONTINUE and iter &lt; 100</pre>
+<p><a href="multiroot.html">prev</a>
+<a href="fit.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

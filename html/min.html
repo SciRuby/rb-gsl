@@ -1,0 +1,183 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>One dimensional Minimization</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">One dimensional Minimization</a></h1><!-- RDLabel: "One dimensional Minimization" -->
+
+<p>This chapter describes routines for finding minima of arbitrary 
+one-dimensional functions.</p>
+<p>Contents:</p>
+<ol>
+<li><a href="min.html#1">Introduction</a></li>
+<li><a href="min.html#2">GSL::Min::FMinimizer class</a></li>
+<li><a href="min.html#3">Iteration</a></li>
+<li><a href="min.html#4">Stopping Parameters</a></li>
+<li><a href="min.html#5">Examples</a></li>
+</ol>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Introduction</a></h2><!-- RDLabel: "Introduction" -->
+
+<p>The minimization algorithms begin with a bounded region known to contain 
+a minimum. The region is described by <code>a</code> lower bound a and an upper bound 
+<code>b</code>, with an estimate of the location of the minimum <code>x</code>.</p>
+<p>The value of the function at <code>x</code> must be less than the value of the 
+function at the ends of the interval,</p>
+<pre>f(a) &gt; f(x) &lt; f(b)</pre>
+<p>This condition guarantees that a minimum is contained somewhere within the 
+interval. On each iteration a new point <code>x'</code> is selected using one of the
+available algorithms. If the new point is a better estimate of the minimum, 
+<code>f(x') &lt; f(x)</code>, then the current estimate of the minimum <code>x</code> is 
+updated. The new point also allows the size of the bounded interval to be 
+reduced, by choosing the most compact set of points which satisfies the 
+constraint <code>f(a) &gt; f(x) &lt; f(b)</code>. The interval is reduced until it 
+encloses the true minimum to a desired tolerance. This provides a best 
+estimate of the location of the minimum and a rigorous error estimate.</p>
+<p>Several bracketing algorithms are available within a single framework. 
+The user provides a high-level driver for the algorithm, and the library 
+provides the individual functions necessary for each of the steps. There 
+are three main phases of the iteration. The steps are,</p>
+<ul>
+<li>initialize minimizer (or <var>solver</var>) state, <code>s</code>, for algorithm <code>T</code></li>
+<li>update <code>s</code> using the iteration <code>T</code></li>
+<li>test <code>s</code> for convergence, and repeat iteration if necessary</li>
+</ul>
+<p>The state of the minimizers is held in a <code>GSL::Min::FMinimizer</code> object. 
+The updating procedure use only function evaluations (not derivatives).
+The function to minimize is given as an instance of the <a href="function.html">GSL::Function</a> class to the minimizer.</p>
+<h2><a name="2" href="#2">2</a> <a name="label-2">GSL::Min::FMinimizer class</a></h2><!-- RDLabel: "GSL::Min::FMinimizer class" -->
+
+<dl>
+<dt><a name="label-3" id="label-3"><code>GSL::Min::FMinimizer.alloc(<var>t</var>)</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer.alloc" -->
+<dd>
+<p>These method create an instance of the <code>GSL::Min::FMinimizer</code> class of 
+type <var>t</var>. The type <var>t</var> is given by a Ruby constant,</p>
+<ul>
+<li>GSL::Min::FMinimizer::GOLDENSECTION</li>
+<li>GSL::Min::FMinimizer::BRENT</li>
+</ul>
+<p>ex1)</p>
+<pre>include GSL
+s1 = Min::FMinimizer.alloc(Min::FMinimizer::GOLDENSECTION)</pre>
+<p>ex2)</p>
+<pre>include GSL::Min
+s2 = FMinimizer.alloc(FMinimizer::BRENT)</pre></dd>
+<dt><a name="label-4" id="label-4"><code>GSL::Min::FMinimizer#set(<var>f</var>, <var>xmin</var>, <var>xlow</var>, <var>xup</var>)</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#set" -->
+<dd>
+<p>This method sets, or resets, an existing minimizer <var>self</var> to use 
+the function <var>f</var> (given by a <code>GSL::Function</code>
+object) and the initial search interval [<var>xlow, xup</var>], 
+with a guess for the location of the minimum <var>xmin</var>.</p>
+<p>If the interval given does not contain a minimum, then the 
+method returns an error code of <code>GSL::FAILURE</code>.</p></dd>
+<dt><a name="label-5" id="label-5"><code>GSL::Min::FMinimizer#set_with_values(<var>f</var>, <var>xmin</var>, <var>fmin</var>, <var>xlow</var>, <var>flow</var>, <var>xup</var>, <var>fup</var>)</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#set_with_values" -->
+<dd>
+This method is equivalent to <code>Fminimizer#set</code> but uses the values 
+<var>fmin, flowe</var> and <var>fup</var> instead of computing 
+<var>f(xmin), f(xlow)</var> and <var>f(xup)</var>.</dd>
+<dt><a name="label-6" id="label-6"><code>GSL::Min::FMinimizer#name</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#name" -->
+<dd>
+This returns the name of the minimizer. </dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-7">Iteration</a></h2><!-- RDLabel: "Iteration" -->
+
+<dl>
+<dt><a name="label-8" id="label-8"><code>GSL::Min::FMinimizer#iterate</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#iterate" -->
+<dd>
+<p>This method performs a single iteration of the minimizer <var>self</var>. 
+If the iteration encounters an unexpected problem then an error code 
+will be returned,</p>
+<ul>
+<li><code>GSL::EBADFUNC</code>: the iteration encountered a singular point where the 
+      function evaluated to <code>Inf</code> or <code>NaN</code>.</li>
+<li><code>GSL::FAILURE</code>: the algorithm could not improve the current best 
+      approximation or bounding interval.</li>
+</ul>
+<p>The minimizer maintains a current best estimate of the position of 
+the minimum at all times, and the current interval bounding the minimum. 
+This information can be accessed with the following auxiliary methods</p></dd>
+<dt><a name="label-9" id="label-9"><code>GSL::Min::FMinimizer#x_minimum</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#x_minimum" -->
+<dd>
+Returns the current estimate of the position of the minimum 
+for the minimizer <var>self</var>.</dd>
+<dt><a name="label-10" id="label-10"><code>GSL::Min::FMinimizer#x_upper</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#x_upper" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Min::FMinimizer#x_lower</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#x_lower" -->
+<dd>
+Return the current upper and lower bound of the interval for the 
+minimizer <var>self</var>.</dd>
+<dt><a name="label-12" id="label-12"><code>GSL::Min::FMinimizer#f_minimum</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#f_minimum" -->
+<dt><a name="label-13" id="label-13"><code>GSL::Min::FMinimizer#f_upper</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#f_upper" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Min::FMinimizer#f_lower</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#f_lower" -->
+<dd>
+Return the value of the function at the current estimate of the 
+minimum and at the upper and lower bounds of interval 
+for the minimizer <var>self</var>.</dd>
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-15">Stopping Parameters</a></h2><!-- RDLabel: "Stopping Parameters" -->
+
+<dl>
+<dt><a name="label-16" id="label-16"><code>GSL::Min::FMinimizer#test_interval(<var>epsabs</var>, <var>epsrel</var>)</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#test_interval" -->
+<dt><a name="label-17" id="label-17"><code>GSL::Min.test_interval(<var>xlow</var>, <var>xup</var>, <var>epsabs</var>, <var>epsrel</var>)</code></a></dt><!-- RDLabel: "GSL::Min.test_interval" -->
+<dd>
+<p>These methoeds test for the convergence of the interval 
+[<var>xlow, xup</var>] with absolute error <var>epsabs</var> and relative 
+error <var>epsrel</var>. The test returns <code>GSL::SUCCESS</code> 
+if the following condition is achieved,</p>
+<pre>|a - b| &lt; epsabs + epsrel min(|a|,|b|) </pre>
+<p>when the interval <code>x = [a,b]</code> does not include the origin. 
+If the interval includes the origin then <code>min(|a|,|b|)</code> is 
+replaced by zero (which is the minimum value of |x| over the interval). 
+This ensures that the relative error is accurately estimated for minima 
+close to the origin.</p>
+<p>This condition on the interval also implies that any estimate of the 
+minimum x_m in the interval satisfies the same condition with respect 
+to the true minimum x_m^*,</p>
+<pre>|x_m - x_m^*| &lt; epsabs + epsrel x_m^*</pre>
+<p>assuming that the true minimum x_m^* is contained within the interval.</p></dd>
+</dl>
+<h2><a name="5" href="#5">5</a> <a name="label-18">Example</a></h2><!-- RDLabel: "Example" -->
+
+<p>To find the minimum of the function f(x) = cos(x) + 1.0:</p>
+<pre>#!/usr/bin/env ruby
+require("gsl")
+include GSL::Min
+
+fn1 = Function.alloc { |x| Math::cos(x) + 1.0 }
+
+iter = 0;  max_iter = 500
+m = 2.0             # initial guess
+m_expected = Math::PI
+a = 0.0
+b = 6.0
+
+gmf = FMinimizer.alloc(FMinimizer::BRENT)
+gmf.set(fn1, m, a, b)
+
+printf("using %s method\n", gmf.name)
+printf("%5s [%9s, %9s] %9s %10s %9s\n", "iter", "lower", "upper", "min",
+       "err", "err(est)")
+
+printf("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n", iter, a, b, m, m - m_expected, b - a)
+
+begin
+  iter += 1
+  status = gmf.iterate
+  status = gmf.test_interval(0.001, 0.0)
+  puts("Converged:") if status == GSL::SUCCESS
+  a = gmf.x_lower
+  b = gmf.x_upper
+  m = gmf.x_minimum
+  printf("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
+         iter, a, b, m, m - m_expected, b - a);
+end while status == GSL::CONTINUE and iter &lt; max_iter</pre>
+<p><a href="roots.html">prev</a>
+<a href="multiroot.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>

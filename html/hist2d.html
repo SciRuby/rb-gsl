@@ -1,0 +1,237 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>GSL::Histogram2d class</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">GSL::Histogram2d class</a></h1><!-- RDLabel: "GSL::Histogram2d class" -->
+
+<h2><a name="1" href="#1">1</a> <a name="label-1">Class methods</a></h2><!-- RDLabel: "Class methods" -->
+
+<dl>
+<dt><a name="label-2" id="label-2"><code>GSL::Histogram2d.alloc(<var>nx</var>, <var>ny</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d.alloc" -->
+<dt><a name="label-3" id="label-3"><code>GSL::Histogram2d.alloc(<var>xrange</var>, <var>yrange</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d.alloc" -->
+<dt><a name="label-4" id="label-4"><code>GSL::Histogram2d.alloc(<var>nx</var>, <var>xmin</var>, <var>xmax</var>, <var>ny</var>, <var>ymin</var>, <var>ymax</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d.alloc" -->
+<dt><a name="label-5" id="label-5"><code>GSL::Histogram2d.alloc(<var>nx</var>, [<var>xmin</var>, <var>xmax</var>], <var>ny</var>, [<var>ymin</var>, <var>ymax</var>])</code></a></dt><!-- RDLabel: "GSL::Histogram2d.alloc" -->
+<dd>
+Constructors.
+<ol>
+<li><p>With sizes</p>
+<pre>irb(main):002:0&gt; h2 = GSL::Histogram2d.alloc(2, 3)  # size 6
+irb(main):003:0&gt; h2.xrange
+=&gt; GSL::Histogram::Range: 
+[ 0.000e+00 1.000e+00 2.000e+00 ]
+irb(main):004:0&gt; h2.yrange
+=&gt; GSL::Histogram::Range: 
+[ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 ]
+irb(main):005:0&gt; h2.bin
+=&gt; GSL::Histogram::Bin: 
+[ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
+irb(main):006:0&gt; h2.xrange.class.superclass
+=&gt; GSL::Vector::View::ReadOnly
+irb(main):007:0&gt; h2.bin.class.superclass
+=&gt; GSL::Vector::View::ReadOnly</pre></li>
+<li><p>With ranges</p>
+<pre>irb(main):006:0&gt; h2 = Histogram2d.alloc([3, 6, 7], [2, 3, 8])
+irb(main):007:0&gt; h2.xrange
+=&gt; GSL::Histogram::Range: 
+[ 3.000e+00 6.000e+00 7.000e+00 ]
+irb(main):008:0&gt; h2.yrange
+=&gt; GSL::Histogram::Range: 
+[ 2.000e+00 3.000e+00 8.000e+00 ]
+irb(main):009:0&gt; h2.bin
+=&gt; GSL::Histogram::Bin: 
+[ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]</pre></li>
+<li><p>With sizes and ranges</p>
+<pre>irb(main):010:0&gt; h2 = Histogram2d.alloc(4, [0, 4], 3, [1, 5])
+irb(main):011:0&gt; h2.xrange
+=&gt; GSL::Histogram::Range: 
+[ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 4.000e+00 ]
+irb(main):012:0&gt; h2.yrange
+=&gt; GSL::Histogram::Range: 
+[ 1.000e+00 2.333e+00 3.667e+00 5.000e+00 ]</pre></li>
+</ol></dd>
+<dt><a name="label-6" id="label-6"><code>GSL::Histogram2d.alloc_uniform(<var>nx</var>, <var>xmin</var>, <var>xmax</var>, <var>ny</var>, <var>ymin</var>, <var>ymax</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d.alloc_uniform" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Histogram2d.equal_bins_p(<var>h1</var>, <var>h2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d.equal_bins_p" -->
+</dl>
+<h2><a name="2" href="#2">2</a> <a name="label-8">Methods</a></h2><!-- RDLabel: "Methods" -->
+
+<dl>
+<dt><a name="label-9" id="label-9"><code>GSL::Histogram2d#set_ranges(<var>vx</var>, <var>vy</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#set_ranges" -->
+<dd>
+This sets the ranges of the existing histogram using 
+two <a href="vector.html">GSL::Vector</a> objects or arrays.</dd>
+<dt><a name="label-10" id="label-10"><code>GSL::Histogram2d#set_ranges_uniform(<var>xmin</var>, <var>xmax</var>, <var>ymin</var>, <var>ymax</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#set_ranges_uniform" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Histogram2d#set_ranges_uniform([<var>xmin</var>, <var>xmax</var>], [<var>ymin</var>, <var>ymax</var>])</code></a></dt><!-- RDLabel: "GSL::Histogram2d#set_ranges_uniform" -->
+<dd>
+This sets the ranges of the existing histogram <var>self</var> to cover 
+the ranges <var>xmin</var> to <var>xmax</var> and <var>ymin</var> to <var>ymax</var> uniformly. 
+The values of the histogram bins are reset to zero.</dd>
+<dt><a name="label-12" id="label-12"><code>GSL::Histogram2d#clone</code></a></dt><!-- RDLabel: "GSL::Histogram2d#clone" -->
+<dt><a name="label-13" id="label-13"><code>GSL::Histogram2d#duplicate</code></a></dt><!-- RDLabel: "GSL::Histogram2d#duplicate" -->
+<dd>
+Returns a newly created histogram which is an exact copy of the 
+histogram <var>self</var>.</dd>
+<dt><a name="label-14" id="label-14"><code>GSL::Histogram2d#increment(<var>x</var>, <var>y</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#increment" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Histogram2d#accumulate(<var>x</var>, <var>y</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#accumulate" -->
+<dt><a name="label-16" id="label-16"><code>GSL::Histogram2d#fill(<var>x</var>, <var>y</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#fill" -->
+<dd>
+These method update the histogram <var>self</var> by adding <var>weight</var> 
+to the bin whose <var>x</var> and <var>y</var> ranges contain the coordinates (x,y).
+If (x,y) lies outside the limits of the histogram then none of the 
+bins are modified. </dd>
+<dt><a name="label-17" id="label-17"><code>GSL::Histogram2d#increment2(<var>x</var>, <var>y</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#increment2" -->
+<dt><a name="label-18" id="label-18"><code>GSL::Histogram2d#accumulate2(<var>x</var>, <var>y</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#accumulate2" -->
+<dt><a name="label-19" id="label-19"><code>GSL::Histogram2d#fill2(<var>x</var>, <var>y</var>, <var>weight</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#fill2" -->
+<dd>
+These are similar to <code>GSL::Histogram#increment/accumulate/fill</code>,
+but when (x,y) lies outside the limits of the histogram then the edge
+bin is incremented.</dd>
+<dt><a name="label-20" id="label-20"><code>GSL::Histogram2d#get(<var>i</var>[, <var>j</var>])</code></a></dt><!-- RDLabel: "GSL::Histogram2d#get" -->
+<dt><a name="label-21" id="label-21"><code>GSL::Histogram2d#get([<var>i</var>, <var>j</var>])</code></a></dt><!-- RDLabel: "GSL::Histogram2d#get" -->
+<dt><a name="label-22" id="label-22"><code>GSL::Histogram2d#[i, <var>j</var>]</code></a></dt><!-- RDLabel: "GSL::Histogram2d#[i, j]" -->
+<dd>
+Return the contents of the <var>(i,j)</var>-th bin of the histogram <var>self</var>. </dd>
+<dt><a name="label-23" id="label-23"><code>GSL::Histogram2d#get_xrange(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#get_xrange" -->
+<dt><a name="label-24" id="label-24"><code>GSL::Histogram2d#get_yrange(<var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#get_yrange" -->
+<dd>
+<p>These methods find the upper and lower range limits of the <var>i</var>-th 
+and <var>j</var>-th bins in the x and y directions of the histogram <var>self</var>.</p>
+<p>Ex: </p>
+<pre>irb(main):030:0&gt; h2 = Histogram2d.alloc(2, [0, 2], 3, [1, 4])
+irb(main):031:0&gt; h2.get_xrange(1)
+=&gt; [1.0, 2.0]
+irb(main):032:0&gt; h2.get_yrange(1)
+=&gt; [2.0, 3.0]</pre></dd>
+<dt><a name="label-25" id="label-25"><code>GSL::Histogram2d#xrange</code></a></dt><!-- RDLabel: "GSL::Histogram2d#xrange" -->
+<dt><a name="label-26" id="label-26"><code>GSL::Histogram2d#yrange</code></a></dt><!-- RDLabel: "GSL::Histogram2d#yrange" -->
+<dd>
+These methods returns the range of histogram as <code>Vector::View</code> objects.</dd>
+<dt><a name="label-27" id="label-27"><code>GSL::Histogram2d#xmax</code></a></dt><!-- RDLabel: "GSL::Histogram2d#xmax" -->
+<dt><a name="label-28" id="label-28"><code>GSL::Histogram2d#xmin</code></a></dt><!-- RDLabel: "GSL::Histogram2d#xmin" -->
+<dt><a name="label-29" id="label-29"><code>GSL::Histogram2d#ymax</code></a></dt><!-- RDLabel: "GSL::Histogram2d#ymax" -->
+<dt><a name="label-30" id="label-30"><code>GSL::Histogram2d#ymin</code></a></dt><!-- RDLabel: "GSL::Histogram2d#ymin" -->
+<dt><a name="label-31" id="label-31"><code>GSL::Histogram2d#nx</code></a></dt><!-- RDLabel: "GSL::Histogram2d#nx" -->
+<dt><a name="label-32" id="label-32"><code>GSL::Histogram2d#ny</code></a></dt><!-- RDLabel: "GSL::Histogram2d#ny" -->
+<dd>
+These methodss return the maximum upper and minimum lower range limits 
+and the number of bins for the x and y directions of the histogram <var>self</var>.</dd>
+<dt><a name="label-33" id="label-33"><code>GSL::Histogram2d#reset</code></a></dt><!-- RDLabel: "GSL::Histogram2d#reset" -->
+<dd>
+Resets all the bins of the histogram <var>self</var> to zero.</dd>
+<dt><a name="label-34" id="label-34"><code>GSL::Histogram2d#find(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#find" -->
+<dd>
+Finds the indices i and j to the to the bin which covers the 
+coordinates (<var>x,y</var>).</dd>
+<dt><a name="label-35" id="label-35"><code>GSL::Histogram2d#max_val</code></a></dt><!-- RDLabel: "GSL::Histogram2d#max_val" -->
+<dd>
+Returns the maximum value contained in the histogram bins.</dd>
+<dt><a name="label-36" id="label-36"><code>GSL::Histogram2d#max_bin</code></a></dt><!-- RDLabel: "GSL::Histogram2d#max_bin" -->
+<dd>
+Returns the indices (i,j) of the bin containing the maximum value in 
+the histogram <var>self</var>.</dd>
+<dt><a name="label-37" id="label-37"><code>GSL::Histogram2d#min_val</code></a></dt><!-- RDLabel: "GSL::Histogram2d#min_val" -->
+<dd>
+Returns the minimum value contained in the histogram bins.</dd>
+<dt><a name="label-38" id="label-38"><code>GSL::Histogram2d#min_bin</code></a></dt><!-- RDLabel: "GSL::Histogram2d#min_bin" -->
+<dd>
+Returns the indices (i,j) of the bin containing the minimum value
+in the histogram <var>self</var>.</dd>
+<dt><a name="label-39" id="label-39"><code>GSL::Histogram2d#xmean</code></a></dt><!-- RDLabel: "GSL::Histogram2d#xmean" -->
+<dd>
+Returns the mean of the histogrammed x variable, where the histogram 
+is regarded as a probability distribution. 
+Negative bin values are ignored for the purposes of this calculation.</dd>
+<dt><a name="label-40" id="label-40"><code>GSL::Histogram2d#xsigma</code></a></dt><!-- RDLabel: "GSL::Histogram2d#xsigma" -->
+<dd>
+Returns the standard deviation of the histogrammed x variable, 
+where the histogram is regarded as a probability distribution. 
+Negative bin values are ignored for the purposes of this calculation.</dd>
+<dt><a name="label-41" id="label-41"><code>GSL::Histogram2d#ymean</code></a></dt><!-- RDLabel: "GSL::Histogram2d#ymean" -->
+<dd>
+Returns the mean of the histogrammed y variable, where the histogram 
+is regarded as a probability distribution. Negative bin values are 
+ignored for the purposes of this calculation.</dd>
+<dt><a name="label-42" id="label-42"><code>GSL::Histogram2d#ysigma</code></a></dt><!-- RDLabel: "GSL::Histogram2d#ysigma" -->
+<dd>
+Returns the standard deviation of the histogrammed y variable, 
+where the histogram is regarded as a probability distribution. 
+Negative bin values are ignored for the purposes of this calculation.</dd>
+<dt><a name="label-43" id="label-43"><code>GSL::Histogram2d#cov</code></a></dt><!-- RDLabel: "GSL::Histogram2d#cov" -->
+<dd>
+Returns the covariance of the histogrammed x and y variables, 
+where the histogram is regarded as a probability distribution. 
+Negative bin values are ignored for the purposes of this calculation.</dd>
+<dt><a name="label-44" id="label-44"><code>GSL::Histogram2d#sum</code></a></dt><!-- RDLabel: "GSL::Histogram2d#sum" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Histogram2d#integral</code></a></dt><!-- RDLabel: "GSL::Histogram2d#integral" -->
+<dd>
+Return the sum of all bin values. Negative bin values are included in the sum.</dd>
+<dt><a name="label-46" id="label-46"><code>GSL::Histogram2d#add</code></a></dt><!-- RDLabel: "GSL::Histogram2d#add" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Histogram2d#sub</code></a></dt><!-- RDLabel: "GSL::Histogram2d#sub" -->
+<dt><a name="label-48" id="label-48"><code>GSL::Histogram2d#mul</code></a></dt><!-- RDLabel: "GSL::Histogram2d#mul" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Histogram2d#div</code></a></dt><!-- RDLabel: "GSL::Histogram2d#div" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Histogram2d#scale(<var>val</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#scale" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Histogram2d#shift(<var>val</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#shift" -->
+<dt><a name="label-52" id="label-52"><code>GSL::Histogram2d#fwrite(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#fwrite" -->
+<dt><a name="label-53" id="label-53"><code>GSL::Histogram2d#fwrite(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#fwrite" -->
+<dt><a name="label-54" id="label-54"><code>GSL::Histogram2d#fread(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#fread" -->
+<dt><a name="label-55" id="label-55"><code>GSL::Histogram2d#fread(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#fread" -->
+<dt><a name="label-56" id="label-56"><code>GSL::Histogram2d#fprintf(<var>io</var>, <var>range_format</var>, <var>bin_format</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#fprintf" -->
+<dt><a name="label-57" id="label-57"><code>GSL::Histogram2d#fprintf(<var>filename</var>, <var>range_format</var>, <var>bin_format</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#fprintf" -->
+<dt><a name="label-58" id="label-58"><code>GSL::Histogram2d#fscanf(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#fscanf" -->
+<dt><a name="label-59" id="label-59"><code>GSL::Histogram2d#fscanf(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#fscanf" -->
+<dt><a name="label-60" id="label-60"><code>GSL::Histogram2d#xproject(<var>jstart</var> = <var>0</var>, <var>jend</var> = <var>ny</var>-<var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#xproject" -->
+<dd>
+Creates a <code>GSL::Histogram</code> object by projecting the 2D histogram 
+<var>self</var> onto the x-axis over the y-range from <var>jstart</var> to <var>jend</var>.</dd>
+<dt><a name="label-61" id="label-61"><code>GSL::Histogram2d#yproject(<var>istart</var> = <var>0</var>, <var>iend</var> = <var>nx</var>-<var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d#yproject" -->
+<dd>
+Creates a <code>GSL::Histogram</code> object by projecting the 2D histogram 
+<var>self</var> onto the y-axis over the x-range from <var>istart</var> to <var>iend</var>.</dd>
+</dl>
+<h2><a name="3" href="#3">3</a> <a name="label-62">GSL::Histogram2d::Pdf class</a></h2><!-- RDLabel: "GSL::Histogram2d::Pdf class" -->
+
+<dl>
+<dt><a name="label-63" id="label-63"><code>GSL::Histogram2d::Pdf.alloc(<var>nx</var>, <var>ny</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d::Pdf.alloc" -->
+<dd>
+Constructors</dd>
+<dt><a name="label-64" id="label-64"><code>GSL::Histogram2d::Pdf#init(<var>h</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d::Pdf#init" -->
+<dd>
+Initializer with a GSL::Histogram2d object <var>h</var>.</dd>
+<dt><a name="label-65" id="label-65"><code>GSL::Histogram2d::Pdf#sample(<var>r1</var>, <var>r2</var>)</code></a></dt><!-- RDLabel: "GSL::Histogram2d::Pdf#sample" -->
+</dl>
+<h2><a name="4" href="#4">4</a> <a name="label-66">Example</a></h2><!-- RDLabel: "Example" -->
+
+<pre>#!/usr/bin/env ruby
+require("gsl")
+
+N = 10000
+BINS = 100
+
+rng = Rng.new(2)
+h2 = Histogram2d.alloc(BINS, [-5, 5], BINS, [-8, 8])
+
+sig1 = 1.0
+sig2 = 2.0
+
+for i in 0...N do
+  r1 = rng.gaussian(sig1)
+  r2 = rng.gaussian(sig2)
+  h2.increment(r1, r2)
+end
+
+hx = h2.xproject
+hy = h2.yproject
+printf("%f %f %f %f\n", h2.xsigma, h2.ysigma, hx.sigma, hy.sigma)
+GSL::graph(hx, hy, "-T X -C -g 3")</pre>
+<p><a href="hist.html">prev</a>
+<a href="hist3d.html">next</a></p>
+<p><a href="ref.html">Reference index</a>
+<a href="index.html">top</a></p>
+
+</body>
+</html>
