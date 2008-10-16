@@ -1021,6 +1021,12 @@ static VALUE rb_gsl_matrix_complex_size2(VALUE obj)
   Data_Get_Struct(obj, gsl_matrix_complex, m);
   return INT2FIX(m->size2);
 }
+static VALUE rb_gsl_matrix_complex_shape(VALUE obj)
+{
+  gsl_matrix_complex *m = NULL;
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  return rb_ary_new3(2, INT2FIX(m->size1), INT2FIX(m->size2));
+}
 
 static VALUE rb_gsl_matrix_complex_uplus(VALUE obj)
 {
@@ -1393,6 +1399,7 @@ void Init_gsl_matrix_complex(VALUE module)
   rb_define_singleton_method(cgsl_matrix_complex, "memcpy", rb_gsl_matrix_complex_memcpy, 2);
   rb_define_method(cgsl_matrix_complex, "clone", rb_gsl_matrix_complex_clone, 0);
   rb_define_alias(cgsl_matrix_complex, "duplicate", "clone");
+  rb_define_alias(cgsl_matrix_complex, "dup", "clone");
   rb_define_method(cgsl_matrix_complex, "swap_rows", rb_gsl_matrix_complex_swap_rows, 2);
   rb_define_method(cgsl_matrix_complex, "swap_columns", rb_gsl_matrix_complex_swap_columns, 2);
   rb_define_method(cgsl_matrix_complex, "swap_rowcol", rb_gsl_matrix_complex_swap_rowcol, 2);
@@ -1453,6 +1460,8 @@ void Init_gsl_matrix_complex(VALUE module)
   
   rb_define_method(cgsl_matrix_complex, "size1", rb_gsl_matrix_complex_size1, 0);
   rb_define_method(cgsl_matrix_complex, "size2", rb_gsl_matrix_complex_size2, 0);
+  rb_define_method(cgsl_matrix_complex, "shape", rb_gsl_matrix_complex_shape, 0);
+  rb_define_alias(cgsl_matrix_complex, "size", "shape");
   
   /*****/
   rb_define_method(cgsl_matrix_complex, "-@", rb_gsl_matrix_complex_uminus, 0);

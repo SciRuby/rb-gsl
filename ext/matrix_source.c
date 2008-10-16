@@ -2129,6 +2129,7 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_matrix), "clone", 
 		   FUNCTION(rb_gsl_matrix,clone), 0);
   rb_define_alias(GSL_TYPE(cgsl_matrix), "duplicate", "clone");
+  rb_define_alias(GSL_TYPE(cgsl_matrix), "dup", "clone");
   rb_define_method(GSL_TYPE(cgsl_matrix), "isnull", 
 		   FUNCTION(rb_gsl_matrix,isnull), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "isnull?", 
