@@ -90,6 +90,10 @@ end
 test_sobol()
 test_nied2()
 
+# Tests for an extension package "qrngextra"
+
+exit unless GSL::QRng.const_defined?("HDSOBOL")
+
 def test_hdsobol()
   v = GSL::Vector.alloc(3)
 
@@ -125,3 +129,4 @@ def test_hdsobol()
 end
 
 test_hdsobol()
+

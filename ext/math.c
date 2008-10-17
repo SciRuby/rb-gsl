@@ -79,7 +79,7 @@ static VALUE rb_gsl_isinf(VALUE obj, VALUE x)
 
 static VALUE rb_gsl_isinf2(VALUE obj, VALUE x)
 {
-  Need_Float(x);
+  //  Need_Float(x);
   if (gsl_isinf(NUM2DBL(x))) return Qtrue;
   else return Qfalse;
 }

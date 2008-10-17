@@ -69,6 +69,7 @@ Contents:
 --- GSL::isinf(x)
     This returns +1 if ((|x|))  is positive infinity, 
     -1 if ((|x|))  is negative infinity and 0 otherwise.
+    NOTE: In Darwin9.5.0-gcc4.0.1, this method returns 1 for -inf.
 --- GSL::isinf?(x)
     This returns (({true})) if ((|x|)) is positive or negative infinity, 
     and (({false})) otherwise.
