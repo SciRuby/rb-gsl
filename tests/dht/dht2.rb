@@ -10,7 +10,7 @@
 require("gsl")
 
 N = 128
-t = Dht.alloc(N, 0.0, 100.0)
+t = GSL::Dht.alloc(N, 0.0, 100.0)
 vin = GSL::Vector.alloc(N)
 for n in 0...N do
   x = t.x_sample(n)

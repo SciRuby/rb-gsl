@@ -7,7 +7,7 @@
 
 require("gsl")
 vin = GSL::Vector.alloc(1, 2, 3)
-t = Dht.alloc(3, 1.0, 1.0)
+t = GSL::Dht.alloc(3, 1.0, 1.0)
 vout = t.apply(vin)
 p vout
 
