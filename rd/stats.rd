@@ -43,6 +43,10 @@
 --- GSL::Vector#sd([mean])
     Standard deviation.
 
+--- GSL::Stats::tss(v[, mean])
+--- GSL::Vector#tss([mean])
+    (GSL-1.11 or later) These methods return the total sum of squares (TSS) of data about the mean.	
+
 --- GSL::Stats::variance_with_fixed_mean(v, mean)
 --- GSL::Vector#variance_with_fixed_mean(mean)
     Unbiased estimate of the variance of ((|v|)) when the population mean 

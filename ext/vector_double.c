@@ -852,8 +852,8 @@ static VALUE rb_gsl_vector_sqrt(VALUE obj)
 static VALUE rb_gsl_vector_normalize(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector *v = NULL, *vnew = NULL;
-  double mean;
-  double sd, nrm;
+  //  double mean;
+  double nrm;
   switch (argc) {
   case 0:
     nrm = 1.0;
@@ -868,10 +868,11 @@ static VALUE rb_gsl_vector_normalize(int argc, VALUE *argv, VALUE obj)
   }
   Data_Get_Vector(obj, v);
   vnew = make_vector_clone(v);
-  mean = gsl_stats_mean(v->data, v->stride, v->size);
+  /*  mean = gsl_stats_mean(v->data, v->stride, v->size);
   gsl_vector_add_constant(vnew, -mean);
   sd = gsl_stats_sd(vnew->data, vnew->stride, vnew->size);  
-  gsl_vector_scale(vnew, sqrt(nrm)/sd);
+  gsl_vector_scale(vnew, sqrt(nrm)/sd);*/
+  gsl_vector_scale(vnew, nrm/gsl_blas_dnrm2(v));
   return Data_Wrap_Struct(VECTOR_ROW_COL(obj), 0, gsl_vector_free, vnew);  
 }
 
@@ -879,7 +880,8 @@ static VALUE rb_gsl_vector_normalize_bang(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector *v = NULL;
   double mean;  
-  double sd, nrm;
+  double nrm;
+  double factor;
   switch (argc) {
   case 0:
     nrm = 1.0;
@@ -894,9 +896,11 @@ static VALUE rb_gsl_vector_normalize_bang(int argc, VALUE *argv, VALUE obj)
   }
   Data_Get_Vector(obj, v);
   mean = gsl_stats_mean(v->data, v->stride, v->size);
-  gsl_vector_add_constant(v, -mean);  
+  /*  gsl_vector_add_constant(v, -mean);  
   sd = gsl_stats_sd(v->data, v->stride, v->size);  
-  gsl_vector_scale(v, sqrt(nrm)/sd);
+  gsl_vector_scale(v, sqrt(nrm)/sd);*/
+  factor = nrm/gsl_blas_dnrm2(v);
+  gsl_vector_scale(v, factor);
   return obj;
 }
 

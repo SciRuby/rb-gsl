@@ -154,6 +154,11 @@ for the parameters (({c0, c1})). For unweighted data the sum is computed with
     which have 
     zero singular value (to machine precision) are discarded from the fit.
 
+--- GSL::MultiFit::linear_est(x, c, cov)
+    (GSL-1.8 or later) This method uses the best-fit multilinear regression coefficients ((|c|)) and their covariance matrix ((|cov|)) to compute the fitted function value ((|y|)) and its standard deviation ((|y_err|)) for the model ((|y = x.c|)) at the point ((|x|)). This returns an array [((|y, y_err|))].
+--- GSL::MultiFit::linear_residuals(X, y, c[, r])
+    (GSL-1.11 or later) This method computes the vector of residuals ((|r = y - X c|)) for the observations ((|y|)), coefficients ((|c|)) and matrix of predictor variables ((|X|)), and returns ((|r|)).
+
 === Higer level interface
 
 --- GSL::MultiFit::polyfit(x, y, order)

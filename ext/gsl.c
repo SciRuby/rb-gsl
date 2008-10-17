@@ -46,18 +46,16 @@ static VALUE rb_gsl_object_info(VALUE obj)
   char buf[256];
   VALUE s;
   sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+#ifdef RUBY_1_9_LATER
+  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+#else
   sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS(CLASS_OF(obj))->super));
+#endif
   s = rb_rescue(rb_gsl_call_name, obj, rb_gsl_call_rescue, obj);
   if (s) sprintf(buf, "%sType:       %s\n", buf, STR2CSTR(s));
   s = rb_rescue(rb_gsl_call_size, obj, rb_gsl_call_rescue, obj);
   if (s) sprintf(buf, "%sSize:       %d\n", buf, (int) FIX2INT(s));
   return rb_str_new2(buf);
-}
-
-static VALUE rb_gsl_not_implemeted(VALUE obj)
-{
-  rb_raise(rb_eNotImpError, "%s#dup is not implemented", rb_class2name(CLASS_OF(obj)));
-  return Qnil;
 }
 
 void Init_rb_gsl()
@@ -68,10 +66,6 @@ void Init_rb_gsl()
   cGSL_Object = rb_define_class_under(mgsl, "Object", rb_cObject);
   rb_define_method(cGSL_Object, "inspect", rb_gsl_object_inspect, 0);
   rb_define_method(cGSL_Object, "info", rb_gsl_object_info, 0);
-  // Override Object#dup to prevent invalid dup-ing of GSL_Objects.
-  // Subclasses (e.g. GSL::Vector) must provide their own implementation of
-  // #dup if desired.
-  rb_define_method(cGSL_Object, "dup", rb_gsl_not_implemeted, 0);
 
   rb_gsl_define_intern(mgsl);
 

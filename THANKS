@@ -11,4 +11,7 @@ zunda (patches)
 Christopher Butler
 Andrea Censi <andrea.censi@dis.uniroma1.it> (Bug report on Vector#*)
 Daigo Moriwaki (Bug report)
+Joe Wölfel (Ruby-1.9 support)
+Cyrus Hall (patch for Ruby-1.9)
+Dave MacMahon (patch for FFT and interface refinements)
 

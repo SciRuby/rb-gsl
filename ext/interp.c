@@ -97,7 +97,7 @@ static VALUE rb_gsl_interp_bsearch(int argc, VALUE *argv, VALUE obj)
       CHECK_VECTOR(argv[0]);
       Need_Float(argv[1]);
       Data_Get_Struct(argv[0], gsl_vector, v);
-      x = RFLOAT(argv[1])->value;
+      x = NUM2DBL(argv[1]);
       indexl = gsl_vector_get(v, 0);
       indexh = gsl_vector_get(v, v->size-1);
       break;
@@ -105,7 +105,7 @@ static VALUE rb_gsl_interp_bsearch(int argc, VALUE *argv, VALUE obj)
       CHECK_VECTOR(argv[0]);
       Need_Float(argv[1]); Need_Float(argv[2]); Need_Float(argv[3]);
       Data_Get_Struct(argv[0], gsl_vector, v);
-      x = RFLOAT(argv[1])->value;
+      x = NUM2DBL(argv[1]);
       indexl = NUM2DBL(argv[2]);
       indexh = NUM2DBL(argv[3]);
       break;
@@ -119,13 +119,13 @@ static VALUE rb_gsl_interp_bsearch(int argc, VALUE *argv, VALUE obj)
     switch (argc) {
     case 1:
       Need_Float(argv[0]);
-      x = RFLOAT(argv[0])->value;
+      x = NUM2DBL(argv[0]);
       indexl = gsl_vector_get(v, 0);
       indexh = gsl_vector_get(v, v->size-1);
       break;
     case 3:
       Need_Float(argv[0]); Need_Float(argv[1]); Need_Float(argv[2]);
-      x = RFLOAT(argv[0])->value;
+      x = NUM2DBL(argv[0]);
       indexl = NUM2DBL(argv[1]);
       indexh = NUM2DBL(argv[2]);
       break;
@@ -153,7 +153,7 @@ static VALUE rb_gsl_interp_find(VALUE obj, VALUE vv, VALUE xx)
   Need_Float(xx);
   Data_Get_Struct(obj, rb_gsl_interp, rgi);
   ptr = get_vector_ptr(vv, &stride, &size);
-  x = RFLOAT(xx)->value;
+  x = NUM2DBL(xx);
   return INT2FIX(gsl_interp_accel_find(rgi->a, ptr, size, x));
 }
 
@@ -166,7 +166,7 @@ static VALUE rb_gsl_interp_accel_find(VALUE obj, VALUE vv, VALUE xx)
   Data_Get_Struct(obj, gsl_interp_accel, a);
   ptr = get_vector_ptr(vv, &stride, &size);
   Need_Float(xx);
-  x = RFLOAT(xx)->value;
+  x = NUM2DBL(xx);
   return INT2FIX(gsl_interp_accel_find(a, ptr, size, x));
 }
 
@@ -268,7 +268,7 @@ static VALUE rb_gsl_interp_eval_e(VALUE obj, VALUE xxa, VALUE yya, VALUE xx)
   Data_Get_Struct(obj, rb_gsl_interp, rgi);
   ptr1 = get_vector_ptr(xxa, &stridex, &size);
   ptr2 = get_vector_ptr(yya, &stridey, &size);
-  x = RFLOAT(xx)->value;
+  x = NUM2DBL(xx);
   status = gsl_interp_eval_e(rgi->p, ptr1, ptr2, x, rgi->a, &y);
   switch (status) {
   case GSL_EDOM:
@@ -297,7 +297,7 @@ static VALUE rb_gsl_interp_eval_deriv_e(VALUE obj, VALUE xxa, VALUE yya, VALUE x
   Data_Get_Struct(obj, rb_gsl_interp, rgi);
   ptr1 = get_vector_ptr(xxa, &stridex, &size);
   ptr2 = get_vector_ptr(yya, &stridey, &size);
-  x = RFLOAT(xx)->value;
+  x = NUM2DBL(xx);
   status = gsl_interp_eval_deriv_e(rgi->p, ptr1, ptr2, x, rgi->a, &y);
   switch (status) {
   case GSL_EDOM:
@@ -325,7 +325,7 @@ static VALUE rb_gsl_interp_eval_deriv2_e(VALUE obj, VALUE xxa, VALUE yya, VALUE 
   Data_Get_Struct(obj, rb_gsl_interp, rgi);
   ptr1 = get_vector_ptr(xxa, &stridex, &size);
   ptr2 = get_vector_ptr(yya, &stridey, &size);
-  x = RFLOAT(xx)->value;
+  x = NUM2DBL(xx);
   status = gsl_interp_eval_deriv2_e(rgi->p, ptr1, ptr2, x, rgi->a, &y);
   switch (status) {
   case GSL_EDOM:
@@ -349,8 +349,8 @@ static VALUE rb_gsl_interp_eval_integ(VALUE obj, VALUE xxa, VALUE yya,
   Data_Get_Struct(obj, rb_gsl_interp, rgi);
   ptr1 = get_vector_ptr(xxa, &stridex, &size);
   ptr2 = get_vector_ptr(yya, &stridey, &size);
-  a = RFLOAT(aa)->value;
-  b = RFLOAT(bb)->value;
+  a = NUM2DBL(aa);
+  b = NUM2DBL(bb);
   return rb_float_new(gsl_interp_eval_integ(rgi->p, ptr1, ptr2, a, b, rgi->a));
 }
 
@@ -367,8 +367,8 @@ static VALUE rb_gsl_interp_eval_integ_e(VALUE obj, VALUE xxa, VALUE yya,
   Data_Get_Struct(obj, rb_gsl_interp, rgi);
   ptr1 = get_vector_ptr(xxa, &stridex, &size);
   ptr2 = get_vector_ptr(yya, &stridey, &size);
-  a = RFLOAT(aa)->value;
-  b = RFLOAT(bb)->value;
+  a = NUM2DBL(aa);
+  b = NUM2DBL(bb);
   status = gsl_interp_eval_integ_e(rgi->p, ptr1, ptr2, a, b, rgi->a, &y);
   switch (status) {
   case GSL_EDOM:
@@ -436,7 +436,11 @@ static VALUE rb_gsl_interp_info(VALUE obj)
   char buf[256];
   Data_Get_Struct(obj, rb_gsl_interp, p);
   sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+#ifdef RUBY_1_9_LATER
+  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+#else
   sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS(CLASS_OF(obj))->super));
+#endif
   sprintf(buf, "%sType:       %s\n", buf, gsl_interp_name(p->p));
   sprintf(buf, "%sxmin:       %f\n", buf, p->p->xmin);
   sprintf(buf, "%sxmax:       %f\n", buf, p->p->xmax);

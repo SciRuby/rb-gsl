@@ -169,7 +169,7 @@ static VALUE FUNCTION(rb_gsl_vector,calloc)(VALUE klass, VALUE nn)
 static VALUE FUNCTION(rb_gsl_vector,get)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_vector) *v = NULL, *vnew = NULL;
-  QUALIFIED_VIEW(gsl_vector,view) *vv;
+  //  QUALIFIED_VIEW(gsl_vector,view) *vv;
   gsl_index *p;
   int i;  /*! not size_t, since a negative index is allowed */
   int beg, en, flag = 0, n;
@@ -2840,10 +2840,11 @@ static VALUE FUNCTION(rb_gsl_vector,join)(int argc, VALUE *argv, VALUE obj)
     sep = argv[0];
     break;
   default:
-    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0 or 1)");
+    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0 or 1)", argc);
   }
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  p = (char *) malloc((10+RSTRING(sep)->len)*v->size + 1);
+  //  p = (char *) malloc((10+RSTRING(sep)->len)*v->size + 1);
+  p = (char *) malloc((10+RSTRING_LEN(sep))*v->size + 1);
   str = rb_str_new2(p);
   for (i = 0; i < v->size; i++) {
 #ifdef BASE_DOUBLE

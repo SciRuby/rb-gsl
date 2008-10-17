@@ -1665,6 +1665,34 @@ static VALUE rb_gsl_multifit_linear_est(VALUE module, VALUE xx, VALUE cc, VALUE 
   gsl_multifit_linear_est(x, c, cov, &y, &y_err);
   return rb_ary_new3(2, rb_float_new(y), rb_float_new(y_err));
 }
+#endif
+#ifdef GSL_1_11_LATER
+static VALUE rb_gsl_multifit_linear_residuals(int argc, VALUE argv[], VALUE module)
+{
+  gsl_vector *y, *c, *r;
+  gsl_matrix *X;
+  VALUE ret;
+  switch (argc) {
+  case 3:
+    Data_Get_Matrix(argv[0], X);
+    Data_Get_Vector(argv[1], y);
+    Data_Get_Vector(argv[2], c);
+    r = gsl_vector_alloc(y->size);
+    ret = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, r);
+    break;
+  case 4:
+    Data_Get_Matrix(argv[0], X);
+    Data_Get_Vector(argv[1], y);
+    Data_Get_Vector(argv[2], c);
+    Data_Get_Vector(argv[3], r);
+    ret = argv[3];
+    break;
+  default:
+    rb_raise(rb_eArgError, "Wrong number of arguments %d (3 or 4).\n", argc);
+  }
+  gsl_multifit_linear_residuals(X, y, c, r);
+  return ret;
+}
 
 #endif
 
@@ -1761,6 +1789,11 @@ void Init_gsl_multifit(VALUE module)
   /***/
 #ifdef GSL_1_8_LATER
   rb_define_module_function(mgsl_multifit, "linear_est", rb_gsl_multifit_linear_est, 3);
+  rb_define_module_function(module, "multifit_linear_est", rb_gsl_multifit_linear_est, 3);
+#endif
+#ifdef GSL_1_11_LATER
+  rb_define_module_function(mgsl_multifit, "linear_residuals", rb_gsl_multifit_linear_residuals, -1);
+  rb_define_module_function(module, "multifit_linear_residuals", rb_gsl_multifit_linear_residuals, -1);
 #endif
 
 #ifdef HAVE_NDLINEAR_GSL_MULTIFIT_NDLINEAR_H

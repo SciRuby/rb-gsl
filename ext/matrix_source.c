@@ -1667,9 +1667,16 @@ static VALUE FUNCTION(rb_gsl_matrix,to_v)(VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m;
   GSL_TYPE(gsl_vector) *v;
+  size_t i, j, k;
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
   v = FUNCTION(gsl_vector,alloc)(m->size1*m->size2);
-  memcpy(v->data, m->data, sizeof(BASE)*v->size);
+  //  memcpy(v->data, m->data, sizeof(BASE)*v->size);
+  for (i = 0, k = 0; i < m->size1; i++) {
+    for (j = 0; j < m->size2; j++, k++) {
+      FUNCTION(gsl_vector,set)(v, k, FUNCTION(gsl_matrix,get)(m, i, j));
+    }
+  }
+
   return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), v);
 }
 
@@ -1778,7 +1785,11 @@ static VALUE FUNCTION(rb_gsl_matrix,info)(VALUE obj)
   char buf[256];
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
   sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+#ifdef RUBY_1_9_LATER
+  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+#else
   sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS(CLASS_OF(obj))->super));
+#endif
   sprintf(buf, "%sDimension:  %dx%d\n", buf, (int) m->size1, (int) m->size2);
   sprintf(buf, "%sSize:       %d\n", buf, (int) (m->size1*m->size2));
   return rb_str_new2(buf);
@@ -2129,7 +2140,6 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_matrix), "clone", 
 		   FUNCTION(rb_gsl_matrix,clone), 0);
   rb_define_alias(GSL_TYPE(cgsl_matrix), "duplicate", "clone");
-  rb_define_alias(GSL_TYPE(cgsl_matrix), "dup", "clone");
   rb_define_method(GSL_TYPE(cgsl_matrix), "isnull", 
 		   FUNCTION(rb_gsl_matrix,isnull), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "isnull?", 

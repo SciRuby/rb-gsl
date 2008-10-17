@@ -21,7 +21,7 @@ static gsl_poly_int* mygsl_poly_hermite(int n1)
   int coef1[2] = {0, 2};
   int coef2[3] = {-2, 0, 4};
   if (n1 < 0) rb_raise(rb_eArgError, "order must be >= 0");
-  p0 = gsl_vector_int_alloc(n1 + 1);
+  p0 = gsl_vector_int_calloc(n1 + 1);
   switch (n1) {
   case 0:
     gsl_vector_int_set(p0, 0, 1);
@@ -33,8 +33,8 @@ static gsl_poly_int* mygsl_poly_hermite(int n1)
     memcpy(p0->data, coef2, 3*sizeof(int));
     break;
   default:
-    p1 = gsl_vector_int_alloc(n1 + 1);
-    p2 = gsl_vector_int_alloc(n1 + 1);
+    p1 = gsl_vector_int_calloc(n1 + 1);
+    p2 = gsl_vector_int_calloc(n1 + 1);
     memcpy(p1->data, coef2, 3*sizeof(int));
     memcpy(p2->data, coef1, 2*sizeof(int));
     for (n = 2; n < n1; n++) {
@@ -61,7 +61,7 @@ static gsl_poly_int* mygsl_poly_cheb(int n1)
   int coef1[2] = {0, 1};
   int coef2[3] = {-1, 0, 2};
   if (n1 < 0) rb_raise(rb_eArgError, "order must be >= 0");
-  p0 = gsl_vector_int_alloc(n1 + 1);
+  p0 = gsl_vector_int_calloc(n1 + 1);
   switch (n1) {
   case 0:
     gsl_vector_int_set(p0, 0, 1);
@@ -73,8 +73,8 @@ static gsl_poly_int* mygsl_poly_cheb(int n1)
     memcpy(p0->data, coef2, 3*sizeof(int));
     break;
   default:
-    p1 = gsl_vector_int_alloc(n1 + 1);
-    p2 = gsl_vector_int_alloc(n1 + 1);
+    p1 = gsl_vector_int_calloc(n1 + 1);
+    p2 = gsl_vector_int_calloc(n1 + 1);
     memcpy(p1->data, coef2, 3*sizeof(int));
     memcpy(p2->data, coef1, 2*sizeof(int));
     for (n = 2; n < n1; n++) {
@@ -100,7 +100,7 @@ static gsl_poly_int* mygsl_poly_chebII(int n1)
   int coef1[2] = {0, 2};
   int coef2[3] = {-1, 0, 4};
   if (n1 < 0) rb_raise(rb_eArgError, "order must be >= 0");
-  p0 = gsl_vector_int_alloc(n1 + 1);
+  p0 = gsl_vector_int_calloc(n1 + 1);
   switch (n1) {
   case 0:
     gsl_vector_int_set(p0, 0, 1);
@@ -112,8 +112,8 @@ static gsl_poly_int* mygsl_poly_chebII(int n1)
     memcpy(p0->data, coef2, 3*sizeof(int));
     break;
   default:
-    p1 = gsl_vector_int_alloc(n1 + 1);
-    p2 = gsl_vector_int_alloc(n1 + 1);
+    p1 = gsl_vector_int_calloc(n1 + 1);
+    p2 = gsl_vector_int_calloc(n1 + 1);
     memcpy(p1->data, coef2, 3*sizeof(int));
     memcpy(p2->data, coef1, 2*sizeof(int));
     for (n = 2; n < n1; n++) {
@@ -137,7 +137,7 @@ static gsl_poly_int* mygsl_poly_laguerre(int n)
   int val;
   gsl_vector_int *p0;
   if (n < 0) rb_raise(rb_eArgError, "order must be >= 0");
-  p0 = gsl_vector_int_alloc(n + 1);
+  p0 = gsl_vector_int_calloc(n + 1);
   switch (n) {
   case 0:
     gsl_vector_int_set(p0, 0, 1);
@@ -163,7 +163,7 @@ static gsl_poly_int* mygsl_poly_bessel(int n)
   size_t k;
   gsl_vector_int *p0;
   if (n < 0) rb_raise(rb_eArgError, "order must be >= 0");
-  p0 = gsl_vector_int_alloc(n + 1);
+  p0 = gsl_vector_int_calloc(n + 1);
   for (k = 0; k <= n; k++) {
     gsl_vector_int_set(p0, k, gsl_sf_fact(n+k)/gsl_sf_fact(n-k)/gsl_sf_fact(k)/((int) pow(2, k)));
   }
@@ -177,7 +177,7 @@ static gsl_poly_int* mygsl_poly_bell(int n1)
   int coef1[2] = {0, 1};
   int coef2[3] = {0, 1, 1};
   if (n1 < 0) rb_raise(rb_eArgError, "order must be >= 0");
-  p0 = gsl_vector_int_alloc(n1 + 1);
+  p0 = gsl_vector_int_calloc(n1 + 1);
   switch (n1) {
   case 0:
     gsl_vector_int_set(p0, 0, 1);
@@ -189,7 +189,7 @@ static gsl_poly_int* mygsl_poly_bell(int n1)
     memcpy(p0->data, coef2, 3*sizeof(int));
     break;
   default:
-    p1 = gsl_vector_int_alloc(n1 + 1);
+    p1 = gsl_vector_int_calloc(n1 + 1);
     memcpy(p1->data, coef2, 3*sizeof(int));
     for (n = 2; n < n1; n++) {
       gsl_vector_int_memcpy(p0, p1);

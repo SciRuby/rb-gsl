@@ -172,7 +172,7 @@ static VALUE rb_gsl_multifit_ndlinear_design(int argc, VALUE *argv, VALUE obj)
   }
 }
 
-static VALUE rb_gsl_multifit_ndlinear_calc(int argc, VALUE *argv, VALUE obj)
+static VALUE rb_gsl_multifit_ndlinear_est(int argc, VALUE *argv, VALUE obj)
 {
   gsl_multifit_ndlinear_workspace *w;
   gsl_vector *x = NULL, *c = NULL;
@@ -206,8 +206,44 @@ static VALUE rb_gsl_multifit_ndlinear_calc(int argc, VALUE *argv, VALUE obj)
   default:
     rb_raise(rb_eArgError, "Wrong number of arguments.");  
   }
-  gsl_multifit_ndlinear_calc(x, c, cov, &y, &yerr, w);
+  gsl_multifit_ndlinear_est(x, c, cov, &y, &yerr, w);
   return rb_ary_new3(2, rb_float_new(y), rb_float_new(yerr));
+}
+
+static VALUE rb_gsl_multifit_ndlinear_calc(int argc, VALUE *argv, VALUE obj)
+{
+  gsl_multifit_ndlinear_workspace *w;
+  gsl_vector *x = NULL, *c = NULL;
+  double val;
+  int argc2;
+  switch (TYPE(obj)) {
+  case T_MODULE:
+  case T_CLASS:
+  case T_OBJECT:
+    if (!rb_obj_is_kind_of(argv[argc-1], cWorkspace)) {
+      rb_raise(rb_eTypeError, 
+	       "Wrong argument type %s (GSL::MultiFit::Ndlinear::Workspace expected)",
+        rb_class2name(CLASS_OF(argv[argc-1])));
+    }
+    Data_Get_Struct(argv[argc-1], gsl_multifit_ndlinear_workspace, w);    
+    argc2 = argc-1;
+    break;
+  default:
+    Data_Get_Struct(obj, gsl_multifit_ndlinear_workspace, w);
+    argc2 = argc;  
+  }
+  switch (argc2) {
+  case 2:
+    CHECK_VECTOR(argv[0]);
+    CHECK_VECTOR(argv[1]);
+    Data_Get_Struct(argv[0], gsl_vector, x);
+    Data_Get_Struct(argv[1], gsl_vector, c);
+    break;
+  default:
+    rb_raise(rb_eArgError, "Wrong number of arguments.");  
+  }
+  val = gsl_multifit_ndlinear_calc(x, c, w);
+  return rb_float_new(val);
 }
 
 static VALUE rb_gsl_multifit_ndlinear_n_coeffs(VALUE obj)
@@ -232,7 +268,7 @@ static VALUE rb_gsl_multifit_ndlinear_N(VALUE obj)
   ary = (VALUE) w->params;
   return rb_ary_entry(ary, INDEX_N);
 }
-
+/*
 static VALUE rb_gsl_multifit_linear_Rsq(VALUE module, VALUE vy, VALUE vchisq)
 {
   gsl_vector *y;
@@ -243,7 +279,7 @@ static VALUE rb_gsl_multifit_linear_Rsq(VALUE module, VALUE vy, VALUE vchisq)
   gsl_multifit_linear_Rsq(y, chisq, &Rsq);
   return rb_float_new(Rsq);
 }
-
+*/
 void Init_ndlinear(VALUE module)
 {
   VALUE mNdlinear;
@@ -260,19 +296,24 @@ void Init_ndlinear(VALUE module)
                             rb_gsl_multifit_ndlinear_design, -1);
   rb_define_singleton_method(cWorkspace, "design", 
                             rb_gsl_multifit_ndlinear_design, -1);
-  rb_define_method(cWorkspace, "design",rb_gsl_multifit_ndlinear_calc, -1);
+  rb_define_method(cWorkspace, "design",rb_gsl_multifit_ndlinear_est, -1);
+  rb_define_singleton_method(mNdlinear, "est", 
+                            rb_gsl_multifit_ndlinear_est, -1);
+  rb_define_singleton_method(cWorkspace, "est", 
+                            rb_gsl_multifit_ndlinear_est, -1);
+  rb_define_method(cWorkspace, "est",rb_gsl_multifit_ndlinear_est, -1);  
+  
   rb_define_singleton_method(mNdlinear, "calc", 
                             rb_gsl_multifit_ndlinear_calc, -1);
   rb_define_singleton_method(cWorkspace, "calc", 
                             rb_gsl_multifit_ndlinear_calc, -1);
   rb_define_method(cWorkspace, "calc",rb_gsl_multifit_ndlinear_calc, -1);  
-  
+
   rb_define_method(cWorkspace, "n_coeffs",rb_gsl_multifit_ndlinear_n_coeffs, 0);    
   rb_define_method(cWorkspace, "n_dim",rb_gsl_multifit_ndlinear_n_dim, 0);      
   rb_define_method(cWorkspace, "N",rb_gsl_multifit_ndlinear_N, 0);
   
-  rb_define_module_function(module, "linear_Rsq", rb_gsl_multifit_linear_Rsq,
-    2);
+  //  rb_define_module_function(module, "linear_Rsq", rb_gsl_multifit_linear_Rsq, 2);
 }
 
 #endif

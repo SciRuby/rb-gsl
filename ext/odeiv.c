@@ -447,7 +447,11 @@ static VALUE rb_gsl_odeiv_step_info(VALUE obj)
   char buf[256];
   Data_Get_Struct(obj, gsl_odeiv_step, s);
   sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+#ifdef RUBY_1_9_LATER
+  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+#else
   sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS(CLASS_OF(obj))->super));
+#endif
   sprintf(buf, "%sType:       %s\n", buf, gsl_odeiv_step_name(s));
   sprintf(buf, "%sDimension:  %d\n", buf, (int) s->dimension);
   return rb_str_new2(buf);
@@ -668,6 +672,7 @@ static VALUE rb_gsl_odeiv_evolve_apply(VALUE obj, VALUE cc, VALUE ss, VALUE sss,
 }
 
 static void rb_gsl_odeiv_solver_free(gsl_odeiv_solver *gde);
+static void gsl_odeiv_solver_mark(gsl_odeiv_solver *gos);
 static VALUE rb_gsl_odeiv_solver_new(int argc, VALUE *argv, VALUE klass)
 {
   gsl_odeiv_solver *gos = NULL;
@@ -702,7 +707,13 @@ static VALUE rb_gsl_odeiv_solver_new(int argc, VALUE *argv, VALUE klass)
   }
   gos->sys = make_sys(argc - 2, argv + 2);
   gos->e = make_evolve(dim);
-  return Data_Wrap_Struct(klass, 0, rb_gsl_odeiv_solver_free, gos);
+  return Data_Wrap_Struct(klass,  gsl_odeiv_solver_mark, rb_gsl_odeiv_solver_free, gos);
+  //  return Data_Wrap_Struct(klass,  0, rb_gsl_odeiv_solver_free, gos);
+}
+
+static void gsl_odeiv_solver_mark(gsl_odeiv_solver *gos)
+{
+  rb_gc_mark((VALUE) gos->sys->params);
 }
 
 static VALUE rb_gsl_odeiv_solver_evolve(VALUE obj)

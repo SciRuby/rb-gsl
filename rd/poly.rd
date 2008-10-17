@@ -22,7 +22,8 @@ Contents:
     The polynomial coefficients ((|c|)) can be an (({Array})), 
     a (({GSL::Vector})), or an (({NArray})). The evaluation point ((|x|))
     is a (({Numeric})), (({Array})), (({GSL::Vector})) or (({NArray})).
-  
+    From GSL 1.11, ((|x|)) can be a complex number, and ((|c|)) can be a complex polynomial given by a (({GSL::Vector::Complex})) or an (({Array})).
+
     Ex)
        irb(main):001:0> require("rbgsl")
        => true

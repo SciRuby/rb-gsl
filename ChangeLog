@@ -1,3 +1,16 @@
+Sat Jul 26 08:23:45 JST 2008
+  * GSL::Poly.eval now handles complex numbers (GSL-1.11)
+  * Added new quasi-random generators "halton" and "reversehalton"
+  * Added a module function GSL::MultiFit::linear_residuals() (GSL-1.11)
+  * Fixed a bug in ODE solver 
+	
+Mon Jun 30 22:07:24 JST 2008
+  * Fixed GSL::Vector#normalize (#20865)
+	
+Mon May 26 19:21:15 JST 2008
+  * Fixed a bug in GSL::Matrix::to_v (#19757)
+  * Fixed a bug in GSL::Vector::Int multiplication (#19924)
+	
 Sat Dec  8 23:44:47     2007
   * Version 1.10.3
 

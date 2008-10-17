@@ -19,6 +19,8 @@
 enum rb_gsl_qrng_generator {
   GSL_QRNG_NIEDERREITER_2,
   GSL_QRNG_SOBOL,
+  GSL_QRNG_HALTON,
+  GSL_QRNG_REVERSEHALTON,
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
   GSL_QRNG_HDSOBOL,
 #endif
@@ -34,17 +36,26 @@ static const gsl_qrng_type* get_gsl_qrng_type(VALUE t)
   switch (TYPE(t)) {
   case T_STRING:
     strcpy(name, STR2CSTR(t));
-    if (str_tail_grep(name, "niederreiter_2") == 0) return T = gsl_qrng_niederreiter_2;
+    if (strstr(name, "niederreiter_2")) return T = gsl_qrng_niederreiter_2;
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
-	else if (str_tail_grep(name, "hdsobol") == 0) return T = qrngextra_hdsobol;
+	else if (strstr(name, "hdsobol")) return T = qrngextra_hdsobol;
 #endif
-    else if (str_tail_grep(name, "sobol") == 0) return T = gsl_qrng_sobol;
+    else if (strstr(name, "sobol")) return T = gsl_qrng_sobol;
+#ifdef GSL_1_11_LATER
+    else if (strstr(name, "reversehalton")) return T = gsl_qrng_reversehalton;
+    else if (strstr(name, "halton")) return T = gsl_qrng_halton;
+
+#endif
     else rb_raise(rb_eArgError, "unknown type");
     break;
   case T_FIXNUM:
     switch (FIX2INT(t)) {
     case GSL_QRNG_NIEDERREITER_2: T = gsl_qrng_niederreiter_2; break;
     case GSL_QRNG_SOBOL: T = gsl_qrng_sobol; break;
+#ifdef GSL_1_11_LATER
+    case GSL_QRNG_HALTON: T = gsl_qrng_halton; break;
+    case GSL_QRNG_REVERSEHALTON: T = gsl_qrng_reversehalton; break;
+#endif
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
 	case GSL_QRNG_HDSOBOL: T = qrngextra_hdsobol; break;
 #endif
@@ -150,6 +161,10 @@ void Init_gsl_qrng(VALUE module)
 
   rb_define_const(cgsl_qrng, "NIEDERREITER_2", INT2FIX(GSL_QRNG_NIEDERREITER_2));
   rb_define_const(cgsl_qrng, "SOBOL", INT2FIX(GSL_QRNG_SOBOL));
+#ifdef GSL_1_11_LATER
+  rb_define_const(cgsl_qrng, "HALTON", INT2FIX(GSL_QRNG_HALTON));
+  rb_define_const(cgsl_qrng, "REVERSEHALTON", INT2FIX(GSL_QRNG_REVERSEHALTON));
+#endif
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
     rb_define_const(cgsl_qrng, "HDSOBOL", INT2FIX(GSL_QRNG_HDSOBOL));
 #endif

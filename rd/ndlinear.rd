@@ -93,13 +93,17 @@ construct the design matrix X.
     matrix where the ith row specifies the n_dim independent variables for the 
     ith observation. 
 
---- GSL::MultiFit::Ndlinear.calc(x, c, cov, w)
---- GSL::MultiFit::Ndlinear::Workspace#calc(x, c, cov)
+--- GSL::MultiFit::Ndlinear.est(x, c, cov, w)
+--- GSL::MultiFit::Ndlinear::Workspace#est(x, c, cov)
     After the least squares problem is solved via (({GSL::MultiFit::linear})), 
     this method can be used to evaluate the model at the data point ((|x|)). 
     The coefficient vector ((|c|)) and covariance matrix ((|cov|)) are 
     outputs from (({GSL::MultiFit::linear})). The model output value and 
     its error [((|y, yerr|))] are returned as an array.
+
+--- GSL::MultiFit::Ndlinear.calc(x, c, w)
+--- GSL::MultiFit::Ndlinear::Workspace#calc(x, c)
+    This method is similar to (({GSL::MultiFit::Ndlinear.est})), but does not compute the model error. It computes the model value at the data point ((|x|))  using the coefficient vector ((|c|)) and returns the model value.
 
 == Examples
 This example program generates data from the 3D isotropic harmonic oscillator 
@@ -113,7 +117,7 @@ simplicity) The example program models psi by default.
 
  N_DIM = 3
  N_SUM_R = 10
- N_SUM_THETA = 11
+ N_SUM_THETA = 10
  N_SUM_PHI = 9
  R_MAX = 3.0
 
@@ -185,7 +189,7 @@ simplicity) The example program models psi by default.
 
  coeffs, cov, chisq, = GSL::MultiFit::linear(X, data, multifit)
 
- rsq = GSL::MultiFit::linear_Rsq(data, chisq)
+ rsq = 1.0 - chisq/data.tss
  STDERR.printf("chisq = %e, Rsq = %f\n", chisq, rsq)
 
  eps_rms = 0.0
@@ -206,7 +210,7 @@ simplicity) The example program models psi by default.
        x[1] = theta
        x[2] = phi
 
-       psi_model, err = GSL::MultiFit::Ndlinear.calc(x, coeffs, cov, ndlinear)
+       psi_model, err = GSL::MultiFit::Ndlinear.calc(x, coeffs, ndlinear)
        psi = psi_real_exact(k, l, m, r, theta, phi)
        err = psi_model - psi
        eps_rms += err * err * dV;

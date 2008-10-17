@@ -137,8 +137,10 @@ gsl_vector_int* mygsl_vector_int_mul_matrix(gsl_vector_int *v, gsl_matrix_int *m
 static VALUE rb_gsl_vector_int_mul(VALUE obj, VALUE b)
 {
   VALUE argv[2];
-  gsl_vector_int *v, *vnew;
+  gsl_vector_int *v, *vnew, *v2;
   gsl_matrix_int *m;
+  int val;
+  size_t i, j;
   switch (TYPE(b)) {
   case T_FIXNUM:
   case T_FLOAT:
@@ -154,6 +156,18 @@ static VALUE rb_gsl_vector_int_mul(VALUE obj, VALUE b)
       Data_Get_Struct(b, gsl_matrix_int, m);
       vnew = mygsl_vector_int_mul_matrix(v, m);
       return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free, vnew);
+    } else if (VECTOR_INT_COL_P(obj) && VECTOR_INT_ROW_P(b)) {
+      Data_Get_Struct(obj, gsl_vector_int, v);
+      Data_Get_Struct(b, gsl_vector_int, v2);
+      if (v->size != v2->size) rb_raise(rb_eIndexError, "Vector sizes does not match.");
+      m = gsl_matrix_int_alloc(v->size, v2->size);
+      for (i = 0; i < v->size; i++) {
+	for (j = 0; j < v2->size; j++) {
+	  val = gsl_vector_int_get(v, i)*gsl_vector_int_get(v2, j);
+	  gsl_matrix_int_set(m, i, j, val);
+	}
+      }
+      return Data_Wrap_Struct(cgsl_matrix_int, 0, gsl_matrix_int_free, m);
     } else {
       return rb_gsl_vector_mul(rb_gsl_vector_int_to_f(obj), b);
     }

@@ -18,12 +18,16 @@
 
 FILE* rb_gsl_open_writefile(VALUE io, int *flag)
 {
+#ifdef RUBY_1_9_LATER
+  rb_io_t *fptr = NULL;
+#else
   OpenFile *fptr = NULL;
+#endif
   FILE *fp = NULL;
   char *name;
   switch (TYPE(io)) {
   case T_STRING:
-    name = RSTRING(io)->ptr;
+    name = RSTRING_PTR(io);
     fp = fopen(name, "w");
     *flag = 1;
     break;
@@ -48,12 +52,16 @@ FILE* rb_gsl_open_writefile(VALUE io, int *flag)
 
 FILE* rb_gsl_open_readfile(VALUE io, int *flag)
 {
+#ifdef RUBY_1_9_LATER
+  rb_io_t *fptr = NULL;
+#else
   OpenFile *fptr = NULL;
+#endif
   FILE *fp = NULL;
   char *name;
   switch (TYPE(io)) {
   case T_STRING:
-    name = RSTRING(io)->ptr;
+    name = RSTRING_PTR(io);
     fp = fopen(name, "r");
     *flag = 1;
     break;

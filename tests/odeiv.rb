@@ -327,8 +327,8 @@ ptypes = [
    "h" => 1e-3},
   {"type" => "gear1",
    "h" => 1e-3},
-  {"type" => "gear2",
-   "h" => 1e-3}
+#  {"type" => "gear2",
+#   "h" => 1e-3}
 ]
 
 GSL::IEEE::env_setup()

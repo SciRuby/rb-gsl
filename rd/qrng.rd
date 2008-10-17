@@ -62,6 +62,13 @@ The following quasi-random sequence algorithms are available,
 
   This generator uses the Sobol sequence described in Antonov, Saleev, USSR Comput. Maths. Math. Phys. 19, 252 (1980). It is valid up to 40 dimensions.
 
+* "(({halton}))" (String)
+* (({GSL::QRng::HALTON})) (Fixnum)
+* "(({reversehalton}))" (String)
+* (({GSL::QRng::REVERSEHALTON})) (Fixnum)
+
+  (GSL-1.11 or later) These generators use the Halton and reverse Halton sequences described in J.H. Halton, Numerische Mathematik 2, 84-90 (1960) and B. Vandewoestyne and R. Cools Computational and Applied Mathematics 189, 1&2, 341-361 (2006). They are valid up to 1229 dimensions.
+
 ((<prev|URL:rng.html>))
 ((<next|URL:randist.html>))
 

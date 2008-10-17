@@ -19,7 +19,11 @@ static VALUE rb_gsl_ieee_env_setup(VALUE obj)
 
 static VALUE rb_gsl_ieee_fprintf_double(int argc, VALUE *argv, VALUE obj)
 {
+#ifdef RUBY_1_9_LATER
+  rb_io_t *fptr = NULL;
+#else
   OpenFile *fptr = NULL;
+#endif
   FILE *fp = NULL;
   int flag = 0;
   VALUE vtmp;
@@ -28,7 +32,7 @@ static VALUE rb_gsl_ieee_fprintf_double(int argc, VALUE *argv, VALUE obj)
   case 2:
     switch (TYPE(argv[0])) {
     case T_STRING:
-      fp = fopen(RSTRING(argv[0])->ptr, "w");
+      fp = fopen(RSTRING_PTR(argv[0]), "w");
       flag = 1;
       break;
     case T_FILE:
@@ -56,8 +60,11 @@ static VALUE rb_gsl_ieee_fprintf_double(int argc, VALUE *argv, VALUE obj)
   if (TYPE(vtmp) != T_FLOAT)
     rb_raise(rb_eTypeError, "wrong argument type %s (Float expected)",
 	     rb_class2name(CLASS_OF(vtmp)));
-  
+#ifdef RUBY_1_9_LATER
+  gsl_ieee_fprintf_double(fp, &(RFLOAT_VALUE(vtmp)));
+#else
   gsl_ieee_fprintf_double(fp, &(RFLOAT(vtmp)->value));
+#endif
   if (fp == stdout) fprintf(stdout, "\n");
   if (flag == 1) fclose(fp);
   return obj;
