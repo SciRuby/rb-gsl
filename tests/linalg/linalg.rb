@@ -156,9 +156,3 @@ def test_LU_solve_dim(m, actual, eps)
   lu = m.clone
 
 end
-
-def test_bidiag_decomp_dim(m, eps)
-  a = m.clone
-  tau1, tau2 = a.bidiag_decomp
-end
-
