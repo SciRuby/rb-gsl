@@ -155,6 +155,7 @@ static VALUE rb_gsl_stats_sd_m(int argc, VALUE *argv, VALUE obj)
   return rb_gsl_stats_XXX_m(argc, argv, obj,
 			    gsl_stats_sd, gsl_stats_sd_m);
 }
+
 #ifdef GSL_1_11_LATER
 static VALUE rb_gsl_stats_tss_m(int argc, VALUE *argv, VALUE obj)
 {
@@ -162,15 +163,7 @@ static VALUE rb_gsl_stats_tss_m(int argc, VALUE *argv, VALUE obj)
 			    gsl_stats_tss, gsl_stats_tss_m);
 }
 #endif
-/*
-#ifdef GSL_1_11_LATER
-static VALUE rb_gsl_stats_tss_m(int argc, VALUE *argv, VALUE obj)
-{
-  return rb_gsl_stats_XXX_m(argc, argv, obj,
-			    gsl_stats_tss, gsl_stats_tss_m);
-}
-#endif
-*/
+
 static VALUE rb_gsl_stats_variance_with_fixed_mean(int argc, VALUE *argv, 
 						   VALUE obj)
 {
@@ -676,14 +669,6 @@ void Init_gsl_stats(VALUE module)
   rb_define_alias(cgsl_vector, "tss", "stats_tss_m");
 #endif
 
-#ifdef GSL_1_11_LATER
-  rb_define_singleton_method(mgsl_stats, "tss", rb_gsl_stats_tss_m, -1);
-  rb_define_singleton_method(mgsl_stats, "tss_m", rb_gsl_stats_tss_m, -1);
-  rb_define_method(cgsl_vector, "stats_tss_m", rb_gsl_stats_tss_m, -1);
-  rb_define_alias(cgsl_vector, "tss_m", "stats_tss_m");
-  rb_define_alias(cgsl_vector, "tss", "stats_tss_m");
-#endif
-  
   rb_define_singleton_method(mgsl_stats, "variance_with_fixed_mean", 
 			     rb_gsl_stats_variance_with_fixed_mean, -1);
   rb_define_method(cgsl_vector, "stats_variance_with_fixed_mean", 
