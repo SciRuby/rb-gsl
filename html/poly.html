@@ -40,7 +40,8 @@
 <p>Evaluates the polynomial <var>c[0] + c[1]x + c[2]x^2 + ...</var>. 
 The polynomial coefficients <var>c</var> can be an <code>Array</code>, 
 a <code>GSL::Vector</code>, or an <code>NArray</code>. The evaluation point <var>x</var>
-is a <code>Numeric</code>, <code>Array</code>, <code>GSL::Vector</code> or <code>NArray</code>.</p>
+is a <code>Numeric</code>, <code>Array</code>, <code>GSL::Vector</code> or <code>NArray</code>.
+From GSL 1.11, <var>x</var> can be a complex number, and <var>c</var> can be a complex polynomial given by a <code>GSL::Vector::Complex</code> or an <code>Array</code>.</p>
 <p>Ex)</p>
 <pre>irb(main):001:0&gt; require("rbgsl")
 =&gt; true

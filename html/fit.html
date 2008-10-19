@@ -174,11 +174,17 @@ The best-fit is found by singular value decomposition of the matrix <var>X</var>
 using the workspace provided in <var>work</var> (optional). Any components 
 which have 
 zero singular value (to machine precision) are discarded from the fit.</dd>
+<dt><a name="label-21" id="label-21"><code>GSL::MultiFit::linear_est(<var>x</var>, <var>c</var>, <var>cov</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::linear_est" -->
+<dd>
+(GSL-1.8 or later) This method uses the best-fit multilinear regression coefficients <var>c</var> and their covariance matrix <var>cov</var> to compute the fitted function value <var>y</var> and its standard deviation <var>y_err</var> for the model <var>y = x.c</var> at the point <var>x</var>. This returns an array [<var>y, y_err</var>].</dd>
+<dt><a name="label-22" id="label-22"><code>GSL::MultiFit::linear_residuals(<var>X</var>, <var>y</var>, <var>c</var>[, <var>r</var>])</code></a></dt><!-- RDLabel: "GSL::MultiFit::linear_residuals" -->
+<dd>
+(GSL-1.11 or later) This method computes the vector of residuals <var>r = y - X c</var> for the observations <var>y</var>, coefficients <var>c</var> and matrix of predictor variables <var>X</var>, and returns <var>r</var>.</dd>
 </dl>
-<h3><a name="4.3" href="#4.3">4.3</a> <a name="label-21">Higer level interface</a></h3><!-- RDLabel: "Higer level interface" -->
+<h3><a name="4.3" href="#4.3">4.3</a> <a name="label-23">Higer level interface</a></h3><!-- RDLabel: "Higer level interface" -->
 
 <dl>
-<dt><a name="label-22" id="label-22"><code>GSL::MultiFit::polyfit(<var>x</var>, <var>y</var>, <var>order</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::polyfit" -->
+<dt><a name="label-24" id="label-24"><code>GSL::MultiFit::polyfit(<var>x</var>, <var>y</var>, <var>order</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::polyfit" -->
 <dd>
 <p>Finds the coefficient of a polynomial of order <var>order</var> 
 that fits the vector data (<var>x, y</var>) in a least-square sense.</p>
@@ -194,7 +200,7 @@ coef, err, chisq, status = MultiFit.polyfit(x, y, 3)
 x2 = Vector.linspace(1, 5, 20)
 graph([x, y], [x2, coef.eval(x2)], "-C -g 3 -S 4")</pre></dd>
 </dl>
-<h2><a name="5" href="#5">5</a> <a name="label-23">Examples</a></h2><!-- RDLabel: "Examples" -->
+<h2><a name="5" href="#5">5</a> <a name="label-25">Examples</a></h2><!-- RDLabel: "Examples" -->
 
 <h3><a name="5.1" href="#5.1">5.1</a> <a name="label-2">Linear regression</a></h3><!-- RDLabel: "Linear regression" -->
 
@@ -218,7 +224,7 @@ printf("# covariance matrix:\n");
 printf("# [ %g, %g\n#   %g, %g]\n", 
         cov00, cov01, cov01, cov11);
 printf("# chisq = %g\n", chisq);</pre>
-<h3><a name="5.2" href="#5.2">5.2</a> <a name="label-25">Exponential fitting</a></h3><!-- RDLabel: "Exponential fitting" -->
+<h3><a name="5.2" href="#5.2">5.2</a> <a name="label-27">Exponential fitting</a></h3><!-- RDLabel: "Exponential fitting" -->
 
 <pre>#!/usr/bin/env ruby
 require("gsl")

@@ -101,16 +101,20 @@ Construct the least squares design matrix <var>X</var> from the input <var>vars<
 and the previously specified basis functions. vars is a ndata-by-n_dim 
 matrix where the ith row specifies the n_dim independent variables for the 
 ith observation. </dd>
-<dt><a name="label-9" id="label-9"><code>GSL::MultiFit::Ndlinear.calc(<var>x</var>, <var>c</var>, <var>cov</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::Ndlinear.calc" -->
-<dt><a name="label-10" id="label-10"><code>GSL::MultiFit::Ndlinear::Workspace#calc(<var>x</var>, <var>c</var>, <var>cov</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::Ndlinear::Workspace#calc" -->
+<dt><a name="label-9" id="label-9"><code>GSL::MultiFit::Ndlinear.est(<var>x</var>, <var>c</var>, <var>cov</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::Ndlinear.est" -->
+<dt><a name="label-10" id="label-10"><code>GSL::MultiFit::Ndlinear::Workspace#est(<var>x</var>, <var>c</var>, <var>cov</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::Ndlinear::Workspace#est" -->
 <dd>
 After the least squares problem is solved via <code>GSL::MultiFit::linear</code>, 
 this method can be used to evaluate the model at the data point <var>x</var>. 
 The coefficient vector <var>c</var> and covariance matrix <var>cov</var> are 
 outputs from <code>GSL::MultiFit::linear</code>. The model output value and 
 its error [<var>y, yerr</var>] are returned as an array.</dd>
+<dt><a name="label-11" id="label-11"><code>GSL::MultiFit::Ndlinear.calc(<var>x</var>, <var>c</var>, <var>w</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::Ndlinear.calc" -->
+<dt><a name="label-12" id="label-12"><code>GSL::MultiFit::Ndlinear::Workspace#calc(<var>x</var>, <var>c</var>)</code></a></dt><!-- RDLabel: "GSL::MultiFit::Ndlinear::Workspace#calc" -->
+<dd>
+This method is similar to <code>GSL::MultiFit::Ndlinear.est</code>, but does not compute the model error. It computes the model value at the data point <var>x</var>  using the coefficient vector <var>c</var> and returns the model value.</dd>
 </dl>
-<h2><a name="3" href="#3">3</a> <a name="label-11">Examples</a></h2><!-- RDLabel: "Examples" -->
+<h2><a name="3" href="#3">3</a> <a name="label-13">Examples</a></h2><!-- RDLabel: "Examples" -->
 
 <p>This example program generates data from the 3D isotropic harmonic oscillator 
 wavefunction (real part) and then fits a model to the data using B-splines in 
@@ -122,7 +126,7 @@ require("rbgsl")
 
 N_DIM = 3
 N_SUM_R = 10
-N_SUM_THETA = 11
+N_SUM_THETA = 10
 N_SUM_PHI = 9
 R_MAX = 3.0
 
@@ -194,7 +198,7 @@ X = GSL::MultiFit::Ndlinear::design(vars, ndlinear)
 
 coeffs, cov, chisq, = GSL::MultiFit::linear(X, data, multifit)
 
-rsq = GSL::MultiFit::linear_Rsq(data, chisq)
+rsq = 1.0 - chisq/data.tss
 STDERR.printf("chisq = %e, Rsq = %f\n", chisq, rsq)
 
 eps_rms = 0.0
@@ -215,7 +219,7 @@ while r &lt; R_MAX do
       x[1] = theta
       x[2] = phi
 
-      psi_model, err = GSL::MultiFit::Ndlinear.calc(x, coeffs, cov, ndlinear)
+      psi_model, err = GSL::MultiFit::Ndlinear.calc(x, coeffs, ndlinear)
       psi = psi_real_exact(k, l, m, r, theta, phi)
       err = psi_model - psi
       eps_rms += err * err * dV;

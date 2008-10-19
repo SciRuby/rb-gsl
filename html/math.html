@@ -110,7 +110,8 @@ This returns <code>true</code> if <var>x</var>  is not-a-number, and <code>false
 <dt><a name="label-27" id="label-27"><code>GSL::isinf(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::isinf" -->
 <dd>
 This returns +1 if <var>x</var>  is positive infinity, 
--1 if <var>x</var>  is negative infinity and 0 otherwise.</dd>
+-1 if <var>x</var>  is negative infinity and 0 otherwise.
+NOTE: In Darwin9.5.0-gcc4.0.1, this method returns 1 for -inf.</dd>
 <dt><a name="label-28" id="label-28"><code>GSL::isinf?(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::isinf?" -->
 <dd>
 This returns <code>true</code> if <var>x</var> is positive or negative infinity, 
