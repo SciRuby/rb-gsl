@@ -123,7 +123,7 @@ Ex:
 See also ((<here|URL:vector.html#3.13>)).
 
 == NOTE:
-In Ruby/GSL, vector lendth is limited within the range of Fixnum.
+In Ruby/GSL, vector length is limited within the range of Fixnum.
 For 32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.
 
 == Methods
@@ -602,7 +602,11 @@ The methods below change vector length of ((|self|)).
 === Vector Properties
 --- GSL::Vector#size
 --- GSL::Vector#len
+--- GSL::Vector#length
     Return the vector length.
+
+--- GSL::Vector#stride
+    Return the vector stride.
 
 --- GSL::Vector#sum
     Returns the sum of the vector elements.

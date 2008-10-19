@@ -72,9 +72,14 @@
     ((|x|)).  Currently, ((|x|)) must be a scalar, but a future Ruby GSL
     version could accept a GSL::Vector.
 
-=== Vector properties
+=== Vector Properties
 --- GSL::Vector::Complex#size
+--- GSL::Vector::Complex#len
+--- GSL::Vector::Complex#length
+    Return the vector length.
+
 --- GSL::Vector::Complex#stride
+    Return the vector stride.
 
 === Iterators
 --- GSL::Vector::Complex#each
@@ -122,7 +127,7 @@
 
 --- GSL::Vector::Complex#arg
 --- GSL::Vector::Complex#phase
-    Calculates the squared argument of each of the complex elements of the vector ((|self|)), and returns a real vector.
+    Calculates the argument of each of the complex elements of the vector ((|self|)), and returns a real vector.
 
 --- GSL::Vector::Complex#abs2
     Calculates the squared magnitude of the complex elements of the vector ((|self|)) and returns a real vector.

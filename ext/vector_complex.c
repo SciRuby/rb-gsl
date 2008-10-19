@@ -1938,6 +1938,7 @@ void Init_gsl_vector_complex(VALUE module)
 
   rb_define_method(cgsl_vector_complex, "size", rb_gsl_vector_complex_size, 0);
   rb_define_alias(cgsl_vector_complex, "len", "size");
+  rb_define_alias(cgsl_vector_complex, "length", "size");
   rb_define_method(cgsl_vector_complex, "stride", rb_gsl_vector_complex_stride, 0);
   rb_define_method(cgsl_vector_complex, "owner", rb_gsl_vector_complex_owner, 0);
   rb_define_method(cgsl_vector_complex, "get", rb_gsl_vector_complex_get, -1);

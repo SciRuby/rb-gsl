@@ -2947,6 +2947,7 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
   rb_define_alias(GSL_TYPE(cgsl_vector), "[]", "get");
   rb_define_method(GSL_TYPE(cgsl_vector), "size", FUNCTION(rb_gsl_vector,size), 0);
   rb_define_alias(GSL_TYPE(cgsl_vector), "len", "size");
+  rb_define_alias(GSL_TYPE(cgsl_vector), "length", "size");
   rb_define_method(GSL_TYPE(cgsl_vector), "stride", FUNCTION(rb_gsl_vector,stride), 0);
   rb_define_method(GSL_TYPE(cgsl_vector), "set_stride", FUNCTION(rb_gsl_vector,set_stride), 1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "stride=", "set_stride");
