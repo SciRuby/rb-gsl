@@ -1380,6 +1380,7 @@ void Init_gsl_matrix_complex(VALUE module)
   rb_define_singleton_method(cgsl_matrix_complex, "I", rb_gsl_matrix_complex_identity, 1);
 
   rb_define_method(cgsl_matrix_complex, "set", rb_gsl_matrix_complex_set, -1);
+  rb_define_alias(cgsl_matrix_complex, "[]=", "set");
 
   rb_define_method(cgsl_matrix_complex, "set_row", rb_gsl_matrix_complex_set_row, -1);
   rb_define_method(cgsl_matrix_complex, "set_col", rb_gsl_matrix_complex_set_col, -1);
@@ -1449,7 +1450,9 @@ void Init_gsl_matrix_complex(VALUE module)
 
   /* 25.June.2004 */
   rb_define_method(cgsl_matrix_complex, "conjugate!", rb_gsl_matrix_complex_conjugate, 0);
+  rb_define_alias(cgsl_matrix_complex, "conj!", "conjugate!");
   rb_define_method(cgsl_matrix_complex, "conjugate", rb_gsl_matrix_complex_conjugate2, 0);
+  rb_define_alias(cgsl_matrix_complex, "conj", "conjugate");
   rb_define_method(cgsl_matrix_complex, "dagger!", rb_gsl_matrix_complex_dagger, 0);
   rb_define_method(cgsl_matrix_complex, "dagger", rb_gsl_matrix_complex_dagger2, 0);
   
