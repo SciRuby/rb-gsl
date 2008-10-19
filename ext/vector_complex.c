@@ -2055,6 +2055,7 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_alias(cgsl_vector_complex, "amp", "abs");
   rb_define_alias(cgsl_vector_complex, "mag", "abs");
   rb_define_method(cgsl_vector_complex, "arg", rb_gsl_vector_complex_arg, 0);
+  rb_define_alias(cgsl_vector_complex, "angle", "arg");
   rb_define_alias(cgsl_vector_complex, "phase", "arg");
   rb_define_method(cgsl_vector_complex, "logabs", rb_gsl_vector_complex_logabs, 0);
 

@@ -1469,6 +1469,7 @@ void Init_gsl_matrix_complex(VALUE module)
 
   /****/
   rb_define_method(cgsl_matrix_complex, "arg", rb_gsl_matrix_complex_arg, 0);
+  rb_define_alias(cgsl_matrix_complex, "angle", "arg");
   rb_define_alias(cgsl_matrix_complex, "phase", "arg");
   rb_define_method(cgsl_matrix_complex, "abs", rb_gsl_matrix_complex_abs, 0);
   rb_define_alias(cgsl_matrix_complex, "amp", "abs");

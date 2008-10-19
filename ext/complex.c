@@ -909,6 +909,7 @@ void Init_gsl_complex(VALUE module)
   rb_define_alias(cgsl_complex, "SET_IMAG", "set_imag");
 
   rb_define_method(cgsl_complex, "arg", rb_gsl_complex_arg, 0);
+  rb_define_alias(cgsl_complex, "angle", "arg");
   rb_define_alias(cgsl_complex, "phase", "arg");
   rb_define_method(cgsl_complex, "abs", rb_gsl_complex_abs, 0);
   rb_define_alias(cgsl_complex, "amp", "abs");

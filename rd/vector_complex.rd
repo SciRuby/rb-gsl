@@ -126,8 +126,9 @@
     Conjugates ((|self|)) in place and returns ((|self|)).
 
 --- GSL::Vector::Complex#arg
+--- GSL::Vector::Complex#angle
 --- GSL::Vector::Complex#phase
-    Calculates the argument of each of the complex elements of the vector ((|self|)), and returns a real vector.
+    Calculates the argument (i.e. phase angle in radians) of each of the complex elements of the vector ((|self|)) and returns a real vector.
 
 --- GSL::Vector::Complex#abs2
     Calculates the squared magnitude of the complex elements of the vector ((|self|)) and returns a real vector.

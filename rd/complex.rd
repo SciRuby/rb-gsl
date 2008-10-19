@@ -48,7 +48,9 @@ Contents:
     Set the real or imaginary parts of the complex number.
 
 --- GSL::Complex#arg
-    Returns the argument
+--- GSL::Complex#angle
+--- GSL::Complex#phase
+    Returns the argument (i.e. phase angle in radians) of ((|self|)).
 
 --- GSL::Complex#abs, abs2, logabs
     Returns the magnitude, squared magnitude, and the logarithm of the magnitude
