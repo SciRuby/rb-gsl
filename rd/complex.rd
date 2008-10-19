@@ -79,7 +79,11 @@ Contents:
 --- GSL::Complex#div_imag
 
 --- GSL::Complex#conjugate
+--- GSL::Complex#conj
     Returns the complex conjugate of the complex number ((|self|)).
+--- GSL::Complex#conjugate!
+--- GSL::Complex#conj!
+    Conjugates ((|self|)) in place and returns ((|self|)).
 --- GSL::Complex#inverse
     Returns the inverse of the complex number ((|self|)).
 --- GSL::Complex#negative

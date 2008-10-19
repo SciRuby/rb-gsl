@@ -334,6 +334,14 @@ static VALUE rb_gsl_complex_conjugate(VALUE obj)
   return rb_gsl_complex_operate(gsl_complex_conjugate, obj);
 }
 
+static VALUE rb_gsl_complex_conjugate_bang(VALUE obj)
+{
+  gsl_complex *c;
+  Data_Get_Struct(obj, gsl_complex, c);
+  GSL_SET_COMPLEX(c, GSL_REAL(*c), -GSL_IMAG(*c));
+  return obj;
+}
+
 static VALUE rb_gsl_complex_inverse(VALUE obj)
 {
   return rb_gsl_complex_operate(gsl_complex_inverse, obj);
@@ -927,6 +935,9 @@ void Init_gsl_complex(VALUE module)
   rb_define_method(cgsl_complex, "div_imag", rb_gsl_complex_div_imag, 1);
 
   rb_define_method(cgsl_complex, "conjugate", rb_gsl_complex_conjugate, 0);
+  rb_define_alias(cgsl_complex, "conj", "conjugate");
+  rb_define_method(cgsl_complex, "conjugate!", rb_gsl_complex_conjugate_bang, 0);
+  rb_define_alias(cgsl_complex, "conj!", "conjugate!");
   rb_define_method(cgsl_complex, "inverse", rb_gsl_complex_inverse, 0);
   rb_define_method(cgsl_complex, "negative", rb_gsl_complex_negative, 0);
 
