@@ -226,7 +226,7 @@ static VALUE FUNCTION(rb_gsl_vector,get)(int argc, VALUE *argv, VALUE obj)
         }
         return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);              
       } else {
-        rb_raise(rb_eTypeError, "wrong argument type %s (Array, Range, or a Fixnum expected)", rb_class2name(CLASS_OF(argv[0])));
+        rb_raise(rb_eTypeError, "wrong argument type %s (Array, Range, GSL::Permutation, or Fixnum expected)", rb_class2name(CLASS_OF(argv[0])));
       }
       break;
     }
