@@ -1670,7 +1670,7 @@ static VALUE rb_gsl_vector_complex_shift(int argc, VALUE *argv, VALUE obj)
     if (n >= v->size) n = v->size;
     vnew = gsl_vector_complex_alloc(n);
     memcpy(vnew->data, v->data, sizeof(gsl_complex)*n);
-    memmove(v->block->data, v->block->data+2*n, sizeof(gsl_complex)*v->size);
+    memmove(v->block->data, v->block->data+2*n, sizeof(gsl_complex)*(v->size - n));
     v->size -= n;
     return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);
     break;
