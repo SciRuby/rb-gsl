@@ -4,7 +4,7 @@ require 'rake/gempackagetask'
 spec = Gem::Specification.new do |s|
   # Basics
   s.name = 'gsl'
-  s.version = '1.11.1'
+  s.version = File.readlines('VERSION')[0].chomp
   s.summary = 'Ruby interface to GSL'
   s.description = 'RubyGSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby'
   #s.platform = Gem::Platform::Ruby
