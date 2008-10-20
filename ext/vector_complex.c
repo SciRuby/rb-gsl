@@ -137,11 +137,13 @@ static VALUE rb_gsl_vector_complex_ptr(VALUE obj, VALUE i)
   return Data_Wrap_Struct(cgsl_complex, 0, NULL, gsl_vector_complex_ptr(v, FIX2INT(i)));
 }
 
+// TODO return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj),..." where appropriate
 static VALUE rb_gsl_vector_complex_get(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector_complex *v = NULL, *vnew;
   gsl_complex *c = NULL, z;
-  int i;
+  gsl_index *p;
+  int i, k;
   int beg, en, step;
   size_t index, n, j;
   Data_Get_Struct(obj, gsl_vector_complex, v);
@@ -167,7 +169,16 @@ static VALUE rb_gsl_vector_complex_get(int argc, VALUE *argv, VALUE obj)
       return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
       break;
     default:
-      if (CLASS_OF(argv[0]) == rb_cRange) {
+      if (PERMUTATION_P(argv[0])) {
+        Data_Get_Struct(argv[0], gsl_index, p);
+        vnew = gsl_vector_complex_alloc(p->size);
+        for (j = 0; j < p->size; j++) {
+          k = p->data[j];
+          if (k < 0) k = p->size + j;
+          gsl_vector_complex_set(vnew, j, gsl_vector_complex_get(v, k));
+        }
+        return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
+      } else if (CLASS_OF(argv[0]) == rb_cRange) {
 	get_range_beg_en_n(argv[0], &beg, &en, &n, &step);
 	vnew = gsl_vector_complex_alloc(n);
 	for (j = 0; j < n; j++) {
@@ -175,6 +186,8 @@ static VALUE rb_gsl_vector_complex_get(int argc, VALUE *argv, VALUE obj)
 	  gsl_vector_complex_set(vnew, j, z);
 	}
 	return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
+      } else {
+        rb_raise(rb_eTypeError, "wrong argument type %s (Array, Range, GSL::Permutation, or Fixnum expected)", rb_class2name(CLASS_OF(argv[0])));
       }
       break;
     }
