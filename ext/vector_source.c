@@ -1776,7 +1776,7 @@ static VALUE FUNCTION(rb_gsl_vector,shift)(int argc, VALUE *argv, VALUE obj)
     return C_TO_VALUE((BASE)x);
     break;
   case 1:
-    n2 = FIX2INT(argv[0]); 
+    n2 = NUM2INT(argv[0]); 
     if (n2 <= 0) return Qnil;
     n = (size_t) n2;
     if (n >= v->size) n = v->size;
@@ -1807,7 +1807,7 @@ static VALUE FUNCTION(rb_gsl_vector,pop)(int argc, VALUE *argv, VALUE obj)
     return C_TO_VALUE((BASE)x);
     break;
   case 1:
-    n2 = FIX2INT(argv[0]); 
+    n2 = NUM2INT(argv[0]); 
     if (n2 <= 0) return Qnil;
     n = (size_t) n2;
     if (n >= v->size) n = v->size;
@@ -1866,16 +1866,15 @@ static VALUE FUNCTION(rb_gsl_vector,unshift_v)(VALUE obj, VALUE x)
   b2 = v2->block;
   if (b->size < (v->size+v2->size)) {
     bnew = FUNCTION(gsl_block,alloc)((v->size + v2->size));
-    memmove(bnew->data+b2->size, b->data, sizeof(BASE)*b->size);
-    memcpy(bnew->data, b2->data, sizeof(BASE)*b2->size);
+    memcpy(bnew->data+v2->size, b->data, sizeof(BASE)*v->size);
+    memcpy(bnew->data, b2->data, sizeof(BASE)*v2->size);
     FUNCTION(gsl_block,free)(b);
+    v->data = bnew->data;
+    v->block = bnew;
   } else {
-    bnew = b;
-    memmove(bnew->data+b2->size, b->data, sizeof(BASE)*b->size);
-    memcpy(bnew->data, b2->data, sizeof(BASE)*b2->size);
+    memmove(b->data+v2->size, b->data, sizeof(BASE)*v->size);
+    memmove(b->data, b2->data, sizeof(BASE)*v2->size);
   }
-  v->data = bnew->data;
-  v->block = bnew;
   v->size += v2->size;
   return obj;
 }
