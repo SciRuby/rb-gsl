@@ -1649,6 +1649,9 @@ static VALUE rb_gsl_vector_complex_shift(int argc, VALUE *argv, VALUE obj)
   gsl_complex *z = NULL;
   int n2;
   size_t n;
+  if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
+    rb_raise(rb_eTypeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
+  }
   Data_Get_Struct(obj, gsl_vector_complex, v);
   if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
   if (v->size == 0) return Qnil;
@@ -1685,6 +1688,9 @@ static VALUE rb_gsl_vector_complex_pop(int argc, VALUE *argv, VALUE obj)
   gsl_complex *z = NULL;
   int n2;
   size_t n;
+  if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
+    rb_raise(rb_eTypeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
+  }
   Data_Get_Struct(obj, gsl_vector_complex, v);
   if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
   if (v->size == 0) return Qnil;
@@ -1719,6 +1725,9 @@ static VALUE rb_gsl_vector_complex_unshift(VALUE obj, VALUE x)
   gsl_block_complex *b = NULL, *bnew = NULL;
   gsl_complex *z, c;
   size_t n = 1;
+  if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
+    rb_raise(rb_eTypeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
+  }
   switch (TYPE(x)) {
   case T_FIXNUM: case T_FLOAT:
     c.dat[0] = NUM2DBL(x); c.dat[1] = 0.0;
@@ -1767,6 +1776,9 @@ static VALUE rb_gsl_vector_complex_push(VALUE obj, VALUE x)
   gsl_block_complex *b = NULL, *bnew = NULL;
   gsl_complex *z, c;
   size_t n = 1;
+  if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
+    rb_raise(rb_eTypeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
+  }
   switch (TYPE(x)) {
   case T_FIXNUM: case T_FLOAT:
     c.dat[0] = NUM2DBL(x); c.dat[1] = 0.0;
@@ -1813,6 +1825,9 @@ static VALUE rb_gsl_vector_complex_concat(VALUE obj, VALUE other)
 {
   gsl_vector_complex *v = NULL, *v2 = NULL;
   gsl_block_complex *bnew = NULL;
+  if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
+    rb_raise(rb_eTypeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
+  }
   CHECK_VECTOR_COMPLEX(other);
   Data_Get_Struct(obj, gsl_vector_complex, v);
   if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
