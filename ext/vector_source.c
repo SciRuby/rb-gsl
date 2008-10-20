@@ -1944,6 +1944,7 @@ static VALUE FUNCTION(rb_gsl_vector,concat)(VALUE obj, VALUE other)
     Data_Get_Struct(other, GSL_TYPE(gsl_vector), v2);
     if (v->stride != 1 || v2->stride != 1) 
       rb_raise(rb_eRuntimeError, "vector must have stride 1");
+    size2 = v2->size;
     bnew = FUNCTION(gsl_block,alloc)(v->size + v2->size);
     memcpy(bnew->data, v->data, sizeof(BASE)*v->size);    
     memcpy(bnew->data+v->size, v2->data, sizeof(BASE)*v2->size);
