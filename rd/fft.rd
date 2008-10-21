@@ -92,24 +92,23 @@ at the expense of requiring additional working space.
 ((*The FFT methods described below return FFTed data, and the input vector is 
 not changed. Use methods with '!' as (({tranform!})) for in-place transform.*))
 
---- GSL::Vector::Complex#radix2_forward(stride = 1, n = half length of the array)
---- GSL::Vector::Complex#radix2_backward(stride = 1, n = half length of the array)
---- GSL::Vector::Complex#radix2_inverse(stride = 1, n = half length of the array)
+--- GSL::Vector::Complex#radix2_forward
+--- GSL::Vector::Complex#radix2_backward
+--- GSL::Vector::Complex#radix2_inverse
 
-    These functions compute forward, backward and inverse FFTs of length
-    ((|n|)) with stride ((|stride|)), on the complex vector using a radix-2
-    decimation-in-time algorithm.  The length of the transform ((|n|)) is
-    restricted to powers of two.  These methods return the FFTed data, and the
-    input data is not changed.
+    These functions compute forward, backward and inverse FFTs of the complex
+    vector using a radix-2 decimation-in-time algorithm.  The length of the
+    transform is restricted to powers of two.  These methods return the FFTed
+    data, and the input data is not changed.
 
---- GSL::Vector::Complex#radix2_transform(stride = 1, n = half length of the array, sign)
+--- GSL::Vector::Complex#radix2_transform(sign)
 
     The sign argument can be either (({GSL::FFT::FORWARD})) or (({GSL::FFT::BACKWARD})).
     
---- GSL::Vector::Complex#radix2_dif_forward(stride = 1, n = half length of the array)
---- GSL::Vector::Complex#radix2_dif_backward(stride = 1, n = half length of the array)
---- GSL::Vector::Complex#radix2_dif_inverse(stride = 1, n = half length of the array)
---- GSL::Vector::Complex#radix2_dif_transform(stride = 1, n = half length of the array, sign)
+--- GSL::Vector::Complex#radix2_dif_forward
+--- GSL::Vector::Complex#radix2_dif_backward
+--- GSL::Vector::Complex#radix2_dif_inverse
+--- GSL::Vector::Complex#radix2_dif_transform
 
     These are decimation-in-frequency versions of the radix-2 FFT functions.
 
@@ -137,9 +136,7 @@ negative times wrap around the end of the array.
 
         # You can choose whichever you like
         #ffted = data.radix2_forward()
-        #ffted = data.radix2_transform(1, n, FFT::FORWARD)
-        ffted = data.radix2_transform(n, FFT::FORWARD)
-        #ffted = data.radix2_transform(FFT::FORWARD)
+        ffted = data.radix2_transform(FFT::FORWARD)
         ffted /= Math::sqrt(n)
         for i in 0...n do
           printf("%d %e %e\n", i, ffted[i].re, ffted[i].im)
@@ -174,10 +171,7 @@ negative times wrap around the end of the array.
 ==== Methods to compute transform
 ((*The FFT methods described below return FFTed data, and the input vector is not changed. Use methods with '!' as (({tranform!})) for in-place transform.*))
 
---- GSL::Vector::Complex#forward(stride = 1, n = array half length, table, work)
---- GSL::Vector::Complex#forward(n, table, work)
 --- GSL::Vector::Complex#forward(table, work)
---- GSL::Vector::Complex#forward(n)
 --- GSL::Vector::Complex#forward(table)
 --- GSL::Vector::Complex#forward(work)
 --- GSL::Vector::Complex#forward()
@@ -185,12 +179,11 @@ negative times wrap around the end of the array.
 --- GSL::Vector::Complex#inverse(arguments same as forward)
 --- GSL::Vector::Complex#transform(arguments same as forward, sign)
 
-    These methods compute forward, backward and inverse FFTs of length ((|n|))
-    with stride ((|stride|)), on the complex vector ((|self|)), using a mixed
-    radix decimation-in-frequency algorithm. There is no restriction on the
-    length ((|n|)).  Efficient modules are provided for subtransforms of length
-    2, 3, 4, 5, 6 and 7.  Any remaining factors are computed with a slow,
-    O(n^2), general-n module.
+    These methods compute forward, backward and inverse FFTs of the complex
+    vector ((|self|)), using a mixed radix decimation-in-frequency algorithm.
+    There is no restriction on the length.  Efficient modules are provided for
+    subtransforms of length 2, 3, 4, 5, 6 and 7.  Any remaining factors are
+    computed with a slow, O(n^2), general-n module.
     
     The caller can supply a ((|table|)) containing the trigonometric lookup
     tables and a workspace ((|work|)) (they are optional).
@@ -264,20 +257,19 @@ The routines for readix-2 real FFTs are provided as instance methods of
 not changed. Use methods with '!' as (({radix2_tranform!})) for in-place
 transform.*))
 
---- GSL::Vector#real_radix2_transform(stride = 1, n = vector length)
---- GSL::Vector#radix2_transform(stride = 1, n = vector length)
---- GSL::Vector#real_radix2_forward(stride = 1, n = vector length)
---- GSL::Vector#radix2_forward(stride = 1, n = vector length)
+--- GSL::Vector#real_radix2_transform
+--- GSL::Vector#radix2_transform
+--- GSL::Vector#real_radix2_forward
+--- GSL::Vector#radix2_forward
 
-    These methods compute a radix-2 FFT of length ((|n|)) and stride
-    ((|stride|)) on the real vector ((|self|)).  The output is a half-complex
-    sequence.  The arrangement of the half-complex terms uses the following
-    scheme: for k < N/2 the real part of the k-th term is stored in location k,
-    and the corresponding imaginary part is stored in location N-k. Terms with
-    k > N/2 can be reconstructed using the symmetry z_k = z^*_{N-k}. The terms
-    for k=0 and k=N/2 are both purely real,  and count as a special case. Their
-    real parts are stored in locations 0 and N/2 respectively, while their
-    imaginary parts which are zero are not stored.
+    These methods compute a radix-2 FFT of the real vector ((|self|)).  The
+    output is a half-complex sequence.  The arrangement of the half-complex
+    terms uses the following scheme: for k < N/2 the real part of the k-th term
+    is stored in location k, and the corresponding imaginary part is stored in
+    location N-k. Terms with k > N/2 can be reconstructed using the symmetry
+    z_k = z^*_{N-k}. The terms for k=0 and k=N/2 are both purely real,  and
+    count as a special case. Their real parts are stored in locations 0 and N/2
+    respectively, while their imaginary parts which are zero are not stored.
 
     These methods return the FFTed data, and the input data is not changed.
 
@@ -302,15 +294,14 @@ transform.*))
           complex[N-1].real  =    self[1]
           complex[N-1].imag  =   -self[N-1]
 
---- GSL::Vector#halfcomplex_radix2_inverse(stride = 1, n = vector length)
---- GSL::Vector#radix2_inverse(stride = 1, n = vector length)
---- GSL::Vector#halfcomplex_radix2_backward(stride = 1, n = vector length)
---- GSL::Vector#radix2_backward(stride = 1, n = vector length)
+--- GSL::Vector#halfcomplex_radix2_inverse
+--- GSL::Vector#radix2_inverse
+--- GSL::Vector#halfcomplex_radix2_backward
+--- GSL::Vector#radix2_backward
 
-    These methods compute the inverse or backwards radix-2 FFT of 
-    length ((|n|)) and stride ((|stride|)) on the half-complex sequence data 
-    stored according the output scheme used by gsl_fft_real_radix2. 
-    The result is a real array stored in natural order.
+    These methods compute the inverse or backwards radix-2 FFT of the
+    half-complex sequence data stored according the output scheme used by
+    gsl_fft_real_radix2.  The result is a real array stored in natural order.
 
 == Mixed-radix FFT routines for real data
 
@@ -407,16 +398,16 @@ Both (({complex[0].imag})) and (({complex[3].imag})) are known to be zero.
 
 ((*The FFT methods described below return FFTed data, and the input vector is not changed. Use methods with '!' as (({real_tranform!})) for in-place transform.*))
 
---- GSL::Vector#real_transform(stride = 1, n = vector length, table, work)
---- GSL::Vector#halfcomplex_transform(stride = 1, n = vector length, table, work)
---- GSL::Vector#fft(stride = 1, n = vector length)
+--- GSL::Vector#real_transform(table, work)
+--- GSL::Vector#halfcomplex_transform(table, work)
+--- GSL::Vector#fft
 
-    These methods compute the FFT of ((|self|)), a real or half-complex array of 
-    length ((|n|)), using a mixed radix decimation-in-frequency algorithm. 
-    For (({real_transform})) ((|self|)) is an array of time-ordered real data. 
-    For (({halfcomplex_transform})) ((|self|)) contains Fourier coefficients in the 
-    half-complex ordering described above. There is no restriction on the length 
-    ((|n|)). 
+    These methods compute the FFT of ((|self|)), a real or half-complex array,
+    using a mixed radix decimation-in-frequency algorithm.  For
+    (({real_transform})) ((|self|)) is an array of time-ordered real data.  For
+    (({halfcomplex_transform})) ((|self|)) contains Fourier coefficients in the
+    half-complex ordering described above. There is no restriction on the
+    length ((|n|)). 
 
     Efficient modules are provided for subtransforms of length 2, 3, 4 and 5. 
     Any remaining factors are computed with a slow, O(n^2), general-n module. 
@@ -426,9 +417,9 @@ Both (({complex[0].imag})) and (({complex[3].imag})) are known to be zero.
 
     These methods return the FFTed data, and the input data is not changed.
 
---- GSL::Vector#halfcomplex_inverse(stride = 1, n = vector length, table, work)
---- GSL::Vector#halfcomplex_backward(stride = 1, n = vector length, table, work)
---- GSL::Vector#ifft(stride = 1, n = vector length)
+--- GSL::Vector#halfcomplex_inverse(table, work)
+--- GSL::Vector#halfcomplex_backward(table, work)
+--- GSL::Vector#ifft
 
 == Examples
 
@@ -468,12 +459,7 @@ Both (({complex[0].imag})) and (({complex[3].imag})) are known to be zero.
     rtable = FFT::RealWavetable.alloc(n)
     rwork = FFT::RealWorkspace.alloc(n)
   
-    #ffted = data.real_transform(1, n, rtable, rwork)
-    #ffted = data.real_transform(n, rtable, rwork)
     #ffted = data.real_transform(rtable, rwork)
-    #ffted = data.real_transform(n, rtable)
-    #ffted = data.real_transform(n, rwork)
-    #ffted = data.real_transform(n)
     #ffted = data.real_transform(rtable)
     #ffted = data.real_transform(rwork)
     #ffted = data.real_transform()

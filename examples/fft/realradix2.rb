@@ -11,9 +11,9 @@ for i in 1..10 do
   data[n-i] = 1.0
 end
 
-#ffted = data.radix2_transform()
-#ffted = data.real_radix2_transform()
+#ffted = data.radix2_transform(GSL::FFT:FORWARD)
+#ffted = data.real_radix2_transform(GSL::FFT::FORWARD)
 # etc...
-ffted = data.radix2_transform()
+ffted = data.radix2_transform(GSL::FFT::FORWARD)
 ffted /= Math::sqrt(n)
 GSL::graph(nil, data, ffted, "-T X -C -g 3 -L 'Real Radix-2' -x 0 #{data.size}")

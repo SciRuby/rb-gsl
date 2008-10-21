@@ -12,17 +12,12 @@ end
 rtable = GSL::FFT::RealWavetable.alloc(n)
 rwork = GSL::FFT::RealWorkspace.alloc(n)
   
-#ffted = data.real_transform(1, n, rtable, rwork)
-#ffted = data.real_transform(n, rtable, rwork)
 #ffted = data.real_transform(rtable, rwork)
-#ffted = data.real_transform(n, rtable)
-#ffted = data.real_transform(n, rwork)
-#ffted = data.real_transform(n)
 #ffted = data.real_transform(rtable)
 #ffted = data.real_transform(rwork)
 #ffted = data.real_transform()
 #ffted = data.fft
-ffted = data.real_transform(data)
+ffted = data.real_transform()
 
 for i in 11...n do
   ffted[i] = 0.0

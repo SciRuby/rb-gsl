@@ -15,12 +15,7 @@ end
 org = data.clone
 
 # Select whichever you like
-#data.forward!(1, n, table, space)
-#data.forward!(n, table, space)
 #data.forward!(table, space)
-#data.forward!(n, table)
-#data.forward!(n, space)
-#data.forward!(n)
 #data.forward!(table)
 #data.forward!(space)
 #data.forward!()

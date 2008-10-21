@@ -14,12 +14,7 @@ for i in 1..10 do
 end
 
 # Select whichever you like
-#ffted = data.forward(1, n, table, space)
-#ffted = data.forward(n, table, space)
 #ffted = data.forward(table, space)
-#ffted = data.forward(n, table)
-#ffted = data.forward(n, space)
-#ffted = data.forward(n)
 #ffted = data.forward(table)
 #ffted = data.forward(space)
 #ffted = data.forward()
