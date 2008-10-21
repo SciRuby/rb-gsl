@@ -1870,7 +1870,7 @@ static VALUE rb_gsl_vector_complex_indgen_bang(int argc, VALUE *argv[], VALUE ob
   }
   Data_Get_Struct(obj, gsl_vector_complex, v);
   for (i = 0, j = start; i < v->size; i++, j += step) {
-    v->data[2*i] = (double) j;
+    gsl_vector_complex_set(v, i, gsl_complex_rect((double)j,0));
   }
   return obj;
 }
@@ -1896,7 +1896,7 @@ static VALUE rb_gsl_vector_complex_indgen(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, gsl_vector_complex, v);
   vnew = gsl_vector_complex_calloc(v->size);
   for (i = 0, j = start; i < vnew->size; i++, j += step) {
-    vnew->data[2*i] = (double) j;
+    gsl_vector_complex_set(vnew, i, gsl_complex_rect((double)j,0));
   }
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
 }
@@ -1924,7 +1924,7 @@ static VALUE rb_gsl_vector_complex_indgen_singleton(int argc, VALUE *argv, VALUE
   }
   vnew = gsl_vector_complex_calloc(n);
   for (i = 0, j = start; i < vnew->size; i++, j += step) {
-    vnew->data[2*i] = (double) j;
+    gsl_vector_complex_set(vnew, i, gsl_complex_rect((double)j,0));
   }
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
 }
