@@ -2793,22 +2793,58 @@ static VALUE FUNCTION(rb_gsl_vector,op_inplace)(VALUE vv1, VALUE vv2,
 
 static VALUE FUNCTION(rb_gsl_vector,add_inplace)(VALUE vv1, VALUE vv2)
 {
-  return FUNCTION(rb_gsl_vector,op_inplace)(vv1, vv2, FUNCTION(gsl_vector,add));
+  GSL_TYPE(gsl_vector) *v1;
+  double x;
+  if(VEC_P(vv2)) {
+    return FUNCTION(rb_gsl_vector,op_inplace)(vv1, vv2, FUNCTION(gsl_vector,add));
+  } else {
+    x = NUM2DBL(vv2);
+    Data_Get_Struct(vv1, GSL_TYPE(gsl_vector), v1);
+    FUNCTION(gsl_vector,add_constant)(v1, x);
+    return vv1;
+  }
 }
 
 static VALUE FUNCTION(rb_gsl_vector,sub_inplace)(VALUE vv1, VALUE vv2)
 {
-  return FUNCTION(rb_gsl_vector,op_inplace)(vv1, vv2, FUNCTION(gsl_vector,sub));
+  GSL_TYPE(gsl_vector) *v1;
+  double x;
+  if(VEC_P(vv2)) {
+    return FUNCTION(rb_gsl_vector,op_inplace)(vv1, vv2, FUNCTION(gsl_vector,sub));
+  } else {
+    x = NUM2DBL(vv2);
+    Data_Get_Struct(vv1, GSL_TYPE(gsl_vector), v1);
+    FUNCTION(gsl_vector,add_constant)(v1, -x);
+    return vv1;
+  }
 }
 
 static VALUE FUNCTION(rb_gsl_vector,mul_inplace)(VALUE vv1, VALUE vv2)
 {
-  return FUNCTION(rb_gsl_vector,op_inplace)(vv1, vv2, FUNCTION(gsl_vector,mul));
+  GSL_TYPE(gsl_vector) *v1;
+  double x;
+  if(VEC_P(vv2)) {
+    return FUNCTION(rb_gsl_vector,op_inplace)(vv1, vv2, FUNCTION(gsl_vector,mul));
+  } else {
+    x = NUM2DBL(vv2);
+    Data_Get_Struct(vv1, GSL_TYPE(gsl_vector), v1);
+    FUNCTION(gsl_vector,scale)(v1, x);
+    return vv1;
+  }
 }
 
 static VALUE FUNCTION(rb_gsl_vector,div_inplace)(VALUE vv1, VALUE vv2)
 {
-  return FUNCTION(rb_gsl_vector,op_inplace)(vv1, vv2, FUNCTION(gsl_vector,div));
+  GSL_TYPE(gsl_vector) *v1;
+  double x;
+  if(VEC_P(vv2)) {
+    return FUNCTION(rb_gsl_vector,op_inplace)(vv1, vv2, FUNCTION(gsl_vector,div));
+  } else {
+    x = NUM2DBL(vv2);
+    Data_Get_Struct(vv1, GSL_TYPE(gsl_vector), v1);
+    FUNCTION(gsl_vector,scale)(v1, 1.0/x);
+    return vv1;
+  }
 }
 
 static VALUE FUNCTION(rb_gsl_vector,zip)(int argc, VALUE *argv, VALUE obj)
