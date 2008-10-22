@@ -85,6 +85,7 @@ GSL_TYPE(gsl_vector)* FUNCTION(make_cvector,from_rarray)(VALUE ary)
 VALUE FUNCTION(rb_gsl_vector,new)(int argc, VALUE *argv, VALUE klass)
 {
   GSL_TYPE(gsl_vector) *v = NULL, *vtmp = NULL;
+  BASE xnative;
   size_t n, i;
   int beg, en, step;
 #ifdef HAVE_NARRAY_H
@@ -119,7 +120,14 @@ VALUE FUNCTION(rb_gsl_vector,new)(int argc, VALUE *argv, VALUE klass)
       break;
     case T_FLOAT:
       v = FUNCTION(gsl_vector,alloc)(1);
-      FUNCTION(gsl_vector,set)(v, 0, NUMCONV2(argv[0]));
+      switch(TYPE(argv[0])) {
+        case T_FIXNUM: case T_BIGNUM: case T_FLOAT:
+          xnative = NUMCONV2(argv[0]);
+          break;
+        default:
+          xnative = (BASE)0;
+      }
+      FUNCTION(gsl_vector,set)(v, 0, xnative);
       break;
 #ifdef BASE_DOUBLE
     case T_ARRAY: 
@@ -150,7 +158,14 @@ VALUE FUNCTION(rb_gsl_vector,new)(int argc, VALUE *argv, VALUE klass)
     v = FUNCTION(gsl_vector,alloc)(argc);
     if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_alloc failed");
     for (i = 0; i < argc; i++) {
-      FUNCTION(gsl_vector,set)(v, i, NUMCONV2(argv[i]));
+      switch(TYPE(argv[i])) {
+        case T_FIXNUM: case T_BIGNUM: case T_FLOAT:
+          xnative = NUMCONV2(argv[i]);
+          break;
+        default:
+          xnative = (BASE)0;
+      }
+      FUNCTION(gsl_vector,set)(v, i, xnative);
     }
     break;
   }
@@ -289,8 +304,9 @@ static VALUE FUNCTION(rb_gsl_vector,set)(VALUE obj, VALUE ii, VALUE xx)
 static VALUE FUNCTION(rb_gsl_vector,set_all)(VALUE obj, VALUE xx)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
+  BASE xnative = NUMCONV2(xx);
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  FUNCTION(gsl_vector,set_all)(v, NUMCONV2(xx));
+  FUNCTION(gsl_vector,set_all)(v, xnative);
   return obj;
 }
 
@@ -1884,6 +1900,7 @@ static VALUE FUNCTION(rb_gsl_vector,push)(VALUE obj, VALUE x)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
   GSL_TYPE(gsl_block) *b, *bnew;
+  BASE xnative;
   if (rb_obj_is_kind_of(obj,QUALIFIED_VIEW(cgsl_vector,view) ))
     rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
   if (VECTOR_P(x) || VECTOR_INT_P(x) || TYPE(x) == T_ARRAY) {
@@ -1891,6 +1908,7 @@ static VALUE FUNCTION(rb_gsl_vector,push)(VALUE obj, VALUE x)
   }
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
+  xnative = NUMCONV2(x);
   b = v->block;
   if (b->size < (v->size+1)) {
     bnew = FUNCTION(gsl_block,alloc)(b->size + 1);
@@ -1902,7 +1920,7 @@ static VALUE FUNCTION(rb_gsl_vector,push)(VALUE obj, VALUE x)
   }
   v->block = bnew;
   v->size += 1;
-  FUNCTION(gsl_vector,set)(v, v->size-1, NUMCONV2(x));
+  FUNCTION(gsl_vector,set)(v, v->size-1, xnative);
   return obj;
 }
 
@@ -1924,6 +1942,8 @@ static VALUE FUNCTION(rb_gsl_vector,concat)(VALUE obj, VALUE other)
 {
   GSL_TYPE(gsl_vector) *v = NULL, *v2 = NULL;
   GSL_TYPE(gsl_block) *bnew = NULL;
+  VALUE x;
+  BASE xnative;
   size_t i, size2;
   if (rb_obj_is_kind_of(obj,QUALIFIED_VIEW(cgsl_vector,view)))
     rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
@@ -1937,7 +1957,15 @@ static VALUE FUNCTION(rb_gsl_vector,concat)(VALUE obj, VALUE other)
     bnew = FUNCTION(gsl_block,alloc)(v->size + size2);    
     memcpy(bnew->data, v->data, sizeof(BASE)*v->size);        
     for (i = 0; i < size2; i++) {
-      bnew->data[v->size+i] = NUMCONV2(rb_ary_entry(other, i));
+      x = rb_ary_entry(other, i);
+      switch(TYPE(x)) {
+        case T_FIXNUM: case T_BIGNUM: case T_FLOAT:
+          xnative = NUMCONV2(x);
+          break;
+        default:
+          xnative = (BASE)0;
+      }
+      bnew->data[v->size+i] = xnative;
     }
   } else {
     Data_Get_Struct(other, GSL_TYPE(gsl_vector), v2);
