@@ -330,7 +330,7 @@ VALUE rb_gsl_range_to_gv(VALUE obj)
   if (RTEST(rb_ivar_get(obj, rb_gsl_id_excl))) n = en - beg;
   else n = en - beg + 1;
   v = gsl_vector_alloc(n);
-  for (i = 0; i < n; i++) gsl_vector_set(v, i, beg + i);
+  for (i = 0; i < n; i++) gsl_vector_set(v, i, beg + (int)i);
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
 }
 gsl_vector_view* gsl_vector_view_alloc()
