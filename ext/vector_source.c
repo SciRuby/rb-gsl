@@ -1829,7 +1829,6 @@ static VALUE FUNCTION(rb_gsl_vector,pop)(int argc, VALUE *argv, VALUE obj)
     if (n >= v->size) n = v->size;
     vnew = FUNCTION(gsl_vector,alloc)(n);
     memcpy(vnew->data, v->data+(v->size-n), sizeof(BASE)*n);
-    FUNCTION(gsl_vector,reverse)(vnew);
     v->size -= n;
     return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);
     break;
