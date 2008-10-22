@@ -420,6 +420,64 @@ static VALUE rb_gsl_matrix_complex_print(VALUE obj)
   return obj;
 }
 
+static VALUE rb_gsl_matrix_complex_to_s(int argc, VALUE *argv, VALUE obj)
+{
+  gsl_matrix_complex *m = NULL;
+  char buf[64];
+  size_t i, j;
+  VALUE str;
+  gsl_complex z;
+  int max_rows = 4;
+  int max_cols = 4;
+
+  switch(argc){
+    case 2: max_cols = NUM2INT(argv[1]);
+    case 1: max_rows = NUM2INT(argv[0]);
+    case 0: break;
+    default:
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0, 1, or 2)", argc);
+  }
+
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  if (m->size1 == 0 && m->size2 == 0) return rb_str_new2("[ ]");
+  str = rb_str_new2("[ ");
+  for (i = 0; i < m->size1; i++) {
+    if (i != 0) {
+      rb_str_cat(str, "\n  ", 3);
+    }
+    for (j = 0; j < m->size2; j++) {
+      z = gsl_matrix_complex_get(m, i, j);
+      sprintf(buf,
+          "%s[ %4.3e %4.3e ]", (j==0) ? "" : " ", GSL_REAL(z), GSL_IMAG(z));
+      rb_str_cat(str, buf, strlen(buf));
+      // if too many cols
+      if (j >= max_cols-1 && j != m->size2-1) {
+        rb_str_cat(str, " ...", 4);
+        break;
+      }
+    }
+    // if too many rows
+    if (i >= max_rows-1 && i != m->size1-1) {
+      rb_str_cat(str, "\n  ...", 6);
+      break;
+    }
+  }
+  rb_str_cat(str, " ]", 2);
+  return str;
+}
+
+static VALUE rb_gsl_matrix_complex_inspect(int argc, VALUE *argv, VALUE obj)
+{
+  VALUE str;
+  char buf[128];
+  gsl_matrix_complex *m;
+
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  sprintf(buf, "#<%s[%lu,%lu]:%#x>\n", rb_class2name(CLASS_OF(obj)), m->size1, m->size2, NUM2UINT(rb_obj_id(obj)));
+  str = rb_str_new2(buf);
+  return rb_str_concat(str, rb_gsl_matrix_complex_to_s(argc, argv, obj));
+}
+
 static VALUE rb_gsl_matrix_complex_fwrite(VALUE obj, VALUE io)
 {
   gsl_matrix_complex *h = NULL;
@@ -1389,10 +1447,11 @@ void Init_gsl_matrix_complex(VALUE module)
   rb_define_alias(cgsl_matrix_complex, "[]", "get");
   rb_define_method(cgsl_matrix_complex, "ptr", rb_gsl_matrix_complex_ptr, 2);
 
+  rb_define_method(cgsl_matrix_complex, "to_s", rb_gsl_matrix_complex_to_s, -1);
   rb_define_method(cgsl_matrix_complex, "fprintf", rb_gsl_matrix_complex_fprintf, -1);
   rb_define_method(cgsl_matrix_complex, "printf", rb_gsl_matrix_complex_printf, -1);
   rb_define_method(cgsl_matrix_complex, "print", rb_gsl_matrix_complex_print, 0);
-  rb_define_method(cgsl_matrix_complex, "inspect", rb_gsl_matrix_complex_print, 0);
+  rb_define_method(cgsl_matrix_complex, "inspect", rb_gsl_matrix_complex_inspect, -1);
   rb_define_method(cgsl_matrix_complex, "fwrite", rb_gsl_matrix_complex_fwrite, 1);
   rb_define_method(cgsl_matrix_complex, "fread", rb_gsl_matrix_complex_fread, 1);
   rb_define_method(cgsl_matrix_complex, "fscanf", rb_gsl_matrix_complex_fscanf, 1);
