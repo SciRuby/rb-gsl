@@ -836,6 +836,7 @@ void FUNCTION(Init_gsl_block,init)(VALUE module)
 			     FUNCTION(rb_gsl_block,calloc), 1);
 
   rb_define_method(GSL_TYPE(cgsl_block), "size", FUNCTION(rb_gsl_block,size), 0);
+  rb_define_alias(GSL_TYPE(cgsl_block), "length", "size");
   rb_define_method(GSL_TYPE(cgsl_block), "fwrite", FUNCTION(rb_gsl_block,fwrite), 1);
   rb_define_method(GSL_TYPE(cgsl_block), "fread", FUNCTION(rb_gsl_block,fread), 1);
   rb_define_method(GSL_TYPE(cgsl_block), "fprintf", FUNCTION(rb_gsl_block,fprintf), -1);
