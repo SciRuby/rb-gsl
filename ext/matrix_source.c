@@ -1677,7 +1677,11 @@ static VALUE FUNCTION(rb_gsl_matrix,to_v)(VALUE obj)
     }
   }
 
-  return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), v);
+  if(m->size1 > 1 && m->size2 == 1) {
+    return Data_Wrap_Struct(CONCAT2(GSL_TYPE(cgsl_vector),col), 0, FUNCTION(gsl_vector,free), v);
+  } else {
+    return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), v);
+  }
 }
 
 static VALUE FUNCTION(rb_gsl_matrix,to_vview)(VALUE obj)
