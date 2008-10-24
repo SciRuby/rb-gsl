@@ -2280,6 +2280,8 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
 		   FUNCTION(rb_gsl_matrix,collect), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "collect!", 
 		   FUNCTION(rb_gsl_matrix,collect_bang), 0);
+  rb_define_alias(GSL_TYPE(cgsl_matrix), "map", "collect");
+  rb_define_alias(GSL_TYPE(cgsl_matrix), "map!", "collect!");
 #ifdef HAVE_GSL_TENSOR_GSL_TENSOR_H
   rb_define_method(GSL_TYPE(cgsl_matrix), "to_tensor", 
 		   FUNCTION(rb_gsl_matrix,to_tensor), 0);

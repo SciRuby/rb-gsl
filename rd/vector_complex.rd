@@ -84,6 +84,10 @@
 === Iterators
 --- GSL::Vector::Complex#each
 --- GSL::Vector::Complex#each_index
+--- GSL::Vector::Complex#collect
+--- GSL::Vector::Complex#map
+--- GSL::Vector::Complex#collect!
+--- GSL::Vector::Complex#map!
 
 === Arithmetic
 --- GSL::Vector::Complex#+(other)

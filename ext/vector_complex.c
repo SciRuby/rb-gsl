@@ -2048,6 +2048,8 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "reverse_each_index", rb_gsl_vector_complex_reverse_each_index, 0);
   rb_define_method(cgsl_vector_complex, "collect", rb_gsl_vector_complex_collect, 0);
   rb_define_method(cgsl_vector_complex, "collect!", rb_gsl_vector_complex_collect_bang, 0);
+  rb_define_alias(cgsl_vector_complex, "map", "collect");
+  rb_define_alias(cgsl_vector_complex, "map!", "collect!");
 
   rb_define_method(cgsl_vector_complex, "set_zero", rb_gsl_vector_complex_set_zero, 0);
   rb_define_method(cgsl_vector_complex, "set_basis", rb_gsl_vector_complex_set_basis, 1);

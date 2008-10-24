@@ -195,6 +195,7 @@ For 32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.
     Iterators 
 
 --- GSL::Vector#collect { |item| .. }
+--- GSL::Vector#map { |item| .. }
     Creates a new vector by collecting the vector elements modified with some
     operations.
 
@@ -210,6 +211,7 @@ For 32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.
       [ 0 1 2 3 4 5 ]
 
 --- GSL::Vector#collect! { |item| .. }
+--- GSL::Vector#map! { |item| .. }
     Ex:
       irb(main):006:0> a = GSL::Vector::Int[0..5]
       => GSL::Vector::Int

@@ -378,6 +378,40 @@ static VALUE rb_gsl_matrix_complex_get(int argc, VALUE *argv, VALUE obj)
   }
 }
 
+static void rb_gsl_matrix_complex_collect_native(gsl_matrix_complex *src, gsl_matrix_complex *dst)
+{
+  VALUE vz;
+  gsl_complex * zp;
+  size_t i, j;
+  for (i = 0; i < src->size1; i++) {
+    for (j = 0; j < src->size2; j++) {
+      vz = Data_Make_Struct(cgsl_complex, gsl_complex, 0, free, zp);
+      *zp = gsl_matrix_complex_get(src, i, j);
+      vz = rb_yield(vz);
+      CHECK_COMPLEX(vz);
+      Data_Get_Struct(vz, gsl_complex, zp);
+      gsl_matrix_complex_set(dst, i, j, *zp);
+    }
+  }
+}
+
+static VALUE rb_gsl_matrix_complex_collect(VALUE obj)
+{
+  gsl_matrix_complex *m = NULL, *mnew;
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  mnew = gsl_matrix_complex_alloc(m->size1, m->size2);
+  rb_gsl_matrix_complex_collect_native(m, mnew);
+  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, mnew);
+}
+
+static VALUE rb_gsl_matrix_complex_collect_bang(VALUE obj)
+{
+  gsl_matrix_complex *m = NULL;
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  rb_gsl_matrix_complex_collect_native(m, m);
+  return obj;
+}
+
 static VALUE rb_gsl_matrix_complex_ptr(VALUE obj, VALUE i, VALUE j)
 {
   gsl_matrix_complex *m = NULL;
@@ -1519,6 +1553,10 @@ void Init_gsl_matrix_complex(VALUE module)
   rb_define_method(cgsl_matrix_complex, "each_row", rb_gsl_matrix_complex_each_row, 0);
   rb_define_method(cgsl_matrix_complex, "each_col", rb_gsl_matrix_complex_each_col, 0);
   rb_define_alias(cgsl_matrix_complex, "each_column", "each_col");
+  rb_define_method(cgsl_matrix_complex, "collect", rb_gsl_matrix_complex_collect, 0);
+  rb_define_method(cgsl_matrix_complex, "collect!", rb_gsl_matrix_complex_collect_bang, 0);
+  rb_define_alias(cgsl_matrix_complex, "map", "collect");
+  rb_define_alias(cgsl_matrix_complex, "map!", "collect!");
   
   rb_define_method(cgsl_matrix_complex, "size1", rb_gsl_matrix_complex_size1, 0);
   rb_define_method(cgsl_matrix_complex, "size2", rb_gsl_matrix_complex_size2, 0);

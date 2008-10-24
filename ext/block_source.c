@@ -880,4 +880,6 @@ void FUNCTION(Init_gsl_block,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_block), "each_index", FUNCTION(rb_gsl_block,each_index), 0);
   rb_define_method(GSL_TYPE(cgsl_block), "collect", FUNCTION(rb_gsl_block,collect), 0);
   rb_define_method(GSL_TYPE(cgsl_block), "collect!", FUNCTION(rb_gsl_block,collect_bang), 0);
+  rb_define_alias(GSL_TYPE(cgsl_block), "map", "collect");
+  rb_define_alias(GSL_TYPE(cgsl_block), "map!", "collect!");
 }

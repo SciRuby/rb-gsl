@@ -3192,6 +3192,8 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
 		   FUNCTION(rb_gsl_vector,collect), 0);
   rb_define_method(GSL_TYPE(cgsl_vector), "collect!", 
 		   FUNCTION(rb_gsl_vector,collect_bang), 0);
+  rb_define_alias(GSL_TYPE(cgsl_vector), "map", "collect");
+  rb_define_alias(GSL_TYPE(cgsl_vector), "map!", "collect!");
 
   rb_define_method(GSL_TYPE(cgsl_vector), "to_m", FUNCTION(rb_gsl_vector,to_m), 2);
   rb_define_alias(GSL_TYPE(cgsl_vector), "to_matrix", "to_m");

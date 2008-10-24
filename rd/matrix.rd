@@ -318,6 +318,9 @@ in the elements of the (({View})) object affect to the original.
     Iterator for each of columns in the matrix ((|self|)). 
 
 --- GSL::Matrix#collect { |item| .. }
+--- GSL::Matrix#map { |item| .. }
+--- GSL::Matrix#collect! { |item| .. }
+--- GSL::Matrix#map! { |item| .. }
 
 === Copying matrices
 --- GSL::Matrix#clone
