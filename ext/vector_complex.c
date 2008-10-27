@@ -1714,7 +1714,6 @@ static VALUE rb_gsl_vector_complex_pop(int argc, VALUE *argv, VALUE obj)
 static VALUE rb_gsl_vector_complex_unshift(VALUE obj, VALUE x)
 {
   gsl_vector_complex *v = NULL, *other = NULL;
-  gsl_block_complex *b = NULL, *bnew = NULL;
   gsl_complex *z, c;
   size_t n = 1;
   if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
@@ -1744,19 +1743,14 @@ static VALUE rb_gsl_vector_complex_unshift(VALUE obj, VALUE x)
   }
   if(n > 0) {
     Data_Get_Struct(obj, gsl_vector_complex, v);
-    if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-    b = v->block;
-    if (b->size < v->size+n) {
-      bnew = gsl_block_complex_alloc(v->size + n);
-      memcpy(bnew->data, z, sizeof(gsl_complex)*n);
-      memcpy(bnew->data+2*n, b->data, sizeof(gsl_complex)*v->size);
-      gsl_block_complex_free(b);
-      v->block = bnew;
-      v->data = bnew->data;
-    } else {
-      memmove(b->data+2*n, b->data, sizeof(gsl_complex)*v->size);
-      memmove(b->data, z, sizeof(gsl_complex)*n);
+    if (v->stride != 1) {
+      rb_raise(rb_eRuntimeError, "vector must have stride 1");
     }
+    if (v->block->size < v->size+n) {
+      rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
+    }
+    memmove(v->data+2*n, v->data, sizeof(gsl_complex)*v->size);
+    memmove(v->data, z, sizeof(gsl_complex)*n);
     v->size += n;
   }
   return obj;
@@ -1765,7 +1759,6 @@ static VALUE rb_gsl_vector_complex_unshift(VALUE obj, VALUE x)
 static VALUE rb_gsl_vector_complex_push(VALUE obj, VALUE x)
 {
   gsl_vector_complex *v = NULL, *other = NULL;
-  gsl_block_complex *b = NULL, *bnew = NULL;
   gsl_complex *z, c;
   size_t n = 1;
   if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
@@ -1795,47 +1788,19 @@ static VALUE rb_gsl_vector_complex_push(VALUE obj, VALUE x)
   }
   if(n > 0) {
     Data_Get_Struct(obj, gsl_vector_complex, v);
-    if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-    b = v->block;
-    if (b->size < v->size+n) {
-      bnew = gsl_block_complex_alloc(v->size + n);
-      memcpy(bnew->data, b->data, sizeof(gsl_complex)*v->size);
-      memcpy(bnew->data+2*v->size, z, sizeof(gsl_complex)*n);
-      gsl_block_complex_free(b);
-      v->block = bnew;
-      v->data = bnew->data;
-    } else {
-      // Use memmove so that v.push(v) will work
-      memmove(b->data+2*v->size, z, sizeof(gsl_complex)*n);
+    if (v->stride != 1) {
+      rb_raise(rb_eRuntimeError, "vector must have stride 1");
     }
+    if (v->block->size < v->size+n) {
+      rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
+    }
+    // Use memmove so that v.push(v) will work
+    memmove(v->data+2*v->size, z, sizeof(gsl_complex)*n);
     v->size += n;
   }
   return obj;
 }
 
-static VALUE rb_gsl_vector_complex_concat(VALUE obj, VALUE other)
-{
-  gsl_vector_complex *v = NULL, *v2 = NULL;
-  gsl_block_complex *bnew = NULL;
-  if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
-    rb_raise(rb_eTypeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
-  }
-  CHECK_VECTOR_COMPLEX(other);
-  Data_Get_Struct(obj, gsl_vector_complex, v);
-  if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  Data_Get_Struct(other, gsl_vector_complex, v2);
-  bnew = gsl_block_complex_alloc(v->size + v2->size);
-  memcpy(bnew->data, v->block->data, sizeof(double)*v->block->size*2);
-  memcpy(bnew->data + v->block->size*2, v2->block->data, 
-	 sizeof(double)*v2->block->size*2);
-  gsl_block_complex_free(v->block);
-  v->size += v2->size;
-  v->block = bnew;
-  v->data = bnew->data;
-  return obj;
-}
-
-static VALUE rb_gsl_vector_complex_block(VALUE obj)
 {
   gsl_vector_complex *v = NULL;
   Data_Get_Struct(obj, gsl_vector_complex, v);
@@ -2197,7 +2162,7 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "pop", rb_gsl_vector_complex_pop, -1);
   rb_define_method(cgsl_vector_complex, "unshift", rb_gsl_vector_complex_unshift, 1);
   rb_define_method(cgsl_vector_complex, "push", rb_gsl_vector_complex_push, 1);
-  rb_define_method(cgsl_vector_complex, "concat", rb_gsl_vector_complex_concat, 1);
+  rb_define_alias(cgsl_vector_complex, "concat", "push");
   rb_define_method(cgsl_vector_complex, "block", rb_gsl_vector_complex_block, 0);
 
   rb_define_method(cgsl_vector_complex, "indgen", rb_gsl_vector_complex_indgen, -1);

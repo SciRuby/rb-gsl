@@ -570,12 +570,15 @@ The methods below change vector length of ((|self|)).
     Append ((|x|)) ((({Numeric})) or (({GSL::Vector}))) to the end of ((|self|)).
 --- GSL::Vector#unshift(x)
     Prepends ((|x|)) to the front of ((|self|)).
+--- GSL::Vector#delete(x)
+    Deletes items from ((|self|)) that are equal to ((|x|)).  If the item is
+    not found, returns (({nil})), otherwise returns ((|x|)).
 --- GSL::Vector#delete_at(i)
     Deletes the element at the specified index ((|i|)), 
     returning that  element, or (({nil})) if the index is out of range.
 --- GSL::Vector#delete_if { |x| ... }
     Deletes every element of ((|self|)) for which block evaluates to (({true}))
-    and returns a new vector of deleted elements.
+    and returns ((|self|)).
 
 === Finding maximum and minimum elements of vectors
 

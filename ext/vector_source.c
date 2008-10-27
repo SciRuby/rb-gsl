@@ -1842,32 +1842,28 @@ static VALUE FUNCTION(rb_gsl_vector,unshift_v)(VALUE obj, VALUE x);
 static VALUE FUNCTION(rb_gsl_vector,unshift)(VALUE obj, VALUE x)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
-  GSL_TYPE(gsl_block) *b, *bnew;
+  BASE xnative;
   if (rb_obj_is_kind_of(obj,cgsl_vector_view) 
       || rb_obj_is_kind_of(obj,cgsl_vector_int_view))
     rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
   if (VECTOR_P(x) || VECTOR_INT_P(x)) return FUNCTION(rb_gsl_vector,unshift_v)(obj, x);
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  b = v->block;
-  if (b->size < (v->size+1)) {
-    bnew = FUNCTION(gsl_block,alloc)(b->size + 1);
-    memcpy(bnew->data+1, b->data, sizeof(BASE)*v->size);
-    FUNCTION(gsl_block,free)(b);
-  } else {
-    bnew = b;
-    memmove(bnew->data+1, b->data, sizeof(BASE)*v->size);
+  if (v->stride != 1) {
+    rb_raise(rb_eRuntimeError, "vector must have stride 1");
   }
-  v->data = bnew->data;
-  v->block = bnew;
+  xnative = NUMCONV2(x);
+  if (v->block->size < (v->size+1)) {
+    rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
+  }
+  memmove(v->data+1, v->data, sizeof(BASE)*v->size);
   v->size += 1;
-  FUNCTION(gsl_vector,set)(v, 0, NUMCONV(x));
+  FUNCTION(gsl_vector,set)(v, 0, xnative);
   return obj;
 }
 
 static VALUE FUNCTION(rb_gsl_vector,unshift_v)(VALUE obj, VALUE x)
 {
   GSL_TYPE(gsl_vector) *v = NULL, *v2;
-  GSL_TYPE(gsl_block) *b, *b2, *bnew;
   if (rb_obj_is_kind_of(obj,QUALIFIED_VIEW(cgsl_vector,view) ))
     rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
   if (!rb_obj_is_kind_of(x, CLASS_OF(obj)))
@@ -1877,19 +1873,11 @@ static VALUE FUNCTION(rb_gsl_vector,unshift_v)(VALUE obj, VALUE x)
   Data_Get_Struct(x, GSL_TYPE(gsl_vector), v2);
   if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
   if (v2->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  b = v->block;
-  b2 = v2->block;
-  if (b->size < (v->size+v2->size)) {
-    bnew = FUNCTION(gsl_block,alloc)((v->size + v2->size));
-    memcpy(bnew->data+v2->size, b->data, sizeof(BASE)*v->size);
-    memcpy(bnew->data, b2->data, sizeof(BASE)*v2->size);
-    FUNCTION(gsl_block,free)(b);
-    v->data = bnew->data;
-    v->block = bnew;
-  } else {
-    memmove(b->data+v2->size, b->data, sizeof(BASE)*v->size);
-    memmove(b->data, b2->data, sizeof(BASE)*v2->size);
+  if (v->block->size < (v->size+v2->size)) {
+    rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
   }
+  memmove(v->data+v2->size, v->data, sizeof(BASE)*v->size);
+  memmove(v->data, v2->data, sizeof(BASE)*v2->size);
   v->size += v2->size;
   return obj;
 }
@@ -1898,7 +1886,6 @@ static VALUE FUNCTION(rb_gsl_vector,concat)(VALUE obj, VALUE other);
 static VALUE FUNCTION(rb_gsl_vector,push)(VALUE obj, VALUE x)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
-  GSL_TYPE(gsl_block) *b, *bnew;
   BASE xnative;
   if (rb_obj_is_kind_of(obj,QUALIFIED_VIEW(cgsl_vector,view) ))
     rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
@@ -1908,16 +1895,9 @@ static VALUE FUNCTION(rb_gsl_vector,push)(VALUE obj, VALUE x)
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
   xnative = NUMCONV2(x);
-  b = v->block;
-  if (b->size < (v->size+1)) {
-    bnew = FUNCTION(gsl_block,alloc)(b->size + 1);
-    memcpy(bnew->data, b->data, sizeof(BASE)*b->size);
-    v->data = bnew->data + (b->data - v->data);
-    FUNCTION(gsl_block,free)(b);
-  } else {
-    bnew = b;
+  if (v->block->size < (v->size+1)) {
+    rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
   }
-  v->block = bnew;
   v->size += 1;
   FUNCTION(gsl_vector,set)(v, v->size-1, xnative);
   return obj;
@@ -1940,7 +1920,6 @@ static VALUE FUNCTION(rb_gsl_vector,first)(VALUE obj)
 static VALUE FUNCTION(rb_gsl_vector,concat)(VALUE obj, VALUE other)
 {
   GSL_TYPE(gsl_vector) *v = NULL, *v2 = NULL;
-  GSL_TYPE(gsl_block) *bnew = NULL;
   VALUE x;
   BASE xnative;
   size_t i, size2;
@@ -1950,11 +1929,14 @@ static VALUE FUNCTION(rb_gsl_vector,concat)(VALUE obj, VALUE other)
     rb_raise(rb_eTypeError, "wrong argument type %s (%s expected)",
 	     rb_class2name(CLASS_OF(other)), rb_class2name(CLASS_OF(obj)));
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
+  if (v->stride != 1)
+    rb_raise(rb_eRuntimeError, "vector must have stride 1");
 
   if (TYPE(other) == T_ARRAY) {
     size2 = RARRAY(other)->len;
-    bnew = FUNCTION(gsl_block,alloc)(v->size + size2);    
-    memcpy(bnew->data, v->data, sizeof(BASE)*v->size);        
+    if (v->block->size < (v->size+size2)) {
+      rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
+    }
     for (i = 0; i < size2; i++) {
       x = rb_ary_entry(other, i);
       switch(TYPE(x)) {
@@ -1964,21 +1946,22 @@ static VALUE FUNCTION(rb_gsl_vector,concat)(VALUE obj, VALUE other)
         default:
           xnative = (BASE)0;
       }
-      bnew->data[v->size+i] = xnative;
+      // Cannot increment size until after all array elements have been
+      // converted because that would alter vector even if an exception is
+      // rasied.  So we cannot use gsl_vector_set.
+      v->data[v->size+i] = xnative;
     }
   } else {
     Data_Get_Struct(other, GSL_TYPE(gsl_vector), v2);
-    if (v->stride != 1 || v2->stride != 1) 
+    if (v2->stride != 1) 
       rb_raise(rb_eRuntimeError, "vector must have stride 1");
     size2 = v2->size;
-    bnew = FUNCTION(gsl_block,alloc)(v->size + v2->size);
-    memcpy(bnew->data, v->data, sizeof(BASE)*v->size);    
-    memcpy(bnew->data+v->size, v2->data, sizeof(BASE)*v2->size);
+    if (v->block->size < (v->size+size2)) {
+      rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
+    }
+    memcpy(v->data+v->size, v2->data, sizeof(BASE)*v2->size);
   }    
-  FUNCTION(gsl_block,free)(v->block);
-  v->block = bnew;
   v->size += size2;
-  v->data = bnew->data;
   return obj;
 }
 
@@ -2090,8 +2073,9 @@ static VALUE FUNCTION(rb_gsl_vector,delete_at)(VALUE obj, VALUE ii)
   int i2;
   size_t i;
   GSL_TYPE(gsl_vector) *v;
-  GSL_TYPE(gsl_block) *b, *bnew;
   BASE x;
+  if (rb_obj_is_kind_of(obj,QUALIFIED_VIEW(cgsl_vector,view)))
+    rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
   if (v->size == 0) return Qnil;
@@ -2099,110 +2083,60 @@ static VALUE FUNCTION(rb_gsl_vector,delete_at)(VALUE obj, VALUE ii)
   i2 = FIX2INT(ii);
   if (i2 < 0) {
     i2 += v->size;
-    if (i2 < 0) rb_raise(rb_eIndexError, "index out of range");
   }
+  if (i2 < 0 || i2 > v->size-1) return Qnil;
   i = (size_t) i2;
   x = FUNCTION(gsl_vector,get)(v, i);
-  b = v->block;
-  if (v->size == 1) {
-    v->size -= 1;
-    return C_TO_VALUE(x);
-  }
-  bnew = FUNCTION(gsl_block,alloc)(v->size - 1);
-  memcpy(bnew->data, b->data, sizeof(BASE)*i);
-  memcpy(bnew->data+i, b->data+i+1, sizeof(BASE)*(bnew->size-i));
-  FUNCTION(gsl_block,free)(b);
-  v->block = bnew;
-  v->data = bnew->data;
+  memmove(v->data+i, v->data+i+1, sizeof(BASE)*(v->size-1-i));
   v->size -= 1;
   return C_TO_VALUE(x);
 }
 
 static VALUE FUNCTION(rb_gsl_vector,delete_if)(VALUE obj)
 {
-  GSL_TYPE(gsl_vector) *v, *v2;
-  GSL_TYPE(gsl_block) *b, *bnew;
+  GSL_TYPE(gsl_vector) *v;
   BASE x;
   VALUE val;
-  int *index;
-  size_t i, j, k, count = 0;
+  size_t i, count = 0;
   if (!rb_block_given_p()) rb_raise(rb_eRuntimeError, "block is not given");
+  if (rb_obj_is_kind_of(obj,QUALIFIED_VIEW(cgsl_vector,view)))
+    rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  if (v->size == 0) return Qnil;
-  index = ALLOC_N(int, v->size);
   for (i = 0; i < v->size; i++) {
     x = FUNCTION(gsl_vector,get)(v, i);
     val = rb_yield(C_TO_VALUE(x));
-    if (val) {
-      index[i] = 1;
+    if(RTEST(val)) {
       count++;
-    } else {
-      index[i] = 0;
+    } else if(count > 0) {
+      FUNCTION(gsl_vector,set)(v, i-count, x);
     }
   }
-  if (count == 0) return Qnil;
-  if (count == v->size) {
-    v2 = FUNCTION(make_vector,clone)(v);
-    v->size = 0;
-    return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), v2);
-  }
-  b = v->block;
-  bnew = FUNCTION(gsl_block,alloc)(v->size-count);
-  v2 = FUNCTION(gsl_vector,alloc)(count);
-  j = 0;
-  k = 0;
-  for (i = 0; i < v->size; i++) {
-    x = FUNCTION(gsl_vector,get)(v, i);
-    if (index[i]) FUNCTION(gsl_vector,set)(v2, j++, x);
-    else bnew->data[k++] = x;
-  }
-  free(index);
-  FUNCTION(gsl_block,free)(b);
-  v->size = count;
-  v->block = bnew;
-  v->data = bnew->data;
-  return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), v2);
+  v->size -= count;
+  return obj;
 }
 
 static VALUE FUNCTION(rb_gsl_vector,delete)(VALUE obj, VALUE yy)
 {
   GSL_TYPE(gsl_vector) *v;
-  GSL_TYPE(gsl_block) *b, *bnew;
   BASE x, y;
-  int *index;
-  size_t i, k, count = 0;
+  size_t i, count = 0;
+  y = NUMCONV(yy);
+  if (rb_obj_is_kind_of(obj,QUALIFIED_VIEW(cgsl_vector,view)))
+    rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  if (v->size == 0) return Qnil;
-  index = ALLOC_N(int, v->size);
-  y = NUMCONV(yy);
+  if (v->size == 0) return obj;
   for (i = 0; i < v->size; i++) {
     x = FUNCTION(gsl_vector,get)(v, i);
     if (x == y) {
-      index[i] = 1;
       count++;
-    } else {
-      index[i] = 0;
+    } else if(count > 0) {
+      FUNCTION(gsl_vector,set)(v, i-count, x);
     }
   }
-  if (count == 0) return Qnil;
-  if (count == v->size) {
-    v->size = 0;
-    return obj;
-  }
-  b = v->block;
-  bnew = FUNCTION(gsl_block,alloc)(v->size-count);
-  k = 0;
-  for (i = 0; i < v->size; i++) {
-    if (!index[i]) bnew->data[k++] = FUNCTION(gsl_vector,get)(v, i);
-  }
-  free(index);
-  FUNCTION(gsl_block,free)(b);
-  v->size = count;
-  v->block = bnew;
-  v->data = bnew->data;
-  return obj;
+  v->size -= count;
+  return count ? y : Qnil;
 }
 
 /* singleton method */
