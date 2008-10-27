@@ -1191,7 +1191,8 @@ static VALUE FUNCTION(rb_gsl_vector,subvector)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
   QUALIFIED_VIEW(gsl_vector,view) *vv = NULL;
-  size_t offset = 0, n, stride = 1;
+  int offset = 0;
+  size_t n, stride = 1;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   switch (argc) {
   case 0:
@@ -1216,8 +1217,11 @@ static VALUE FUNCTION(rb_gsl_vector,subvector)(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0-3)", argc);
     break;
   }
+  if(offset < 0) {
+    offset += v->size;
+  }
   vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
-  *vv = FUNCTION(gsl_vector,subvector_with_stride)(v, offset, stride, n);
+  *vv = FUNCTION(gsl_vector,subvector_with_stride)(v, (size_t)offset, stride, n);
   if (VEC_COL_P(obj))
     return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,col_view), 0, free, vv);
   else
@@ -1229,7 +1233,8 @@ static VALUE FUNCTION(rb_gsl_vector,subvector_with_stride)(int argc, VALUE *argv
 {
   GSL_TYPE(gsl_vector) *v = NULL;
   QUALIFIED_VIEW(gsl_vector,view) *vv = NULL;
-  size_t offset, stride = 1, n;
+  int offset;
+  size_t stride = 1, n;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   switch (argc) {
   case 1:
@@ -1254,8 +1259,11 @@ static VALUE FUNCTION(rb_gsl_vector,subvector_with_stride)(int argc, VALUE *argv
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 - 3)", argc);
     break;
   }
+  if(offset < 0) {
+    offset += v->size;
+  }
   vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
-  *vv = FUNCTION(gsl_vector,subvector_with_stride)(v, offset, stride, n);
+  *vv = FUNCTION(gsl_vector,subvector_with_stride)(v, (size_t)offset, stride, n);
   if (VEC_COL_P(obj))
     return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,col_view), 0, free, vv);
   else

@@ -712,7 +712,8 @@ static VALUE rb_gsl_vector_complex_subvector(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector_complex *v = NULL;
   gsl_vector_complex_view *vv = NULL;
-  size_t offset = 0, n, stride = 1;
+  int offset = 0;
+  size_t n, stride = 1;
   Data_Get_Struct(obj, gsl_vector_complex, v);
   switch (argc) {
   case 0:
@@ -738,8 +739,11 @@ static VALUE rb_gsl_vector_complex_subvector(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0-3)", argc);
     break;
   }
+  if(offset < 0) {
+    offset += v->size;
+  }
   vv = gsl_vector_complex_view_alloc();
-  *vv = gsl_vector_complex_subvector_with_stride(v, offset, stride, n);
+  *vv = gsl_vector_complex_subvector_with_stride(v, (size_t)offset, stride, n);
   if (VECTOR_COMPLEX_ROW_P(obj))
     return Data_Wrap_Struct(cgsl_vector_complex_view, 0, gsl_vector_complex_view_free, vv);
   else
@@ -750,10 +754,15 @@ static VALUE rb_gsl_vector_complex_subvector_with_stride(VALUE obj, VALUE o, VAL
 {
   gsl_vector_complex *v = NULL;
   gsl_vector_complex_view *vv = NULL;
+  int offset;
   CHECK_FIXNUM(o); CHECK_FIXNUM(nn); CHECK_FIXNUM(s);
+  offset = NUM2INT(o);
   Data_Get_Struct(obj, gsl_vector_complex, v);
+  if(offset < 0) {
+    offset += v->size;
+  }
   vv = gsl_vector_complex_view_alloc();
-  *vv = gsl_vector_complex_subvector_with_stride(v, FIX2INT(o), FIX2INT(s), FIX2INT(nn));
+  *vv = gsl_vector_complex_subvector_with_stride(v, (size_t)offset, FIX2INT(s), FIX2INT(nn));
   if (VECTOR_COMPLEX_ROW_P(obj))
     return Data_Wrap_Struct(cgsl_vector_complex_view, 0, gsl_vector_complex_view_free, vv);
   else
@@ -1801,6 +1810,7 @@ static VALUE rb_gsl_vector_complex_push(VALUE obj, VALUE x)
   return obj;
 }
 
+static VALUE rb_gsl_vector_complex_block(VALUE obj)
 {
   gsl_vector_complex *v = NULL;
   Data_Get_Struct(obj, gsl_vector_complex, v);
