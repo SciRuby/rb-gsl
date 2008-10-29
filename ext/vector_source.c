@@ -1552,13 +1552,13 @@ static VALUE FUNCTION(rb_gsl_vector,to_m_circulant)(VALUE obj)
 }
 
 static void FUNCTION(mygsl_vector,indgen)(GSL_TYPE(gsl_vector) *v,
-					  int start, int step)
+					  BASE start, BASE step)
 {
   size_t k = 0;
-  int i;
+  BASE i;
   i = start;
   for (k = 0; k < v->size; k++) {
-    FUNCTION(gsl_vector,set)(v, k, (BASE) i);
+    FUNCTION(gsl_vector,set)(v, k, i);
     i += step;
   }
 }
@@ -1567,16 +1567,16 @@ static VALUE FUNCTION(rb_gsl_vector,indgen_singleton)(int argc, VALUE *argv, VAL
 {
   GSL_TYPE(gsl_vector) *v = NULL;
   size_t n;
-  int start = 0, step = 1;
+  BASE start = 0, step = 1;
   switch (argc) {
   case 3:
-    step = FIX2INT(argv[2]);
+    step = NUMCONV2(argv[2]);
     /* no break */
   case 2:
-    start = FIX2INT(argv[1]);
+    start = NUMCONV2(argv[1]);
     /* no break */
   case 1:
-    n = FIX2INT(argv[0]);
+    n = NUM2INT(argv[0]);
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1-3)", argc);
@@ -1590,13 +1590,13 @@ static VALUE FUNCTION(rb_gsl_vector,indgen_singleton)(int argc, VALUE *argv, VAL
 static VALUE FUNCTION(rb_gsl_vector,indgen)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_vector) *v, *vnew;
-  int start = 0, step = 1;
+  BASE start = 0, step = 1;
   switch (argc) {
   case 2:
-    step = FIX2INT(argv[1]);
+    step = NUMCONV2(argv[1]);
     /* no break */
   case 1:
-    start = FIX2INT(argv[0]);
+    start = NUMCONV2(argv[0]);
     break;
   case 0:
     break;
@@ -1613,13 +1613,13 @@ static VALUE FUNCTION(rb_gsl_vector,indgen)(int argc, VALUE *argv, VALUE obj)
 static VALUE FUNCTION(rb_gsl_vector,indgen_bang)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
-  int start = 0, step = 1;
+  BASE start = 0, step = 1;
   switch (argc) {
   case 2:
-    step = FIX2INT(argv[1]);
+    step = NUMCONV2(argv[1]);
     /* no break */
   case 1:
-    start = FIX2INT(argv[0]);
+    start = NUMCONV2(argv[0]);
     break;
   case 0:
     break;

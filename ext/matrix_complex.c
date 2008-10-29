@@ -1330,84 +1330,96 @@ static VALUE rb_gsl_matrix_complex_arccoth(VALUE obj)
 
 static VALUE rb_gsl_matrix_complex_indgen_bang(int argc, VALUE *argv[], VALUE obj)
 {
-  gsl_matrix_complex *v = NULL;
-  size_t start = 0, step = 1;
+  gsl_matrix_complex *m = NULL;
+  double start = 0, step = 1, x;
   size_t i, j;
   switch (argc) {
   case 0:
     break;
   case 1:
-    start = FIX2INT(argv[0]);
+    start = NUM2DBL(argv[0]);
     break;
   case 2:
-    start = FIX2INT(argv[0]);
-    step = FIX2INT(argv[1]);
+    start = NUM2DBL(argv[0]);
+    step = NUM2DBL(argv[1]);
     break;
   default:
     rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)");
   }
-  Data_Get_Struct(obj, gsl_matrix_complex, v);
-  for (i = 0, j = start; i < v->block->size; i++, j += step) {
-    v->data[2*i] = (double) j;
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  x = start;
+  for (i = 0; i < m->size1; i++) {
+    for (j = 0; j < m->size2; j++) {
+      gsl_matrix_complex_set(m, i, j, gsl_complex_rect(x, 0));
+      x += step;
+    }
   }
   return obj;
 }
 
 static VALUE rb_gsl_matrix_complex_indgen(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_matrix_complex *v = NULL, *vnew;
-  size_t start = 0, step = 1;
+  gsl_matrix_complex *m = NULL, *mnew;
+  double start = 0, step = 1, x;
   size_t i, j;
   switch (argc) {
   case 0:
     break;
   case 1:
-    start = FIX2INT(argv[0]);
+    start = NUM2DBL(argv[0]);
     break;
   case 2:
-    start = FIX2INT(argv[0]);
-    step = FIX2INT(argv[1]);
+    start = NUM2DBL(argv[0]);
+    step = NUM2DBL(argv[1]);
     break;
   default:
     rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)");
   }
-  Data_Get_Struct(obj, gsl_matrix_complex, v);
-  vnew = gsl_matrix_complex_calloc(v->size1, v->size2);
-  for (i = 0, j = start; i < vnew->block->size; i++, j += step) {
-    vnew->data[2*i] = (double) j;
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  mnew = gsl_matrix_complex_calloc(m->size1, m->size2);
+  x = start;
+  for (i = 0; i < mnew->size1; i++) {
+    for (j = 0; j < mnew->size2; j++) {
+      gsl_matrix_complex_set(mnew, i, j, gsl_complex_rect(x, 0));
+      x += step;
+    }
   }
-  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, vnew);
+  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, mnew);
 }
 
 static VALUE rb_gsl_matrix_complex_indgen_singleton(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_matrix_complex *vnew;
-  size_t n1, n2, start = 0, step = 1;
-  size_t i, j;
+  gsl_matrix_complex *mnew;
+  double start = 0, step = 1, x;
+  size_t n1, n2, i, j;
   switch (argc) {
   case 2:
-    n1 = (size_t) FIX2INT(argv[0]);
-    n2 = (size_t) FIX2INT(argv[1]);
+    n1 = (size_t) NUM2INT(argv[0]);
+    n2 = (size_t) NUM2INT(argv[1]);
     break;
   case 3:
-    n1 = (size_t) FIX2INT(argv[0]);
-    n2 = (size_t) FIX2INT(argv[1]);
-    start = FIX2INT(argv[2]);
+    n1 = (size_t) NUM2INT(argv[0]);
+    n2 = (size_t) NUM2INT(argv[1]);
+    start = NUM2DBL(argv[2]);
     break;
   case 4:
-    n1 = (size_t) FIX2INT(argv[0]);
-    n2 = (size_t) FIX2INT(argv[1]);
-    start = FIX2INT(argv[2]);
-    step = FIX2INT(argv[3]);
+    n1 = (size_t) NUM2INT(argv[0]);
+    n2 = (size_t) NUM2INT(argv[1]);
+    start = NUM2DBL(argv[2]);
+    step = NUM2DBL(argv[3]);
     break;
   default:
     rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-4)");
   }
-  vnew = gsl_matrix_complex_calloc(n1, n2);
-  for (i = 0, j = start; i < vnew->block->size; i++, j += step) {
-    vnew->data[2*i] = (double) j;
+  mnew = gsl_matrix_complex_calloc(n1, n2);
+  x = start;
+  for (i = 0; i < mnew->size1; i++) {
+    for (j = 0; j < mnew->size2; j++) {
+      gsl_matrix_complex_set(mnew, i, j, gsl_complex_rect(x, 0));
+      x += step;
+    }
   }
-  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, vnew);
+  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, mnew);
 }
 
 

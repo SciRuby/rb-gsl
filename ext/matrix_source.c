@@ -1580,14 +1580,14 @@ static VALUE FUNCTION(rb_gsl_matrix,circulant)(VALUE obj, VALUE vv)
 }
 
 static void FUNCTION(mygsl_matrix,indgen)(GSL_TYPE(gsl_matrix) *m,
-					  int start, int step)
+					  BASE start, BASE step)
 {
   size_t i, j;
-  int n;
+  BASE n;
   n = start;
   for (i = 0; i < m->size1; i++) {
     for (j = 0; j < m->size2; j++) {
-      FUNCTION(gsl_matrix,set)(m, i, j, (BASE) n);
+      FUNCTION(gsl_matrix,set)(m, i, j, n);
       n += step;
     }
   }
@@ -1597,20 +1597,20 @@ static VALUE FUNCTION(rb_gsl_matrix,indgen_singleton)(int argc, VALUE *argv, VAL
 {
   GSL_TYPE(gsl_matrix) *m;
   size_t n1, n2;
-  int start = 0, step = 1;
+  BASE start = 0, step = 1;
   switch (argc) {
   case 4:
-    step = FIX2INT(argv[3]);
+    step = NUMCONV2(argv[3]);
     /* no break */
   case 3:
-    start = FIX2INT(argv[2]);
+    start = NUMCONV2(argv[2]);
     /* no break */
   case 2:
-    n1 = FIX2INT(argv[0]);
-    n2 = FIX2INT(argv[1]);
+    n1 = NUM2INT(argv[0]);
+    n2 = NUM2INT(argv[1]);
     break;
   default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1-3)", argc);
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2-4)", argc);
     break;
   }
   m = FUNCTION(gsl_matrix,alloc)(n1, n2);
@@ -1621,13 +1621,13 @@ static VALUE FUNCTION(rb_gsl_matrix,indgen_singleton)(int argc, VALUE *argv, VAL
 static VALUE FUNCTION(rb_gsl_matrix,indgen)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m, *mnew;
-  int start = 0, step = 1;
+  BASE start = 0, step = 1;
   switch (argc) {
   case 2:
-    step = FIX2INT(argv[1]);
+    step = NUMCONV2(argv[1]);
     /* no break */
   case 1:
-    start = FIX2INT(argv[0]);
+    start = NUMCONV2(argv[0]);
     break;
   case 0:
     break;
@@ -1644,13 +1644,13 @@ static VALUE FUNCTION(rb_gsl_matrix,indgen)(int argc, VALUE *argv, VALUE obj)
 static VALUE FUNCTION(rb_gsl_matrix,indgen_bang)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m;
-  int start = 0, step = 1;
+  BASE start = 0, step = 1;
   switch (argc) {
   case 2:
-    step = FIX2INT(argv[1]);
+    step = NUMCONV2(argv[1]);
     /* no break */
   case 1:
-    start = FIX2INT(argv[0]);
+    start = NUMCONV2(argv[0]);
     break;
   case 0:
     break;

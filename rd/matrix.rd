@@ -108,11 +108,10 @@ Contents:
       [  2  3  4  5  6 
          7  8  9 10 11 
         12 13 14 15 16 ]
-      irb(main):018:0> m = GSL::Matrix::Int.indgen(3, 5, 2, 3)
-      => GSL::Matrix::Int 
-      [  2  5  8 11 14 
-        17 20 23 26 29 
-        32 35 38 41 44 ]
+      irb(main):018:0> m = GSL::Matrix.indgen(2, 3, 4.5, 6.7)
+      => GSL::Matrix
+      [  4.500e+00  1.120e+01  1.790e+01 
+         2.460e+01  3.130e+01  3.800e+01 ]
 
 === NOTE:
 Matrix dimensions are limited within the range of Fixnum.

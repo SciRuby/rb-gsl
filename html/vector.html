@@ -101,9 +101,9 @@ with interval <var>step</var> (mimics NArray#indgen).</p>
 irb(main):020:0&gt; v = GSL::Vector::Int.indgen(5, 3)
 =&gt; GSL::Vector::Int: 
 [ 3 4 5 6 7 ]
-irb(main):021:0&gt; v = GSL::Vector::Int.indgen(5, 3, 2)
-=&gt; GSL::Vector::Int: 
-[ 3 5 7 9 11 ]</pre></dd>
+irb(main):021:0&gt; v = GSL::Vector.indgen(4, 1.2, 0.3)
+=&gt; GSL::Vector
+[ 1.200e+00 1.500e+00 1.800e+00 2.100e+00 ]</pre></dd>
 <dt><a name="label-13" id="label-13"><code>GSL::Vector.filescan(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Vector.filescan" -->
 <dd>
 <p>Reads a formatted ascii file and returns an array of vectors.

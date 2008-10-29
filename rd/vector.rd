@@ -93,9 +93,9 @@ See also ((<GSL::Vector::Complex|URL:vector_complex.html>)).
         irb(main):020:0> v = GSL::Vector::Int.indgen(5, 3)
         => GSL::Vector::Int: 
         [ 3 4 5 6 7 ]
-        irb(main):021:0> v = GSL::Vector::Int.indgen(5, 3, 2)
-        => GSL::Vector::Int: 
-        [ 3 5 7 9 11 ]
+        irb(main):021:0> v = GSL::Vector.indgen(4, 1.2, 0.3)
+        => GSL::Vector
+        [ 1.200e+00 1.500e+00 1.800e+00 2.100e+00 ]
 
 --- GSL::Vector.filescan(filename)
     Reads a formatted ascii file and returns an array of vectors.
