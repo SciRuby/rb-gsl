@@ -454,7 +454,14 @@ in the elements of the (({View})) object affect to the original vector.
       => GSL::Vector::Int: 
       [ 1 3 4 3 5 ]
 
+--- GSL::Vector#sgn
+--- GSL::Vector#signum
+    Creates a new vector, with elements +1 if ((|x_i|)) > 0, -1 if ((|x_i|)) <
+    0, otherwise 0.  Note that this definition gives the signum of NaN as 0
+    rather than NaN.
+
 --- GSL::Vector#abs
+--- GSL::Vector#fabs
     Creates a new vector, with elements ((|fabs(x_i)|)).
 
       irb(main):034:0> v = GSL::Vector::Int[-3, 2, -5, 4]

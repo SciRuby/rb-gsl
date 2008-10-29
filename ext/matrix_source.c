@@ -1959,6 +1959,23 @@ static VALUE FUNCTION(rb_gsl_matrix,finite)(VALUE obj)
   return FUNCTION(rb_gsl_matrix,test)(obj, gsl_finite);
 }
 
+static VALUE FUNCTION(rb_gsl_matrix,sgn)(VALUE obj)
+{
+  GSL_TYPE(gsl_matrix) *m, *mnew;
+  BASE x;
+  size_t i, j;
+  Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
+  mnew = FUNCTION(gsl_matrix,alloc)(m->size1, m->size2);
+  for (i = 0; i < m->size1; i++) {
+    for (j = 0; j < m->size2; j++) {
+      x = FUNCTION(gsl_matrix,get)(m, i, j);
+      FUNCTION(gsl_matrix,set)(mnew, i, j, (BASE)(x>0 ? 1 : (x<0 ? -1 : 0)));
+    }
+  }
+
+  return Data_Wrap_Struct(GSL_TYPE(cgsl_matrix), 0, FUNCTION(gsl_matrix,free), mnew);
+}
+
 static VALUE FUNCTION(rb_gsl_matrix,abs)(VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m, *mnew;
@@ -2348,7 +2365,10 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_matrix), "isinf", FUNCTION(rb_gsl_matrix,isinf), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "finite", FUNCTION(rb_gsl_matrix,finite), 0);
 
+  rb_define_method(GSL_TYPE(cgsl_matrix), "sgn", FUNCTION(rb_gsl_matrix,sgn), 0);
+  rb_define_alias(GSL_TYPE(cgsl_matrix), "signum", "sgn");
   rb_define_method(GSL_TYPE(cgsl_matrix), "abs", FUNCTION(rb_gsl_matrix,abs), 0);
+  rb_define_alias(GSL_TYPE(cgsl_matrix), "fabs", "abs");
 
   rb_define_method(GSL_TYPE(cgsl_matrix), "horzcat", FUNCTION(rb_gsl_matrix,horzcat), 1);
   rb_define_alias(GSL_TYPE(cgsl_matrix), "cat", "horzcat");

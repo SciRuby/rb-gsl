@@ -677,7 +677,14 @@ elements.</dd>
 <dt><a name="label-126" id="label-126"><code>GSL:Matrix#norm</code></a></dt><!-- RDLabel: "GSL:Matrix#norm" -->
 <dd>
 Returns matrix norm, sqrt(sum_{ij} m_{ij}^2).</dd>
-<dt><a name="label-127" id="label-127"><code>GSL:Matrix#abs</code></a></dt><!-- RDLabel: "GSL:Matrix#abs" -->
+<dt><a name="label-127" id="label-127"><code>GSL::Matrix#sgn</code></a></dt><!-- RDLabel: "GSL::Matrix#sgn" -->
+<dt><a name="label-128" id="label-128"><code>GSL::Matrix#signum</code></a></dt><!-- RDLabel: "GSL::Matrix#signum" -->
+<dd>
+Creates a new matrix, with elements +1 if <var>x_i,j</var> &gt; 0, -1 if
+<var>x_i,j</var> &lt; 0, otherwise 0.  Note that this definition gives the signum
+of NaN as 0 rather than NaN.</dd>
+<dt><a name="label-129" id="label-129"><code>GSL:Matrix#abs</code></a></dt><!-- RDLabel: "GSL:Matrix#abs" -->
+<dt><a name="label-130" id="label-130"><code>GSL:Matrix#fabs</code></a></dt><!-- RDLabel: "GSL:Matrix#fabs" -->
 <dd>
 <p>Example:</p>
 <pre>irb(main):004:0&gt; m = GSL::Matrix::Int[-5..4, 3, 3]
@@ -690,26 +697,26 @@ irb(main):005:0&gt; m.abs
 [ 5 4 3 
   2 1 0 
   1 2 3 ]</pre></dd>
-<dt><a name="label-128" id="label-128"><code>GSL::Matrix#equal?(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#equal?" -->
-<dt><a name="label-129" id="label-129"><code>GSL::Matrix#==(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#==" -->
+<dt><a name="label-131" id="label-131"><code>GSL::Matrix#equal?(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#equal?" -->
+<dt><a name="label-132" id="label-132"><code>GSL::Matrix#==(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#==" -->
 <dd>
 Returns <code>true</code> if the matrices have same size and elements
 equal to absolute accurary <var>eps</var> for all the indices, 
 and <code>false</code> otherwise.</dd>
 </dl>
-<h2><a name="3" href="#3">3</a> <a name="label-130">NArray</a></h2><!-- RDLabel: "NArray" -->
+<h2><a name="3" href="#3">3</a> <a name="label-133">NArray</a></h2><!-- RDLabel: "NArray" -->
 
 <dl>
-<dt><a name="label-131" id="label-131"><code>GSL::Matrix#to_na</code></a></dt><!-- RDLabel: "GSL::Matrix#to_na" -->
+<dt><a name="label-134" id="label-134"><code>GSL::Matrix#to_na</code></a></dt><!-- RDLabel: "GSL::Matrix#to_na" -->
 <dd>
 The Matrix object <var>self</var> is converted into an <code>NMatrix</code> object. 
 The matrix data are copied to newly allocated memory.</dd>
-<dt><a name="label-132" id="label-132"><code>NArray#to_gm</code></a></dt><!-- RDLabel: "NArray#to_gm" -->
-<dt><a name="label-133" id="label-133"><code>NArray#to_gslm</code></a></dt><!-- RDLabel: "NArray#to_gslm" -->
+<dt><a name="label-135" id="label-135"><code>NArray#to_gm</code></a></dt><!-- RDLabel: "NArray#to_gm" -->
+<dt><a name="label-136" id="label-136"><code>NArray#to_gslm</code></a></dt><!-- RDLabel: "NArray#to_gslm" -->
 <dd>
 Convert <code>NArray</code> object into <code>GSL::Matrix</code>.</dd>
-<dt><a name="label-134" id="label-134"><code>NArray#to_gm_view</code></a></dt><!-- RDLabel: "NArray#to_gm_view" -->
-<dt><a name="label-135" id="label-135"><code>NArray#to_gslm_view</code></a></dt><!-- RDLabel: "NArray#to_gslm_view" -->
+<dt><a name="label-137" id="label-137"><code>NArray#to_gm_view</code></a></dt><!-- RDLabel: "NArray#to_gm_view" -->
+<dt><a name="label-138" id="label-138"><code>NArray#to_gslm_view</code></a></dt><!-- RDLabel: "NArray#to_gslm_view" -->
 <dd>
 A <code>GSL::Matrix::View</code> object is created from the NArray object <var>na</var>. 
 The data of <var>na</var> are 
@@ -717,14 +724,14 @@ not copied, thus any modifications to the View object affect on the original
 NArray object <var>na</var>. 
 The View object can be used as a reference to the NMatrix object.</dd>
 </dl>
-<h2><a name="4" href="#4">4</a> <a name="label-136">Special matrices</a></h2><!-- RDLabel: "Special matrices" -->
+<h2><a name="4" href="#4">4</a> <a name="label-139">Special matrices</a></h2><!-- RDLabel: "Special matrices" -->
 
 <dl>
-<dt><a name="label-137" id="label-137"><code>GSL::Matrix.hirbert(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.hirbert" -->
+<dt><a name="label-140" id="label-140"><code>GSL::Matrix.hirbert(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.hirbert" -->
 <dd>
 Returns the Hilbert matrix of order <var>n</var>. The <var>ij</var> element is
 defined as 1/(i+j+1).</dd>
-<dt><a name="label-138" id="label-138"><code>GSL::Matrix.invhirbert(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.invhirbert" -->
+<dt><a name="label-141" id="label-141"><code>GSL::Matrix.invhirbert(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.invhirbert" -->
 <dd>
 <p>Returns the inverse of a Hilbert matrix of order <var>n</var>.</p>
 <p>Ex:</p>
@@ -758,7 +765,7 @@ irb(main):013:0&gt; m*invm2
   -1.554e-15 1.000e+00 -2.389e-14 8.349e-15 
   1.295e-15 3.405e-15 1.000e+00 -6.957e-15 
   1.110e-15 1.916e-14 1.707e-14 1.000e+00 ]</pre></dd>
-<dt><a name="label-139" id="label-139"><code>GSL::Matrix.pascal(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.pascal" -->
+<dt><a name="label-142" id="label-142"><code>GSL::Matrix.pascal(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.pascal" -->
 <dd>
 <p>Returns the Pascal matrix of order <var>n</var>, created from Pascal's triangle.</p>
 <pre>irb(main):002:0&gt; GSL::Matrix::Int.pascal(10)
@@ -773,7 +780,7 @@ irb(main):013:0&gt; m*invm2
       1     8    36   120   330   792  1716  3432  6435 11440 
       1     9    45   165   495  1287  3003  6435 12870 24310 
       1    10    55   220   715  2002  5005 11440 24310 48620 ]</pre></dd>
-<dt><a name="label-140" id="label-140"><code>GSL::Matrix.vandermonde(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.vandermonde" -->
+<dt><a name="label-143" id="label-143"><code>GSL::Matrix.vandermonde(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.vandermonde" -->
 <dd>
 <p>Creates a Vendermonde matrix from a vector or an array <var>v</var>.</p>
 <pre>irb(main):002:0&gt; GSL::Matrix.vander([1, 2, 3, 4])
@@ -782,7 +789,7 @@ irb(main):013:0&gt; m*invm2
   8.000e+00 4.000e+00 2.000e+00 1.000e+00
   2.700e+01 9.000e+00 3.000e+00 1.000e+00
   6.400e+01 1.600e+01 4.000e+00 1.000e+00 ]</pre></dd>
-<dt><a name="label-141" id="label-141"><code>GSL::Matrix.toeplitz(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.toeplitz" -->
+<dt><a name="label-144" id="label-144"><code>GSL::Matrix.toeplitz(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.toeplitz" -->
 <dd>
 <p>Creates a Toeplitz matrix from a vector or an array <var>v</var>.</p>
 <pre>irb(main):004:0&gt; GSL::Matrix::Int.toeplitz([1, 2, 3, 4, 5])
@@ -792,7 +799,7 @@ irb(main):013:0&gt; m*invm2
   3 2 1 2 3 
   4 3 2 1 2 
   5 4 3 2 1 ]</pre></dd>
-<dt><a name="label-142" id="label-142"><code>GSL::Matrix.circulant(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.circulant" -->
+<dt><a name="label-145" id="label-145"><code>GSL::Matrix.circulant(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.circulant" -->
 <dd>
 <p>Creates a circulant matrix from a vector or an array <var>v</var>.</p>
 <pre>irb(main):005:0&gt; GSL::Matrix::Int.circulant([1, 2, 3, 4])

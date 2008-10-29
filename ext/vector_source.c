@@ -638,6 +638,20 @@ GSL_TYPE(gsl_vector)* FUNCTION(mygsl_vector,down)(GSL_TYPE(gsl_vector) *p)
   return pnew;
 }
 
+static VALUE FUNCTION(rb_gsl_vector,sgn)(VALUE obj)
+{
+  GSL_TYPE(gsl_vector) *v = NULL, *vnew = NULL;
+  BASE x;
+  size_t i;
+  Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
+  vnew = FUNCTION(gsl_vector,alloc)(v->size);
+  for (i = 0; i < v->size; i++) {
+    x = FUNCTION(gsl_vector,get)(v, i);
+    FUNCTION(gsl_vector,set)(vnew, i, (BASE)(x>0 ? 1 : (x<0 ? -1 : 0)));
+  }
+  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);  
+}
+
 static VALUE FUNCTION(rb_gsl_vector,abs)(VALUE obj)
 {
   GSL_TYPE(gsl_vector) *v = NULL, *vnew = NULL;
@@ -3020,6 +3034,8 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
 			     FUNCTION(rb_gsl_vector,connect), -1);
 
 
+  rb_define_method(GSL_TYPE(cgsl_vector), "sgn", FUNCTION(rb_gsl_vector,sgn), 0);
+  rb_define_alias(GSL_TYPE(cgsl_vector), "signum", "sgn");
   rb_define_method(GSL_TYPE(cgsl_vector), "abs", FUNCTION(rb_gsl_vector,abs), 0);
   rb_define_alias(GSL_TYPE(cgsl_vector), "fabs", "abs");
   rb_define_method(GSL_TYPE(cgsl_vector), "square", 

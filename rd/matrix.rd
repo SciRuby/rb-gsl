@@ -650,7 +650,14 @@ in the elements of the (({View})) object affect to the original.
 --- GSL:Matrix#norm
     Returns matrix norm, sqrt(sum_{ij} m_{ij}^2).
 
+--- GSL::Matrix#sgn
+--- GSL::Matrix#signum
+    Creates a new matrix, with elements +1 if ((|x_i,j|)) > 0, -1 if
+    ((|x_i,j|)) < 0, otherwise 0.  Note that this definition gives the signum
+    of NaN as 0 rather than NaN.
+
 --- GSL:Matrix#abs
+--- GSL:Matrix#fabs
     Example:
       irb(main):004:0> m = GSL::Matrix::Int[-5..4, 3, 3]
       => GSL::Matrix::Int
