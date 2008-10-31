@@ -841,7 +841,7 @@ static VALUE rb_gsl_fft_halfcomplex_unpack(VALUE obj)
   CHECK_VECTOR(obj);
   Data_Get_Struct(obj, gsl_vector, v);
 
-  vout = gsl_vector_complex_alloc(2*v->size);
+  vout = gsl_vector_complex_alloc(v->size);
   gsl_fft_halfcomplex_unpack(v->data, (gsl_complex_packed_array) vout->data, v->stride, v->size);
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vout);
 }
