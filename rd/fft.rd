@@ -222,7 +222,7 @@ negative times wrap around the end of the array.
         printf("%d %e %e\n", i, data[i].re, data[i].im)
       end
 
-== Complex data FFTs
+== Real data FFTs
 === Overview of real data FFTs 
 
 The functions for real data FFTs are provided as instance methods of
