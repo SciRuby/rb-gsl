@@ -100,55 +100,6 @@ static VALUE rb_gsl_complex_imag(VALUE obj)
   return  rb_float_new(GSL_IMAG(*c));
 }
 
-static VALUE rb_gsl_complex_set(int argc, VALUE *argv, VALUE obj)
-{
-  gsl_complex *c = NULL;
-  Data_Get_Struct(obj, gsl_complex, c);
-  switch (argc) {
-  case 1:
-    switch (TYPE(argv[0])) {
-    case T_ARRAY:
-      *c = ary2complex(argv[0]);
-      break;
-    case T_FLOAT:
-    case T_BIGNUM:
-    case T_FIXNUM:
-      GSL_SET_REAL(c, NUM2DBL(argv[0]));
-      break;
-    default:
-      rb_raise(rb_eTypeError, "Array or Numeric expected");
-      break;
-    }
-    break;
-  case 2:
-    Need_Float(argv[0]);Need_Float(argv[1]);
-    *c = gsl_complex_rect(NUM2DBL(argv[0]), NUM2DBL(argv[1]));
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 2)", argc);
-    break;
-  }
-  return obj;
-}
-
-static VALUE rb_gsl_complex_set_real(VALUE obj, VALUE x)
-{
-  gsl_complex *c = NULL;
-  Need_Float(x);
-  Data_Get_Struct(obj, gsl_complex, c);
-  GSL_SET_REAL(c, NUM2DBL(x));
-  return obj;
-}
-
-static VALUE rb_gsl_complex_set_imag(VALUE obj, VALUE y)
-{
-  gsl_complex *c = NULL;
-  Need_Float(y);
-  Data_Get_Struct(obj, gsl_complex, c);
-  GSL_SET_IMAG(c, NUM2DBL(y));
-  return obj;
-}
-
 static VALUE rb_gsl_complex_print(VALUE obj)
 {
   gsl_complex *c = NULL;
@@ -332,14 +283,6 @@ static VALUE rb_gsl_complex_operate2(gsl_complex (*func)(gsl_complex), int argc,
 static VALUE rb_gsl_complex_conjugate(VALUE obj)
 {
   return rb_gsl_complex_operate(gsl_complex_conjugate, obj);
-}
-
-static VALUE rb_gsl_complex_conjugate_bang(VALUE obj)
-{
-  gsl_complex *c;
-  Data_Get_Struct(obj, gsl_complex, c);
-  GSL_SET_COMPLEX(c, GSL_REAL(*c), -GSL_IMAG(*c));
-  return obj;
 }
 
 static VALUE rb_gsl_complex_inverse(VALUE obj)
@@ -904,18 +847,6 @@ void Init_gsl_complex(VALUE module)
   rb_define_method(cgsl_complex, "printf", rb_gsl_complex_printf, 1);
   rb_define_alias(cgsl_complex, "show", "print");
 
-  rb_define_method(cgsl_complex, "set", rb_gsl_complex_set, -1);
-  rb_define_alias(cgsl_complex, "set_complex", "set");
-  rb_define_alias(cgsl_complex, "SET_COMPLEX", "set");
-  rb_define_method(cgsl_complex, "set_real", rb_gsl_complex_set_real, 1);
-  rb_define_alias(cgsl_complex, "real=", "set_real");
-  rb_define_alias(cgsl_complex, "re=", "set_real");
-  rb_define_alias(cgsl_complex, "SET_REAL", "set_real");
-  rb_define_method(cgsl_complex, "set_imag", rb_gsl_complex_set_imag, 1);
-  rb_define_alias(cgsl_complex, "imag=", "set_imag");
-  rb_define_alias(cgsl_complex, "im=", "set_imag");
-  rb_define_alias(cgsl_complex, "SET_IMAG", "set_imag");
-
   rb_define_method(cgsl_complex, "arg", rb_gsl_complex_arg, 0);
   rb_define_alias(cgsl_complex, "angle", "arg");
   rb_define_alias(cgsl_complex, "phase", "arg");
@@ -936,8 +867,6 @@ void Init_gsl_complex(VALUE module)
 
   rb_define_method(cgsl_complex, "conjugate", rb_gsl_complex_conjugate, 0);
   rb_define_alias(cgsl_complex, "conj", "conjugate");
-  rb_define_method(cgsl_complex, "conjugate!", rb_gsl_complex_conjugate_bang, 0);
-  rb_define_alias(cgsl_complex, "conj!", "conjugate!");
   rb_define_method(cgsl_complex, "inverse", rb_gsl_complex_inverse, 0);
   rb_define_method(cgsl_complex, "negative", rb_gsl_complex_negative, 0);
 

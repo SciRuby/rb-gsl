@@ -30,23 +30,6 @@ Contents:
 --- GSL::Complex#IMAG
     Returns the imaginary part
 
---- GSL::Complex#set(re, im)
---- GSL::Complex#set_complex(re, im)
---- GSL::Complex#SET_COMPLEX(re, im)
-    Set the real and imaginary parts of the complex number.
-
---- GSL::Complex#set_real(re)
---- GSL::Complex#set_re(re)
---- GSL::Complex#SET_REAL(re)
---- GSL::Complex#real=(re)
---- GSL::Complex#re=(re)
---- GSL::Complex#set_imag(im)
---- GSL::Complex#set_im(im)
---- GSL::Complex#SET_IMAG(im)
---- GSL::Complex#imag=(im)
---- GSL::Complex#im=(im)
-    Set the real or imaginary parts of the complex number.
-
 --- GSL::Complex#arg
 --- GSL::Complex#angle
 --- GSL::Complex#phase
@@ -81,9 +64,6 @@ Contents:
 --- GSL::Complex#conjugate
 --- GSL::Complex#conj
     Returns the complex conjugate of the complex number ((|self|)).
---- GSL::Complex#conjugate!
---- GSL::Complex#conj!
-    Conjugates ((|self|)) in place and returns ((|self|)).
 --- GSL::Complex#inverse
     Returns the inverse of the complex number ((|self|)).
 --- GSL::Complex#negative
