@@ -253,10 +253,13 @@ in the elements of the (({View})) object affect to the original vector.
 --- GSL::Vector#subvector(n)
 --- GSL::Vector#subvector(offset, n)
 --- GSL::Vector#subvector(offset, stride, n)
+--- GSL::Vector#subvector(range, stride=1)
     Create a (({Vector::View})) object slicing ((|n|)) elements
     of the vector ((|self|)) from the offset ((|offset|)). If called with one
     argument ((|n|)), ((|offset|)) is set to 0. With no arguments, a view is
-    created with the same length of the original vector.
+    created with the same length of the original vector.  If called with a
+    ((|range|)) parameter (and optional ((|stride|))), a view is created for
+    that range (and stride).
 
     * Example:
        #!/usr/bin/env ruby
@@ -564,7 +567,8 @@ in the elements of the (({View})) object affect to the original vector.
        [ 6.000e+00 0.000e+00 0.000e+00 ]]
 
 === Vector operations with size changes
-The methods below change vector length of ((|self|)).
+The methods below change vector length of ((|self|)).  A Vector's length may
+not extend past its original allocation.
 --- GSL::Vector#pop
     Removes the last element from ((|self|)) and returns it, or 
     (({nil})) if empty.

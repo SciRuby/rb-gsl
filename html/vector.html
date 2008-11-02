@@ -271,11 +271,14 @@ in the elements of the <code>View</code> object affect to the original vector.</
 <dt><a name="label-53" id="label-53"><code>GSL::Vector#subvector(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#subvector" -->
 <dt><a name="label-54" id="label-54"><code>GSL::Vector#subvector(<var>offset</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#subvector" -->
 <dt><a name="label-55" id="label-55"><code>GSL::Vector#subvector(<var>offset</var>, <var>stride</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#subvector" -->
+<dt><a name="label-56" id="label-56"><code>GSL::Vector#subvector(<var>range</var>, <var>stride</var>=<var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#subvector" -->
 <dd>
 Create a <code>Vector::View</code> object slicing <var>n</var> elements
 of the vector <var>self</var> from the offset <var>offset</var>. If called with one
 argument <var>n</var>, <var>offset</var> is set to 0. With no arguments, a view is
-created with the same length of the original vector.
+created with the same length of the original vector.  If called with a
+<var>range</var> parameter (and optional <var>stride</var>), a view is created for
+that range (and stride).
 <ul>
 <li><p>Example:</p>
 <pre>#!/usr/bin/env ruby
@@ -290,13 +293,13 @@ view[2] = 99
 view.print           &lt;----- [ 2 3 99 5 ]
 v.print              &lt;----- [ 1 2 3 99 5 6 ]</pre></li>
 </ul></dd>
-<dt><a name="label-56" id="label-56"><code>GSL::Vector#subvector_with_stride(<var>offset</var>, <var>n</var>, <var>stride</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#subvector_with_stride" -->
+<dt><a name="label-57" id="label-57"><code>GSL::Vector#subvector_with_stride(<var>offset</var>, <var>n</var>, <var>stride</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#subvector_with_stride" -->
 <dd>
 Return a <code>Vector::View</code> object of a subvector of another vector <var>self</var> 
 with an additional stride argument. The subvector is formed in the same way 
 as for <code>Vector#subvector</code> but the new vector view has <var>n</var> elements 
 with a step-size of <var>stride</var> from one element to the next in the original vector. </dd>
-<dt><a name="label-57" id="label-57"><code>GSL::Vectir#matrix_view(<var>n1</var>, <var>n2</var>)</code></a></dt><!-- RDLabel: "GSL::Vectir#matrix_view" -->
+<dt><a name="label-58" id="label-58"><code>GSL::Vectir#matrix_view(<var>n1</var>, <var>n2</var>)</code></a></dt><!-- RDLabel: "GSL::Vectir#matrix_view" -->
 <dd>
 This creates a <code>Matrix::View</code> object from the vector <var>self</var>.
 It enables to use the vector as a <a href="matrix.html">Matrix</a> object.
@@ -317,13 +320,13 @@ irb(main):022:0&gt; v
 [ 1 2 3 4 5 99 7 8 9 ]</pre></li>
 </ul></dd>
 </dl>
-<h3><a name="3.7" href="#3.7">3.7</a> <a name="label-58">Vector operations</a></h3><!-- RDLabel: "Vector operations" -->
+<h3><a name="3.7" href="#3.7">3.7</a> <a name="label-59">Vector operations</a></h3><!-- RDLabel: "Vector operations" -->
 
 <dl>
-<dt><a name="label-59" id="label-59"><code>GSL::Vector#swap_elements(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#swap_elements" -->
+<dt><a name="label-60" id="label-60"><code>GSL::Vector#swap_elements(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#swap_elements" -->
 <dd>
 This method exchanges the i-th and j-th elements of the vector <var>in-place</var>. </dd>
-<dt><a name="label-60" id="label-60"><code>GSL::Vector#reverse</code></a></dt><!-- RDLabel: "GSL::Vector#reverse" -->
+<dt><a name="label-61" id="label-61"><code>GSL::Vector#reverse</code></a></dt><!-- RDLabel: "GSL::Vector#reverse" -->
 <dd>
 <p>Reverses the order of the elements of the vector.</p>
 <pre>irb(main):025:0&gt; v = GSL::Vector::Int[1..5]
@@ -332,10 +335,10 @@ This method exchanges the i-th and j-th elements of the vector <var>in-place</va
 irb(main):026:0&gt; v.reverse
 =&gt; GSL::Vector::Int: 
 [ 5 4 3 2 1 ]</pre></dd>
-<dt><a name="label-61" id="label-61"><code>GSL::Vector#trans</code></a></dt><!-- RDLabel: "GSL::Vector#trans" -->
-<dt><a name="label-62" id="label-62"><code>GSL::Vector#transpose</code></a></dt><!-- RDLabel: "GSL::Vector#transpose" -->
-<dt><a name="label-63" id="label-63"><code>GSL::Vector#col</code></a></dt><!-- RDLabel: "GSL::Vector#col" -->
-<dt><a name="label-64" id="label-64"><code>GSL::Vector#row</code></a></dt><!-- RDLabel: "GSL::Vector#row" -->
+<dt><a name="label-62" id="label-62"><code>GSL::Vector#trans</code></a></dt><!-- RDLabel: "GSL::Vector#trans" -->
+<dt><a name="label-63" id="label-63"><code>GSL::Vector#transpose</code></a></dt><!-- RDLabel: "GSL::Vector#transpose" -->
+<dt><a name="label-64" id="label-64"><code>GSL::Vector#col</code></a></dt><!-- RDLabel: "GSL::Vector#col" -->
+<dt><a name="label-65" id="label-65"><code>GSL::Vector#row</code></a></dt><!-- RDLabel: "GSL::Vector#row" -->
 <dd>
 <p>Transpose the vector from a row vector into a column vector and vice versa.</p>
 <pre>irb(main):029:0&gt; v = GSL::Vector::Int[1..5]
@@ -348,52 +351,52 @@ irb(main):030:0&gt; v.col
   3 
   4 
   5 ]</pre></dd>
-<dt><a name="label-65" id="label-65"><code>GSL::Vector#add(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#add" -->
+<dt><a name="label-66" id="label-66"><code>GSL::Vector#add(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#add" -->
 <dd>
 Adds the elements of vector <var>b</var> to the elements 
 of the vector <var>self</var>. A new vector is created, and the vector
 <var>self</var> is not changed.</dd>
-<dt><a name="label-66" id="label-66"><code>GSL::Vector#sub(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sub" -->
+<dt><a name="label-67" id="label-67"><code>GSL::Vector#sub(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sub" -->
 <dd>
 Subtracts the element of vector <var>b</var> from the elements of <var>self</var>.
 A new vector is created, and the vector <var>self</var> is not changed.</dd>
-<dt><a name="label-67" id="label-67"><code>GSL::Vector#mul(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#mul" -->
+<dt><a name="label-68" id="label-68"><code>GSL::Vector#mul(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#mul" -->
 <dd>
 Multiplies the elements of vector <var>self</var> by the elements of vector <var>b</var>.</dd>
-<dt><a name="label-68" id="label-68"><code>GSL::Vector#div(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#div" -->
+<dt><a name="label-69" id="label-69"><code>GSL::Vector#div(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#div" -->
 <dd>
 Divides the elements of vector <var>self</var> by the elements of vector <var>b</var>.</dd>
-<dt><a name="label-69" id="label-69"><code>GSL::Vector#scale(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#scale" -->
-<dt><a name="label-70" id="label-70"><code>GSL::Vector#scale!(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#scale!" -->
+<dt><a name="label-70" id="label-70"><code>GSL::Vector#scale(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#scale" -->
+<dt><a name="label-71" id="label-71"><code>GSL::Vector#scale!(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#scale!" -->
 <dd>
 This method multiplies the elements of vector <var>self</var> by 
 the constant factor <var>x</var>.</dd>
-<dt><a name="label-71" id="label-71"><code>GSL::Vector#add_constant(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#add_constant" -->
-<dt><a name="label-72" id="label-72"><code>GSL::Vector#add_constant!(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#add_constant!" -->
+<dt><a name="label-72" id="label-72"><code>GSL::Vector#add_constant(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#add_constant" -->
+<dt><a name="label-73" id="label-73"><code>GSL::Vector#add_constant!(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#add_constant!" -->
 <dd>
 Adds the constant value <var>x</var> to the elements of the vector <var>self</var>.</dd>
-<dt><a name="label-73" id="label-73"><code>GSL::Vector#+(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#+" -->
+<dt><a name="label-74" id="label-74"><code>GSL::Vector#+(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#+" -->
 <dd>
 For <var>b</var>,
 <ul>
 <li>a Number: ---&gt; <code>self.add_constanb(b)</code></li>
 <li>a Vector: ---&gt; <code>self.add(b)</code></li>
 </ul></dd>
-<dt><a name="label-74" id="label-74"><code>GSL::Vector#-(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#-" -->
+<dt><a name="label-75" id="label-75"><code>GSL::Vector#-(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#-" -->
 <dd>
 For <var>b</var>,
 <ul>
 <li>a Number: ---&gt; <code>self.add_constanb(-b)</code></li>
 <li>a Vector: ---&gt; <code>self.sub(b)</code></li>
 </ul></dd>
-<dt><a name="label-75" id="label-75"><code>GSL::Vector#/(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#/" -->
+<dt><a name="label-76" id="label-76"><code>GSL::Vector#/(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#/" -->
 <dd>
 For <var>b</var>,
 <ul>
 <li>a Number: ---&gt; <code>self.scale(1/b)</code></li>
 <li>a Vector: ---&gt; <code>self.div(b)</code></li>
 </ul></dd>
-<dt><a name="label-76" id="label-76"><code>GSL::Vector#*(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#*" -->
+<dt><a name="label-77" id="label-77"><code>GSL::Vector#*(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#*" -->
 <dd>
 Vector multiplication.
 <ol>
@@ -431,15 +434,15 @@ irb(main):031:0&gt; m*a.col
 [ 8 
   14 ]</pre></li>
 </ol></dd>
-<dt><a name="label-77" id="label-77"><code>GSL::Vector#add!(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#add!" -->
-<dt><a name="label-78" id="label-78"><code>GSL::Vector#sub!(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sub!" -->
-<dt><a name="label-79" id="label-79"><code>GSL::Vector#mul!(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#mul!" -->
-<dt><a name="label-80" id="label-80"><code>GSL::Vector#div!(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#div!" -->
+<dt><a name="label-78" id="label-78"><code>GSL::Vector#add!(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#add!" -->
+<dt><a name="label-79" id="label-79"><code>GSL::Vector#sub!(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sub!" -->
+<dt><a name="label-80" id="label-80"><code>GSL::Vector#mul!(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#mul!" -->
+<dt><a name="label-81" id="label-81"><code>GSL::Vector#div!(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#div!" -->
 <dd>
 In-place operations with a vector <var>b</var>.</dd>
-<dt><a name="label-81" id="label-81"><code>GSL::Vector#pow(<var>p</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#pow" -->
-<dt><a name="label-82" id="label-82"><code>GSL::Vector#**(<var>p</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#**" -->
-<dt><a name="label-83" id="label-83"><code>GSL::Vector#pow!(<var>p</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#pow!" -->
+<dt><a name="label-82" id="label-82"><code>GSL::Vector#pow(<var>p</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#pow" -->
+<dt><a name="label-83" id="label-83"><code>GSL::Vector#**(<var>p</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#**" -->
+<dt><a name="label-84" id="label-84"><code>GSL::Vector#pow!(<var>p</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#pow!" -->
 <dd>
 <p>Element-wise calculation of power p.</p>
 <p>Ex)</p>
@@ -462,15 +465,15 @@ irb(main):006:0&gt; v.pow!(2)
 irb(main):007:0&gt; v
 =&gt; GSL::Vector
 [ 1.000e+00 4.000e+00 9.000e+00 ]</pre></dd>
-<dt><a name="label-84" id="label-84"><code>GSL::Vector#swap_elements(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#swap_elements" -->
+<dt><a name="label-85" id="label-85"><code>GSL::Vector#swap_elements(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#swap_elements" -->
 <dd>
 This exchanges the <var>i</var>-th and <var>j</var>-th elements of the vector <var>self</var> in-place.</dd>
-<dt><a name="label-85" id="label-85"><code>GSL::Vector#clone</code></a></dt><!-- RDLabel: "GSL::Vector#clone" -->
-<dt><a name="label-86" id="label-86"><code>GSL::Vector#duplicate</code></a></dt><!-- RDLabel: "GSL::Vector#duplicate" -->
+<dt><a name="label-86" id="label-86"><code>GSL::Vector#clone</code></a></dt><!-- RDLabel: "GSL::Vector#clone" -->
+<dt><a name="label-87" id="label-87"><code>GSL::Vector#duplicate</code></a></dt><!-- RDLabel: "GSL::Vector#duplicate" -->
 <dd>
 These create a copy of the vector <var>self</var>.</dd>
-<dt><a name="label-87" id="label-87"><code>GSL::Vector.connect(<var>v1</var>, <var>v2</var>, <var>v3</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector.connect" -->
-<dt><a name="label-88" id="label-88"><code>GSL::Vector#connect(<var>v2</var>, <var>v3</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector#connect" -->
+<dt><a name="label-88" id="label-88"><code>GSL::Vector.connect(<var>v1</var>, <var>v2</var>, <var>v3</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector.connect" -->
+<dt><a name="label-89" id="label-89"><code>GSL::Vector#connect(<var>v2</var>, <var>v3</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector#connect" -->
 <dd>
 <p>Creates a new vector by connecting all the elements of the given vectors.</p>
 <pre>irb(main):031:0&gt; v1 = GSL::Vector::Int[1, 3]
@@ -482,14 +485,14 @@ irb(main):032:0&gt; v2 = GSL::Vector::Int[4, 3, 5]
 irb(main):033:0&gt; v1.connect(v2)
 =&gt; GSL::Vector::Int: 
 [ 1 3 4 3 5 ]</pre></dd>
-<dt><a name="label-89" id="label-89"><code>GSL::Vector#sgn</code></a></dt><!-- RDLabel: "GSL::Vector#sgn" -->
-<dt><a name="label-90" id="label-90"><code>GSL::Vector#signum</code></a></dt><!-- RDLabel: "GSL::Vector#signum" -->
+<dt><a name="label-90" id="label-90"><code>GSL::Vector#sgn</code></a></dt><!-- RDLabel: "GSL::Vector#sgn" -->
+<dt><a name="label-91" id="label-91"><code>GSL::Vector#signum</code></a></dt><!-- RDLabel: "GSL::Vector#signum" -->
 <dd>
 Creates a new vector, with elements +1 if <var>x_i</var> &gt; 0, -1 if <var>x_i</var> &lt;
 0, otherwise 0.  Note that this definition gives the signum of NaN as 0
 rather than NaN.</dd>
-<dt><a name="label-91" id="label-91"><code>GSL::Vector#abs</code></a></dt><!-- RDLabel: "GSL::Vector#abs" -->
-<dt><a name="label-92" id="label-92"><code>GSL::Vector#fabs</code></a></dt><!-- RDLabel: "GSL::Vector#fabs" -->
+<dt><a name="label-92" id="label-92"><code>GSL::Vector#abs</code></a></dt><!-- RDLabel: "GSL::Vector#abs" -->
+<dt><a name="label-93" id="label-93"><code>GSL::Vector#fabs</code></a></dt><!-- RDLabel: "GSL::Vector#fabs" -->
 <dd>
 <p>Creates a new vector, with elements <var>fabs(x_i)</var>.</p>
 <pre>irb(main):034:0&gt; v = GSL::Vector::Int[-3, 2, -5, 4]
@@ -498,8 +501,8 @@ rather than NaN.</dd>
 irb(main):035:0&gt; v.abs
 =&gt; GSL::Vector::Int: 
 [ 3 2 5 4 ]</pre></dd>
-<dt><a name="label-93" id="label-93"><code>GSL::Vector#square</code></a></dt><!-- RDLabel: "GSL::Vector#square" -->
-<dt><a name="label-94" id="label-94"><code>GSL::Vector#abs2</code></a></dt><!-- RDLabel: "GSL::Vector#abs2" -->
+<dt><a name="label-94" id="label-94"><code>GSL::Vector#square</code></a></dt><!-- RDLabel: "GSL::Vector#square" -->
+<dt><a name="label-95" id="label-95"><code>GSL::Vector#abs2</code></a></dt><!-- RDLabel: "GSL::Vector#abs2" -->
 <dd>
 <p>Create a new vector, with elements <var>x_i*x_i</var>.</p>
 <pre>irb(main):036:0&gt; v = GSL::Vector::Int[1..4]
@@ -508,12 +511,12 @@ irb(main):035:0&gt; v.abs
 irb(main):037:0&gt; v.square
 =&gt; GSL::Vector::Int: 
 [ 1 4 9 16 ]</pre></dd>
-<dt><a name="label-95" id="label-95"><code>GSL::Vector#sqrt</code></a></dt><!-- RDLabel: "GSL::Vector#sqrt" -->
+<dt><a name="label-96" id="label-96"><code>GSL::Vector#sqrt</code></a></dt><!-- RDLabel: "GSL::Vector#sqrt" -->
 <dd>
 Creates a new vector, with elements <code>sqrt</code>(<var>x_i</var>).</dd>
-<dt><a name="label-96" id="label-96"><code>GSL::Vector#floor</code></a></dt><!-- RDLabel: "GSL::Vector#floor" -->
-<dt><a name="label-97" id="label-97"><code>GSL::Vector#ceil</code></a></dt><!-- RDLabel: "GSL::Vector#ceil" -->
-<dt><a name="label-98" id="label-98"><code>GSL::Vector#round</code></a></dt><!-- RDLabel: "GSL::Vector#round" -->
+<dt><a name="label-97" id="label-97"><code>GSL::Vector#floor</code></a></dt><!-- RDLabel: "GSL::Vector#floor" -->
+<dt><a name="label-98" id="label-98"><code>GSL::Vector#ceil</code></a></dt><!-- RDLabel: "GSL::Vector#ceil" -->
+<dt><a name="label-99" id="label-99"><code>GSL::Vector#round</code></a></dt><!-- RDLabel: "GSL::Vector#round" -->
 <dd>
 <p>Ex:</p>
 <pre>irb(main):002:0&gt; v = GSL::Vector[1.1, 2.7, 3.5, 4.3]
@@ -528,10 +531,10 @@ irb(main):004:0&gt; v.ceil
 irb(main):005:0&gt; v.round
 =&gt; GSL::Vector::Int
 [ 1 3 4 4 ]</pre></dd>
-<dt><a name="label-99" id="label-99"><code>GSL::Vector#normalize(<var>nrm</var> = <var>1</var>.<var>0</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#normalize" -->
+<dt><a name="label-100" id="label-100"><code>GSL::Vector#normalize(<var>nrm</var> = <var>1</var>.<var>0</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#normalize" -->
 <dd>
 Creates a new vector of norm <var>nrm</var>, by scaling the vector <var>self</var>.</dd>
-<dt><a name="label-100" id="label-100"><code>GSL::Vector#normalize!(<var>nrm</var> = <var>1</var>.<var>0</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#normalize!" -->
+<dt><a name="label-101" id="label-101"><code>GSL::Vector#normalize!(<var>nrm</var> = <var>1</var>.<var>0</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#normalize!" -->
 <dd>
 <p>This normalizes the vector <var>self</var> in-place.</p>
 <p>Ex:</p>
@@ -555,19 +558,19 @@ irb(main):006:0&gt; c = b.normalize(2)
 [ 2.582e-01 5.164e-01 7.746e-01 1.033e+00 ]
 irb(main):007:0&gt; c.square.sum
 =&gt; 2.0</pre></dd>
-<dt><a name="label-101" id="label-101"><code>GSL::Vector#decimate(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#decimate" -->
+<dt><a name="label-102" id="label-102"><code>GSL::Vector#decimate(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#decimate" -->
 <dd>
 Creates a new vector by averaring every <var>n</var> 
 points of the vector <var>self</var> down to one point.</dd>
-<dt><a name="label-102" id="label-102"><code>GSL::Vector#diff(<var>k</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#diff" -->
+<dt><a name="label-103" id="label-103"><code>GSL::Vector#diff(<var>k</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#diff" -->
 <dd>
 Calculate <var>k</var>-th differences of a vector <var>self</var>.</dd>
-<dt><a name="label-103" id="label-103"><code>GSL::Vector#join(<var>sep</var> = " ")</code></a></dt><!-- RDLabel: "GSL::Vector#join" -->
+<dt><a name="label-104" id="label-104"><code>GSL::Vector#join(<var>sep</var> = " ")</code></a></dt><!-- RDLabel: "GSL::Vector#join" -->
 <dd>
 Converts the vector to a <code>String</code> by joining all the elements with a
 separator <var>sep</var>.</dd>
-<dt><a name="label-104" id="label-104"><code>GSL::Vector#zip(<var>vec</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector#zip" -->
-<dt><a name="label-105" id="label-105"><code>GSL::Vector.zip(<var>vec</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector.zip" -->
+<dt><a name="label-105" id="label-105"><code>GSL::Vector#zip(<var>vec</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector#zip" -->
+<dt><a name="label-106" id="label-106"><code>GSL::Vector.zip(<var>vec</var>, ...)</code></a></dt><!-- RDLabel: "GSL::Vector.zip" -->
 <dd>
 <p>Create an <code>Array</code> of vectors by merging the elements of <var>self</var>
 with corresponding elements from each arguments.</p>
@@ -587,117 +590,118 @@ irb(main):006:0&gt; a.zip(GSL::Vector[1, 2], GSL::Vector[8.0])
  [ 5.000e+00 2.000e+00 0.000e+00 ],
  [ 6.000e+00 0.000e+00 0.000e+00 ]]</pre></dd>
 </dl>
-<h3><a name="3.8" href="#3.8">3.8</a> <a name="label-106">Vector operations with size changes</a></h3><!-- RDLabel: "Vector operations with size changes" -->
+<h3><a name="3.8" href="#3.8">3.8</a> <a name="label-107">Vector operations with size changes</a></h3><!-- RDLabel: "Vector operations with size changes" -->
 
-<p>The methods below change vector length of <var>self</var>.</p>
+<p>The methods below change vector length of <var>self</var>.  A Vector's length may
+not extend past its original allocation.</p>
 <dl>
-<dt><a name="label-107" id="label-107"><code>GSL::Vector#pop</code></a></dt><!-- RDLabel: "GSL::Vector#pop" -->
+<dt><a name="label-108" id="label-108"><code>GSL::Vector#pop</code></a></dt><!-- RDLabel: "GSL::Vector#pop" -->
 <dd>
 Removes the last element from <var>self</var> and returns it, or 
 <code>nil</code> if empty.</dd>
-<dt><a name="label-108" id="label-108"><code>GSL::Vector#shift</code></a></dt><!-- RDLabel: "GSL::Vector#shift" -->
+<dt><a name="label-109" id="label-109"><code>GSL::Vector#shift</code></a></dt><!-- RDLabel: "GSL::Vector#shift" -->
 <dd>
 Returns the first element from <var>self</var> and removes it. Returns 
 <code>nil</code> if empty.</dd>
-<dt><a name="label-109" id="label-109"><code>GSL::Vector#push(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#push" -->
-<dt><a name="label-110" id="label-110"><code>GSL::Vector#concat(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#concat" -->
-<dt><a name="label-111" id="label-111"><code>GSL::Vector#&lt;&lt;(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#<<" -->
+<dt><a name="label-110" id="label-110"><code>GSL::Vector#push(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#push" -->
+<dt><a name="label-111" id="label-111"><code>GSL::Vector#concat(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#concat" -->
+<dt><a name="label-112" id="label-112"><code>GSL::Vector#&lt;&lt;(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#<<" -->
 <dd>
 Append <var>x</var> (<code>Numeric</code> or <code>GSL::Vector</code>) to the end of <var>self</var>.</dd>
-<dt><a name="label-112" id="label-112"><code>GSL::Vector#unshift(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#unshift" -->
+<dt><a name="label-113" id="label-113"><code>GSL::Vector#unshift(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#unshift" -->
 <dd>
 Prepends <var>x</var> to the front of <var>self</var>.</dd>
-<dt><a name="label-113" id="label-113"><code>GSL::Vector#delete(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#delete" -->
+<dt><a name="label-114" id="label-114"><code>GSL::Vector#delete(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#delete" -->
 <dd>
 Deletes items from <var>self</var> that are equal to <var>x</var>.  If the item is
 not found, returns <code>nil</code>, otherwise returns <var>x</var>.</dd>
-<dt><a name="label-114" id="label-114"><code>GSL::Vector#delete_at(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#delete_at" -->
+<dt><a name="label-115" id="label-115"><code>GSL::Vector#delete_at(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#delete_at" -->
 <dd>
 Deletes the element at the specified index <var>i</var>, 
 returning that  element, or <code>nil</code> if the index is out of range.</dd>
-<dt><a name="label-115" id="label-115"><code>GSL::Vector#delete_if { |<var>x</var>| ... }</code></a></dt><!-- RDLabel: "GSL::Vector#delete_if" -->
+<dt><a name="label-116" id="label-116"><code>GSL::Vector#delete_if { |<var>x</var>| ... }</code></a></dt><!-- RDLabel: "GSL::Vector#delete_if" -->
 <dd>
 Deletes every element of <var>self</var> for which block evaluates to <code>true</code>
 and returns <var>self</var>.</dd>
 </dl>
-<h3><a name="3.9" href="#3.9">3.9</a> <a name="label-116">Finding maximum and minimum elements of vectors</a></h3><!-- RDLabel: "Finding maximum and minimum elements of vectors" -->
+<h3><a name="3.9" href="#3.9">3.9</a> <a name="label-117">Finding maximum and minimum elements of vectors</a></h3><!-- RDLabel: "Finding maximum and minimum elements of vectors" -->
 
 <dl>
-<dt><a name="label-117" id="label-117"><code>GSL::Vector#max</code></a></dt><!-- RDLabel: "GSL::Vector#max" -->
+<dt><a name="label-118" id="label-118"><code>GSL::Vector#max</code></a></dt><!-- RDLabel: "GSL::Vector#max" -->
 <dd>
 This method returns the maximum value in the vector.</dd>
-<dt><a name="label-118" id="label-118"><code>GSL::Vector#min</code></a></dt><!-- RDLabel: "GSL::Vector#min" -->
+<dt><a name="label-119" id="label-119"><code>GSL::Vector#min</code></a></dt><!-- RDLabel: "GSL::Vector#min" -->
 <dd>
 This method returns the minimum value in the vector.</dd>
-<dt><a name="label-119" id="label-119"><code>GSL::Vector#minmax</code></a></dt><!-- RDLabel: "GSL::Vector#minmax" -->
+<dt><a name="label-120" id="label-120"><code>GSL::Vector#minmax</code></a></dt><!-- RDLabel: "GSL::Vector#minmax" -->
 <dd>
 This method returns an array of two elements, the minimum and the maximum values
 in the vector <var>self</var>.</dd>
-<dt><a name="label-120" id="label-120"><code>GSL::Vector#max_index</code></a></dt><!-- RDLabel: "GSL::Vector#max_index" -->
+<dt><a name="label-121" id="label-121"><code>GSL::Vector#max_index</code></a></dt><!-- RDLabel: "GSL::Vector#max_index" -->
 <dd>
 This method returns the index of the maximum value in the vector. When there are 
 several equal maximum elements then the lowest index is returned. </dd>
-<dt><a name="label-121" id="label-121"><code>GSL::Vector#min_index</code></a></dt><!-- RDLabel: "GSL::Vector#min_index" -->
+<dt><a name="label-122" id="label-122"><code>GSL::Vector#min_index</code></a></dt><!-- RDLabel: "GSL::Vector#min_index" -->
 <dd>
 This method returns the index of the minimum value in the vector. When there are 
 several equal minimum elements then the lowest index is returned. </dd>
-<dt><a name="label-122" id="label-122"><code>GSL::Vector#minmax_index</code></a></dt><!-- RDLabel: "GSL::Vector#minmax_index" -->
+<dt><a name="label-123" id="label-123"><code>GSL::Vector#minmax_index</code></a></dt><!-- RDLabel: "GSL::Vector#minmax_index" -->
 <dd>
 This method returns an array of two elements which has the indices 
 of the minimum and the maximum values in the vector <var>self</var>.</dd>
 </dl>
-<h3><a name="3.10" href="#3.10">3.10</a> <a name="label-123">Vector Properties</a></h3><!-- RDLabel: "Vector Properties" -->
+<h3><a name="3.10" href="#3.10">3.10</a> <a name="label-124">Vector Properties</a></h3><!-- RDLabel: "Vector Properties" -->
 
 <dl>
-<dt><a name="label-124" id="label-124"><code>GSL::Vector#size</code></a></dt><!-- RDLabel: "GSL::Vector#size" -->
-<dt><a name="label-125" id="label-125"><code>GSL::Vector#len</code></a></dt><!-- RDLabel: "GSL::Vector#len" -->
-<dt><a name="label-126" id="label-126"><code>GSL::Vector#length</code></a></dt><!-- RDLabel: "GSL::Vector#length" -->
+<dt><a name="label-125" id="label-125"><code>GSL::Vector#size</code></a></dt><!-- RDLabel: "GSL::Vector#size" -->
+<dt><a name="label-126" id="label-126"><code>GSL::Vector#len</code></a></dt><!-- RDLabel: "GSL::Vector#len" -->
+<dt><a name="label-127" id="label-127"><code>GSL::Vector#length</code></a></dt><!-- RDLabel: "GSL::Vector#length" -->
 <dd>
 Return the vector length.</dd>
-<dt><a name="label-127" id="label-127"><code>GSL::Vector#stride</code></a></dt><!-- RDLabel: "GSL::Vector#stride" -->
+<dt><a name="label-128" id="label-128"><code>GSL::Vector#stride</code></a></dt><!-- RDLabel: "GSL::Vector#stride" -->
 <dd>
 Return the vector stride.</dd>
-<dt><a name="label-128" id="label-128"><code>GSL::Vector#sum</code></a></dt><!-- RDLabel: "GSL::Vector#sum" -->
+<dt><a name="label-129" id="label-129"><code>GSL::Vector#sum</code></a></dt><!-- RDLabel: "GSL::Vector#sum" -->
 <dd>
 Returns the sum of the vector elements.</dd>
-<dt><a name="label-129" id="label-129"><code>GSL::Vector#prod</code></a></dt><!-- RDLabel: "GSL::Vector#prod" -->
+<dt><a name="label-130" id="label-130"><code>GSL::Vector#prod</code></a></dt><!-- RDLabel: "GSL::Vector#prod" -->
 <dd>
 Returns the product of the vector elements.</dd>
-<dt><a name="label-130" id="label-130"><code>GSL::Vector#cumsum</code></a></dt><!-- RDLabel: "GSL::Vector#cumsum" -->
+<dt><a name="label-131" id="label-131"><code>GSL::Vector#cumsum</code></a></dt><!-- RDLabel: "GSL::Vector#cumsum" -->
 <dd>
 Calculate the cumulative sum of elements of <var>self</var> and returns as a new vector.</dd>
-<dt><a name="label-131" id="label-131"><code>GSL::Vector#cumprod</code></a></dt><!-- RDLabel: "GSL::Vector#cumprod" -->
+<dt><a name="label-132" id="label-132"><code>GSL::Vector#cumprod</code></a></dt><!-- RDLabel: "GSL::Vector#cumprod" -->
 <dd>
 Calculate the cumulative product of elements of <var>self</var> and returns as a new vector.</dd>
-<dt><a name="label-132" id="label-132"><code>GSL::Vector#isnull</code></a></dt><!-- RDLabel: "GSL::Vector#isnull" -->
+<dt><a name="label-133" id="label-133"><code>GSL::Vector#isnull</code></a></dt><!-- RDLabel: "GSL::Vector#isnull" -->
 <dd>
 Returns 1 if all the elements of the vector <var>self</var> 
 are zero, and 0 otherwise.</dd>
-<dt><a name="label-133" id="label-133"><code>GSL::Vector#isnull?</code></a></dt><!-- RDLabel: "GSL::Vector#isnull?" -->
+<dt><a name="label-134" id="label-134"><code>GSL::Vector#isnull?</code></a></dt><!-- RDLabel: "GSL::Vector#isnull?" -->
 <dd>
 Return <code>true</code> if all the elements of the vector <var>self</var> 
 are zero, and <code>false</code> otherwise.</dd>
-<dt><a name="label-134" id="label-134"><code>GSL::Vector#ispos</code></a></dt><!-- RDLabel: "GSL::Vector#ispos" -->
-<dt><a name="label-135" id="label-135"><code>GSL::Vector#ispos?</code></a></dt><!-- RDLabel: "GSL::Vector#ispos?" -->
-<dt><a name="label-136" id="label-136"><code>GSL::Vector#isneg</code></a></dt><!-- RDLabel: "GSL::Vector#isneg" -->
-<dt><a name="label-137" id="label-137"><code>GSL::Vector#isneg?</code></a></dt><!-- RDLabel: "GSL::Vector#isneg?" -->
+<dt><a name="label-135" id="label-135"><code>GSL::Vector#ispos</code></a></dt><!-- RDLabel: "GSL::Vector#ispos" -->
+<dt><a name="label-136" id="label-136"><code>GSL::Vector#ispos?</code></a></dt><!-- RDLabel: "GSL::Vector#ispos?" -->
+<dt><a name="label-137" id="label-137"><code>GSL::Vector#isneg</code></a></dt><!-- RDLabel: "GSL::Vector#isneg" -->
+<dt><a name="label-138" id="label-138"><code>GSL::Vector#isneg?</code></a></dt><!-- RDLabel: "GSL::Vector#isneg?" -->
 <dd>
 (GSL-1.9 or later) Return 1 (true) if all the elements of the vector <var>self</var> are zero, strictly positive, strictly negative respectively, and 0 (false) otherwise.</dd>
-<dt><a name="label-138" id="label-138"><code>GSL::Vector#isnonneg</code></a></dt><!-- RDLabel: "GSL::Vector#isnonneg" -->
-<dt><a name="label-139" id="label-139"><code>GSL::Vector#isnonneg?</code></a></dt><!-- RDLabel: "GSL::Vector#isnonneg?" -->
+<dt><a name="label-139" id="label-139"><code>GSL::Vector#isnonneg</code></a></dt><!-- RDLabel: "GSL::Vector#isnonneg" -->
+<dt><a name="label-140" id="label-140"><code>GSL::Vector#isnonneg?</code></a></dt><!-- RDLabel: "GSL::Vector#isnonneg?" -->
 <dd>
 (GSL-1.10 or later) Return 1 (true) if all the elements of the vector <var>self</var> are non-negative , and 0 (false) otherwise. </dd>
-<dt><a name="label-140" id="label-140"><code>GSL::Vector#all?</code></a></dt><!-- RDLabel: "GSL::Vector#all?" -->
+<dt><a name="label-141" id="label-141"><code>GSL::Vector#all?</code></a></dt><!-- RDLabel: "GSL::Vector#all?" -->
 <dd>
 Returns <code>true</code> if all the vector elements are non-zero, and <code>false</code> 
 otherwise. If a block is given, the method returns <code>true</code> if the
 tests are true for all the elements.</dd>
-<dt><a name="label-141" id="label-141"><code>GSL::Vector#any?</code></a></dt><!-- RDLabel: "GSL::Vector#any?" -->
+<dt><a name="label-142" id="label-142"><code>GSL::Vector#any?</code></a></dt><!-- RDLabel: "GSL::Vector#any?" -->
 <dd>
 Returns <code>true</code> if any the vector elements are non-zero, and <code>false</code> 
 otherwise. If a block is given, the method returns <code>true</code> if the
 tests are true for any of the elements.</dd>
-<dt><a name="label-142" id="label-142"><code>GSL::Vector#none?</code></a></dt><!-- RDLabel: "GSL::Vector#none?" -->
+<dt><a name="label-143" id="label-143"><code>GSL::Vector#none?</code></a></dt><!-- RDLabel: "GSL::Vector#none?" -->
 <dd>
 <p>Returns <code>true</code> if all the elements of the vector <var>self</var> 
 are zero, and <code>false</code> otherwise (just as <code>GSL::Vector#isnull?</code>).
@@ -719,27 +723,27 @@ irb(main):016:0&gt; a.none?
 =&gt; false
 irb(main):017:0&gt; c.none?
 =&gt; true</pre></dd>
-<dt><a name="label-143" id="label-143"><code>GSL::Vector#all</code></a></dt><!-- RDLabel: "GSL::Vector#all" -->
-<dt><a name="label-144" id="label-144"><code>GSL::Vector#any</code></a></dt><!-- RDLabel: "GSL::Vector#any" -->
-<dt><a name="label-145" id="label-145"><code>GSL::Vector#none</code></a></dt><!-- RDLabel: "GSL::Vector#none" -->
+<dt><a name="label-144" id="label-144"><code>GSL::Vector#all</code></a></dt><!-- RDLabel: "GSL::Vector#all" -->
+<dt><a name="label-145" id="label-145"><code>GSL::Vector#any</code></a></dt><!-- RDLabel: "GSL::Vector#any" -->
+<dt><a name="label-146" id="label-146"><code>GSL::Vector#none</code></a></dt><!-- RDLabel: "GSL::Vector#none" -->
 <dd>
 Returns 1 or 0.</dd>
-<dt><a name="label-146" id="label-146"><code>GSL::Vector#equal?(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#equal?" -->
-<dt><a name="label-147" id="label-147"><code>GSL::Vector#==(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#==" -->
+<dt><a name="label-147" id="label-147"><code>GSL::Vector#equal?(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#equal?" -->
+<dt><a name="label-148" id="label-148"><code>GSL::Vector#==(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#==" -->
 <dd>
 Returns <code>true</code> if the vectors have same size and elements
 equal to absolute accurary <var>eps</var> for all the indices, 
 and <code>false</code> otherwise.</dd>
 </dl>
-<h3><a name="3.11" href="#3.11">3.11</a> <a name="label-148">Element-wise vector comparison</a></h3><!-- RDLabel: "Element-wise vector comparison" -->
+<h3><a name="3.11" href="#3.11">3.11</a> <a name="label-149">Element-wise vector comparison</a></h3><!-- RDLabel: "Element-wise vector comparison" -->
 
 <dl>
-<dt><a name="label-149" id="label-149"><code>GSL::Vector#eq(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#eq" -->
-<dt><a name="label-150" id="label-150"><code>GSL::Vector#ne(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#ne" -->
-<dt><a name="label-151" id="label-151"><code>GSL::Vector#gt(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#gt" -->
-<dt><a name="label-152" id="label-152"><code>GSL::Vector#ge(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#ge" -->
-<dt><a name="label-153" id="label-153"><code>GSL::Vector#lt(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#lt" -->
-<dt><a name="label-154" id="label-154"><code>GSL::Vector#le(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#le" -->
+<dt><a name="label-150" id="label-150"><code>GSL::Vector#eq(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#eq" -->
+<dt><a name="label-151" id="label-151"><code>GSL::Vector#ne(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#ne" -->
+<dt><a name="label-152" id="label-152"><code>GSL::Vector#gt(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#gt" -->
+<dt><a name="label-153" id="label-153"><code>GSL::Vector#ge(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#ge" -->
+<dt><a name="label-154" id="label-154"><code>GSL::Vector#lt(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#lt" -->
+<dt><a name="label-155" id="label-155"><code>GSL::Vector#le(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#le" -->
 <dd>
 <p>Return a <code>Block::Byte</code> object with elements 0/1 by comparing the two vectors
 <var>self</var> and <var>other</var>. Note that the values returned are 0/1, 
@@ -761,10 +765,10 @@ irb(main):010:0&gt; a.ne(2)
 [ 1 0 1 ]
 irb(main):011:0&gt; a.ge(2)
 [ 0 1 1 ]</pre></dd>
-<dt><a name="label-155" id="label-155"><code>GSL::Vector#and(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#and" -->
-<dt><a name="label-156" id="label-156"><code>GSL::Vector#or(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#or" -->
-<dt><a name="label-157" id="label-157"><code>GSL::Vector#xor(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#xor" -->
-<dt><a name="label-158" id="label-158"><code>GSL::Vector#not</code></a></dt><!-- RDLabel: "GSL::Vector#not" -->
+<dt><a name="label-156" id="label-156"><code>GSL::Vector#and(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#and" -->
+<dt><a name="label-157" id="label-157"><code>GSL::Vector#or(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#or" -->
+<dt><a name="label-158" id="label-158"><code>GSL::Vector#xor(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#xor" -->
+<dt><a name="label-159" id="label-159"><code>GSL::Vector#not</code></a></dt><!-- RDLabel: "GSL::Vector#not" -->
 <dd>
 <p>Ex:</p>
 <pre>irb(main):033:0&gt; a = GSL::Vector[1, 0, 3, 0]
@@ -779,8 +783,8 @@ irb(main):038:0&gt; a.not
 [ 0 1 0 1 ]
 irb(main):039:0&gt; b.not
 [ 0 0 1 1 ]</pre></dd>
-<dt><a name="label-159" id="label-159"><code>GSL::Vector#where</code></a></dt><!-- RDLabel: "GSL::Vector#where" -->
-<dt><a name="label-160" id="label-160"><code>GSL::Vector#where { |<var>elm</var>| ... }</code></a></dt><!-- RDLabel: "GSL::Vector#where" -->
+<dt><a name="label-160" id="label-160"><code>GSL::Vector#where</code></a></dt><!-- RDLabel: "GSL::Vector#where" -->
+<dt><a name="label-161" id="label-161"><code>GSL::Vector#where { |<var>elm</var>| ... }</code></a></dt><!-- RDLabel: "GSL::Vector#where" -->
 <dd>
 <p>Returns the vector indices where the tests are true. If all the test failed
 <var>nil</var> is returned.</p>
@@ -794,13 +798,13 @@ irb(main):008:0&gt; a = GSL::Vector[0, 0, 0]
 irb(main):009:0&gt; a.where
 =&gt; nil</pre></dd>
 </dl>
-<h3><a name="3.12" href="#3.12">3.12</a> <a name="label-161">Histogram</a></h3><!-- RDLabel: "Histogram" -->
+<h3><a name="3.12" href="#3.12">3.12</a> <a name="label-162">Histogram</a></h3><!-- RDLabel: "Histogram" -->
 
 <dl>
-<dt><a name="label-162" id="label-162"><code>GSL::Vector#histogram(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#histogram" -->
-<dt><a name="label-163" id="label-163"><code>GSL::Vector#histogram(<var>ranges</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#histogram" -->
-<dt><a name="label-164" id="label-164"><code>GSL::Vector#histogram(<var>n</var>, <var>min</var>, <var>max</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#histogram" -->
-<dt><a name="label-165" id="label-165"><code>GSL::Vector#histogram(<var>n</var>, [<var>min</var>, <var>max</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#histogram" -->
+<dt><a name="label-163" id="label-163"><code>GSL::Vector#histogram(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#histogram" -->
+<dt><a name="label-164" id="label-164"><code>GSL::Vector#histogram(<var>ranges</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#histogram" -->
+<dt><a name="label-165" id="label-165"><code>GSL::Vector#histogram(<var>n</var>, <var>min</var>, <var>max</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#histogram" -->
+<dt><a name="label-166" id="label-166"><code>GSL::Vector#histogram(<var>n</var>, [<var>min</var>, <var>max</var>])</code></a></dt><!-- RDLabel: "GSL::Vector#histogram" -->
 <dd>
 <p>Creates a histogram filling the vector <var>self</var>.</p>
 <p>Example:</p>
@@ -817,14 +821,14 @@ irb(main):006:0&gt; h.graph("-T X -C -g 3")    # Show the histogram
 <pre>h = Histogram.alloc(50, [-4, 4])
 h.increment(v)</pre></dd>
 </dl>
-<h3><a name="3.13" href="#3.13">3.13</a> <a name="label-166">Sorting</a></h3><!-- RDLabel: "Sorting" -->
+<h3><a name="3.13" href="#3.13">3.13</a> <a name="label-167">Sorting</a></h3><!-- RDLabel: "Sorting" -->
 
 <dl>
-<dt><a name="label-167" id="label-167"><code>GSL::Vector#sort</code></a></dt><!-- RDLabel: "GSL::Vector#sort" -->
-<dt><a name="label-168" id="label-168"><code>GSL::Vector#sort!</code></a></dt><!-- RDLabel: "GSL::Vector#sort!" -->
+<dt><a name="label-168" id="label-168"><code>GSL::Vector#sort</code></a></dt><!-- RDLabel: "GSL::Vector#sort" -->
+<dt><a name="label-169" id="label-169"><code>GSL::Vector#sort!</code></a></dt><!-- RDLabel: "GSL::Vector#sort!" -->
 <dd>
 These methods sort the vector <var>self</var> in ascending numerical order.</dd>
-<dt><a name="label-169" id="label-169"><code>GSL::Vector#sort_index</code></a></dt><!-- RDLabel: "GSL::Vector#sort_index" -->
+<dt><a name="label-170" id="label-170"><code>GSL::Vector#sort_index</code></a></dt><!-- RDLabel: "GSL::Vector#sort_index" -->
 <dd>
 This method indirectly sorts the elements of the vector <var>self</var> into 
 ascending order, and returns the resulting permutation. 
@@ -833,10 +837,10 @@ would have been stored in that position if the vector had been sorted in place.
 The first element of permutation gives the index of the least element in the
 vector, and the last element of permutation gives the index of the greatest 
 vector element. The vector <var>self</var> is not changed.</dd>
-<dt><a name="label-170" id="label-170"><code>GSL::Vector#sort_smallest(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sort_smallest" -->
-<dt><a name="label-171" id="label-171"><code>GSL::Vector#sort_largest(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sort_largest" -->
-<dt><a name="label-172" id="label-172"><code>GSL::Vector#sort_smallest_index(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sort_smallest_index" -->
-<dt><a name="label-173" id="label-173"><code>GSL::Vector#sort_largest_index(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sort_largest_index" -->
+<dt><a name="label-171" id="label-171"><code>GSL::Vector#sort_smallest(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sort_smallest" -->
+<dt><a name="label-172" id="label-172"><code>GSL::Vector#sort_largest(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sort_largest" -->
+<dt><a name="label-173" id="label-173"><code>GSL::Vector#sort_smallest_index(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sort_smallest_index" -->
+<dt><a name="label-174" id="label-174"><code>GSL::Vector#sort_largest_index(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#sort_largest_index" -->
 <dd>
 <p>Ex:</p>
 <pre>irb(main):005:0&gt; v = GSL::Vector::Int[8, 2, 3, 7, 9, 1, 4]
@@ -855,22 +859,22 @@ irb(main):009:0&gt; v.sort_smallest(3)
 =&gt; GSL::Vector::Int: 
 [ 1 2 3 ]</pre></dd>
 </dl>
-<h3><a name="3.14" href="#3.14">3.14</a> <a name="label-174">BLAS Methods</a></h3><!-- RDLabel: "BLAS Methods" -->
+<h3><a name="3.14" href="#3.14">3.14</a> <a name="label-175">BLAS Methods</a></h3><!-- RDLabel: "BLAS Methods" -->
 
 <dl>
-<dt><a name="label-175" id="label-175"><code>GSL::Vector#nrm2</code></a></dt><!-- RDLabel: "GSL::Vector#nrm2" -->
-<dt><a name="label-176" id="label-176"><code>GSL::Vector#dnrm2</code></a></dt><!-- RDLabel: "GSL::Vector#dnrm2" -->
+<dt><a name="label-176" id="label-176"><code>GSL::Vector#nrm2</code></a></dt><!-- RDLabel: "GSL::Vector#nrm2" -->
+<dt><a name="label-177" id="label-177"><code>GSL::Vector#dnrm2</code></a></dt><!-- RDLabel: "GSL::Vector#dnrm2" -->
 <dd>
 Compute the Euclidean norm ||x||_2 = sqrt {sum x_i^2} of the vector.</dd>
-<dt><a name="label-177" id="label-177"><code>GSL::Vector#asum</code></a></dt><!-- RDLabel: "GSL::Vector#asum" -->
-<dt><a name="label-178" id="label-178"><code>GSL::Vector#dasum</code></a></dt><!-- RDLabel: "GSL::Vector#dasum" -->
+<dt><a name="label-178" id="label-178"><code>GSL::Vector#asum</code></a></dt><!-- RDLabel: "GSL::Vector#asum" -->
+<dt><a name="label-179" id="label-179"><code>GSL::Vector#dasum</code></a></dt><!-- RDLabel: "GSL::Vector#dasum" -->
 <dd>
 Compute the absolute sum \sum |x_i| of the elements of the vector.</dd>
 </dl>
-<h3><a name="3.15" href="#3.15">3.15</a> <a name="label-179">Data type conversions</a></h3><!-- RDLabel: "Data type conversions" -->
+<h3><a name="3.15" href="#3.15">3.15</a> <a name="label-180">Data type conversions</a></h3><!-- RDLabel: "Data type conversions" -->
 
 <dl>
-<dt><a name="label-180" id="label-180"><code>GSL::Vector#to_a</code></a></dt><!-- RDLabel: "GSL::Vector#to_a" -->
+<dt><a name="label-181" id="label-181"><code>GSL::Vector#to_a</code></a></dt><!-- RDLabel: "GSL::Vector#to_a" -->
 <dd>
 <p>This method converts the vector into a Ruby array. A Ruby array also can be
 converted into a GSL::Vector object with the <code>to_gv</code> method. For example,</p>
@@ -880,7 +884,7 @@ p a          -&gt; [1.0, 2.0, 3.0, 4.0, 5.0]
 a[2] = 12.0
 v2 = a.to_gv  -&gt; a new GSL::Vector object
 v2.print     -&gt; 1.0000e+00 2.0000e+00 1.2000e+01 4.0000e+00 5.0000e+00</pre></dd>
-<dt><a name="label-181" id="label-181"><code>GSL::Vector#to_m(<var>nrow</var>, <var>ncol</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#to_m" -->
+<dt><a name="label-182" id="label-182"><code>GSL::Vector#to_m(<var>nrow</var>, <var>ncol</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#to_m" -->
 <dd>
 <p>Creates a <code>GSL::Matrix</code> object of <var>nrow</var> rows and <var>ncol</var> columns.</p>
 <pre>irb(main):011:0&gt; v = GSL::Vector::Int[1..5]
@@ -899,7 +903,7 @@ irb(main):014:0&gt; v.to_m(3, 2)
 [ 1 2 
   3 4 
   5 0 ]</pre></dd>
-<dt><a name="label-182" id="label-182"><code>GSL::Vector#to_m_diagonal</code></a></dt><!-- RDLabel: "GSL::Vector#to_m_diagonal" -->
+<dt><a name="label-183" id="label-183"><code>GSL::Vector#to_m_diagonal</code></a></dt><!-- RDLabel: "GSL::Vector#to_m_diagonal" -->
 <dd>
 <p>Converts the vector into a diagonal matrix. 
 See also <a href="matrix.html">GSL::Matrix.diagonal(v)</a>.</p>
@@ -912,7 +916,7 @@ irb(main):013:0&gt; v.to_m_diagonal
   0 2 0 0 
   0 0 3 0 
   0 0 0 4 ]</pre></dd>
-<dt><a name="label-183" id="label-183"><code>GSL::Vector#to_m_circulant</code></a></dt><!-- RDLabel: "GSL::Vector#to_m_circulant" -->
+<dt><a name="label-184" id="label-184"><code>GSL::Vector#to_m_circulant</code></a></dt><!-- RDLabel: "GSL::Vector#to_m_circulant" -->
 <dd>
 <p>Creates a circulant matrix.</p>
 <pre>irb(main):002:0&gt; v = GSL::Vector::Int[1..5]
@@ -925,8 +929,8 @@ irb(main):003:0&gt; v.to_m_circulant
   3 4 5 1 2   
   2 3 4 5 1   
   1 2 3 4 5 ]</pre></dd>
-<dt><a name="label-184" id="label-184"><code>GSL::Vector#to_complex</code></a></dt><!-- RDLabel: "GSL::Vector#to_complex" -->
-<dt><a name="label-185" id="label-185"><code>GSL::Vector#to_complex2</code></a></dt><!-- RDLabel: "GSL::Vector#to_complex2" -->
+<dt><a name="label-185" id="label-185"><code>GSL::Vector#to_complex</code></a></dt><!-- RDLabel: "GSL::Vector#to_complex" -->
+<dt><a name="label-186" id="label-186"><code>GSL::Vector#to_complex2</code></a></dt><!-- RDLabel: "GSL::Vector#to_complex2" -->
 <dd>
 <p>Example:</p>
 <pre>irb(main):002:0&gt; v = GSL::Vector[1..4]
@@ -938,17 +942,17 @@ irb(main):003:0&gt; v.to_complex
 irb(main):004:0&gt; v.to_complex2
 [ [1.000e+00 2.000e+00] [3.000e+00 4.000e+00] ]
 =&gt; #&lt;GSL::Vector::Complex:0x6d6424&gt;</pre></dd>
-<dt><a name="label-186" id="label-186"><code>GSL::Vector#to_tensor(<var>rank</var>, <var>dimension</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#to_tensor" -->
+<dt><a name="label-187" id="label-187"><code>GSL::Vector#to_tensor(<var>rank</var>, <var>dimension</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#to_tensor" -->
 </dl>
-<h3><a name="3.16" href="#3.16">3.16</a> <a name="label-187"><code>GSL::Vector &lt;---&gt; NArray</code></a></h3><!-- RDLabel: "GSL::Vector <---> NArray" -->
+<h3><a name="3.16" href="#3.16">3.16</a> <a name="label-188"><code>GSL::Vector &lt;---&gt; NArray</code></a></h3><!-- RDLabel: "GSL::Vector <---> NArray" -->
 
 <dl>
-<dt><a name="label-188" id="label-188"><code>GSL::Vector#to_na</code></a></dt><!-- RDLabel: "GSL::Vector#to_na" -->
+<dt><a name="label-189" id="label-189"><code>GSL::Vector#to_na</code></a></dt><!-- RDLabel: "GSL::Vector#to_na" -->
 <dd>
 Converts a vector <var>self</var> into an <code>NArray</code> object. 
 The data are copied to newly allocated memory.</dd>
-<dt><a name="label-189" id="label-189"><code>GSL::Vector#to_na2</code></a></dt><!-- RDLabel: "GSL::Vector#to_na2" -->
-<dt><a name="label-190" id="label-190"><code>GSL::Vector#to_na_ref</code></a></dt><!-- RDLabel: "GSL::Vector#to_na_ref" -->
+<dt><a name="label-190" id="label-190"><code>GSL::Vector#to_na2</code></a></dt><!-- RDLabel: "GSL::Vector#to_na2" -->
+<dt><a name="label-191" id="label-191"><code>GSL::Vector#to_na_ref</code></a></dt><!-- RDLabel: "GSL::Vector#to_na_ref" -->
 <dd>
 <p>Create an <code>NArray</code> reference of the vector <var>self</var>.</p>
 <p>Example:</p>
@@ -971,13 +975,13 @@ irb(main):025:0&gt; na2[1] = 99    # na2 points to the data of v
 irb(main):026:0&gt; v
 =&gt; GSL::Vector::Int
 [ 1 99 3 4 ]</pre></dd>
-<dt><a name="label-191" id="label-191"><code>NArray#to_gv</code></a></dt><!-- RDLabel: "NArray#to_gv" -->
-<dt><a name="label-192" id="label-192"><code>NArray#to_gslv</code></a></dt><!-- RDLabel: "NArray#to_gslv" -->
+<dt><a name="label-192" id="label-192"><code>NArray#to_gv</code></a></dt><!-- RDLabel: "NArray#to_gv" -->
+<dt><a name="label-193" id="label-193"><code>NArray#to_gslv</code></a></dt><!-- RDLabel: "NArray#to_gslv" -->
 <dd>
 Create <code>GSL::Vector</code> object from the <code>NArray</code> object <var>self</var>.</dd>
-<dt><a name="label-193" id="label-193"><code>NArray#to_gv_view</code></a></dt><!-- RDLabel: "NArray#to_gv_view" -->
-<dt><a name="label-194" id="label-194"><code>NArray#to_gv2</code></a></dt><!-- RDLabel: "NArray#to_gv2" -->
-<dt><a name="label-195" id="label-195"><code>NArray#to_gslv_view</code></a></dt><!-- RDLabel: "NArray#to_gslv_view" -->
+<dt><a name="label-194" id="label-194"><code>NArray#to_gv_view</code></a></dt><!-- RDLabel: "NArray#to_gv_view" -->
+<dt><a name="label-195" id="label-195"><code>NArray#to_gv2</code></a></dt><!-- RDLabel: "NArray#to_gv2" -->
+<dt><a name="label-196" id="label-196"><code>NArray#to_gslv_view</code></a></dt><!-- RDLabel: "NArray#to_gslv_view" -->
 <dd>
 <p>A <code>GSL::Vector::View</code> object is created from the NArray object <var>self</var>. 
 This method does not allocate memory for the data: the data of <var>self</var> 
@@ -1024,15 +1028,15 @@ irb(main):013:0&gt; na
 =&gt; NArray.float(6): 
 [ 1.0, 2.0, 3.0, 4.0, 5.0, 9.0 ]</pre></dd>
 </dl>
-<h3><a name="3.17" href="#3.17">3.17</a> <a name="label-196">Graphics</a></h3><!-- RDLabel: "Graphics" -->
+<h3><a name="3.17" href="#3.17">3.17</a> <a name="label-197">Graphics</a></h3><!-- RDLabel: "Graphics" -->
 
 <dl>
-<dt><a name="label-197" id="label-197"><code>GSL::Vector.graph(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector.graph" -->
-<dt><a name="label-198" id="label-198"><code>GSL::Vector.graph(<var>y</var>, <var>options</var>)</code></a></dt><!-- RDLabel: "GSL::Vector.graph" -->
-<dt><a name="label-199" id="label-199"><code>GSL::Vector.graph(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector.graph" -->
-<dt><a name="label-200" id="label-200"><code>GSL::Vector.graph(<var>x</var>, <var>y</var>, <var>options</var>)</code></a></dt><!-- RDLabel: "GSL::Vector.graph" -->
-<dt><a name="label-201" id="label-201"><code>GSL::Vector#graph(<var>options</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#graph" -->
-<dt><a name="label-202" id="label-202"><code>GSL::Vector#graph(<var>x</var>, <var>options</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#graph" -->
+<dt><a name="label-198" id="label-198"><code>GSL::Vector.graph(<var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector.graph" -->
+<dt><a name="label-199" id="label-199"><code>GSL::Vector.graph(<var>y</var>, <var>options</var>)</code></a></dt><!-- RDLabel: "GSL::Vector.graph" -->
+<dt><a name="label-200" id="label-200"><code>GSL::Vector.graph(<var>x</var>, <var>y</var>)</code></a></dt><!-- RDLabel: "GSL::Vector.graph" -->
+<dt><a name="label-201" id="label-201"><code>GSL::Vector.graph(<var>x</var>, <var>y</var>, <var>options</var>)</code></a></dt><!-- RDLabel: "GSL::Vector.graph" -->
+<dt><a name="label-202" id="label-202"><code>GSL::Vector#graph(<var>options</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#graph" -->
+<dt><a name="label-203" id="label-203"><code>GSL::Vector#graph(<var>x</var>, <var>options</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#graph" -->
 <dd>
 <p>These methods use the GNU plotutils <code>graph</code> application to plot
 a vector <var>self</var>. The options of <code>graph</code> as "-T X -C" can be given by a String.</p>

@@ -712,7 +712,7 @@ static VALUE rb_gsl_vector_complex_subvector(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector_complex *v = NULL;
   gsl_vector_complex_view *vv = NULL;
-  int offset = 0;
+  int offset = 0, end, step, length;
   size_t n, stride = 1;
   Data_Get_Struct(obj, gsl_vector_complex, v);
   switch (argc) {
@@ -720,20 +720,79 @@ static VALUE rb_gsl_vector_complex_subvector(int argc, VALUE *argv, VALUE obj)
     n = v->size;
     break;
   case 1:
-    CHECK_FIXNUM(argv[0]);
-    n = FIX2INT(argv[0]);
+    if (CLASS_OF(argv[0]) == rb_cRange) {
+      get_range_beg_en_n(argv[0], &offset, &end, &n, &step);
+      if((offset < 0 && (size_t)(-offset) > v->size) || ((size_t)offset >= v->size)) {
+        rb_raise(rb_eRangeError,
+            "begin value %d is out of range for Vector of length %d",
+            offset, v->size);
+      }
+      if((end < 0 && (size_t)(-end) > v->size) || (size_t)end >= v->size) {
+        rb_raise(rb_eRangeError,
+            "end value %d is out of range for Vector of length %d",
+            end, v->size);
+      }
+      if(offset < 0) offset += v->size;
+      if(end < 0) end += v->size;
+      if(end < offset) stride = (size_t)-1;
+    } else {
+      CHECK_FIXNUM(argv[0]);
+      length = FIX2INT(argv[0]);
+      if(length < 0) {
+        rb_raise(rb_eArgError, "length must be non-negative");
+      }
+      n = (size_t)length;
+    }
     break;
   case 2:
-    CHECK_FIXNUM(argv[0]);
-    CHECK_FIXNUM(argv[1]);
-    offset = FIX2INT(argv[0]);
-    n = FIX2INT(argv[1]);
+    // TODO Clean up duplication with argc==1 case
+    if (CLASS_OF(argv[0]) == rb_cRange) {
+      get_range_beg_en_n(argv[0], &offset, &end, &n, &step);
+      if((offset < 0 && (size_t)(-offset) > v->size) || ((size_t)offset >= v->size)) {
+        rb_raise(rb_eRangeError,
+            "begin value %d is out of range for Vector of length %d",
+            offset, v->size);
+      }
+      if((end < 0 && (size_t)(-end) > v->size) || (size_t)end >= v->size) {
+        rb_raise(rb_eRangeError,
+            "end value %d is out of range for Vector of length %d",
+            end, v->size);
+      }
+      if(offset < 0) offset += v->size;
+      if(end < 0) end += v->size;
+      CHECK_FIXNUM(argv[1]);
+      step = FIX2INT(argv[1]);
+      if(step == 0 && offset != end) {
+        rb_raise(rb_eArgError, "stride must be non-zero");
+      } else if((step < 0 && offset <= end) || (step > 0 && end < offset)) {
+        step = -step;
+      }
+      if(step < 0) {
+        n = (n-1)/(-step) + 1;
+      } else if(step > 0) {
+        n = (n-1)/step + 1;
+      }
+      stride = (size_t)step;
+    } else {
+      CHECK_FIXNUM(argv[0]);
+      CHECK_FIXNUM(argv[1]);
+      offset = FIX2INT(argv[0]);
+      length = FIX2INT(argv[1]);
+      if(length < 0) {
+        rb_raise(rb_eArgError, "length must be non-negative");
+      }
+      n = (size_t)length;
+    }
     break;
   case 3:
     CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
     offset = FIX2INT(argv[0]);
     stride = FIX2INT(argv[1]);
-    n = FIX2INT(argv[2]);
+    length = FIX2INT(argv[2]);
+    if(length < 0) {
+      rb_raise(rb_eArgError, "length must be non-negative");
+    }
+    n = (size_t)length;
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0-3)", argc);
