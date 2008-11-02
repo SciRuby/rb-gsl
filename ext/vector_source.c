@@ -1305,34 +1305,62 @@ static VALUE FUNCTION(rb_gsl_vector,subvector_with_stride)(int argc, VALUE *argv
 {
   GSL_TYPE(gsl_vector) *v = NULL;
   QUALIFIED_VIEW(gsl_vector,view) *vv = NULL;
-  int offset;
+  int offset = 0, step, length;
   size_t stride = 1, n;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   switch (argc) {
   case 1:
     CHECK_FIXNUM(argv[0]);
-    stride = FIX2INT(argv[0]);
-    offset = 0;
-    n = v->size/2;
+    step = FIX2INT(argv[0]);
+    if(step <= 0) {
+      rb_raise(rb_eArgError, "stride must be positive");
+    }
+    stride = (size_t)step;
+    //n = v->size/stride;
+    n = (v->size-1)/stride + 1;
     break;
   case 2:
     CHECK_FIXNUM(argv[0]);    CHECK_FIXNUM(argv[1]);
     offset = FIX2INT(argv[0]);
-    stride = FIX2INT(argv[1]);
-    n = v->size/2;
+    step = FIX2INT(argv[1]);
+    if(offset < 0) {
+      offset += v->size;
+      if(offset < 0) {
+        rb_raise(rb_eRangeError, "offset %d out of range", offset - (int)v->size);
+      }
+    } else if(offset >= v->size) {
+      rb_raise(rb_eRangeError, "offset %d out of range", offset);
+    }
+    if(step <= 0) {
+      rb_raise(rb_eArgError, "stride must be positive");
+    }
+    stride = (size_t)step;
+    //n = (v->size-(size_t)offset)/stride;
+    n = (v->size-(size_t)offset-1)/stride + 1;
     break;
   case 3:
     CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
     offset = FIX2INT(argv[0]);
     stride = FIX2INT(argv[1]);
-    n = FIX2INT(argv[2]);
+    length = FIX2INT(argv[2]);
+    if(offset < 0) {
+      offset += v->size;
+      if(offset < 0) {
+        rb_raise(rb_eRangeError, "offset %d out of range", offset - (int)v->size);
+      }
+    }
+    if(step <= 0) {
+      rb_raise(rb_eArgError, "stride must be positive");
+    }
+    if(length < 0) {
+      rb_raise(rb_eArgError, "length must be non-negative");
+    }
+    stride = (size_t)step;
+    n = (size_t)length;
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 - 3)", argc);
     break;
-  }
-  if(offset < 0) {
-    offset += v->size;
   }
   vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
   *vv = FUNCTION(gsl_vector,subvector_with_stride)(v, (size_t)offset, stride, n);

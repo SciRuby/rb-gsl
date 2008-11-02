@@ -259,7 +259,8 @@ in the elements of the (({View})) object affect to the original vector.
     argument ((|n|)), ((|offset|)) is set to 0. With no arguments, a view is
     created with the same length of the original vector.  If called with a
     ((|range|)) parameter (and optional ((|stride|))), a view is created for
-    that range (and stride).
+    that range (and stride).  Note the ((|n|)), if given, is the length of the
+    returned View.
 
     * Example:
        #!/usr/bin/env ruby
@@ -274,13 +275,17 @@ in the elements of the (({View})) object affect to the original vector.
        view.print           <----- [ 2 3 99 5 ]
        v.print              <----- [ 1 2 3 99 5 6 ]
 
---- GSL::Vector#subvector_with_stride(offset, n, stride)
-    Return a (({Vector::View})) object of a subvector of another vector ((|self|)) 
-    with an additional stride argument. The subvector is formed in the same way 
-    as for (({Vector#subvector})) but the new vector view has ((|n|)) elements 
-    with a step-size of ((|stride|)) from one element to the next in the original vector. 
+--- GSL::Vector#subvector_with_stride(stride)
+--- GSL::Vector#subvector_with_stride(offset, stride)
+--- GSL::Vector#subvector_with_stride(offset, stride, n)
+    Return a (({Vector::View})) object of a subvector of another vector
+    ((|self|)) with an additional stride argument. The subvector is formed in
+    the same way as for (({Vector#subvector})) but the new vector view has
+    ((|n|)) elements with a step-size of ((|stride|)) from one element to the
+    next in the original vector.  Note that ((|n|)), if given, is the length of
+    the returned View.
 
---- GSL::Vectir#matrix_view(n1, n2)
+--- GSL::Vector#matrix_view(n1, n2)
     This creates a (({Matrix::View})) object from the vector ((|self|)).
     It enables to use the vector as a ((<Matrix|URL:matrix.html>)) object.
 
