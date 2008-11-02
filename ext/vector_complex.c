@@ -138,17 +138,22 @@ static VALUE rb_gsl_vector_complex_ptr(VALUE obj, VALUE i)
 }
 
 // TODO return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj),..." where appropriate
+static VALUE rb_gsl_vector_complex_subvector(int argc, VALUE *argv, VALUE obj);
 static VALUE rb_gsl_vector_complex_get(int argc, VALUE *argv, VALUE obj)
 {
+  VALUE retval = Qnil;
   gsl_vector_complex *v = NULL, *vnew;
-  gsl_complex *c = NULL, z;
+  gsl_complex *c = NULL;
   gsl_index *p;
   int i, k;
-  int beg, en, step;
-  size_t index, n, j;
-  Data_Get_Struct(obj, gsl_vector_complex, v);
-  switch (argc) {
-  case 1:
+  size_t index, j;
+  // If argc is not 1 or argv[0] is a Range
+  if( argc != 1 || rb_obj_is_kind_of(argv[0], rb_cRange)) {
+    // Treat as call to subvector
+    retval = rb_gsl_vector_complex_subvector(argc, argv, obj);
+  } else {
+    Data_Get_Struct(obj, gsl_vector_complex, v);
+
     switch (TYPE(argv[0])) {
     case T_FIXNUM:
       CHECK_FIXNUM(argv[0]);
@@ -157,7 +162,7 @@ static VALUE rb_gsl_vector_complex_get(int argc, VALUE *argv, VALUE obj)
       else index = (size_t) i;
       c = ALLOC(gsl_complex);
       *c = gsl_vector_complex_get(v, index);
-      return Data_Wrap_Struct(cgsl_complex, 0, free, c);
+      retval = Data_Wrap_Struct(cgsl_complex, 0, free, c);
       break;
     case T_ARRAY:
       vnew = gsl_vector_complex_alloc(RARRAY(argv[0])->len);
@@ -166,7 +171,7 @@ static VALUE rb_gsl_vector_complex_get(int argc, VALUE *argv, VALUE obj)
 	if (i < 0) i = v->size + i;
 	gsl_vector_complex_set(vnew, j, gsl_vector_complex_get(v, i));
       }
-      return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
+      retval = Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
       break;
     default:
       if (PERMUTATION_P(argv[0])) {
@@ -177,36 +182,15 @@ static VALUE rb_gsl_vector_complex_get(int argc, VALUE *argv, VALUE obj)
           if (k < 0) k = p->size + j;
           gsl_vector_complex_set(vnew, j, gsl_vector_complex_get(v, k));
         }
-        return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
-      } else if (CLASS_OF(argv[0]) == rb_cRange) {
-	get_range_beg_en_n(argv[0], &beg, &en, &n, &step);
-	vnew = gsl_vector_complex_alloc(n);
-	for (j = 0; j < n; j++) {
-	  z = gsl_vector_complex_get(v, j+beg);
-	  gsl_vector_complex_set(vnew, j, z);
-	}
-	return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
+        retval = Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
       } else {
+        // TODO Support Vector::Int (and even Vector?)
         rb_raise(rb_eTypeError, "wrong argument type %s (Array, Range, GSL::Permutation, or Fixnum expected)", rb_class2name(CLASS_OF(argv[0])));
       }
       break;
     }
-    break;
-  case 0:
-    rb_raise(rb_eArgError, "number of arguments must be > 0");
-    break;
-  default:
-    vnew = gsl_vector_complex_alloc(argc);
-    for (j = 0; j < argc; j++) {
-      i = FIX2INT(argv[j]);
-      if (i >= 0) z = gsl_vector_complex_get(v, i);
-      else z = gsl_vector_complex_get(v, v->size+i);
-      gsl_vector_complex_set(vnew, j, z);
-    }
-    return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
-    break;
   }
-  return Qnil;
+  return retval;
 }
 
 static VALUE rb_gsl_vector_complex_set(int argc, VALUE *argv, VALUE obj)
@@ -720,14 +704,14 @@ static VALUE rb_gsl_vector_complex_subvector(int argc, VALUE *argv, VALUE obj)
     n = v->size;
     break;
   case 1:
-    if (CLASS_OF(argv[0]) == rb_cRange) {
+    if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
       get_range_beg_en_n(argv[0], &offset, &end, &n, &step);
-      if((offset < 0 && (size_t)(-offset) > v->size) || ((size_t)offset >= v->size)) {
+      if((offset < 0 && (size_t)(-offset) > v->size) || (offset > 0 && (size_t)offset >= v->size)) {
         rb_raise(rb_eRangeError,
             "begin value %d is out of range for Vector of length %d",
             offset, v->size);
       }
-      if((end < 0 && (size_t)(-end) > v->size) || (size_t)end >= v->size) {
+      if((end < 0 && (size_t)(-end) > v->size) || (end > 0 && (size_t)end >= v->size)) {
         rb_raise(rb_eRangeError,
             "end value %d is out of range for Vector of length %d",
             end, v->size);
@@ -746,14 +730,14 @@ static VALUE rb_gsl_vector_complex_subvector(int argc, VALUE *argv, VALUE obj)
     break;
   case 2:
     // TODO Clean up duplication with argc==1 case
-    if (CLASS_OF(argv[0]) == rb_cRange) {
+    if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
       get_range_beg_en_n(argv[0], &offset, &end, &n, &step);
-      if((offset < 0 && (size_t)(-offset) > v->size) || ((size_t)offset >= v->size)) {
+      if((offset < 0 && (size_t)(-offset) > v->size) || (offset > 0 && (size_t)offset >= v->size)) {
         rb_raise(rb_eRangeError,
             "begin value %d is out of range for Vector of length %d",
             offset, v->size);
       }
-      if((end < 0 && (size_t)(-end) > v->size) || (size_t)end >= v->size) {
+      if((end < 0 && (size_t)(-end) > v->size) || (end > 0 && (size_t)end >= v->size)) {
         rb_raise(rb_eRangeError,
             "end value %d is out of range for Vector of length %d",
             end, v->size);

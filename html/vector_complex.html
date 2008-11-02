@@ -40,10 +40,13 @@ the elements of the vector to zero.</dd>
 <h3><a name="2.1" href="#2.1">2.1</a> <a name="label-9">Accessing vector elements</a></h3><!-- RDLabel: "Accessing vector elements" -->
 
 <dl>
-<dt><a name="label-10" id="label-10"><code>GSL::Vector::Complex#get(...)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#get" -->
-<dt><a name="label-11" id="label-11"><code>GSL::Vector::Complex#[...]</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#[...]" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Vector::Complex#get(<var>indices</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#get" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Vector::Complex#[indices]</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#[indices]" -->
 <dd>
-<p>Returns the <var>i</var>-th element (complex) of a complex vector <var>self</var>. </p>
+<p>Returns elements(s) of the complex vector <var>self</var> if <var>indices</var> is a
+single Fixnum, a single Array of Fixnums, or a single GSL::Permutation (or
+GSL::Index).  For all other <var>indices</var>, the parameters are treated as
+with <code>Vector#subvector</code> and a <code>Vector::View</code> is returned.</p>
 <p>Example:</p>
 <pre>irb(main):010:0&gt; z
 [ [0.000e+00 1.000e+00] [2.000e+00 5.000e+00] [-3.000e+00 4.000e+00] ]

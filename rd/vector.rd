@@ -131,10 +131,13 @@ For 32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.
 === Accessing vector elements
 --- GSL::Vector#get(indices)
 --- GSL::Vector#[indices]
-    Return elements(s) of the vector ((|self|)). 
+    Returns elements(s) of the vector ((|self|)) if ((|indices|)) is a single
+    Fixnum, a single Array of Fixnums, or a single GSL::Permutation (or
+    GSL::Index).  For all other ((|indices|)), the parameters are treated as
+    with (({Vector#subvector})) and a (({Vector::View})) is returned. 
 
 --- GSL::Vector#set(i, val)
---- GSL::Vector#[]=
+--- GSL::Vector#[i] = val
     Set the ((|i|))-th element of the vector ((|self|)) to ((|val|)).
 
     Ex:

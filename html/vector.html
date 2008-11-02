@@ -139,9 +139,12 @@ For 32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.</p>
 <dt><a name="label-18" id="label-18"><code>GSL::Vector#get(<var>indices</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#get" -->
 <dt><a name="label-19" id="label-19"><code>GSL::Vector#[indices]</code></a></dt><!-- RDLabel: "GSL::Vector#[indices]" -->
 <dd>
-Return elements(s) of the vector <var>self</var>. </dd>
+Returns elements(s) of the vector <var>self</var> if <var>indices</var> is a single
+Fixnum, a single Array of Fixnums, or a single GSL::Permutation (or
+GSL::Index).  For all other <var>indices</var>, the parameters are treated as
+with <code>Vector#subvector</code> and a <code>Vector::View</code> is returned. </dd>
 <dt><a name="label-20" id="label-20"><code>GSL::Vector#set(<var>i</var>, <var>val</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#set" -->
-<dt><a name="label-21" id="label-21"><code>GSL::Vector#[] = </code></a></dt><!-- RDLabel: "GSL::Vector#[]=" -->
+<dt><a name="label-21" id="label-21"><code>GSL::Vector#[i] = <var>val</var></code></a></dt><!-- RDLabel: "GSL::Vector#[i] = val" -->
 <dd>
 <p>Set the <var>i</var>-th element of the vector <var>self</var> to <var>val</var>.</p>
 <p>Ex:</p>

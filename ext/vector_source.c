@@ -181,25 +181,29 @@ static VALUE FUNCTION(rb_gsl_vector,calloc)(VALUE klass, VALUE nn)
   return Data_Wrap_Struct(klass, 0, FUNCTION(gsl_vector,free), v);
 }
 
+static VALUE FUNCTION(rb_gsl_vector,subvector)(int argc, VALUE *argv, VALUE obj);
 static VALUE FUNCTION(rb_gsl_vector,get)(int argc, VALUE *argv, VALUE obj)
 {
+  VALUE retval = Qnil;
   GSL_TYPE(gsl_vector) *v = NULL, *vnew = NULL;
   //  QUALIFIED_VIEW(gsl_vector,view) *vv;
   gsl_index *p;
   int i;  /*! not size_t, since a negative index is allowed */
-  int beg, en, flag = 0, n;
   size_t j, k;
-  Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  if (argc < 1) rb_raise(rb_eArgError, "too few arguments");
-  switch (argc) {
-  case 1:
+  // If argc is not 1 or argv[0] is a Range
+  if( argc != 1 || rb_obj_is_kind_of(argv[0], rb_cRange)) {
+    // Treat as call to subvector
+    retval = FUNCTION(rb_gsl_vector,subvector)(argc, argv, obj);
+  } else {
+    Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
+
     switch (TYPE(argv[0])) {
     case T_FIXNUM:
       i = FIX2INT(argv[0]);
       if (i < 0) 
-        return C_TO_VALUE2(FUNCTION(gsl_vector,get)(v, (size_t) (v->size + i)));
+        retval = C_TO_VALUE2(FUNCTION(gsl_vector,get)(v, (size_t) (v->size + i)));
       else
-        return C_TO_VALUE2(FUNCTION(gsl_vector,get)(v, (size_t) (i)));
+        retval = C_TO_VALUE2(FUNCTION(gsl_vector,get)(v, (size_t) (i)));
       break;
     case T_ARRAY:
       vnew = FUNCTION(gsl_vector,alloc)(RARRAY(argv[0])->len);
@@ -210,7 +214,7 @@ static VALUE FUNCTION(rb_gsl_vector,get)(int argc, VALUE *argv, VALUE obj)
         else k = i;
         FUNCTION(gsl_vector,set)(vnew, j, FUNCTION(gsl_vector,get)(v, k));
       }
-      return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);
+      retval = Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);
       break;
     default:
       if (PERMUTATION_P(argv[0])) {
@@ -221,42 +225,15 @@ static VALUE FUNCTION(rb_gsl_vector,get)(int argc, VALUE *argv, VALUE obj)
           if (k < 0) k = p->size + j;
           FUNCTION(gsl_vector,set)(vnew, j, FUNCTION(gsl_vector,get)(v, k));
         }
-        return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);
-      } else if (rb_obj_is_kind_of(argv[0], rb_cRange)) {
-        beg = NUM2INT(rb_ivar_get(argv[0], rb_gsl_id_beg));
-        if (beg < 0) beg = v->size + beg;
-        en = NUM2INT(rb_ivar_get(argv[0], rb_gsl_id_end));
-        if (en < 0) en = v->size + en;
-        n = en - beg;
-        if (n < 0) {
-          n *= -1;
-          flag = 1;
-        }
-        if (!RTEST(rb_ivar_get(argv[0], rb_gsl_id_excl))) n += 1;
-        vnew = FUNCTION(gsl_vector,alloc)(n);
-        for (i = 0; i < n; i++) {
-          if (beg > en) k = beg - i;
-          else k = beg + i;
-          FUNCTION(gsl_vector,set)(vnew, i, FUNCTION(gsl_vector,get)(v, k));
-        }
-        return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);              
+        retval = Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);
       } else {
+        // TODO Support Vector::Int (and even Vector?)
         rb_raise(rb_eTypeError, "wrong argument type %s (Array, Range, GSL::Permutation, or Fixnum expected)", rb_class2name(CLASS_OF(argv[0])));
       }
       break;
     }
-    break;
-  default:
-    vnew = FUNCTION(gsl_vector,alloc)(argc);
-    for (j = 0; j < argc; j++) {
-      i = FIX2INT(argv[j]);
-      if (i < 0) k = v->size + i;
-      else k = i;
-      FUNCTION(gsl_vector,set)(vnew, j, FUNCTION(gsl_vector,get)(v, k));
-    }
-    return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);      
-    break;
   }
+  return retval;
 }
 
 static VALUE FUNCTION(rb_gsl_vector,size)(VALUE obj)
@@ -1213,14 +1190,14 @@ static VALUE FUNCTION(rb_gsl_vector,subvector)(int argc, VALUE *argv, VALUE obj)
     n = v->size;
     break;
   case 1:
-    if (CLASS_OF(argv[0]) == rb_cRange) {
+    if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
       get_range_beg_en_n(argv[0], &offset, &end, &n, &step);
-      if((offset < 0 && (size_t)(-offset) > v->size) || ((size_t)offset >= v->size)) {
+      if((offset < 0 && (size_t)(-offset) > v->size) || (offset > 0 && (size_t)offset >= v->size)) {
         rb_raise(rb_eRangeError,
             "begin value %d is out of range for Vector of length %d",
             offset, v->size);
       }
-      if((end < 0 && (size_t)(-end) > v->size) || (size_t)end >= v->size) {
+      if((end < 0 && (size_t)(-end) > v->size) || (end > 0 && (size_t)end >= v->size)) {
         rb_raise(rb_eRangeError,
             "end value %d is out of range for Vector of length %d",
             end, v->size);
@@ -1239,14 +1216,14 @@ static VALUE FUNCTION(rb_gsl_vector,subvector)(int argc, VALUE *argv, VALUE obj)
     break;
   case 2:
     // TODO Clean up duplication with argc==1 case
-    if (CLASS_OF(argv[0]) == rb_cRange) {
+    if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
       get_range_beg_en_n(argv[0], &offset, &end, &n, &step);
-      if((offset < 0 && (size_t)(-offset) > v->size) || ((size_t)offset >= v->size)) {
+      if((offset < 0 && (size_t)(-offset) > v->size) || (offset > 0 && (size_t)offset >= v->size)) {
         rb_raise(rb_eRangeError,
             "begin value %d is out of range for Vector of length %d",
             offset, v->size);
       }
-      if((end < 0 && (size_t)(-end) > v->size) || (size_t)end >= v->size) {
+      if((end < 0 && (size_t)(-end) > v->size) || (end > 0 && (size_t)end >= v->size)) {
         rb_raise(rb_eRangeError,
             "end value %d is out of range for Vector of length %d",
             end, v->size);
