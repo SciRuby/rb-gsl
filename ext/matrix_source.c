@@ -1129,7 +1129,10 @@ static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj)
         if(step < 0 || in2 <=0) {
           rb_raise(rb_eRangeError, "begin > end");
         }
-        if(ij < 0) ij += m->size2;
+        if(ij < 0) {
+          ij  += m->size2;
+          if(end >= 0) in2 -= m->size2;
+        }
         j = (size_t)ij;
         n2 = (size_t)in2;
       } else {
@@ -1147,7 +1150,10 @@ static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj)
       if(step < 0 || in1 <= 0) {
         rb_raise(rb_eRangeError, "arg0: begin > end");
       }
-      if(ii < 0) ii += m->size1;
+      if(ii < 0) {
+        ii  += m->size1;
+        if(end >= 0) in1 -= m->size1;
+      }
       i = (size_t)ii;
       n1 = (size_t)in1;
       // Parse second arg
@@ -1160,7 +1166,10 @@ static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj)
         if(step < 0 || in2 <= 0) {
           rb_raise(rb_eRangeError, "arg1: begin > end");
         }
-        if(ij < 0) ij += m->size2;
+        if(ij < 0) {
+          ij  += m->size2;
+          if(end >= 0) in2 -= m->size2;
+        }
         j = (size_t)ij;
         n2 = (size_t)in2;
       } else {
@@ -1186,7 +1195,10 @@ static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj)
         if(step < 0 || in2 <= 0) {
           rb_raise(rb_eRangeError, "arg1: begin > end");
         }
-        if(ij < 0) ij += m->size2;
+        if(ij < 0) {
+          ij  += m->size2;
+          if(end >= 0) in2 -= m->size2;
+        }
         vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
         *vv = FUNCTION(gsl_matrix,subrow)(m, (size_t)ii, (size_t)ij, (size_t)in2);
         return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,view), 0, free, vv);
@@ -1224,7 +1236,10 @@ static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj)
       if(step < 0 || in1 <= 0) {
         rb_raise(rb_eRangeError, "arg0: begin > end");
       }
-      if(ii < 0) ii += m->size1;
+      if(ii < 0) {
+        ii  += m->size1;
+        if(end >= 0) in1 -= m->size1;
+      }
       ij = FIX2INT(argv[1]);
       in2 = FIX2INT(argv[2]);
       if(ij < 0) ij += m->size2;
@@ -1249,7 +1264,10 @@ static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj)
         if(step < 0 || in2 <= 0) {
           rb_raise(rb_eRangeError, "arg2: begin > end");
         }
-        if(ij < 0) ij += m->size2;
+        if(ij < 0) {
+          ij  += m->size2;
+          if(end >= 0) in2 -= m->size2;
+        }
         j = (size_t)ij;
         n2 = (size_t)in2;
       }
@@ -1268,9 +1286,10 @@ static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj)
     n1 = (size_t)in1; n2 = (size_t)in2;
     break;
   default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 or 4)", argc);
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 to 4)", argc);
     break;
   }
+  printf("subvector(%d, %d, %d, %d)\n", i, j, n1, n2);
   mv = ALLOC(QUALIFIED_VIEW(gsl_matrix,view));
   *mv = FUNCTION(gsl_matrix,submatrix)(m, i, j, n1, n2);
   return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_matrix,view), 0, free, mv);
