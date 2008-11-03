@@ -482,28 +482,25 @@ static VALUE FUNCTION(rb_gsl_matrix,shape)(VALUE obj)
 }
 
 static VALUE FUNCTION(rb_gsl_matrix,row)(VALUE obj, VALUE i);
+static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj);
 static VALUE FUNCTION(rb_gsl_matrix,get)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m = NULL;
   size_t i, j;
-  Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
   switch (argc) {
   case 2:
-    CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]);
-    i = FIX2INT(argv[0]);    j = FIX2INT(argv[1]);
-    return C_TO_VALUE2(FUNCTION(gsl_matrix,get)(m, i, j));
+    if(TYPE(argv[0]) == T_FIXNUM && TYPE(argv[1]) == T_FIXNUM) {
+      i = FIX2INT(argv[0]); j = FIX2INT(argv[1]);
+      Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
+      return C_TO_VALUE2(FUNCTION(gsl_matrix,get)(m, i, j));
+    }
     break;
   case 1:
+    Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
     return FUNCTION(rb_gsl_matrix,row)(obj, argv[0]);
     break;
-  case 0:
-    return obj;
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0-2)", argc);
-    break;
   }
-
+  return FUNCTION(rb_gsl_matrix,submatrix)(argc, argv, obj);
 }
 
 

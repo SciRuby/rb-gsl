@@ -140,9 +140,26 @@ For 32-bit CPU, the maximum of matrix dimension is 2^30 ~ 1e9.
 --- GSL::Matrix#[]=
     This method sets elements of the matrix.
 
---- GSL::Matrix#get(i, j)
---- GSL::Matrix#[]
-    This method returns the ((|(i,j)|))-th element of the matrix ((|self|)). 
+--- GSL::Matrix#get(args)
+--- GSL::Matrix#[args]
+    If ((|args|)) are two (({Fixnums})), ((|i,j|)), this method returns the
+    ((|(i,j)|))-th element of the matrix ((|self|)). 
+
+    If ((|args|)) is a single (({Fixnum})), ((|i|)), this method returns a
+    Vector::View of the ((|i|))-th row of the matrix ((|self|)).  By using this
+    property, it is possible to access to matrix elements and also modify them,
+    with the expressions as (({a = m[i][j]})) and (({m[i][j] = val})).  The
+    results are just same as using the methods (({Matrix#get(i, j)})) and
+    (({Matrix#set(i, j, val)})), but different in manner.  The methods
+    (({get})) and (({set})) use the GSL C functions (({gsl_matrix_get(),
+    gsl_matrix_set()})), i.e. access to the (i, j)-element directly. In the
+    expression (({m[i][j]})), first a (({Vector::View})) object which points to
+    the data of the i-th row of the matrix (({m})) is created, (({m[i]})), and
+    then the j-th element of the (({Vector::View})) object (({m[i]})),
+    expressed as (({m[i][j]})), is extracted/modified.
+
+    All other forms of ((|args|)) are treated as with (({Matrix#submatrix}))
+    and a View object is returned.
 
     Examples:
       irb(main):002:0> m = GSL::Matrix[1..9, 3, 3]
@@ -267,19 +284,6 @@ parameter name indicates the type of the parameter: ((|i|)), ((|row|)),
     object. Any modifications to the (({Vectror::View})) object returned by this method
     propagate to the original matrix. 
     
-    By using this property, it is possible to access to matrix elements 
-    and also modify them, with the expressions as (({a = m[i][j]})) 
-    and (({m[i][j] = val})). 
-    The results are just same as using the methods (({Matrix#get(i, j)}))
-    and (({Matrix#set(i, j, val)})), but different in manner. 
-    The methods (({get})) and (({set})) use
-    the GSL C functions (({gsl_matrix_get(), gsl_matrix_set()})), i.e. access
-    to the (i, j)-element directly. In the expression (({m[i][j]})), first a
-    (({Vector::View})) object which points to the data of the i-th row of the
-    matrix (({m})) is created, (({m[i]})), 
-    and then the j-th element of the (({Vector::View})) object (({m[i]})),
-    expressed as (({m[i][j]})), is extracted/modified.
-
 --- GSL::Matrix#column(i)
 --- GSL::Matrix#col(i) 
     These methods return a vector view of the ((|j|))-th column of the matrix.

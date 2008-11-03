@@ -154,10 +154,25 @@ irb(main):007:0&gt; m.shape
 <dt><a name="label-30" id="label-30"><code>GSL::Matrix#[] = </code></a></dt><!-- RDLabel: "GSL::Matrix#[]=" -->
 <dd>
 This method sets elements of the matrix.</dd>
-<dt><a name="label-31" id="label-31"><code>GSL::Matrix#get(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#get" -->
-<dt><a name="label-32" id="label-32"><code>GSL::Matrix#[]</code></a></dt><!-- RDLabel: "GSL::Matrix#[]" -->
+<dt><a name="label-31" id="label-31"><code>GSL::Matrix#get(<var>args</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#get" -->
+<dt><a name="label-32" id="label-32"><code>GSL::Matrix#[args]</code></a></dt><!-- RDLabel: "GSL::Matrix#[args]" -->
 <dd>
-<p>This method returns the <var>(i,j)</var>-th element of the matrix <var>self</var>. </p>
+<p>If <var>args</var> are two <code>Fixnums</code>, <var>i,j</var>, this method returns the
+<var>(i,j)</var>-th element of the matrix <var>self</var>. </p>
+<p>If <var>args</var> is a single <code>Fixnum</code>, <var>i</var>, this method returns a
+Vector::View of the <var>i</var>-th row of the matrix <var>self</var>.  By using this
+property, it is possible to access to matrix elements and also modify them,
+with the expressions as <code>a = m[i][j]</code> and <code>m[i][j] = val</code>.  The
+results are just same as using the methods <code>Matrix#get(i, j)</code> and
+<code>Matrix#set(i, j, val)</code>, but different in manner.  The methods
+<code>get</code> and <code>set</code> use the GSL C functions <code>gsl_matrix_get(),
+gsl_matrix_set()</code>, i.e. access to the (i, j)-element directly. In the
+expression <code>m[i][j]</code>, first a <code>Vector::View</code> object which points to
+the data of the i-th row of the matrix <code>m</code> is created, <code>m[i]</code>, and
+then the j-th element of the <code>Vector::View</code> object <code>m[i]</code>,
+expressed as <code>m[i][j]</code>, is extracted/modified.</p>
+<p>All other forms of <var>args</var> are treated as with <code>Matrix#submatrix</code>
+and a View object is returned.</p>
 <p>Examples:</p>
 <pre>irb(main):002:0&gt; m = GSL::Matrix[1..9, 3, 3]
 =&gt; GSL::Matrix
@@ -298,21 +313,9 @@ irb(main):006:0&gt; </pre></dd>
 <dl>
 <dt><a name="label-65" id="label-65"><code>GSL::Matrix#row(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#row" -->
 <dd>
-<p>These methods return <var>i</var>-th row of the matrix as a <code>Vector::View</code>
+These methods return <var>i</var>-th row of the matrix as a <code>Vector::View</code>
 object. Any modifications to the <code>Vectror::View</code> object returned by this method
-propagate to the original matrix. </p>
-<p>By using this property, it is possible to access to matrix elements 
-and also modify them, with the expressions as <code>a = m[i][j]</code> 
-and <code>m[i][j] = val</code>. 
-The results are just same as using the methods <code>Matrix#get(i, j)</code>
-and <code>Matrix#set(i, j, val)</code>, but different in manner. 
-The methods <code>get</code> and <code>set</code> use
-the GSL C functions <code>gsl_matrix_get(), gsl_matrix_set()</code>, i.e. access
-to the (i, j)-element directly. In the expression <code>m[i][j]</code>, first a
-<code>Vector::View</code> object which points to the data of the i-th row of the
-matrix <code>m</code> is created, <code>m[i]</code>, 
-and then the j-th element of the <code>Vector::View</code> object <code>m[i]</code>,
-expressed as <code>m[i][j]</code>, is extracted/modified.</p></dd>
+propagate to the original matrix. </dd>
 <dt><a name="label-66" id="label-66"><code>GSL::Matrix#column(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#column" -->
 <dt><a name="label-67" id="label-67"><code>GSL::Matrix#col(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#col" -->
 <dd>
