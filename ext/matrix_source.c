@@ -1289,7 +1289,6 @@ static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 to 4)", argc);
     break;
   }
-  printf("subvector(%d, %d, %d, %d)\n", i, j, n1, n2);
   mv = ALLOC(QUALIFIED_VIEW(gsl_matrix,view));
   *mv = FUNCTION(gsl_matrix,submatrix)(m, i, j, n1, n2);
   return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_matrix,view), 0, free, mv);
