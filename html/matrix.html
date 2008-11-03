@@ -211,19 +211,70 @@ elements zero. This applies to both square and rectangular matrices. </dd>
 <h3><a name="2.4" href="#2.4">2.4</a> <a name="label-46">Matrix views</a></h3><!-- RDLabel: "Matrix views" -->
 
 <p>The <code>GSL::Matrix::View</code> class is defined to be used as "references" to
-matrices. The <code>Matrix::View</code> class is a subclass of <code>Matrix</code>,
-and an instance of the <code>View</code> class created by slicing a <code>Matrix</code> object 
-can be used same as the original matrix. The
-<code>View</code> object shares the data with the original matrix, i.e. any changes
-in the elements of the <code>View</code> object affect to the original.</p>
+matrices. The <code>Matrix::View</code> class is a subclass of <code>Matrix</code>, and an
+instance of the <code>View</code> class created by slicing a <code>Matrix</code> object can
+be used same as the original matrix. The <code>View</code> object shares the data with
+the original matrix, i.e. any changes in the elements of the <code>View</code> object
+affect to the original.</p>
+<p>The primary means of generating <code>Matrix::View</code> objects is with
+<code>GSL::Matrix#submatrix</code> (or its alias <code>GSL::Matrix#view</code>).  Many forms
+are supported and they are documented here individually.  All forms return a
+<code>Matrix::View</code> unless otherwise documented.  In the list below, the
+parameter name indicates the type of the parameter: <var>i</var>, <var>row</var>,
+<var>col</var>, <var>len</var>, <var>len1</var>, and <var>len2</var> are <code>Fixnums</code>; <var>rows</var> and
+<var>cols</var> are <code>Ranges</code>.</p>
 <dl>
-<dt><a name="label-47" id="label-47"><code>GSL::Matrix#submatrix(<var>k1</var>, <var>k2</var>, <var>n1</var>, <var>n2</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
-<dt><a name="label-48" id="label-48"><code>GSL::Matrix#view(<var>k1</var>, <var>k2</var>, <var>n1</var>, <var>n2</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#view" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Matrix#submatrix()</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
 <dd>
-This returns a <code>GSL::Matirx::View</code> object, a submatrix of the matrix 
-<var>self</var>. The upper-left element of the submatrix is the element <var>(k1,k2)</var> 
-of the original matrix. The submatrix has <var>n1</var> rows and <var>n2</var> columns. </dd>
-<dt><a name="label-49" id="label-49"><code>GSL::Vectir#matrix_view(<var>n1</var>, <var>n2</var>)</code></a></dt><!-- RDLabel: "GSL::Vectir#matrix_view" -->
+View covers all rows and all columns.</dd>
+<dt><a name="label-48" id="label-48"><code>GSL::Matrix#submatrix(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers single element at row <var>i</var>/<var>size2</var>, column
+<var>i</var>%<var>size2</var>.</dd>
+<dt><a name="label-49" id="label-49"><code>GSL::Matrix#submatrix(<var>nil</var>,<var>nil</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers all rows and all columns.</dd>
+<dt><a name="label-50" id="label-50"><code>GSL::Matrix#submatrix(<var>nil</var>,<var>cols</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers all rows with columns specified by <var>cols</var>.</dd>
+<dt><a name="label-51" id="label-51"><code>GSL::Matrix#submatrix(<var>nil</var>,<var>col</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+Returns a <code>Vector::Col::View</code> for the column <var>col</var>.</dd>
+<dt><a name="label-52" id="label-52"><code>GSL::Matrix#submatrix(<var>rows</var>, <var>nil</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers rows specified by <var>rows</var> and all columns.</dd>
+<dt><a name="label-53" id="label-53"><code>GSL::Matrix#submatrix(<var>rows</var>, <var>cols</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers rows specified by <var>rows</var>, columns specified by <var>cols</var>.</dd>
+<dt><a name="label-54" id="label-54"><code>GSL::Matrix#submatrix(<var>rows</var>, <var>col</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+Returns a <code>Vector::Col::View</code> for column <var>col</var>, rows <var>rows</var>.</dd>
+<dt><a name="label-55" id="label-55"><code>GSL::Matrix#submatrix(<var>row</var>, <var>nil</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+Returns a <code>Vector::View</code> for row <var>row</var>.</dd>
+<dt><a name="label-56" id="label-56"><code>GSL::Matrix#submatrix(<var>row</var>, <var>cols</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+Returns a <code>Vector::View</code> for row <var>row</var>, columns <var>cols</var>.</dd>
+<dt><a name="label-57" id="label-57"><code>GSL::Matrix#submatrix(<var>row</var>, <var>col</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers a single element at row <var>row</var>, column <var>col</var>.</dd>
+<dt><a name="label-58" id="label-58"><code>GSL::Matrix#submatrix(<var>nil</var>, <var>col</var>, <var>len</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers all rows and <var>len</var> columns starting at column <var>col</var>.</dd>
+<dt><a name="label-59" id="label-59"><code>GSL::Matrix#submatrix(<var>rows</var>, <var>col</var>, <var>len</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers <var>rows</var> rows and <var>len</var> columns starting at column <var>col</var>.</dd>
+<dt><a name="label-60" id="label-60"><code>GSL::Matrix#submatrix(<var>row</var>, <var>len</var>, <var>nil</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers <var>len</var> rows starting at row <var>row</var> and all columns.</dd>
+<dt><a name="label-61" id="label-61"><code>GSL::Matrix#submatrix(<var>row</var>, <var>len</var>, <var>cols</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers <var>len</var> rows starting at row <var>row</var> and <var>cols</var> columns.</dd>
+<dt><a name="label-62" id="label-62"><code>GSL::Matrix#submatrix(<var>row</var>, <var>col</var>, <var>len1</var>, <var>len2</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#submatrix" -->
+<dd>
+View covers <var>len1</var> rows starting at row <var>row</var> and <var>len2</var>
+columns starting at column <var>col</var>.</dd>
+<dt><a name="label-63" id="label-63"><code>GSL::Vector#matrix_view(<var>n1</var>, <var>n2</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#matrix_view" -->
 <dd>
 <p>This creates a <code>Matrix::View</code> object from the vector <var>self</var>.</p>
 <p>Ex:</p>
@@ -242,10 +293,10 @@ irb(main):005:0&gt; v
 [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 9.999e+01 6.000e+00 7.000e+00 8.000e+00 9.000e+00 ]
 irb(main):006:0&gt; </pre></dd>
 </dl>
-<h3><a name="2.5" href="#2.5">2.5</a> <a name="label-50">Creating row and column views</a></h3><!-- RDLabel: "Creating row and column views" -->
+<h3><a name="2.5" href="#2.5">2.5</a> <a name="label-64">Creating row and column views</a></h3><!-- RDLabel: "Creating row and column views" -->
 
 <dl>
-<dt><a name="label-51" id="label-51"><code>GSL::Matrix#row(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#row" -->
+<dt><a name="label-65" id="label-65"><code>GSL::Matrix#row(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#row" -->
 <dd>
 <p>These methods return <var>i</var>-th row of the matrix as a <code>Vector::View</code>
 object. Any modifications to the <code>Vectror::View</code> object returned by this method
@@ -262,21 +313,21 @@ to the (i, j)-element directly. In the expression <code>m[i][j]</code>, first a
 matrix <code>m</code> is created, <code>m[i]</code>, 
 and then the j-th element of the <code>Vector::View</code> object <code>m[i]</code>,
 expressed as <code>m[i][j]</code>, is extracted/modified.</p></dd>
-<dt><a name="label-52" id="label-52"><code>GSL::Matrix#column(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#column" -->
-<dt><a name="label-53" id="label-53"><code>GSL::Matrix#col(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#col" -->
+<dt><a name="label-66" id="label-66"><code>GSL::Matrix#column(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#column" -->
+<dt><a name="label-67" id="label-67"><code>GSL::Matrix#col(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#col" -->
 <dd>
 These methods return a vector view of the <var>j</var>-th column of the matrix.</dd>
-<dt><a name="label-54" id="label-54"><code>GSL::Matrix#subrow(<var>i</var>, <var>offset</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#subrow" -->
+<dt><a name="label-68" id="label-68"><code>GSL::Matrix#subrow(<var>i</var>, <var>offset</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#subrow" -->
 <dd>
 Returns a vector view of the <var>i</var>-th row of the matrix <var>self</var> 
 beginning at <var>offset</var> elements past the first column 
 and containing <var>n</var> elements. (&gt;= GSL-1.10)</dd>
-<dt><a name="label-55" id="label-55"><code>GSL::Matrix#subcolumn(<var>j</var>, <var>offset</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#subcolumn" -->
+<dt><a name="label-69" id="label-69"><code>GSL::Matrix#subcolumn(<var>j</var>, <var>offset</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#subcolumn" -->
 <dd>
 Returns a vector view of the <var>j</var>-th column of the matrix <var>self</var> 
 beginning at <var>offset</var> elements past the first row 
 and containing <var>n</var> elements. (&gt;= GSL-1.10)</dd>
-<dt><a name="label-56" id="label-56"><code>GSL::Matrix#diagonal</code></a></dt><!-- RDLabel: "GSL::Matrix#diagonal" -->
+<dt><a name="label-70" id="label-70"><code>GSL::Matrix#diagonal</code></a></dt><!-- RDLabel: "GSL::Matrix#diagonal" -->
 <dd>
 <p>This method returns a <code>Vector::View</code> of the diagonal of the matrix.
 The matrix is not required to be square. For a rectangular matrix the 
@@ -305,18 +356,18 @@ irb(main):021:0&gt; m
 irb(main):022:0&gt; m.diagonal
 =&gt; GSL::Vector::View: 
 [ 1.000e+00 5.000e+00 1.230e+02 ]</pre></dd>
-<dt><a name="label-57" id="label-57"><code>GSL::Matrix#subdiagonal(<var>k</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#subdiagonal" -->
+<dt><a name="label-71" id="label-71"><code>GSL::Matrix#subdiagonal(<var>k</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#subdiagonal" -->
 <dd>
 Returns a vector view view of the <var>k</var>-th subdiagonal 
 of the matrix <var>self</var>. 
 The matrix is not required to be square. The diagonal of the matrix 
 corresponds to k = 0.</dd>
-<dt><a name="label-58" id="label-58"><code>GSL::Matrix#superdiagonal(<var>k</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#superdiagonal" -->
+<dt><a name="label-72" id="label-72"><code>GSL::Matrix#superdiagonal(<var>k</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#superdiagonal" -->
 <dd>
 Returns a vector view of the <var>k</var>-th superdiagonal of the matrix <var>self</var>. 
 The matrix is not required to be square. The diagonal of the matrix 
 corresponds to k = 0.</dd>
-<dt><a name="label-59" id="label-59"><code>GSL::Matrix#to_v</code></a></dt><!-- RDLabel: "GSL::Matrix#to_v" -->
+<dt><a name="label-73" id="label-73"><code>GSL::Matrix#to_v</code></a></dt><!-- RDLabel: "GSL::Matrix#to_v" -->
 <dd>
 <p>Creates a <code>GSL::Vector</code> object "flattening" the rows of the matrix <var>self</var>.</p>
 <pre>irb(main):002:0&gt; m = GSL::Matrix[1..6, 2, 3]
@@ -327,83 +378,83 @@ irb(main):003:0&gt; m.to_v
 =&gt; GSL::Vector 
 [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 6.000e+00 ]</pre></dd>
 </dl>
-<h3><a name="2.6" href="#2.6">2.6</a> <a name="label-60">Iterators</a></h3><!-- RDLabel: "Iterators" -->
+<h3><a name="2.6" href="#2.6">2.6</a> <a name="label-74">Iterators</a></h3><!-- RDLabel: "Iterators" -->
 
 <dl>
-<dt><a name="label-61" id="label-61"><code>GSL::Matrix#each_row</code></a></dt><!-- RDLabel: "GSL::Matrix#each_row" -->
+<dt><a name="label-75" id="label-75"><code>GSL::Matrix#each_row</code></a></dt><!-- RDLabel: "GSL::Matrix#each_row" -->
 <dd>
 Iterator for each of rows in the matrix <var>self</var>. </dd>
-<dt><a name="label-62" id="label-62"><code>GSL::Matrix#each_col</code></a></dt><!-- RDLabel: "GSL::Matrix#each_col" -->
+<dt><a name="label-76" id="label-76"><code>GSL::Matrix#each_col</code></a></dt><!-- RDLabel: "GSL::Matrix#each_col" -->
 <dd>
 Iterator for each of columns in the matrix <var>self</var>. </dd>
-<dt><a name="label-63" id="label-63"><code>GSL::Matrix#collect { |<var>item</var>| .. }</code></a></dt><!-- RDLabel: "GSL::Matrix#collect" -->
-<dt><a name="label-64" id="label-64"><code>GSL::Matrix#map { |<var>item</var>| .. }</code></a></dt><!-- RDLabel: "GSL::Matrix#map" -->
-<dt><a name="label-65" id="label-65"><code>GSL::Matrix#collect! { |<var>item</var>| .. }</code></a></dt><!-- RDLabel: "GSL::Matrix#collect!" -->
-<dt><a name="label-66" id="label-66"><code>GSL::Matrix#map! { |<var>item</var>| .. }</code></a></dt><!-- RDLabel: "GSL::Matrix#map!" -->
+<dt><a name="label-77" id="label-77"><code>GSL::Matrix#collect { |<var>item</var>| .. }</code></a></dt><!-- RDLabel: "GSL::Matrix#collect" -->
+<dt><a name="label-78" id="label-78"><code>GSL::Matrix#map { |<var>item</var>| .. }</code></a></dt><!-- RDLabel: "GSL::Matrix#map" -->
+<dt><a name="label-79" id="label-79"><code>GSL::Matrix#collect! { |<var>item</var>| .. }</code></a></dt><!-- RDLabel: "GSL::Matrix#collect!" -->
+<dt><a name="label-80" id="label-80"><code>GSL::Matrix#map! { |<var>item</var>| .. }</code></a></dt><!-- RDLabel: "GSL::Matrix#map!" -->
 </dl>
-<h3><a name="2.7" href="#2.7">2.7</a> <a name="label-67">Copying matrices</a></h3><!-- RDLabel: "Copying matrices" -->
+<h3><a name="2.7" href="#2.7">2.7</a> <a name="label-81">Copying matrices</a></h3><!-- RDLabel: "Copying matrices" -->
 
 <dl>
-<dt><a name="label-68" id="label-68"><code>GSL::Matrix#clone</code></a></dt><!-- RDLabel: "GSL::Matrix#clone" -->
-<dt><a name="label-69" id="label-69"><code>GSL::Matrix#duplicate</code></a></dt><!-- RDLabel: "GSL::Matrix#duplicate" -->
+<dt><a name="label-82" id="label-82"><code>GSL::Matrix#clone</code></a></dt><!-- RDLabel: "GSL::Matrix#clone" -->
+<dt><a name="label-83" id="label-83"><code>GSL::Matrix#duplicate</code></a></dt><!-- RDLabel: "GSL::Matrix#duplicate" -->
 <dd>
 Create a new matrix of the same elements.</dd>
-<dt><a name="label-70" id="label-70"><code>GSL::Matrix.memcpy(<var>dest</var>, <var>src</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.memcpy" -->
-<dt><a name="label-71" id="label-71"><code>GSL::Matrix.swap(<var>dest</var>, <var>src</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.swap" -->
+<dt><a name="label-84" id="label-84"><code>GSL::Matrix.memcpy(<var>dest</var>, <var>src</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.memcpy" -->
+<dt><a name="label-85" id="label-85"><code>GSL::Matrix.swap(<var>dest</var>, <var>src</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.swap" -->
 </dl>
-<h3><a name="2.8" href="#2.8">2.8</a> <a name="label-72">Copying rows and columns</a></h3><!-- RDLabel: "Copying rows and columns" -->
+<h3><a name="2.8" href="#2.8">2.8</a> <a name="label-86">Copying rows and columns</a></h3><!-- RDLabel: "Copying rows and columns" -->
 
 <dl>
-<dt><a name="label-73" id="label-73"><code>GSL::Matrix#get_row(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#get_row" -->
+<dt><a name="label-87" id="label-87"><code>GSL::Matrix#get_row(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#get_row" -->
 <dd>
 This method returns a new vector (not a view) which contains the elements 
 of the <var>i</var>-th row of the matrix <var>self</var>.</dd>
-<dt><a name="label-74" id="label-74"><code>GSL::Matrix#get_col(<var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#get_col" -->
+<dt><a name="label-88" id="label-88"><code>GSL::Matrix#get_col(<var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#get_col" -->
 <dd>
 This method returns a new vector (not a view) which contains the elements of the <var>j</var>-th 
 column of the matrix <var>self</var>.</dd>
-<dt><a name="label-75" id="label-75"><code>GSL::Matrix#set_row(<var>i</var>, <var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#set_row" -->
+<dt><a name="label-89" id="label-89"><code>GSL::Matrix#set_row(<var>i</var>, <var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#set_row" -->
 <dd>
 This method copies the elements of the vector <var>v</var> into the <var>i</var>-th 
 row of the matrix. 
 The length of the vector must be the same as the length of the row. </dd>
-<dt><a name="label-76" id="label-76"><code>GSL::Matrix#set_col(<var>j</var>, <var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#set_col" -->
+<dt><a name="label-90" id="label-90"><code>GSL::Matrix#set_col(<var>j</var>, <var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#set_col" -->
 <dd>
 This method copies the elements of the vector <var>v</var> into the <var>j</var>-th 
 column of the matrix. The length of the vector must be the same as the length 
 of the column. </dd>
 </dl>
-<h3><a name="2.9" href="#2.9">2.9</a> <a name="label-77">Exchanging rows and columns</a></h3><!-- RDLabel: "Exchanging rows and columns" -->
+<h3><a name="2.9" href="#2.9">2.9</a> <a name="label-91">Exchanging rows and columns</a></h3><!-- RDLabel: "Exchanging rows and columns" -->
 
 <dl>
-<dt><a name="label-78" id="label-78"><code>GSL::Matrix#swap_rows!(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_rows!" -->
+<dt><a name="label-92" id="label-92"><code>GSL::Matrix#swap_rows!(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_rows!" -->
 <dd>
 This method exchanges the <var>i</var>-th and <var>j</var>-th rows of the matrix <var>in-place</var>.</dd>
-<dt><a name="label-79" id="label-79"><code>GSL::Matrix#swap_rows(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_rows" -->
+<dt><a name="label-93" id="label-93"><code>GSL::Matrix#swap_rows(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_rows" -->
 <dd>
 This method creates a new matrix exchanging the <var>i</var>-th and <var>j</var>-th rows of the matrix <var>self</var>.</dd>
-<dt><a name="label-80" id="label-80"><code>GSL::Matrix#swap_columns!(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_columns!" -->
+<dt><a name="label-94" id="label-94"><code>GSL::Matrix#swap_columns!(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_columns!" -->
 <dd>
 This method exchanges the <var>i</var>-th and <var>j</var>-th columns of the matrix <var>in-place</var>. </dd>
-<dt><a name="label-81" id="label-81"><code>GSL::Matrix#swap_columns(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_columns" -->
+<dt><a name="label-95" id="label-95"><code>GSL::Matrix#swap_columns(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_columns" -->
 <dd>
 This method creates a new matrix exchanging the <var>i</var>-th and <var>j</var>-th columns of the matrix <var>self</var>.</dd>
-<dt><a name="label-82" id="label-82"><code>GSL::Matrix#swap_rowcol(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_rowcol" -->
+<dt><a name="label-96" id="label-96"><code>GSL::Matrix#swap_rowcol(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_rowcol" -->
 <dd>
 This method exchanges the <var>i</var>-th row and <var>j</var>-th column of the matrix.
 The matrix must be square for this operation to be possible.</dd>
-<dt><a name="label-83" id="label-83"><code>GSL::Matrix#transpose_memcpy</code></a></dt><!-- RDLabel: "GSL::Matrix#transpose_memcpy" -->
-<dt><a name="label-84" id="label-84"><code>GSL::Matrix#transpose</code></a></dt><!-- RDLabel: "GSL::Matrix#transpose" -->
+<dt><a name="label-97" id="label-97"><code>GSL::Matrix#transpose_memcpy</code></a></dt><!-- RDLabel: "GSL::Matrix#transpose_memcpy" -->
+<dt><a name="label-98" id="label-98"><code>GSL::Matrix#transpose</code></a></dt><!-- RDLabel: "GSL::Matrix#transpose" -->
 <dd>
 This method returns a matrix of a transpose of the matrix. The matrix
 <var>self</var> is not modified.</dd>
-<dt><a name="label-85" id="label-85"><code>GSL::Matrix#transpose!</code></a></dt><!-- RDLabel: "GSL::Matrix#transpose!" -->
+<dt><a name="label-99" id="label-99"><code>GSL::Matrix#transpose!</code></a></dt><!-- RDLabel: "GSL::Matrix#transpose!" -->
 <dd>
 This method replaces the matrix by its transpose by copying the 
 elements of the matrix <var>in-place</var>. The matrix must be square for this
 operation to be possible. </dd>
-<dt><a name="label-86" id="label-86"><code>GSL::Matrix#reverse_rows</code></a></dt><!-- RDLabel: "GSL::Matrix#reverse_rows" -->
-<dt><a name="label-87" id="label-87"><code>GSL::Matrix#flipud</code></a></dt><!-- RDLabel: "GSL::Matrix#flipud" -->
+<dt><a name="label-100" id="label-100"><code>GSL::Matrix#reverse_rows</code></a></dt><!-- RDLabel: "GSL::Matrix#reverse_rows" -->
+<dt><a name="label-101" id="label-101"><code>GSL::Matrix#flipud</code></a></dt><!-- RDLabel: "GSL::Matrix#flipud" -->
 <dd>
 <p>Example:</p>
 <pre>irb(main):018:0&gt; m = GSL::Matrix::Int[1..9, 3, 3]
@@ -416,8 +467,8 @@ irb(main):019:0&gt; m.reverse_rows
 [ 7 8 9 
   4 5 6 
   1 2 3 ]</pre></dd>
-<dt><a name="label-88" id="label-88"><code>GSL::Matrix#reverse_columns</code></a></dt><!-- RDLabel: "GSL::Matrix#reverse_columns" -->
-<dt><a name="label-89" id="label-89"><code>GSL::Matrix#fliplr</code></a></dt><!-- RDLabel: "GSL::Matrix#fliplr" -->
+<dt><a name="label-102" id="label-102"><code>GSL::Matrix#reverse_columns</code></a></dt><!-- RDLabel: "GSL::Matrix#reverse_columns" -->
+<dt><a name="label-103" id="label-103"><code>GSL::Matrix#fliplr</code></a></dt><!-- RDLabel: "GSL::Matrix#fliplr" -->
 <dd>
 <p>Example:</p>
 <pre>irb(main):018:0&gt; m = GSL::Matrix::Int[1..9, 3, 3]
@@ -430,7 +481,7 @@ irb(main):020:0&gt; m.reverse_rows.reverse_columns
 [ 9 8 7 
   6 5 4 
   3 2 1 ]</pre></dd>
-<dt><a name="label-90" id="label-90"><code>GSL::Matrix#rot90(<var>n</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#rot90" -->
+<dt><a name="label-104" id="label-104"><code>GSL::Matrix#rot90(<var>n</var> = <var>1</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#rot90" -->
 <dd>
 <p>Return a copy of <var>self</var> with the elements rotated 
 counterclockwise in 90-degree increments. The argument <var>n</var> is 
@@ -461,11 +512,11 @@ irb(main):018:0&gt; m.rot90(-1)
 [ 4 1 
   5 2 
   6 3 ]</pre></dd>
-<dt><a name="label-91" id="label-91"><code>GSL::Matrix#upper</code></a></dt><!-- RDLabel: "GSL::Matrix#upper" -->
+<dt><a name="label-105" id="label-105"><code>GSL::Matrix#upper</code></a></dt><!-- RDLabel: "GSL::Matrix#upper" -->
 <dd>
 This creates a matrix copying the upper half part of the matrix 
 <var>self</var>, including the diagonal elements.</dd>
-<dt><a name="label-92" id="label-92"><code>GSL::Matrix#lower</code></a></dt><!-- RDLabel: "GSL::Matrix#lower" -->
+<dt><a name="label-106" id="label-106"><code>GSL::Matrix#lower</code></a></dt><!-- RDLabel: "GSL::Matrix#lower" -->
 <dd>
 <p>This creates a matrix copying the lower half part of the matrix 
 <var>self</var>, including the diagonal elements.</p>
@@ -484,7 +535,7 @@ irb(main):016:0&gt; m.lower
 [ 1.000e+00 0.000e+00 0.000e+00 
   4.000e+00 5.000e+00 0.000e+00 
   7.000e+00 8.000e+00 9.000e+00 ]</pre></dd>
-<dt><a name="label-93" id="label-93"><code>GSL::Matrix#horzcat(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#horzcat" -->
+<dt><a name="label-107" id="label-107"><code>GSL::Matrix#horzcat(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#horzcat" -->
 <dd>
 <p>Returns the horizontal concatenation of <var>self</var> and <var>other</var>.</p>
 <p>Ex:</p>
@@ -502,7 +553,7 @@ irb(main):004:0&gt; a.horzcat(b)
 =&gt; GSL::Matrix::Int
 [  1  2  5  6  7 
    3  4  8  9 10 ]</pre></dd>
-<dt><a name="label-94" id="label-94"><code>GSL::Matrix#vertcat(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#vertcat" -->
+<dt><a name="label-108" id="label-108"><code>GSL::Matrix#vertcat(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#vertcat" -->
 <dd>
 <p>Returns the vertical concatenation of <var>self</var> and <var>other</var>.</p>
 <p>Ex:</p>
@@ -523,41 +574,41 @@ irb(main):004:0&gt; a.vertcat(b)
    7  8 
    9 10 ]</pre></dd>
 </dl>
-<h3><a name="2.10" href="#2.10">2.10</a> <a name="label-95">Matrix operations</a></h3><!-- RDLabel: "Matrix operations" -->
+<h3><a name="2.10" href="#2.10">2.10</a> <a name="label-109">Matrix operations</a></h3><!-- RDLabel: "Matrix operations" -->
 
 <dl>
-<dt><a name="label-96" id="label-96"><code>GSL::Matrix#add(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#add" -->
-<dt><a name="label-97" id="label-97"><code>GSL::Matrix#+(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#+" -->
+<dt><a name="label-110" id="label-110"><code>GSL::Matrix#add(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#add" -->
+<dt><a name="label-111" id="label-111"><code>GSL::Matrix#+(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#+" -->
 <dd>
 <p>This method adds the elements of matrix <var>b</var> 
 to the elements of the  matrix. 
 The two matrices must have the same dimensions. </p>
 <p>If <var>b</var> is a scalar, these methods add it to all the elements
 of the matrix <var>self</var> (equivalent to the method <code>add_constant</code>).</p></dd>
-<dt><a name="label-98" id="label-98"><code>GSL::Matrix#sub(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#sub" -->
-<dt><a name="label-99" id="label-99"><code>GSL::Matrix#-(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#-" -->
+<dt><a name="label-112" id="label-112"><code>GSL::Matrix#sub(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#sub" -->
+<dt><a name="label-113" id="label-113"><code>GSL::Matrix#-(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#-" -->
 <dd>
 This method subtracts the elements of matrix <var>b</var> 
 from the elements of the  
 matrix. The two matrices must have the same dimensions. </dd>
-<dt><a name="label-100" id="label-100"><code>GSL::Matrix#mul_elements(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#mul_elements" -->
+<dt><a name="label-114" id="label-114"><code>GSL::Matrix#mul_elements(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#mul_elements" -->
 <dd>
 This method multiplies the elements of the matrix by the elements of 
 matrix <var>b</var>. The two matrices must have the same dimensions. 
 If <var>b</var> is a scalar, the method <code>scale</code> (see below) 
 is called.</dd>
-<dt><a name="label-101" id="label-101"><code>GSL::Matrix#div_elements(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#div_elements" -->
+<dt><a name="label-115" id="label-115"><code>GSL::Matrix#div_elements(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#div_elements" -->
 <dd>
 This method divides the elements of the  matrix by the elements of 
 matrix <var>b</var>. The two matrices must have the same dimensions. </dd>
-<dt><a name="label-102" id="label-102"><code>GSL::Matrix#scale(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#scale" -->
+<dt><a name="label-116" id="label-116"><code>GSL::Matrix#scale(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#scale" -->
 <dd>
 This method multiplies the elements of the  matrix by the constant 
 factor <var>x</var>.</dd>
-<dt><a name="label-103" id="label-103"><code>GSL::Matrix#add_constant(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#add_constant" -->
+<dt><a name="label-117" id="label-117"><code>GSL::Matrix#add_constant(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#add_constant" -->
 <dd>
 This method adds the constant value <var>x</var> to the elements of the matrix.</dd>
-<dt><a name="label-104" id="label-104"><code>GSL::Matrix#*(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#*" -->
+<dt><a name="label-118" id="label-118"><code>GSL::Matrix#*(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#*" -->
 <dd>
 <p>Matrix multiplication. </p>
 <p>Ex:</p>
@@ -584,7 +635,7 @@ irb(main):007:0&gt; a*c.col
 =&gt; GSL::Vector::Col 
 [ 5.000e+00 
   1.100e+01 ]</pre></dd>
-<dt><a name="label-105" id="label-105"><code>GSL::Matrix#/(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#/" -->
+<dt><a name="label-119" id="label-119"><code>GSL::Matrix#/(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#/" -->
 <dd>
 <p>If <var>b</var> is a scalar or a <code>Matrix</code>, this method calculates the
 element-by-element divisions.
@@ -611,79 +662,79 @@ irb(main):006:0&gt; m*x
 =&gt; GSL::Vector::Col
 [  5.000e+00 
    6.000e+00 ]</pre></dd>
-<dt><a name="label-106" id="label-106"><code>GSL::Matrix#^(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#^" -->
+<dt><a name="label-120" id="label-120"><code>GSL::Matrix#^(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#^" -->
 <dd>
 Computes matrix power of <var>b</var>.</dd>
 </dl>
-<h3><a name="2.11" href="#2.11">2.11</a> <a name="label-107">Finding maximum and minimum elements of matrices</a></h3><!-- RDLabel: "Finding maximum and minimum elements of matrices" -->
+<h3><a name="2.11" href="#2.11">2.11</a> <a name="label-121">Finding maximum and minimum elements of matrices</a></h3><!-- RDLabel: "Finding maximum and minimum elements of matrices" -->
 
 <dl>
-<dt><a name="label-108" id="label-108"><code>GSL::Matrix#max</code></a></dt><!-- RDLabel: "GSL::Matrix#max" -->
-<dt><a name="label-109" id="label-109"><code>GSL::Matrix#min</code></a></dt><!-- RDLabel: "GSL::Matrix#min" -->
+<dt><a name="label-122" id="label-122"><code>GSL::Matrix#max</code></a></dt><!-- RDLabel: "GSL::Matrix#max" -->
+<dt><a name="label-123" id="label-123"><code>GSL::Matrix#min</code></a></dt><!-- RDLabel: "GSL::Matrix#min" -->
 <dd>
 These methods return the max/min value in the  matrix.</dd>
-<dt><a name="label-110" id="label-110"><code>GSL::Matrix#minmax</code></a></dt><!-- RDLabel: "GSL::Matrix#minmax" -->
+<dt><a name="label-124" id="label-124"><code>GSL::Matrix#minmax</code></a></dt><!-- RDLabel: "GSL::Matrix#minmax" -->
 <dd>
 This method returns a two elements array [min, max], 
 which contains the minimum
 and the maximum values in the  matrix.</dd>
-<dt><a name="label-111" id="label-111"><code>GSL::Matrix#max_index</code></a></dt><!-- RDLabel: "GSL::Matrix#max_index" -->
-<dt><a name="label-112" id="label-112"><code>GSL::Matrix#min_index</code></a></dt><!-- RDLabel: "GSL::Matrix#min_index" -->
+<dt><a name="label-125" id="label-125"><code>GSL::Matrix#max_index</code></a></dt><!-- RDLabel: "GSL::Matrix#max_index" -->
+<dt><a name="label-126" id="label-126"><code>GSL::Matrix#min_index</code></a></dt><!-- RDLabel: "GSL::Matrix#min_index" -->
 <dd>
 These methods return the index of the max/min value in the matrix.</dd>
-<dt><a name="label-113" id="label-113"><code>GSL::Matrix#minmax_index</code></a></dt><!-- RDLabel: "GSL::Matrix#minmax_index" -->
+<dt><a name="label-127" id="label-127"><code>GSL::Matrix#minmax_index</code></a></dt><!-- RDLabel: "GSL::Matrix#minmax_index" -->
 <dd>
 This method returns a two elements array [imin, imax], 
 which contains the indices
 of the minimum and the maximum value in the matrix.</dd>
 </dl>
-<h3><a name="2.12" href="#2.12">2.12</a> <a name="label-114">Matrix properties</a></h3><!-- RDLabel: "Matrix properties" -->
+<h3><a name="2.12" href="#2.12">2.12</a> <a name="label-128">Matrix properties</a></h3><!-- RDLabel: "Matrix properties" -->
 
 <dl>
-<dt><a name="label-115" id="label-115"><code>GSL::Matrix#isnull</code></a></dt><!-- RDLabel: "GSL::Matrix#isnull" -->
+<dt><a name="label-129" id="label-129"><code>GSL::Matrix#isnull</code></a></dt><!-- RDLabel: "GSL::Matrix#isnull" -->
 <dd>
 This returns 1 if all the elements of the matrix <var>self</var> are zero, 
 and 0 otherwise.</dd>
-<dt><a name="label-116" id="label-116"><code>GSL::Matrix#isnull?</code></a></dt><!-- RDLabel: "GSL::Matrix#isnull?" -->
+<dt><a name="label-130" id="label-130"><code>GSL::Matrix#isnull?</code></a></dt><!-- RDLabel: "GSL::Matrix#isnull?" -->
 <dd>
 This returns <code>true</code> if all the elements of the matrix <var>self</var> 
 are zero, and <code>false</code> otherwise.</dd>
-<dt><a name="label-117" id="label-117"><code>GSL::Matrix#ispos</code></a></dt><!-- RDLabel: "GSL::Matrix#ispos" -->
-<dt><a name="label-118" id="label-118"><code>GSL::Matrix#ispos?</code></a></dt><!-- RDLabel: "GSL::Matrix#ispos?" -->
+<dt><a name="label-131" id="label-131"><code>GSL::Matrix#ispos</code></a></dt><!-- RDLabel: "GSL::Matrix#ispos" -->
+<dt><a name="label-132" id="label-132"><code>GSL::Matrix#ispos?</code></a></dt><!-- RDLabel: "GSL::Matrix#ispos?" -->
 <dd>
 (GSL-1.9 or later) Return 1 (true) if all the elements of the matrix <var>self</var> are strictly positive, and 0 (false) otherwise. </dd>
-<dt><a name="label-119" id="label-119"><code>GSL::Matrix#isneg</code></a></dt><!-- RDLabel: "GSL::Matrix#isneg" -->
-<dt><a name="label-120" id="label-120"><code>GSL::Matrix#isneg?</code></a></dt><!-- RDLabel: "GSL::Matrix#isneg?" -->
+<dt><a name="label-133" id="label-133"><code>GSL::Matrix#isneg</code></a></dt><!-- RDLabel: "GSL::Matrix#isneg" -->
+<dt><a name="label-134" id="label-134"><code>GSL::Matrix#isneg?</code></a></dt><!-- RDLabel: "GSL::Matrix#isneg?" -->
 <dd>
 (GSL-1.9 or later) Return 1 (true) if all the elements of the matrix <var>self</var> are strictly negative, and 0 (false) otherwise. </dd>
-<dt><a name="label-121" id="label-121"><code>GSL::Matrix#isnonneg</code></a></dt><!-- RDLabel: "GSL::Matrix#isnonneg" -->
-<dt><a name="label-122" id="label-122"><code>GSL::Matrix#isnonneg?</code></a></dt><!-- RDLabel: "GSL::Matrix#isnonneg?" -->
+<dt><a name="label-135" id="label-135"><code>GSL::Matrix#isnonneg</code></a></dt><!-- RDLabel: "GSL::Matrix#isnonneg" -->
+<dt><a name="label-136" id="label-136"><code>GSL::Matrix#isnonneg?</code></a></dt><!-- RDLabel: "GSL::Matrix#isnonneg?" -->
 <dd>
 (GSL-1.10 or later) Return 1 (true) if all the elements of the matrix <var>self</var> are non-negative , and 0 (false) otherwise. </dd>
-<dt><a name="label-123" id="label-123"><code>GSL::Matrix#any</code></a></dt><!-- RDLabel: "GSL::Matrix#any" -->
+<dt><a name="label-137" id="label-137"><code>GSL::Matrix#any</code></a></dt><!-- RDLabel: "GSL::Matrix#any" -->
 <dd>
 Returns a Vector of ones and zeros with each element indicating 
 whether any of the elements of the corresponding column of the 
 matrix are nonzero.</dd>
-<dt><a name="label-124" id="label-124"><code>GSL::Matrix#all</code></a></dt><!-- RDLabel: "GSL::Matrix#all" -->
+<dt><a name="label-138" id="label-138"><code>GSL::Matrix#all</code></a></dt><!-- RDLabel: "GSL::Matrix#all" -->
 <dd>
 Behaves like the method <code>any</code>, except that it returns 1 only if 
 all the elements of the matrix.</dd>
-<dt><a name="label-125" id="label-125"><code>GSL:Matrix#trace</code></a></dt><!-- RDLabel: "GSL:Matrix#trace" -->
+<dt><a name="label-139" id="label-139"><code>GSL:Matrix#trace</code></a></dt><!-- RDLabel: "GSL:Matrix#trace" -->
 <dd>
 This returns trace of the matrix <var>self</var>, the sum of the diagonal 
 elements.</dd>
-<dt><a name="label-126" id="label-126"><code>GSL:Matrix#norm</code></a></dt><!-- RDLabel: "GSL:Matrix#norm" -->
+<dt><a name="label-140" id="label-140"><code>GSL:Matrix#norm</code></a></dt><!-- RDLabel: "GSL:Matrix#norm" -->
 <dd>
 Returns matrix norm, sqrt(sum_{ij} m_{ij}^2).</dd>
-<dt><a name="label-127" id="label-127"><code>GSL::Matrix#sgn</code></a></dt><!-- RDLabel: "GSL::Matrix#sgn" -->
-<dt><a name="label-128" id="label-128"><code>GSL::Matrix#signum</code></a></dt><!-- RDLabel: "GSL::Matrix#signum" -->
+<dt><a name="label-141" id="label-141"><code>GSL::Matrix#sgn</code></a></dt><!-- RDLabel: "GSL::Matrix#sgn" -->
+<dt><a name="label-142" id="label-142"><code>GSL::Matrix#signum</code></a></dt><!-- RDLabel: "GSL::Matrix#signum" -->
 <dd>
 Creates a new matrix, with elements +1 if <var>x_i,j</var> &gt; 0, -1 if
 <var>x_i,j</var> &lt; 0, otherwise 0.  Note that this definition gives the signum
 of NaN as 0 rather than NaN.</dd>
-<dt><a name="label-129" id="label-129"><code>GSL:Matrix#abs</code></a></dt><!-- RDLabel: "GSL:Matrix#abs" -->
-<dt><a name="label-130" id="label-130"><code>GSL:Matrix#fabs</code></a></dt><!-- RDLabel: "GSL:Matrix#fabs" -->
+<dt><a name="label-143" id="label-143"><code>GSL:Matrix#abs</code></a></dt><!-- RDLabel: "GSL:Matrix#abs" -->
+<dt><a name="label-144" id="label-144"><code>GSL:Matrix#fabs</code></a></dt><!-- RDLabel: "GSL:Matrix#fabs" -->
 <dd>
 <p>Example:</p>
 <pre>irb(main):004:0&gt; m = GSL::Matrix::Int[-5..4, 3, 3]
@@ -696,26 +747,26 @@ irb(main):005:0&gt; m.abs
 [ 5 4 3 
   2 1 0 
   1 2 3 ]</pre></dd>
-<dt><a name="label-131" id="label-131"><code>GSL::Matrix#equal?(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#equal?" -->
-<dt><a name="label-132" id="label-132"><code>GSL::Matrix#==(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#==" -->
+<dt><a name="label-145" id="label-145"><code>GSL::Matrix#equal?(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#equal?" -->
+<dt><a name="label-146" id="label-146"><code>GSL::Matrix#==(<var>other</var>, <var>eps</var> = <var>1e</var>-<var>10</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#==" -->
 <dd>
 Returns <code>true</code> if the matrices have same size and elements
 equal to absolute accurary <var>eps</var> for all the indices, 
 and <code>false</code> otherwise.</dd>
 </dl>
-<h2><a name="3" href="#3">3</a> <a name="label-133">NArray</a></h2><!-- RDLabel: "NArray" -->
+<h2><a name="3" href="#3">3</a> <a name="label-147">NArray</a></h2><!-- RDLabel: "NArray" -->
 
 <dl>
-<dt><a name="label-134" id="label-134"><code>GSL::Matrix#to_na</code></a></dt><!-- RDLabel: "GSL::Matrix#to_na" -->
+<dt><a name="label-148" id="label-148"><code>GSL::Matrix#to_na</code></a></dt><!-- RDLabel: "GSL::Matrix#to_na" -->
 <dd>
 The Matrix object <var>self</var> is converted into an <code>NMatrix</code> object. 
 The matrix data are copied to newly allocated memory.</dd>
-<dt><a name="label-135" id="label-135"><code>NArray#to_gm</code></a></dt><!-- RDLabel: "NArray#to_gm" -->
-<dt><a name="label-136" id="label-136"><code>NArray#to_gslm</code></a></dt><!-- RDLabel: "NArray#to_gslm" -->
+<dt><a name="label-149" id="label-149"><code>NArray#to_gm</code></a></dt><!-- RDLabel: "NArray#to_gm" -->
+<dt><a name="label-150" id="label-150"><code>NArray#to_gslm</code></a></dt><!-- RDLabel: "NArray#to_gslm" -->
 <dd>
 Convert <code>NArray</code> object into <code>GSL::Matrix</code>.</dd>
-<dt><a name="label-137" id="label-137"><code>NArray#to_gm_view</code></a></dt><!-- RDLabel: "NArray#to_gm_view" -->
-<dt><a name="label-138" id="label-138"><code>NArray#to_gslm_view</code></a></dt><!-- RDLabel: "NArray#to_gslm_view" -->
+<dt><a name="label-151" id="label-151"><code>NArray#to_gm_view</code></a></dt><!-- RDLabel: "NArray#to_gm_view" -->
+<dt><a name="label-152" id="label-152"><code>NArray#to_gslm_view</code></a></dt><!-- RDLabel: "NArray#to_gslm_view" -->
 <dd>
 A <code>GSL::Matrix::View</code> object is created from the NArray object <var>na</var>. 
 The data of <var>na</var> are 
@@ -723,14 +774,14 @@ not copied, thus any modifications to the View object affect on the original
 NArray object <var>na</var>. 
 The View object can be used as a reference to the NMatrix object.</dd>
 </dl>
-<h2><a name="4" href="#4">4</a> <a name="label-139">Special matrices</a></h2><!-- RDLabel: "Special matrices" -->
+<h2><a name="4" href="#4">4</a> <a name="label-153">Special matrices</a></h2><!-- RDLabel: "Special matrices" -->
 
 <dl>
-<dt><a name="label-140" id="label-140"><code>GSL::Matrix.hirbert(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.hirbert" -->
+<dt><a name="label-154" id="label-154"><code>GSL::Matrix.hirbert(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.hirbert" -->
 <dd>
 Returns the Hilbert matrix of order <var>n</var>. The <var>ij</var> element is
 defined as 1/(i+j+1).</dd>
-<dt><a name="label-141" id="label-141"><code>GSL::Matrix.invhirbert(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.invhirbert" -->
+<dt><a name="label-155" id="label-155"><code>GSL::Matrix.invhirbert(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.invhirbert" -->
 <dd>
 <p>Returns the inverse of a Hilbert matrix of order <var>n</var>.</p>
 <p>Ex:</p>
@@ -764,7 +815,7 @@ irb(main):013:0&gt; m*invm2
   -1.554e-15 1.000e+00 -2.389e-14 8.349e-15 
   1.295e-15 3.405e-15 1.000e+00 -6.957e-15 
   1.110e-15 1.916e-14 1.707e-14 1.000e+00 ]</pre></dd>
-<dt><a name="label-142" id="label-142"><code>GSL::Matrix.pascal(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.pascal" -->
+<dt><a name="label-156" id="label-156"><code>GSL::Matrix.pascal(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.pascal" -->
 <dd>
 <p>Returns the Pascal matrix of order <var>n</var>, created from Pascal's triangle.</p>
 <pre>irb(main):002:0&gt; GSL::Matrix::Int.pascal(10)
@@ -779,7 +830,7 @@ irb(main):013:0&gt; m*invm2
       1     8    36   120   330   792  1716  3432  6435 11440 
       1     9    45   165   495  1287  3003  6435 12870 24310 
       1    10    55   220   715  2002  5005 11440 24310 48620 ]</pre></dd>
-<dt><a name="label-143" id="label-143"><code>GSL::Matrix.vandermonde(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.vandermonde" -->
+<dt><a name="label-157" id="label-157"><code>GSL::Matrix.vandermonde(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.vandermonde" -->
 <dd>
 <p>Creates a Vendermonde matrix from a vector or an array <var>v</var>.</p>
 <pre>irb(main):002:0&gt; GSL::Matrix.vander([1, 2, 3, 4])
@@ -788,7 +839,7 @@ irb(main):013:0&gt; m*invm2
   8.000e+00 4.000e+00 2.000e+00 1.000e+00
   2.700e+01 9.000e+00 3.000e+00 1.000e+00
   6.400e+01 1.600e+01 4.000e+00 1.000e+00 ]</pre></dd>
-<dt><a name="label-144" id="label-144"><code>GSL::Matrix.toeplitz(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.toeplitz" -->
+<dt><a name="label-158" id="label-158"><code>GSL::Matrix.toeplitz(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.toeplitz" -->
 <dd>
 <p>Creates a Toeplitz matrix from a vector or an array <var>v</var>.</p>
 <pre>irb(main):004:0&gt; GSL::Matrix::Int.toeplitz([1, 2, 3, 4, 5])
@@ -798,7 +849,7 @@ irb(main):013:0&gt; m*invm2
   3 2 1 2 3 
   4 3 2 1 2 
   5 4 3 2 1 ]</pre></dd>
-<dt><a name="label-145" id="label-145"><code>GSL::Matrix.circulant(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.circulant" -->
+<dt><a name="label-159" id="label-159"><code>GSL::Matrix.circulant(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.circulant" -->
 <dd>
 <p>Creates a circulant matrix from a vector or an array <var>v</var>.</p>
 <pre>irb(main):005:0&gt; GSL::Matrix::Int.circulant([1, 2, 3, 4])

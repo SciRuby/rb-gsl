@@ -1085,18 +1085,190 @@ static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m = NULL;
   QUALIFIED_VIEW(gsl_matrix,view) *mv = NULL;
+  QUALIFIED_VIEW(gsl_vector,view) *vv = NULL;
+  int ii, ij, in1, in2, end, step;
   size_t i, j, n1, n2;
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
   switch (argc) {
+  // no args -> same as submatrix(0, 0, size1, size2)
   case 0:
     i = 0; j = 0;
     n1 = m->size1; n2 = m->size2;
     break;
+
+  // Fixnum -> Same as submatrix(i/size2, i%size2, 1, 1)
+  case 1:
+    CHECK_FIXNUM(argv[0]);
+    ii = FIX2INT(argv[0]);
+    n1 = m->size1 * m->size2;
+    if(ii < 0) ii += n1;
+    // TODO Bounds check?
+    i = ii / m->size2; j = ii % m->size2;
+    n1 = 1; n2 = 1;
+    break;
+
+
+  // nil, nil -> all rows, all cols (Matrix::View)
+  // nil, Range -> all rows, Range cols (Matrix::View)
+  // nil, Fixnum -> all rows, single col (Vector::Col::View)
+  // Range, nil -> Range rows, all cols (Matrix::View)
+  // Range, Range -> Range rows, Range cols (Matrix::View)
+  // Range, Fixnum -> Range rows, single col (Vector::Col::View)
+  // Fixnum, nil -> single row, all cols (Vector::View)
+  // Fixnum, Range -> single row, Range cols (Vector::View)
+  // Fixnum, Fixnum -> single row, single col (Matrix::View)
+  case 2: 
+    // nil, ...
+    if(NIL_P(argv[0])) {
+      // Parse second arg
+      if(NIL_P(argv[1])) {
+        // nil, nil -> all rows, all cols (Matrix::View)
+        i = 0; j = 0;
+        n1 = m->size1; n2 = m->size2;
+      } else if(rb_obj_is_kind_of(argv[1], rb_cRange)) {
+        // nil, Range -> all rows, Range cols (Matrix::View)
+        i = 0; n1 = m->size1;
+        get_range_beg_en_n(argv[1], &ij, &end, &in2, &step);
+        if(step < 0 || in2 <=0) {
+          rb_raise(rb_eRangeError, "begin > end");
+        }
+        if(ij < 0) ij += m->size2;
+        j = (size_t)ij;
+        n2 = (size_t)in2;
+      } else {
+        // nil, Fixnum -> all rows, single col (Vector::Col::View)
+        ij = NUM2INT(argv[1]);
+        if(ij < 0) ij += m->size2;
+        j = (size_t)ij;
+        vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
+        *vv = FUNCTION(gsl_matrix,column)(m, j);
+        return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,col_view), 0, free, vv);
+      }
+    // Range, ...
+    } else if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
+      get_range_beg_en_n(argv[0], &ii, &end, &in1, &step);
+      if(step < 0 || in1 <= 0) {
+        rb_raise(rb_eRangeError, "arg0: begin > end");
+      }
+      if(ii < 0) ii += m->size1;
+      i = (size_t)ii;
+      n1 = (size_t)in1;
+      // Parse second arg
+      if(NIL_P(argv[1])) {
+        // Range, nil -> Range rows, all cols (Matrix::View)
+        j = 0; n2 = m->size2;
+      } else if(rb_obj_is_kind_of(argv[1], rb_cRange)) {
+        // Range, Range -> Range rows, Range cols (Matrix::View)
+        get_range_beg_en_n(argv[1], &ij, &end, &in2, &step);
+        if(step < 0 || in2 <= 0) {
+          rb_raise(rb_eRangeError, "arg1: begin > end");
+        }
+        if(ij < 0) ij += m->size2;
+        j = (size_t)ij;
+        n2 = (size_t)in2;
+      } else {
+        // Range, Fixnum -> Range rows, single col (Vector::Col::View)
+        ij = NUM2INT(argv[1]);
+        if(ij < 0) ij += m->size2;
+        vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
+        *vv = FUNCTION(gsl_matrix,subcolumn)(m, (size_t)ij, (size_t)ii, (size_t)n1);
+        return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,col_view), 0, free, vv);
+      }
+    // Fixnum, ...
+    } else {
+      ii = NUM2INT(argv[0]);
+      if(ii < 0) ii += m->size1;
+      if(NIL_P(argv[1])) {
+        // Fixnum, nil -> single row, all cols (Vector::View)
+        vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
+        *vv = FUNCTION(gsl_matrix,row)(m, (size_t)ii);
+        return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,view), 0, free, vv);
+      } else if(rb_obj_is_kind_of(argv[1], rb_cRange)) {
+        // Fixnum, Range -> single row, Range cols (Vector::View)
+        get_range_beg_en_n(argv[1], &ij, &end, &in2, &step);
+        if(step < 0 || in2 <= 0) {
+          rb_raise(rb_eRangeError, "arg1: begin > end");
+        }
+        if(ij < 0) ij += m->size2;
+        vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
+        *vv = FUNCTION(gsl_matrix,subrow)(m, (size_t)ii, (size_t)ij, (size_t)in2);
+        return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,view), 0, free, vv);
+      } else {
+        // Fixnum, Fixnum -> single row, single col (Matrix::View)
+        ij = NUM2INT(argv[1]);
+        if(ij < 0) ij += m->size2;
+        i = (size_t)ii; j = (size_t)ij;
+        n1 = 1; n2 = 1;
+      }
+    }
+    break;
+
+  // nil, Fixnum, Fixnum -> All rows, some cols
+  // Range, Fixnum, Fixnum -> Range rows, some cols
+  // Fixnum, Fixnum, nil -> Some rows, all cols
+  // Fixnum, Fixnum, Range -> Some rows, Range cols
+  case 3:
+    // nil, Fixnum, Fixnum
+    if(NIL_P(argv[0])) {
+      // nil, Fixnum, Fixnum -> All rows, some cols
+      CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
+      i = 0;
+      ij = FIX2INT(argv[1]);
+      n1 = m->size1;
+      in2 = FIX2INT(argv[2]);
+      if(ij < 0) ij += m->size2;
+      j = (size_t) ij;
+      n2 = (size_t) in2;
+    // Range, Fixnum, Fixnum
+    } else if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
+      // Range, Fixnum, Fixnum -> Range rows, some cols
+      CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
+      get_range_beg_en_n(argv[0], &ii, &end, &in1, &step);
+      if(step < 0 || in1 <= 0) {
+        rb_raise(rb_eRangeError, "arg0: begin > end");
+      }
+      if(ii < 0) ii += m->size1;
+      ij = FIX2INT(argv[1]);
+      in2 = FIX2INT(argv[2]);
+      if(ij < 0) ij += m->size2;
+      i = (size_t)ii; j = (size_t) ij;
+      n1 = (size_t)in1; n2 = (size_t) in2;
+    // Fixnum, Fixnum, ...
+    } else {
+      CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]);
+      ii = FIX2INT(argv[0]);
+      if(ii < 0) ii += m->size1; 
+      in1 = FIX2INT(argv[1]);
+      i = (size_t)ii;
+      n1 = (size_t)in1;
+      // Parse arg2
+      if(NIL_P(argv[2])) {
+        // Fixnum, Fixnum, nil -> Some rows, all cols
+        j = 0;
+        n2 = m->size2;
+      } else {
+        // Fixnum, Fixnum, Range -> Some rows, Range cols
+        get_range_beg_en_n(argv[2], &ij, &end, &in2, &step);
+        if(step < 0 || in2 <= 0) {
+          rb_raise(rb_eRangeError, "arg2: begin > end");
+        }
+        if(ij < 0) ij += m->size2;
+        j = (size_t)ij;
+        n2 = (size_t)in2;
+      }
+    }
+    break;
+
   case 4:
     CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]);
     CHECK_FIXNUM(argv[2]); CHECK_FIXNUM(argv[3]);
-    i = FIX2INT(argv[0]);  j = FIX2INT(argv[1]);
-    n1 = FIX2INT(argv[2]);  n2 = FIX2INT(argv[3]);
+    ii = FIX2INT(argv[0]);  ij = FIX2INT(argv[1]);
+    in1 = FIX2INT(argv[2]);  in2 = FIX2INT(argv[3]);
+    if(ii < 0) ii += m->size1;
+    if(ij < 0) ij += m->size2;
+    // TODO Bounds check?
+    i = (size_t)ii; j = (size_t)ij;
+    n1 = (size_t)in1; n2 = (size_t)in2;
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 or 4)", argc);

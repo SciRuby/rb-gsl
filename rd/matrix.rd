@@ -191,19 +191,56 @@ For 32-bit CPU, the maximum of matrix dimension is 2^30 ~ 1e9.
 
 === Matrix views
 The (({GSL::Matrix::View})) class is defined to be used as "references" to
-matrices. The (({Matrix::View})) class is a subclass of (({Matrix})),
-and an instance of the (({View})) class created by slicing a (({Matrix})) object 
-can be used same as the original matrix. The
-(({View})) object shares the data with the original matrix, i.e. any changes
-in the elements of the (({View})) object affect to the original.
+matrices. The (({Matrix::View})) class is a subclass of (({Matrix})), and an
+instance of the (({View})) class created by slicing a (({Matrix})) object can
+be used same as the original matrix. The (({View})) object shares the data with
+the original matrix, i.e. any changes in the elements of the (({View})) object
+affect to the original.
 
---- GSL::Matrix#submatrix(k1, k2, n1, n2)
---- GSL::Matrix#view(k1, k2, n1, n2)
-    This returns a (({GSL::Matirx::View})) object, a submatrix of the matrix 
-    ((|self|)). The upper-left element of the submatrix is the element ((|(k1,k2)|)) 
-    of the original matrix. The submatrix has ((|n1|)) rows and ((|n2|)) columns. 
+The primary means of generating (({Matrix::View})) objects is with
+(({GSL::Matrix#submatrix})) (or its alias (({GSL::Matrix#view}))).  Many forms
+are supported and they are documented here individually.  All forms return a
+(({Matrix::View})) unless otherwise documented.  In the list below, the
+parameter name indicates the type of the parameter: ((|i|)), ((|row|)),
+((|col|)), ((|len|)), ((|len1|)), and ((|len2|)) are (({Fixnums})); ((|rows|)) and
+((|cols|)) are (({Ranges})).
 
---- GSL::Vectir#matrix_view(n1, n2)
+--- GSL::Matrix#submatrix()
+    View covers all rows and all columns.
+--- GSL::Matrix#submatrix(i)
+    View covers single element at row ((|i|))/((|size2|)), column
+    ((|i|))%((|size2|)).
+--- GSL::Matrix#submatrix(nil,nil)
+    View covers all rows and all columns.
+--- GSL::Matrix#submatrix(nil,cols)
+    View covers all rows with columns specified by ((|cols|)).
+--- GSL::Matrix#submatrix(nil,col)
+    Returns a (({Vector::Col::View})) for the column ((|col|)).
+--- GSL::Matrix#submatrix(rows, nil)
+    View covers rows specified by ((|rows|)) and all columns.
+--- GSL::Matrix#submatrix(rows, cols)
+    View covers rows specified by ((|rows|)), columns specified by ((|cols|)).
+--- GSL::Matrix#submatrix(rows, col)
+    Returns a (({Vector::Col::View})) for column ((|col|)), rows ((|rows|)).
+--- GSL::Matrix#submatrix(row, nil)
+    Returns a (({Vector::View})) for row ((|row|)).
+--- GSL::Matrix#submatrix(row, cols)
+    Returns a (({Vector::View})) for row ((|row|)), columns ((|cols|)).
+--- GSL::Matrix#submatrix(row, col)
+    View covers a single element at row ((|row|)), column ((|col|)).
+--- GSL::Matrix#submatrix(nil, col, len)
+    View covers all rows and ((|len|)) columns starting at column ((|col|)).
+--- GSL::Matrix#submatrix(rows, col, len)
+    View covers ((|rows|)) rows and ((|len|)) columns starting at column ((|col|)).
+--- GSL::Matrix#submatrix(row, len, nil)
+    View covers ((|len|)) rows starting at row ((|row|)) and all columns.
+--- GSL::Matrix#submatrix(row, len, cols)
+    View covers ((|len|)) rows starting at row ((|row|)) and ((|cols|)) columns.
+--- GSL::Matrix#submatrix(row, col, len1, len2)
+    View covers ((|len1|)) rows starting at row ((|row|)) and ((|len2|))
+    columns starting at column ((|col|)).
+
+--- GSL::Vector#matrix_view(n1, n2)
     This creates a (({Matrix::View})) object from the vector ((|self|)).
 
     Ex:
