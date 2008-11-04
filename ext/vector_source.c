@@ -36,6 +36,7 @@
 #define VEC_VIEW_P VECTOR_INT_VIEW_P
 #endif
 
+// TODO change beg and end to BASE
 void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
 
 void get_range_beg_en_n_for_size(VALUE range,
@@ -375,16 +376,63 @@ static VALUE FUNCTION(rb_gsl_vector,owner)(VALUE obj)
   return INT2FIX(v->owner);
 }
 
-static VALUE FUNCTION(rb_gsl_vector,set)(VALUE obj, VALUE ii, VALUE xx)
+static VALUE FUNCTION(rb_gsl_vector,set)(int argc, VALUE *argv, VALUE obj)
 {
-  GSL_TYPE(gsl_vector) *v = NULL;
-  int i;  
-  CHECK_FIXNUM(ii);   i = FIX2INT(ii);
+  GSL_TYPE(gsl_vector) *v, *vother;
+  QUALIFIED_VIEW(gsl_vector,view) vv;
+  VALUE other;
+  int ii, step;
+  size_t i, offset, stride, n, nother;
+  int beg, end;
+
+  if(argc < 1 || argc > 4) {
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0-3)", argc);
+  }
+
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  if (i < 0) 
-    FUNCTION(gsl_vector,set)(v, (size_t) (v->size+i), NUMCONV2(xx));
-  else
-    FUNCTION(gsl_vector,set)(v, (size_t) i, NUMCONV2(xx));
+  other = argv[argc-1];
+
+  if(argc == 1) {
+    FUNCTION(gsl_vector,set_all)(v, NUMCONV2(other));
+  } else if(argc == 2 && TYPE(argv[0]) == T_FIXNUM) {
+    // v[i] = x
+    ii = FIX2INT(argv[0]);
+    if(ii < 0) ii += v->size;
+    FUNCTION(gsl_vector,set)(v, (size_t)ii, NUMCONV2(other));
+  } else {
+    // assignment to v.subvector(...)
+    parse_subvector_args(argc-1, argv, v->size, &offset, &stride, &n);
+    vv = FUNCTION(gsl_vector,subvector_with_stride)(v, offset, stride, n);
+    if(rb_obj_is_kind_of(other, GSL_TYPE(cgsl_vector))) {
+      Data_Get_Struct(other, GSL_TYPE(gsl_vector), vother);
+      if(n != vother->size) {
+        rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, vother->size);
+      }
+      // TODO Change to gsl_vector_memmove if/when GSL has such a function
+      // because gsl_vector_memcpy does not handle overlapping regions (e.g.
+      // Views) well.
+      FUNCTION(gsl_vector,memcpy)(&vv.vector, vother);
+    } else if(rb_obj_is_kind_of(other, rb_cArray)) {
+      if(n != RARRAY_LEN(other)) {
+        rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, RARRAY_LEN(other));
+      }
+      for(i = 0; i < n; i++) {
+        FUNCTION(gsl_vector,set)(&vv.vector, i, NUMCONV2(rb_ary_entry(other, i)));
+      }
+    } else if(rb_obj_is_kind_of(other, rb_cRange)) {
+      get_range_beg_en_n(other, &beg, &end, &nother, &step);
+      if(n != nother) {
+        rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, nother);
+      }
+      for(i = 0; i < n; i++) {
+        FUNCTION(gsl_vector,set)(&vv.vector, i, beg);
+        beg += step;
+      }
+    } else {
+      FUNCTION(gsl_vector,set_all)(&vv.vector, NUMCONV2(other));
+    }
+  }
+
   return obj;
 }
 
@@ -3060,7 +3108,7 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
   rb_define_alias(GSL_TYPE(cgsl_vector), "stride=", "set_stride");
   rb_define_method(GSL_TYPE(cgsl_vector), "owner", FUNCTION(rb_gsl_vector,owner), 0);
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "set", FUNCTION(rb_gsl_vector,set), 2);
+  rb_define_method(GSL_TYPE(cgsl_vector), "set", FUNCTION(rb_gsl_vector,set), -1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "[]=", "set");
   rb_define_method(GSL_TYPE(cgsl_vector), "set_all", FUNCTION(rb_gsl_vector,set_all), 1);
   rb_define_method(GSL_TYPE(cgsl_vector), "set_zero", FUNCTION(rb_gsl_vector,set_zero), 0);

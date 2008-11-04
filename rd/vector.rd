@@ -129,34 +129,54 @@ For 32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.
 == Methods
 
 === Accessing vector elements
---- GSL::Vector#get(indices)
---- GSL::Vector#[indices]
-    Returns elements(s) of the vector ((|self|)) if ((|indices|)) is a single
+--- GSL::Vector#get(args)
+--- GSL::Vector#[args]
+    Returns elements(s) of the vector ((|self|)) if ((|args|)) is a single
     Fixnum, a single Array of Fixnums, or a single GSL::Permutation (or
-    GSL::Index).  For all other ((|indices|)), the parameters are treated as
+    GSL::Index).  For all other ((|args|)), the arguments are treated as
     with (({Vector#subvector})) and a (({Vector::View})) is returned. 
 
---- GSL::Vector#set(i, val)
---- GSL::Vector#[i] = val
-    Set the ((|i|))-th element of the vector ((|self|)) to ((|val|)).
+--- GSL::Vector#set(args, val)
+--- GSL::Vector#[args] = val
+    If ((|args|)) is empty, behaves as (({#set_all})) and ((|val|)) must be a
+    (({Numeric})).  If ((|args|)) is a single Fixnum, ((|i|)), sets the
+    ((|i|))-th element of the vector ((|self|)) to ((|val|)), which must be a
+    (({Numeric})).  All other ((|args|)) are treated as with (({#subvector}))
+    whose elements are assigned from ((|val|)).  In the last case, ((|val|))
+    can be an (({Array})), (({Range})), (({Vector})), or (({Numeric})).
 
     Ex:
-          irb(main):001:0> require("rbgsl")
-          => true
-          irb(main):002:0> v = GSL::Vector[0..5]
-          => GSL::Vector: [ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 ]
-          irb(main):003:0> v[2]
-          => 2.0
-          irb(main):004:0> v[1, 3, 4]
-          => GSL::Vector: [ 1.000e+00 3.000e+00 4.000e+00 ]
-          irb(main):005:0> v[1..3]
-          => GSL::Vector::View: [ 1.000e+00 2.000e+00 3.000e+00 ]
-          irb(main):006:0> v[3] = 9
-          => 9
-          irb(main):007:0> v[-1] = 123
-          => 123
-          irb(main):008:0> v
-          => GSL::Vector: [ 0.000e+00 1.000e+00 2.000e+00 9.000e+00 4.000e+00 1.230e+02 ]
+        irb(main):001:0> require 'rbgsl'
+        => true
+        irb(main):002:0> v = GSL::Vector[0..5]
+        => GSL::Vector
+        [ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 ]
+        irb(main):003:0> v[2]
+        => 2.0
+        irb(main):004:0> v[1,2,3]
+        => GSL::Vector::View
+        [ 1.000e+00 3.000e+00 5.000e+00 ]
+        irb(main):005:0> v[[1,2,3]]
+        => GSL::Vector
+        [ 1.000e+00 2.000e+00 3.000e+00 ]
+        irb(main):006:0> v[3] = 9
+        => 9
+        irb(main):007:0> v[-1] = 123
+        => 123
+        irb(main):008:0> v
+        => GSL::Vector
+        [ 0.000e+00 1.000e+00 2.000e+00 9.000e+00 4.000e+00 1.230e+02 ]
+        irb(main):009:0> v[2,3] = 0
+        => 0
+        irb(main):010:0> v
+        => GSL::Vector
+        [ 0.000e+00 1.000e+00 0.000e+00 0.000e+00 0.000e+00 1.230e+02 ]
+        irb(main):011:0> v[2,3] = [4,5,6]
+        => [4, 5, 6]
+        irb(main):012:0> v
+        => GSL::Vector
+        [ 0.000e+00 1.000e+00 4.000e+00 5.000e+00 6.000e+00 1.230e+02 ]
+
 
 === Initializing vector elements
 --- GSL::Vector#set_all(x)
