@@ -20,6 +20,10 @@ enum {
   GSL_MATRIX_COMPLEX_DIV,
 };
 
+// From ext/matrix_source.c
+void parse_submatrix_args(int argc, VALUE *argv, size_t size1, size_t size2,
+    size_t *i, size_t *j, size_t *n1, size_t *n2);
+
 static VALUE rb_gsl_matrix_complex_arithmetics(int flag, VALUE obj, VALUE bb);
 
 static VALUE rb_gsl_matrix_complex_arithmetics(int flag, VALUE obj, VALUE bb)
@@ -839,26 +843,24 @@ static VALUE rb_gsl_matrix_complex_submatrix(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix_complex *m = NULL;
   gsl_matrix_complex_view *mv = NULL;
+  gsl_vector_complex_view *vv = NULL;
   size_t i, j, n1, n2;
   Data_Get_Struct(obj, gsl_matrix_complex, m);
-  switch (argc) {
-  case 0:
-    i = 0; j = 0;
-    n1 = m->size1; n2 = m->size2;
-    break;
-  case 4:
-    CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]);
-    CHECK_FIXNUM(argv[2]); CHECK_FIXNUM(argv[3]);
-    i = FIX2INT(argv[0]);  j = FIX2INT(argv[1]);
-    n1 = FIX2INT(argv[2]);  n2 = FIX2INT(argv[3]);
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 or 4)", argc);
-    break;
+  parse_submatrix_args(argc, argv, m->size1, m->size2, &i, &j, &n1, &n2);
+  if(n1 == 0) {
+    vv = ALLOC(gsl_vector_complex_view);
+    *vv = gsl_matrix_complex_subrow(m, i, j, n2);
+    return Data_Wrap_Struct(cgsl_vector_complex_view, 0, free, vv);
   }
-  mv = gsl_matrix_complex_view_alloc();
-  *mv = gsl_matrix_complex_submatrix(m, i, j, n1, n2);
-  return Data_Wrap_Struct(cgsl_matrix_complex_view, 0, gsl_matrix_complex_view_free, mv);
+  else if(n2 == 0) {
+    vv = ALLOC(gsl_vector_complex_view);
+    *vv = gsl_matrix_complex_subcolumn(m, j, i, n1);
+    return Data_Wrap_Struct(cgsl_vector_complex_col_view, 0, free, vv);
+  } else {
+    mv = ALLOC(gsl_matrix_complex_view);
+    *mv = gsl_matrix_complex_submatrix(m, i, j, n1, n2);
+    return Data_Wrap_Struct(cgsl_matrix_complex_view, 0, free, mv);
+  }
 }
 
 static VALUE rb_gsl_matrix_complex_row(VALUE obj, VALUE i)
