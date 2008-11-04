@@ -102,12 +102,11 @@ void parse_submatrix_args(int argc, VALUE *argv, size_t size1, size_t size2,
       } else if(rb_obj_is_kind_of(argv[1], rb_cRange)) {
         // nil, Range -> all rows, Range cols (Matrix::View)
         *i = 0; *n1 = size1;
-        get_range_beg_en_n_for_size(argv[1], &ij, &end, &in2, &step, size2);
-        if(step < 0 || in2 <=0) {
+        get_range_beg_en_n_for_size(argv[1], &ij, &end, n2, &step, size2);
+        if(step < 0 || *n2 <=0) {
           rb_raise(rb_eRangeError, "begin > end");
         }
         *j = (size_t)ij;
-        *n2 = (size_t)in2;
       } else {
         // nil, Fixnum -> all rows, single col (Vector::Col::View)
         ij = NUM2INT(argv[1]);
@@ -117,24 +116,22 @@ void parse_submatrix_args(int argc, VALUE *argv, size_t size1, size_t size2,
       }
     // Range, ...
     } else if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
-      get_range_beg_en_n_for_size(argv[0], &ii, &end, &in1, &step, size1);
-      if(step < 0 || in1 <= 0) {
+      get_range_beg_en_n_for_size(argv[0], &ii, &end, n1, &step, size1);
+      if(step < 0 || *n1 <= 0) {
         rb_raise(rb_eRangeError, "arg0: begin > end");
       }
       *i = (size_t)ii;
-      *n1 = (size_t)in1;
       // Parse second arg
       if(NIL_P(argv[1])) {
         // Range, nil -> Range rows, all cols (Matrix::View)
         *j = 0; *n2 = size2;
       } else if(rb_obj_is_kind_of(argv[1], rb_cRange)) {
         // Range, Range -> Range rows, Range cols (Matrix::View)
-        get_range_beg_en_n_for_size(argv[1], &ij, &end, &in2, &step, size2);
-        if(step < 0 || in2 <= 0) {
+        get_range_beg_en_n_for_size(argv[1], &ij, &end, n2, &step, size2);
+        if(step < 0 || *n2 <= 0) {
           rb_raise(rb_eRangeError, "arg1: begin > end");
         }
         *j = (size_t)ij;
-        *n2 = (size_t)in2;
       } else {
         // Range, Fixnum -> Range rows, single col (Vector::Col::View)
         ij = NUM2INT(argv[1]);
@@ -152,12 +149,13 @@ void parse_submatrix_args(int argc, VALUE *argv, size_t size1, size_t size2,
         *n1 = 0; *n2 = size2; // *n1 == 0 tells #submatrix to return Vector::View
       } else if(rb_obj_is_kind_of(argv[1], rb_cRange)) {
         // Fixnum, Range -> single row, Range cols (Vector::View)
-        get_range_beg_en_n_for_size(argv[1], &ij, &end, &in2, &step, size2);
-        if(step < 0 || in2 <= 0) {
+        get_range_beg_en_n_for_size(argv[1], &ij, &end, n2, &step, size2);
+        if(step < 0 || *n2 <= 0) {
           rb_raise(rb_eRangeError, "arg1: begin > end");
         }
-        *i = (size_t)ii; *j = (size_t)ij;
-        *n1 = 0; *n2 = (size_t)in2; // *n1 == 0 tells #submatrix to return Vector::View
+        *i = (size_t)ii;
+        *j = (size_t)ij;
+        *n1 = 0; // *n1 == 0 tells #submatrix to return Vector::View
       } else {
         // Fixnum, Fixnum -> single row, single col (Matrix::View)
         ij = NUM2INT(argv[1]);
@@ -188,15 +186,16 @@ void parse_submatrix_args(int argc, VALUE *argv, size_t size1, size_t size2,
     } else if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
       // Range, Fixnum, Fixnum -> Range rows, some cols
       CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
-      get_range_beg_en_n_for_size(argv[0], &ii, &end, &in1, &step, size1);
-      if(step < 0 || in1 <= 0) {
+      get_range_beg_en_n_for_size(argv[0], &ii, &end, n1, &step, size1);
+      if(step < 0 || *n1 <= 0) {
         rb_raise(rb_eRangeError, "arg0: begin > end");
       }
       ij = FIX2INT(argv[1]);
       in2 = FIX2INT(argv[2]);
       if(ij < 0) ij += size2;
-      *i = (size_t)ii; *j = (size_t) ij;
-      *n1 = (size_t)in1; *n2 = (size_t) in2;
+      *i = (size_t)ii;
+      *j = (size_t) ij;
+      *n2 = (size_t) in2;
     // Fixnum, Fixnum, ...
     } else {
       CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]);
@@ -212,12 +211,11 @@ void parse_submatrix_args(int argc, VALUE *argv, size_t size1, size_t size2,
         *n2 = size2;
       } else {
         // Fixnum, Fixnum, Range -> Some rows, Range cols
-        get_range_beg_en_n_for_size(argv[2], &ij, &end, &in2, &step, size2);
-        if(step < 0 || in2 <= 0) {
+        get_range_beg_en_n_for_size(argv[2], &ij, &end, n2, &step, size2);
+        if(step < 0 || *n2 <= 0) {
           rb_raise(rb_eRangeError, "arg2: begin > end");
         }
         *j = (size_t)ij;
-        *n2 = (size_t)in2;
       }
     }
     break;
