@@ -416,6 +416,26 @@ static VALUE rb_gsl_matrix_complex_collect_bang(VALUE obj)
   return obj;
 }
 
+static VALUE rb_gsl_matrix_complex_to_a(VALUE obj)
+{
+  gsl_matrix_complex *m;
+  gsl_complex *c;
+  VALUE ma, ra;
+  size_t i, j;
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  ma = rb_ary_new2(m->size1);
+  for(i=0; i < m->size1; i++) {
+    ra = rb_ary_new2(m->size2);
+    rb_ary_store(ma, i, ra);
+    for(j=0; j < m->size2; j++) {
+      c = ALLOC(gsl_complex);
+      *c = gsl_matrix_complex_get(m, i, j); 
+      rb_ary_store(ra, j, Data_Wrap_Struct(cgsl_complex, 0, free, c));
+    }
+  }
+  return ma;
+}
+
 static VALUE rb_gsl_matrix_complex_ptr(VALUE obj, VALUE i, VALUE j)
 {
   gsl_matrix_complex *m = NULL;
@@ -1572,6 +1592,8 @@ void Init_gsl_matrix_complex(VALUE module)
   rb_define_alias(cgsl_matrix_complex, "map", "collect");
   rb_define_alias(cgsl_matrix_complex, "map!", "collect!");
   
+  rb_define_method(cgsl_matrix_complex, "to_a", rb_gsl_matrix_complex_to_a, 0);
+
   rb_define_method(cgsl_matrix_complex, "size1", rb_gsl_matrix_complex_size1, 0);
   rb_define_method(cgsl_matrix_complex, "size2", rb_gsl_matrix_complex_size2, 0);
   rb_define_method(cgsl_matrix_complex, "shape", rb_gsl_matrix_complex_shape, 0);

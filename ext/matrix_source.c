@@ -1850,6 +1850,23 @@ static VALUE FUNCTION(rb_gsl_matrix,indgen_bang)(int argc, VALUE *argv, VALUE ob
   return obj;
 }
 
+static VALUE FUNCTION(rb_gsl_matrix,to_a)(VALUE obj)
+{
+  GSL_TYPE(gsl_matrix) *m;
+  VALUE ma, ra;
+  size_t i, j;
+  Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
+  ma = rb_ary_new2(m->size1);
+  for(i=0; i < m->size1; i++) {
+    ra = rb_ary_new2(m->size2);
+    rb_ary_store(ma, i, ra);
+    for(j=0; j < m->size2; j++) {
+      rb_ary_store(ra, j, C_TO_VALUE(FUNCTION(gsl_matrix,get)(m, i, j)));
+    }
+  }
+  return ma;
+}
+
 static VALUE FUNCTION(rb_gsl_matrix,to_v)(VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m;
@@ -2493,6 +2510,8 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
 
   /*****/
 
+  rb_define_method(GSL_TYPE(cgsl_matrix), "to_a", 
+		   FUNCTION(rb_gsl_matrix,to_a), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "to_v", 
 		   FUNCTION(rb_gsl_matrix,to_v), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "to_vview", 

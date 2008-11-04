@@ -184,6 +184,13 @@ For 32-bit CPU, the maximum of matrix dimension is 2^30 ~ 1e9.
         4.000e+00 5.000e+00 3.000e+00 
         7.000e+00 1.000e+00 5.000e+00 ]
 
+--- GSL::Matrix#to_a
+    Converts the (({Matrix})) ((|self|)) to a Ruby (({Array})) of (({Arrays})).
+
+    Example:
+      irb(main):001:0> GSL::Matrix.eye(3).to_a
+      => [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+
 === Initializing matrix elements 
 --- GSL::Matrix#set_all(x)
     This method sets all the elements of the matrix ((|self|)) to the value x.
