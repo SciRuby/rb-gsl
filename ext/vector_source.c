@@ -37,7 +37,13 @@
 #endif
 
 void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
-void FUNCTION(set_ptr_data,by_range)(BASE *ptr, size_t n, VALUE range);
+
+void get_range_beg_en_n_for_size(VALUE range,
+    int *beg, int *en, size_t *n, int *step, size_t size);
+
+void parse_subvector_args(int argc, VALUE *argv, size_t size,
+    size_t *offset, size_t *stride, size_t *n);
+
 #ifdef BASE_DOUBLE
 void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step)
 {
@@ -47,6 +53,110 @@ void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step)
   if (!RTEST(rb_ivar_get(range, rb_gsl_id_excl))) *n += 1;
   if (*en < *beg) *step = -1; else *step = 1;
 }
+
+void get_range_beg_en_n_for_size(VALUE range, int *beg, int *en, size_t *n, int *step, size_t size)
+{
+  *beg = NUM2INT(rb_ivar_get(range, rb_gsl_id_beg));
+  if(*beg < 0) *beg += size;
+  *en = NUM2INT(rb_ivar_get(range, rb_gsl_id_end));
+  if(*en < 0) *en += size;
+  *n = (size_t) fabs(*en - *beg);
+  if (!RTEST(rb_ivar_get(range, rb_gsl_id_excl))) *n += 1;
+  if (*en < *beg) *step = -1; else *step = 1;
+}
+
+void parse_subvector_args(int argc, VALUE *argv, size_t size,
+    size_t *offset, size_t *stride, size_t *n)
+{
+  int begin = 0, end, step, length;
+  *stride = 1;
+  switch (argc) {
+  case 0:
+    *n = size;
+    break;
+  case 1:
+    if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
+      get_range_beg_en_n_for_size(argv[0], &begin, &end, n, &step, size);
+      // TODO Should we do bounds checking or risk letting GSL do it?
+      // On one hand, it seems like we should do as little as possible to stay as
+      // thin and fast as possible.  On the other hand, it seems like we don't
+      // want to let Ruby crash if GSL does not have bounds checking enabled.
+      if(begin < 0 || (size_t)begin >= size) {
+        rb_raise(rb_eRangeError,
+            "begin value %d is out of range for Vector of length %d",
+            begin, size);
+      }
+      if(end < 0 || (size_t)end >= size) {
+        rb_raise(rb_eRangeError,
+            "end value %d is out of range for Vector of length %d",
+            end, size);
+      }
+      *stride = (size_t)step;
+    } else {
+      CHECK_FIXNUM(argv[0]);
+      length = FIX2INT(argv[0]);
+      if(length < 0) {
+        rb_raise(rb_eArgError, "length must be non-negative");
+      }
+      *n = (size_t)length;
+    }
+    break;
+  case 2:
+    if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
+      get_range_beg_en_n_for_size(argv[0], &begin, &end, n, &step, size);
+      if(begin < 0 || (size_t)begin >= size) {
+        rb_raise(rb_eRangeError,
+            "begin value %d is out of range for Vector of length %d",
+            begin, size);
+      }
+      if(end < 0 || (size_t)end >= size) {
+        rb_raise(rb_eRangeError,
+            "end value %d is out of range for Vector of length %d",
+            end, size);
+      }
+      CHECK_FIXNUM(argv[1]);
+      step = FIX2INT(argv[1]);
+      if(step == 0 && begin != end) {
+        rb_raise(rb_eArgError, "stride must be non-zero");
+      } else if((step < 0 && begin <= end) || (step > 0 && end < begin)) {
+        step = -step;
+      }
+      if(step < 0) {
+        *n = (*n-1)/(-step) + 1;
+      } else if(step > 0) {
+        *n = (*n-1)/step + 1;
+      }
+      *stride = (size_t)step;
+    } else {
+      CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]);
+      begin = FIX2INT(argv[0]);
+      length = FIX2INT(argv[1]);
+      if(length < 0) {
+        rb_raise(rb_eArgError, "length must be non-negative");
+      }
+      *n = (size_t)length;
+    }
+    break;
+  case 3:
+    CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
+    begin = FIX2INT(argv[0]);
+    *stride = (size_t)FIX2INT(argv[1]);
+    length = FIX2INT(argv[2]);
+    if(length < 0) {
+      rb_raise(rb_eArgError, "length must be non-negative");
+    }
+    *n = (size_t)length;
+    break;
+  default:
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0-3)", argc);
+    break;
+  }
+  if(begin < 0) {
+    begin += size;
+  }
+  *offset = (size_t)begin;
+}
+
 #endif
 
 void FUNCTION(set_ptr_data,by_range)(BASE *ptr, size_t n, VALUE range)
@@ -1182,96 +1292,11 @@ static VALUE FUNCTION(rb_gsl_vector,subvector)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
   QUALIFIED_VIEW(gsl_vector,view) *vv = NULL;
-  int offset = 0, end, step, length;
-  size_t n, stride = 1;
+  size_t offset, stride, n;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  switch (argc) {
-  case 0:
-    n = v->size;
-    break;
-  case 1:
-    if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
-      get_range_beg_en_n(argv[0], &offset, &end, &n, &step);
-      if((offset < 0 && (size_t)(-offset) > v->size) || (offset > 0 && (size_t)offset >= v->size)) {
-        rb_raise(rb_eRangeError,
-            "begin value %d is out of range for Vector of length %d",
-            offset, v->size);
-      }
-      if((end < 0 && (size_t)(-end) > v->size) || (end > 0 && (size_t)end >= v->size)) {
-        rb_raise(rb_eRangeError,
-            "end value %d is out of range for Vector of length %d",
-            end, v->size);
-      }
-      if(offset < 0) offset += v->size;
-      if(end < 0) end += v->size;
-      if(end < offset) stride = (size_t)-1;
-    } else {
-      CHECK_FIXNUM(argv[0]);
-      length = FIX2INT(argv[0]);
-      if(length < 0) {
-        rb_raise(rb_eArgError, "length must be non-negative");
-      }
-      n = (size_t)length;
-    }
-    break;
-  case 2:
-    // TODO Clean up duplication with argc==1 case
-    if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
-      get_range_beg_en_n(argv[0], &offset, &end, &n, &step);
-      if((offset < 0 && (size_t)(-offset) > v->size) || (offset > 0 && (size_t)offset >= v->size)) {
-        rb_raise(rb_eRangeError,
-            "begin value %d is out of range for Vector of length %d",
-            offset, v->size);
-      }
-      if((end < 0 && (size_t)(-end) > v->size) || (end > 0 && (size_t)end >= v->size)) {
-        rb_raise(rb_eRangeError,
-            "end value %d is out of range for Vector of length %d",
-            end, v->size);
-      }
-      if(offset < 0) offset += v->size;
-      if(end < 0) end += v->size;
-      CHECK_FIXNUM(argv[1]);
-      step = FIX2INT(argv[1]);
-      if(step == 0 && offset != end) {
-        rb_raise(rb_eArgError, "stride must be non-zero");
-      } else if((step < 0 && offset <= end) || (step > 0 && end < offset)) {
-        step = -step;
-      }
-      if(step < 0) {
-        n = (n-1)/(-step) + 1;
-      } else if(step > 0) {
-        n = (n-1)/step + 1;
-      }
-      stride = (size_t)step;
-    } else {
-      CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]);
-      offset = FIX2INT(argv[0]);
-      length = FIX2INT(argv[1]);
-      if(length < 0) {
-        rb_raise(rb_eArgError, "length must be non-negative");
-      }
-      n = (size_t)length;
-    }
-    break;
-  case 3:
-    CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
-    offset = FIX2INT(argv[0]);
-    stride = FIX2INT(argv[1]);
-    length = FIX2INT(argv[2]);
-    if(length < 0) {
-      rb_raise(rb_eArgError, "length must be non-negative");
-    }
-    n = (size_t)length;
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0-3)", argc);
-    break;
-  }
-  if(offset < 0) {
-    offset += v->size;
-  }
+  parse_subvector_args(argc, argv, v->size, &offset, &stride, &n);
   vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
-  *vv = FUNCTION(gsl_vector,subvector_with_stride)(v, (size_t)offset, stride, n);
+  *vv = FUNCTION(gsl_vector,subvector_with_stride)(v, offset, stride, n);
   if (VEC_COL_P(obj))
     return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,col_view), 0, free, vv);
   else

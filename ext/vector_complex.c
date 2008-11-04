@@ -15,8 +15,9 @@
 EXTERN VALUE cgsl_complex;
 static VALUE rb_gsl_vector_complex_inner_product(int argc, VALUE *argv, VALUE obj);
 static VALUE rb_gsl_vector_complex_product_to_m(int argc, VALUE *argv, VALUE obj);
-void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
 
+void parse_subvector_args(int argc, VALUE *argv, size_t size,
+    size_t *offset, size_t *stride, size_t *n);
 
 static VALUE rb_gsl_vector_complex_new(int argc, VALUE *argv, VALUE klass)
 {
@@ -696,97 +697,11 @@ static VALUE rb_gsl_vector_complex_subvector(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector_complex *v = NULL;
   gsl_vector_complex_view *vv = NULL;
-  int offset = 0, end, step, length;
-  size_t n, stride = 1;
+  size_t offset, stride, n;
   Data_Get_Struct(obj, gsl_vector_complex, v);
-  switch (argc) {
-  case 0:
-    n = v->size;
-    break;
-  case 1:
-    if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
-      get_range_beg_en_n(argv[0], &offset, &end, &n, &step);
-      if((offset < 0 && (size_t)(-offset) > v->size) || (offset > 0 && (size_t)offset >= v->size)) {
-        rb_raise(rb_eRangeError,
-            "begin value %d is out of range for Vector of length %d",
-            offset, v->size);
-      }
-      if((end < 0 && (size_t)(-end) > v->size) || (end > 0 && (size_t)end >= v->size)) {
-        rb_raise(rb_eRangeError,
-            "end value %d is out of range for Vector of length %d",
-            end, v->size);
-      }
-      if(offset < 0) offset += v->size;
-      if(end < 0) end += v->size;
-      if(end < offset) stride = (size_t)-1;
-    } else {
-      CHECK_FIXNUM(argv[0]);
-      length = FIX2INT(argv[0]);
-      if(length < 0) {
-        rb_raise(rb_eArgError, "length must be non-negative");
-      }
-      n = (size_t)length;
-    }
-    break;
-  case 2:
-    // TODO Clean up duplication with argc==1 case
-    if(rb_obj_is_kind_of(argv[0], rb_cRange)) {
-      get_range_beg_en_n(argv[0], &offset, &end, &n, &step);
-      if((offset < 0 && (size_t)(-offset) > v->size) || (offset > 0 && (size_t)offset >= v->size)) {
-        rb_raise(rb_eRangeError,
-            "begin value %d is out of range for Vector of length %d",
-            offset, v->size);
-      }
-      if((end < 0 && (size_t)(-end) > v->size) || (end > 0 && (size_t)end >= v->size)) {
-        rb_raise(rb_eRangeError,
-            "end value %d is out of range for Vector of length %d",
-            end, v->size);
-      }
-      if(offset < 0) offset += v->size;
-      if(end < 0) end += v->size;
-      CHECK_FIXNUM(argv[1]);
-      step = FIX2INT(argv[1]);
-      if(step == 0 && offset != end) {
-        rb_raise(rb_eArgError, "stride must be non-zero");
-      } else if((step < 0 && offset <= end) || (step > 0 && end < offset)) {
-        step = -step;
-      }
-      if(step < 0) {
-        n = (n-1)/(-step) + 1;
-      } else if(step > 0) {
-        n = (n-1)/step + 1;
-      }
-      stride = (size_t)step;
-    } else {
-      CHECK_FIXNUM(argv[0]);
-      CHECK_FIXNUM(argv[1]);
-      offset = FIX2INT(argv[0]);
-      length = FIX2INT(argv[1]);
-      if(length < 0) {
-        rb_raise(rb_eArgError, "length must be non-negative");
-      }
-      n = (size_t)length;
-    }
-    break;
-  case 3:
-    CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
-    offset = FIX2INT(argv[0]);
-    stride = FIX2INT(argv[1]);
-    length = FIX2INT(argv[2]);
-    if(length < 0) {
-      rb_raise(rb_eArgError, "length must be non-negative");
-    }
-    n = (size_t)length;
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0-3)", argc);
-    break;
-  }
-  if(offset < 0) {
-    offset += v->size;
-  }
+  parse_subvector_args(argc, argv, v->size, &offset, &stride, &n);
   vv = gsl_vector_complex_view_alloc();
-  *vv = gsl_vector_complex_subvector_with_stride(v, (size_t)offset, stride, n);
+  *vv = gsl_vector_complex_subvector_with_stride(v, offset, stride, n);
   if (VECTOR_COMPLEX_ROW_P(obj))
     return Data_Wrap_Struct(cgsl_vector_complex_view, 0, gsl_vector_complex_view_free, vv);
   else
