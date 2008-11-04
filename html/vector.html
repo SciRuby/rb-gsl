@@ -140,18 +140,24 @@ For 32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.</p>
 <dt><a name="label-19" id="label-19"><code>GSL::Vector#[args]</code></a></dt><!-- RDLabel: "GSL::Vector#[args]" -->
 <dd>
 Returns elements(s) of the vector <var>self</var> if <var>args</var> is a single
-Fixnum, a single Array of Fixnums, or a single GSL::Permutation (or
-GSL::Index).  For all other <var>args</var>, the arguments are treated as
-with <code>Vector#subvector</code> and a <code>Vector::View</code> is returned. </dd>
+<code>Fixnum</code>, a single <code>Array</code> of <code>Fixnums</code>, or a single
+<code>GSL::Permutation</code> (or <code>GSL::Index</code>).  For all other <var>args</var>,
+the arguments are treated as with <code>Vector#subvector</code> and a
+<code>Vector::View</code> is returned. </dd>
 <dt><a name="label-20" id="label-20"><code>GSL::Vector#set(<var>args</var>, <var>val</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#set" -->
 <dt><a name="label-21" id="label-21"><code>GSL::Vector#[args] = <var>val</var></code></a></dt><!-- RDLabel: "GSL::Vector#[args] = val" -->
 <dd>
 <p>If <var>args</var> is empty, behaves as <code>#set_all</code> and <var>val</var> must be a
-<code>Numeric</code>.  If <var>args</var> is a single Fixnum, <var>i</var>, sets the
-<var>i</var>-th element of the vector <var>self</var> to <var>val</var>, which must be a
-<code>Numeric</code>.  All other <var>args</var> are treated as with <code>#subvector</code>
-whose elements are assigned from <var>val</var>.  In the last case, <var>val</var>
-can be an <code>Array</code>, <code>Range</code>, <code>Vector</code>, or <code>Numeric</code>.</p>
+<code>Numeric</code>.</p>
+<p>If <var>args</var> is a single <code>Fixnum</code>, <var>i</var>, sets the <var>i</var>-th
+element of the vector <var>self</var> to <var>val</var>, which must be a
+<code>Numeric</code>.</p>
+<p>All other <var>args</var> specify a subvector (as with <code>#subvector</code>) whose
+elements are assigned from <var>val</var>.  In this case, <var>val</var> can be an
+<code>Array</code>, <code>Range</code>, <code>GSL::Vector</code>, or <code>Numeric</code>.</p>
+<p>NOTE: GSL does not provide a vector copy function that properly copies data
+across overlapping memory regions, so watch out if assigning to part of a
+Vector from another part of itself (see example below).</p>
 <p>Ex:</p>
 <pre>irb(main):001:0&gt; require 'rbgsl'
 =&gt; true
@@ -182,7 +188,13 @@ irb(main):011:0&gt; v[2,3] = [4,5,6]
 =&gt; [4, 5, 6]
 irb(main):012:0&gt; v
 =&gt; GSL::Vector
-[ 0.000e+00 1.000e+00 4.000e+00 5.000e+00 6.000e+00 1.230e+02 ]</pre></dd>
+[ 0.000e+00 1.000e+00 4.000e+00 5.000e+00 6.000e+00 1.230e+02 ]
+irb(main):013:0&gt; v[1,4] = v[0,4] # !!! Overlapping !!!
+=&gt; GSL::Vector::View
+[ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
+irb(main):014:0&gt; v
+=&gt; GSL::Vector
+[ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 1.230e+02 ]</pre></dd>
 </dl>
 <h3><a name="3.2" href="#3.2">3.2</a> <a name="label-22">Initializing vector elements</a></h3><!-- RDLabel: "Initializing vector elements" -->
 

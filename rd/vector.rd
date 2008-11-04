@@ -132,18 +132,27 @@ For 32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.
 --- GSL::Vector#get(args)
 --- GSL::Vector#[args]
     Returns elements(s) of the vector ((|self|)) if ((|args|)) is a single
-    Fixnum, a single Array of Fixnums, or a single GSL::Permutation (or
-    GSL::Index).  For all other ((|args|)), the arguments are treated as
-    with (({Vector#subvector})) and a (({Vector::View})) is returned. 
+    (({Fixnum})), a single (({Array})) of (({Fixnums})), or a single
+    (({GSL::Permutation})) (or (({GSL::Index}))).  For all other ((|args|)),
+    the arguments are treated as with (({Vector#subvector})) and a
+    (({Vector::View})) is returned. 
 
 --- GSL::Vector#set(args, val)
 --- GSL::Vector#[args] = val
     If ((|args|)) is empty, behaves as (({#set_all})) and ((|val|)) must be a
-    (({Numeric})).  If ((|args|)) is a single Fixnum, ((|i|)), sets the
-    ((|i|))-th element of the vector ((|self|)) to ((|val|)), which must be a
-    (({Numeric})).  All other ((|args|)) are treated as with (({#subvector}))
-    whose elements are assigned from ((|val|)).  In the last case, ((|val|))
-    can be an (({Array})), (({Range})), (({Vector})), or (({Numeric})).
+    (({Numeric})).
+
+    If ((|args|)) is a single (({Fixnum})), ((|i|)), sets the ((|i|))-th
+    element of the vector ((|self|)) to ((|val|)), which must be a
+    (({Numeric})).
+
+    All other ((|args|)) specify a subvector (as with (({#subvector}))) whose
+    elements are assigned from ((|val|)).  In this case, ((|val|)) can be an
+    (({Array})), (({Range})), (({GSL::Vector})), or (({Numeric})).
+
+    NOTE: GSL does not provide a vector copy function that properly copies data
+    across overlapping memory regions, so watch out if assigning to part of a
+    Vector from another part of itself (see example below).
 
     Ex:
         irb(main):001:0> require 'rbgsl'
@@ -176,6 +185,12 @@ For 32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.
         irb(main):012:0> v
         => GSL::Vector
         [ 0.000e+00 1.000e+00 4.000e+00 5.000e+00 6.000e+00 1.230e+02 ]
+        irb(main):013:0> v[1,4] = v[0,4] # !!! Overlapping !!!
+        => GSL::Vector::View
+        [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
+        irb(main):014:0> v
+        => GSL::Vector
+        [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 1.230e+02 ]
 
 
 === Initializing vector elements
