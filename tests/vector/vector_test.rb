@@ -64,5 +64,71 @@ class VectorTest < Test::Unit::TestCase
 		assert_equal(v.ispos, 1)
 		assert_equal(v.ispos?, true)				
 	end
+
+  def test_vector_subvector
+    v = GSL::Vector::Int.indgen(12)
+
+    # args = []
+    vv = v.subvector
+    assert_not_equal(v.object_id, vv.object_id)
+    assert_equal(v.subvector, v)
+
+    # args = [Fixnum]
+    vv = v.subvector(3)
+    assert_equal([0, 1, 2], vv.to_a)
+    assert_raise(ArgumentError) {v.subvector(-1)}
+
+    # args = [Fixnum, Fixnum]
+    vv = v.subvector(2, 3)
+    assert_equal([2, 3, 4], vv.to_a)
+
+    vv = v.subvector(-4, 3)
+    assert_equal([8, 9, 10], vv.to_a)
+    assert_raise(ArgumentError) {v.subvector(2, -1)}
+
+    # args = [Fixnum, Fixnum, Fixnum]
+    vv = v.subvector(1, 3, 4)
+    assert_equal([1, 4, 7, 10], vv.to_a)
+
+    # args = [Range]
+    tests = {
+    # ( range ) => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      ( 1..  3) => [   1, 2, 3                          ],                                   
+      ( 1... 3) => [   1, 2                             ],
+      ( 3..  1) => [   3, 2, 1                          ],
+      ( 3... 1) => [      3, 2                          ],
+      (-7..  9) => [               5, 6, 7, 8, 9        ],
+      (-7... 9) => [               5, 6, 7, 8           ],
+      ( 4.. -3) => [            4, 5, 6, 7, 8, 9        ],
+      ( 4...-3) => [            4, 5, 6, 7, 8           ],
+      ( 2.. -2) => [      2, 3, 4, 5, 6, 7, 8, 9, 10    ],
+      ( 2...-2) => [      2, 3, 4, 5, 6, 7, 8, 9        ],
+      (-2..  2) => [     10, 9, 8, 7, 6, 5, 4, 3,  2    ],
+      (-2... 2) => [     10, 9, 8, 7, 6, 5, 4, 3        ],
+      (-3.. -1) => [                           9, 10, 11],
+      (-3...-1) => [                           9, 10    ],
+      (-1.. -3) => [                          11, 10,  9],
+      (-1...-3) => [                          11, 10    ],
+      # Add more test cases here...
+    }
+    tests.each do |r, x|
+      assert_nothing_raised("subvector(#{r})") {v.subvector(r)}
+      assert_equal(x, v.subvector(r).to_a, "subvector(#{r})")
+    end
+
+    # args = [Range, Fixnum]
+    tests = {
+    # [( range ), s] => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+      [( 1..  6), 2] => [   1,    3,    5                    ],
+      [( 1... 6), 2] => [   1,    3,    5                    ],
+      [( 0..  6), 3] => [0,       3,      6                  ],
+      [( 0... 6), 3] => [0,    3                             ],
+      # Add more test cases here...
+    }
+    tests.each do |(r,s), x|
+      assert_nothing_raised("subvector(#{r},#{s})") {v.subvector(r)}
+      assert_equal(x, v.subvector(r,s).to_a, "subvector(#{r},#{s})")
+    end
+  end
 end
 
