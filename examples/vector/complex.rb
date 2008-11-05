@@ -8,9 +8,9 @@ v[2] = [3, 4]
 p v[2]
 
 i = 0
-v.each do |elm|
-  elm.re += i
+v.map! do |elm|
   i += 1
+  elm += i
 end
 
 v.each do |elm|
