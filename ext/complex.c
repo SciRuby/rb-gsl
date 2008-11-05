@@ -15,6 +15,37 @@
 
 VALUE cgsl_complex;
 
+// Initialize gsl_complex from Ruby object
+void rb_gsl_obj_to_gsl_complex(VALUE obj, gsl_complex *z)
+{
+  VALUE vre, vim;
+  gsl_complex * zz;
+
+  switch(TYPE(obj)) {
+  case T_ARRAY:
+    vre = rb_ary_entry(obj,0);
+    vim = rb_ary_entry(obj,1);
+    if (!NIL_P(vre)) GSL_SET_REAL(z, NUM2DBL(vre));
+    if (!NIL_P(vim)) GSL_SET_IMAG(z, NUM2DBL(vim));
+    break;
+  case T_FLOAT:
+  case T_FIXNUM:
+  case T_BIGNUM:
+    *z = gsl_complex_rect(NUM2DBL(obj), 0.0);
+    break;
+  default:
+    if (rb_obj_is_kind_of(obj, cgsl_complex)) {
+      Data_Get_Struct(obj, gsl_complex, zz);
+      *z = *zz;
+    } else {
+      rb_raise(rb_eTypeError,
+          "wrong type %s, (Array, Float, Integer, or GSL::Complex expected)",
+          rb_class2name(CLASS_OF(obj)));
+    }
+    break;
+  }
+}
+
 static VALUE rb_gsl_complex_new(int argc, VALUE *argv, VALUE klass)
 {
   gsl_complex *c = NULL;

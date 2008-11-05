@@ -16,8 +16,15 @@ EXTERN VALUE cgsl_complex;
 static VALUE rb_gsl_vector_complex_inner_product(int argc, VALUE *argv, VALUE obj);
 static VALUE rb_gsl_vector_complex_product_to_m(int argc, VALUE *argv, VALUE obj);
 
+// From vector_source.c
+void get_range_beg_en_n(VALUE range, double *beg, double *en, size_t *n, int *step);
+//
+// From vector_source.c
 void parse_subvector_args(int argc, VALUE *argv, size_t size,
     size_t *offset, size_t *stride, size_t *n);
+
+// From complex.c
+void rb_gsl_obj_to_gsl_complex(VALUE obj, gsl_complex *z);
 
 static VALUE rb_gsl_vector_complex_new(int argc, VALUE *argv, VALUE klass)
 {
@@ -194,112 +201,22 @@ static VALUE rb_gsl_vector_complex_get(int argc, VALUE *argv, VALUE obj)
   return retval;
 }
 
-static VALUE rb_gsl_vector_complex_set(int argc, VALUE *argv, VALUE obj)
-{
-  gsl_vector_complex *v = NULL;
-  gsl_complex tmp, *z = &tmp;
-  VALUE vre, vim;
-  size_t i;
-  if (argc < 2) rb_raise(rb_eArgError, "wrong number of arguments");
-  Data_Get_Struct(obj, gsl_vector_complex, v);
-  if (TYPE(argv[0]) != T_FIXNUM) {
-    for (i = 0; i < argc; i++) {
-      if (i >= v->size) break;
-      switch (TYPE(argv[i])) {
-      case T_ARRAY:
-	tmp = gsl_vector_complex_get(v, i);
-	vre = rb_ary_entry(argv[i],0);
-	vim = rb_ary_entry(argv[i],1);
-	if (!NIL_P(vre)) GSL_SET_REAL(&tmp, NUM2DBL(vre));
-	if (!NIL_P(vim)) GSL_SET_IMAG(&tmp, NUM2DBL(vim));
-	break;
-      case T_FLOAT:
-      case T_FIXNUM:
-      case T_BIGNUM:
-	tmp = gsl_complex_rect(NUM2DBL(argv[i]), 0.0);
-	break;
-      default:
-	CHECK_COMPLEX(argv[i]);
-	Data_Get_Struct(argv[i], gsl_complex, z);
-	tmp = *z;
-	break;
-      }
-      gsl_vector_complex_set(v, i, tmp);
-    }
-    return obj;
-  }
-  i = FIX2INT(argv[0]);
-  switch (argc) {
-  case 2:
-    if (rb_obj_is_kind_of(argv[1], cgsl_complex)) {
-      Data_Get_Struct(argv[1], gsl_complex, z);
-      tmp = *z;
-    } else {
-      switch(TYPE(argv[1])) {
-      case T_ARRAY:
-	tmp = gsl_vector_complex_get(v, i);
-	vre = rb_ary_entry(argv[1],0);
-	vim = rb_ary_entry(argv[1],1);
-	if (!NIL_P(vre)) GSL_SET_REAL(&tmp, NUM2DBL(vre));
-	if (!NIL_P(vim)) GSL_SET_IMAG(&tmp, NUM2DBL(vim));
-	break;
-      case T_FLOAT:
-      case T_FIXNUM:
-      case T_BIGNUM:
-	tmp = gsl_complex_rect(NUM2DBL(argv[1]), 0.0);
-	break;
-      default:
-	CHECK_COMPLEX(argv[1]);
-	Data_Get_Struct(argv[1], gsl_complex, z);
-	tmp = *z;
-	break;
-      }
-    }
-    break;
-  case 3:
-    tmp = gsl_complex_rect(NUM2DBL(argv[1]), NUM2DBL(argv[2]));
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments");
-    break;
-  }
-  gsl_vector_complex_set(v, i, tmp);
-
-  return obj;
-}
-
 static VALUE rb_gsl_vector_complex_set_all(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector_complex *v = NULL;
-  gsl_complex *z = NULL, tmp;
+  gsl_complex tmp;
+
   if (argc < 1) rb_raise(rb_eArgError, "wrong number of arguments");
+
   Data_Get_Struct(obj, gsl_vector_complex, v);
+
   switch (argc) {
   case 1:
-    if (rb_obj_is_kind_of(argv[0], cgsl_complex)) {
-      Data_Get_Struct(argv[0], gsl_complex, z);
-      tmp = *z;
-    } else {
-      switch(TYPE(argv[0])) {
-      case T_ARRAY:
-	tmp = gsl_complex_rect(
-	    NUM2DBL(rb_ary_entry(argv[0], 0)),
-	    NUM2DBL(rb_ary_entry(argv[0], 1)));
-	break;
-      case T_FLOAT:
-      case T_FIXNUM:
-      case T_BIGNUM:
-	tmp = gsl_complex_rect(NUM2DBL(argv[0]), 0.0);
-	break;
-      default:
-	rb_raise(rb_eTypeError, 
-		 "wrong argument type %s", rb_class2name(CLASS_OF(argv[0])));
-	break;
-      }
-    }
+    GSL_SET_COMPLEX(&tmp, 0.0, 0.0);
+    rb_gsl_obj_to_gsl_complex(argv[0], &tmp);
     break;
   case 2:
-    tmp = gsl_complex_rect(NUM2DBL(argv[0]), NUM2DBL(argv[1]));
+    GSL_SET_COMPLEX(&tmp, NUM2DBL(argv[0]), NUM2DBL(argv[1]));
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments");
@@ -307,6 +224,78 @@ static VALUE rb_gsl_vector_complex_set_all(int argc, VALUE *argv, VALUE obj)
   }
 
   gsl_vector_complex_set_all(v, tmp);
+
+  return obj;
+}
+
+static VALUE rb_gsl_vector_complex_set(int argc, VALUE *argv, VALUE obj)
+{
+  gsl_vector_complex *v = NULL, *vother;
+  gsl_vector_complex_view vv;
+  gsl_complex tmp;
+  VALUE other;
+  size_t offset, stride, n;
+  double beg, end;
+  size_t nother, i;
+  int step, ii;
+
+  if(argc < 1 || argc > 4) {
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1-4)", argc);
+  }
+
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  other = argv[argc-1];
+
+  if(argc == 1) {
+    rb_gsl_vector_complex_set_all(argc, argv, obj);
+  } else if(argc == 2 && TYPE(argv[0]) == T_FIXNUM) {
+    // v[i] = x
+    ii = FIX2INT(argv[0]);
+    if(ii < 0) ii += v->size;
+    // Get/make GSL::Complex from second arg
+    tmp = gsl_vector_complex_get(v, ii);
+    rb_gsl_obj_to_gsl_complex(argv[1], &tmp);
+    gsl_vector_complex_set(v, (size_t)ii, tmp);
+  } else {
+    // assignment to v.subvector(...)
+    parse_subvector_args(argc-1, argv, v->size, &offset, &stride, &n);
+    vv = gsl_vector_complex_subvector_with_stride(v, offset, stride, n);
+    if(rb_obj_is_kind_of(other, cgsl_vector_complex)) {
+      Data_Get_Struct(other, gsl_vector_complex, vother);
+      if(n != vother->size) {
+        rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, vother->size);
+      }
+      // TODO Change to gsl_vector_complex_memmove if/when GSL has such a
+      // function because gsl_vector_memcpy does not handle overlapping regions
+      // (e.g.  Views) well.
+      gsl_vector_complex_memcpy(&vv.vector, vother);
+    } else if(rb_obj_is_kind_of(other, rb_cArray)) {
+      // TODO Support other forms of Array contents as well
+      if(n != RARRAY_LEN(other)) {
+        rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, RARRAY_LEN(other));
+      }
+      for(i = 0; i < n; i++) {
+        GSL_SET_COMPLEX(&tmp, 0.0, 0.0);
+        rb_gsl_obj_to_gsl_complex(rb_ary_entry(other, i), &tmp);
+        gsl_vector_complex_set(&vv.vector, i, tmp);
+      }
+    } else if(rb_obj_is_kind_of(other, rb_cRange)) {
+      get_range_beg_en_n(other, &beg, &end, &nother, &step);
+      if(n != nother) {
+        rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, nother);
+      }
+      GSL_SET_IMAG(&tmp, 0.0);
+      for(i = 0; i < n; i++) {
+        GSL_SET_REAL(&tmp, beg);
+        gsl_vector_complex_set(&vv.vector, i, tmp);
+        beg += step;
+      }
+    } else {
+      GSL_SET_COMPLEX(&tmp, 0.0, 0.0);
+      rb_gsl_obj_to_gsl_complex(argv[1], &tmp);
+      gsl_vector_complex_set_all(&vv.vector, tmp);
+    }
+  }
 
   return obj;
 }

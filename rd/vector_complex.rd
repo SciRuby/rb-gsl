@@ -46,16 +46,26 @@
       [ [0.000e+00 1.000e+00] [-3.000e+00 4.000e+00] ]
       => #<GSL::Vector::Complex:0x6bfbac>
 
---- GSL::Vector::Complex#set(i, z)
---- GSL::Vector::Complex#set(i, re, im)
---- GSL::Vector::Complex#set(i, [re, im])
---- GSL::Vector::Complex#[]=(i, z)
---- GSL::Vector::Complex#[]=(i, re, im)
---- GSL::Vector::Complex#[]=(i, [re, im])
-    Sets the value of the ((|i|))-th element of a complex vector ((|self|)) to
-    ((|z|)) or (({GSL::Complex[re,im]})).  The forms taking two real values
-    allow the passing of nil to keep the correponding component of element
-    ((|i|)) unchanged.
+--- GSL::Vector::Complex#set(args, val)
+--- GSL::Vector::Complex#[args]=val
+    If ((|args|)) is empty, behaves as (({#set_all})) and ((|val|)) must be a
+    ((|[re,im]|)) (({Array})), (({Float})), (({Integer})), or
+    (({GSL::Complex})).
+
+    If ((|args|)) is a single (({Fixnum})), ((|i|)), sets the ((|i|))-th
+    element of the vector ((|self|)) to ((|val|)), which must be a
+    ((|[re,im]|)) (({Array})), (({Float})), (({Integer})), or
+    (({GSL::Complex})).
+
+    All other ((|args|)) specify a subvector (as with (({#subvector}))) whose
+    elements are assigned from ((|val|)).  In this case, ((|val|)) can be an
+    (({Array})), (({Range})), (({GSL::Vector::Complex})), or one of the classes
+    listed in the previous cases.
+
+    NOTE: GSL does not provide a vector copy function that properly copies data
+    across overlapping memory regions, so watch out if assigning to part of a
+    Vector from another part of itself (see (({#set})) example of
+    ((<GSL::Vector|URL:vector.html>))).
 
 === Initializing vector elements
 --- GSL::Vector::Complex#set_all(z)
