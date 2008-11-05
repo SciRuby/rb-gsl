@@ -25,11 +25,11 @@
 
 == Instance methods
 === Accessing vector elements
---- GSL::Vector::Complex#get(indices)
---- GSL::Vector::Complex#[indices]
-    Returns elements(s) of the complex vector ((|self|)) if ((|indices|)) is a
+--- GSL::Vector::Complex#get(args)
+--- GSL::Vector::Complex#[args]
+    Returns elements(s) of the complex vector ((|self|)) if ((|args|)) is a
     single Fixnum, a single Array of Fixnums, or a single GSL::Permutation (or
-    GSL::Index).  For all other ((|indices|)), the parameters are treated as
+    GSL::Index).  For all other ((|args|)), the parameters are treated as
     with (({Vector#subvector})) and a (({Vector::View})) is returned.
 
     Example:
