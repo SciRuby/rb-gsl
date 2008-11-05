@@ -387,7 +387,7 @@ static VALUE FUNCTION(rb_gsl_vector,set)(int argc, VALUE *argv, VALUE obj)
   BASE beg, end;
 
   if(argc < 1 || argc > 4) {
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0-3)", argc);
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1-4)", argc);
   }
 
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
