@@ -51,7 +51,7 @@ static VALUE rb_gsl_permutation_init(VALUE obj)
   return obj;
 }
 
-void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
+void get_range_int_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
 static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
 {
   gsl_permutation *b, *bnew;
@@ -87,7 +87,7 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
 	for (j = 0; j < p->size; j++) bnew->data[j] = b->data[p->data[j]];
 	return Data_Wrap_Struct(CLASS_OF(argv[0]), 0, gsl_permutation_free, bnew);
       } else if (CLASS_OF(argv[0]) == rb_cRange) {
-	get_range_beg_en_n(argv[0], &beg, &en, &n, &step);
+	get_range_int_beg_en_n(argv[0], &beg, &en, &n, &step);
 	bnew = gsl_permutation_alloc(n);
 	for (j = 0; j < n; j++) 
 	  bnew->data[j] = b->data[beg+j];

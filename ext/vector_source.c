@@ -36,8 +36,7 @@
 #define VEC_VIEW_P VECTOR_INT_VIEW_P
 #endif
 
-// TODO change beg and end to BASE
-void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
+void FUNCTION(get_range,beg_en_n)(VALUE range, BASE *beg, BASE *en, size_t *n, int *step);
 
 void get_range_beg_en_n_for_size(VALUE range,
     int *beg, int *en, size_t *n, int *step, size_t size);
@@ -45,16 +44,16 @@ void get_range_beg_en_n_for_size(VALUE range,
 void parse_subvector_args(int argc, VALUE *argv, size_t size,
     size_t *offset, size_t *stride, size_t *n);
 
-#ifdef BASE_DOUBLE
-void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step)
+void FUNCTION(get_range,beg_en_n)(VALUE range, BASE *beg, BASE *en, size_t *n, int *step)
 {
-  *beg = NUM2INT(rb_ivar_get(range, rb_gsl_id_beg));
-  *en = NUM2INT(rb_ivar_get(range, rb_gsl_id_end));
+  *beg = NUMCONV2(rb_ivar_get(range, rb_gsl_id_beg));
+  *en = NUMCONV2(rb_ivar_get(range, rb_gsl_id_end));
   *n = (size_t) fabs(*en - *beg);
   if (!RTEST(rb_ivar_get(range, rb_gsl_id_excl))) *n += 1;
   if (*en < *beg) *step = -1; else *step = 1;
 }
 
+#ifdef BASE_INT
 void get_range_beg_en_n_for_size(VALUE range, int *beg, int *en, size_t *n, int *step, size_t size)
 {
   *beg = NUM2INT(rb_ivar_get(range, rb_gsl_id_beg));
@@ -163,8 +162,9 @@ void parse_subvector_args(int argc, VALUE *argv, size_t size,
 void FUNCTION(set_ptr_data,by_range)(BASE *ptr, size_t n, VALUE range)
 {
   size_t n2, i;
-  int beg, en, val, step;
-  get_range_beg_en_n(range, &beg, &en, &n2, &step);
+  BASE beg, en, val;
+  int step;
+  FUNCTION(get_range,beg_en_n)(range, &beg, &en, &n2, &step);
   val = beg;
   for (i = 0; i < n; i++) {
     if (i < n2) ptr[i] = val;
@@ -198,7 +198,8 @@ VALUE FUNCTION(rb_gsl_vector,new)(int argc, VALUE *argv, VALUE klass)
   GSL_TYPE(gsl_vector) *v = NULL, *vtmp = NULL;
   BASE xnative;
   size_t n, i;
-  int beg, en, step;
+  BASE beg, en;
+  int step;
 #ifdef HAVE_NARRAY_H
   VALUE ary2;
 #endif
@@ -247,7 +248,7 @@ VALUE FUNCTION(rb_gsl_vector,new)(int argc, VALUE *argv, VALUE klass)
 #endif
     default:
       if (CLASS_OF(argv[0]) == rb_cRange) {
-	get_range_beg_en_n(argv[0], &beg, &en, &n, &step);
+	FUNCTION(get_range,beg_en_n)(argv[0], &beg, &en, &n, &step);
 	v = FUNCTION(gsl_vector,alloc)(n);
 	FUNCTION(set_ptr_data,by_range)(v->data, v->size, argv[0]);
 	return Data_Wrap_Struct(klass, 0, FUNCTION(gsl_vector,free), v);
@@ -383,7 +384,7 @@ static VALUE FUNCTION(rb_gsl_vector,set)(int argc, VALUE *argv, VALUE obj)
   VALUE other;
   int ii, step;
   size_t i, offset, stride, n, nother;
-  int beg, end;
+  BASE beg, end;
 
   if(argc < 1 || argc > 4) {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0-3)", argc);
@@ -420,7 +421,7 @@ static VALUE FUNCTION(rb_gsl_vector,set)(int argc, VALUE *argv, VALUE obj)
         FUNCTION(gsl_vector,set)(&vv.vector, i, NUMCONV2(rb_ary_entry(other, i)));
       }
     } else if(rb_obj_is_kind_of(other, rb_cRange)) {
-      get_range_beg_en_n(other, &beg, &end, &nother, &step);
+      FUNCTION(get_range,beg_en_n)(other, &beg, &end, &nother, &step);
       if(n != nother) {
         rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, nother);
       }
@@ -1362,8 +1363,8 @@ static VALUE FUNCTION(rb_gsl_vector,subvector_with_stride)(int argc, VALUE *argv
   case 1:
     CHECK_FIXNUM(argv[0]);
     step = FIX2INT(argv[0]);
-    if(step <= 0) {
-      rb_raise(rb_eArgError, "stride must be positive");
+    if(step == 0) {
+      rb_raise(rb_eArgError, "stride must be non-zero");
     }
     stride = (size_t)step;
     //n = v->size/stride;
@@ -1381,8 +1382,8 @@ static VALUE FUNCTION(rb_gsl_vector,subvector_with_stride)(int argc, VALUE *argv
     } else if(offset >= v->size) {
       rb_raise(rb_eRangeError, "offset %d out of range", offset);
     }
-    if(step <= 0) {
-      rb_raise(rb_eArgError, "stride must be positive");
+    if(step == 0) {
+      rb_raise(rb_eArgError, "stride must be non-zero");
     }
     stride = (size_t)step;
     //n = (v->size-(size_t)offset)/stride;
@@ -1391,7 +1392,7 @@ static VALUE FUNCTION(rb_gsl_vector,subvector_with_stride)(int argc, VALUE *argv
   case 3:
     CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
     offset = FIX2INT(argv[0]);
-    stride = FIX2INT(argv[1]);
+    step = FIX2INT(argv[1]);
     length = FIX2INT(argv[2]);
     if(offset < 0) {
       offset += v->size;
@@ -1399,8 +1400,8 @@ static VALUE FUNCTION(rb_gsl_vector,subvector_with_stride)(int argc, VALUE *argv
         rb_raise(rb_eRangeError, "offset %d out of range", offset - (int)v->size);
       }
     }
-    if(step <= 0) {
-      rb_raise(rb_eArgError, "stride must be positive");
+    if(step == 0) {
+      rb_raise(rb_eArgError, "stride must be non-zero");
     }
     if(length < 0) {
       rb_raise(rb_eArgError, "length must be non-negative");

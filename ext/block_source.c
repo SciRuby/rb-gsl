@@ -178,7 +178,7 @@ static VALUE FUNCTION(rb_gsl_block,inspect)(VALUE obj)
 #define NUMCONV FIX2INT
 #endif
 
-void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
+void get_range_int_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
 static VALUE FUNCTION(rb_gsl_block,get)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_block) *b, *bnew;
@@ -215,7 +215,7 @@ static VALUE FUNCTION(rb_gsl_block,get)(int argc, VALUE *argv, VALUE obj)
 	for (j = 0; j < p->size; j++) bnew->data[j] = b->data[p->data[j]];
 	return Data_Wrap_Struct(GSL_TYPE(cgsl_block), 0, FUNCTION(gsl_block,free), bnew);
       } else if (CLASS_OF(argv[0]) == rb_cRange) {
-	get_range_beg_en_n(argv[0], &beg, &en, &n, &step);
+	get_range_int_beg_en_n(argv[0], &beg, &en, &n, &step);
 	bnew = FUNCTION(gsl_block,alloc)(n);
 	for (j = 0; j < n; j++) 
 	  bnew->data[j] = b->data[beg+j];

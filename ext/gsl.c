@@ -12,7 +12,7 @@
 #include "rb_gsl.h"
 #include <gsl/gsl_machine.h>
 
-ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl;
+ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 static ID rb_gsl_id_name, rb_gsl_id_size;
 VALUE cGSL_Object;
 static void rb_gsl_define_intern(VALUE module);
@@ -192,6 +192,7 @@ static void rb_gsl_define_intern(VALUE module)
   rb_gsl_id_beg  = rb_intern("begin");
   rb_gsl_id_end  = rb_intern("end");
   rb_gsl_id_excl = rb_intern("excl");
+  rb_gsl_id_to_a = rb_intern("to_a");
   rb_gsl_id_name  = rb_intern("name");
   rb_gsl_id_size  = rb_intern("size");
 }

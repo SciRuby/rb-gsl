@@ -26,7 +26,7 @@
 #include "narray.h"
 #endif
 
-EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl;
+EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 
 #ifndef CHECK_FIXNUM
 #define CHECK_FIXNUM(x) if(!FIXNUM_P(x))rb_raise(rb_eTypeError,"Fixnum expected");

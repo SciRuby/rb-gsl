@@ -48,7 +48,7 @@
 #endif
 
 // From ext/vector_source.c
-void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
+void FUNCTION(get_range,beg_en_n)(VALUE range, BASE *beg, BASE *en, size_t *n, int *step);
 
 // From ext/vector_source.c
 void get_range_beg_en_n_for_size(VALUE range,
@@ -340,9 +340,10 @@ void FUNCTION(set_ptr_data,by_range)(BASE *ptr, size_t n, VALUE range);
 static GSL_TYPE(gsl_matrix)* FUNCTION(cr_matrix,from_ranges)(int argc, VALUE *argv)
 {
   GSL_TYPE(gsl_matrix) *m;
+  BASE beg, en;
   size_t i, n;
-  int beg, en, step;
-  get_range_beg_en_n(argv[0], &beg, &en, &n, &step);
+  int step;
+  FUNCTION(get_range,beg_en_n)(argv[0], &beg, &en, &n, &step);
   m = FUNCTION(gsl_matrix,calloc)(argc, n);
   FUNCTION(set_ptr_data,by_range)(m->data, n, argv[0]);
   for (i = 1; i < argc; i++) {

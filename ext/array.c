@@ -483,25 +483,25 @@ int gsl_vector_complex_div(gsl_vector_complex *cv, const gsl_vector_complex *cv2
   return 0;
 }
 
-void get_range_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
 VALUE rb_gsl_range2ary(VALUE obj)
 {
-  int beg, en, i, step;
+  double beg, en;
   size_t n;
+  int step;
   VALUE ary;
   if (CLASS_OF(obj) != rb_cRange) 
     rb_raise(rb_eTypeError, "wrong argument type %s (Range expected)",
 	     rb_class2name(CLASS_OF(obj)));
-  get_range_beg_en_n(obj, &beg, &en, &n, &step);
-  ary = rb_ary_new2(n);
-  for (i = 0; i < n; i++) rb_ary_store(ary, i, INT2FIX(beg+i));
+  ary = rb_funcall(obj, rb_gsl_id_to_a, 0);
   return ary;
 }
 
+void get_range_beg_en_n(VALUE range, double *beg, double *en, size_t *n, int *step);
 VALUE rb_gsl_range2vector(VALUE obj)
 {
-  int beg, en, i, step;
+  double beg, en;
   size_t n;
+  int i, step;
   gsl_vector *v;
   if (CLASS_OF(obj) != rb_cRange) 
     rb_raise(rb_eTypeError, "wrong argument type %s (Range expected)",
@@ -512,6 +512,7 @@ VALUE rb_gsl_range2vector(VALUE obj)
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
 }
 
+void get_range_int_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
 VALUE rb_gsl_range2vector_int(VALUE obj)
 {
   int beg, en, i, step;
@@ -520,7 +521,7 @@ VALUE rb_gsl_range2vector_int(VALUE obj)
   if (CLASS_OF(obj) != rb_cRange) 
     rb_raise(rb_eTypeError, "wrong argument type %s (Range expected)",
 	     rb_class2name(CLASS_OF(obj)));
-  get_range_beg_en_n(obj, &beg, &en, &n, &step);
+  get_range_int_beg_en_n(obj, &beg, &en, &n, &step);
   v = gsl_vector_int_alloc(n);
   for (i = 0; i < n; i++) gsl_vector_int_set(v, i, beg+i);
   return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free, v);
