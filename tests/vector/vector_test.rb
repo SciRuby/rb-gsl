@@ -131,4 +131,3 @@ class VectorTest < Test::Unit::TestCase
     end
   end
 end
-
