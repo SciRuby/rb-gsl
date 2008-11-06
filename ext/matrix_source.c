@@ -209,13 +209,16 @@ void parse_submatrix_args(int argc, VALUE *argv, size_t size1, size_t size2,
         // Fixnum, Fixnum, nil -> Some rows, all cols
         *j = 0;
         *n2 = size2;
-      } else {
+      } else if(rb_obj_is_kind_of(argv[2], rb_cRange)) {
         // Fixnum, Fixnum, Range -> Some rows, Range cols
         get_range_beg_en_n_for_size(argv[2], &ij, &end, n2, &step, size2);
         if(step < 0 || *n2 <= 0) {
           rb_raise(rb_eRangeError, "arg2: begin > end");
         }
         *j = (size_t)ij;
+      } else {
+        rb_raise(rb_eArgError, "expected third argument to be nil or Range, not %s",
+           rb_class2name(CLASS_OF(argv[2])));
       }
     }
     break;
@@ -672,82 +675,123 @@ static VALUE FUNCTION(rb_gsl_matrix,shape)(VALUE obj)
   return rb_ary_new3(2, INT2FIX(m->size1), INT2FIX(m->size2));
 }
 
-static VALUE FUNCTION(rb_gsl_matrix,row)(VALUE obj, VALUE i);
 static VALUE FUNCTION(rb_gsl_matrix,submatrix)(int argc, VALUE *argv, VALUE obj);
 static VALUE FUNCTION(rb_gsl_matrix,get)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m = NULL;
-  size_t i, j;
-  switch (argc) {
-  case 2:
-    if(TYPE(argv[0]) == T_FIXNUM && TYPE(argv[1]) == T_FIXNUM) {
-      i = FIX2INT(argv[0]); j = FIX2INT(argv[1]);
-      Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
-      return C_TO_VALUE2(FUNCTION(gsl_matrix,get)(m, i, j));
-    }
-    break;
-  case 1:
+  VALUE retval;
+  int ii, ij;
+
+
+  if(argc == 2 && TYPE(argv[0]) == T_FIXNUM && TYPE(argv[1]) == T_FIXNUM) {
     Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
-    return FUNCTION(rb_gsl_matrix,row)(obj, argv[0]);
-    break;
+    ii = FIX2INT(argv[0]);
+    ij = FIX2INT(argv[1]);
+    if(ii < 0) ii += m->size1;
+    if(ij < 0) ij += m->size2;
+    retval = C_TO_VALUE2(FUNCTION(gsl_matrix,get)(m, (size_t)ii, (size_t)ij));
+  } else if(argc == 1 && TYPE(argv[0]) == T_FIXNUM) {
+    Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
+    ii = FIX2INT(argv[0]);
+    if(ii < 0) ii += m->size1 * m->size2;
+    retval = C_TO_VALUE2(FUNCTION(gsl_matrix,get)(m, (size_t)(ii / m->size2), (size_t)(ii % m->size2)));
+  } else {
+    retval = FUNCTION(rb_gsl_matrix,submatrix)(argc, argv, obj);
   }
-  return FUNCTION(rb_gsl_matrix,submatrix)(argc, argv, obj);
+
+  return retval;
 }
 
-
+void FUNCTION(rb_gsl_vector,set_subvector)(int argc, VALUE *argv, GSL_TYPE(gsl_vector) *v, VALUE other);
 static VALUE FUNCTION(rb_gsl_matrix,set)(int argc, VALUE *argv, VALUE obj)
 {
-  GSL_TYPE(gsl_matrix) *m = NULL;
-  size_t size1, size2;
-  size_t i, j, k;
-  VALUE ary;
-  if (argc < 2) rb_raise(rb_eArgError, "too few arguments");
-  Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
-  if (CLASS_OF(argv[0]) == rb_cRange) argv[0] = rb_gsl_range2ary(argv[0]);
-  switch (TYPE(argv[0])) {
-  case T_ARRAY:
-    if (CLASS_OF(argv[1]) == rb_cRange) argv[1] = rb_gsl_range2ary(argv[1]);
-    switch (TYPE(argv[1])) {
-    case T_ARRAY:
-      for (i = 0; i < m->size1; i++) {
-	if (CLASS_OF(argv[i]) == rb_cRange) ary = rb_gsl_range2ary(argv[i]);
-	else ary = argv[i];
-	for (j = 0; j < m->size2; j++) {
-	  FUNCTION(gsl_matrix,set)(m, i, j, NUMCONV2(rb_ary_entry(ary, j)));
-	}
-      }
-      break;
-    case T_FIXNUM:
-      if (argc != 3) rb_raise(rb_eArgError, "wrong number of arguments");
-      CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
-      ary = argv[0];
-      size1 = FIX2INT(argv[1]);
-      size2 = FIX2INT(argv[2]);
-      k = 0;
-      for (i = 0; i < size1; i++) {
-	for (j = 0; j < size2; j++, k++) {
-	  FUNCTION(gsl_matrix,set)(m, i, j, NUMCONV2(rb_ary_entry(ary, k)));
-	}
-      }
-      break;
-    default:
-      rb_raise(rb_eTypeError, "wrong argument type %s", 
-	       rb_class2name(CLASS_OF(argv[1])));
-      break;
-    }
-    break;
-  case T_FIXNUM:
-    if (argc != 3) {
-      rb_raise(rb_eArgError, "wrong number of args. (usage: row, col, and val)");
-    }
-    CHECK_FIXNUM(argv[1]);
-    FUNCTION(gsl_matrix,set)(m, FIX2INT(argv[0]), FIX2INT(argv[1]), NUMCONV2(argv[2]));
-    break;
-  default:
-    rb_raise(rb_eTypeError, 
-	     "wrong argument type %s", rb_class2name(CLASS_OF(argv[0])));
-    break;
+  GSL_TYPE(gsl_matrix) *m, *mother;
+  QUALIFIED_VIEW(gsl_matrix,view) mv;
+  QUALIFIED_VIEW(gsl_vector,view) vv;
+  VALUE other, row, row_set_argv[2];
+  int ii, ij, step;
+  size_t i, j, k, n1, n2, nother;
+  BASE beg, end;
+
+  if(argc < 1 || argc > 5) {
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1-5)", argc);
   }
+
+  Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
+  other = argv[argc-1];
+
+  if(argc == 1) {
+    // m[] = x
+    FUNCTION(gsl_matrix,set_all)(m, NUMCONV2(other));
+  } else if(argc == 3 && TYPE(argv[0]) == T_FIXNUM && TYPE(argv[1]) == T_FIXNUM) {
+    // m[i,j] = x
+    ii = FIX2INT(argv[0]);
+    ij = FIX2INT(argv[1]);
+    if(ii < 0) ii += m->size1;
+    if(ij < 0) ij += m->size2;
+    FUNCTION(gsl_matrix,set)(m, (size_t)ii, (size_t)ij, NUMCONV2(other));
+  } else if(TYPE(argv[0]) == T_ARRAY) {
+    // m.set(row0...)
+    row_set_argv[0] = INT2FIX(0);
+    row_set_argv[1] = INT2FIX(m->size2);
+
+    for(k = 0; k < argc && k < m->size1; k++) {
+      vv = FUNCTION(gsl_matrix,row)(m, k);
+      FUNCTION(rb_gsl_vector,set_subvector)(2, row_set_argv, &vv.vector, argv[k]);
+    }
+  } else {
+    // x -> assignment to m.submatrix(i...)
+    parse_submatrix_args(argc-1, argv, m->size1, m->size2, &i, &j, &n1, &n2);
+    if(n1 == 0) n1 = 1;
+    if(n2 == 0) n2 = 1;
+    mv = FUNCTION(gsl_matrix,submatrix)(m, i, j, n1, n2);
+    if(rb_obj_is_kind_of(other, GSL_TYPE(cgsl_matrix))) {
+      // m[...] = m_other
+      Data_Get_Struct(other, GSL_TYPE(gsl_matrix), mother);
+      if(n1 * n2 != mother->size1 * mother->size2) {
+        rb_raise(rb_eRangeError, "sizes do not match (%d x %d != %d x %d)",
+            n1, n2, mother->size1, mother->size2);
+      }
+      // TODO Change to gsl_matrix_memmove if/when GSL has such a function
+      // because gsl_matrix_memcpy does not handle overlapping regions (e.g.
+      // Views) well.
+      FUNCTION(gsl_matrix,memcpy)(&mv.matrix, mother);
+    } else if(rb_obj_is_kind_of(other, rb_cArray)) {
+      row_set_argv[0] = INT2FIX(0);
+      row_set_argv[1] = INT2FIX(n2);
+
+      if(n1 == 1) {
+        // m[...] = [col0, ...] # single row
+        vv = FUNCTION(gsl_matrix,row)(&mv.matrix, 0);
+        FUNCTION(rb_gsl_vector,set_subvector)(2, row_set_argv, &vv.vector, other);
+      } else {
+        // m[...] = [[row0], [row1], ...] # multiple rows
+        if(n1 != RARRAY_LEN(other)) {
+          rb_raise(rb_eRangeError, "row counts do not match (%d != %d)",
+              n1, RARRAY_LEN(other));
+        }
+        for(k = 0; k < n1; k++) {
+          vv = FUNCTION(gsl_matrix,row)(&mv.matrix, k);
+          row = rb_ary_entry(other, k);
+          FUNCTION(rb_gsl_vector,set_subvector)(2, row_set_argv, &vv.vector, row);
+        }
+      }
+    } else if(rb_obj_is_kind_of(other, rb_cRange)) {
+      // m[...] = beg..end
+      FUNCTION(get_range,beg_en_n)(other, &beg, &end, &nother, &step);
+      if(n1 * n2 != nother) {
+        rb_raise(rb_eRangeError, "sizes do not match (%d x %d != %d)", n1, n2, nother);
+      }
+      for(k = 0; k < nother; k++) {
+        FUNCTION(gsl_matrix,set)(&mv.matrix, k / n2, k % n2, beg);
+        beg += step;
+      }
+    } else {
+      // m[...] = x
+      FUNCTION(gsl_matrix,set_all)(&mv.matrix, NUMCONV2(other));
+    }
+  }
+
   return obj;
 }
 

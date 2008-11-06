@@ -17,15 +17,15 @@ def test_bidiag_decomp_dim(m, eps)
 
 	b.set_diagonal(d)
 	for i in 0...(nn-1) do
-		b[i][i+1] = sd[i]
+		b[i,i+1] = sd[i]
 	end
 
 	a = u*b*v.trans  
 
 	for i in 0...mm do
 		for j in 0...nn do
-			aij = a[i][j]
-			mij = m[i][j]
+			aij = a[i,j]
+			mij = m[i,j]
       foo = check(aij, mij, eps);
       if foo > 0
         printf("(%3lu,%3lu)[%lu,%lu]: %22.18g   %22.18g\n", M, N, i,j, aij, mij);

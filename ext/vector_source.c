@@ -377,14 +377,51 @@ static VALUE FUNCTION(rb_gsl_vector,owner)(VALUE obj)
   return INT2FIX(v->owner);
 }
 
-static VALUE FUNCTION(rb_gsl_vector,set)(int argc, VALUE *argv, VALUE obj)
+void FUNCTION(rb_gsl_vector,set_subvector)(int argc, VALUE *argv, GSL_TYPE(gsl_vector) *v, VALUE other)
 {
-  GSL_TYPE(gsl_vector) *v, *vother;
+  GSL_TYPE(gsl_vector) *vother;
   QUALIFIED_VIEW(gsl_vector,view) vv;
-  VALUE other;
-  int ii, step;
+  int step;
   size_t i, offset, stride, n, nother;
   BASE beg, end;
+  // assignment to v.subvector(...)
+  parse_subvector_args(argc, argv, v->size, &offset, &stride, &n);
+  vv = FUNCTION(gsl_vector,subvector_with_stride)(v, offset, stride, n);
+  if(rb_obj_is_kind_of(other, GSL_TYPE(cgsl_vector))) {
+    Data_Get_Struct(other, GSL_TYPE(gsl_vector), vother);
+    if(n != vother->size) {
+      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, vother->size);
+    }
+    // TODO Change to gsl_vector_memmove if/when GSL has such a function
+    // because gsl_vector_memcpy does not handle overlapping regions (e.g.
+    // Views) well.
+    FUNCTION(gsl_vector,memcpy)(&vv.vector, vother);
+  } else if(rb_obj_is_kind_of(other, rb_cArray)) {
+    if(n != RARRAY_LEN(other)) {
+      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, RARRAY_LEN(other));
+    }
+    for(i = 0; i < n; i++) {
+      FUNCTION(gsl_vector,set)(&vv.vector, i, NUMCONV2(rb_ary_entry(other, i)));
+    }
+  } else if(rb_obj_is_kind_of(other, rb_cRange)) {
+    FUNCTION(get_range,beg_en_n)(other, &beg, &end, &nother, &step);
+    if(n != nother) {
+      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, nother);
+    }
+    for(i = 0; i < n; i++) {
+      FUNCTION(gsl_vector,set)(&vv.vector, i, beg);
+      beg += step;
+    }
+  } else {
+    FUNCTION(gsl_vector,set_all)(&vv.vector, NUMCONV2(other));
+  }
+}
+
+static VALUE FUNCTION(rb_gsl_vector,set)(int argc, VALUE *argv, VALUE obj)
+{
+  GSL_TYPE(gsl_vector) *v;
+  VALUE other;
+  int ii;
 
   if(argc < 1 || argc > 4) {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1-4)", argc);
@@ -402,36 +439,7 @@ static VALUE FUNCTION(rb_gsl_vector,set)(int argc, VALUE *argv, VALUE obj)
     FUNCTION(gsl_vector,set)(v, (size_t)ii, NUMCONV2(other));
   } else {
     // assignment to v.subvector(...)
-    parse_subvector_args(argc-1, argv, v->size, &offset, &stride, &n);
-    vv = FUNCTION(gsl_vector,subvector_with_stride)(v, offset, stride, n);
-    if(rb_obj_is_kind_of(other, GSL_TYPE(cgsl_vector))) {
-      Data_Get_Struct(other, GSL_TYPE(gsl_vector), vother);
-      if(n != vother->size) {
-        rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, vother->size);
-      }
-      // TODO Change to gsl_vector_memmove if/when GSL has such a function
-      // because gsl_vector_memcpy does not handle overlapping regions (e.g.
-      // Views) well.
-      FUNCTION(gsl_vector,memcpy)(&vv.vector, vother);
-    } else if(rb_obj_is_kind_of(other, rb_cArray)) {
-      if(n != RARRAY_LEN(other)) {
-        rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, RARRAY_LEN(other));
-      }
-      for(i = 0; i < n; i++) {
-        FUNCTION(gsl_vector,set)(&vv.vector, i, NUMCONV2(rb_ary_entry(other, i)));
-      }
-    } else if(rb_obj_is_kind_of(other, rb_cRange)) {
-      FUNCTION(get_range,beg_en_n)(other, &beg, &end, &nother, &step);
-      if(n != nother) {
-        rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, nother);
-      }
-      for(i = 0; i < n; i++) {
-        FUNCTION(gsl_vector,set)(&vv.vector, i, beg);
-        beg += step;
-      }
-    } else {
-      FUNCTION(gsl_vector,set_all)(&vv.vector, NUMCONV2(other));
-    }
+    FUNCTION(rb_gsl_vector,set_subvector)(argc-1, argv, v, other);
   }
 
   return obj;

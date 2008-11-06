@@ -10,10 +10,10 @@ def test_nonsymmv2(m, eps)
   evalre = eval.real
   evecre = evec.real
   a = evecre.inv*m*evecre
-  GSL::Test::test_abs(a[0][0], evalre[0], eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[1][1], evalre[1], eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[0][1], 0, eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[1][0], 0, eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[0,0], evalre[0], eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[1,1], evalre[1], eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[0,1], 0, eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[1,0], 0, eps, "GSL::Matrix::eigen_nonsymmv")
 end
 
 def test_nonsymmv3(m, eps)
@@ -23,15 +23,15 @@ def test_nonsymmv3(m, eps)
   evalre = eval.real
   evecre = evec.real
   a = evecre.inv*m*evecre
-  GSL::Test::test_abs(a[0][0], evalre[0], eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[1][1], evalre[1], eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[2][2], evalre[2], eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[0][1], 0, eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[0][2], 0, eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[1][0], 0, eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[1][2], 0, eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[2][0], 0, eps, "GSL::Matrix::eigen_nonsymmv")
-  GSL::Test::test_abs(a[2][1], 0, eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[0,0], evalre[0], eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[1,1], evalre[1], eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[2,2], evalre[2], eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[0,1], 0, eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[0,2], 0, eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[1,0], 0, eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[1,2], 0, eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[2,0], 0, eps, "GSL::Matrix::eigen_nonsymmv")
+  GSL::Test::test_abs(a[2,1], 0, eps, "GSL::Matrix::eigen_nonsymmv")
 end
 
 m = GSL::Matrix[[1, 2], [3, 2]]

@@ -75,9 +75,9 @@ for i in 0...NDATA do
 
 	dpsi = rng.gaussian(0.05*psi)
 
-	vars[i][0] = r
-	vars[i][1] = theta
-	vars[i][2] = phi		
+	vars[i,0] = r
+	vars[i,1] = theta
+	vars[i,2] = phi		
 
 	data[i] = psi + dpsi
 end

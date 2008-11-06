@@ -23,9 +23,9 @@ procdf = Proc.new { |x, t, y, sigma, jac|
     ti = t[i]
     si = sigma[i]
     ei = Math::exp(-lambda*ti)
-    jac[i][0] = ei/si
-    jac[i][1] = -ti*a*ei/si
-    jac[i][2] = 1.0/si
+    jac[i,0] = ei/si
+    jac[i,1] = -ti*a*ei/si
+    jac[i,2] = 1.0/si
   end
 }
 
@@ -69,9 +69,9 @@ position = solver.position
 
 chi2 = GSL::pow_2(solver.f.dnrm2)
 dof = n - np
-printf("A      = %.5f +/- %.5f\n", position[0], Math::sqrt(chi2/dof*covar[0][0]))
-printf("lambda = %.5f +/- %.5f\n", position[1], Math::sqrt(chi2/dof*covar[1][1]))
-printf("b      = %.5f +/- %.5f\n", position[2], Math::sqrt(chi2/dof*covar[2][2]))
+printf("A      = %.5f +/- %.5f\n", position[0], Math::sqrt(chi2/dof*covar[0,0]))
+printf("lambda = %.5f +/- %.5f\n", position[1], Math::sqrt(chi2/dof*covar[1,1]))
+printf("b      = %.5f +/- %.5f\n", position[2], Math::sqrt(chi2/dof*covar[2,2]))
 
 str = sprintf("%4.3f*exp(-%4.3f*x)+%4.3f", position[0], position[1], position[2])
 

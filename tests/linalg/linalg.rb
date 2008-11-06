@@ -131,12 +131,12 @@ def test_matmult()
   a = GSL::Matrix.alloc([10.0, 5.0, 1.0, 20.0], 2, 2)
   b = GSL::Matrix.alloc([10.0, 5.0, 2.0, 1.0, 3.0, 2.0], 2, 3)
   c = a**b
-  s += ((c[0][0] - 105.0).abs > GSL::DBL_EPSILON) ? 1 : 0
-  s += ((c[0][1] -  65.0).abs > GSL::DBL_EPSILON) ? 1 : 0
-  s += ((c[0][2] -  30.0).abs > GSL::DBL_EPSILON) ? 1 : 0
-  s += ((c[1][0] -  30.0).abs > GSL::DBL_EPSILON) ? 1 : 0
-  s += ((c[1][1] -  65.0).abs > GSL::DBL_EPSILON) ? 1 : 0
-  s += ((c[1][2] -  42.0).abs > GSL::DBL_EPSILON) ? 1 : 0
+  s += ((c[0,0] - 105.0).abs > GSL::DBL_EPSILON) ? 1 : 0
+  s += ((c[0,1] -  65.0).abs > GSL::DBL_EPSILON) ? 1 : 0
+  s += ((c[0,2] -  30.0).abs > GSL::DBL_EPSILON) ? 1 : 0
+  s += ((c[1,0] -  30.0).abs > GSL::DBL_EPSILON) ? 1 : 0
+  s += ((c[1,1] -  65.0).abs > GSL::DBL_EPSILON) ? 1 : 0
+  s += ((c[1,2] -  42.0).abs > GSL::DBL_EPSILON) ? 1 : 0
   return s
 end
 

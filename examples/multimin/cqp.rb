@@ -21,8 +21,8 @@ module GSL::CQP
       cqp_data.A = GSL::Matrix[[10, -1.0], 1, 2]
       cqp_data.b = GSL::Vector.alloc(1); cqp_data.b[0] = 20
       cqp_data.C = GSL::Matrix.calloc(4, 2)
-      cqp_data.C[0][0] = 1.0; cqp_data.C[1][1] = 1.0
-      cqp_data.C[2][0] = -1.0; cqp_data.C[3][1] = -11.0      
+      cqp_data.C[0,0] = 1.0; cqp_data.C[1,1] = 1.0
+      cqp_data.C[2,0] = -1.0; cqp_data.C[3,1] = -11.0      
       cqp_data.d = GSL::Vector[2.0, -50, -50, -50]
       
       
@@ -37,9 +37,9 @@ module GSL::CQP
       cqp_data.C = GSL::Matrix.eye(3, 3)
       cqp_data.d = GSL::Vector.calloc(3)
       
-      cqp_data.Q[0][0] = 4.0; cqp_data.Q[0][1] = 2.0
-      cqp_data.Q[1][0] = 2.0; cqp_data.Q[1][1] = 4.0      
-      cqp_data.Q[2][0] = 2.0; cqp_data.Q[2][2] = 2.0            
+      cqp_data.Q[0,0] = 4.0; cqp_data.Q[0,1] = 2.0
+      cqp_data.Q[1,0] = 2.0; cqp_data.Q[1,1] = 4.0      
+      cqp_data.Q[2,0] = 2.0; cqp_data.Q[2,2] = 2.0            
       Test_Problem.new("Beale's problem", 3, 1, 3, cqp_data, 9.0+1.0/9.0)
     end  
 

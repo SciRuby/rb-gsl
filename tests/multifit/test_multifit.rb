@@ -19,7 +19,7 @@ def test_lmder(fdf, x, xx, f, cov)
   covar = s.covar(0.0)
   for i in 0...fdf.p
     for j in 0...fdf.p
-      test_rel(covar[i][j], cov[i*fdf.p+j], 1e-7, 
+      test_rel(covar[i,j], cov[i*fdf.p+j], 1e-7, 
                "gsl_multifit_covar cov(#{i},#{j})")
     end
   end
@@ -42,7 +42,7 @@ def test_fdf(name, fdf, x, x_final, f_sumsq, sigma)
   s2 = pow(Blas.dnrm2(s.f), 2.0)
   test_rel(s2, f_sumsq, 1e-5, "#{name}, lmsder, |f|^2")
   for i in 0...fdf.p
-    ei = sqrt(s2/(fdf.n-fdf.p))*sqrt(covar[i][i]);
+    ei = sqrt(s2/(fdf.n-fdf.p))*sqrt(covar[i,i]);
     test_rel(ei, sigma[i], 1e-4, "#{name}, sigma(#{i})")
   end
 end

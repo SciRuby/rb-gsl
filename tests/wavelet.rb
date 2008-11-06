@@ -81,14 +81,14 @@ def test_2d(n, tda, t, member, type)
 
   for i in 0...n
     for j in 0...n
-      x1 = m1[i][j]
-      x2 = m2[i][j]
+      x1 = m1[i,j]
+      x2 = m2[i,j]
       mdelta.set(i, j, (x1 - x2).abs)
     end
   end
   i, j = mdelta.max_index
-  x1 = m1[i][j]
-  x2 = m1[i][j]
+  x1 = m1[i,j]
+  x2 = m1[i,j]
   GSL::Test::test((x2 - x1).abs > n*1e-15 ? 1 : 0, "#{w.name}(#{member})-2d #{typename}, n = #{n}, tda = #{tda}, maxerr = #{(x2 - x1).abs}")
   if tda > n
     status = 0

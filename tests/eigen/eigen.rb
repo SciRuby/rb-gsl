@@ -9,8 +9,8 @@ def create_random_symm_matrix(size1, size2, rng, lower, upper)
   for i in 0...size1 do
   	for j in i...size2 do
   		x = rng.uniform()*(upper-lower) + lower
-  		m[i][j] = x
-  		m[j][i] = x
+  		m[i,j] = x
+  		m[j,i] = x
 		end
 	end
 	m
@@ -27,8 +27,8 @@ def create_random_herm_matrix(size1, size2, rng, lower, upper)
 				im = rng.uniform()* (upper - lower) + lower
 			end
 			z = GSL::Complex.alloc(re, im)
-			m[i][j] = z
-			m[j][i] = z.conjugate
+			m[i,j] = z
+			m[j,i] = z.conjugate
 		end
 	end
 	m
@@ -40,8 +40,8 @@ def create_random_posdef_matrix(size1, size2, rng)
   for i in 0...size1 do
   	for j in i...size2 do
         a = pow(x, (j - i).to_f)
-				m[i][j] = a
-				m[j][i] = a
+				m[i,j] = a
+				m[j,i] = a
 		end
 	end
 	m
@@ -54,7 +54,7 @@ def create_random_complex_posdef_matrix(size1, size2, rng)
 	for i in 0...n do
 		x = rng.uniform()
 		z = GSL::Complex.alloc(x, 0.0)
-		m[i][i] = z
+		m[i,i] = z
 	end
 	
 	work = GSL::Vector::Complex.alloc(n)
@@ -76,7 +76,7 @@ def create_random_nonsymm_matrix(size1, size2, rng, lower, upper)
 	m = GSL::Matrix.alloc(size1, size2)
   for i in 0...size1 do
   	for j in 0...size2 do
-  		m[i][j] = rng.uniform()*(upper - lower) + lower
+  		m[i,j] = rng.uniform()*(upper - lower) + lower
   	end
   end
   m
@@ -211,8 +211,8 @@ def test_eigen_schur(a, s, q, z, count, desc, desc2)
 	t2 = q*s
 	for i in 0...n do
 		for j in 0...n do
-			x = t1[i][j]
-			y = t2[i][j]
+			x = t1[i,j]
+			y = t2[i,j]
 	    GSL::test_abs(x, y, 1.0e8 * GSL::DBL_EPSILON,
                        "#{desc}(N=#{n},cnt=#{count}), #{desc2}, schur(#{i},#{j})")
   	end

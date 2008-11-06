@@ -37,7 +37,7 @@ for i in 0...N do
   xi = x[i]
   bw.eval(xi, B)
   for j in 0...NCOEFFS do
-    xx[i][j] = B[j]
+    xx[i,j] = B[j]
   end
 end
 

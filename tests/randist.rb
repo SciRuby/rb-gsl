@@ -26,19 +26,19 @@ def test_shuffle()
     end
     GSL::Ran.shuffle(R_global, x)
     for j in 0...n
-      count.set(x[j], j, count[x[j]][j]+1)
+      count.set(x[j], j, count[x[j],j]+1)
     end
   end
 
   for i in 0...n
     for j in 0...n
       expected = N/10.0
-      d = (count[i][j] - expected).abs
+      d = (count[i,j] - expected).abs
       sigma = d/sqrt(expected)
       if sigma > 5 and d > 1
         status = 1
         GSL::Test::test(status, 
-                        "gsl_ran_shuffle #{i},#{j} (#{count[i][j]/N} observed vs 0.1 expected)")
+                        "gsl_ran_shuffle #{i},#{j} (#{count[i,j]/N} observed vs 0.1 expected)")
       end
     end
   end

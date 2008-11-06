@@ -136,30 +136,58 @@ For 32-bit CPU, the maximum of matrix dimension is 2^30 ~ 1e9.
        irb(main):007:0> m.shape
        => [3, 5]
 
---- GSL::Matrix#set(argv)
---- GSL::Matrix#[]=
-    This method sets elements of the matrix.
+--- GSL::Matrix#set(args, val)
+--- GSL::Matrix#[args]=val
+    If ((|args|)) is empty, behaves as (({#set_all(((|val|)))})).
+
+    If ((|args|)) are two (({Fixnums})), ((|i|)) and ((|j|)), this method
+    sets the ((|(i,j)|))-th element of the matrix ((|self|)) to ((|val|)). 
+
+    If ((|args|)) is a single (({Fixnum})), ((|i|)), this method sets the
+    element at row ((|i|))/((|size2|)), column ((|i|))%((|size2|)) to
+    ((|val|)).
+
+    For (({#set})), if ((|args|)) is empty and ((|val|)) is an (({Array})) of
+    (({Arrays})), the contents of ((|self|)) are set row by row from the
+    elements (i.e. (({Arrays}))) of ((|val|)).
+
+    All other ((|args|)) specify a submatrix (as with (({#submatrix}))) whose
+    elements are assigned from ((|val|)).  In this case, ((|val|)) can be an
+    (({Array})) whose elements will be assigned to the rows of the submatrix,
+    (({Range})) whose elements will be assigned to the elements of the
+    submatrix, (({GSL::Matrix})) whose elements will be assigned to the
+    elements of the submatrix, or (({Numeric})) that will be assigned to all
+    elements of the submatrix.
+
+    NOTE: GSL does not provide a matrix copy function that properly copies data
+    across overlapping memory regions, so watch out if assigning to part of a
+    Matrix from another part of itself (see (({#set})) example of
+    ((<GSL::Vector|URL:vector.html>))).
 
 --- GSL::Matrix#get(args)
 --- GSL::Matrix#[args]
-    If ((|args|)) are two (({Fixnums})), ((|i,j|)), this method returns the
-    ((|(i,j)|))-th element of the matrix ((|self|)). 
+    If ((|args|)) are two (({Fixnums})), ((|i|)) and ((|j|)), this method
+    returns the ((|(i,j)|))-th element of the matrix ((|self|)). 
 
-    If ((|args|)) is a single (({Fixnum})), ((|i|)), this method returns a
-    Vector::View of the ((|i|))-th row of the matrix ((|self|)).  By using this
-    property, it is possible to access to matrix elements and also modify them,
-    with the expressions as (({a = m[i][j]})) and (({m[i][j] = val})).  The
-    results are just same as using the methods (({Matrix#get(i, j)})) and
-    (({Matrix#set(i, j, val)})), but different in manner.  The methods
-    (({get})) and (({set})) use the GSL C functions (({gsl_matrix_get(),
-    gsl_matrix_set()})), i.e. access to the (i, j)-element directly. In the
-    expression (({m[i][j]})), first a (({Vector::View})) object which points to
-    the data of the i-th row of the matrix (({m})) is created, (({m[i]})), and
-    then the j-th element of the (({Vector::View})) object (({m[i]})),
-    expressed as (({m[i][j]})), is extracted/modified.
-
+    If ((|args|)) is a single (({Fixnum})), ((|i|)), this method returns the
+    element at row ((|i|))/((|size2|)), column ((|i|))%((|size2|)).
+    
     All other forms of ((|args|)) are treated as with (({Matrix#submatrix}))
     and a View object is returned.
+
+    NOTE: The behavior of the single (({Fixnum})) argument case is different
+    from earlier versions (< 1.11.2) of Ruby/GSL.  These earlier versions
+    returned a (({Vector::View})) in this case, thereby allowing element
+    (((|i|)),((|j|))) to be accessed as (({m[((|i|))][((|j|))]})).  THIS FORM
+    IS NO LONGER SUPPORTED as of Ruby/GSL 1.11.2.  Existing occurences of this
+    construct will need to be replaced with the backwards compatible and more
+    efficient (({m[((|i|)),((|j|))]})) or, equivalent to the old and less
+    efficient form, (({m[((|i|)),nil][((|j|))]})).  For GSL::Matrix, the old
+    form will now raise a (({NoMethodError})) because (({Float})) has no
+    (({#[]})) method.  For GSL::Matrix::Int, however, the old form will return
+    a single bit from an element of the matrix because (({Fixnum})) and
+    (({Bignum})) have a (({#[]})) method that allows access to the number's
+    individual bits.
 
     Examples:
       irb(main):002:0> m = GSL::Matrix[1..9, 3, 3]
@@ -170,19 +198,38 @@ For 32-bit CPU, the maximum of matrix dimension is 2^30 ~ 1e9.
       irb(main):003:0> m[1, 2]
       => 6.0
       irb(main):004:0> m[1, 2] = 123     # m.set(1, 2, 123)
+      => 123
       irb(main):005:0> m
       => GSL::Matrix
       [ 1.000e+00 2.000e+00 3.000e+00 
         4.000e+00 5.000e+00 1.230e+02 
         7.000e+00 8.000e+00 9.000e+00 ]
       irb(main):006:0> m[1]
-      => GSL::Vector::View
-      [ 4.000e+00 5.000e+00 6.000e+00 ]
+      => 2.0
       irb(main):007:0> m.set([3, 5, 2], [4, 5, 3], [7, 1, 5])
       => GSL::Matrix
       [ 3.000e+00 5.000e+00 2.000e+00 
         4.000e+00 5.000e+00 3.000e+00 
         7.000e+00 1.000e+00 5.000e+00 ]
+      irb(main):008:0> m[1][1]   # old/unsupported form
+      NoMethodError: undefined method `[]' for 2.0:Float
+              from (irb):8
+      irb(main):009:0> m = GSL::Matrix::Int[1..9, 3, 3]
+      => GSL::Matrix::Int
+      [ 1 2 3 
+        4 5 6 
+        7 8 9 ]
+      irb(main):010:0> m[1]      # m[0,1]
+      => 2
+      irb(main):011:0> m[1][0]   # Bit 0 of m[0,1]
+      => 0
+      irb(main):012:0> m[1][1]   # Bit 1 of m[0,1]
+      => 1
+      irb(main):013:0> m[1][2]   # Bit 2 of m[0,1]
+      => 0
+      irb(main):014:0> m[1][3]   # Bit 3 of m[0,1]
+      => 0
+
 
 --- GSL::Matrix#to_a
     Converts the (({Matrix})) ((|self|)) to a Ruby (({Array})) of (({Arrays})).

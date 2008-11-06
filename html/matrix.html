@@ -150,29 +150,51 @@ irb(main):006:0&gt; m.size2
 =&gt; 5
 irb(main):007:0&gt; m.shape
 =&gt; [3, 5]</pre></dd>
-<dt><a name="label-29" id="label-29"><code>GSL::Matrix#set(<var>argv</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#set" -->
-<dt><a name="label-30" id="label-30"><code>GSL::Matrix#[] = </code></a></dt><!-- RDLabel: "GSL::Matrix#[]=" -->
+<dt><a name="label-29" id="label-29"><code>GSL::Matrix#set(<var>args</var>, <var>val</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#set" -->
+<dt><a name="label-30" id="label-30"><code>GSL::Matrix#[args]=val</code></a></dt><!-- RDLabel: "GSL::Matrix#[args]=val" -->
 <dd>
-This method sets elements of the matrix.</dd>
+<p>If <var>args</var> is empty, behaves as <code>#set_all(<var>val</var>)</code>.</p>
+<p>If <var>args</var> are two <code>Fixnums</code>, <var>i</var> and <var>j</var>, this method
+sets the <var>(i,j)</var>-th element of the matrix <var>self</var> to <var>val</var>. </p>
+<p>If <var>args</var> is a single <code>Fixnum</code>, <var>i</var>, this method sets the
+element at row <var>i</var>/<var>size2</var>, column <var>i</var>%<var>size2</var> to
+<var>val</var>.</p>
+<p>For <code>#set</code>, if <var>args</var> is empty and <var>val</var> is an <code>Array</code> of
+<code>Arrays</code>, the contents of <var>self</var> are set row by row from the
+elements (i.e. <code>Arrays</code>) of <var>val</var>.</p>
+<p>All other <var>args</var> specify a submatrix (as with <code>#submatrix</code>) whose
+elements are assigned from <var>val</var>.  In this case, <var>val</var> can be an
+<code>Array</code> whose elements will be assigned to the rows of the submatrix,
+<code>Range</code> whose elements will be assigned to the elements of the
+submatrix, <code>GSL::Matrix</code> whose elements will be assigned to the
+elements of the submatrix, or <code>Numeric</code> that will be assigned to all
+elements of the submatrix.</p>
+<p>NOTE: GSL does not provide a matrix copy function that properly copies data
+across overlapping memory regions, so watch out if assigning to part of a
+Matrix from another part of itself (see <code>#set</code> example of
+<a href="vector.html">GSL::Vector</a>).</p></dd>
 <dt><a name="label-31" id="label-31"><code>GSL::Matrix#get(<var>args</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#get" -->
 <dt><a name="label-32" id="label-32"><code>GSL::Matrix#[args]</code></a></dt><!-- RDLabel: "GSL::Matrix#[args]" -->
 <dd>
-<p>If <var>args</var> are two <code>Fixnums</code>, <var>i,j</var>, this method returns the
-<var>(i,j)</var>-th element of the matrix <var>self</var>. </p>
-<p>If <var>args</var> is a single <code>Fixnum</code>, <var>i</var>, this method returns a
-Vector::View of the <var>i</var>-th row of the matrix <var>self</var>.  By using this
-property, it is possible to access to matrix elements and also modify them,
-with the expressions as <code>a = m[i][j]</code> and <code>m[i][j] = val</code>.  The
-results are just same as using the methods <code>Matrix#get(i, j)</code> and
-<code>Matrix#set(i, j, val)</code>, but different in manner.  The methods
-<code>get</code> and <code>set</code> use the GSL C functions <code>gsl_matrix_get(),
-gsl_matrix_set()</code>, i.e. access to the (i, j)-element directly. In the
-expression <code>m[i][j]</code>, first a <code>Vector::View</code> object which points to
-the data of the i-th row of the matrix <code>m</code> is created, <code>m[i]</code>, and
-then the j-th element of the <code>Vector::View</code> object <code>m[i]</code>,
-expressed as <code>m[i][j]</code>, is extracted/modified.</p>
+<p>If <var>args</var> are two <code>Fixnums</code>, <var>i</var> and <var>j</var>, this method
+returns the <var>(i,j)</var>-th element of the matrix <var>self</var>. </p>
+<p>If <var>args</var> is a single <code>Fixnum</code>, <var>i</var>, this method returns the
+element at row <var>i</var>/<var>size2</var>, column <var>i</var>%<var>size2</var>.</p>
 <p>All other forms of <var>args</var> are treated as with <code>Matrix#submatrix</code>
 and a View object is returned.</p>
+<p>NOTE: The behavior of the single <code>Fixnum</code> argument case is different
+from earlier versions (&lt; 1.11.2) of Ruby/GSL.  These earlier versions
+returned a <code>Vector::View</code> in this case, thereby allowing element
+(<var>i</var>,<var>j</var>) to be accessed as <code>m[<var>i</var>][<var>j</var>]</code>.  THIS FORM
+IS NO LONGER SUPPORTED as of Ruby/GSL 1.11.2.  Existing occurences of this
+construct will need to be replaced with the backwards compatible and more
+efficient <code>m[<var>i</var>,<var>j</var>]</code> or, equivalent to the old and less
+efficient form, <code>m[<var>i</var>,nil][<var>j</var>]</code>.  For GSL::Matrix, the old
+form will now raise a <code>NoMethodError</code> because <code>Float</code> has no
+<code>#[]</code> method.  For GSL::Matrix::Int, however, the old form will return
+a single bit from an element of the matrix because <code>Fixnum</code> and
+<code>Bignum</code> have a <code>#[]</code> method that allows access to the number's
+individual bits.</p>
 <p>Examples:</p>
 <pre>irb(main):002:0&gt; m = GSL::Matrix[1..9, 3, 3]
 =&gt; GSL::Matrix
@@ -182,19 +204,37 @@ and a View object is returned.</p>
 irb(main):003:0&gt; m[1, 2]
 =&gt; 6.0
 irb(main):004:0&gt; m[1, 2] = 123     # m.set(1, 2, 123)
+=&gt; 123
 irb(main):005:0&gt; m
 =&gt; GSL::Matrix
 [ 1.000e+00 2.000e+00 3.000e+00 
   4.000e+00 5.000e+00 1.230e+02 
   7.000e+00 8.000e+00 9.000e+00 ]
 irb(main):006:0&gt; m[1]
-=&gt; GSL::Vector::View
-[ 4.000e+00 5.000e+00 6.000e+00 ]
+=&gt; 2.0
 irb(main):007:0&gt; m.set([3, 5, 2], [4, 5, 3], [7, 1, 5])
 =&gt; GSL::Matrix
 [ 3.000e+00 5.000e+00 2.000e+00 
   4.000e+00 5.000e+00 3.000e+00 
-  7.000e+00 1.000e+00 5.000e+00 ]</pre></dd>
+  7.000e+00 1.000e+00 5.000e+00 ]
+irb(main):008:0&gt; m[1][1]   # old/unsupported form
+NoMethodError: undefined method `[]' for 2.0:Float
+        from (irb):8
+irb(main):009:0&gt; m = GSL::Matrix::Int[1..9, 3, 3]
+=&gt; GSL::Matrix::Int
+[ 1 2 3 
+  4 5 6 
+  7 8 9 ]
+irb(main):010:0&gt; m[1]      # m[0,1]
+=&gt; 2
+irb(main):011:0&gt; m[1][0]   # Bit 0 of m[0,1]
+=&gt; 0
+irb(main):012:0&gt; m[1][1]   # Bit 1 of m[0,1]
+=&gt; 1
+irb(main):013:0&gt; m[1][2]   # Bit 2 of m[0,1]
+=&gt; 0
+irb(main):014:0&gt; m[1][3]   # Bit 3 of m[0,1]
+=&gt; 0</pre></dd>
 <dt><a name="label-33" id="label-33"><code>GSL::Matrix#to_a</code></a></dt><!-- RDLabel: "GSL::Matrix#to_a" -->
 <dd>
 <p>Converts the <code>Matrix</code> <var>self</var> to a Ruby <code>Array</code> of <code>Arrays</code>.</p>

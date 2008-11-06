@@ -27,7 +27,7 @@ begin
     break
   end
   for j in 0...3
-    status |= (c.data[j] != c63[i][j])
+    status |= (c.data[j] != c63[i,j])
   end
 
   s1 = c.valid?
@@ -43,7 +43,7 @@ c.next
 c.next
 
 for j in 0...3 
-  status |= (c.data[j] != c63[19][j])
+  status |= (c.data[j] != c63[19,j])
 end
 GSL::Test.test(status, "GSL::Combination#next on the last combination")
 
@@ -68,7 +68,7 @@ begin
   end
   i -= 1
   for j in 0...3
-    status |= (c.data[j] != c63[i][j])
+    status |= (c.data[j] != c63[i,j])
   end
   s1 = c.valid?
   desc = sprintf("GSL::Combination#valid\(%u\)", i)
@@ -82,7 +82,7 @@ c.prev
 c.prev
 
 for j in 0...3
-  status |= (c.data[j] != c63[0][j])
+  status |= (c.data[j] != c63[0,j])
 end
 GSL::Test.test(status, "GSL::Combination#prev on the first combination")
 

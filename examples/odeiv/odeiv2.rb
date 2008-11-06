@@ -9,10 +9,10 @@ func = Proc.new { |t, y, dydt, mu|
 }
 
 jac = Proc.new { |t, y, dfdy, dfdt, mu|
-  dfdy[0][0] = 0.0
-  dfdy[0][1] = 1.0
-  dfdy[1][0] = -2*mu*y[0]*y[1] - 1.0
-  dfdy[1][1] = -mu*(y[0]*y[0] - 1.0)
+  dfdy[0,0] = 0.0
+  dfdy[0,1] = 1.0
+  dfdy[1,0] = -2*mu*y[0]*y[1] - 1.0
+  dfdy[1,1] = -mu*(y[0]*y[0] - 1.0)
   dfdt[0] = 0.0
   dfdt[1] = 0.0
 }

@@ -32,12 +32,12 @@ H = GSL::Matrix.calloc(NMAX, NMAX)
 H.set_diagonal(1.0/dx/dx + V)
 tmp = -0.5/dx/dx
 for n1 in 1...NMAX do
-  H[n1-1][n1] = tmp
-  H[n1][n1-1] = tmp
+  H[n1-1,n1] = tmp
+  H[n1,n1-1] = tmp
 end
 for n1 in 0...(NMAX-1) do
-  H[n1+1][n1] = tmp
-  H[n1][n1+1] = tmp
+  H[n1+1,n1] = tmp
+  H[n1,n1+1] = tmp
 end
 
 # Calculate eigen values and eigen vectors
@@ -53,7 +53,7 @@ for n1 in 0...NMAX do
   x2[n1] = 0
   for n2 in 0...NMAX do
     x = (n2 - NMAX/2)*dx
-    x2[n1] += GSL::pow_2(evec[n2][n1]*x)
+    x2[n1] += GSL::pow_2(evec[n2,n1]*x)
   end
 end
 

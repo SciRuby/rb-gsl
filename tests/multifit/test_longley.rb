@@ -100,7 +100,7 @@ def test_longley()
 
   for i in 0...Longley_p
     for j in 0...Longley_p
-      test_rel(cov[i][j], expected_cov[i][j], 1e-7, 
+      test_rel(cov[i,j], expected_cov[i,j], 1e-7, 
                "longley gsl_fit_wmultilinear cov(#{i},#{j})")
     end
   end

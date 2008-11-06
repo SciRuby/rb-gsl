@@ -27,8 +27,8 @@ def test_fdf(desc, fdf, initpt, factor, type)
   sum = 0.0
   for i in 0...n
     for j in 0...n
-      u = jac[i][j]
-      su = s.jac[i][j]
+      u = jac[i,j]
+      su = s.jac[i,j]
       r = (u - su).abs/(1e-6 + 1e-6 * u.abs)
       sum += r
       if (u - su).abs > (1e-6 + 1e-6 * u.abs)

@@ -87,7 +87,7 @@ dof = t.size - gauss_p
 chi2 = pow_2(solver.f.dnrm2)
 xsigma = GSL::Vector.alloc(xresult.size)
 xresult.size.times do |i|
-  xsigma[i] = Math::sqrt(chi2/dof*covar[i][i]) * 2.0 
+  xsigma[i] = Math::sqrt(chi2/dof*covar[i,i]) * 2.0 
   # resulting parameters to differ two times than standard error
 end
 puts("a*exp(-(x-x0)**2/2/si**2), chi2/N:%.3g" % (chi2/t.size))

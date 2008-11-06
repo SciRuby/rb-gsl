@@ -15,10 +15,10 @@ procf = Proc.new { |x, params, f|
 procdf = Proc.new { |x, params, jac|
   a = params[0]
   b = params[1]
-  jac[0][0] = -a
-  jac[0][1] = 0
-  jac[1][0] = -2*b*x[0]
-  jac[1][1] = b
+  jac[0,0] = -a
+  jac[0,1] = 0
+  jac[1,0] = -2*b*x[0]
+  jac[1,1] = b
 }
 
 params = [1.0, 10.0]

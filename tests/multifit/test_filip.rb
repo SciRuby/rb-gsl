@@ -146,7 +146,7 @@ def test_filip()
   end
   for i in 0...Filip_p
     for j in 0...Filip_p
-      test_rel(cov[i][j], expected_cov[i][j], 1e-6,
+      test_rel(cov[i,j], expected_cov[i,j], 1e-6,
                 "filip gsl_fit_wmultilinear cov(#{i},#{j})")
     end
   end

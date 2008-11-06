@@ -20,9 +20,9 @@ File.open(file0, "w") do |f|
     y0 = Math::exp(a)
     sigma = 0.1*y0
     val = r.gaussian(sigma)
-    X[i][0] = 1.0
-    X[i][1] = a
-    X[i][2] = a*a
+    X[i,0] = 1.0
+    X[i,1] = a
+    X[i,2] = a*a
     y[i] = y0 + val
     w[i] = 1.0/(sigma*sigma)
     f.printf("%g %g %g\n", a, y[i], sigma)
@@ -34,9 +34,9 @@ c, cov, chisq, status = GSL::MultiFit.wlinear(X, w, y)
 
 printf("# best fit: Y = %g + %g X + %g X^2\n", c[0], c[1], c[2])
 printf("# covariance matrix:\n")
-printf("[ %+.5e, %+.5e, %+.5e\n", cov[0][0], cov[0][1], cov[0][2])
-printf("  %+.5e, %+.5e, %+.5e\n", cov[1][0], cov[1][1], cov[1][2])
-printf("  %+.5e, %+.5e, %+.5e ]\n", cov[2][0], cov[2][1], cov[2][2])
+printf("[ %+.5e, %+.5e, %+.5e\n", cov[0,0], cov[0,1], cov[0,2])
+printf("  %+.5e, %+.5e, %+.5e\n", cov[1,0], cov[1,1], cov[1,2])
+printf("  %+.5e, %+.5e, %+.5e ]\n", cov[2,0], cov[2,1], cov[2,2])
 printf("# chisq = %g\n", chisq)
 
 str = sprintf("%4.3f", c[0])
