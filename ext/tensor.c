@@ -14,7 +14,7 @@
   distributed separately as an add-on package.
  */
 
-#ifdef HAVE_GSL_TENSOR_GSL_TENSOR_H
+#ifdef HAVE_TENSOR_TENSOR_H
 
 #include "rb_gsl_config.h"
 #include "rb_gsl_tensor.h"

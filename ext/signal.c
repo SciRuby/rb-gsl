@@ -106,8 +106,11 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
 {
   double *data1, *data2, *data3;
   size_t stride1, stride2, stride3 = 1, size1, size2;
-  //  int naflag1, naflag2, shape;
+#ifdef HAVE_NARRAY_H
+  int naflag1, naflag2, shape;
+#else
   int naflag1, naflag2;
+#endif
   gsl_vector *v = NULL;
   gsl_fft_halfcomplex_wavetable *table = NULL;
   gsl_fft_real_wavetable *rtable = NULL;

@@ -1,3 +1,7 @@
+Thu Nov  6 17:34:18 JST 2008
+  * Match with the tensor extension version 0.99
+    * now not compatible for the versions older than tensor-0.97.
+	
 Sat Jul 26 08:23:45 JST 2008
   * GSL::Poly.eval now handles complex numbers (GSL-1.11)
   * Added new quasi-random generators "halton" and "reversehalton"

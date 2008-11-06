@@ -152,9 +152,9 @@ void Init_rb_gsl()
 
   rb_gsl_define_const(mgsl);
 
-#ifdef HAVE_GSL_TENSOR_GSL_TENSOR_H
-  Init_gsl_tensor_init(mgsl);
-  Init_gsl_tensor_int_init(mgsl);
+#ifdef HAVE_TENSOR_TENSOR_H
+  Init_tensor_init(mgsl);
+  Init_tensor_int_init(mgsl);
 #endif
 
   Init_gsl_graph(mgsl);
@@ -242,7 +242,7 @@ static void rb_gsl_define_const(VALUE module)
 
 static VALUE rb_gsl_have_tensor(VALUE module)
 {
-#ifdef HAVE_GSL_TENSOR_GSL_TENSOR_H
+#ifdef HAVE_TENSOR_TENSOR_H
   return Qtrue;
 #else
   return Qfalse;

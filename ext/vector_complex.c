@@ -1780,7 +1780,7 @@ static VALUE rb_gsl_vector_complex_indgen_bang(int argc, VALUE *argv[], VALUE ob
     step = NUM2DBL(argv[1]);
     break;
   default:
-    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)");
+    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)", argc);
   }
   Data_Get_Struct(obj, gsl_vector_complex, v);
   for (i = 0, x = start; i < v->size; i++, x += step) {
@@ -1805,7 +1805,7 @@ static VALUE rb_gsl_vector_complex_indgen(int argc, VALUE *argv, VALUE obj)
     step = FIX2INT(argv[1]);
     break;
   default:
-    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)");
+    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)", argc);
   }
   Data_Get_Struct(obj, gsl_vector_complex, v);
   vnew = gsl_vector_complex_calloc(v->size);
@@ -1834,7 +1834,7 @@ static VALUE rb_gsl_vector_complex_indgen_singleton(int argc, VALUE *argv, VALUE
     step = FIX2INT(argv[2]);
     break;
   default:
-    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-3)");
+    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-3)",argc);
   }
   vnew = gsl_vector_complex_calloc(n);
   for (i = 0, j = start; i < vnew->size; i++, j += step) {

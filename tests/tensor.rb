@@ -7,10 +7,12 @@ require("gsl")
 require("./gsl_test2.rb")
 include GSL::Test
 
+exit unless GSL.const_defined?("Tensor")
+
 RANK = 3
 DIMENSION = 5
 
-t = Tensor.alloc(RANK, DIMENSION)
+t = GSL::Tensor.alloc(RANK, DIMENSION)
 
 Test::test2(t.rank == RANK, "#{t.class}.alloc returns valid rank")
 Test::test2(t.dimension == DIMENSION, "#{t.class}_alloc returns valid dimension")
@@ -368,7 +370,8 @@ end
 
 #####
 # Vector and Tensor, subtensors
-v = GSL::Vector.new(0...125)
+#v = GSL::Vector.new(0...125)
+v = GSL::Vector.indgen(125)
 t = v.to_tensor(3, 5)
 Test::test2(t.rank == RANK, "#{v.class}.to_tensor(#{RANK}, #{DIMENSION}) returns valid rank")
 Test::test2(t.dimension == DIMENSION, "#{v.class}.to_tensor(#{RANK}, #{DIMENSION}) returns valid dimension")

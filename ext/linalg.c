@@ -156,8 +156,8 @@ static gsl_vector* get_vector2(VALUE obj,  int *flagv);
 static gsl_matrix* get_matrix(VALUE obj, VALUE klass, int *flagm)
 {
   gsl_matrix *mtmp = NULL, *m = NULL;
-  //  gsl_matrix_view mv;
 #ifdef HAVE_NARRAY_H
+  gsl_matrix_view mv;
   struct NARRAY *na;
 #endif
   if (CLASS_OF(obj) == klass) {
@@ -195,8 +195,8 @@ static gsl_permutation* get_permutation(VALUE obj, size_t size, int *flagp)
 static gsl_vector* get_vector2(VALUE obj, int *flagv)
 {
   gsl_vector *v = NULL;
-  //  gsl_vector_view vv;
 #ifdef HAVE_NARRAY_H
+  gsl_vector_view vv;
   struct NARRAY *na;
 #endif
   if (TYPE(obj) == T_ARRAY) {

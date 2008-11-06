@@ -103,9 +103,9 @@ void Init_wavelet(VALUE module);
 
 void Init_gsl_graph(VALUE module);
 
-#ifdef HAVE_GSL_TENSOR_GSL_TENSOR_H
-void Init_gsl_tensor_init(VALUE module);
-void Init_gsl_tensor_int_init(VALUE module);
+#ifdef HAVE_TENSOR_TENSOR_H
+void Init_tensor_init(VALUE module);
+void Init_tensor_int_init(VALUE module);
 #endif
 
 void Init_gsl_dirac(VALUE module);

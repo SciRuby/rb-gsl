@@ -2,32 +2,32 @@ require 'mkmf'
 
 
 module GSL
-	class Version
-		def initialize(str)
-			@str = str
-			@ary = str.split(".").collect { |elm| elm.to_i }
-		end
-		def to_s; @str; end
-		def inspect; @str; end
-		def >=(ver)
-			ary2 = ver.split(".").collect { |elm| elm.to_i }
-			if @ary[0] > ary2[0]; return true; end			
-			if @ary[0] < ary2[0]; return false; end
-			if @ary[1] > ary2[1]; return true; end
-			if @ary[1] < ary2[1]; return false; end
-			if @ary.size < ary2.size; return false; end
-			if @ary.size == 3 and ary2.size == 3
-				if @ary[2] < ary2[2]; return false; end
-			end		
-			return true
-		end
-		def <(ver)
-			ary2 = ver.split(".").collect { |elm| elm.to_i }
-			if @ary[0] >= ary2[0]; return false; end
-			if @ary[0] >= ary2[0]; return false; end
-			return true
-		end
-	end
+  class Version
+    def initialize(str)
+      @str = str
+      @ary = str.split(".").collect { |elm| elm.to_i }
+    end
+    def to_s; @str; end
+    def inspect; @str; end
+    def >=(ver)
+      ary2 = ver.split(".").collect { |elm| elm.to_i }
+      if @ary[0] > ary2[0]; return true; end			
+      if @ary[0] < ary2[0]; return false; end
+      if @ary[1] > ary2[1]; return true; end
+      if @ary[1] < ary2[1]; return false; end
+      if @ary.size < ary2.size; return false; end
+      if @ary.size == 3 and ary2.size == 3
+        if @ary[2] < ary2[2]; return false; end
+      end		
+      return true
+    end
+    def <(ver)
+      ary2 = ver.split(".").collect { |elm| elm.to_i }
+      if @ary[0] >= ary2[0]; return false; end
+      if @ary[0] >= ary2[0]; return false; end
+      return true
+    end
+  end
 end
 
 if /mingw/ =~ RUBY_PLATFORM
@@ -43,7 +43,7 @@ def gsl_config()
     puts(cflags)
     $CFLAGS += " " + cflags
   end
-   
+  
   IO.popen("#{GSL_CONFIG} --libs") do |f|
     libs = f.gets.chomp
     dir_config("cblas")
@@ -124,7 +124,7 @@ end
 
 #####
 
-$CFLAGS = " -Wall -I../include"
+$CFLAGS = " -Wall -I../include "
 
 begin
   RB_GSL_CONFIG = File.open("../include/rb_gsl_config.h", "w")
@@ -151,10 +151,10 @@ begin
     have_library("ool")
   end
   
-  if have_header("gsl_tensor/gsl_tensor.h")
-    have_library("gsltensor")
+  if have_header("tensor/tensor.h")
+    have_library("tensor")
   end
- 
+
   if have_header("jacobi.h")
     have_library("jacobi")
   end

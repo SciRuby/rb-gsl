@@ -1506,7 +1506,7 @@ static int FUNCTION(mygsl_matrix,equal)(GSL_TYPE(gsl_matrix) *a, GSL_TYPE(gsl_ma
   return 1;
 }
  
-#ifdef HAVE_GSL_TENSOR_GSL_TENSOR_H
+#ifdef HAVE_TENSOR_TENSOR_H
 EXTERN VALUE cgsl_tensor, cgsl_tensor_int;
 VALUE rb_gsl_tensor_equal(int argc, VALUE *argv, VALUE obj);
 VALUE rb_gsl_tensor_int_equal(int argc, VALUE *argv, VALUE obj);
@@ -1534,7 +1534,7 @@ static VALUE FUNCTION(rb_gsl_matrix,equal)(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 2)", argc);
     break;
   }
-#ifdef HAVE_GSL_TENSOR_GSL_TENSOR_H
+#ifdef HAVE_TENSOR_TENSOR_H
   if (TEN_P(bb)) {
     return FUNCTION(rb_gsl_tensor,equal)(argc, argv, obj);
   }
@@ -1546,7 +1546,7 @@ static VALUE FUNCTION(rb_gsl_matrix,equal)(int argc, VALUE *argv, VALUE obj)
   else return Qfalse;
 }
 
-#ifdef HAVE_GSL_TENSOR_GSL_TENSOR_H
+#ifdef HAVE_TENSOR_TENSOR_H
 #ifdef TEN_P
 #undef TEN_P
 #endif
@@ -1587,7 +1587,7 @@ static VALUE FUNCTION(rb_gsl_matrix,equal_singleton)(int argc, VALUE *argv, VALU
   return Qtrue;
 }
 
-#ifdef HAVE_GSL_TENSOR_GSL_TENSOR_H
+#ifdef HAVE_TENSOR_TENSOR_H
 #include "rb_gsl_tensor.h"
 static VALUE FUNCTION(rb_gsl_matrix,to_tensor)(VALUE obj)
 {
@@ -2546,7 +2546,7 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
 		   FUNCTION(rb_gsl_matrix,collect_bang), 0);
   rb_define_alias(GSL_TYPE(cgsl_matrix), "map", "collect");
   rb_define_alias(GSL_TYPE(cgsl_matrix), "map!", "collect!");
-#ifdef HAVE_GSL_TENSOR_GSL_TENSOR_H
+#ifdef HAVE_TENSOR_TENSOR_H
   rb_define_method(GSL_TYPE(cgsl_matrix), "to_tensor", 
 		   FUNCTION(rb_gsl_matrix,to_tensor), 0);
 #endif
