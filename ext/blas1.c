@@ -234,14 +234,16 @@ static VALUE rb_gsl_blas_daxpy(int argc, VALUE *argv, VALUE obj)
   case T_OBJECT:
     get_vector2(argc-1, argv+1, obj, &x, &y);
     Need_Float(argv[0]);
-    a = RFLOAT(argv[0])->value;
+    //    a = RFLOAT(argv[0])->value;
+    a = NUM2DBL(argv[0]);
     break;
   default:
     Data_Get_Struct(obj, gsl_vector, x);
     if (argc != 2) rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)",
 			    argc);
     Need_Float(argv[0]);
-    a = RFLOAT(argv[0])->value;
+    //    a = RFLOAT(argv[0])->value;
+    a = NUM2DBL(argv[0]);
     Data_Get_Vector(argv[1], y);
     break;
   }
@@ -259,7 +261,8 @@ static VALUE rb_gsl_blas_daxpy2(int argc, VALUE *argv, VALUE obj)
   case T_OBJECT:
     get_vector2(argc-1, argv+1, obj, &x, &y);
     Need_Float(argv[0]);
-    a = RFLOAT(argv[0])->value;
+    //    a = RFLOAT(argv[0])->value;
+    a = NUM2DBL(argv[0]);
     break;
   default:
     Data_Get_Struct(obj, gsl_vector, x);
@@ -267,7 +270,8 @@ static VALUE rb_gsl_blas_daxpy2(int argc, VALUE *argv, VALUE obj)
 			    argc);
     Need_Float(argv[0]);
     CHECK_VECTOR(argv[1]);
-    a = RFLOAT(argv[0])->value;
+    //    a = RFLOAT(argv[0])->value;
+    a = NUM2DBL(argv[0]);
     Data_Get_Struct(argv[1], gsl_vector, y);
     break;
   }
@@ -344,7 +348,8 @@ static VALUE rb_gsl_blas_dscal(int argc, VALUE *argv, VALUE obj)
 			    argc);
     Need_Float(argv[0]);
     CHECK_VECTOR(argv[1]);
-    a = RFLOAT(argv[0])->value;
+    //    a = RFLOAT(argv[0])->value;
+    a = NUM2DBL(argv[0]);
     Data_Get_Struct(argv[1], gsl_vector, x);
     gsl_blas_dscal(a, x);
     return argv[1];
@@ -353,7 +358,8 @@ static VALUE rb_gsl_blas_dscal(int argc, VALUE *argv, VALUE obj)
     if (argc != 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)",
 			    argc);
     Need_Float(argv[0]);
-    a = RFLOAT(argv[0])->value;
+    //    a = RFLOAT(argv[0])->value;
+    a = NUM2DBL(argv[0]);
     Data_Get_Struct(obj, gsl_vector, x);
     gsl_blas_dscal(a, x);
     return obj;
@@ -403,7 +409,8 @@ static VALUE rb_gsl_blas_zdscal(int argc, VALUE *argv, VALUE obj)
 			    argc);
     Need_Float(argv[0]);
     CHECK_VECTOR_COMPLEX(argv[1]);
-    a = RFLOAT(argv[0])->value;
+    //    a = RFLOAT(argv[0])->value;
+    a = NUM2DBL(argv[0]);
     Data_Get_Struct(argv[1], gsl_vector_complex, x);
     gsl_blas_zdscal(a, x);
     return argv[1];

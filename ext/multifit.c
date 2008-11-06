@@ -236,7 +236,7 @@ static VALUE rb_gsl_multifit_fdfsolver_new(int argc, VALUE *argv, VALUE klass)
       }
       break;
     default:
-      rb_raise(rb_eTypeError, "wrong argument type (Fixnum or String)",
+      rb_raise(rb_eTypeError, "wrong argument type %s (Fixnum or String)",
 	       rb_class2name(CLASS_OF(argv[0])));
       break;
     }

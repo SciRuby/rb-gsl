@@ -136,7 +136,7 @@ static const gsl_wavelet_type* rb_gsl_wavelet_get_type_int(int t)
     T = gsl_wavelet_bspline_centered;
     break;
   default:
-    rb_raise(rb_eArgError, "unknown type %s", t);
+    rb_raise(rb_eArgError, "unknown type %d", t);
     break;
   }
   return T;

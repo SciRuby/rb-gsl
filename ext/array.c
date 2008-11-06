@@ -216,7 +216,8 @@ void carray_set_from_rarray(double *a, VALUE ary)
   for (i = 0; i < size; i++) {
     val = rb_ary_entry(ary, i);
     Need_Float(val);
-    a[i] = RFLOAT(val)->value;
+    a[i] = NUM2DBL(val);
+    //    a[i] = RFLOAT(val)->value;
   }
 }
 
@@ -485,9 +486,9 @@ int gsl_vector_complex_div(gsl_vector_complex *cv, const gsl_vector_complex *cv2
 
 VALUE rb_gsl_range2ary(VALUE obj)
 {
-  double beg, en;
-  size_t n;
-  int step;
+  //  double beg, en;
+  //  size_t n;
+  //  int step;
   VALUE ary;
   if (CLASS_OF(obj) != rb_cRange) 
     rb_raise(rb_eTypeError, "wrong argument type %s (Range expected)",

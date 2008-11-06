@@ -106,13 +106,14 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
 {
   double *data1, *data2, *data3;
   size_t stride1, stride2, stride3 = 1, size1, size2;
-  int naflag1, naflag2, shape;
+  //  int naflag1, naflag2, shape;
+  int naflag1, naflag2;
   gsl_vector *v = NULL;
   gsl_fft_halfcomplex_wavetable *table = NULL;
   gsl_fft_real_wavetable *rtable = NULL;
   gsl_fft_real_workspace *space = NULL, *space2 = NULL;
   int flagt = 0, flagw = 0;
-  size_t i;
+  //  size_t i;
   gsl_vector *vtmp1 = NULL, *vtmp2 = NULL;
   VALUE ary;
   switch (argc) {

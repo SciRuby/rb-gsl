@@ -158,7 +158,8 @@ static VALUE rb_gsl_math_eval(double (*func)(const double), VALUE xx)
     for (i = 0; i < size; i++) {
       x = rb_ary_entry(xx, i);
       Need_Float(x);
-      rb_ary_store(ary, i, rb_float_new((*func)(RFLOAT(x)->value)));
+      //      rb_ary_store(ary, i, rb_float_new((*func)(RFLOAT(x)->value)));
+      rb_ary_store(ary, i, rb_float_new((*func)(NUM2DBL(x))));
     }
     return ary;
     break;
@@ -217,7 +218,8 @@ static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE
       x = rb_ary_entry(xx, i);
       y = rb_ary_entry(yy, i);
       Need_Float(x); Need_Float(y);
-      rb_ary_store(ary, i, rb_float_new((*func)(RFLOAT(x)->value, RFLOAT(y)->value)));
+      //      rb_ary_store(ary, i, rb_float_new((*func)(RFLOAT(x)->value, RFLOAT(y)->value)));
+      rb_ary_store(ary, i, rb_float_new((*func)(NUM2DBL(x), NUM2DBL(y))));
     }
     return ary;
     break;
@@ -420,7 +422,8 @@ static VALUE rb_gsl_pow_int(VALUE obj, VALUE xx, VALUE nn)
     for (i = 0; i < size; i++) {
       x = rb_ary_entry(xx, i);
       Need_Float(x);
-      rb_ary_store(ary, i, rb_float_new(gsl_pow_int(RFLOAT(x)->value, n)));
+      //      rb_ary_store(ary, i, rb_float_new(gsl_pow_int(RFLOAT(x)->value, n)));
+      rb_ary_store(ary, i, rb_float_new(gsl_pow_int(NUM2DBL(x), n)));
     }
     return ary;
     break;

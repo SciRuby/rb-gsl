@@ -189,11 +189,11 @@ static VALUE rb_gsl_interp_evaluate(VALUE obj, VALUE xxa, VALUE yya, VALUE xx,
   Data_Get_Struct(obj, rb_gsl_interp, rgi);
   ptrx = get_vector_ptr(xxa, &stridex, &size);
   if (size != rgi->p->size ){
-    rb_raise(rb_eTypeError, "size mismatch (xa:%d != %d)", size, rgi->p->size);
+    rb_raise(rb_eTypeError, "size mismatch (xa:%d != %d)",  (int) size, (int) rgi->p->size);
   }
   ptry = get_vector_ptr(yya, &stridey, &size);
   if (size != rgi->p->size ){
-    rb_raise(rb_eTypeError, "size mismatch (ya:%d != %d)", size, rgi->p->size);
+    rb_raise(rb_eTypeError, "size mismatch (ya:%d != %d)", (int) size, (int) rgi->p->size);
   }
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
   switch (TYPE(xx)) {

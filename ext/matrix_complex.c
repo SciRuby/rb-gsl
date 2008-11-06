@@ -1366,7 +1366,7 @@ static VALUE rb_gsl_matrix_complex_indgen_bang(int argc, VALUE *argv[], VALUE ob
     step = NUM2DBL(argv[1]);
     break;
   default:
-    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)");
+    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)", argc);
   }
   Data_Get_Struct(obj, gsl_matrix_complex, m);
   x = start;
@@ -1395,7 +1395,7 @@ static VALUE rb_gsl_matrix_complex_indgen(int argc, VALUE *argv, VALUE obj)
     step = NUM2DBL(argv[1]);
     break;
   default:
-    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)");
+    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)", argc);
   }
   Data_Get_Struct(obj, gsl_matrix_complex, m);
   mnew = gsl_matrix_complex_calloc(m->size1, m->size2);
@@ -1431,7 +1431,7 @@ static VALUE rb_gsl_matrix_complex_indgen_singleton(int argc, VALUE *argv, VALUE
     step = NUM2DBL(argv[3]);
     break;
   default:
-    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-4)");
+    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-4)", argc);
   }
   mnew = gsl_matrix_complex_calloc(n1, n2);
   x = start;

@@ -1237,7 +1237,7 @@ static VALUE rb_gsl_graph_graph(int argc, VALUE *argv, VALUE obj)
     }
     break;
   default:
-    rb_raise(rb_eArgError, "wrong number of argumeuts (%d for 1-3");
+    rb_raise(rb_eArgError, "wrong number of argumeuts (%d for 1-3)", argc);
     break;
   }
   if (VECTOR_P(g->xdata)) Data_Get_Struct(g->xdata, gsl_vector, x);
@@ -1306,7 +1306,7 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
     }
     break;
   default:
-    rb_raise(rb_eArgError, "wrong number of argumeuts (%d for 1-3");
+    rb_raise(rb_eArgError, "wrong number of argumeuts (%d for 1-3)", argc);
     break;
   }
   if (VECTOR_P(g->xdata)) Data_Get_Struct(g->xdata, gsl_vector, x);

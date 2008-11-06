@@ -58,8 +58,10 @@ static int get_a_b(int argc, VALUE *argv, int argstart, double *a, double *b)
     aa = rb_ary_entry(argv[argstart], 0);
     bb = rb_ary_entry(argv[argstart], 1);
     Need_Float(aa); Need_Float(bb);
-    *a = RFLOAT(aa)->value;
-    *b = RFLOAT(bb)->value;
+    //    *a = RFLOAT(aa)->value;
+    //    *b = RFLOAT(bb)->value;
+    *a = NUM2DBL(aa);
+    *b = NUM2DBL(bb);
     itmp = argstart + 1;
   } else {
     Need_Float(argv[argstart]); Need_Float(argv[argstart+1]);

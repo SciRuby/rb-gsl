@@ -301,7 +301,7 @@ static VALUE rb_gsl_histogram_set_ranges_uniform(int argc, VALUE *argv, VALUE ob
     xmax = NUM2DBL(argv[1]);
     break;
   default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 2)");
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 2)", argc);
     break;
   }
   Data_Get_Struct(obj, gsl_histogram, h);

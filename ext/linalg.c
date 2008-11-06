@@ -156,7 +156,7 @@ static gsl_vector* get_vector2(VALUE obj,  int *flagv);
 static gsl_matrix* get_matrix(VALUE obj, VALUE klass, int *flagm)
 {
   gsl_matrix *mtmp = NULL, *m = NULL;
-  gsl_matrix_view mv;
+  //  gsl_matrix_view mv;
 #ifdef HAVE_NARRAY_H
   struct NARRAY *na;
 #endif
@@ -195,7 +195,7 @@ static gsl_permutation* get_permutation(VALUE obj, size_t size, int *flagp)
 static gsl_vector* get_vector2(VALUE obj, int *flagv)
 {
   gsl_vector *v = NULL;
-  gsl_vector_view vv;
+  //  gsl_vector_view vv;
 #ifdef HAVE_NARRAY_H
   struct NARRAY *na;
 #endif
@@ -1085,7 +1085,8 @@ static VALUE rb_gsl_linalg_QRLQ_QTvec(int argc, VALUE *argv, VALUE obj,
   VALUE ret;
   switch (TYPE(obj)) {
   case T_MODULE:  case T_CLASS:  case T_OBJECT:
-    if (argc != 3) rb_raise(rb_eArgError, "wrong number of arguments (%d for 3)"); 
+    if (argc != 3) rb_raise(rb_eArgError, 
+			    "wrong number of arguments (%d for 3)", argc); 
     CHECK_MATRIX(argv[0]); CHECK_VECTOR(argv[1]); CHECK_VECTOR(argv[2]);
     Data_Get_Struct(argv[0], gsl_matrix, QR);
     Data_Get_Struct(argv[1], gsl_vector, tau);
@@ -1093,7 +1094,8 @@ static VALUE rb_gsl_linalg_QRLQ_QTvec(int argc, VALUE *argv, VALUE obj,
     ret = argv[2];
     break;
   default:
-    if (argc != 2) rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)"); 
+    if (argc != 2) rb_raise(rb_eArgError, 
+			    "wrong number of arguments (%d for 2)", argc); 
     CHECK_VECTOR(argv[2]); CHECK_VECTOR(argv[1]);
     Data_Get_Struct(obj, gsl_matrix, QR);
     Data_Get_Struct(argv[0], gsl_vector, tau);
