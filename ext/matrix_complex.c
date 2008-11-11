@@ -20,11 +20,15 @@ enum {
   GSL_MATRIX_COMPLEX_DIV,
 };
 
+// From complex.c
+gsl_complex rb_gsl_obj_to_gsl_complex(VALUE obj, gsl_complex *z);
+
+// From ext/vector_source.c
+void get_range_beg_en_n(VALUE range, double *beg, double *en, size_t *n, int *step);
+
 // From ext/matrix_source.c
 void parse_submatrix_args(int argc, VALUE *argv, size_t size1, size_t size2,
     size_t *i, size_t *j, size_t *n1, size_t *n2);
-
-static VALUE rb_gsl_matrix_complex_arithmetics(int flag, VALUE obj, VALUE bb);
 
 static VALUE rb_gsl_matrix_complex_arithmetics(int flag, VALUE obj, VALUE bb)
 {
@@ -256,52 +260,145 @@ static VALUE rb_gsl_matrix_complex_identity(VALUE klass, VALUE nn)
   return  Data_Wrap_Struct(klass, 0, gsl_matrix_complex_free, m);
 }
 
-static VALUE rb_gsl_matrix_complex_set(int argc, VALUE *argv, VALUE obj)
+static VALUE rb_gsl_matrix_complex_set_zero(VALUE obj)
 {
   gsl_matrix_complex *m = NULL;
-  gsl_complex *z = NULL, tmp;
-  size_t i, j;
-  if (argc < 3) rb_raise(rb_eArgError, "wrong number of arguments");
-  CHECK_FIXNUM(argv[0]);
-  CHECK_FIXNUM(argv[1]);
   Data_Get_Struct(obj, gsl_matrix_complex, m);
-  i = FIX2INT(argv[0]);
-  j = FIX2INT(argv[1]);
-  switch (argc) {
-  case 3:
-    if (rb_obj_is_kind_of(argv[2], cgsl_complex)) {
-      Data_Get_Struct(argv[2], gsl_complex, z);
-    } else {
-      switch(TYPE(argv[2])) {
-      case T_ARRAY:
-	tmp = ary2complex(argv[2]);
-	z = &tmp;
-	break;
-      case T_FLOAT:
-      case T_BIGNUM:
-      case T_FIXNUM:
-	tmp.dat[0] = NUM2DBL(argv[2]);
-	tmp.dat[1] = 0.0;
-	z = &tmp;
-	break;
-      default:
-	rb_raise(rb_eTypeError, 
-		 "wrong argument type %s", rb_class2name(CLASS_OF(argv[2])));
-	break;
-      }
-      break;
-    }
+  gsl_matrix_complex_set_zero(m);
+  return obj;
+}
+
+static VALUE rb_gsl_matrix_complex_set_identity(VALUE obj)
+{
+  gsl_matrix_complex *m = NULL;
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  gsl_matrix_complex_set_identity(m);
+  return obj;
+}
+
+static VALUE rb_gsl_matrix_complex_set_all(VALUE obj, VALUE s)
+{
+  gsl_matrix_complex *m = NULL;
+  gsl_complex c, *z = NULL;
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  switch (TYPE(s)) {
+  case T_FLOAT:
+  case T_BIGNUM:
+  case T_FIXNUM:
+    c.dat[0] = NUM2DBL(s);
+    c.dat[1] = 0.0;
+    gsl_matrix_complex_set_all(m, c);
     break;
-  case 4:
-    tmp.dat[0] = NUM2DBL(argv[2]);
-    tmp.dat[1] = NUM2DBL(argv[3]);
-    z = &tmp;
+  case T_ARRAY:
+    c.dat[0] = NUM2DBL(rb_ary_entry(s, 0));
+    c.dat[1] = NUM2DBL(rb_ary_entry(s, 1));
+    gsl_matrix_complex_set_all(m, c);
     break;
   default:
-    rb_raise(rb_eArgError, "wrong number of arguments");
+    if (rb_obj_is_kind_of(s, cgsl_complex)) {
+      Data_Get_Struct(s, gsl_complex, z);
+      gsl_matrix_complex_set_all(m, *z);
+    } else {
+      rb_raise(rb_eTypeError, 
+	       "wrong argument type %s", rb_class2name(CLASS_OF(s)));
+    }
     break;
   }
-  gsl_matrix_complex_set(m, i, j, *z);
+  return obj;
+}
+
+void rb_gsl_vector_complex_set_subvector(int argc, VALUE *argv, gsl_vector_complex *v, VALUE other);
+static VALUE rb_gsl_matrix_complex_set(int argc, VALUE *argv, VALUE obj)
+{
+  gsl_matrix_complex *m = NULL, *mother;
+  gsl_matrix_complex_view mv;
+  gsl_vector_complex_view vv;
+  gsl_complex tmp;
+  VALUE other, row, row_set_argv[2];
+  int ii, ij, step;
+  size_t i, j, k, n1, n2, nother;
+  double beg, end;
+
+  if(argc < 1 || argc > 5) {
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1-5)", argc);
+  }
+
+  Data_Get_Struct(obj, gsl_matrix_complex, m);
+  other = argv[argc-1];
+
+  if(argc == 1) {
+    // m[] = x
+    gsl_matrix_complex_set_all(m, rb_gsl_obj_to_gsl_complex(other, NULL));
+  } else if(argc == 3 && TYPE(argv[0]) == T_FIXNUM && TYPE(argv[1]) == T_FIXNUM) {
+    // m[i,j] = x
+    ii = FIX2INT(argv[0]);
+    ij = FIX2INT(argv[1]);
+    if(ii < 0) ii += m->size1;
+    if(ij < 0) ij += m->size2;
+    gsl_matrix_complex_set(m, (size_t)ii, (size_t)ij, rb_gsl_obj_to_gsl_complex(other, NULL));
+  } else if(TYPE(argv[0]) == T_ARRAY) {
+    // m.set(row0...)
+    row_set_argv[0] = INT2FIX(0);
+    row_set_argv[1] = INT2FIX(m->size2);
+
+    for(k = 0; k < argc && k < m->size1; k++) {
+      vv = gsl_matrix_complex_row(m, k);
+      rb_gsl_vector_complex_set_subvector(2, row_set_argv, &vv.vector, argv[k]);
+    }
+  } else {
+    // x -> assignment to m.submatrix(i...)
+    parse_submatrix_args(argc-1, argv, m->size1, m->size2, &i, &j, &n1, &n2);
+    if(n1 == 0) n1 = 1;
+    if(n2 == 0) n2 = 1;
+    mv = gsl_matrix_complex_submatrix(m, i, j, n1, n2);
+    if(rb_obj_is_kind_of(other, cgsl_matrix_complex)) {
+      // m[...] = m_other
+      Data_Get_Struct(other, gsl_matrix_complex, mother);
+      if(n1 * n2 != mother->size1 * mother->size2) {
+        rb_raise(rb_eRangeError, "sizes do not match (%d x %d != %d x %d)",
+            n1, n2, mother->size1, mother->size2);
+      }
+      // TODO Change to gsl_matrix_memmove if/when GSL has such a function
+      // because gsl_matrix_memcpy does not handle overlapping regions (e.g.
+      // Views) well.
+      gsl_matrix_complex_memcpy(&mv.matrix, mother);
+    } else if(rb_obj_is_kind_of(other, rb_cArray)) {
+      row_set_argv[0] = INT2FIX(0);
+      row_set_argv[1] = INT2FIX(n2);
+
+      if(n1 == 1) {
+        // m[...] = [col0, ...] # single row
+        vv = gsl_matrix_complex_row(&mv.matrix, 0);
+        rb_gsl_vector_complex_set_subvector(2, row_set_argv, &vv.vector, other);
+      } else {
+        // m[...] = [[row0], [row1], ...] # multiple rows
+        if(n1 != RARRAY_LEN(other)) {
+          rb_raise(rb_eRangeError, "row counts do not match (%d != %d)",
+              n1, RARRAY_LEN(other));
+        }
+        for(k = 0; k < n1; k++) {
+          vv = gsl_matrix_complex_row(&mv.matrix, k);
+          row = rb_ary_entry(other, k);
+          rb_gsl_vector_complex_set_subvector(2, row_set_argv, &vv.vector, row);
+        }
+      }
+    } else if(rb_obj_is_kind_of(other, rb_cRange)) {
+      // m[...] = beg..end
+      get_range_beg_en_n(other, &beg, &end, &nother, &step);
+      if(n1 * n2 != nother) {
+        rb_raise(rb_eRangeError, "sizes do not match (%d x %d != %d)", n1, n2, nother);
+      }
+      tmp = gsl_complex_rect(beg, 0.0);
+      for(k = 0; k < nother; k++) {
+        gsl_matrix_complex_set(&mv.matrix, k / n2, k % n2, tmp);
+        GSL_SET_REAL(&tmp, GSL_REAL(tmp) + step);
+      }
+    } else {
+      // m[...] = x
+      gsl_matrix_complex_set_all(&mv.matrix, rb_gsl_obj_to_gsl_complex(other, NULL));
+    }
+  }
+
   return obj;
 }
 
@@ -803,53 +900,6 @@ static VALUE rb_gsl_matrix_complex_add_diagonal(VALUE obj, VALUE s)
     if (rb_obj_is_kind_of(s, cgsl_complex)) {
       Data_Get_Struct(s, gsl_complex, z);
       gsl_matrix_complex_add_diagonal(m, *z);
-    } else {
-      rb_raise(rb_eTypeError, 
-	       "wrong argument type %s", rb_class2name(CLASS_OF(s)));
-    }
-    break;
-  }
-  return obj;
-}
-
-static VALUE rb_gsl_matrix_complex_set_zero(VALUE obj)
-{
-  gsl_matrix_complex *m = NULL;
-  Data_Get_Struct(obj, gsl_matrix_complex, m);
-  gsl_matrix_complex_set_zero(m);
-  return obj;
-}
-
-static VALUE rb_gsl_matrix_complex_set_identity(VALUE obj)
-{
-  gsl_matrix_complex *m = NULL;
-  Data_Get_Struct(obj, gsl_matrix_complex, m);
-  gsl_matrix_complex_set_identity(m);
-  return obj;
-}
-
-static VALUE rb_gsl_matrix_complex_set_all(VALUE obj, VALUE s)
-{
-  gsl_matrix_complex *m = NULL;
-  gsl_complex c, *z = NULL;
-  Data_Get_Struct(obj, gsl_matrix_complex, m);
-  switch (TYPE(s)) {
-  case T_FLOAT:
-  case T_BIGNUM:
-  case T_FIXNUM:
-    c.dat[0] = NUM2DBL(s);
-    c.dat[1] = 0.0;
-    gsl_matrix_complex_set_all(m, c);
-    break;
-  case T_ARRAY:
-    c.dat[0] = NUM2DBL(rb_ary_entry(s, 0));
-    c.dat[1] = NUM2DBL(rb_ary_entry(s, 1));
-    gsl_matrix_complex_set_all(m, c);
-    break;
-  default:
-    if (rb_obj_is_kind_of(s, cgsl_complex)) {
-      Data_Get_Struct(s, gsl_complex, z);
-      gsl_matrix_complex_set_all(m, *z);
     } else {
       rb_raise(rb_eTypeError, 
 	       "wrong argument type %s", rb_class2name(CLASS_OF(s)));
