@@ -384,6 +384,7 @@ void FUNCTION(rb_gsl_vector,set_subvector)(int argc, VALUE *argv, GSL_TYPE(gsl_v
   int step;
   size_t i, offset, stride, n, nother;
   BASE beg, end;
+
   // assignment to v.subvector(...)
   parse_subvector_args(argc, argv, v->size, &offset, &stride, &n);
   vv = FUNCTION(gsl_vector,subvector_with_stride)(v, offset, stride, n);
