@@ -15,11 +15,26 @@
 
 VALUE cgsl_complex;
 
-// Initialize gsl_complex from Ruby object
-void rb_gsl_obj_to_gsl_complex(VALUE obj, gsl_complex *z)
+// Set real/imag components of gsl_complex from Ruby object.
+// If z is NULL, it is as if it pointed to a temporary (0+0i) value,
+// otherwise the gsl_complex pointed to z is modified.
+// Returns the resulting gsl_complex value in both cases.
+//
+// NOTE: This function does not always set both components of *z, so if *z is
+// non-null, it should be initialized before calling this function.
+gsl_complex rb_gsl_obj_to_gsl_complex(VALUE obj, gsl_complex *z)
 {
   VALUE vre, vim;
-  gsl_complex * zz;
+  gsl_complex tmp, *zz;
+
+  if(!z) {
+    z = &tmp;
+    GSL_SET_COMPLEX(z, 0.0, 0.0);
+  }
+
+  if(obj == Qnil) {
+    return *z;
+  }
 
   switch(TYPE(obj)) {
   case T_ARRAY:
@@ -39,11 +54,12 @@ void rb_gsl_obj_to_gsl_complex(VALUE obj, gsl_complex *z)
       *z = *zz;
     } else {
       rb_raise(rb_eTypeError,
-          "wrong type %s, (Array, Float, Integer, or GSL::Complex expected)",
+          "wrong type %s, (nil, Array, Float, Integer, or GSL::Complex expected)",
           rb_class2name(CLASS_OF(obj)));
     }
     break;
   }
+  return *z;
 }
 
 static VALUE rb_gsl_complex_new(int argc, VALUE *argv, VALUE klass)
