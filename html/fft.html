@@ -95,7 +95,32 @@ N-1      z(t = N-1)      x(f = -1/(N Delta))</pre>
 <p>When N is even the location N/2 contains the most positive and negative
 frequencies +1/(2 Delta), -1/(2 Delta) which are equivalent. If N is odd then
 general structure of the table above still applies, but N/2 does not appear.</p>
-<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-4">Radix-2 FFT routines for complex data</a></h3><!-- RDLabel: "Radix-2 FFT routines for complex data" -->
+<p><a href="vector_complex.html">GSL::Vector::Complex</a> provides four methods for
+shifting the frequency domain data between <em>FFT order</em>, shown in the table
+above, and <em>natural order</em>, which has the most negative freqeuncy component
+first, the zero frequency component in the middle, and the most positive
+frequency component last.</p>
+<dl>
+<dt><a name="label-4" id="label-4"><code>GSL::Vector::Complex#fftshift</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fftshift" -->
+<dt><a name="label-5" id="label-5"><code>GSL::Vector::Complex#fftshift!</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fftshift!" -->
+<dd>
+Shifts the data of <var>self</var> from FFT order to natural order.  The
+<code>#fftshift</code> method leaves <var>self</var> unmodified and returns a new
+<code>GSL::Vector::Complex</code> object containing the shifted data.  The
+<code>#fftshift!</code> method modifies <var>self</var> in-place and returns
+<var>self</var>.  Note that <code>#fftshift</code> and <code>#ifftshift</code> are equivalent
+for even lengths, but not for odd lengths.</dd>
+<dt><a name="label-6" id="label-6"><code>GSL::Vector::Complex#ifftshift</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#ifftshift" -->
+<dt><a name="label-7" id="label-7"><code>GSL::Vector::Complex#ifftshift!</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#ifftshift!" -->
+<dd>
+Shifts the data of <var>self</var> from natural order to FFT order.  The
+<code>#ifftshift</code> method leaves <var>self</var> unmodified and returns a new
+<code>GSL::Vector::Complex</code> object containing the shifted data.  The
+<code>#ifftshift!</code> method modifies <var>self</var> in-place and returns
+<var>self</var>.  Note that <code>#fftshift</code> and <code>#ifftshift</code> are equivalent
+for even lengths, but not for odd lengths.</dd>
+</dl>
+<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-8">Radix-2 FFT routines for complex data</a></h3><!-- RDLabel: "Radix-2 FFT routines for complex data" -->
 
 <p>The radix-2 algorithms are simple and compact, although not necessarily the 
 most efficient. They use the Cooley-Tukey algorithm to compute complex 
@@ -105,25 +130,25 @@ at the expense of requiring additional working space.</p>
 <p><em>The FFT methods described below return FFTed data, and the input vector is 
 not changed. Use methods with '!' as <code>tranform!</code> for in-place transform.</em></p>
 <dl>
-<dt><a name="label-5" id="label-5"><code>GSL::Vector::Complex#radix2_forward</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_forward" -->
-<dt><a name="label-6" id="label-6"><code>GSL::Vector::Complex#radix2_backward</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_backward" -->
-<dt><a name="label-7" id="label-7"><code>GSL::Vector::Complex#radix2_inverse</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_inverse" -->
+<dt><a name="label-9" id="label-9"><code>GSL::Vector::Complex#radix2_forward</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_forward" -->
+<dt><a name="label-10" id="label-10"><code>GSL::Vector::Complex#radix2_backward</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_backward" -->
+<dt><a name="label-11" id="label-11"><code>GSL::Vector::Complex#radix2_inverse</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_inverse" -->
 <dd>
 These functions compute forward, backward and inverse FFTs of the complex
 vector using a radix-2 decimation-in-time algorithm.  The length of the
 transform is restricted to powers of two.  These methods return the FFTed
 data, and the input data is not changed.</dd>
-<dt><a name="label-8" id="label-8"><code>GSL::Vector::Complex#radix2_transform(<var>sign</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_transform" -->
+<dt><a name="label-12" id="label-12"><code>GSL::Vector::Complex#radix2_transform(<var>sign</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_transform" -->
 <dd>
 The sign argument can be either <code>GSL::FFT::FORWARD</code> or <code>GSL::FFT::BACKWARD</code>.</dd>
-<dt><a name="label-9" id="label-9"><code>GSL::Vector::Complex#radix2_dif_forward</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_dif_forward" -->
-<dt><a name="label-10" id="label-10"><code>GSL::Vector::Complex#radix2_dif_backward</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_dif_backward" -->
-<dt><a name="label-11" id="label-11"><code>GSL::Vector::Complex#radix2_dif_inverse</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_dif_inverse" -->
-<dt><a name="label-12" id="label-12"><code>GSL::Vector::Complex#radix2_dif_transform</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_dif_transform" -->
+<dt><a name="label-13" id="label-13"><code>GSL::Vector::Complex#radix2_dif_forward</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_dif_forward" -->
+<dt><a name="label-14" id="label-14"><code>GSL::Vector::Complex#radix2_dif_backward</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_dif_backward" -->
+<dt><a name="label-15" id="label-15"><code>GSL::Vector::Complex#radix2_dif_inverse</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_dif_inverse" -->
+<dt><a name="label-16" id="label-16"><code>GSL::Vector::Complex#radix2_dif_transform</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#radix2_dif_transform" -->
 <dd>
 These are decimation-in-frequency versions of the radix-2 FFT functions.</dd>
 </dl>
-<h4><a name="2.2.1" href="#2.2.1">2.2.1</a> <a name="label-13">Example of complex Radix-2 FFT</a></h4><!-- RDLabel: "Example of complex Radix-2 FFT" -->
+<h4><a name="2.2.1" href="#2.2.1">2.2.1</a> <a name="label-17">Example of complex Radix-2 FFT</a></h4><!-- RDLabel: "Example of complex Radix-2 FFT" -->
 
 <p>Here is an example program which computes the FFT of a short pulse in a 
 sample of length  128. To make the resulting Fourier transform real the pulse 
@@ -152,12 +177,12 @@ ffted /= Math::sqrt(n)
 for i in 0...n do
   printf("%d %e %e\n", i, ffted[i].re, ffted[i].im)
 end</pre>
-<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-14">Mixed-radix FFT routines for complex data</a></h3><!-- RDLabel: "Mixed-radix FFT routines for complex data" -->
+<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-18">Mixed-radix FFT routines for complex data</a></h3><!-- RDLabel: "Mixed-radix FFT routines for complex data" -->
 
-<h4><a name="2.3.1" href="#2.3.1">2.3.1</a> <a name="label-15">GSL::FFT::ComplexWavetable class</a></h4><!-- RDLabel: "GSL::FFT::ComplexWavetable class" -->
+<h4><a name="2.3.1" href="#2.3.1">2.3.1</a> <a name="label-19">GSL::FFT::ComplexWavetable class</a></h4><!-- RDLabel: "GSL::FFT::ComplexWavetable class" -->
 
 <dl>
-<dt><a name="label-16" id="label-16"><code>GSL::FFT::ComplexWavetable.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::FFT::ComplexWavetable.alloc" -->
+<dt><a name="label-20" id="label-20"><code>GSL::FFT::ComplexWavetable.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::FFT::ComplexWavetable.alloc" -->
 <dd>
 <p>This method prepares a trigonometric lookup table for a complex FFT of length <var>n</var>.
 The length <var>n</var> is factorized into a product of subtransforms, and the factors and their 
@@ -169,28 +194,28 @@ throughput.</p>
 <p>The <code>Wavetable</code> object can be used repeatedly for any transform of the same length.
 The table is not modified by calls to any of the other FFT functions. The same wavetable 
 can be used for both forward and backward (or inverse) transforms of a given length.</p></dd>
-<dt><a name="label-17" id="label-17"><code>GSL::FFT::ComplexWavetable#n</code></a></dt><!-- RDLabel: "GSL::FFT::ComplexWavetable#n" -->
-<dt><a name="label-18" id="label-18"><code>GSL::FFT::ComplexWavetable#nf</code></a></dt><!-- RDLabel: "GSL::FFT::ComplexWavetable#nf" -->
-<dt><a name="label-19" id="label-19"><code>GSL::FFT::ComplexWavetable#factor</code></a></dt><!-- RDLabel: "GSL::FFT::ComplexWavetable#factor" -->
+<dt><a name="label-21" id="label-21"><code>GSL::FFT::ComplexWavetable#n</code></a></dt><!-- RDLabel: "GSL::FFT::ComplexWavetable#n" -->
+<dt><a name="label-22" id="label-22"><code>GSL::FFT::ComplexWavetable#nf</code></a></dt><!-- RDLabel: "GSL::FFT::ComplexWavetable#nf" -->
+<dt><a name="label-23" id="label-23"><code>GSL::FFT::ComplexWavetable#factor</code></a></dt><!-- RDLabel: "GSL::FFT::ComplexWavetable#factor" -->
 </dl>
-<h4><a name="2.3.2" href="#2.3.2">2.3.2</a> <a name="label-20">GSL::FFT::ComplexWorkspace class</a></h4><!-- RDLabel: "GSL::FFT::ComplexWorkspace class" -->
+<h4><a name="2.3.2" href="#2.3.2">2.3.2</a> <a name="label-24">GSL::FFT::ComplexWorkspace class</a></h4><!-- RDLabel: "GSL::FFT::ComplexWorkspace class" -->
 
 <dl>
-<dt><a name="label-21" id="label-21"><code>GSL::FFT::ComplexWorkspace.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::FFT::ComplexWorkspace.alloc" -->
+<dt><a name="label-25" id="label-25"><code>GSL::FFT::ComplexWorkspace.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::FFT::ComplexWorkspace.alloc" -->
 <dd>
 Creates a workspace for a complex transform of length <var>n</var>.</dd>
 </dl>
-<h4><a name="2.3.3" href="#2.3.3">2.3.3</a> <a name="label-22">Methods to compute transform</a></h4><!-- RDLabel: "Methods to compute transform" -->
+<h4><a name="2.3.3" href="#2.3.3">2.3.3</a> <a name="label-26">Methods to compute transform</a></h4><!-- RDLabel: "Methods to compute transform" -->
 
 <p><em>The FFT methods described below return FFTed data, and the input vector is not changed. Use methods with '!' as <code>tranform!</code> for in-place transform.</em></p>
 <dl>
-<dt><a name="label-23" id="label-23"><code>GSL::Vector::Complex#forward(<var>table</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#forward" -->
-<dt><a name="label-24" id="label-24"><code>GSL::Vector::Complex#forward(<var>table</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#forward" -->
-<dt><a name="label-25" id="label-25"><code>GSL::Vector::Complex#forward(<var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#forward" -->
-<dt><a name="label-26" id="label-26"><code>GSL::Vector::Complex#forward()</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#forward" -->
-<dt><a name="label-27" id="label-27"><code>GSL::Vector::Complex#backward(<var>arguments</var> <var>same</var> <var>as</var> <var>forward</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#backward" -->
-<dt><a name="label-28" id="label-28"><code>GSL::Vector::Complex#inverse(<var>arguments</var> <var>same</var> <var>as</var> <var>forward</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#inverse" -->
-<dt><a name="label-29" id="label-29"><code>GSL::Vector::Complex#transform(<var>arguments</var> <var>same</var> <var>as</var> <var>forward</var>, <var>sign</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#transform" -->
+<dt><a name="label-27" id="label-27"><code>GSL::Vector::Complex#forward(<var>table</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#forward" -->
+<dt><a name="label-28" id="label-28"><code>GSL::Vector::Complex#forward(<var>table</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#forward" -->
+<dt><a name="label-29" id="label-29"><code>GSL::Vector::Complex#forward(<var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#forward" -->
+<dt><a name="label-30" id="label-30"><code>GSL::Vector::Complex#forward()</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#forward" -->
+<dt><a name="label-31" id="label-31"><code>GSL::Vector::Complex#backward(<var>arguments</var> <var>same</var> <var>as</var> <var>forward</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#backward" -->
+<dt><a name="label-32" id="label-32"><code>GSL::Vector::Complex#inverse(<var>arguments</var> <var>same</var> <var>as</var> <var>forward</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#inverse" -->
+<dt><a name="label-33" id="label-33"><code>GSL::Vector::Complex#transform(<var>arguments</var> <var>same</var> <var>as</var> <var>forward</var>, <var>sign</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#transform" -->
 <dd>
 <p>These methods compute forward, backward and inverse FFTs of the complex
 vector <var>self</var>, using a mixed radix decimation-in-frequency algorithm.
@@ -203,7 +228,7 @@ tables and a workspace <var>work</var> (they are optional).</p>
 <code>GSL::FFT::FORWARD</code> or <code>GSL::FFT::BACKWARD</code>.</p>
 <p>These methods return the FFTed data, and the input data is not changed.</p></dd>
 </dl>
-<h4><a name="2.3.4" href="#2.3.4">2.3.4</a> <a name="label-30">Example to use the mixed-radix FFT algorithm</a></h4><!-- RDLabel: "Example to use the mixed-radix FFT algorithm" -->
+<h4><a name="2.3.4" href="#2.3.4">2.3.4</a> <a name="label-34">Example to use the mixed-radix FFT algorithm</a></h4><!-- RDLabel: "Example to use the mixed-radix FFT algorithm" -->
 
 <pre>require 'gsl'
 include GSL
@@ -227,9 +252,9 @@ ffted /= Math::sqrt(n)
 for i in 0...n do
   printf("%d %e %e\n", i, data[i].re, data[i].im)
 end</pre>
-<h2><a name="3" href="#3">3</a> <a name="label-31">Real data FFTs</a></h2><!-- RDLabel: "Real data FFTs" -->
+<h2><a name="3" href="#3">3</a> <a name="label-35">Real data FFTs</a></h2><!-- RDLabel: "Real data FFTs" -->
 
-<h3><a name="3.1" href="#3.1">3.1</a> <a name="label-32">Overview of real data FFTs</a></h3><!-- RDLabel: "Overview of real data FFTs" -->
+<h3><a name="3.1" href="#3.1">3.1</a> <a name="label-36">Overview of real data FFTs</a></h3><!-- RDLabel: "Overview of real data FFTs" -->
 
 <p>The functions for real data FFTs are provided as instance methods of
 <a href="vector.class">GSL::Vector</a>.  While they are similar to those for
@@ -252,7 +277,7 @@ the real and imaginary parts of a given term in neighboring locations (which is
 desirable for better locality of memory accesses).  This means that a half
 complex sequence produces by a radix-2 forward transform <em>cannot</em> be
 recovered by a mixed-radix inverse transform (and vice versa).</p>
-<h3><a name="3.2" href="#3.2">3.2</a> <a name="label-33">Radix-2 FFT routines for real data</a></h3><!-- RDLabel: "Radix-2 FFT routines for real data" -->
+<h3><a name="3.2" href="#3.2">3.2</a> <a name="label-37">Radix-2 FFT routines for real data</a></h3><!-- RDLabel: "Radix-2 FFT routines for real data" -->
 
 <p>The routines for readix-2 real FFTs are provided as instance methods of
 <a href="vector.html">GSL::Vector</a>.</p>
@@ -260,10 +285,10 @@ recovered by a mixed-radix inverse transform (and vice versa).</p>
 not changed. Use methods with '!' as <code>radix2_tranform!</code> for in-place
 transform.</em></p>
 <dl>
-<dt><a name="label-34" id="label-34"><code>GSL::Vector#real_radix2_transform</code></a></dt><!-- RDLabel: "GSL::Vector#real_radix2_transform" -->
-<dt><a name="label-35" id="label-35"><code>GSL::Vector#radix2_transform</code></a></dt><!-- RDLabel: "GSL::Vector#radix2_transform" -->
-<dt><a name="label-36" id="label-36"><code>GSL::Vector#real_radix2_forward</code></a></dt><!-- RDLabel: "GSL::Vector#real_radix2_forward" -->
-<dt><a name="label-37" id="label-37"><code>GSL::Vector#radix2_forward</code></a></dt><!-- RDLabel: "GSL::Vector#radix2_forward" -->
+<dt><a name="label-38" id="label-38"><code>GSL::Vector#real_radix2_transform</code></a></dt><!-- RDLabel: "GSL::Vector#real_radix2_transform" -->
+<dt><a name="label-39" id="label-39"><code>GSL::Vector#radix2_transform</code></a></dt><!-- RDLabel: "GSL::Vector#radix2_transform" -->
+<dt><a name="label-40" id="label-40"><code>GSL::Vector#real_radix2_forward</code></a></dt><!-- RDLabel: "GSL::Vector#real_radix2_forward" -->
+<dt><a name="label-41" id="label-41"><code>GSL::Vector#radix2_forward</code></a></dt><!-- RDLabel: "GSL::Vector#radix2_forward" -->
 <dd>
 <p>These methods compute a radix-2 FFT of the real vector <var>self</var>.  The
 output is a half-complex sequence.  The arrangement of the half-complex
@@ -293,16 +318,16 @@ complex[k'].imag   =   -self[N-k]
     ...............         ................
 complex[N-1].real  =    self[1]
 complex[N-1].imag  =   -self[N-1]</pre></dd>
-<dt><a name="label-38" id="label-38"><code>GSL::Vector#halfcomplex_radix2_inverse</code></a></dt><!-- RDLabel: "GSL::Vector#halfcomplex_radix2_inverse" -->
-<dt><a name="label-39" id="label-39"><code>GSL::Vector#radix2_inverse</code></a></dt><!-- RDLabel: "GSL::Vector#radix2_inverse" -->
-<dt><a name="label-40" id="label-40"><code>GSL::Vector#halfcomplex_radix2_backward</code></a></dt><!-- RDLabel: "GSL::Vector#halfcomplex_radix2_backward" -->
-<dt><a name="label-41" id="label-41"><code>GSL::Vector#radix2_backward</code></a></dt><!-- RDLabel: "GSL::Vector#radix2_backward" -->
+<dt><a name="label-42" id="label-42"><code>GSL::Vector#halfcomplex_radix2_inverse</code></a></dt><!-- RDLabel: "GSL::Vector#halfcomplex_radix2_inverse" -->
+<dt><a name="label-43" id="label-43"><code>GSL::Vector#radix2_inverse</code></a></dt><!-- RDLabel: "GSL::Vector#radix2_inverse" -->
+<dt><a name="label-44" id="label-44"><code>GSL::Vector#halfcomplex_radix2_backward</code></a></dt><!-- RDLabel: "GSL::Vector#halfcomplex_radix2_backward" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Vector#radix2_backward</code></a></dt><!-- RDLabel: "GSL::Vector#radix2_backward" -->
 <dd>
 These methods compute the inverse or backwards radix-2 FFT of the
 half-complex sequence data stored according the output scheme used by
 gsl_fft_real_radix2.  The result is a real array stored in natural order.</dd>
 </dl>
-<h2><a name="4" href="#4">4</a> <a name="label-42">Mixed-radix FFT routines for real data</a></h2><!-- RDLabel: "Mixed-radix FFT routines for real data" -->
+<h2><a name="4" href="#4">4</a> <a name="label-46">Mixed-radix FFT routines for real data</a></h2><!-- RDLabel: "Mixed-radix FFT routines for real data" -->
 
 <p>This section describes mixed-radix FFT algorithms for real data. 
 The mixed-radix functions work for FFTs of any length. They are a 
@@ -321,7 +346,7 @@ component is never stored. It is known to be zero since the zero frequency
 component is simply the sum of the input data (all real). For a sequence of
 even length the imaginary part of the frequency n/2 is not stored either, since
 the symmetry z_k = z_{N-k}^* implies that this is purely real too. </p>
-<h3><a name="4.1" href="#4.1">4.1</a> <a name="label-43">Data storage scheme</a></h3><!-- RDLabel: "Data storage scheme" -->
+<h3><a name="4.1" href="#4.1">4.1</a> <a name="label-47">Data storage scheme</a></h3><!-- RDLabel: "Data storage scheme" -->
 
 <p>The storage scheme is best shown by some examples. 
 The table below shows the output for an odd-length sequence, n=5. 
@@ -360,11 +385,11 @@ complex[5].imag  = -halfcomplex[2] </pre>
 <p>The upper elements of the <var>complex</var> array, <code>complex[4]</code> 
 and <code>complex[5]</code> are filled in using the symmetry condition. 
 Both <code>complex[0].imag</code> and <code>complex[3].imag</code> are known to be zero.</p>
-<h4><a name="4.1.1" href="#4.1.1">4.1.1</a> <a name="label-44">Wavetable and Workspace classes</a></h4><!-- RDLabel: "Wavetable and Workspace classes" -->
+<h4><a name="4.1.1" href="#4.1.1">4.1.1</a> <a name="label-48">Wavetable and Workspace classes</a></h4><!-- RDLabel: "Wavetable and Workspace classes" -->
 
 <dl>
-<dt><a name="label-45" id="label-45"><code>GSL::FFT::RealWavetable.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::FFT::RealWavetable.alloc" -->
-<dt><a name="label-46" id="label-46"><code>GSL::FFT::HalfComplexWavetable.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::FFT::HalfComplexWavetable.alloc" -->
+<dt><a name="label-49" id="label-49"><code>GSL::FFT::RealWavetable.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::FFT::RealWavetable.alloc" -->
+<dt><a name="label-50" id="label-50"><code>GSL::FFT::HalfComplexWavetable.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::FFT::HalfComplexWavetable.alloc" -->
 <dd>
 <p>These methods create trigonometric lookup tables for an FFT of size <var>n</var> 
 real elements. The length <var>n</var> is factorized into a product of subtransforms, 
@@ -378,19 +403,19 @@ throughput.</p>
 length. The table is not modified by calls to any of the other FFT functions. 
 The appropriate type of wavetable must be used for forward real or inverse
 half-complex transforms.</p></dd>
-<dt><a name="label-47" id="label-47"><code>GSL::FFT::RealWorkspace.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::FFT::RealWorkspace.alloc" -->
+<dt><a name="label-51" id="label-51"><code>GSL::FFT::RealWorkspace.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::FFT::RealWorkspace.alloc" -->
 <dd>
 This method creates a workspace object for a real transform of length
 <var>n</var>.  The same workspace can be used for both forward real and inverse
 halfcomplex transforms.</dd>
 </dl>
-<h4><a name="4.1.2" href="#4.1.2">4.1.2</a> <a name="label-48">Methods for mixed-radix real FFTs</a></h4><!-- RDLabel: "Methods for mixed-radix real FFTs" -->
+<h4><a name="4.1.2" href="#4.1.2">4.1.2</a> <a name="label-52">Methods for mixed-radix real FFTs</a></h4><!-- RDLabel: "Methods for mixed-radix real FFTs" -->
 
 <p><em>The FFT methods described below return FFTed data, and the input vector is not changed. Use methods with '!' as <code>real_tranform!</code> for in-place transform.</em></p>
 <dl>
-<dt><a name="label-49" id="label-49"><code>GSL::Vector#real_transform(<var>table</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#real_transform" -->
-<dt><a name="label-50" id="label-50"><code>GSL::Vector#halfcomplex_transform(<var>table</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#halfcomplex_transform" -->
-<dt><a name="label-51" id="label-51"><code>GSL::Vector#fft</code></a></dt><!-- RDLabel: "GSL::Vector#fft" -->
+<dt><a name="label-53" id="label-53"><code>GSL::Vector#real_transform(<var>table</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#real_transform" -->
+<dt><a name="label-54" id="label-54"><code>GSL::Vector#halfcomplex_transform(<var>table</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#halfcomplex_transform" -->
+<dt><a name="label-55" id="label-55"><code>GSL::Vector#fft</code></a></dt><!-- RDLabel: "GSL::Vector#fft" -->
 <dd>
 <p>These methods compute the FFT of <var>self</var>, a real or half-complex array,
 using a mixed radix decimation-in-frequency algorithm.  For
@@ -403,13 +428,13 @@ Any remaining factors are computed with a slow, O(n^2), general-n module. </p>
 <p>The caller can supply a <var>table</var> containing trigonometric lookup tables 
 and a workspace <var>work</var> (optional).</p>
 <p>These methods return the FFTed data, and the input data is not changed.</p></dd>
-<dt><a name="label-52" id="label-52"><code>GSL::Vector#halfcomplex_inverse(<var>table</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#halfcomplex_inverse" -->
-<dt><a name="label-53" id="label-53"><code>GSL::Vector#halfcomplex_backward(<var>table</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#halfcomplex_backward" -->
-<dt><a name="label-54" id="label-54"><code>GSL::Vector#ifft</code></a></dt><!-- RDLabel: "GSL::Vector#ifft" -->
+<dt><a name="label-56" id="label-56"><code>GSL::Vector#halfcomplex_inverse(<var>table</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#halfcomplex_inverse" -->
+<dt><a name="label-57" id="label-57"><code>GSL::Vector#halfcomplex_backward(<var>table</var>, <var>work</var>)</code></a></dt><!-- RDLabel: "GSL::Vector#halfcomplex_backward" -->
+<dt><a name="label-58" id="label-58"><code>GSL::Vector#ifft</code></a></dt><!-- RDLabel: "GSL::Vector#ifft" -->
 </dl>
-<h2><a name="5" href="#5">5</a> <a name="label-55">Examples</a></h2><!-- RDLabel: "Examples" -->
+<h2><a name="5" href="#5">5</a> <a name="label-59">Examples</a></h2><!-- RDLabel: "Examples" -->
 
-<h3><a name="5.1" href="#5.1">5.1</a> <a name="label-56">Example 1</a></h3><!-- RDLabel: "Example 1" -->
+<h3><a name="5.1" href="#5.1">5.1</a> <a name="label-60">Example 1</a></h3><!-- RDLabel: "Example 1" -->
 
 <pre>#!/usr/bin/env ruby
 require("gsl")
@@ -429,7 +454,7 @@ mag = y2.abs
 phase = y2.arg
 f = Vector.linspace(0, SAMPLING/2, mag.size)
 graph(f, mag, "-C -g 3 -x 0 200 -X 'Frequency [Hz]'")</pre>
-<h3><a name="5.2" href="#5.2">5.2</a> <a name="label-57">Example 2</a></h3><!-- RDLabel: "Example 2" -->
+<h3><a name="5.2" href="#5.2">5.2</a> <a name="label-61">Example 2</a></h3><!-- RDLabel: "Example 2" -->
 
 <pre>#!/usr/bin/env ruby
 require("gsl")

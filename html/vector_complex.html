@@ -125,147 +125,176 @@ Return the vector stride.</dd>
 <dt><a name="label-33" id="label-33"><code>GSL::Vector::Complex#collect!</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#collect!" -->
 <dt><a name="label-34" id="label-34"><code>GSL::Vector::Complex#map!</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#map!" -->
 </dl>
-<h3><a name="2.5" href="#2.5">2.5</a> <a name="label-35">Arithmetic</a></h3><!-- RDLabel: "Arithmetic" -->
+<h3><a name="2.5" href="#2.5">2.5</a> <a name="label-35">Reordering Elements</a></h3><!-- RDLabel: "Reordering Elements" -->
+
+<p><a href="vector_complex.html">GSL::Vector::Complex</a> provides four methods for
+shifting the frequency domain data between <em>FFT order</em>, shown in the table
+in <a href="fft.html#2.1">Overview of complex data FFTs</a>,
+and <em>natural order</em>, which has the most negative freqeuncy component
+first, the zero frequency component in the middle, and the most positive
+frequency component last.  For more information on Ruby/GSL and FFTs, see
+<a href="fft.html">Fast Fourier Transforms</a>,</p>
+<dl>
+<dt><a name="label-36" id="label-36"><code>GSL::Vector::Complex#fftshift</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fftshift" -->
+<dt><a name="label-37" id="label-37"><code>GSL::Vector::Complex#fftshift!</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fftshift!" -->
+<dd>
+Shifts the data of <var>self</var> from FFT order to natural order.  The
+<code>#fftshift</code> method leaves <var>self</var> unmodified and returns a new
+<code>GSL::Vector::Complex</code> object containing the shifted data.  The
+<code>#fftshift!</code> method modifies <var>self</var> in-place and returns
+<var>self</var>.  Note that <code>#fftshift</code> and <code>#ifftshift</code> are equivalent
+for even lengths, but not for odd lengths.</dd>
+<dt><a name="label-38" id="label-38"><code>GSL::Vector::Complex#ifftshift</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#ifftshift" -->
+<dt><a name="label-39" id="label-39"><code>GSL::Vector::Complex#ifftshift!</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#ifftshift!" -->
+<dd>
+Shifts the data of <var>self</var> from natural order to FFT order.  The
+<code>#ifftshift</code> method leaves <var>self</var> unmodified and returns a new
+<code>GSL::Vector::Complex</code> object containing the shifted data.  The
+<code>#ifftshift!</code> method modifies <var>self</var> in-place and returns
+<var>self</var>.  Note that <code>#fftshift</code> and <code>#ifftshift</code> are equivalent
+for even lengths, but not for odd lengths.</dd>
+</dl>
+<h3><a name="2.6" href="#2.6">2.6</a> <a name="label-40">Arithmetic</a></h3><!-- RDLabel: "Arithmetic" -->
 
 <dl>
-<dt><a name="label-36" id="label-36"><code>GSL::Vector::Complex#+(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#+" -->
-<dt><a name="label-37" id="label-37"><code>GSL::Vector::Complex#-(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#-" -->
-<dt><a name="label-38" id="label-38"><code>GSL::Vector::Complex#*(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#*" -->
-<dt><a name="label-39" id="label-39"><code>GSL::Vector::Complex#/(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#/" -->
-<dt><a name="label-40" id="label-40"><code>GSL::Vector::Complex#add(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#add" -->
-<dt><a name="label-41" id="label-41"><code>GSL::Vector::Complex#sub(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sub" -->
-<dt><a name="label-42" id="label-42"><code>GSL::Vector::Complex#mul(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#mul" -->
-<dt><a name="label-43" id="label-43"><code>GSL::Vector::Complex#div(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#div" -->
+<dt><a name="label-41" id="label-41"><code>GSL::Vector::Complex#+(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#+" -->
+<dt><a name="label-42" id="label-42"><code>GSL::Vector::Complex#-(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#-" -->
+<dt><a name="label-43" id="label-43"><code>GSL::Vector::Complex#*(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#*" -->
+<dt><a name="label-44" id="label-44"><code>GSL::Vector::Complex#/(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#/" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Vector::Complex#add(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#add" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Vector::Complex#sub(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sub" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Vector::Complex#mul(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#mul" -->
+<dt><a name="label-48" id="label-48"><code>GSL::Vector::Complex#div(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#div" -->
 <dd>
 Returns a new GSL::Vector::Complex instance containing the result of the
 appropriate arithmetic operation on <var>self</var> and <var>other</var>.  The inputs
 are unchanged.  The <var>other</var> parameter may be a scalar,
 <a href="vector.html">GSL::Vector</a>, or
 <a href="vector_complex.html">GSL::Vector::Complex</a>.</dd>
-<dt><a name="label-44" id="label-44"><code>GSL::Vector::Complex#+=(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#+=" -->
-<dt><a name="label-45" id="label-45"><code>GSL::Vector::Complex#-=(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#-=" -->
-<dt><a name="label-46" id="label-46"><code>GSL::Vector::Complex#*=(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#*=" -->
-<dt><a name="label-47" id="label-47"><code>GSL::Vector::Complex#/=(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#/=" -->
-<dt><a name="label-48" id="label-48"><code>GSL::Vector::Complex#add!(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#add!" -->
-<dt><a name="label-49" id="label-49"><code>GSL::Vector::Complex#sub!(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sub!" -->
-<dt><a name="label-50" id="label-50"><code>GSL::Vector::Complex#mul!(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#mul!" -->
-<dt><a name="label-51" id="label-51"><code>GSL::Vector::Complex#div!(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#div!" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Vector::Complex#+=(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#+=" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Vector::Complex#-=(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#-=" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Vector::Complex#*=(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#*=" -->
+<dt><a name="label-52" id="label-52"><code>GSL::Vector::Complex#/=(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#/=" -->
+<dt><a name="label-53" id="label-53"><code>GSL::Vector::Complex#add!(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#add!" -->
+<dt><a name="label-54" id="label-54"><code>GSL::Vector::Complex#sub!(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sub!" -->
+<dt><a name="label-55" id="label-55"><code>GSL::Vector::Complex#mul!(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#mul!" -->
+<dt><a name="label-56" id="label-56"><code>GSL::Vector::Complex#div!(<var>other</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#div!" -->
 <dd>
 Modifies <var>self</var> in place to contain the result of the appropriate
 arithmetic operation on <var>self</var> and <var>other</var>.  The <var>other</var>
 parameter may be a scalar, GSL::Vector, or GSL::Vector::Complex.</dd>
 </dl>
-<h3><a name="2.6" href="#2.6">2.6</a> <a name="label-52">Reading and writing vectors</a></h3><!-- RDLabel: "Reading and writing vectors" -->
+<h3><a name="2.7" href="#2.7">2.7</a> <a name="label-57">Reading and writing vectors</a></h3><!-- RDLabel: "Reading and writing vectors" -->
 
 <dl>
-<dt><a name="label-53" id="label-53"><code>GSL::Vector::Complex#fwite(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fwite" -->
-<dt><a name="label-54" id="label-54"><code>GSL::Vector::Complex#fread(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fread" -->
-<dt><a name="label-55" id="label-55"><code>GSL::Vector::Complex#fprintf(<var>io</var>, <var>format</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fprintf" -->
-<dt><a name="label-56" id="label-56"><code>GSL::Vector::Complex#fscanf(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fscanf" -->
+<dt><a name="label-58" id="label-58"><code>GSL::Vector::Complex#fwite(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fwite" -->
+<dt><a name="label-59" id="label-59"><code>GSL::Vector::Complex#fread(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fread" -->
+<dt><a name="label-60" id="label-60"><code>GSL::Vector::Complex#fprintf(<var>io</var>, <var>format</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fprintf" -->
+<dt><a name="label-61" id="label-61"><code>GSL::Vector::Complex#fscanf(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#fscanf" -->
 </dl>
-<h3><a name="2.7" href="#2.7">2.7</a> <a name="label-57">Functions</a></h3><!-- RDLabel: "Functions" -->
+<h3><a name="2.8" href="#2.8">2.8</a> <a name="label-62">Functions</a></h3><!-- RDLabel: "Functions" -->
 
 <dl>
-<dt><a name="label-58" id="label-58"><code>GSL::Vector::Complex#conj</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#conj" -->
+<dt><a name="label-63" id="label-63"><code>GSL::Vector::Complex#conj</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#conj" -->
 <dd>
 Returns a new GSL::Vector::Complex that is the complex conjugate of <var>self</var>.</dd>
-<dt><a name="label-59" id="label-59"><code>GSL::Vector::Complex#conj!</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#conj!" -->
+<dt><a name="label-64" id="label-64"><code>GSL::Vector::Complex#conj!</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#conj!" -->
 <dd>
 Conjugates <var>self</var> in place and returns <var>self</var>.</dd>
-<dt><a name="label-60" id="label-60"><code>GSL::Vector::Complex#arg</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arg" -->
-<dt><a name="label-61" id="label-61"><code>GSL::Vector::Complex#angle</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#angle" -->
-<dt><a name="label-62" id="label-62"><code>GSL::Vector::Complex#phase</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#phase" -->
+<dt><a name="label-65" id="label-65"><code>GSL::Vector::Complex#arg</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arg" -->
+<dt><a name="label-66" id="label-66"><code>GSL::Vector::Complex#angle</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#angle" -->
+<dt><a name="label-67" id="label-67"><code>GSL::Vector::Complex#phase</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#phase" -->
 <dd>
 Calculates the argument (i.e. phase angle in radians) of each of the complex elements of the vector <var>self</var> and returns a real vector.</dd>
-<dt><a name="label-63" id="label-63"><code>GSL::Vector::Complex#abs2</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#abs2" -->
+<dt><a name="label-68" id="label-68"><code>GSL::Vector::Complex#abs2</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#abs2" -->
 <dd>
 Calculates the squared magnitude of the complex elements of the vector <var>self</var> and returns a real vector.</dd>
-<dt><a name="label-64" id="label-64"><code>GSL::Vector::Complex#abs</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#abs" -->
-<dt><a name="label-65" id="label-65"><code>GSL::Vector::Complex#amp</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#amp" -->
+<dt><a name="label-69" id="label-69"><code>GSL::Vector::Complex#abs</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#abs" -->
+<dt><a name="label-70" id="label-70"><code>GSL::Vector::Complex#amp</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#amp" -->
 <dd>
 Calculates the magnitude of the complex elements of the vector <var>self</var> and returns a real vector.</dd>
-<dt><a name="label-66" id="label-66"><code>GSL::Vector::Complex#logabs</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#logabs" -->
+<dt><a name="label-71" id="label-71"><code>GSL::Vector::Complex#logabs</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#logabs" -->
 <dd>
 Calculates the natural logarithm of the magnitude of the complex elements of the vector <var>self</var> and returns a real vector.</dd>
-<dt><a name="label-67" id="label-67"><code>GSL::Vector::Complex#sqrt</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sqrt" -->
+<dt><a name="label-72" id="label-72"><code>GSL::Vector::Complex#sqrt</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sqrt" -->
 <dd>
 Calculates the square root of the complex elements of the vector <var>self</var> and returns a new complex vector.</dd>
-<dt><a name="label-68" id="label-68"><code>GSL::Vector::Complex#exp</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#exp" -->
-<dt><a name="label-69" id="label-69"><code>GSL::Vector::Complex#pow(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#pow" -->
-<dt><a name="label-70" id="label-70"><code>GSL::Vector::Complex#log</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#log" -->
-<dt><a name="label-71" id="label-71"><code>GSL::Vector::Complex#log10</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#log10" -->
-<dt><a name="label-72" id="label-72"><code>GSL::Vector::Complex#log_b(<var>base</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#log_b" -->
-<dt><a name="label-73" id="label-73"><code>GSL::Vector::Complex#sin</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sin" -->
-<dt><a name="label-74" id="label-74"><code>GSL::Vector::Complex#cos</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#cos" -->
-<dt><a name="label-75" id="label-75"><code>GSL::Vector::Complex#tan</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#tan" -->
-<dt><a name="label-76" id="label-76"><code>GSL::Vector::Complex#sec</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sec" -->
-<dt><a name="label-77" id="label-77"><code>GSL::Vector::Complex#csc</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#csc" -->
-<dt><a name="label-78" id="label-78"><code>GSL::Vector::Complex#cot</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#cot" -->
-<dt><a name="label-79" id="label-79"><code>GSL::Vector::Complex#arcsin</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arcsin" -->
-<dt><a name="label-80" id="label-80"><code>GSL::Vector::Complex#arccos</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccos" -->
-<dt><a name="label-81" id="label-81"><code>GSL::Vector::Complex#arctan</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arctan" -->
-<dt><a name="label-82" id="label-82"><code>GSL::Vector::Complex#arcsec</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arcsec" -->
-<dt><a name="label-83" id="label-83"><code>GSL::Vector::Complex#arccsc</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccsc" -->
-<dt><a name="label-84" id="label-84"><code>GSL::Vector::Complex#arccot</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccot" -->
-<dt><a name="label-85" id="label-85"><code>GSL::Vector::Complex#sinh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sinh" -->
-<dt><a name="label-86" id="label-86"><code>GSL::Vector::Complex#cosh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#cosh" -->
-<dt><a name="label-87" id="label-87"><code>GSL::Vector::Complex#tanh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#tanh" -->
-<dt><a name="label-88" id="label-88"><code>GSL::Vector::Complex#sech</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sech" -->
-<dt><a name="label-89" id="label-89"><code>GSL::Vector::Complex#csch</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#csch" -->
-<dt><a name="label-90" id="label-90"><code>GSL::Vector::Complex#coth</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#coth" -->
-<dt><a name="label-91" id="label-91"><code>GSL::Vector::Complex#arcsinh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arcsinh" -->
-<dt><a name="label-92" id="label-92"><code>GSL::Vector::Complex#arccosh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccosh" -->
-<dt><a name="label-93" id="label-93"><code>GSL::Vector::Complex#arctanh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arctanh" -->
-<dt><a name="label-94" id="label-94"><code>GSL::Vector::Complex#arcsech</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arcsech" -->
-<dt><a name="label-95" id="label-95"><code>GSL::Vector::Complex#arccsch</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccsch" -->
-<dt><a name="label-96" id="label-96"><code>GSL::Vector::Complex#arccoth</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccoth" -->
+<dt><a name="label-73" id="label-73"><code>GSL::Vector::Complex#exp</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#exp" -->
+<dt><a name="label-74" id="label-74"><code>GSL::Vector::Complex#pow(<var>a</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#pow" -->
+<dt><a name="label-75" id="label-75"><code>GSL::Vector::Complex#log</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#log" -->
+<dt><a name="label-76" id="label-76"><code>GSL::Vector::Complex#log10</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#log10" -->
+<dt><a name="label-77" id="label-77"><code>GSL::Vector::Complex#log_b(<var>base</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#log_b" -->
+<dt><a name="label-78" id="label-78"><code>GSL::Vector::Complex#sin</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sin" -->
+<dt><a name="label-79" id="label-79"><code>GSL::Vector::Complex#cos</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#cos" -->
+<dt><a name="label-80" id="label-80"><code>GSL::Vector::Complex#tan</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#tan" -->
+<dt><a name="label-81" id="label-81"><code>GSL::Vector::Complex#sec</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sec" -->
+<dt><a name="label-82" id="label-82"><code>GSL::Vector::Complex#csc</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#csc" -->
+<dt><a name="label-83" id="label-83"><code>GSL::Vector::Complex#cot</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#cot" -->
+<dt><a name="label-84" id="label-84"><code>GSL::Vector::Complex#arcsin</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arcsin" -->
+<dt><a name="label-85" id="label-85"><code>GSL::Vector::Complex#arccos</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccos" -->
+<dt><a name="label-86" id="label-86"><code>GSL::Vector::Complex#arctan</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arctan" -->
+<dt><a name="label-87" id="label-87"><code>GSL::Vector::Complex#arcsec</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arcsec" -->
+<dt><a name="label-88" id="label-88"><code>GSL::Vector::Complex#arccsc</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccsc" -->
+<dt><a name="label-89" id="label-89"><code>GSL::Vector::Complex#arccot</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccot" -->
+<dt><a name="label-90" id="label-90"><code>GSL::Vector::Complex#sinh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sinh" -->
+<dt><a name="label-91" id="label-91"><code>GSL::Vector::Complex#cosh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#cosh" -->
+<dt><a name="label-92" id="label-92"><code>GSL::Vector::Complex#tanh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#tanh" -->
+<dt><a name="label-93" id="label-93"><code>GSL::Vector::Complex#sech</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sech" -->
+<dt><a name="label-94" id="label-94"><code>GSL::Vector::Complex#csch</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#csch" -->
+<dt><a name="label-95" id="label-95"><code>GSL::Vector::Complex#coth</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#coth" -->
+<dt><a name="label-96" id="label-96"><code>GSL::Vector::Complex#arcsinh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arcsinh" -->
+<dt><a name="label-97" id="label-97"><code>GSL::Vector::Complex#arccosh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccosh" -->
+<dt><a name="label-98" id="label-98"><code>GSL::Vector::Complex#arctanh</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arctanh" -->
+<dt><a name="label-99" id="label-99"><code>GSL::Vector::Complex#arcsech</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arcsech" -->
+<dt><a name="label-100" id="label-100"><code>GSL::Vector::Complex#arccsch</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccsch" -->
+<dt><a name="label-101" id="label-101"><code>GSL::Vector::Complex#arccoth</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#arccoth" -->
 </dl>
-<h3><a name="2.8" href="#2.8">2.8</a> <a name="label-97">Statistics</a></h3><!-- RDLabel: "Statistics" -->
+<h3><a name="2.9" href="#2.9">2.9</a> <a name="label-102">Statistics</a></h3><!-- RDLabel: "Statistics" -->
 
 <dl>
-<dt><a name="label-98" id="label-98"><code>GSL::Vector::Complex#sum</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sum" -->
+<dt><a name="label-103" id="label-103"><code>GSL::Vector::Complex#sum</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sum" -->
 <dd>
 Returns a GSL::Complex object representing the sum of all elements of <var>self</var>.</dd>
-<dt><a name="label-99" id="label-99"><code>GSL::Vector::Complex#mean</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#mean" -->
+<dt><a name="label-104" id="label-104"><code>GSL::Vector::Complex#mean</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#mean" -->
 <dd>
 Returns a GSL::Complex object representing the mean of all elements of <var>self</var>.</dd>
-<dt><a name="label-100" id="label-100"><code>GSL::Vector::Complex#tss</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#tss" -->
+<dt><a name="label-105" id="label-105"><code>GSL::Vector::Complex#tss</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#tss" -->
 <dd>
 Returns the total sum of squares about <code>self.mean</code>.  This is a real
 number, i.e. a Float.</dd>
-<dt><a name="label-101" id="label-101"><code>GSL::Vector::Complex#tss_m(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#tss_m" -->
+<dt><a name="label-106" id="label-106"><code>GSL::Vector::Complex#tss_m(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#tss_m" -->
 <dd>
 Returns the total sum of squares about <var>mean</var>.  This is a real number,
 i.e. a Float.</dd>
-<dt><a name="label-102" id="label-102"><code>GSL::Vector::Complex#variance</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#variance" -->
+<dt><a name="label-107" id="label-107"><code>GSL::Vector::Complex#variance</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#variance" -->
 <dd>
 Returns the variance of <var>self</var>.  This is a real number, i.e. a Float.</dd>
-<dt><a name="label-103" id="label-103"><code>GSL::Vector::Complex#variance_m(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#variance_m" -->
+<dt><a name="label-108" id="label-108"><code>GSL::Vector::Complex#variance_m(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#variance_m" -->
 <dd>
 Returns the variance of <var>self</var> around <var>mean</var>.  This is a real
 number, i.e. a Float.</dd>
-<dt><a name="label-104" id="label-104"><code>GSL::Vector::Complex#variance_fm(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#variance_fm" -->
+<dt><a name="label-109" id="label-109"><code>GSL::Vector::Complex#variance_fm(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#variance_fm" -->
 <dd>
 Returns the variance of <var>self</var> around the fixed mean <var>mean</var>.  This
 is a real number, i.e. a Float.</dd>
-<dt><a name="label-105" id="label-105"><code>GSL::Vector::Complex#sd</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sd" -->
+<dt><a name="label-110" id="label-110"><code>GSL::Vector::Complex#sd</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sd" -->
 <dd>
 Returns the standard deviation of <var>self</var>.  This is a real number, i.e.
 a Float.</dd>
-<dt><a name="label-106" id="label-106"><code>GSL::Vector::Complex#sd_m(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sd_m" -->
+<dt><a name="label-111" id="label-111"><code>GSL::Vector::Complex#sd_m(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sd_m" -->
 <dd>
 Returns the standard deviation of <var>self</var> around <var>mean</var>.  This is a
 real number, i.e. a Float.</dd>
-<dt><a name="label-107" id="label-107"><code>GSL::Vector::Complex#sd_fm(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sd_fm" -->
+<dt><a name="label-112" id="label-112"><code>GSL::Vector::Complex#sd_fm(<var>mean</var>)</code></a></dt><!-- RDLabel: "GSL::Vector::Complex#sd_fm" -->
 <dd>
 Returns the standard deviation of <var>self</var> around the fixed mean
 <var>mean</var>.  This is a real number, i.e. a Float.</dd>
 </dl>
-<h2><a name="3" href="#3">3</a> <a name="label-108">Data Conversions</a></h2><!-- RDLabel: "Data Conversions" -->
+<h2><a name="3" href="#3">3</a> <a name="label-113">Data Conversions</a></h2><!-- RDLabel: "Data Conversions" -->
 
 <dl>
-<dt><a name="label-109" id="label-109"><code>GSL::Vector#to_complex</code></a></dt><!-- RDLabel: "GSL::Vector#to_complex" -->
-<dt><a name="label-110" id="label-110"><code>GSL::Vector#to_complex2</code></a></dt><!-- RDLabel: "GSL::Vector#to_complex2" -->
+<dt><a name="label-114" id="label-114"><code>GSL::Vector#to_complex</code></a></dt><!-- RDLabel: "GSL::Vector#to_complex" -->
+<dt><a name="label-115" id="label-115"><code>GSL::Vector#to_complex2</code></a></dt><!-- RDLabel: "GSL::Vector#to_complex2" -->
 <dd>
 <p>Create a complex vector from a real vector.</p>
 <pre>irb(main):002:0&gt; v = Vector[1..4]

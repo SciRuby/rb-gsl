@@ -777,6 +777,101 @@ static VALUE rb_gsl_vector_complex_swap_elements(VALUE obj, VALUE i, VALUE j)
   return obj;
 }
 
+static VALUE rb_gsl_vector_complex_fftshift_bang(VALUE obj)
+{
+  gsl_vector_complex *v = NULL;
+  gsl_complex tmp;
+  size_t i, n;
+
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  n = v->size;
+  if(n & 1) {
+    // length is odd
+    tmp = gsl_vector_complex_get(v,0);
+    for(i = 0; i < n/2; i++) {
+      gsl_vector_complex_set(v, i, gsl_vector_complex_get(v, i+n/2+1));
+      gsl_vector_complex_set(v, i+n/2+1, gsl_vector_complex_get(v, i+1));
+    }
+    gsl_vector_complex_set(v, n/2, tmp);
+  } else {
+    // length is even
+    for(i = 0; i < n/2; i++) {
+      gsl_vector_complex_swap_elements(v, i, i+n/2);
+    }
+  }
+
+  return obj;
+}
+
+static VALUE rb_gsl_vector_complex_fftshift(VALUE obj)
+{
+  gsl_vector_complex *v, *vnew;
+  gsl_vector_complex_view vv, vvnew;
+  size_t n;
+
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  n = v->size;
+  vnew = gsl_vector_complex_alloc(n);
+  // Copy low to high
+  vv = gsl_vector_complex_subvector(v, 0, (n+1)/2);
+  vvnew = gsl_vector_complex_subvector(vnew, n/2, (n+1)/2);
+  gsl_vector_complex_memcpy(&vvnew.vector, &vv.vector);
+  // Copy high to low
+  vv = gsl_vector_complex_subvector(v, (n+1)/2, n/2);
+  vvnew = gsl_vector_complex_subvector(vnew, 0, n/2);
+  gsl_vector_complex_memcpy(&vvnew.vector, &vv.vector);
+
+  return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);  
+}
+
+static VALUE rb_gsl_vector_complex_ifftshift_bang(VALUE obj)
+{
+  gsl_vector_complex *v = NULL;
+  gsl_complex tmp;
+  size_t i, n;
+
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  n = v->size;
+  if(n & 1) {
+    // length is odd
+    tmp = gsl_vector_complex_get(v,n/2);
+    for(i = n/2; i > 0; i--) {
+      gsl_vector_complex_set(v, i, gsl_vector_complex_get(v, i+n/2));
+      gsl_vector_complex_set(v, i+n/2, gsl_vector_complex_get(v, i-1));
+    }
+    gsl_vector_complex_set(v, 0, tmp);
+  } else {
+    // length is even
+    for(i = 0; i < n/2; i++) {
+      gsl_vector_complex_swap_elements(v, i, i+n/2);
+    }
+  }
+
+  return obj;
+}
+
+static VALUE rb_gsl_vector_complex_ifftshift(VALUE obj)
+{
+  return rb_gsl_vector_complex_ifftshift_bang(rb_gsl_vector_complex_clone(obj));
+  gsl_vector_complex *v, *vnew;
+  gsl_vector_complex_view vv, vvnew;
+  size_t n;
+
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  n = v->size;
+  vnew = gsl_vector_complex_alloc(n);
+  // Copy high to low
+  vv = gsl_vector_complex_subvector(vnew, n/2, (n+1)/2);
+  vvnew = gsl_vector_complex_subvector(v, 0, (n+1)/2);
+  gsl_vector_complex_memcpy(&vvnew.vector, &vv.vector);
+  // Copy low to high
+  vv = gsl_vector_complex_subvector(vnew, 0, n/2);
+  vvnew = gsl_vector_complex_subvector(v, (n+1)/2, n/2);
+  gsl_vector_complex_memcpy(&vvnew.vector, &vv.vector);
+
+  return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);  
+}
+
 static VALUE rb_gsl_vector_complex_isnull(VALUE obj)
 {
   gsl_vector_complex *v = NULL;
@@ -1915,6 +2010,10 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "reverse!", rb_gsl_vector_complex_reverse, 0);
   rb_define_method(cgsl_vector_complex, "reverse", rb_gsl_vector_complex_reverse2, 0);
   rb_define_method(cgsl_vector_complex, "swap_elements", rb_gsl_vector_complex_swap_elements, 2);
+  rb_define_method(cgsl_vector_complex, "fftshift!", rb_gsl_vector_complex_fftshift_bang, 0);
+  rb_define_method(cgsl_vector_complex, "fftshift", rb_gsl_vector_complex_fftshift, 0);
+  rb_define_method(cgsl_vector_complex, "ifftshift!", rb_gsl_vector_complex_ifftshift_bang, 0);
+  rb_define_method(cgsl_vector_complex, "ifftshift", rb_gsl_vector_complex_ifftshift, 0);
   rb_define_method(cgsl_vector_complex, "isnull", rb_gsl_vector_complex_isnull, 0);
 
   rb_define_method(cgsl_vector_complex, "matrix_view", rb_gsl_vector_complex_matrix_view, -1);

@@ -102,6 +102,33 @@
 --- GSL::Vector::Complex#collect!
 --- GSL::Vector::Complex#map!
 
+=== Reordering Elements
+((<GSL::Vector::Complex|URL:vector_complex.html>)) provides four methods for
+shifting the frequency domain data between ((*FFT order*)), shown in the table
+in ((<Overview of complex data FFTs|URL:fft.html#2.1>)),
+and ((*natural order*)), which has the most negative freqeuncy component
+first, the zero frequency component in the middle, and the most positive
+frequency component last.  For more information on Ruby/GSL and FFTs, see
+((<Fast Fourier Transforms|URL:fft.html>)),
+
+--- GSL::Vector::Complex#fftshift
+--- GSL::Vector::Complex#fftshift!
+    Shifts the data of ((|self|)) from FFT order to natural order.  The
+    (({#fftshift})) method leaves ((|self|)) unmodified and returns a new
+    (({GSL::Vector::Complex})) object containing the shifted data.  The
+    (({#fftshift!})) method modifies ((|self|)) in-place and returns
+    ((|self|)).  Note that (({#fftshift})) and (({#ifftshift})) are equivalent
+    for even lengths, but not for odd lengths.
+
+--- GSL::Vector::Complex#ifftshift
+--- GSL::Vector::Complex#ifftshift!
+    Shifts the data of ((|self|)) from natural order to FFT order.  The
+    (({#ifftshift})) method leaves ((|self|)) unmodified and returns a new
+    (({GSL::Vector::Complex})) object containing the shifted data.  The
+    (({#ifftshift!})) method modifies ((|self|)) in-place and returns
+    ((|self|)).  Note that (({#fftshift})) and (({#ifftshift})) are equivalent
+    for even lengths, but not for odd lengths.
+
 === Arithmetic
 --- GSL::Vector::Complex#+(other)
 --- GSL::Vector::Complex#-(other)
