@@ -1609,6 +1609,7 @@ void Init_gsl_matrix_complex(VALUE module)
   rb_define_method(cgsl_matrix_complex, "column", rb_gsl_matrix_complex_column, 1);
   rb_define_alias(cgsl_matrix_complex, "col", "column");
   rb_define_method(cgsl_matrix_complex, "diagonal", rb_gsl_matrix_complex_diagonal, 0);
+  rb_define_alias(cgsl_matrix_complex, "diag", "diagonal");
   rb_define_method(cgsl_matrix_complex, "set_diagonal", rb_gsl_matrix_complex_set_diagonal, 1);
   rb_define_method(cgsl_matrix_complex, "subdiagonal", rb_gsl_matrix_complex_subdiagonal, 1);
   rb_define_method(cgsl_matrix_complex, "superdiagonal", rb_gsl_matrix_complex_superdiagonal, 1);

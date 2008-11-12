@@ -352,6 +352,7 @@ parameter name indicates the type of the parameter: ((|i|)), ((|row|)),
     beginning at ((|offset|)) elements past the first row 
     and containing ((|n|)) elements. (>= GSL-1.10)
 
+--- GSL::Matrix#diag
 --- GSL::Matrix#diagonal 
     This method returns a (({Vector::View})) of the diagonal of the matrix.
     The matrix is not required to be square. For a rectangular matrix the 

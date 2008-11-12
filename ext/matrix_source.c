@@ -2506,6 +2506,7 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
 
   rb_define_method(GSL_TYPE(cgsl_matrix), "diagonal", 
 		   FUNCTION(rb_gsl_matrix,diagonal), 0);
+  rb_define_alias(GSL_TYPE(cgsl_matrix), "diag", "diagonal");
 
   rb_define_method(GSL_TYPE(cgsl_matrix), "subdiagonal", 
 		   FUNCTION(rb_gsl_matrix,subdiagonal), 1);
