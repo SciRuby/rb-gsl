@@ -609,21 +609,17 @@ in the elements of the (({View})) object affect to the original vector.
        [ 5.000e+00 2.000e+00 0.000e+00 ],
        [ 6.000e+00 0.000e+00 0.000e+00 ]]
 
+--- GSL::Vector#concat(x)
+    Returns a new Vector that contains the concatenation ((|self|)) and
+    ((|x|)), which must be an (({Array})), (({Fixnum})), (({Bignum})),
+    (({Float})), (({Range})), or (({GSL::Vector})).
+
 === Vector operations with size changes
 The methods below change vector length of ((|self|)).  A Vector's length may
-not extend past its original allocation.
---- GSL::Vector#pop
-    Removes the last element from ((|self|)) and returns it, or 
-    (({nil})) if empty.
---- GSL::Vector#shift
-    Returns the first element from ((|self|)) and removes it. Returns 
-    (({nil})) if empty.
---- GSL::Vector#push(x)
---- GSL::Vector#concat(x)
---- GSL::Vector#<<(x)
-    Append ((|x|)) ((({Numeric})) or (({GSL::Vector}))) to the end of ((|self|)).
---- GSL::Vector#unshift(x)
-    Prepends ((|x|)) to the front of ((|self|)).
+not extend past its original allocation.  Use of these methods is discouraged.
+Existing Views may still refer to elements beyond the end of the shortened
+Vector.  These elements remain allocated, but are effectvely unmanaged.
+
 --- GSL::Vector#delete(x)
     Deletes items from ((|self|)) that are equal to ((|x|)).  If the item is
     not found, returns (({nil})), otherwise returns ((|x|)).

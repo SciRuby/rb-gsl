@@ -1757,9 +1757,6 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_poly), "-@", FUNCTION(rb_gsl_poly,uminus), 0);
   rb_define_method(GSL_TYPE(cgsl_poly), "+@", FUNCTION(rb_gsl_poly,uplus), 0);
 
-  rb_define_alias(GSL_TYPE(cgsl_poly), "up", "unshift");
-  rb_define_alias(GSL_TYPE(cgsl_poly), "down", "shift");
-
   rb_define_method(GSL_TYPE(cgsl_poly), "coerce", 
 		   FUNCTION(rb_gsl_poly,coerce), 1);
   rb_define_method(GSL_TYPE(cgsl_poly), "to_gv", FUNCTION(rb_gsl_poly,to_gv), 0);

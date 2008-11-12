@@ -1943,134 +1943,6 @@ static VALUE FUNCTION(rb_gsl_vector,histogram)(int argc, VALUE *argv, VALUE obj)
   return Data_Wrap_Struct(cgsl_histogram, 0, gsl_histogram_free, h);
 }
 
-static VALUE FUNCTION(rb_gsl_vector,shift)(int argc, VALUE *argv, VALUE obj)
-{
-  GSL_TYPE(gsl_vector) *v = NULL, *vnew = NULL;
-  BASE x;
-  int n2;
-  size_t n;
-  Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  if (v->size == 0) return Qnil;
-  switch (argc) {
-  case 0:
-    x = FUNCTION(gsl_vector,get)(v, 0);
-    v->size -= 1;
-    memmove(v->block->data, v->block->data+1, sizeof(BASE)*v->size);
-    return C_TO_VALUE((BASE)x);
-    break;
-  case 1:
-    n2 = NUM2INT(argv[0]); 
-    if (n2 <= 0) return Qnil;
-    n = (size_t) n2;
-    if (n >= v->size) n = v->size;
-    vnew = FUNCTION(gsl_vector,alloc)(n);
-    memcpy(vnew->data, v->data, sizeof(BASE)*n);
-    v->size -= n;
-    memmove(v->block->data, v->block->data+n, sizeof(BASE)*v->size);
-    return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 or 1)", argc);
-    break;
-  }
-}
-
-static VALUE FUNCTION(rb_gsl_vector,pop)(int argc, VALUE *argv, VALUE obj)
-{
-  GSL_TYPE(gsl_vector) *v = NULL, *vnew = NULL;
-  BASE x;
-  int n2;
-  size_t n;
-  Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  if (v->size == 0) return Qnil;
-  switch (argc) {
-  case 0:
-    x = FUNCTION(gsl_vector,get)(v, v->size-1);
-    v->size -= 1;
-    return C_TO_VALUE((BASE)x);
-    break;
-  case 1:
-    n2 = NUM2INT(argv[0]); 
-    if (n2 <= 0) return Qnil;
-    n = (size_t) n2;
-    if (n >= v->size) n = v->size;
-    vnew = FUNCTION(gsl_vector,alloc)(n);
-    memcpy(vnew->data, v->data+(v->size-n), sizeof(BASE)*n);
-    v->size -= n;
-    return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 or 1)", argc);
-    break;
-  }
-}
-
-static VALUE FUNCTION(rb_gsl_vector,unshift_v)(VALUE obj, VALUE x);
-static VALUE FUNCTION(rb_gsl_vector,unshift)(VALUE obj, VALUE x)
-{
-  GSL_TYPE(gsl_vector) *v = NULL;
-  BASE xnative;
-  if (rb_obj_is_kind_of(obj,cgsl_vector_view) 
-      || rb_obj_is_kind_of(obj,cgsl_vector_int_view))
-    rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
-  if (VECTOR_P(x) || VECTOR_INT_P(x)) return FUNCTION(rb_gsl_vector,unshift_v)(obj, x);
-  Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  if (v->stride != 1) {
-    rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  }
-  xnative = NUMCONV2(x);
-  if (v->block->size < (v->size+1)) {
-    rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
-  }
-  memmove(v->data+1, v->data, sizeof(BASE)*v->size);
-  v->size += 1;
-  FUNCTION(gsl_vector,set)(v, 0, xnative);
-  return obj;
-}
-
-static VALUE FUNCTION(rb_gsl_vector,unshift_v)(VALUE obj, VALUE x)
-{
-  GSL_TYPE(gsl_vector) *v = NULL, *v2;
-  if (rb_obj_is_kind_of(obj,QUALIFIED_VIEW(cgsl_vector,view) ))
-    rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
-  if (!rb_obj_is_kind_of(x, CLASS_OF(obj)))
-    rb_raise(rb_eTypeError, "wrong argument type %s (%s expected)",
-	     rb_class2name(CLASS_OF(x)), rb_class2name(CLASS_OF(obj)));
-  Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  Data_Get_Struct(x, GSL_TYPE(gsl_vector), v2);
-  if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  if (v2->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  if (v->block->size < (v->size+v2->size)) {
-    rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
-  }
-  memmove(v->data+v2->size, v->data, sizeof(BASE)*v->size);
-  memmove(v->data, v2->data, sizeof(BASE)*v2->size);
-  v->size += v2->size;
-  return obj;
-}
-
-static VALUE FUNCTION(rb_gsl_vector,concat)(VALUE obj, VALUE other);
-static VALUE FUNCTION(rb_gsl_vector,push)(VALUE obj, VALUE x)
-{
-  GSL_TYPE(gsl_vector) *v = NULL;
-  BASE xnative;
-  if (rb_obj_is_kind_of(obj,QUALIFIED_VIEW(cgsl_vector,view) ))
-    rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
-  if (VECTOR_P(x) || VECTOR_INT_P(x) || TYPE(x) == T_ARRAY) {
-    return FUNCTION(rb_gsl_vector,concat)(obj, x);
-  }
-  Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  xnative = NUMCONV2(x);
-  if (v->block->size < (v->size+1)) {
-    rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
-  }
-  v->size += 1;
-  FUNCTION(gsl_vector,set)(v, v->size-1, xnative);
-  return obj;
-}
-
 static VALUE FUNCTION(rb_gsl_vector,last)(VALUE obj)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
@@ -2087,50 +1959,62 @@ static VALUE FUNCTION(rb_gsl_vector,first)(VALUE obj)
 
 static VALUE FUNCTION(rb_gsl_vector,concat)(VALUE obj, VALUE other)
 {
-  GSL_TYPE(gsl_vector) *v = NULL, *v2 = NULL;
+  GSL_TYPE(gsl_vector) *v = NULL, *v2 = NULL, *vnew = NULL;
+  QUALIFIED_VIEW(gsl_vector,view) vv;
   VALUE x;
-  BASE xnative;
+  BASE beg, end;
+  int step;
   size_t i, size2;
-  if (rb_obj_is_kind_of(obj,QUALIFIED_VIEW(cgsl_vector,view)))
-    rb_raise(rb_eRuntimeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
-  if (!rb_obj_is_kind_of(other, CLASS_OF(obj)) && TYPE(other) != T_ARRAY)
-    rb_raise(rb_eTypeError, "wrong argument type %s (%s expected)",
-	     rb_class2name(CLASS_OF(other)), rb_class2name(CLASS_OF(obj)));
-  Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  if (v->stride != 1)
-    rb_raise(rb_eRuntimeError, "vector must have stride 1");
 
-  if (TYPE(other) == T_ARRAY) {
-    size2 = RARRAY(other)->len;
-    if (v->block->size < (v->size+size2)) {
-      rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
-    }
-    for (i = 0; i < size2; i++) {
-      x = rb_ary_entry(other, i);
-      switch(TYPE(x)) {
-        case T_FIXNUM: case T_BIGNUM: case T_FLOAT:
-          xnative = NUMCONV2(x);
-          break;
-        default:
-          xnative = (BASE)0;
+  Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
+
+  switch(TYPE(other)) {
+    case T_FIXNUM:
+    case T_BIGNUM:
+    case T_FLOAT:
+      vnew = FUNCTION(gsl_vector,alloc)(v->size + 1);
+      vv = FUNCTION(gsl_vector,subvector)(vnew, 0, v->size);
+      FUNCTION(gsl_vector,memcpy)(&vv.vector, v);
+      FUNCTION(gsl_vector,set)(vnew, v->size, NUMCONV2(other));
+      break;
+
+    case T_ARRAY:
+      size2 = RARRAY(other)->len;
+      vnew = FUNCTION(gsl_vector,alloc)(v->size + size2);
+      vv = FUNCTION(gsl_vector,subvector)(vnew, 0, v->size);
+      FUNCTION(gsl_vector,memcpy)(&vv.vector, v);
+      for (i = 0; i < size2; i++) {
+        x = rb_ary_entry(other, i);
+        FUNCTION(gsl_vector,set)(vnew, v->size + i, NUMCONV2(x));
       }
-      // Cannot increment size until after all array elements have been
-      // converted because that would alter vector even if an exception is
-      // rasied.  So we cannot use gsl_vector_set.
-      v->data[v->size+i] = xnative;
-    }
-  } else {
-    Data_Get_Struct(other, GSL_TYPE(gsl_vector), v2);
-    if (v2->stride != 1) 
-      rb_raise(rb_eRuntimeError, "vector must have stride 1");
-    size2 = v2->size;
-    if (v->block->size < (v->size+size2)) {
-      rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
-    }
-    memcpy(v->data+v->size, v2->data, sizeof(BASE)*v2->size);
-  }    
-  v->size += size2;
-  return obj;
+      break;
+
+    default:
+      if(rb_obj_is_kind_of(other, rb_cRange)) {
+        FUNCTION(get_range,beg_en_n)(other, &beg, &end, &size2, &step);
+        vnew = FUNCTION(gsl_vector,alloc)(v->size + size2);
+        vv = FUNCTION(gsl_vector,subvector)(vnew, 0, v->size);
+        FUNCTION(gsl_vector,memcpy)(&vv.vector, v);
+        for (i = 0; i < size2; i++) {
+          FUNCTION(gsl_vector,set)(vnew, v->size + i, beg);
+          beg += step;
+        }
+      } else if (rb_obj_is_kind_of(other, GSL_TYPE(cgsl_vector))) {
+        Data_Get_Struct(other, GSL_TYPE(gsl_vector), v2);
+        size2 = v2->size;
+        vnew = FUNCTION(gsl_vector,alloc)(v->size + size2);
+        vv = FUNCTION(gsl_vector,subvector)(vnew, 0, v->size);
+        FUNCTION(gsl_vector,memcpy)(&vv.vector, v);
+        vv = FUNCTION(gsl_vector,subvector)(vnew, v->size, size2);
+        FUNCTION(gsl_vector,memcpy)(&vv.vector, v2);
+      } else {
+        rb_raise(rb_eTypeError, "wrong argument type %s (Array, Numeric, Range, or %s expected)",
+            rb_class2name(CLASS_OF(other)), rb_class2name(GSL_TYPE(cgsl_vector)));
+      }
+      break;
+  }
+
+  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);  
 }
 
 void FUNCTION(mygsl_vector,diff)(GSL_TYPE(gsl_vector) *vdst,
@@ -3338,13 +3222,6 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_vector), "histogram",
 		   FUNCTION(rb_gsl_vector,histogram), -1);
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "shift", 
-		   FUNCTION(rb_gsl_vector,shift), -1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "unshift", 
-		   FUNCTION(rb_gsl_vector,unshift), 1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "push", FUNCTION(rb_gsl_vector,push), 1);
-  rb_define_alias(GSL_TYPE(cgsl_vector), "<<", "push");
-  rb_define_method(GSL_TYPE(cgsl_vector), "pop",  FUNCTION(rb_gsl_vector,pop), -1);
   rb_define_method(GSL_TYPE(cgsl_vector), "last", 
 		   FUNCTION(rb_gsl_vector,last), 0);
   rb_define_method(GSL_TYPE(cgsl_vector), "first", 

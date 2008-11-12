@@ -1597,170 +1597,71 @@ static VALUE rb_gsl_vector_complex_arccoth(VALUE obj)
   return rb_gsl_vector_complex_XXXz(obj, gsl_complex_arccoth);
 }
 
-static VALUE rb_gsl_vector_complex_shift(int argc, VALUE *argv, VALUE obj)
+static VALUE rb_gsl_vector_complex_concat(VALUE obj, VALUE other)
 {
-  gsl_vector_complex *v = NULL, *vnew = NULL;
-  gsl_complex *z = NULL;
-  int n2;
-  size_t n;
-  if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
-    rb_raise(rb_eTypeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
-  }
+  gsl_vector_complex *v = NULL, *v2 = NULL, *vnew = NULL;
+  gsl_vector_complex_view vv;
+  gsl_complex tmp;
+  VALUE x;
+  double beg, end;
+  int step;
+  size_t i, size2;
+
   Data_Get_Struct(obj, gsl_vector_complex, v);
-  if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  if (v->size == 0) return Qnil;
-  switch (argc) {
-  case 0:
-    z = ALLOC(gsl_complex);
-    *z = gsl_vector_complex_get(v, 0);
-    v->size -= 1;
-    memmove(v->block->data, v->block->data+2, sizeof(double)*v->size*2);
-    return Data_Wrap_Struct(cgsl_complex, 0, free, z);
-    break;
-  case 1:
-    n2 = NUM2INT(argv[0]); 
-    if (n2 <= 0) return Qnil;
-    n = (size_t) n2;
-    if (n >= v->size) n = v->size;
-    vnew = gsl_vector_complex_alloc(n);
-    memcpy(vnew->data, v->data, sizeof(gsl_complex)*n);
-    memmove(v->block->data, v->block->data+2*n, sizeof(gsl_complex)*(v->size - n));
-    v->size -= n;
-    return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 or 1)", argc);
-    break;
-  }
-  /* Should never get here. */
-  return Qnil;
-}
 
-static VALUE rb_gsl_vector_complex_pop(int argc, VALUE *argv, VALUE obj)
-{
-  gsl_vector_complex *v = NULL, *vnew = NULL;
-  gsl_complex *z = NULL;
-  int n2;
-  size_t n;
-  if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
-    rb_raise(rb_eTypeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
-  }
-  Data_Get_Struct(obj, gsl_vector_complex, v);
-  if (v->stride != 1) rb_raise(rb_eRuntimeError, "vector must have stride 1");
-  if (v->size == 0) return Qnil;
-  switch (argc) {
-  case 0:
-    z = ALLOC(gsl_complex);
-    *z = gsl_vector_complex_get(v, v->size-1);
-    v->size -= 1;
-    return Data_Wrap_Struct(cgsl_complex, 0, free, z);
-    break;
-  case 1:
-    n2 = NUM2INT(argv[0]); 
-    if (n2 <= 0) return Qnil;
-    n = (size_t) n2;
-    if (n >= v->size) n = v->size;
-    vnew = gsl_vector_complex_alloc(n);
-    memcpy(vnew->data, v->data+2*(v->size-n), sizeof(gsl_complex)*n);
-    v->size -= n;
-    return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 0 or 1)", argc);
-    break;
-  }
-  /* Should never get here. */
-  return Qnil;
-}
+  switch(TYPE(other)) {
+    case T_FIXNUM:
+    case T_BIGNUM:
+    case T_FLOAT:
+      vnew = gsl_vector_complex_alloc(v->size + 1);
+      vv = gsl_vector_complex_subvector(vnew, 0, v->size);
+      gsl_vector_complex_memcpy(&vv.vector, v);
+      gsl_vector_complex_set(vnew, v->size, rb_gsl_obj_to_gsl_complex(other, NULL));
+      break;
 
-static VALUE rb_gsl_vector_complex_unshift(VALUE obj, VALUE x)
-{
-  gsl_vector_complex *v = NULL, *other = NULL;
-  gsl_complex *z, c;
-  size_t n = 1;
-  if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
-    rb_raise(rb_eTypeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
-  }
-  switch (TYPE(x)) {
-  case T_FIXNUM: case T_FLOAT:
-    c.dat[0] = NUM2DBL(x); c.dat[1] = 0.0;
-    z = &c;
-    break;
-  case T_ARRAY:
-    c.dat[0] = NUM2DBL(rb_ary_entry(x, 0));
-    c.dat[1] = NUM2DBL(rb_ary_entry(x, 1));
-    z = &c;
-    break;
-  default:
-    if(VECTOR_COMPLEX_P(x)) {
-      Data_Get_Struct(x, gsl_vector_complex, other);
-      if (other->stride != 1) rb_raise(rb_eRuntimeError, "other vector must have stride 1");
-      z = (gsl_complex *)other->data;
-      n = other->size;
-    } else {
-      CHECK_COMPLEX(x);
-      Data_Get_Struct(x, gsl_complex, z);
-    }
-    break;
-  }
-  if(n > 0) {
-    Data_Get_Struct(obj, gsl_vector_complex, v);
-    if (v->stride != 1) {
-      rb_raise(rb_eRuntimeError, "vector must have stride 1");
-    }
-    if (v->block->size < v->size+n) {
-      rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
-    }
-    memmove(v->data+2*n, v->data, sizeof(gsl_complex)*v->size);
-    memmove(v->data, z, sizeof(gsl_complex)*n);
-    v->size += n;
-  }
-  return obj;
-}
+    case T_ARRAY:
+      size2 = RARRAY(other)->len;
+      vnew = gsl_vector_complex_alloc(v->size + size2);
+      vv = gsl_vector_complex_subvector(vnew, 0, v->size);
+      gsl_vector_complex_memcpy(&vv.vector, v);
+      for (i = 0; i < size2; i++) {
+        x = rb_ary_entry(other, i);
+        gsl_vector_complex_set(vnew, v->size + i, rb_gsl_obj_to_gsl_complex(x, NULL));
+      }
+      break;
 
-static VALUE rb_gsl_vector_complex_push(VALUE obj, VALUE x)
-{
-  gsl_vector_complex *v = NULL, *other = NULL;
-  gsl_complex *z, c;
-  size_t n = 1;
-  if(CLASS_OF(obj) != cgsl_vector_complex && CLASS_OF(obj) != cgsl_vector_complex_col) {
-    rb_raise(rb_eTypeError, "prohibited for %s", rb_class2name(CLASS_OF(obj)));
+    default:
+      if(rb_obj_is_kind_of(other, cgsl_complex)) {
+        vnew = gsl_vector_complex_alloc(v->size + 1);
+        vv = gsl_vector_complex_subvector(vnew, 0, v->size);
+        gsl_vector_complex_memcpy(&vv.vector, v);
+        gsl_vector_complex_set(vnew, v->size, rb_gsl_obj_to_gsl_complex(other, NULL));
+      } else if(rb_obj_is_kind_of(other, rb_cRange)) {
+        get_range_beg_en_n(other, &beg, &end, &size2, &step);
+        vnew = gsl_vector_complex_alloc(v->size + size2);
+        vv = gsl_vector_complex_subvector(vnew, 0, v->size);
+        gsl_vector_complex_memcpy(&vv.vector, v);
+        GSL_SET_COMPLEX(&tmp, beg, 0.0);
+        for (i = 0; i < size2; i++) {
+          gsl_vector_complex_set(vnew, v->size + i, tmp);
+          GSL_SET_REAL(&tmp, GSL_REAL(tmp) + step);
+        }
+      } else if (rb_obj_is_kind_of(other, cgsl_vector_complex)) {
+        Data_Get_Struct(other, gsl_vector_complex, v2);
+        size2 = v2->size;
+        vnew = gsl_vector_complex_alloc(v->size + size2);
+        vv = gsl_vector_complex_subvector(vnew, 0, v->size);
+        gsl_vector_complex_memcpy(&vv.vector, v);
+        vv = gsl_vector_complex_subvector(vnew, v->size, size2);
+        gsl_vector_complex_memcpy(&vv.vector, v2);
+      } else {
+        rb_raise(rb_eTypeError, "wrong argument type %s (Array, Numeric, Range, GSL::Complex, or %s expected)",
+            rb_class2name(CLASS_OF(other)), rb_class2name(cgsl_vector_complex));
+      }
+      break;
   }
-  switch (TYPE(x)) {
-  case T_FIXNUM: case T_FLOAT:
-    c.dat[0] = NUM2DBL(x); c.dat[1] = 0.0;
-    z = &c;
-    break;
-  case T_ARRAY:
-    c.dat[0] = NUM2DBL(rb_ary_entry(x, 0));
-    c.dat[1] = NUM2DBL(rb_ary_entry(x, 1));
-    z = &c;
-    break;
-  default:
-    if(VECTOR_COMPLEX_P(x)) {
-      Data_Get_Struct(x, gsl_vector_complex, other);
-      if (other->stride != 1) rb_raise(rb_eRuntimeError, "other vector must have stride 1");
-      z = (gsl_complex *)other->data;
-      n = other->size;
-    } else {
-      CHECK_COMPLEX(x);
-      Data_Get_Struct(x, gsl_complex, z);
-    }
-    break;
-  }
-  if(n > 0) {
-    Data_Get_Struct(obj, gsl_vector_complex, v);
-    if (v->stride != 1) {
-      rb_raise(rb_eRuntimeError, "vector must have stride 1");
-    }
-    if (v->block->size < v->size+n) {
-      rb_raise(rb_eRuntimeError, "operation would require memory reallocation");
-    }
-    // Use memmove so that v.push(v) will work
-    memmove(v->data+2*v->size, z, sizeof(gsl_complex)*n);
-    v->size += n;
-  }
-  return obj;
+
+  return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);  
 }
 
 static VALUE rb_gsl_vector_complex_block(VALUE obj)
@@ -2121,11 +2022,7 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "arccoth", rb_gsl_vector_complex_arccoth, 0);
 
   /*****/
-  rb_define_method(cgsl_vector_complex, "shift", rb_gsl_vector_complex_shift, -1);
-  rb_define_method(cgsl_vector_complex, "pop", rb_gsl_vector_complex_pop, -1);
-  rb_define_method(cgsl_vector_complex, "unshift", rb_gsl_vector_complex_unshift, 1);
-  rb_define_method(cgsl_vector_complex, "push", rb_gsl_vector_complex_push, 1);
-  rb_define_alias(cgsl_vector_complex, "concat", "push");
+  rb_define_method(cgsl_vector_complex, "concat", rb_gsl_vector_complex_concat, 1);
   rb_define_method(cgsl_vector_complex, "block", rb_gsl_vector_complex_block, 0);
 
   rb_define_method(cgsl_vector_complex, "indgen", rb_gsl_vector_complex_indgen, -1);
