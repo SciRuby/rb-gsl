@@ -103,13 +103,12 @@
 --- GSL::Vector::Complex#map!
 
 === Reordering Elements
-((<GSL::Vector::Complex|URL:vector_complex.html>)) provides four methods for
-shifting the frequency domain data between ((*FFT order*)), shown in the table
-in ((<Overview of complex data FFTs|URL:fft.html#2.1>)),
-and ((*natural order*)), which has the most negative freqeuncy component
-first, the zero frequency component in the middle, and the most positive
-frequency component last.  For more information on Ruby/GSL and FFTs, see
-((<Fast Fourier Transforms|URL:fft.html>)),
+(({GSL::Vector::Complex})) provides four methods for shifting the frequency
+domain data between ((*FFT order*)), shown in the table in the ((<Overview of
+complex data FFTs|URL:fft.html#2.1>)), and ((*natural order*)), which has the
+most negative freqeuncy component first, the zero frequency component in the
+middle, and the most positive frequency component last.  For more information
+on Ruby/GSL and FFTs, see ((<Fast Fourier Transforms|URL:fft.html>)).
 
 --- GSL::Vector::Complex#fftshift
 --- GSL::Vector::Complex#fftshift!
@@ -138,11 +137,10 @@ frequency component last.  For more information on Ruby/GSL and FFTs, see
 --- GSL::Vector::Complex#sub(other)
 --- GSL::Vector::Complex#mul(other)
 --- GSL::Vector::Complex#div(other)
-    Returns a new GSL::Vector::Complex instance containing the result of the
-    appropriate arithmetic operation on ((|self|)) and ((|other|)).  The inputs
-    are unchanged.  The ((|other|)) parameter may be a scalar,
-    ((<GSL::Vector|URL:vector.html>)), or
-    ((<GSL::Vector::Complex|URL:vector_complex.html>)).
+    Returns a new (({GSL::Vector::Complex})) instance containing the result of
+    the appropriate arithmetic operation on ((|self|)) and ((|other|)).  The
+    inputs are unchanged.  The ((|other|)) parameter may be a scalar,
+    (({((<GSL::Vector|URL:vector.html>))})), or (({GSL::Vector::Complex})).
 
 --- GSL::Vector::Complex#+=(other)
 --- GSL::Vector::Complex#-=(other)
@@ -154,7 +152,8 @@ frequency component last.  For more information on Ruby/GSL and FFTs, see
 --- GSL::Vector::Complex#div!(other)
     Modifies ((|self|)) in place to contain the result of the appropriate
     arithmetic operation on ((|self|)) and ((|other|)).  The ((|other|))
-    parameter may be a scalar, GSL::Vector, or GSL::Vector::Complex.
+    parameter may be a scalar, (({((<GSL::Vector|URL:vector.html>))})), or
+    (({GSL::Vector::Complex})).
 
 === Reading and writing vectors
 --- GSL::Vector::Complex#fwite(io)
@@ -164,28 +163,36 @@ frequency component last.  For more information on Ruby/GSL and FFTs, see
 
 === Functions
 --- GSL::Vector::Complex#conj
-    Returns a new GSL::Vector::Complex that is the complex conjugate of ((|self|)).
+--- GSL::Vector::Complex#conjugate
+    Returns a new (({GSL::Vector::Complex})) that is the complex conjugate of
+    ((|self|)).
 
 --- GSL::Vector::Complex#conj!
-    Conjugates ((|self|)) in place and returns ((|self|)).
+--- GSL::Vector::Complex#conjugate!
+    Conjugates ((|self|)) in-place and returns ((|self|)).
 
 --- GSL::Vector::Complex#arg
 --- GSL::Vector::Complex#angle
 --- GSL::Vector::Complex#phase
-    Calculates the argument (i.e. phase angle in radians) of each of the complex elements of the vector ((|self|)) and returns a real vector.
+    Calculates the argument (i.e. phase angle in radians) of each of the
+    complex elements of the vector ((|self|)) and returns a real vector.
 
 --- GSL::Vector::Complex#abs2
-    Calculates the squared magnitude of the complex elements of the vector ((|self|)) and returns a real vector.
+    Calculates the squared magnitude of the complex elements of the vector
+    ((|self|)) and returns a real vector.
 
 --- GSL::Vector::Complex#abs
 --- GSL::Vector::Complex#amp
-    Calculates the magnitude of the complex elements of the vector ((|self|)) and returns a real vector.
+    Calculates the magnitude of the complex elements of the vector ((|self|))
+    and returns a real vector.
 
 --- GSL::Vector::Complex#logabs
-    Calculates the natural logarithm of the magnitude of the complex elements of the vector ((|self|)) and returns a real vector.
+    Calculates the natural logarithm of the magnitude of the complex elements
+    of the vector ((|self|)) and returns a real vector.
 
 --- GSL::Vector::Complex#sqrt
-    Calculates the square root of the complex elements of the vector ((|self|)) and returns a new complex vector.
+    Calculates the square root of the complex elements of the vector ((|self|))
+    and returns a new complex vector.
 
 --- GSL::Vector::Complex#exp
 --- GSL::Vector::Complex#pow(a)
@@ -219,32 +226,35 @@ frequency component last.  For more information on Ruby/GSL and FFTs, see
 
 === Statistics
 --- GSL::Vector::Complex#sum
-    Returns a GSL::Complex object representing the sum of all elements of ((|self|)).
+    Returns a (({GSL::Complex})) object representing the sum of all elements of
+    ((|self|)).
 --- GSL::Vector::Complex#mean
-    Returns a GSL::Complex object representing the mean of all elements of ((|self|)).
+    Returns a (({GSL::Complex})) object representing the mean of all elements
+    of ((|self|)).
 --- GSL::Vector::Complex#tss
     Returns the total sum of squares about (({self.mean})).  This is a real
-    number, i.e. a Float.
+    number, i.e. a (({Float})).
 --- GSL::Vector::Complex#tss_m(mean)
     Returns the total sum of squares about ((|mean|)).  This is a real number,
-    i.e. a Float.
+    i.e. a (({Float.}))
 --- GSL::Vector::Complex#variance
-    Returns the variance of ((|self|)).  This is a real number, i.e. a Float.
+    Returns the variance of ((|self|)).  This is a real number, i.e. a
+    (({Float.}))
 --- GSL::Vector::Complex#variance_m(mean)
     Returns the variance of ((|self|)) around ((|mean|)).  This is a real
-    number, i.e. a Float.
+    number, i.e. a (({Float})).
 --- GSL::Vector::Complex#variance_fm(mean)
     Returns the variance of ((|self|)) around the fixed mean ((|mean|)).  This
-    is a real number, i.e. a Float.
+    is a real number, i.e. a (({Float})).
 --- GSL::Vector::Complex#sd
     Returns the standard deviation of ((|self|)).  This is a real number, i.e.
-    a Float.
+    a (({Float})).
 --- GSL::Vector::Complex#sd_m(mean)
     Returns the standard deviation of ((|self|)) around ((|mean|)).  This is a
-    real number, i.e. a Float.
+    real number, i.e. a (({Float})).
 --- GSL::Vector::Complex#sd_fm(mean)
     Returns the standard deviation of ((|self|)) around the fixed mean
-    ((|mean|)).  This is a real number, i.e. a Float.
+    ((|mean|)).  This is a real number, i.e. a (({Float})).
 
 == Data Conversions
 --- GSL::Vector#to_complex
