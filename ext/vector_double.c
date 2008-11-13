@@ -1001,12 +1001,25 @@ static VALUE rb_gsl_vector_ceil(VALUE obj)
 }
 
 #ifdef HAVE_ROUND
-double round(double);
-static VALUE rb_gsl_vector_round(VALUE obj)
+#define rb_gsl_round_native round
+#else
+static double rb_gsl_round_native(double x)
 {
-  return rb_gsl_vector_xxx(obj, round);
+  if(!gsl_finite(x)) {
+    return x; // nan, +inf, -inf
+  } else if(x > 0.0) {
+    return floor(x+0.5);
+  } else if(x < 0.0) {
+    return ceil(x-0.5);
+  }
+  return x; // +0 or -0
 }
 #endif
+
+static VALUE rb_gsl_vector_round(VALUE obj)
+{
+  return rb_gsl_vector_xxx(obj, rb_gsl_round_native);
+}
 
 static VALUE rb_gsl_vector_dB(VALUE obj)
 {
@@ -1399,9 +1412,7 @@ void Init_gsl_vector(VALUE module)
 
   rb_define_method(cgsl_vector, "floor", rb_gsl_vector_floor, 0);
   rb_define_method(cgsl_vector, "ceil", rb_gsl_vector_ceil, 0);
-#ifdef HAVE_ROUND
   rb_define_method(cgsl_vector, "round", rb_gsl_vector_round, 0);
-#endif
 
   rb_define_method(cgsl_vector, "dB", rb_gsl_vector_dB, 0);
 
