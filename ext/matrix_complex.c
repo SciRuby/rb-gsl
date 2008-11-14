@@ -454,29 +454,51 @@ static VALUE rb_gsl_matrix_complex_set_col(int argc, VALUE *argv, VALUE obj)
   return obj;
 }
 
-static VALUE rb_gsl_matrix_complex_row(VALUE, VALUE);
-
+static VALUE rb_gsl_matrix_complex_submatrix(int argc, VALUE *argv, VALUE obj);
 static VALUE rb_gsl_matrix_complex_get(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix_complex *m = NULL;
   gsl_complex *c = NULL;
-  size_t i, j;
-  switch (argc) {
-  case 1:
-    return rb_gsl_matrix_complex_row(obj, argv[0]);
-    break;
-  case 2:
-    CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]);
+  VALUE retval;
+  int ii, ij;
+
+  if(argc == 2 && TYPE(argv[0]) == T_FIXNUM && TYPE(argv[1]) == T_FIXNUM) {
+    // m[i,j]
     Data_Get_Struct(obj, gsl_matrix_complex, m);
-    i = FIX2INT(argv[0]); j = FIX2INT(argv[1]);
+    ii = FIX2INT(argv[0]);
+    ij = FIX2INT(argv[1]);
+    if(ii < 0) ii += m->size1;
+    if(ij < 0) ij += m->size2;
     c = ALLOC(gsl_complex);
-    *c = gsl_matrix_complex_get(m, i, j); 
-    return Data_Wrap_Struct(cgsl_complex, 0, free, c);
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 2)", argc);
-    break;
+    *c = gsl_matrix_complex_get(m, (size_t)ii, (size_t)ij); 
+    retval = Data_Wrap_Struct(cgsl_complex, 0, free, c);
+  } else if(argc == 1 && TYPE(argv[0]) == T_FIXNUM) {
+    // m[i]
+    Data_Get_Struct(obj, gsl_matrix_complex, m);
+    ii = FIX2INT(argv[0]);
+    if(ii < 0) ii += m->size1 * m->size2;
+    c = ALLOC(gsl_complex);
+    *c = gsl_matrix_complex_get(m, (size_t)(ii / m->size2), (size_t)(ii % m->size2));
+    retval = Data_Wrap_Struct(cgsl_complex, 0, free, c);
+  } else if(argc == 1 && TYPE(argv[0]) == T_ARRAY) {
+    // m[[i,j]], to have parity with Real Matrix types
+    if(RARRAY_LEN(argv[0]) == 2) {
+      Data_Get_Struct(obj, gsl_matrix_complex, m);
+      ii = FIX2INT(RARRAY_PTR(argv[0])[0]);
+      ij = FIX2INT(RARRAY_PTR(argv[0])[1]);
+      if(ii < 0) ii += m->size1;
+      if(ij < 0) ij += m->size2;
+      c = ALLOC(gsl_complex);
+      *c = gsl_matrix_complex_get(m, (size_t)ii, (size_t)ij); 
+      retval = Data_Wrap_Struct(cgsl_complex, 0, free, c);
+    } else {
+      rb_raise(rb_eArgError, "Array index must have length 2, not %d", RARRAY_LEN(argv[0]));
+    }
+  } else {
+    retval = rb_gsl_matrix_complex_submatrix(argc, argv, obj);
   }
+
+  return retval;
 }
 
 static void rb_gsl_matrix_complex_collect_native(gsl_matrix_complex *src, gsl_matrix_complex *dst)

@@ -682,8 +682,8 @@ static VALUE FUNCTION(rb_gsl_matrix,get)(int argc, VALUE *argv, VALUE obj)
   VALUE retval;
   int ii, ij;
 
-
   if(argc == 2 && TYPE(argv[0]) == T_FIXNUM && TYPE(argv[1]) == T_FIXNUM) {
+    // m[i,j]
     Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
     ii = FIX2INT(argv[0]);
     ij = FIX2INT(argv[1]);
@@ -691,10 +691,23 @@ static VALUE FUNCTION(rb_gsl_matrix,get)(int argc, VALUE *argv, VALUE obj)
     if(ij < 0) ij += m->size2;
     retval = C_TO_VALUE2(FUNCTION(gsl_matrix,get)(m, (size_t)ii, (size_t)ij));
   } else if(argc == 1 && TYPE(argv[0]) == T_FIXNUM) {
+    // m[i]
     Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
     ii = FIX2INT(argv[0]);
     if(ii < 0) ii += m->size1 * m->size2;
     retval = C_TO_VALUE2(FUNCTION(gsl_matrix,get)(m, (size_t)(ii / m->size2), (size_t)(ii % m->size2)));
+  } else if(argc == 1 && TYPE(argv[0]) == T_ARRAY) {
+    // m[[i,j]], to support m[m.max_index]
+    if(RARRAY_LEN(argv[0]) == 2) {
+      Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
+      ii = FIX2INT(RARRAY_PTR(argv[0])[0]);
+      ij = FIX2INT(RARRAY_PTR(argv[0])[1]);
+      if(ii < 0) ii += m->size1;
+      if(ij < 0) ij += m->size2;
+      retval = C_TO_VALUE2(FUNCTION(gsl_matrix,get)(m, (size_t)ii, (size_t)ij));
+    } else {
+      rb_raise(rb_eArgError, "Array index must have length 2, not %d", RARRAY_LEN(argv[0]));
+    }
   } else {
     retval = FUNCTION(rb_gsl_matrix,submatrix)(argc, argv, obj);
   }
