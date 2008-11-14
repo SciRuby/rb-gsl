@@ -1,29 +1,41 @@
 #!/usr/bin/env ruby
-require("gsl")
+# Turn on warnings
+$-w = true
 
-m = GSL::Matrix::Complex.alloc(3, 3)
+require 'irb/xmp'
+require 'gsl'
 
-m.set(1, 2, 3, 5.6)
+# Apparently, IRB::Frame has a bug that prevents the defaults from working, so
+# an XMP instance must be created explicitly this way instead of using the
+# otherwise convenient xmp method.
+XMP.new(IRB::Frame.top(-1)).puts <<END
+# Create 3x3 Matrix::Complex mz
+mz = GSL::Matrix::Complex.alloc(3, 3)
 
-m.print
+# Set element at row 1, column 2 to 3+5.6i
+mz.set(1, 2, GSL::Complex[3, 5.6])
 
-a = m.get(1, 2)
-p a
-p a.class
+# Get element at row 1, column 2
+a = mz.get(1, 2)
 
-m2 = m.submatrix(1, 1, 2, 2)
-p m2
-m2.print
+# Create Matrix::Complex::View of mz
+# starting at row 1, column 1 and
+# spanning 2 rows and 2 columns
+mzv = mz.submatrix(1, 1, 2, 2)
 
-row = m.row(1)
-p row
-col = m.col(2)
-p col
+# Create a Vector::Complex::View for row 1 of mz
+row = mz.row(1)
 
-m.each_row do |v|
+# Create a Vector::Complex::Col::View for column 2 of mz
+col = mz.col(2)
+
+# Iterate through rows of mz
+mz.each_row do |v|
   p v
 end
 
-m.each_col do |v|
+# Iterate through columns of mz
+mz.each_col do |v|
   p v
 end
+END

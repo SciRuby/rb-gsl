@@ -1,19 +1,34 @@
 #!/usr/bin/env ruby
-require("gsl")
+# Turn on warnings
+$-w = true
 
+require 'irb/xmp'
+require 'gsl'
+
+# Apparently, IRB::Frame has a bug that prevents the defaults from working, so
+# an XMP instance must be created explicitly this way instead of using the
+# otherwise convenient xmp method.
+XMP.new(IRB::Frame.top(-1)).puts <<END
+# Create test Vector with 15 elements initialized to 0.0
 v = GSL::Vector::alloc(15)
+
+# Set elements of v from file smpv.dat
 File.open("smpv.dat") do |f|
   v.fscanf(f)
 end
 
-v.print
-#v.printf("%f")
+# Show v
+v
 
+# Create another test vector with three elements
+# initialized to 10.0, 1.0, and 3.0.
 v2 = GSL::Vector.alloc(10, 1, 3)
-p v2
+END
 
 __END__
 
+# TODO Remove examples below that are duplicated elsewhere
+# TODO Include examples below that are not duplicated elsewhere
 v = GSL::Vector::alloc([9, 1, 2, 3, 12, 6, 0.1, 0.56, 5, 7, 2])
 v.print
 p v.size

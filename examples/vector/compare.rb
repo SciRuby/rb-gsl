@@ -1,19 +1,28 @@
 #!/usr/bin/env ruby
-require("gsl")
+# Turn on warnings
+$-w = true
 
+require 'irb/xmp'
+require 'gsl'
+
+# Apparently, IRB::Frame has a bug that prevents the defaults from working, so
+# an XMP instance must be created explicitly this way instead of using the
+# otherwise convenient xmp method.
+XMP.new(IRB::Frame.top(-1)).puts <<END
+# Create three Vectors: x, y, z
 x = GSL::Vector::Int[1, 2, 3]
 y = GSL::Vector::Int[1, 2, 5]
 z = GSL::Vector::Int[0, 2, 9]
 
-puts("x = #{x.to_s}")
-puts("y = #{y.to_s}")
-puts("z = #{z.to_s}")
+# Test element-wise "==" method
+x.eq(y)
 
-puts("Test x.eq(y)")
-p x.eq(y)
-puts("Test x.ne(y)")
-p x.ne(y)
-puts("Test x.ge(y)")
-p x.ge(y)
-puts("Test x.lt(z)")
-p x.lt(z)
+# Test element-wise "!=" method
+x.ne(y)
+
+# Test element-wise ">=" method
+x.ge(y)
+
+# Test element-wise "<" method
+x.lt(z)
+END

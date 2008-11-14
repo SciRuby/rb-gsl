@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby
+# Turn on warnings
+$-w = true
 
-require("gnuplot")
-require("gsl")
-require("gsl/gnuplot");
+require 'gnuplot'
+require 'gsl'
+require 'gsl/gnuplot';
 
+# Plot using gnuplot
 Gnuplot.open do |gp|
   Gnuplot::Plot.new( gp ) do |plot|
   
@@ -33,4 +36,3 @@ Gnuplot.open do |gp|
 
   end
 end
-    

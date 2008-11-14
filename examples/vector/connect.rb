@@ -1,17 +1,22 @@
 #!/usr/bin/env ruby
-require("gsl")
+# Turn on warnings
+$-w = true
 
+require 'irb/xmp'
+require 'gsl'
+
+# Apparently, IRB::Frame has a bug that prevents the defaults from working, so
+# an XMP instance must be created explicitly this way instead of using the
+# otherwise convenient xmp method.
+XMP.new(IRB::Frame.top(-1)).puts <<END
+# Create three test Vectors
 v1 = GSL::Vector[1..2]
 v2 = GSL::Vector[3..4]
 v3 = GSL::Vector[5..7]
 
-puts("v1 = [ #{v1.to_a.join(' ')} ]")
-puts("v2 = [ #{v2.to_a.join(' ')} ]")
-puts("v3 = [ #{v3.to_a.join(' ')} ]\n")
+# Connect them using GSL::Vector#connect
+v1.connect(v2, v3)
 
-puts("Ex1: v1.connect(v2, v3)")
-p v1.connect(v2, v3)
-
-puts("Ex2: GSL::Vector.connect(v1, v2, v3)")
-p GSL::Vector.connect(v1, v2, v3)
-
+# Connect them using GSL::Vector.connect
+GSL::Vector.connect(v1, v2, v3)
+END
