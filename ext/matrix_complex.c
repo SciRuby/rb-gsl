@@ -1150,27 +1150,29 @@ static VALUE rb_gsl_matrix_complex_trace(VALUE obj)
 static VALUE rb_gsl_matrix_complex_each_row(VALUE obj)
 {
   gsl_matrix_complex *m = NULL;
-  gsl_vector_complex_view vv, *pv = &vv;
+  gsl_vector_complex_view *vv;
   size_t i;
   Data_Get_Struct(obj, gsl_matrix_complex, m);
   for (i = 0; i < m->size1; i++) {
-    vv = gsl_matrix_complex_row(m, i);
-    rb_yield(Data_Wrap_Struct(cgsl_vector_complex_view_ro, 0, NULL, pv));
+    vv = ALLOC(gsl_vector_complex_view);
+    *vv = gsl_matrix_complex_row(m, i);
+    rb_yield(Data_Wrap_Struct(cgsl_vector_complex_view, 0, free, vv));
   }
-  return Qtrue;
+  return obj;
 }
 
 static VALUE rb_gsl_matrix_complex_each_col(VALUE obj)
 {
   gsl_matrix_complex *m = NULL;
-  gsl_vector_complex_view vv, *pv = &vv;
+  gsl_vector_complex_view *vv;
   size_t i;
   Data_Get_Struct(obj, gsl_matrix_complex, m);
   for (i = 0; i < m->size2; i++) {
-    vv = gsl_matrix_complex_column(m, i);
-    rb_yield(Data_Wrap_Struct(cgsl_vector_complex_view_ro, 0, NULL, pv));
+    vv = ALLOC(gsl_vector_complex_view);
+    *vv = gsl_matrix_complex_column(m, i);
+    rb_yield(Data_Wrap_Struct(cgsl_vector_complex_col_view, 0, free, vv));
   }
-  return Qtrue;
+  return obj;
 }
 
 static VALUE rb_gsl_matrix_complex_size1(VALUE obj)

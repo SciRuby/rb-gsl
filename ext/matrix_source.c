@@ -1013,7 +1013,9 @@ static VALUE FUNCTION(rb_gsl_matrix,get_col)(VALUE obj, VALUE i)
   v = FUNCTION(gsl_vector,alloc)(m->size2);
   if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_alloc failed");
   FUNCTION(gsl_matrix,get_col)(v, m, FIX2INT(i));
-  return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), v);
+  // TODO This is NOT returning a view!  Is there a macro more appropriate than
+  // QUALIFIED_VIEW?
+  return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,col), 0, FUNCTION(gsl_vector,free), v);
 }
 
 static VALUE FUNCTION(rb_gsl_matrix,set_row)(VALUE obj, VALUE i, VALUE vv)
@@ -1426,35 +1428,37 @@ static VALUE FUNCTION(rb_gsl_matrix,vector_view)(VALUE obj)
 static VALUE FUNCTION(rb_gsl_matrix,each_row)(VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m = NULL;
-  QUALIFIED_VIEW(gsl_vector,view) vv, *pv = &vv;
+  QUALIFIED_VIEW(gsl_vector,view) *vv;
   size_t i;
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
   for (i = 0; i < m->size1; i++) {
-    vv = FUNCTION(gsl_matrix,row)(m, i);
+    vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
+    *vv = FUNCTION(gsl_matrix,row)(m, i);
 #ifdef BASE_DOUBLE
-    rb_yield(Data_Wrap_Struct(cgsl_vector_view_ro, 0, NULL, pv));
+    rb_yield(Data_Wrap_Struct(cgsl_vector_view, 0, free, vv));
 #else
-    rb_yield(Data_Wrap_Struct(cgsl_vector_int_view_ro, 0, NULL, pv));
+    rb_yield(Data_Wrap_Struct(cgsl_vector_int_view, 0, free, vv));
 #endif
   }
-  return Qtrue;
+  return obj;
 }
 
 static VALUE FUNCTION(rb_gsl_matrix,each_col)(VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m = NULL;
-  QUALIFIED_VIEW(gsl_vector,view) vv, *pv = &vv;
+  QUALIFIED_VIEW(gsl_vector,view) *vv;
   size_t i;
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
   for (i = 0; i < m->size2; i++) {
-    vv = FUNCTION(gsl_matrix,column)(m, i);
+    vv = ALLOC(QUALIFIED_VIEW(gsl_vector,view));
+    *vv = FUNCTION(gsl_matrix,column)(m, i);
 #ifdef BASE_DOUBLE
-    rb_yield(Data_Wrap_Struct(cgsl_vector_col_view_ro, 0, NULL, pv));
+    rb_yield(Data_Wrap_Struct(cgsl_vector_col_view, 0, free, vv));
 #else
-    rb_yield(Data_Wrap_Struct(cgsl_vector_int_col_view_ro, 0, NULL, pv));
+    rb_yield(Data_Wrap_Struct(cgsl_vector_int_col_view, 0, free, vv));
 #endif
   }
-  return Qtrue;
+  return obj;
 }
 
 static VALUE FUNCTION(rb_gsl_matrix,scale_bang)(VALUE obj, VALUE x)
