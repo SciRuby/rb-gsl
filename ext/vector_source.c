@@ -95,10 +95,17 @@ void parse_subvector_args(int argc, VALUE *argv, size_t size,
     } else {
       CHECK_FIXNUM(argv[0]);
       length = FIX2INT(argv[0]);
-      if(length < 0) {
-        rb_raise(rb_eArgError, "length must be non-negative");
+      if((length < 0 && -length > size) || (length > 0 && length > size)) {
+        rb_raise(rb_eRangeError,
+            "length %d is out of range for Vector of length %d",
+            length, size);
+      } else if(length < 0) {
+        begin = length;
+        *n = (size_t)(-length);
+      } else {
+        // begin was initialized to 0
+        *n = (size_t)length;
       }
-      *n = (size_t)length;
     }
     break;
   case 2:
@@ -132,7 +139,8 @@ void parse_subvector_args(int argc, VALUE *argv, size_t size,
       begin = FIX2INT(argv[0]);
       length = FIX2INT(argv[1]);
       if(length < 0) {
-        rb_raise(rb_eArgError, "length must be non-negative");
+        length = -length;
+        *stride = -1;
       }
       *n = (size_t)length;
     }
@@ -140,11 +148,13 @@ void parse_subvector_args(int argc, VALUE *argv, size_t size,
   case 3:
     CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
     begin = FIX2INT(argv[0]);
-    *stride = (size_t)FIX2INT(argv[1]);
+    step = FIX2INT(argv[1]);
     length = FIX2INT(argv[2]);
     if(length < 0) {
-      rb_raise(rb_eArgError, "length must be non-negative");
+      step = -step;
+      length = -length;
     }
+    *stride = (size_t)step;
     *n = (size_t)length;
     break;
   default:
