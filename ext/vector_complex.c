@@ -237,7 +237,7 @@ void rb_gsl_vector_complex_set_subvector(int argc, VALUE *argv, gsl_vector_compl
   double beg, end;
 
   // assignment to v.subvector(...)
-  parse_subvector_args(argc-1, argv, v->size, &offset, &stride, &n);
+  parse_subvector_args(argc, argv, v->size, &offset, &stride, &n);
   vv = gsl_vector_complex_subvector_with_stride(v, offset, stride, n);
   if(rb_obj_is_kind_of(other, cgsl_vector_complex)) {
     Data_Get_Struct(other, gsl_vector_complex, vother);
