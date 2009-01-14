@@ -1001,6 +1001,7 @@ static VALUE rb_gsl_vector_ceil(VALUE obj)
 }
 
 #ifdef HAVE_ROUND
+double round(double x);
 #define rb_gsl_round_native round
 #else
 static double rb_gsl_round_native(double x)
