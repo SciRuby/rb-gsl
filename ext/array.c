@@ -406,7 +406,7 @@ void gsl_matrix_complex_mul_vector(gsl_vector_complex *vnew,
 }
 
 /*****/
-
+#ifndef GSL_1_12_LATER
 int gsl_vector_complex_add(gsl_vector_complex *cv, const gsl_vector_complex *cv2)
 {
   size_t i;
@@ -483,6 +483,7 @@ int gsl_vector_complex_div(gsl_vector_complex *cv, const gsl_vector_complex *cv2
   }
   return 0;
 }
+#endif
 
 VALUE rb_gsl_range2ary(VALUE obj)
 {

@@ -22,10 +22,10 @@ class Fixnum
       a = GSL::Poly[1]; a[0] = self
       GSL::Rational.new(a, other)
     elsif other.kind_of?(GSL::Vector::Col) 
-      other.scale(1.0/pow_2(other.dnrm2))
+      other.scale(1.0/GSL::pow_2(other.dnrm2))
     elsif other.kind_of?(GSL::Vector::Int::Col)
       v = other.to_f
-      v.scale(1.0/pow_2(v.dnrm2))
+      v.scale(1.0/GSL::pow_2(v.dnrm2))
     else
       self._orig_div(other)
     end
@@ -57,10 +57,10 @@ class Float
       a = GSL::Poly[1]; a[0] = self
       GSL::Rational.new(a, other)
     elsif other.kind_of?(GSL::Vector::Col) 
-      other.scale(1.0/pow_2(other.dnrm2))
+      other.scale(1.0/GSL::pow_2(other.dnrm2))
     elsif other.kind_of?(GSL::Vector::Int::Col)
       v = other.to_f
-      v.scale(1.0/pow_2(v.dnrm2))
+      v.scale(1.0/GSL::pow_2(v.dnrm2))
     else
       self._orig_div(other)
     end

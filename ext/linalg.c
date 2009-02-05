@@ -3488,6 +3488,8 @@ static VALUE rb_gsl_linalg_hessenberg_set_zero(VALUE module, VALUE HH)
   CHECK_MATRIX(HH);
   Data_Get_Struct(HH, gsl_matrix, H);
   return INT2FIX(gsl_linalg_hessenberg_set_zero(H));
+  /*  gsl_linalg_hessenberg_set_zero(H);
+      return INT2FIX(0);*/
 }
 static VALUE rb_gsl_linalg_hesstri_decomp(int argc, VALUE *argv, VALUE module)
 {

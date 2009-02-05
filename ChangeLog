@@ -1,3 +1,7 @@
+Thu Feb  2 12:16:38 JST 2009
+  * Fixed a bug in GSL::Histogram.alloc_uniform() (bug [#23040])
+  * Fixed a bug in GSL::Vector#/ (bug [#23334])
+	
 Thu Nov  6 17:34:18 JST 2008
   * Match with the tensor extension version 0.99
     * now not compatible for the versions older than tensor-0.97.

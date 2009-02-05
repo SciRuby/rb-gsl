@@ -1489,6 +1489,75 @@ static VALUE rb_gsl_histogram_reverse(VALUE obj)
   return Data_Wrap_Struct(cgsl_histogram, 0, gsl_histogram_free, hnew);
 }
 
+/* The functions below are not included in GSL */
+/*
+ * Returns an x value at which the histogram integration
+ * reaches the given percentile. The x value is calculated
+ * by an interpolation between the ranges in which the percentile
+ * is found.
+ */
+static double histogram_percentile(const gsl_histogram *h, double f)
+{
+  double sum = gsl_histogram_sum(h), sf;
+  double val, s = 0, x;
+  double ri, ri1;
+  size_t i;
+  sf = sum * f;
+  for (i = 0; i < h->n; i++) {
+    val = gsl_histogram_get(h, i);
+    if ((s+val) > sf) break;
+    s += val;
+  }
+  ri = h->range[i];
+  ri1 = h->range[i+1];
+  x = (sf - s)*(ri1 - ri)/val + ri;
+  return x;
+}
+
+static double histogram_median(const gsl_histogram *h)
+{
+  return histogram_percentile(h, 0.5);
+}
+
+static VALUE rb_gsl_histogram_percentile(VALUE obj, VALUE f)
+{
+  gsl_histogram *h;
+  Data_Get_Struct(obj, gsl_histogram, h);
+  return rb_float_new(histogram_percentile(h, NUM2DBL(f)));
+}
+
+static VALUE rb_gsl_histogram_median(VALUE obj)
+{
+  gsl_histogram *h;
+  Data_Get_Struct(obj, gsl_histogram, h);
+  return rb_float_new(histogram_median(h));
+}
+
+static double histogram_percentile_inv(const gsl_histogram *h, double x)
+{
+  double sum = gsl_histogram_sum(h);
+  double val, s = 0;
+  double ri, ri1, q;
+  size_t i;
+
+  for (i = 0; i < h->n; i++) {
+    val = gsl_histogram_get(h, i);
+    if (h->range[i+1] > x) break;
+    s += val;
+  }
+  ri = h->range[i];
+  ri1 = h->range[i+1];
+  q = s + val/(ri1 - ri)*(x - ri);
+  return q/sum;
+}
+
+static VALUE rb_gsl_histogram_percentile_inv(VALUE obj, VALUE x)
+{
+  gsl_histogram *h;
+  Data_Get_Struct(obj, gsl_histogram, h);
+  return rb_float_new(histogram_percentile_inv(h, NUM2DBL(x)));
+}
+
 void Init_gsl_histogram(VALUE module)
 {
   VALUE cgsl_histogram_pdf;
@@ -1507,9 +1576,9 @@ void Init_gsl_histogram(VALUE module)
   rb_define_singleton_method(cgsl_histogram, "[]", rb_gsl_histogram_alloc, -1);
 
   rb_define_singleton_method(cgsl_histogram, "alloc_uniform", 
-			     rb_gsl_histogram_alloc_uniform, 3);
+			     rb_gsl_histogram_alloc_uniform, -1);
   rb_define_singleton_method(cgsl_histogram, "new_uniform", 
-			     rb_gsl_histogram_alloc_uniform, 3);
+			     rb_gsl_histogram_alloc_uniform, -1);
 
   rb_define_singleton_method(cgsl_histogram, "alloc_with_min_max_step", 
 			     rb_gsl_histogram_alloc_with_min_max_step, 3);
@@ -1641,4 +1710,8 @@ void Init_gsl_histogram(VALUE module)
   rb_define_alias(cgsl_histogram, "mergebin", "rebin");
 
   rb_define_method(cgsl_histogram, "reverse", rb_gsl_histogram_reverse, 0);
+
+  rb_define_method(cgsl_histogram, "percentile", rb_gsl_histogram_percentile, 1);
+  rb_define_method(cgsl_histogram, "median", rb_gsl_histogram_median, 0);
+  rb_define_method(cgsl_histogram, "percentile_inv", rb_gsl_histogram_percentile_inv, 1);
 }
