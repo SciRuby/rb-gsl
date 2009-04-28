@@ -626,7 +626,7 @@ static int gsl_multifit_function_fdf_f(const gsl_vector *x, void *params,
   proc = rb_ary_entry(ary, 0);
   vx = Data_Wrap_Struct(cgsl_vector, 0, NULL, (gsl_vector *) x);
   vf = Data_Wrap_Struct(cgsl_vector, 0, NULL, f);
-  switch (RARRAY(vt_y_sigma)->len) {
+  switch (RARRAY_LEN(vt_y_sigma)) {
   case 2:
     vt = rb_ary_entry(vt_y_sigma, 0);
     vy = rb_ary_entry(vt_y_sigma, 1);
@@ -654,7 +654,7 @@ static int gsl_multifit_function_fdf_df(const gsl_vector *x, void *params,
   proc = rb_ary_entry(ary, 1);
   vx = Data_Wrap_Struct(cgsl_vector, 0, NULL, (gsl_vector *) x);
   vJ = Data_Wrap_Struct(cgsl_matrix, 0, NULL, J);
-  switch (RARRAY(vt_y_sigma)->len) {
+  switch (RARRAY_LEN(vt_y_sigma)) {
   case 2:
     vt = rb_ary_entry(vt_y_sigma, 0);
     vy = rb_ary_entry(vt_y_sigma, 1);
@@ -686,7 +686,7 @@ static int gsl_multifit_function_fdf_fdf(const gsl_vector *x, void *params,
   vx = Data_Wrap_Struct(cgsl_vector, 0, NULL, (gsl_vector *) x);
   vf = Data_Wrap_Struct(cgsl_vector, 0, NULL, f);
   vJ = Data_Wrap_Struct(cgsl_matrix, 0, NULL, J);
-  switch (RARRAY(vt_y_sigma)->len) {
+  switch (RARRAY_LEN(vt_y_sigma)) {
   case 2:
     vt = rb_ary_entry(vt_y_sigma, 0);
     vy = rb_ary_entry(vt_y_sigma, 1);

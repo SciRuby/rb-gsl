@@ -98,7 +98,8 @@ static void gsl_multiroot_function_mark(gsl_multiroot_function *f)
 {
   size_t i;
   rb_gc_mark((VALUE) f->params);
-  for (i = 0; i < RARRAY(f->params)->len; i++) 
+  //  for (i = 0; i < RARRAY(f->params)->len; i++) 
+  for (i = 0; i < RARRAY_LEN(f->params); i++) 
     rb_gc_mark(rb_ary_entry((VALUE) f->params, i));
 }
 
@@ -234,7 +235,8 @@ static void gsl_multiroot_function_fdf_mark(gsl_multiroot_function_fdf *f)
 {
   size_t i;
   rb_gc_mark((VALUE) f->params);
-  for (i = 0; i < RARRAY(f->params)->len; i++) 
+  //  for (i = 0; i < RARRAY(f->params)->len; i++) 
+  for (i = 0; i < RARRAY_LEN(f->params); i++) 
     rb_gc_mark(rb_ary_entry((VALUE) f->params, i));
 }
 
@@ -827,7 +829,8 @@ static VALUE rb_gsl_multiroot_function_solve(int argc, VALUE *argv, VALUE obj)
     /* no break */
   case 1:
     if (TYPE(argv[0]) == T_ARRAY) {
-      if (RARRAY(argv[0])->len != F->n)
+      //      if (RARRAY(argv[0])->len != F->n)
+      if (RARRAY_LEN(argv[0]) != F->n)
 	rb_raise(rb_eRangeError, "array size are different.");
       x0 = gsl_vector_alloc(F->n);
       for (i = 0; i < x0->size; i++) 

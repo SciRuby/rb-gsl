@@ -503,7 +503,7 @@ static VALUE rb_gsl_sf_bessel_sequence_Jnu_e(int argc, VALUE *argv, VALUE obj)
 
   switch (TYPE(ary)) {
   case T_ARRAY:
-    size = RARRAY(ary)->len;
+    size = RARRAY_LEN(ary);
     v = gsl_vector_alloc(size);
     for (i = 0; i < size; i++) gsl_vector_set(v, i, NUM2DBL(rb_ary_entry(ary, i)));
     flag = 1;
@@ -600,7 +600,7 @@ static VALUE rb_gsl_sf_eval_double_uint(double (*func)(double, unsigned int), VA
     return rb_float_new((*func)(f, NUM2UINT(argv)));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       val = (*func)(f, NUM2UINT(rb_ary_entry(argv, i)));

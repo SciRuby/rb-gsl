@@ -197,7 +197,7 @@ static VALUE rb_gsl_poly_make_rational(VALUE obj, VALUE other)
   } else {
     switch (TYPE(other)) {
     case T_ARRAY:
-      p2 = gsl_vector_alloc(RARRAY(other)->len);
+      p2 = gsl_vector_alloc(RARRAY_LEN(other));
       for (i = 0; i < p2->size; i++)
 	gsl_vector_set(p2, i, NUM2DBL(rb_ary_entry(other, i)));
       rnew = gsl_rational_new(p, p2);
@@ -340,7 +340,7 @@ static VALUE rb_gsl_rational_div(VALUE obj, VALUE other)
   } else {
     switch (TYPE(other)) {
     case T_ARRAY:
-      p = gsl_vector_alloc(RARRAY(other)->len);
+      p = gsl_vector_alloc(RARRAY_LEN(other));
       for (i = 0; i < p->size; i++)
 	gsl_vector_set(p, i, NUM2DBL(rb_ary_entry(other, i)));
       rnew = gsl_rational_div_poly(r, p);
@@ -394,7 +394,7 @@ static VALUE rb_gsl_rational_coerce(VALUE obj, VALUE other)
     gsl_vector_set(p, 0, NUM2DBL(other));
     break;
   case T_ARRAY:
-    p = gsl_vector_alloc(RARRAY(other)->len);
+    p = gsl_vector_alloc(RARRAY_LEN(other));
     for (i = 0; i < p->size; i++)
       gsl_vector_set(p, i, NUM2DBL(rb_ary_entry(other, i)));
     break;

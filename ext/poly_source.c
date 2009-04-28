@@ -125,7 +125,7 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
     val = rb_float_new(gsl_poly_eval(ptr0, N, NUM2DBL(x)));
     break;    
   case T_ARRAY:
-    n = RARRAY(x)->len;
+    n = RARRAY_LEN(x);
     val = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       rslt = gsl_poly_eval(ptr0, N, NUM2DBL(rb_ary_entry(x, i)));
@@ -197,7 +197,7 @@ static VALUE rb_gsl_complex_poly_complex_eval(VALUE a, VALUE b)
     N = coef->size;
     zc = (gsl_complex*) coef->data;
   } else if (TYPE(a) == T_ARRAY) {
-    N = RARRAY(a)->len;
+    N = RARRAY_LEN(a);
     zc = (gsl_complex*) malloc(sizeof(gsl_complex));
     flag = 1;
     for (i = 0; i < N; i++) {
@@ -219,8 +219,8 @@ static VALUE rb_gsl_complex_poly_complex_eval(VALUE a, VALUE b)
     *res = gsl_complex_poly_complex_eval(zc, coef->size, z);
     break;
   case T_ARRAY:
-    ret = rb_ary_new2(RARRAY(b)->len);
-    for (i = 0; i < RARRAY(b)->len; i++) {
+    ret = rb_ary_new2(RARRAY_LEN(b));
+    for (i = 0; i < RARRAY_LEN(b); i++) {
       Data_Get_Struct(rb_ary_entry(b, i), gsl_complex, zx);
       res = (gsl_complex*) malloc(sizeof(gsl_complex));
       *res = gsl_complex_poly_complex_eval(zc, N, *zx);
@@ -281,8 +281,8 @@ static VALUE FUNCTION(rb_gsl_poly,eval)(VALUE obj, VALUE xx)
     return rb_float_new(FUNCTION(gsl_poly,eval)(p->data, p->size, NUM2DBL(xx)));
     break;
   case T_ARRAY:
-    ary = rb_ary_new2(RARRAY(xx)->len);
-    for (i = 0; i < RARRAY(xx)->len; i++) {
+    ary = rb_ary_new2(RARRAY_LEN(xx));
+    for (i = 0; i < RARRAY_LEN(xx); i++) {
       x = rb_ary_entry(xx, i);
       Need_Float(x);
       rb_ary_store(ary, i, rb_float_new(FUNCTION(gsl_poly,eval)(p->data, p->size, NUM2DBL(x))));
@@ -384,8 +384,8 @@ static VALUE FUNCTION(rb_gsl_poly,eval2)(int argc, VALUE *argv, VALUE obj)
     return rb_float_new(FUNCTION(gsl_poly,eval)(p->data, size, NUM2DBL(xx)));
     break;
   case T_ARRAY:
-    ary = rb_ary_new2(RARRAY(xx)->len);
-    for (i = 0; i < RARRAY(xx)->len; i++) {
+    ary = rb_ary_new2(RARRAY_LEN(xx));
+    for (i = 0; i < RARRAY_LEN(xx); i++) {
       x = rb_ary_entry(xx, i);
       Need_Float(x);
       rb_ary_store(ary, i, rb_float_new(FUNCTION(gsl_poly,eval)(p->data, size, NUM2DBL(x))));
@@ -714,7 +714,7 @@ VALUE FUNCTION(rb_gsl_poly,complex_solve)(int argc, VALUE *argv, VALUE obj)
 
   switch (TYPE(argv[0])) {
   case T_ARRAY:
-    if (size < 0) size = RARRAY(argv[0])->len;
+    if (size < 0) size = RARRAY_LEN(argv[0]);
     a = gsl_vector_alloc(size);
     for (i = 0; i < size; i++) gsl_vector_set(a, i, NUMCONV2(rb_ary_entry(argv[0], i)));
     break;
@@ -1034,7 +1034,7 @@ static VALUE rb_gsl_poly_dd_eval(VALUE obj, VALUE xxa, VALUE xx)
 					 NUM2DBL(xx)));
     break;
   case T_ARRAY:
-    size = RARRAY(xx)->len;
+    size = RARRAY_LEN(xx);
     ary = rb_ary_new2(size);
     for (i = 0; i < size; i++) {
       x = rb_ary_entry(xx, i);
@@ -1260,7 +1260,7 @@ GSL_TYPE(gsl_poly)* FUNCTION(get_poly,get)(VALUE obj, int *flag)
   size_t i;
   switch (TYPE(obj)) {
   case T_ARRAY:
-    p = FUNCTION(gsl_vector,alloc)(RARRAY(obj)->len);
+    p = FUNCTION(gsl_vector,alloc)(RARRAY_LEN(obj));
     for (i = 0; i < p->size; i++) FUNCTION(gsl_vector,set)(p, i, (BASE) NUM2DBL(rb_ary_entry(obj, i)));
     *flag = 1;
     break;

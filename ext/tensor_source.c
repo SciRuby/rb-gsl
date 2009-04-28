@@ -182,7 +182,8 @@ static void rbgsl_tensor_get_indices(int argc, VALUE *argv, tensor_indices *indi
 static void rb_tensor_get_indices_array(tensor_indices *v, VALUE ary)
 {
   size_t i, nn;
-  nn = (size_t) GSL_MIN_INT((int) v->size, (int) RARRAY(ary)->len);
+  //  nn = (size_t) GSL_MIN_INT((int) v->size, (int) RARRAY(ary)->len);
+  nn = (size_t) GSL_MIN_INT((int) v->size, (int) RARRAY_LEN(ary));
   for (i = 0; i < nn; i++)
     v->data[i] = FIX2UINT(rb_ary_entry(ary, i));
 }
@@ -196,7 +197,8 @@ static void rbgsl_tensor_get_indices(int argc, VALUE *argv,
   case 1:
     switch (TYPE(argv[0])) {
     case T_ARRAY:
-      *n = (size_t) GSL_MIN_INT((int) indices->size, (int) RARRAY(argv[0])->len);
+      //      *n = (size_t) GSL_MIN_INT((int) indices->size, (int) RARRAY(argv[0])->len);
+      *n = (size_t) GSL_MIN_INT((int) indices->size, (int) RARRAY_LEN(argv[0]));
       rb_tensor_get_indices_array(indices, argv[0]);
       break;
     case T_FIXNUM:

@@ -42,7 +42,7 @@ static VALUE rb_gsl_vector_complex_new(int argc, VALUE *argv, VALUE klass)
       if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
       break;
     case T_ARRAY: 
-      n = RARRAY(argv[0])->len;
+      n = RARRAY_LEN(argv[0]);
       v = gsl_vector_complex_alloc(n);
       if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
       for (i = 0; i < n; i++) {
@@ -173,7 +173,7 @@ static VALUE rb_gsl_vector_complex_get(int argc, VALUE *argv, VALUE obj)
       retval = Data_Wrap_Struct(cgsl_complex, 0, free, c);
       break;
     case T_ARRAY:
-      vnew = gsl_vector_complex_alloc(RARRAY(argv[0])->len);
+      vnew = gsl_vector_complex_alloc(RARRAY_LEN(argv[0]));
       for (j = 0; j < vnew->size; j++) {
 	i = FIX2INT(rb_ary_entry(argv[0], j));
 	if (i < 0) i = v->size + i;
@@ -1715,7 +1715,7 @@ static VALUE rb_gsl_vector_complex_concat(VALUE obj, VALUE other)
       break;
 
     case T_ARRAY:
-      size2 = RARRAY(other)->len;
+      size2 = RARRAY_LEN(other);
       vnew = gsl_vector_complex_alloc(v->size + size2);
       vv = gsl_vector_complex_subvector(vnew, 0, v->size);
       gsl_vector_complex_memcpy(&vv.vector, v);

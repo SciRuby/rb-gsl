@@ -688,7 +688,8 @@ static VALUE rb_gsl_odeiv_solver_new(int argc, VALUE *argv, VALUE klass)
   }
   gos = ALLOC(gsl_odeiv_solver);
   gos->s = make_step(argv[0], dim);
-  switch (RARRAY(argv[1])->len) {
+  //  switch (RARRAY(argv[1])->len) {
+  switch (RARRAY_LEN(argv[1])) {
   case 2:
     epsabs = rb_ary_entry(argv[1], 0);
     epsrel = rb_ary_entry(argv[1], 1);

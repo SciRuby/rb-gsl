@@ -375,7 +375,7 @@ double rb_gsl_multimin_function_fdf_f(const gsl_vector *x, void *p)
   vx = Data_Wrap_Struct(cgsl_vector, 0, NULL, (gsl_vector *) x);
   ary = (VALUE) p;
   proc = rb_ary_entry(ary, 0);
-  vp = rb_ary_entry(ary, RARRAY(ary)->len-1);
+  vp = rb_ary_entry(ary, RARRAY_LEN(ary)-1);
   if (NIL_P(vp)) result = rb_funcall(proc, RBGSL_ID_call, 1, vx);
   else result = rb_funcall(proc, RBGSL_ID_call, 2, vx, vp);
   return NUM2DBL(result);
@@ -389,7 +389,7 @@ void rb_gsl_multimin_function_fdf_df(const gsl_vector *x, void *p,
   vg = Data_Wrap_Struct(cgsl_vector, 0, NULL, g);
   ary = (VALUE) p;
   proc = rb_ary_entry(ary, 1);
-  vp = rb_ary_entry(ary, RARRAY(ary)->len-1);
+  vp = rb_ary_entry(ary, RARRAY_LEN(ary)-1);
   if (NIL_P(vp)) {
     rb_funcall(proc, RBGSL_ID_call, 2, vx, vg);
   } else {
@@ -408,7 +408,7 @@ void rb_gsl_multimin_function_fdf_fdf(const gsl_vector *x, void *p,
   proc_f = rb_ary_entry(ary, 0);
   proc_df = rb_ary_entry(ary, 1);
   proc_fdf = rb_ary_entry(ary, 2);
-  vp = rb_ary_entry(ary, RARRAY(ary)->len-1);
+  vp = rb_ary_entry(ary, RARRAY_LEN(ary)-1);
   if (NIL_P(vp)) {
     result = rb_funcall(proc_f, RBGSL_ID_call, 1, vx);
     rb_funcall(proc_df, RBGSL_ID_call, 2, vx, vg);

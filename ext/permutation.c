@@ -71,7 +71,8 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
       return INT2FIX((int) b->data[j]);
       break;
     case T_ARRAY:
-      n = RARRAY(argv[0])->len;
+      //      n = RARRAY(argv[0])->len;
+      n = RARRAY_LEN(argv[0]);
       bnew = gsl_permutation_alloc(n);
       for (j = 0; j < n; j++) {
 	i = FIX2INT(rb_ary_entry(argv[0], j));

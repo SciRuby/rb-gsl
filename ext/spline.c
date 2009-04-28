@@ -71,7 +71,8 @@ static VALUE rb_gsl_spline_init(VALUE obj, VALUE xxa, VALUE yya)
   Data_Get_Struct(obj, rb_gsl_spline, sp);
   p = sp->s;
   if (TYPE(xxa) == T_ARRAY) {
-    size = RARRAY(xxa)->len;
+    //    size = RARRAY(xxa)->len;
+    size = RARRAY_LEN(xxa);
     xa = gsl_vector_alloc(size);
     for (i = 0; i < size; i++) gsl_vector_set(xa, i, NUM2DBL(rb_ary_entry(xxa, i)));
     ptr1 = xa->data;
@@ -140,7 +141,8 @@ static VALUE rb_gsl_spline_evaluate(VALUE obj, VALUE xx,
     return rb_float_new((*eval)(rgs->s, NUM2DBL(xx), rgs->a));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       x = rb_ary_entry(xx, i);

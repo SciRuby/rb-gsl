@@ -67,7 +67,8 @@ static VALUE rb_gsl_multifit_ndlinear_alloc(int argc, VALUE *argv, VALUE klass)
       rb_raise(rb_eTypeError, "Wrong argument type %s (Array expected)",
         rb_class2name(CLASS_OF(argv[istart+1])));
     }
-    n_dim = RARRAY(argv[istart])->len;
+    //    n_dim = RARRAY(argv[istart])->len;
+    n_dim = RARRAY_LEN(argv[istart]);
     N = (size_t*) malloc(sizeof(size_t)*n_dim);
     break;
   default:
