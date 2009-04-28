@@ -136,5 +136,10 @@ void Init_fresnel(VALUE module);
 void Init_bspline(VALUE module);
 #endif
 
+#ifdef HAVE_ALF_ALF_H
+#include "alf/alf.h"
+#endif
+void Init_alf(VALUE module);
+void Init_geometry(VALUE module);
 
 #endif

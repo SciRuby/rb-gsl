@@ -182,6 +182,12 @@ void Init_rb_gsl()
 	Init_bspline(mgsl);
 #endif
 
+#ifdef HAVE_ALF_ALF_H
+	Init_alf(mgsl);
+#endif
+
+	Init_geometry(mgsl);
+
   rb_gsl_define_methods(mgsl);
 }
 

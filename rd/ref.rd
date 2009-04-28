@@ -3,6 +3,27 @@
 = Ruby/GSL Reference
 (See also ((<GSL reference manual|URL:http://www.gnu.org/software/gsl/manual/gsl-ref_toc.html>)))
 
+== Front Matter
+This document describes the modules, classes and the methods of Ruby/GSL. 
+This includes cut&paste from the ((<GSL Reference|URL:http://www.gnu.org/software/gsl/manual/html_node/>)), and documents of the extention libraries.
+
+=== Copyright of the GSL Reference
+  Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 The GSL Team.
+  Permission is granted to copy, distribute and/or modify this document under the terms of 
+  the GNU Free Documentation License, Version 1.3 or any later version published by the 
+  Free Software Foundation; with the Invariant Sections being "GNU General Public License"
+  and "Free Software Needs Free Documentation", the Front-Cover text being "A GNU Manual", 
+  and with the Back-Cover Text being (a) (see below). A copy of the license is included in 
+  the section entitled "GNU Free Documentation License".
+  (a) The Back-Cover Text is: "You have the freedom to copy and modify this GNU Manual."
+
+=== Copyright of this reference
+  2009 Yoshiki Tsunesada
+  Permission is granted to copy, distribute and/or modify this document under the terms of 
+  the GNU Free Documentation License.
+
+== Ruby/GSL Reference
+
   (1) ((<Introduction|URL:intro.html>))
   (2) ((<Using RubyGSL|URL:use.html>))
   (3) ((<Error Handling|URL:ehandling.html>))
@@ -51,8 +72,10 @@
        (5) quartic
        (6) jacobi (see examples/jacobi/*.rb)
        (7) ((<NDLINEAR: multi-linear, multi-parameter least squares fitting|URL:ndlinear.html>))
-       
+       (8) ((<ALF: associated Legendre polynomials|URL:alf.html>))
   (42) ((<NArray compatibilities|URL:narray.html>))
+
+  (43) ((<GNU Free Documentation Licence|URL:http://www.gnu.org/software/gsl/manual/html_node/GNU-Free-Documentation-License.html>))
 
 ((<next|URL:intro.html>))
 

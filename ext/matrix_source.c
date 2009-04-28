@@ -2358,6 +2358,40 @@ static VALUE FUNCTION(rb_gsl_matrix,isnonneg2)(VALUE obj)
 }
 #endif
 
+static VALUE FUNCTION(rb_gsl_matrix,symmetrize)(VALUE obj)
+{
+  GSL_TYPE(gsl_matrix) *m, *mnew;
+  size_t i, j;
+  Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
+  if (m->size1 != m->size2)
+    rb_raise(rb_eRuntimeError, "symmetrize: not a square matrix.\n");
+  mnew = FUNCTION(gsl_matrix,alloc)(m->size1, m->size2);
+  for (i = 0; i < m->size1; i++) {
+    for (j = i; j < m->size2; j++) {
+      FUNCTION(gsl_matrix,set)(mnew, i, j, FUNCTION(gsl_matrix,get)(m, i, j));
+    }
+    for (j = 0; j < i; j++) {
+      FUNCTION(gsl_matrix,set)(mnew, i, j, FUNCTION(gsl_matrix,get)(m, j, i));
+    }
+  }
+  return Data_Wrap_Struct(GSL_TYPE(cgsl_matrix), 0, FUNCTION(gsl_matrix,free), mnew);
+}
+
+static VALUE FUNCTION(rb_gsl_matrix,symmetrize_bang)(VALUE obj)
+{
+  GSL_TYPE(gsl_matrix) *m;
+  size_t i, j;
+  Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
+  if (m->size1 != m->size2)
+    rb_raise(rb_eRuntimeError, "symmetrize: not a square matrix.\n");
+  for (i = 0; i < m->size1; i++) {
+    for (j = 0; j < i; j++) {
+      FUNCTION(gsl_matrix,set)(m, i, j, FUNCTION(gsl_matrix,get)(m, j, i));
+    }
+  }
+  return obj;
+}
+
 void FUNCTION(Init_gsl_matrix,init)(VALUE module)
 {
   /*  rb_define_singleton_method(GSL_TYPE(cgsl_matrix), "new", FUNCTION(rb_gsl_matrix,alloc), -1);*/
@@ -2656,6 +2690,8 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_matrix), "isnonneg?", FUNCTION(rb_gsl_matrix,isnonneg2), 0);
 #endif
 
+  rb_define_method(GSL_TYPE(cgsl_matrix), "symmetrize", FUNCTION(rb_gsl_matrix,symmetrize), 0);
+  rb_define_method(GSL_TYPE(cgsl_matrix), "symmetrize!", FUNCTION(rb_gsl_matrix,symmetrize_bang), 0);
 }
 
 #undef NUMCONV

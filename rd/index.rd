@@ -1,6 +1,8 @@
 =begin
 = Ruby/GSL
 
+Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License.
+
 == Description
 ((<RubyGSL|URL:http://rubyforge.org/projects/rb-gsl/>)) is a ruby interface to the ((<GSL|URL:http://www.gnu.org/software/gsl/>)) (GNU Scientific Library), for numerical computing with ((<Ruby|URL:http://www.ruby-lang.org/en/>)). 
 
@@ -62,5 +64,6 @@ Yoshiki Tsunesada
 Jul/2004
 
 This document is generated with ((<RDTool|RAA:RDTool>)).
+
 
 =end
