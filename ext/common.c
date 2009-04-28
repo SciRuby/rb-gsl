@@ -33,7 +33,11 @@ FILE* rb_gsl_open_writefile(VALUE io, int *flag)
     break;
   case T_FILE:
     GetOpenFile(io, fptr);
+#ifdef RUBY_1_9_LATER
+    name = STR2CSTR(fptr->pathv);
+#else
     name = fptr->path;
+#endif
     rb_io_check_writable(fptr);
 #ifdef RUBY_1_9_LATER
     fp = rb_io_stdio_file(fptr);
