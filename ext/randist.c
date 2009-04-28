@@ -1303,7 +1303,8 @@ VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double))
     return rb_float_new((*f)(NUM2DBL(xx)));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       x = rb_ary_entry(xx, i);
@@ -1372,7 +1373,8 @@ VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa,
     return rb_float_new((*f)(NUM2DBL(xx), a));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       x = rb_ary_entry(xx, i);
@@ -1441,7 +1443,8 @@ VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb,
     return rb_float_new((*f)(NUM2DBL(xx), a, b));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       x = rb_ary_entry(xx, i);
@@ -1512,7 +1515,8 @@ VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa,
     return rb_float_new((*f)(NUM2UINT(xx), a));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       x = rb_ary_entry(xx, i);
