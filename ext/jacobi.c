@@ -32,7 +32,8 @@ static VALUE jac_eval3(VALUE xx, VALUE aa, VALUE bb, double (*f)(double, double,
 		}
 		return Data_Wrap_Struct(VECTOR_ROW_COL(CLASS_OF(xx)), 0, gsl_vector_free, y);
 	} else if (TYPE(xx) == T_ARRAY) {
-		len = RARRAY(xx)->len;
+	  //		len = RARRAY(xx)->len;
+		len = RARRAY_LEN(xx);
 		ary = rb_ary_new2(len);
 		for (i = 0; i < len; i++) {
 			rb_ary_store(ary, i, rb_float_new((*f)(NUM2DBL(rb_ary_entry(xx, i)), a, b)));
@@ -93,7 +94,8 @@ static VALUE rb_jac_jacobi_eval(int argc, VALUE *argv,
 		n = FIX2INT(argv[1]);
 		a = NUM2DBL(argv[2]);
 		b = NUM2DBL(argv[3]);
-		len = RARRAY(argv[0])->len;
+		//		len = RARRAY(argv[0])->len;
+		len = RARRAY_LEN(argv[0]);
 		ary = rb_ary_new2(len);
 		for (i = 0; i < len; i++) {
 			rb_ary_store(ary, i, rb_float_new((*f)(NUM2DBL(rb_ary_entry(argv[0], i)), n, a, b)));

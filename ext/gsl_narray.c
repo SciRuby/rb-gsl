@@ -482,7 +482,8 @@ static VALUE rb_gsl_narray_histogram(int argc, VALUE *argv, VALUE obj)
       gsl_histogram_set_ranges_uniform(h, min, max);
       break;
     case T_ARRAY:
-      n = RARRAY(argv[0])->len - 1;
+      //      n = RARRAY(argv[0])->len - 1;
+      n = RARRAY_LEN(argv[0]) - 1;
       h = gsl_histogram_alloc(n);
       for (i = 0; i <= n; i++) h->range[i] = NUM2DBL(rb_ary_entry(argv[0], i));
       break;

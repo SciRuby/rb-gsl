@@ -153,7 +153,7 @@ static VALUE rb_gsl_math_eval(double (*func)(const double), VALUE xx)
     return rb_float_new((*func)(NUM2DBL(xx)));
     break;
   case T_ARRAY:
-    size = RARRAY(xx)->len;
+    size = RARRAY_LEN(xx);
     ary = rb_ary_new2(size);
     for (i = 0; i < size; i++) {
       x = rb_ary_entry(xx, i);
@@ -211,8 +211,9 @@ static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE
     break;
   case T_ARRAY:
     Check_Type(yy, T_ARRAY);
-    size = RARRAY(xx)->len;
-    if (size != RARRAY(yy)->len) rb_raise(rb_eRuntimeError, "array sizes are different.");
+    size = RARRAY_LEN(xx);
+    //    if (size != RARRAY(yy)->len) rb_raise(rb_eRuntimeError, "array sizes are different.");
+    if (size != RARRAY_LEN(yy)) rb_raise(rb_eRuntimeError, "array sizes are different.");
     ary = rb_ary_new2(size);
     for (i = 0; i < size; i++) {
       x = rb_ary_entry(xx, i);
@@ -341,7 +342,7 @@ VALUE rb_gsl_pow(VALUE obj, VALUE xx, VALUE nn)
     break;
   case T_ARRAY:
     n = NUM2DBL(nn);
-    size = RARRAY(xx)->len;
+    size = RARRAY_LEN(xx);
     ary = rb_ary_new2(size);
     for (i = 0; i < size; i++) {
       x = rb_ary_entry(xx, i);
@@ -417,7 +418,7 @@ static VALUE rb_gsl_pow_int(VALUE obj, VALUE xx, VALUE nn)
   case T_ARRAY:
     CHECK_FIXNUM(nn);
     n = FIX2INT(nn);
-    size = RARRAY(xx)->len;
+    size = RARRAY_LEN(xx);
     ary = rb_ary_new2(size);
     for (i = 0; i < size; i++) {
       x = rb_ary_entry(xx, i);

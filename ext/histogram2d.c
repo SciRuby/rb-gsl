@@ -81,7 +81,8 @@ static VALUE rb_gsl_histogram2d_alloc_uniform(int argc, VALUE *argv, VALUE klass
   case 4:
     CHECK_FIXNUM(argv[0]);     CHECK_FIXNUM(argv[2]); 
     Check_Type(argv[1], T_ARRAY); Check_Type(argv[3], T_ARRAY);
-    if (RARRAY(argv[1])->len != 2 || RARRAY(argv[3])->len != 2)
+    //    if (RARRAY(argv[1])->len != 2 || RARRAY(argv[3])->len != 2)
+    if (RARRAY_LEN(argv[1]) != 2 || RARRAY_LEN(argv[3]) != 2)
       rb_raise(rb_eArgError, "array size must be 2");
     xmin = NUM2DBL(rb_ary_entry(argv[1], 0));
     xmax = NUM2DBL(rb_ary_entry(argv[1], 1));

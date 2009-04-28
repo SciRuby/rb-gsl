@@ -199,7 +199,8 @@ static VALUE FUNCTION(rb_gsl_block,get)(int argc, VALUE *argv, VALUE obj)
       return C_TO_VALUE(b->data[j]);
       break;
     case T_ARRAY:
-      n = RARRAY(argv[0])->len;
+      //      n = RARRAY(argv[0])->len;
+      n = RARRAY_LEN(argv[0]);
       bnew = FUNCTION(gsl_block,alloc)(n);
       for (j = 0; j < n; j++) {
 	i = FIX2INT(rb_ary_entry(argv[0], j));

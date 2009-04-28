@@ -13,7 +13,12 @@
 #define ___RB_GSL_H___
 
 #include "ruby.h"
+#ifdef RUBY_1_9_LATER
+#include "ruby/io.h"
+#else
 #include "rubyio.h"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>

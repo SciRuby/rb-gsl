@@ -354,7 +354,8 @@ static VALUE rb_gsl_histogram_accumulate(int argc, VALUE *argv, VALUE obj)
   }
   Data_Get_Struct(obj, gsl_histogram, h);
   if (TYPE(argv[0]) == T_ARRAY) {
-    for (i = 0; i < RARRAY(argv[0])->len; i++)
+    //    for (i = 0; i < RARRAY(argv[0])->len; i++)
+    for (i = 0; i < RARRAY_LEN(argv[0]); i++)
       gsl_histogram_accumulate(h, NUM2DBL(rb_ary_entry(argv[0], i)), weight);
   } else if (VECTOR_P(argv[0])) {
     Data_Get_Struct(argv[0], gsl_vector, v);

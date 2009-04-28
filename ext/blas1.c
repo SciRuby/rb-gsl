@@ -561,8 +561,9 @@ static VALUE rb_gsl_blas_drotm(VALUE obj, VALUE xx, VALUE yy, VALUE PP)
     Data_Get_Struct(PP, gsl_vector, p);
   } else {
     if (TYPE(PP) != T_ARRAY) rb_raise(rb_eTypeError, "wrong argument type %s (Array of Vector expected", rb_class2name(CLASS_OF(PP)));
-    p = gsl_vector_alloc(RARRAY(PP)->len);
-    for (i = 0; i < RARRAY(PP)->len; i++) {
+    //    p = gsl_vector_alloc(RARRAY(PP)->len);
+    p = gsl_vector_alloc(RARRAY_LEN(PP));
+    for (i = 0; i < RARRAY_LEN(PP); i++) {
       gsl_vector_set(p, i, rb_ary_entry(PP, i));
     }
     flag = 1;
@@ -584,8 +585,9 @@ static VALUE rb_gsl_blas_drotm2(VALUE obj, VALUE xx, VALUE yy, VALUE PP)
     Data_Get_Struct(PP, gsl_vector, p);
   } else {
     if (TYPE(PP) != T_ARRAY) rb_raise(rb_eTypeError, "wrong argument type %s (Array of Vector expected", rb_class2name(CLASS_OF(PP)));
-    p = gsl_vector_alloc(RARRAY(PP)->len);
-    for (i = 0; i < RARRAY(PP)->len; i++) {
+    //    p = gsl_vector_alloc(RARRAY(PP)->len);
+    p = gsl_vector_alloc(RARRAY_LEN(PP));
+    for (i = 0; i < RARRAY_LEN(PP); i++) {
       gsl_vector_set(p, i, rb_ary_entry(PP, i));
     }
     flag = 1;

@@ -63,7 +63,8 @@ static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
     return rb_ary_new3(3, rb_float_new(result), rb_float_new(abserr), INT2FIX(status));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     aerr = rb_ary_new2(n);
     for (i = 0; i < n; i++) {

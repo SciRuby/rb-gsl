@@ -282,7 +282,8 @@ VALUE rb_gsl_ary_eval1(VALUE ary, double (*f)(double))
   VALUE ary2;
   size_t i, n;
   double val;
-  n = RARRAY(ary)->len;
+  //  n = RARRAY(ary)->len;
+  n = RARRAY_LEN(ary);
   ary2 = rb_ary_new2(n);
   for (i = 0; i < n; i++) {
     val = (*f)(NUM2DBL(rb_ary_entry(ary, i)));

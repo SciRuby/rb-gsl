@@ -186,7 +186,8 @@ static VALUE rb_gsl_histogram3d_get(int argc, VALUE *argv, VALUE obj)
       return Data_Wrap_Struct(cgsl_histogram3d_view, 0, free, h2);
       break;
     case T_ARRAY:
-      switch (RARRAY(argv[0])->len) {
+      //      switch (RARRAY(argv[0])->len) {
+      switch (RARRAY_LEN(argv[0])) {
       case 1:
 	i = FIX2INT(rb_ary_entry(argv[0], 0));
 	h2 = ALLOC(mygsl_histogram3d_view);

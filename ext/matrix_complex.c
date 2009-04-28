@@ -216,7 +216,8 @@ static VALUE rb_gsl_matrix_complex_eye(int argc, VALUE *argv, VALUE klass)
       z = gsl_complex_rect(NUM2DBL(argv[1]), 0.0);
       break;
     case T_ARRAY:
-      if (RARRAY(argv[1])->len < 2) rb_raise(rb_eArgError, "wrong argument");
+      //      if (RARRAY(argv[1])->len < 2) rb_raise(rb_eArgError, "wrong argument");
+      if (RARRAY_LEN(argv[1]) < 2) rb_raise(rb_eArgError, "wrong argument");
       z = gsl_complex_rect(NUM2DBL(rb_ary_entry(argv[1], 0)),
 			   NUM2DBL(rb_ary_entry(argv[1], 1)));
       break;

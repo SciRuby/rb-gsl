@@ -202,7 +202,8 @@ static VALUE rb_gsl_interp_evaluate(VALUE obj, VALUE xxa, VALUE yya, VALUE xx,
     return rb_float_new((*eval)(rgi->p, ptrx, ptry, NUM2DBL(xx), rgi->a));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       x = rb_ary_entry(xx, i);

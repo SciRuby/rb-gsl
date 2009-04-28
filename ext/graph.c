@@ -1066,7 +1066,8 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     break;
   case T_ARRAY:
     sprintf(command, "%s -x", command);
-    len = RARRAY(g->x)->len;
+    //    len = RARRAY(g->x)->len;
+    len = RARRAY_LEN(g->x);
     for (i = 0; i < len; i++) {
       val = rb_ary_entry(g->x, i);
       Need_Float(val);
@@ -1084,7 +1085,8 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     break;
   case T_ARRAY:
     sprintf(command, "%s -y", command);
-    len = RARRAY(g->y)->len;
+    //    len = RARRAY(g->y)->len;
+    len = RARRAY_LEN(g->y);
     for (i = 0; i < len; i++) {
       val = rb_ary_entry(g->y, i);
       Need_Float(val);
@@ -1151,7 +1153,8 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     sprintf(command, "%s -S %s", command, STR2CSTR(g->S));
     break;
   case T_ARRAY:
-    if (RARRAY(g->S)->len == 2) 
+    //    if (RARRAY(g->S)->len == 2) 
+    if (RARRAY_LEN(g->S) == 2) 
       sprintf(command, "%s -S %d %f", command, (int) FIX2INT(rb_ary_entry(g->S, 0)),
 	      NUM2DBL(rb_ary_entry(g->S, 1)));
     break;
@@ -1178,7 +1181,8 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     break;
   case T_ARRAY:
     sprintf(command, "%s --reposition", command);
-    len =  RARRAY(g->reposition)->len;
+    //    len =  RARRAY(g->reposition)->len;
+    len =  RARRAY_LEN(g->reposition);
     for (i = 0; i <len; i++) {
       val = rb_ary_entry(g->reposition, i);
       Need_Float(val);

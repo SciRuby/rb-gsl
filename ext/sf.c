@@ -168,7 +168,7 @@ VALUE rb_gsl_sf_eval_int_double(double (*func)(int, double), VALUE jj, VALUE arg
     return rb_float_new((*func)(j, NUM2DBL(argv)));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -237,7 +237,7 @@ VALUE rb_gsl_sf_eval_double_int(double (*func)(double, int), VALUE argv, VALUE j
     return rb_float_new((*func)(NUM2DBL(argv), j));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -309,7 +309,7 @@ VALUE rb_gsl_sf_eval_int_int_double(double (*func)(int, int, double), VALUE jj,
     return rb_float_new((*func)(j, j2, NUM2DBL(argv)));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -381,7 +381,7 @@ VALUE rb_gsl_sf_eval_int_double_double(double (*func)(int, double, double), VALU
     return rb_float_new((*func)(j, f, NUM2DBL(argv)));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -450,7 +450,7 @@ VALUE rb_gsl_sf_eval_double_double(double (*func)(double, double), VALUE ff, VAL
     return rb_float_new((*func)(f, NUM2DBL(argv)));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -518,7 +518,7 @@ VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double),
     return rb_float_new((*func)(f, f2, NUM2DBL(argv)));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -590,7 +590,7 @@ VALUE rb_gsl_sf_eval_double4(double (*func)(double, double, double, double),
     return rb_float_new((*func)(f, f2, f3, NUM2DBL(argv)));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -657,7 +657,7 @@ VALUE rb_gsl_sf_eval1_int(double (*func)(int), VALUE argv)
     return rb_float_new((*func)(NUM2INT(argv)));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       val = (*func)(NUM2INT(rb_ary_entry(argv, i)));
@@ -722,7 +722,7 @@ VALUE rb_gsl_sf_eval1_uint(double (*func)(unsigned int), VALUE argv)
     return rb_float_new((*func)(NUM2UINT(argv)));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       val = (*func)(NUM2UINT(rb_ary_entry(argv, i)));
@@ -804,7 +804,7 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
     return rb_float_new((*func)(NUM2DBL(argv), m));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -880,7 +880,7 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
     return rb_float_new((*func)(NUM2DBL(argv), xx2, m));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -957,7 +957,7 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
     return rb_float_new((*func)(NUM2DBL(argv), xx2, xx3, m));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -1035,7 +1035,7 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
 				NUM2DBL(x4), m));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
@@ -1344,7 +1344,7 @@ VALUE eval_sf(double (*func)(double, gsl_mode_t), VALUE argv)
     return rb_float_new((*func)(NUM2DBL(argv), GSL_PREC_DOUBLE));
     break;
   case T_ARRAY:
-    n = RARRAY(argv)->len;
+    n = RARRAY_LEN(argv);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);

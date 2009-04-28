@@ -211,7 +211,8 @@ void carray_set_from_rarray(double *a, VALUE ary)
   VALUE val;
   if (CLASS_OF(ary) == rb_cRange) ary = rb_gsl_range2ary(ary);
   Check_Type(ary, T_ARRAY);
-  size = RARRAY(ary)->len;
+  //  size = RARRAY(ary)->len;
+  size = RARRAY_LEN(ary);
   if (size == 0) return;
   for (i = 0; i < size; i++) {
     val = rb_ary_entry(ary, i);

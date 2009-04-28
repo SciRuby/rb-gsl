@@ -111,7 +111,8 @@ static VALUE rb_gsl_cheb_eval(VALUE obj, VALUE xx)
     return rb_float_new(gsl_cheb_eval(p, NUM2DBL(xx)));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       x = rb_ary_entry(xx, i);
@@ -178,7 +179,8 @@ static VALUE rb_gsl_cheb_eval_err(VALUE obj, VALUE xx)
     return rb_ary_new3(2, rb_float_new(result), rb_float_new(err));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     aerr = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
@@ -264,7 +266,8 @@ static VALUE rb_gsl_cheb_eval_n(VALUE obj, VALUE nn, VALUE xx)
     return rb_float_new(gsl_cheb_eval_n(p, order, NUM2DBL(xx)));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       x = rb_ary_entry(xx, i);
@@ -334,7 +337,8 @@ static VALUE rb_gsl_cheb_eval_n_err(VALUE obj, VALUE nn, VALUE xx)
     return rb_ary_new3(2, rb_float_new(result), rb_float_new(err));
     break;
   case T_ARRAY:
-    n = RARRAY(xx)->len;
+    //    n = RARRAY(xx)->len;
+    n = RARRAY_LEN(xx);
     ary = rb_ary_new2(n);
     aerr = rb_ary_new2(n);
     for (i = 0; i < n; i++) {

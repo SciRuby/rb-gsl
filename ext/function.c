@@ -126,7 +126,8 @@ static VALUE rb_gsl_function_eval(VALUE obj, VALUE x)
     return result;
     break;
   case T_ARRAY:
-    n = RARRAY(x)->len;
+    //    n = RARRAY(x)->len;
+    n = RARRAY_LEN(x);
     arynew = rb_ary_new2(n);
     for (i = 0; i < n; i++) {
       x2 = rb_ary_entry(x, i);
@@ -245,7 +246,8 @@ static VALUE rb_gsl_function_graph(int argc, VALUE *argv, VALUE obj)
   case 1:
     if (CLASS_OF(argv[0]) == rb_cRange) argv[0] = rb_gsl_range2ary(argv[0]);
     if (TYPE(argv[0]) == T_ARRAY) {
-      n = RARRAY(argv[0])->len;
+      //      n = RARRAY(argv[0])->len;
+      n = RARRAY_LEN(argv[0]);
       v = gsl_vector_alloc(n);
       flag = 1;
       for (i = 0; i < n; i++) 

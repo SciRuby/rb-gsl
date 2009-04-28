@@ -114,7 +114,8 @@ static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n,
     return rb_float_new((*sample)(t, FIX2INT(n)));
     break;
   case T_ARRAY:
-    size = RARRAY(n)->len;
+    //    size = RARRAY(n)->len;
+    size = RARRAY_LEN(n);
     ary = rb_ary_new2(size);
     for (i = 0; i < size; i++) {
       nn = FIX2INT(rb_ary_entry(n, i));
