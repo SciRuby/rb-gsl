@@ -1216,9 +1216,9 @@ static VALUE rb_gsl_histogram_fit_gaussian(int argc, VALUE *argv, VALUE obj)
     break;
   }
   x = gsl_vector_alloc(p);
-  gsl_vector_set(x, 0, 1);   /* initial values, var = 1 */
-  gsl_vector_set(x, 1, 0.0);   /* mu = 0 */
-  gsl_vector_set(x, 2, 1);   /* amp = 1 */
+  gsl_vector_set(x, 0, gsl_pow_2(gsl_histogram_sigma(h)));   /* initial values, var = 1 */
+  gsl_vector_set(x, 1, gsl_histogram_mean(h));   /* mu = 0 */
+  gsl_vector_set(x, 2, gsl_histogram_max_val(h));   /* amp = 1 */
   hh.h = h;
   hh.binstart = binstart;
   hh.binend = binend;
@@ -1352,8 +1352,8 @@ static VALUE rb_gsl_histogram_fit_rayleigh(int argc, VALUE *argv, VALUE obj)
     break;
   }
   x = gsl_vector_alloc(p);
-  gsl_vector_set(x, 0, 1);   /* initial values, var = 1 */
-  gsl_vector_set(x, 1, 1);   /* amp = 1 */
+  gsl_vector_set(x, 0, gsl_pow_2(gsl_histogram_sigma(h)));   /* initial values, var = 1 */
+  gsl_vector_set(x, 1, gsl_histogram_max_val(h));   
   hh.h = h;
   hh.binstart = binstart;
   hh.binend = binend;
@@ -1395,6 +1395,142 @@ static VALUE rb_gsl_histogram_fit_rayleigh(int argc, VALUE *argv, VALUE obj)
 		     rb_float_new(chi2), INT2FIX(dof));
 }
 
+/*
+ * y(x) = Amp*exp(-a*x)
+ */
+static int xExponential_f(const gsl_vector *v, void *params, gsl_vector *f);
+static int xExponential_df(const gsl_vector *v, void *params, gsl_matrix * J);
+static int xExponential_f(const gsl_vector *v, void *params, gsl_vector *f)
+{
+  struct fit_histogram *hh;
+  gsl_histogram *h = NULL;
+  double amp, b, xl, xh, xi, yi, sqw;
+  size_t i, binstart, binend;
+  hh = (struct fit_histogram *) params;
+  h = hh->h;
+  binstart = hh->binstart;
+  binend = hh->binend;
+  b = gsl_vector_get(v, 0);
+  amp = gsl_vector_get(v, 1);
+  for (i = binstart; i <= binend; i++) {
+    if (gsl_histogram_get_range(h, i, &xl, &xh))
+      rb_raise(rb_eIndexError, "wrong index");
+    xi = (xl + xh)/2.0;
+    yi = h->bin[i];
+    sqw = sqrt(yi);
+    gsl_vector_set(f, i-binstart, (amp*xi*exp(-b*xi) - yi)*sqw);
+  }
+  return GSL_SUCCESS;
+}
+
+static int xExponential_df(const gsl_vector *v, void *params, gsl_matrix *J)
+{
+  struct fit_histogram *hh;
+  gsl_histogram *h = NULL;
+  double amp, b, xl, xh, xi, yi, y, sqw;
+  size_t i, binstart, binend;
+  hh = (struct fit_histogram *) params;
+  h = hh->h;
+  binstart = hh->binstart;
+  binend = hh->binend;
+  b = gsl_vector_get(v, 0);
+  amp = gsl_vector_get(v, 1);
+  for (i = binstart; i <= binend; i++) {
+    if (gsl_histogram_get_range(h, i, &xl, &xh))
+      rb_raise(rb_eIndexError, "wrong index");
+    xi = (xl + xh)/2.0;
+    yi = h->bin[i];
+    sqw = sqrt(yi);
+    y = xi*exp(-b*xi);
+    gsl_matrix_set(J, i-binstart, 0, -amp*y*xi*sqw);
+    gsl_matrix_set(J, i-binstart, 1, y*sqw);
+  }
+  return GSL_SUCCESS;
+}
+
+static int xExponential_fdf(const gsl_vector *v, void *params, gsl_vector *f, 
+			gsl_matrix *J)
+{
+  xExponential_f(v, params, f);
+  xExponential_df(v, params, J);
+  return GSL_SUCCESS;
+}
+
+
+static VALUE rb_gsl_histogram_fit_xexponential(int argc, VALUE *argv, VALUE obj)
+{
+  gsl_histogram *h = NULL;
+  struct fit_histogram hh;
+  const gsl_multifit_fdfsolver_type *T;
+  gsl_multifit_fdfsolver *s;
+  int status;
+  size_t iter = 0, binstart, binend;
+  size_t n, dof;      /* # of data points */
+  size_t p = 2;  /* # of fitting parameters */
+  gsl_multifit_function_fdf f;
+  gsl_matrix *covar = NULL;
+  gsl_vector *x = NULL;
+  double b, height, errs, errh, chi2;
+  Data_Get_Struct(obj, gsl_histogram, h);
+  binstart = 0;
+  binend = h->n - 1;
+  switch (argc) {
+  case 2:
+    CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]);
+    binstart = FIX2INT(argv[0]);
+    binend = FIX2INT(argv[1]);
+    if (binend >= h->n) binend = h->n - 1;
+    break;
+  case 0:
+    break;
+  default:
+    rb_raise(rb_eArgError, "too many arguments (%d for 0 or 2)", argc);
+    break;
+  }
+  x = gsl_vector_alloc(p);
+  gsl_vector_set(x, 0, gsl_histogram_sigma(h));   /* initial values, var = 1 */
+  gsl_vector_set(x, 1, gsl_histogram_max_val(h));   
+  hh.h = h;
+  hh.binstart = binstart;
+  hh.binend = binend;
+  n = binend - binstart + 1;
+
+  covar = gsl_matrix_alloc(p, p);
+
+  f.f = xExponential_f;
+  f.df = xExponential_df;
+  f.fdf = xExponential_fdf;
+  f.n = n;
+  f.p = p;
+  f.params = &hh;
+
+  T = gsl_multifit_fdfsolver_lmsder;
+  s = gsl_multifit_fdfsolver_alloc(T, n, p);
+  gsl_multifit_fdfsolver_set(s, &f, x);
+
+  do {
+    iter++;
+    status = gsl_multifit_fdfsolver_iterate(s);
+    if (status) break;
+    status = gsl_multifit_test_delta(s->dx, s->x, 1e-4, 1e-4);
+  } while (status == GSL_CONTINUE);
+  b = gsl_vector_get(s->x, 0);
+  height = gsl_vector_get(s->x, 1);
+  gsl_multifit_covar(s->J, 0.0, covar);
+  chi2 = gsl_pow_2(gsl_blas_dnrm2(s->f));   /* not reduced chi-square */
+  dof = n - p;
+  errs = sqrt(chi2/dof*gsl_matrix_get(covar, 0, 0));
+  errh = sqrt(chi2/dof*gsl_matrix_get(covar, 1, 1));
+
+  gsl_multifit_fdfsolver_free(s);
+  gsl_vector_free(x);
+  gsl_matrix_free(covar);
+  return rb_ary_new3(6, rb_float_new(b), 
+		     rb_float_new(height), rb_float_new(errs),
+		     rb_float_new(errh),
+		     rb_float_new(chi2), INT2FIX(dof));
+}
+
 static VALUE rb_gsl_histogram_fit(int argc, VALUE *argv, VALUE obj)
 {
   char fittype[32];
@@ -1409,6 +1545,8 @@ static VALUE rb_gsl_histogram_fit(int argc, VALUE *argv, VALUE obj)
     return rb_gsl_histogram_fit_gaussian(argc-1, argv+1, obj);
  } else if (str_head_grep(fittype, "rayleigh") == 0) {
     return rb_gsl_histogram_fit_rayleigh(argc-1, argv+1, obj);
+  } else if (str_head_grep(fittype, "xexp") == 0) {
+    return rb_gsl_histogram_fit_xexponential(argc-1, argv+1, obj);
   } else {
     rb_raise(rb_eRuntimeError, 
 	     "unknown fitting type %s (exp, power, gaus expected)", fittype);
@@ -1828,6 +1966,8 @@ void Init_gsl_histogram(VALUE module)
 		   rb_gsl_histogram_fit_gaussian, -1);
   rb_define_method(cgsl_histogram, "fit_exponential", 
 		   rb_gsl_histogram_fit_exponential, -1);
+  rb_define_method(cgsl_histogram, "fit_xexponential", 
+		   rb_gsl_histogram_fit_xexponential, -1);
   rb_define_method(cgsl_histogram, "fit_power", 
 		   rb_gsl_histogram_fit_power, -1);
   rb_define_method(cgsl_histogram, "fit_rayleigh", 

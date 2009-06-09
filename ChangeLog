@@ -1,3 +1,6 @@
+Tue Jun  9 10:42:30 JST 2009
+  * Fixed bug in linalg.c (bug [#25842])
+	
 Thu Feb  2 12:16:38 JST 2009
   * Fixed a bug in GSL::Histogram.alloc_uniform() (bug [#23040])
   * Fixed a bug in GSL::Vector#/ (bug [#23334])

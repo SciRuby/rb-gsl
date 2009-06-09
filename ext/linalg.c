@@ -2448,7 +2448,9 @@ static VALUE rb_gsl_linalg_SV_solve(int argc, VALUE *argv, VALUE obj)
     flagv = 1;
     break;
   }
-  x = gsl_vector_alloc(b->size);
+  //  x = gsl_vector_alloc(b->size);  
+  // Bug report #25842
+  x = gsl_vector_alloc(S->size);
   gsl_linalg_SV_solve(U, V, S, b, x);
   if (flagv == 1) {
     gsl_matrix_free(U);
