@@ -47,15 +47,18 @@ The function to minimize is given as an instance of the ((<GSL::Function|URL:fun
 == GSL::Min::FMinimizer class
 --- GSL::Min::FMinimizer.alloc(t)
     These method create an instance of the (({GSL::Min::FMinimizer})) class of 
-    type ((|t|)). The type ((|t|)) is given by a Ruby constant,
+    type ((|t|)). The type ((|t|)) is given by a String,
+      * "goldensection"
+      * "brent"
+      * "quad_golden"
+    or by a Ruby constant,
       * GSL::Min::FMinimizer::GOLDENSECTION
       * GSL::Min::FMinimizer::BRENT
-    ex1)
-        include GSL
-        s1 = Min::FMinimizer.alloc(Min::FMinimizer::GOLDENSECTION)
-    ex2)
+      * GSL::Min::FMinimizer::QUAD_GOLDEN (GSL-1.13)
+
+    ex)
         include GSL::Min
-        s2 = FMinimizer.alloc(FMinimizer::BRENT)
+        s = FMinimizer.alloc(FMinimizer::BRENT)
 
 --- GSL::Min::FMinimizer#set(f, xmin, xlow, xup)
     This method sets, or resets, an existing minimizer ((|self|)) to use 

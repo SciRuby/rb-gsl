@@ -24,7 +24,9 @@ static VALUE cgsl_monte_plain;
 static VALUE cgsl_monte_miser;
 static VALUE cgsl_monte_vegas;
 static VALUE cgsl_monte_function;
-
+#ifdef GSL_1_13_LATER
+static VALUE cgsl_monte_miser_params, cgsl_monte_vegas_params;
+#endif
 EXTERN VALUE cgsl_vector;
 
 enum {
@@ -659,9 +661,192 @@ static VALUE rb_gsl_monte_vegas_state(VALUE obj)
 		     INT2FIX(s->mode), INT2FIX(s->verbose));
 }
 
+#ifdef GSL_1_13_LATER
+static VALUE rb_gsl_monte_miser_params_get(VALUE obj)
+{
+  gsl_monte_miser_state *s = NULL;
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_state, s);
+  p = (gsl_monte_miser_params *) malloc(sizeof(gsl_monte_miser_params));
+  gsl_monte_miser_params_get(s, p);  
+  return Data_Wrap_Struct(cgsl_monte_miser_params, 0, free, p);
+}
+static VALUE rb_gsl_monte_miser_params_set(VALUE obj, VALUE params)
+{
+  gsl_monte_miser_state *s = NULL;
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_state, s);
+  Data_Get_Struct(params, gsl_monte_miser_params, p);
+  gsl_monte_miser_params_set(s, p);  
+  return Qtrue;
+}
+static VALUE rb_gsl_monte_miser_params_get_estimate_frac(VALUE obj)
+{
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_params, p);
+  return rb_float_new(p->estimate_frac);
+}
+static VALUE rb_gsl_monte_miser_params_set_estimate_frac(VALUE obj, VALUE val)
+{
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_params, p);
+  p->estimate_frac = NUM2DBL(val);
+  return val;
+}
+static VALUE rb_gsl_monte_miser_params_get_min_calls(VALUE obj)
+{
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_params, p);
+  return INT2FIX(p->min_calls);
+}
+static VALUE rb_gsl_monte_miser_params_set_min_calls(VALUE obj, VALUE val)
+{
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_params, p);
+  p->min_calls = (size_t) FIX2INT(val);
+  return val;
+}
+static VALUE rb_gsl_monte_miser_params_get_min_calls_per_bisection(VALUE obj)
+{
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_params, p);
+  return INT2FIX(p->min_calls_per_bisection);
+}
+static VALUE rb_gsl_monte_miser_params_set_min_calls_per_bisection(VALUE obj, VALUE val)
+{
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_params, p);
+  p->min_calls_per_bisection = (size_t) FIX2INT(val);
+  return val;
+}
+static VALUE rb_gsl_monte_miser_params_get_alpha(VALUE obj)
+{
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_params, p);
+  return rb_float_new(p->alpha);
+}
+static VALUE rb_gsl_monte_miser_params_set_alpha(VALUE obj, VALUE val)
+{
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_params, p);
+  p->alpha = NUM2DBL(val);
+  return val;
+}
+static VALUE rb_gsl_monte_miser_params_get_dither(VALUE obj)
+{
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_params, p);
+  return rb_float_new(p->dither);
+}
+static VALUE rb_gsl_monte_miser_params_set_dither(VALUE obj, VALUE val)
+{
+  gsl_monte_miser_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_miser_params, p);
+  p->dither = NUM2DBL(val);
+  return val;
+}
+
+static VALUE rb_gsl_monte_vegas_params_get(VALUE obj)
+{
+  gsl_monte_vegas_state *s = NULL;
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_state, s);
+  p = (gsl_monte_vegas_params *) malloc(sizeof(gsl_monte_vegas_params));
+  gsl_monte_vegas_params_get(s, p);  
+  return Data_Wrap_Struct(cgsl_monte_vegas_params, 0, free, p);
+}
+static VALUE rb_gsl_monte_vegas_params_set(VALUE obj, VALUE params)
+{
+  gsl_monte_vegas_state *s = NULL;
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_state, s);
+  Data_Get_Struct(params, gsl_monte_vegas_params, p);
+  gsl_monte_vegas_params_set(s, p);  
+  return Qtrue;
+}
+static VALUE rb_gsl_monte_vegas_params_get_alpha(VALUE obj)
+{
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_params, p);
+  return rb_float_new(p->alpha);
+}
+static VALUE rb_gsl_monte_vegas_params_set_alpha(VALUE obj, VALUE val)
+{
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_params, p);
+  p->alpha = NUM2DBL(val);
+  return val;
+}
+static VALUE rb_gsl_monte_vegas_params_get_iterations(VALUE obj)
+{
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_params, p);
+  return INT2FIX(p->iterations);
+}
+static VALUE rb_gsl_monte_vegas_params_set_iterations(VALUE obj, VALUE val)
+{
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_params, p);
+  p->iterations = (size_t) FIX2INT(val);
+  return val;
+}
+static VALUE rb_gsl_monte_vegas_params_get_stage(VALUE obj)
+{
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_params, p);
+  return INT2FIX(p->stage);
+}
+static VALUE rb_gsl_monte_vegas_params_set_stage(VALUE obj, VALUE val)
+{
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_params, p);
+  p->stage = FIX2INT(val);
+  return val;
+}
+static VALUE rb_gsl_monte_vegas_params_get_mode(VALUE obj)
+{
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_params, p);
+  return INT2FIX(p->mode);
+}
+static VALUE rb_gsl_monte_vegas_params_set_mode(VALUE obj, VALUE val)
+{
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_params, p);
+  p->mode = FIX2INT(val);
+  return val;
+}
+static VALUE rb_gsl_monte_vegas_params_get_verbose(VALUE obj)
+{
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_params, p);
+  return INT2FIX(p->verbose);
+}
+static VALUE rb_gsl_monte_vegas_params_set_verbose(VALUE obj, VALUE val)
+{
+  gsl_monte_vegas_params *p = NULL;
+  Data_Get_Struct(obj, gsl_monte_vegas_params, p);
+  p->verbose = FIX2INT(val);
+  return val;
+}
+static VALUE rb_gsl_monte_vegas_runval(VALUE obj)
+{
+  gsl_monte_vegas_state *s = NULL;
+  double res, sig;
+  VALUE ary;
+  Data_Get_Struct(obj, gsl_monte_vegas_state, s);
+  gsl_monte_vegas_runval(s, &res, &sig);
+  ary = rb_ary_new2(2);
+  rb_ary_store(ary, 0, rb_float_new(res));
+  rb_ary_store(ary, 1, rb_float_new(sig));
+  return ary;
+}
+#endif
+
 void Init_gsl_monte(VALUE module)
 {
   VALUE mgsl_monte;
+
 
   mgsl_monte = rb_define_module_under(module, "Monte");
 
@@ -753,6 +938,54 @@ void Init_gsl_monte(VALUE module)
 			     rb_gsl_monte_integrate, -1);
   rb_define_method(cgsl_monte_vegas, "integrate", 
 		   rb_gsl_monte_vegas_integrate, -1);
+
+#ifdef GSL_1_13_LATER
+  cgsl_monte_miser_params = rb_define_class_under(cgsl_monte_miser, "Params", cGSL_Object);
+  cgsl_monte_vegas_params = rb_define_class_under(cgsl_monte_vegas, "Params", cGSL_Object);
+
+  rb_define_method(cgsl_monte_miser, "params_get", rb_gsl_monte_miser_params_get, 0);
+  rb_define_method(cgsl_monte_miser, "params_set", rb_gsl_monte_miser_params_set, 1);
+  rb_define_method(cgsl_monte_miser_params, "estimate_frac", rb_gsl_monte_miser_params_get_estimate_frac, 0);
+  rb_define_method(cgsl_monte_miser_params, "set_estimate_frac", rb_gsl_monte_miser_params_set_estimate_frac, 1);
+  rb_define_alias(cgsl_monte_miser_params, "estimate_frac=", "set_estimate_frac");
+  rb_define_method(cgsl_monte_miser_params, "min_calls", rb_gsl_monte_miser_params_get_min_calls, 0);
+  rb_define_method(cgsl_monte_miser_params, "set_min_calls", rb_gsl_monte_miser_params_set_min_calls, 1);
+  rb_define_alias(cgsl_monte_miser_params, "min_calls=", "set_min_calls");
+  rb_define_method(cgsl_monte_miser_params, "min_calls_per_bisection", rb_gsl_monte_miser_params_get_min_calls_per_bisection, 0);
+  rb_define_method(cgsl_monte_miser_params, "set_min_calls_per_bisection", rb_gsl_monte_miser_params_set_min_calls_per_bisection, 1);
+  rb_define_alias(cgsl_monte_miser_params, "min_calls_per_bisection=", "set_min_calls_per_bisection");
+  rb_define_method(cgsl_monte_miser_params, "alpha", rb_gsl_monte_miser_params_get_alpha, 0);
+  rb_define_method(cgsl_monte_miser_params, "set_alpha", rb_gsl_monte_miser_params_set_alpha, 1);
+  rb_define_alias(cgsl_monte_miser_params, "alpha=", "set_alpha");
+  rb_define_method(cgsl_monte_miser_params, "dither", rb_gsl_monte_miser_params_get_dither, 0);
+  rb_define_method(cgsl_monte_miser_params, "set_dither", rb_gsl_monte_miser_params_set_dither, 1);
+  rb_define_alias(cgsl_monte_miser_params, "dither=", "set_dither");
+
+  rb_define_method(cgsl_monte_vegas, "params_get", rb_gsl_monte_vegas_params_get, 0);
+  rb_define_method(cgsl_monte_vegas, "params_set", rb_gsl_monte_vegas_params_set, 1);
+  rb_define_method(cgsl_monte_vegas_params, "alpha", rb_gsl_monte_vegas_params_get_alpha, 0);
+  rb_define_method(cgsl_monte_vegas_params, "set_alpha", rb_gsl_monte_vegas_params_set_alpha, 1);
+  rb_define_alias(cgsl_monte_vegas_params, "alpha=", "set_alpha");
+  rb_define_method(cgsl_monte_vegas_params, "iterations", rb_gsl_monte_vegas_params_get_iterations, 0);
+  rb_define_method(cgsl_monte_vegas_params, "set_iterations", rb_gsl_monte_vegas_params_set_iterations, 1);
+  rb_define_alias(cgsl_monte_vegas_params, "iterations=", "set_iterations");
+  rb_define_method(cgsl_monte_vegas_params, "stage", rb_gsl_monte_vegas_params_get_stage, 0);
+  rb_define_method(cgsl_monte_vegas_params, "set_stage", rb_gsl_monte_vegas_params_set_stage, 1);
+  rb_define_alias(cgsl_monte_vegas_params, "stage=", "set_stage");
+  rb_define_method(cgsl_monte_vegas_params, "mode", rb_gsl_monte_vegas_params_get_mode, 0);
+  rb_define_method(cgsl_monte_vegas_params, "set_mode", rb_gsl_monte_vegas_params_set_mode, 1);
+  rb_define_alias(cgsl_monte_vegas_params, "mode=", "set_mode");
+  rb_define_method(cgsl_monte_vegas_params, "verbose", rb_gsl_monte_vegas_params_get_verbose, 0);
+  rb_define_method(cgsl_monte_vegas_params, "set_verbose", rb_gsl_monte_vegas_params_set_verbose, 1);
+  rb_define_alias(cgsl_monte_vegas_params, "verbose=", "set_verbose");
+
+  rb_define_method(cgsl_monte_vegas, "runval", rb_gsl_monte_vegas_runval, 0);
+
+  rb_define_const(cgsl_monte_vegas, "MODE_IMPORTANCE", INT2FIX(GSL_VEGAS_MODE_IMPORTANCE));
+  rb_define_const(cgsl_monte_vegas, "MODE_IMPORTANCE_ONLY", INT2FIX(GSL_VEGAS_MODE_IMPORTANCE_ONLY)); 
+  rb_define_const(cgsl_monte_vegas, "MODE_STRATIFIED", INT2FIX(GSL_VEGAS_MODE_STRATIFIED));
+#endif
+
 }
 #ifdef CHECK_MONTE_FUNCTION
 #undef CHECK_MONTE_FUNCTION

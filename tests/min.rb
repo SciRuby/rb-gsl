@@ -85,7 +85,7 @@ Func3 = GSL::Function.alloc { |x|
 }
 Func4 = GSL::Function.alloc { |x| x - 30.0/(1.0 + 1e5*pow(x - 0.8, 2.0)) }
 
-types = ["goldensection", "brent"]
+types = ["goldensection", "brent", "quad_golden"]
 types.each do |t|
   test_f(t, "cos(x) [0 (3) 6]", F_cos, 0.0, 3.0, 6.0, M_PI)
   test_f(t, "x^4 - 1 [-3 (-1) 17]", Func1, -3.0, -1.0, 17.0, 0.0);

@@ -38,7 +38,10 @@ enum {
   GSL_FDFMINIMIZER_STEEPEST_DESCENT,
   GSL_FMINIMIZER_NMSIMPLEX,
 #ifdef GSL_1_9_LATER
-	GSL_FDFMINIMIZER_VECTOR_BFGS2,
+  GSL_FDFMINIMIZER_VECTOR_BFGS2,
+#endif
+#ifdef GSL_1_13_LATER
+  GSL_FMINIMIZER_NMSIMPLEX2RAND,
 #endif
 };
 
@@ -446,6 +449,10 @@ static void define_const(VALUE klass1, VALUE klass2)
   rb_define_const(klass1, 
 		  "VECTOR_BFGS2", INT2FIX(GSL_FDFMINIMIZER_VECTOR_BFGS2));
 #endif
+#ifdef GSL_1_13_LATER
+  rb_define_const(klass2, 
+		  "NMSIMPLEX2RAND", INT2FIX(GSL_FMINIMIZER_NMSIMPLEX2RAND));
+#endif
 }
 
 static const gsl_multimin_fdfminimizer_type* get_fdfminimizer_type(VALUE t)
@@ -606,13 +613,21 @@ static const gsl_multimin_fminimizer_type* get_fminimizer_type(VALUE t)
     strcpy(name, STR2CSTR(t));
     if (str_tail_grep(name, "nmsimplex") == 0) 
       return gsl_multimin_fminimizer_nmsimplex;
+#ifdef GSL_1_13_LATER
+    if (str_tail_grep(name, "nmsimplex2rand") == 0) 
+      return gsl_multimin_fminimizer_nmsimplex2rand;
+#endif
     else
-      rb_raise(rb_eTypeError, "unknown type %s (only nmsimplex supported)", name);
+      rb_raise(rb_eTypeError, "unknown type %s (nmsimplex and nmsimplex2rand supported)", name);
     break;
   case T_FIXNUM:
     switch (FIX2INT(t)) {
     case GSL_FMINIMIZER_NMSIMPLEX:
       return gsl_multimin_fminimizer_nmsimplex; break;
+#ifdef GSL_1_13_LATER
+    case GSL_FMINIMIZER_NMSIMPLEX2RAND:
+      return gsl_multimin_fminimizer_nmsimplex2rand; break;
+#endif
     default:
       rb_raise(rb_eTypeError, "%d: unknown type (not supported)", FIX2INT(t));
       break;

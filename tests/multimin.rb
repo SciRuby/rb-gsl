@@ -36,6 +36,17 @@ def test_f(desc, f, initpt)
 
   status |= s.fval.abs > 1e-5 ? 1 : 0
   GSL::Test::test(status, "#{s.name}, on #{desc}: #{iter} iterations, f(x)=#{s.fval}")
+
+  s = GSL::MultiMin::FMinimizer.alloc("nmsimplex2rand", f.n)
+  s.set(f, x, step_size)
+  iter = 0
+  begin
+    status = s.iterate
+    status = GSL::MultiMin.test_size(s.size, 1e-3)
+  end while iter < 5000 and status == GSL::CONTINUE
+
+  status |= s.fval.abs > 1e-5 ? 1 : 0
+  GSL::Test::test(status, "#{s.name}, on #{desc}: #{iter} iterations, f(x)=#{s.fval}")
 end
 
 def roth_initpt

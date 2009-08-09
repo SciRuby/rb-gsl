@@ -94,18 +94,90 @@ finishes.</p>
 <dt><a name="label-40" id="label-40"><code>GSL::Monte::Vegas#result</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#result" -->
 <dt><a name="label-41" id="label-41"><code>GSL::Monte::Vegas#sigma</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#sigma" -->
 <dt><a name="label-42" id="label-42"><code>GSL::Monte::Vegas#chisq</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#chisq" -->
-<dt><a name="label-43" id="label-43"><code>GSL::Monte::Vegas#iterations</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#iterations" -->
-<dt><a name="label-44" id="label-44"><code>GSL::Monte::Vegas#iterations=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#iterations=" -->
-<dt><a name="label-45" id="label-45"><code>GSL::Monte::Vegas#alpha</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#alpha" -->
-<dt><a name="label-46" id="label-46"><code>GSL::Monte::Vegas#alpha=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#alpha=" -->
-<dt><a name="label-47" id="label-47"><code>GSL::Monte::Vegas#stage</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#stage" -->
-<dt><a name="label-48" id="label-48"><code>GSL::Monte::Vegas#stage=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#stage=" -->
-<dt><a name="label-49" id="label-49"><code>GSL::Monte::Vegas#mode</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#mode" -->
-<dt><a name="label-50" id="label-50"><code>GSL::Monte::Vegas#mode=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#mode=" -->
-<dt><a name="label-51" id="label-51"><code>GSL::Monte::Vegas#verbose</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#verbose" -->
-<dt><a name="label-52" id="label-52"><code>GSL::Monte::Vegas#verbose=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#verbose=" -->
+<dd>
+Returns the chi-squared per degree of freedom for the weighted estimate of the integral. The returned value should be close to 1. A value which differs significantly from 1 indicates that the values from different iterations are inconsistent. In this case the weighted error will be under-estimated, and further iterations of the algorithm are needed to obtain reliable results.</dd>
+<dt><a name="label-43" id="label-43"><code>GSL::Monte::Vegas#runval</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#runval" -->
+<dd>
+Returns the raw (unaveraged) values of the integral and its error <var>[result, sigma]</var> from the most recent iteration of the algorithm.</dd>
+<dt><a name="label-44" id="label-44"><code>GSL::Monte::Vegas#iterations</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#iterations" -->
+<dt><a name="label-45" id="label-45"><code>GSL::Monte::Vegas#iterations=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#iterations=" -->
+<dt><a name="label-46" id="label-46"><code>GSL::Monte::Vegas#alpha</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#alpha" -->
+<dt><a name="label-47" id="label-47"><code>GSL::Monte::Vegas#alpha=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#alpha=" -->
+<dt><a name="label-48" id="label-48"><code>GSL::Monte::Vegas#stage</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#stage" -->
+<dt><a name="label-49" id="label-49"><code>GSL::Monte::Vegas#stage=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#stage=" -->
+<dt><a name="label-50" id="label-50"><code>GSL::Monte::Vegas#mode</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#mode" -->
+<dt><a name="label-51" id="label-51"><code>GSL::Monte::Vegas#mode=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#mode=" -->
+<dt><a name="label-52" id="label-52"><code>GSL::Monte::Vegas#verbose</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#verbose" -->
+<dt><a name="label-53" id="label-53"><code>GSL::Monte::Vegas#verbose=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#verbose=" -->
 </dl>
-<h2><a name="5" href="#5">5</a> <a name="label-53">Example</a></h2><!-- RDLabel: "Example" -->
+<h2><a name="5" href="#5">5</a> <a name="label-54">Miser Parameters (GSL-1.13 or later)</a></h2><!-- RDLabel: "Miser Parameters (GSL-1.13 or later)" -->
+
+<dl>
+<dt><a name="label-55" id="label-55"><code>GSL::Monte::Miser#params_get</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#params_get" -->
+<dd>
+Returns the parameters of the integrator state as an instance of <code>GSL::Monte::Miser::Params</code> class.</dd>
+<dt><a name="label-56" id="label-56"><code>GSL::Monte::Miser#params_set(<var>params</var>)</code></a></dt><!-- RDLabel: "GSL::Monte::Miser#params_set" -->
+<dd>
+Sets the integrator parameters based on values provided in an object of the <code>GSL::Monte::Miser::Params</code> class <var>params</var>.</dd>
+</dl>
+<h3><a name="5.1" href="#5.1">5.1</a> <a name="label-57">Accessors of <code>GSL::Monte::Miser::Params</code></a></h3><!-- RDLabel: "Accessors of GSL::Monte::Miser::Params" -->
+
+<dl>
+<dt><a name="label-58" id="label-58"><code>GSL::Monte::Miser::Params#estimate_frac</code></a></dt><!-- RDLabel: "GSL::Monte::Miser::Params#estimate_frac" -->
+<dt><a name="label-59" id="label-59"><code>GSL::Monte::Miser::Params#estimate_frac=</code></a></dt><!-- RDLabel: "GSL::Monte::Miser::Params#estimate_frac=" -->
+<dd>
+The fraction of the currently available number of function calls which are allocated to estimating the variance at each recursive step. The default value is 0.1.</dd>
+<dt><a name="label-60" id="label-60"><code>GSL::Monte::Miser::Params#min_calls</code></a></dt><!-- RDLabel: "GSL::Monte::Miser::Params#min_calls" -->
+<dt><a name="label-61" id="label-61"><code>GSL::Monte::Miser::Params#min_calls=</code></a></dt><!-- RDLabel: "GSL::Monte::Miser::Params#min_calls=" -->
+<dd>
+The minimum number of function calls required for each estimate of the variance. If the number of function calls allocated to the estimate using <var>estimate_frac</var> falls below <var>min_calls</var> then <var>min_calls</var> are used instead. This ensures that each estimate maintains a reasonable level of accuracy. The default value of min_calls is 16 * dim.</dd>
+<dt><a name="label-62" id="label-62"><code>GSL::Monte::Miser::Params#min_calls_per_bisection</code></a></dt><!-- RDLabel: "GSL::Monte::Miser::Params#min_calls_per_bisection" -->
+<dt><a name="label-63" id="label-63"><code>GSL::Monte::Miser::Params#min_calls_per_bisection=</code></a></dt><!-- RDLabel: "GSL::Monte::Miser::Params#min_calls_per_bisection=" -->
+<dd>
+The minimum number of function calls required to proceed with a bisection step. When a recursive step has fewer calls available than <var>min_calls_per_bisection</var> it performs a plain Monte Carlo estimate of the current sub-region and terminates its branch of the recursion. The default value of this parameter is 32 * min_calls.</dd>
+<dt><a name="label-64" id="label-64"><code>GSL::Monte::Miser::Params#alpha</code></a></dt><!-- RDLabel: "GSL::Monte::Miser::Params#alpha" -->
+<dt><a name="label-65" id="label-65"><code>GSL::Monte::Miser::Params#alpha=</code></a></dt><!-- RDLabel: "GSL::Monte::Miser::Params#alpha=" -->
+<dd>
+This parameter controls how the estimated variances for the two sub-regions of a bisection are combined when allocating points. With recursive sampling the overall variance should scale better than 1/N, since the values from the sub-regions will be obtained using a procedure which explicitly minimizes their variance. To accommodate this behavior the MISER algorithm allows the total variance to depend on a scaling parameter <var>alpha</var>, The authors of the original paper describing MISER recommend the value <var>alpha</var> = 2 as a good choice, obtained from numerical experiments, and this is used as the default value in this implementation.</dd>
+<dt><a name="label-66" id="label-66"><code>GSL::Monte::Miser::Params#dither</code></a></dt><!-- RDLabel: "GSL::Monte::Miser::Params#dither" -->
+<dt><a name="label-67" id="label-67"><code>GSL::Monte::Miser::Params#dither=</code></a></dt><!-- RDLabel: "GSL::Monte::Miser::Params#dither=" -->
+</dl>
+<p>This parameter introduces a random fractional variation of size dither into each bisection, which can be used to break the symmetry of integrands which are concentrated near the exact center of the hypercubic integration region. The default value of dither is zero, so no variation is introduced. If needed, a typical value of dither is 0.1.</p>
+<h2><a name="6" href="#6">6</a> <a name="label-68">Vegas Parameters (GSL-1.13 or later)</a></h2><!-- RDLabel: "Vegas Parameters (GSL-1.13 or later)" -->
+
+<dl>
+<dt><a name="label-69" id="label-69"><code>GSL::Monte::Vegas#params_get</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#params_get" -->
+<dd>
+Returns the parameters of the integrator state as an instance of <code>GSL::Monte::Vegas::Params</code> class.</dd>
+<dt><a name="label-70" id="label-70"><code>GSL::Monte::Vegas#params_set(<var>params</var>)</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas#params_set" -->
+<dd>
+Sets the integrator parameters based on values provided in an object of the <code>GSL::Monte::Vegas::Params</code> class <var>params</var>.</dd>
+</dl>
+<h3><a name="6.1" href="#6.1">6.1</a> <a name="label-71">Accessors of <code>GSL::Monte::Vegas::Params</code></a></h3><!-- RDLabel: "Accessors of GSL::Monte::Vegas::Params" -->
+
+<dl>
+<dt><a name="label-72" id="label-72"><code>GSL::Monte::Vegas::Params#alpha</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas::Params#alpha" -->
+<dt><a name="label-73" id="label-73"><code>GSL::Monte::Vegas::Params#alpha=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas::Params#alpha=" -->
+<dd>
+Controls the stiffness of the rebinning algorithm. It is typically set between one and two. A value of zero prevents rebinning of the grid. The default value is 1.5.</dd>
+<dt><a name="label-74" id="label-74"><code>GSL::Monte::Vegas::Params#iterations</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas::Params#iterations" -->
+<dt><a name="label-75" id="label-75"><code>GSL::Monte::Vegas::Params#iterations=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas::Params#iterations=" -->
+<dd>
+The number of iterations to perform for each call to the routine. The default value is 5 iterations.</dd>
+<dt><a name="label-76" id="label-76"><code>GSL::Monte::Vegas::Params#stage</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas::Params#stage" -->
+<dt><a name="label-77" id="label-77"><code>GSL::Monte::Vegas::Params#stage=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas::Params#stage=" -->
+<dd>
+Setting this determines the stage of the calculation. Normally, stage = 0 which begins with a new uniform grid and empty weighted average. Calling vegas with stage = 1 retains the grid from the previous run but discards the weighted average, so that one can "tune" the grid using a relatively small number of points and then do a large run with stage = 1 on the optimized grid. Setting stage = 2 keeps the grid and the weighted average from the previous run, but may increase (or decrease) the number of histogram bins in the grid depending on the number of calls available. Choosing stage = 3 enters at the main loop, so that nothing is changed, and is equivalent to performing additional iterations in a previous call.</dd>
+<dt><a name="label-78" id="label-78"><code>GSL::Monte::Vegas::Params#mode</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas::Params#mode" -->
+<dt><a name="label-79" id="label-79"><code>GSL::Monte::Vegas::Params#mode=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas::Params#mode=" -->
+<dd>
+The possible choices are <code>GSL::VEGAS::MODE_IMPORTANCE</code>, <code>GSL::VEGAS::MODE_STRATIFIED</code>, <code>GSL::VEGAS::MODE_IMPORTANCE_ONLY</code>. This determines whether VEGAS will use importance sampling or stratified sampling, or whether it can pick on its own. In low dimensions VEGAS uses strict stratified sampling (more precisely, stratified sampling is chosen if there are fewer than 2 bins per box).</dd>
+<dt><a name="label-80" id="label-80"><code>GSL::Monte::Vegas::Params#verbose</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas::Params#verbose" -->
+<dt><a name="label-81" id="label-81"><code>GSL::Monte::Vegas::Params#verbose=</code></a></dt><!-- RDLabel: "GSL::Monte::Vegas::Params#verbose=" -->
+<dd>
+Set the level of information printed by VEGAS. All information is written to the stream ostream. The default setting of verbose is -1, which turns off all output. A verbose value of 0 prints summary information about the weighted average and final result, while a value of 1 also displays the grid coordinates. A value of 2 prints information from the rebinning procedure for each iteration.</dd>
+</dl>
+<h2><a name="7" href="#7">7</a> <a name="label-82">Example</a></h2><!-- RDLabel: "Example" -->
 
 <pre>#!/usr/bin/env ruby
 require("gsl")

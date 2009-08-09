@@ -55,17 +55,21 @@ The function to minimize is given as an instance of the <a href="function.html">
 <dt><a name="label-3" id="label-3"><code>GSL::Min::FMinimizer.alloc(<var>t</var>)</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer.alloc" -->
 <dd>
 <p>These method create an instance of the <code>GSL::Min::FMinimizer</code> class of 
-type <var>t</var>. The type <var>t</var> is given by a Ruby constant,</p>
+type <var>t</var>. The type <var>t</var> is given by a String,</p>
+<ul>
+<li>"goldensection"</li>
+<li>"brent"</li>
+<li>"quad_golden"</li>
+</ul>
+<p>or by a Ruby constant,</p>
 <ul>
 <li>GSL::Min::FMinimizer::GOLDENSECTION</li>
 <li>GSL::Min::FMinimizer::BRENT</li>
+<li>GSL::Min::FMinimizer::QUAD_GOLDEN (GSL-1.13)</li>
 </ul>
-<p>ex1)</p>
-<pre>include GSL
-s1 = Min::FMinimizer.alloc(Min::FMinimizer::GOLDENSECTION)</pre>
-<p>ex2)</p>
+<p>ex)</p>
 <pre>include GSL::Min
-s2 = FMinimizer.alloc(FMinimizer::BRENT)</pre></dd>
+s = FMinimizer.alloc(FMinimizer::BRENT)</pre></dd>
 <dt><a name="label-4" id="label-4"><code>GSL::Min::FMinimizer#set(<var>f</var>, <var>xmin</var>, <var>xlow</var>, <var>xup</var>)</code></a></dt><!-- RDLabel: "GSL::Min::FMinimizer#set" -->
 <dd>
 <p>This method sets, or resets, an existing minimizer <var>self</var> to use 

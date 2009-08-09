@@ -1624,6 +1624,86 @@ static VALUE rb_gsl_poly_wfit(int argc, VALUE *argv, VALUE obj)
 }
 #endif
 
+#ifdef BASE_DOUBLE
+#ifdef GSL_1_13_LATER
+static VALUE rb_gsl_poly_eval_derivs_singleton(int argc, VALUE *argv, VALUE klass)
+{
+  VALUE ary;
+  gsl_vector *v = NULL, *v2 = NULL;
+  size_t i, lenc, lenres;
+#ifdef HAVE_NARRAY_H
+  struct NARRAY *na;
+  double *ptr1, *ptr2;
+  int shape[1];
+#endif
+
+  if (argc < 2) rb_raise(rb_eArgError, "Wrong number of arguments (%d for >= 2)");
+  if (rb_obj_is_kind_of(argv[0], rb_cArray)) {
+    v = gsl_vector_alloc(RARRAY_LEN(argv[0]));
+    lenc = v->size;
+    for (i = 0; i < lenc; i++) {
+      gsl_vector_set(v, i, NUM2DBL(rb_ary_entry(argv[0], i)));
+    }
+    if (argc == 2) lenres = lenc + 1;
+    else lenres = FIX2INT(argv[2]);
+    v2 = gsl_vector_alloc(lenres);
+    gsl_poly_eval_derivs(v->data, lenc, NUM2DBL(argv[1]), v2->data, lenres);
+    ary = rb_ary_new2(lenres);
+    for (i = 0; i < lenres; i++) {
+      rb_ary_store(ary, i, rb_float_new(gsl_vector_get(v2, i)));
+    }
+    gsl_vector_free(v2);
+    gsl_vector_free(v);
+    return ary;
+  }
+  if (rb_obj_is_kind_of(argv[0], cgsl_vector)) {
+    Data_Get_Struct(argv[0], gsl_vector, v);
+    lenc = v->size;
+    if (argc == 2) lenres = lenc + 1;
+    else lenres = FIX2INT(argv[2]);
+    v2 = gsl_vector_alloc(lenres);
+    gsl_poly_eval_derivs(v->data, lenc, NUM2DBL(argv[1]), v2->data, lenres);
+    return Data_Wrap_Struct(cgsl_poly, 0, gsl_vector_free, v2);
+  }
+#ifdef HAVE_NARRAY_H
+  if (NA_IsNArray(argv[0])) {
+    GetNArray(argv[0], na);
+    ptr1 = (double*) na->ptr;
+    lenc = na->total;
+    if (argc == 2) lenres = lenc + 1;
+    else lenres = FIX2INT(argv[2]);
+    shape[0] = lenres;
+    ary = na_make_object(NA_DFLOAT, na->rank, shape, CLASS_OF(argv[0]));
+    ptr2 = NA_PTR_TYPE(ary,double*);
+    gsl_poly_eval_derivs(ptr1, lenc, NUM2DBL(argv[1]), ptr2, lenres);
+    return ary;
+  }
+#endif
+  return Qnil;  // Never comes here
+}
+static VALUE rb_gsl_poly_eval_derivs(int argc, VALUE *argv, VALUE obj)
+{
+  gsl_vector *v, *v2;
+  size_t lenc, lenres;
+  Data_Get_Struct(obj, gsl_vector, v);
+  lenc = v->size;
+  switch (argc) {
+  case 1:
+    lenres = lenc + 1;
+    break;
+  case 2:
+    lenres = FIX2INT(argv[1]);
+    break;
+  default:
+    rb_raise(rb_eArgError, "Wrong number of arguments (%d for > 1)");
+  }
+  v2 = gsl_vector_alloc(lenres);
+  gsl_poly_eval_derivs(v->data, lenc, NUM2DBL(argv[0]), v2->data, lenres);
+  return Data_Wrap_Struct(cgsl_poly, 0, gsl_vector_free, v2);
+}
+#endif
+#endif
+
 void FUNCTION(Init_gsl_poly,init)(VALUE module)
 {
 #ifdef BASE_DOUBLE
@@ -1775,6 +1855,12 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
 		   FUNCTION(rb_gsl_poly,fit), -1);
   rb_define_singleton_method(GSL_TYPE(cgsl_poly), "wfit", 
 		   FUNCTION(rb_gsl_poly,wfit), -1);
+
+#ifdef GSL_1_13_LATER
+  rb_define_singleton_method(cgsl_poly, "eval_derivs", rb_gsl_poly_eval_derivs_singleton, -1);
+  rb_define_method(cgsl_vector, "eval_derivs", rb_gsl_poly_eval_derivs, -1);
+#endif
+
 #endif
 }
 

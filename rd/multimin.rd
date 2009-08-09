@@ -71,7 +71,7 @@ the function in question.
 --- GSL::MultiMin::FdfMinimizer.alloc(type, n)
 --- GSL::MultiMin::FMinimizer.alloc(type, n)
     These method create a minimizer of type ((|type|)) for an ((|n|))-dimension function. 
-    The type is given by a name of the algorithm, or by a Ruby constant.
+    The type is given by a string, or by a Ruby constant.
 
     * (({GSL::MultiMin::FdfMinimizer::CONJUGATE_FR})) or (({"conjugate_fr"}))
     * (({GSL::MultiMin::FdfMinimizer::CONJUGATE_PR})) or (({"conjugate_pr"}))
@@ -79,6 +79,7 @@ the function in question.
     * (({GSL::MultiMin::FdfMinimizer::VECTOR_BFGS2})) or (({"vector_bfgs2"})) (GSL-1.9 or later)
     * (({GSL::MultiMin::FdfMinimizer::STEEPEST_DESCENT})) or (({"steepest_descent"}))
     * (({GSL::MultiMin::FMinimizer::NMSIMPLEX})) or (({"nmsimplex"}))
+    * (({GSL::MultiMin::FMinimizer::NMSIMPLEX2RAND})) or (({"nmsimplex2rand"})) (GSL-1.13)
 
     * ex:
         include GSL::MultiMin

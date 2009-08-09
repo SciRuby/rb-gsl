@@ -42,6 +42,38 @@ Contents:
        => NArray.float(3):
        [ 6.0, 17.0, 34.0 ]
 
+--- GSL::Poly.eval_derivs(c, x)
+--- GSL::Poly.eval_derivs(c, x, lenres)
+    (GSL-1.13) Evaluate and return a polynomial and its derivatives. The output contains the values of d^k P/d x^k for the specified value of x starting with k = 0. The input polynomial ((|c|)) can be an (({Array})), (({GSL::Poly})) or an (({NArray})). If ((|lenres|)) is not given, ((|lenres = LENGTH(c) + 1|)) is used, therefore the last element of the output is 0.
+
+--- GSL::Poly#eval_derivs(x)
+--- GSL::Poly#eval_derivs(x, lenres)
+    (GSL-1.13) Evaluate and return a polynomial and its derivatives. The output contains the values of d^k P/d x^k for the specified value of x starting with k = 0. If ((|lenres|)) is not given, ((|lenres = LENGTH(self) + 1|)) is used, therefore the last element of the output is 0.
+   
+    Ex.)
+     >> ary = [1, 2, 3]
+     => [1, 2, 3]
+     >> GSL::Poly.eval_derivs(ary, 1)
+     => [6.0, 8.0, 6.0, 0.0]
+     >> na = NArray[1.0, 2, 3]
+     => NArray.float(3): 
+     [ 1.0, 2.0, 3.0 ]
+     >> GSL::Poly.eval_derivs(na, 1)
+     => NArray.float(4): 
+     [ 6.0, 8.0, 6.0, 0.0 ]
+     >> poly = GSL::Poly[1.0, 2, 3]
+     => GSL::Poly
+     [ 1.000e+00 2.000e+00 3.000e+00 ]
+     >> GSL::Poly.eval_derivs(poly, 1)
+     => GSL::Poly
+     [ 6.000e+00 8.000e+00 6.000e+00 0.000e+00 ]
+     >> poly.eval_derivs(1)
+     => GSL::Poly
+     [ 6.000e+00 8.000e+00 6.000e+00 0.000e+00 ]
+     >> poly.eval_derivs(1, 3)
+     => GSL::Poly
+     [ 6.000e+00 8.000e+00 6.000e+00 ]
+
 == Solving polynomial equations
 === Quadratic Equations
 --- GSL::Poly::solve_quadratic(a, b, c)

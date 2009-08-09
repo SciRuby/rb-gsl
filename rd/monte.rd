@@ -70,6 +70,9 @@ The function to be integrated has its own datatype, the (({GSL::Monte::Function}
 --- GSL::Monte::Vegas#result
 --- GSL::Monte::Vegas#sigma
 --- GSL::Monte::Vegas#chisq
+    Returns the chi-squared per degree of freedom for the weighted estimate of the integral. The returned value should be close to 1. A value which differs significantly from 1 indicates that the values from different iterations are inconsistent. In this case the weighted error will be under-estimated, and further iterations of the algorithm are needed to obtain reliable results.
+--- GSL::Monte::Vegas#runval
+    Returns the raw (unaveraged) values of the integral and its error ((|[result, sigma]|)) from the most recent iteration of the algorithm.
 --- GSL::Monte::Vegas#iterations
 --- GSL::Monte::Vegas#iterations=
 --- GSL::Monte::Vegas#alpha
@@ -80,6 +83,51 @@ The function to be integrated has its own datatype, the (({GSL::Monte::Function}
 --- GSL::Monte::Vegas#mode=
 --- GSL::Monte::Vegas#verbose
 --- GSL::Monte::Vegas#verbose=
+
+== Miser Parameters (GSL-1.13 or later)
+--- GSL::Monte::Miser#params_get
+    Returns the parameters of the integrator state as an instance of (({GSL::Monte::Miser::Params})) class.
+--- GSL::Monte::Miser#params_set(params)
+    Sets the integrator parameters based on values provided in an object of the (({GSL::Monte::Miser::Params})) class ((|params|)).
+=== Accessors of (({GSL::Monte::Miser::Params}))
+--- GSL::Monte::Miser::Params#estimate_frac
+--- GSL::Monte::Miser::Params#estimate_frac=
+    The fraction of the currently available number of function calls which are allocated to estimating the variance at each recursive step. The default value is 0.1.
+--- GSL::Monte::Miser::Params#min_calls
+--- GSL::Monte::Miser::Params#min_calls=
+    The minimum number of function calls required for each estimate of the variance. If the number of function calls allocated to the estimate using ((|estimate_frac|)) falls below ((|min_calls|)) then ((|min_calls|)) are used instead. This ensures that each estimate maintains a reasonable level of accuracy. The default value of min_calls is 16 * dim.
+--- GSL::Monte::Miser::Params#min_calls_per_bisection
+--- GSL::Monte::Miser::Params#min_calls_per_bisection=
+    The minimum number of function calls required to proceed with a bisection step. When a recursive step has fewer calls available than ((|min_calls_per_bisection|)) it performs a plain Monte Carlo estimate of the current sub-region and terminates its branch of the recursion. The default value of this parameter is 32 * min_calls.
+--- GSL::Monte::Miser::Params#alpha
+--- GSL::Monte::Miser::Params#alpha=
+    This parameter controls how the estimated variances for the two sub-regions of a bisection are combined when allocating points. With recursive sampling the overall variance should scale better than 1/N, since the values from the sub-regions will be obtained using a procedure which explicitly minimizes their variance. To accommodate this behavior the MISER algorithm allows the total variance to depend on a scaling parameter ((|alpha|)), The authors of the original paper describing MISER recommend the value ((|alpha|)) = 2 as a good choice, obtained from numerical experiments, and this is used as the default value in this implementation.
+--- GSL::Monte::Miser::Params#dither
+--- GSL::Monte::Miser::Params#dither=
+This parameter introduces a random fractional variation of size dither into each bisection, which can be used to break the symmetry of integrands which are concentrated near the exact center of the hypercubic integration region. The default value of dither is zero, so no variation is introduced. If needed, a typical value of dither is 0.1.
+
+== Vegas Parameters (GSL-1.13 or later)
+--- GSL::Monte::Vegas#params_get
+    Returns the parameters of the integrator state as an instance of (({GSL::Monte::Vegas::Params})) class.
+--- GSL::Monte::Vegas#params_set(params)
+    Sets the integrator parameters based on values provided in an object of the (({GSL::Monte::Vegas::Params})) class ((|params|)).
+
+=== Accessors of (({GSL::Monte::Vegas::Params}))
+--- GSL::Monte::Vegas::Params#alpha
+--- GSL::Monte::Vegas::Params#alpha=
+    Controls the stiffness of the rebinning algorithm. It is typically set between one and two. A value of zero prevents rebinning of the grid. The default value is 1.5.
+--- GSL::Monte::Vegas::Params#iterations
+--- GSL::Monte::Vegas::Params#iterations=
+    The number of iterations to perform for each call to the routine. The default value is 5 iterations.
+--- GSL::Monte::Vegas::Params#stage
+--- GSL::Monte::Vegas::Params#stage=
+    Setting this determines the stage of the calculation. Normally, stage = 0 which begins with a new uniform grid and empty weighted average. Calling vegas with stage = 1 retains the grid from the previous run but discards the weighted average, so that one can "tune" the grid using a relatively small number of points and then do a large run with stage = 1 on the optimized grid. Setting stage = 2 keeps the grid and the weighted average from the previous run, but may increase (or decrease) the number of histogram bins in the grid depending on the number of calls available. Choosing stage = 3 enters at the main loop, so that nothing is changed, and is equivalent to performing additional iterations in a previous call.
+--- GSL::Monte::Vegas::Params#mode
+--- GSL::Monte::Vegas::Params#mode=
+    The possible choices are (({GSL::VEGAS::MODE_IMPORTANCE})), (({GSL::VEGAS::MODE_STRATIFIED})), (({GSL::VEGAS::MODE_IMPORTANCE_ONLY})). This determines whether VEGAS will use importance sampling or stratified sampling, or whether it can pick on its own. In low dimensions VEGAS uses strict stratified sampling (more precisely, stratified sampling is chosen if there are fewer than 2 bins per box).
+--- GSL::Monte::Vegas::Params#verbose
+--- GSL::Monte::Vegas::Params#verbose=
+    Set the level of information printed by VEGAS. All information is written to the stream ostream. The default setting of verbose is -1, which turns off all output. A verbose value of 0 prints summary information about the weighted average and final result, while a value of 1 also displays the grid coordinates. A value of 2 prints information from the rebinning procedure for each iteration.
 
 == Example
 

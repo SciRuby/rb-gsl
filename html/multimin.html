@@ -81,7 +81,7 @@ the function in question. </p>
 <dt><a name="label-5" id="label-5"><code>GSL::MultiMin::FMinimizer.alloc(<var>type</var>, <var>n</var>)</code></a></dt><!-- RDLabel: "GSL::MultiMin::FMinimizer.alloc" -->
 <dd>
 These method create a minimizer of type <var>type</var> for an <var>n</var>-dimension function. 
-The type is given by a name of the algorithm, or by a Ruby constant.
+The type is given by a string, or by a Ruby constant.
 <ul>
 <li><code>GSL::MultiMin::FdfMinimizer::CONJUGATE_FR</code> or <code>"conjugate_fr"</code></li>
 <li><code>GSL::MultiMin::FdfMinimizer::CONJUGATE_PR</code> or <code>"conjugate_pr"</code></li>
@@ -89,6 +89,7 @@ The type is given by a name of the algorithm, or by a Ruby constant.
 <li><code>GSL::MultiMin::FdfMinimizer::VECTOR_BFGS2</code> or <code>"vector_bfgs2"</code> (GSL-1.9 or later)</li>
 <li><code>GSL::MultiMin::FdfMinimizer::STEEPEST_DESCENT</code> or <code>"steepest_descent"</code></li>
 <li><code>GSL::MultiMin::FMinimizer::NMSIMPLEX</code> or <code>"nmsimplex"</code></li>
+<li><code>GSL::MultiMin::FMinimizer::NMSIMPLEX2RAND</code> or <code>"nmsimplex2rand"</code> (GSL-1.13)</li>
 <li><p>ex:</p>
 <pre>include GSL::MultiMin
 m1 = FdfMinimizer.alloc(FdfMinimizer::CONJUGATE_FR, 2)

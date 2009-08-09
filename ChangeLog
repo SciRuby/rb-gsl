@@ -1,3 +1,10 @@
+Sat Aug  8 22:36:24 BOT 2009
+  * Added GSL::Monte::Miser#params_get, GSL::Monte::Vegas#params_get
+  * Added GSL::BSpline::greville_abscissa(i)
+  * Added GSL::Poly#eval_derivs(x)
+  * Added a new minimization algorithm "quad_golden"
+  * Added a new multimin algorithm "nmsimplex2rand"
+	
 Tue Jun  9 10:42:30 JST 2009
   * Fixed bug in linalg.c (bug [#25842])
 	
