@@ -224,3 +224,19 @@ for i in 0...7
   y = coeff.eval(xa[i] - 1.5)
   test_rel(y, ya[i], 1e-10, "taylor expansion about 1.5 y[#{i}]");
 end
+
+# Added GSL-1.12.90 (gsl-1.13)
+# gsl_poly_eval_derivs()
+exit unless GSL::Poly.method_defined?("eval_derivs")
+
+c = GSL::Vector.alloc([1.0, -2.0, +3.0, -4.0, +5.0, -6.0])
+x = -0.5
+
+dc = GSL::Poly.eval_derivs(c, x)
+
+test_rel(dc[0], c[0] + c[1]*x + c[2]*x*x + c[3]*x*x*x + c[4]*x*x*x*x + c[5]*x*x*x*x*x , eps, "eval_derivs({+1, -2, +3, -4, +5, -6}, 3.75)");
+test_rel(dc[1], c[1] + 2.0*c[2]*x + 3.0*c[3]*x*x + 4.0*c[4]*x*x*x + 5.0*c[5]*x*x*x*x , eps, "eval_derivs({+1, -2, +3, -4, +5, -6} deriv 1, -12.375)");
+test_rel(dc[2], 2.0*c[2] + 3.0*2.0*c[3]*x + 4.0*3.0*c[4]*x*x + 5.0*4.0*c[5]*x*x*x , eps, "eval_derivs({+1, -2, +3, -4, +5, -6} deriv 2, +48.0)");
+test_rel(dc[3], 3.0*2.0*c[3] + 4.0*3.0*2.0*c[4]*x + 5.0*4.0*3.0*c[5]*x*x , eps,"eval_derivs({+1, -2, +3, -4, +5, -6} deriv 3, -174.0)");
+test_rel(dc[4], 4.0*3.0*2.0*c[4] + 5.0*4.0*3.0*2.0*c[5]*x, eps, "eval_derivs({+1, -2, +3, -4, +5, -6} deriv 4, +480.0)");
+test_rel(dc[5], 5.0*4.0*3.0*2.0*c[5] , eps, "eval_derivs({+1, -2, +3, -4, +5, -6} deriv 5, -720.0)");
