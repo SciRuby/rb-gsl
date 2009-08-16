@@ -57,6 +57,8 @@ multimin.c
 multimin_fsdf.c
 multiroots.c
 ndlinear.c
+nmf.c
+nmf_wrap.c
 ntuple.c
 odeiv.c
 ool.c

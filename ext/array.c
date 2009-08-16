@@ -654,6 +654,7 @@ void Init_gsl_array(VALUE module)
   Init_gsl_combination(module);
 #endif
   Init_gsl_array_complex(module);
+  Init_gsl_matrix_nmf();
 
   rb_define_method(cgsl_vector_view_ro, "set", rb_gsl_obj_read_only, -1);
   rb_define_method(cgsl_matrix_view_ro, "set", rb_gsl_obj_read_only, -1);

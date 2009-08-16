@@ -227,4 +227,6 @@ void Init_gsl_block_init(VALUE module);
 void Init_gsl_block_int_init(VALUE module);
 void Init_gsl_block_uchar_init(VALUE module);
 
+void Init_gsl_matrix_nmf(void);
+
 #endif
