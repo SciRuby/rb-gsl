@@ -1,4 +1,5 @@
 set multiplot
+set grid
 set size 0.33, 0.33
 
 set origin 0, 0.66

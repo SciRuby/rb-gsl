@@ -7,10 +7,10 @@ require("gsl")
 
 year, sunspot = GSL::Vector.filescan("sunspot.dat")
 N = year.size
-
 ffted = sunspot.fft
 
-power = GSL.sqrt(ffted[1..(N-2)].to_complex2.abs2)*2/N
+#power = GSL.sqrt(ffted[1..(N-2)].to_complex2.abs2)*2/N
+power = GSL.sqrt(ffted.to_complex2.abs2)*2/N
 freq = GSL::Vector.linspace(1, N/2, power.size)/N
 period = 1.0/freq
 GSL::graph(period, power, "-C -g 3 -x 0 40 -X 'Period [year]'")
