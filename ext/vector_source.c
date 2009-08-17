@@ -84,12 +84,12 @@ void parse_subvector_args(int argc, VALUE *argv, size_t size,
       if(begin < 0 || (size_t)begin >= size) {
         rb_raise(rb_eRangeError,
             "begin value %d is out of range for Vector of length %d",
-            begin, size);
+		 begin, (int) size);
       }
       if(end < 0 || (size_t)end >= size) {
         rb_raise(rb_eRangeError,
             "end value %d is out of range for Vector of length %d",
-            end, size);
+		 end, (int) size);
       }
       *stride = (size_t)step;
     } else {
@@ -98,7 +98,7 @@ void parse_subvector_args(int argc, VALUE *argv, size_t size,
       if((length < 0 && -length > size) || (length > 0 && length > size)) {
         rb_raise(rb_eRangeError,
             "length %d is out of range for Vector of length %d",
-            length, size);
+		 length, (int) size);
       } else if(length < 0) {
         begin = length;
         *n = (size_t)(-length);
@@ -114,12 +114,12 @@ void parse_subvector_args(int argc, VALUE *argv, size_t size,
       if(begin < 0 || (size_t)begin >= size) {
         rb_raise(rb_eRangeError,
             "begin value %d is out of range for Vector of length %d",
-            begin, size);
+		 (int) begin, (int) size);
       }
       if(end < 0 || (size_t)end >= size) {
         rb_raise(rb_eRangeError,
             "end value %d is out of range for Vector of length %d",
-            end, size);
+		 (int) end, (int) size);
       }
       CHECK_FIXNUM(argv[1]);
       step = FIX2INT(argv[1]);
@@ -405,7 +405,7 @@ void FUNCTION(rb_gsl_vector,set_subvector)(int argc, VALUE *argv, GSL_TYPE(gsl_v
   if(rb_obj_is_kind_of(other, GSL_TYPE(cgsl_vector))) {
     Data_Get_Struct(other, GSL_TYPE(gsl_vector), vother);
     if(n != vother->size) {
-      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, vother->size);
+      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)",(int) n, (int) vother->size);
     }
     // TODO Change to gsl_vector_memmove if/when GSL has such a function
     // because gsl_vector_memcpy does not handle overlapping regions (e.g.
@@ -413,7 +413,7 @@ void FUNCTION(rb_gsl_vector,set_subvector)(int argc, VALUE *argv, GSL_TYPE(gsl_v
     FUNCTION(gsl_vector,memcpy)(&vv.vector, vother);
   } else if(rb_obj_is_kind_of(other, rb_cArray)) {
     if(n != RARRAY_LEN(other)) {
-      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, RARRAY_LEN(other));
+      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", (int) n, (int) RARRAY_LEN(other));
     }
     for(i = 0; i < n; i++) {
       FUNCTION(gsl_vector,set)(&vv.vector, i, NUMCONV2(rb_ary_entry(other, i)));
@@ -421,7 +421,7 @@ void FUNCTION(rb_gsl_vector,set_subvector)(int argc, VALUE *argv, GSL_TYPE(gsl_v
   } else if(rb_obj_is_kind_of(other, rb_cRange)) {
     FUNCTION(get_range,beg_en_n)(other, &beg, &end, &nother, &step);
     if(n != nother) {
-      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, nother);
+      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", (int) n, (int) nother);
     }
     for(i = 0; i < n; i++) {
       FUNCTION(gsl_vector,set)(&vv.vector, i, beg);

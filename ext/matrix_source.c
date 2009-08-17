@@ -706,7 +706,7 @@ static VALUE FUNCTION(rb_gsl_matrix,get)(int argc, VALUE *argv, VALUE obj)
       if(ij < 0) ij += m->size2;
       retval = C_TO_VALUE2(FUNCTION(gsl_matrix,get)(m, (size_t)ii, (size_t)ij));
     } else {
-      rb_raise(rb_eArgError, "Array index must have length 2, not %d", RARRAY_LEN(argv[0]));
+      rb_raise(rb_eArgError, "Array index must have length 2, not %d", (int) RARRAY_LEN(argv[0]));
     }
   } else {
     retval = FUNCTION(rb_gsl_matrix,submatrix)(argc, argv, obj);
@@ -763,7 +763,7 @@ static VALUE FUNCTION(rb_gsl_matrix,set)(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(other, GSL_TYPE(gsl_matrix), mother);
       if(n1 * n2 != mother->size1 * mother->size2) {
         rb_raise(rb_eRangeError, "sizes do not match (%d x %d != %d x %d)",
-            n1, n2, mother->size1, mother->size2);
+		 (int) n1, (int) n2, (int) mother->size1, (int) mother->size2);
       }
       // TODO Change to gsl_matrix_memmove if/when GSL has such a function
       // because gsl_matrix_memcpy does not handle overlapping regions (e.g.
@@ -781,7 +781,7 @@ static VALUE FUNCTION(rb_gsl_matrix,set)(int argc, VALUE *argv, VALUE obj)
         // m[...] = [[row0], [row1], ...] # multiple rows
         if(n1 != RARRAY_LEN(other)) {
           rb_raise(rb_eRangeError, "row counts do not match (%d != %d)",
-              n1, RARRAY_LEN(other));
+		   (int) n1, (int) RARRAY_LEN(other));
         }
         for(k = 0; k < n1; k++) {
           vv = FUNCTION(gsl_matrix,row)(&mv.matrix, k);
@@ -793,7 +793,7 @@ static VALUE FUNCTION(rb_gsl_matrix,set)(int argc, VALUE *argv, VALUE obj)
       // m[...] = beg..end
       FUNCTION(get_range,beg_en_n)(other, &beg, &end, &nother, &step);
       if(n1 * n2 != nother) {
-        rb_raise(rb_eRangeError, "sizes do not match (%d x %d != %d)", n1, n2, nother);
+        rb_raise(rb_eRangeError, "sizes do not match (%d x %d != %d)", (int) n1, (int) n2, (int) nother);
       }
       for(k = 0; k < nother; k++) {
         FUNCTION(gsl_matrix,set)(&mv.matrix, k / n2, k % n2, beg);
@@ -2265,7 +2265,7 @@ static VALUE FUNCTION(rb_gsl_matrix,horzcat)(VALUE obj, VALUE mm2)
   Data_Get_Struct(mm2, GSL_TYPE(gsl_matrix), m2);
   if (m->size1 != m2->size1) 
     rb_raise(rb_eRuntimeError, "Different number of rows (%d and %d).",
-	     m->size1, m2->size1);
+	     (int) m->size1, (int) m2->size1);
   mnew = FUNCTION(gsl_matrix,alloc)(m->size1, m->size2 + m2->size2);
   for (j = 0, k = 0; j < m->size2; j++, k++) {
     v = FUNCTION(gsl_matrix,column)(m, j);
@@ -2295,7 +2295,7 @@ static VALUE FUNCTION(rb_gsl_matrix,vertcat)(VALUE obj, VALUE mm2)
   Data_Get_Struct(mm2, GSL_TYPE(gsl_matrix), m2);
   if (m->size2 != m2->size2) 
     rb_raise(rb_eRuntimeError, "Different number of columns (%d and %d).",
-	     m->size2, m2->size2);
+	     (int) m->size2, (int) m2->size2);
   mnew = FUNCTION(gsl_matrix,alloc)(m->size1 + m2->size1, m->size2);
   for (i = 0, k = 0; i < m->size1; i++, k++) {
     v = FUNCTION(gsl_matrix,row)(m, i);

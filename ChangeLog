@@ -1,3 +1,6 @@
+Sun Aug 16 19:01:31 BOT 2009
+  * Added Non-negative Matrix Factorization (NMF) support (by Roman Shterenzon)
+	
 Sat Aug  8 22:36:24 BOT 2009
   * Added GSL-1.13 features:
     * Added GSL::Monte::Miser#params_get, GSL::Monte::Vegas#params_get

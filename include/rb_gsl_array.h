@@ -12,8 +12,6 @@
 #ifndef ___RB_GSL_ARRAY_H___
 #define ___RB_GSL_ARRAY_H___
 
-#include "ruby.h"
-#include "rubyio.h"
 #include <math.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_complex.h>
@@ -32,6 +30,14 @@
 #include <gsl/gsl_odeiv.h>
 #include <gsl/gsl_blas.h>
 #include "rb_gsl_config.h"
+
+#include "ruby.h"
+#ifdef RUBY_1_9_LATER
+#include "ruby/io.h"
+#else
+#include "rubyio.h"
+#endif
+
 #include "rb_gsl_common.h"
 
 typedef gsl_permutation gsl_index;

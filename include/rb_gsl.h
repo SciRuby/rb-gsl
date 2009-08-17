@@ -12,13 +12,6 @@
 #ifndef ___RB_GSL_H___
 #define ___RB_GSL_H___
 
-#include "ruby.h"
-#ifdef RUBY_1_9_LATER
-#include "ruby/io.h"
-#else
-#include "rubyio.h"
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -45,6 +38,14 @@
 #include "rb_gsl_fit.h"
 #include "rb_gsl_const.h"
 #include "rb_gsl_config.h"
+
+
+#include "ruby.h"
+#ifdef RUBY_1_9_LATER
+#include "ruby/io.h"
+#else
+#include "rubyio.h"
+#endif
 
 void Init_gsl_error(VALUE module);
 void Init_gsl_math(VALUE module);

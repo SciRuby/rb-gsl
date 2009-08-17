@@ -1637,7 +1637,7 @@ static VALUE rb_gsl_poly_eval_derivs_singleton(int argc, VALUE *argv, VALUE klas
   int shape[1];
 #endif
 
-  if (argc < 2) rb_raise(rb_eArgError, "Wrong number of arguments (%d for >= 2)");
+  if (argc < 2) rb_raise(rb_eArgError, "Wrong number of arguments (%d for >= 2)", argc);
   if (rb_obj_is_kind_of(argv[0], rb_cArray)) {
     v = gsl_vector_alloc(RARRAY_LEN(argv[0]));
     lenc = v->size;
@@ -1695,7 +1695,7 @@ static VALUE rb_gsl_poly_eval_derivs(int argc, VALUE *argv, VALUE obj)
     lenres = FIX2INT(argv[1]);
     break;
   default:
-    rb_raise(rb_eArgError, "Wrong number of arguments (%d for > 1)");
+    rb_raise(rb_eArgError, "Wrong number of arguments (%d for > 1)", argc);
   }
   v2 = gsl_vector_alloc(lenres);
   gsl_poly_eval_derivs(v->data, lenc, NUM2DBL(argv[0]), v2->data, lenres);

@@ -242,7 +242,7 @@ void rb_gsl_vector_complex_set_subvector(int argc, VALUE *argv, gsl_vector_compl
   if(rb_obj_is_kind_of(other, cgsl_vector_complex)) {
     Data_Get_Struct(other, gsl_vector_complex, vother);
     if(n != vother->size) {
-      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, vother->size);
+      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", (int) n, (int) vother->size);
     }
     // TODO Change to gsl_vector_complex_memmove if/when GSL has such a
     // function because gsl_vector_memcpy does not handle overlapping regions
@@ -251,7 +251,7 @@ void rb_gsl_vector_complex_set_subvector(int argc, VALUE *argv, gsl_vector_compl
   } else if(rb_obj_is_kind_of(other, rb_cArray)) {
     // TODO Support other forms of Array contents as well
     if(n != RARRAY_LEN(other)) {
-      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, RARRAY_LEN(other));
+      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", (int) n, (int) RARRAY_LEN(other));
     }
     for(i = 0; i < n; i++) {
       tmp = rb_gsl_obj_to_gsl_complex(rb_ary_entry(other, i), NULL);
@@ -260,7 +260,7 @@ void rb_gsl_vector_complex_set_subvector(int argc, VALUE *argv, gsl_vector_compl
   } else if(rb_obj_is_kind_of(other, rb_cRange)) {
     get_range_beg_en_n(other, &beg, &end, &nother, &step);
     if(n != nother) {
-      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", n, nother);
+      rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", (int) n, (int) nother);
     }
     GSL_SET_IMAG(&tmp, 0.0);
     for(i = 0; i < n; i++) {

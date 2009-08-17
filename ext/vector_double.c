@@ -84,7 +84,7 @@ static VALUE rb_gsl_vector_linspace(int argc, VALUE *argv, VALUE klass)
     /* do nothing */
     break;
   default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)");
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)", argc);
     break;
   }
   Need_Float(argv[0]);   Need_Float(argv[1]); 
@@ -104,7 +104,7 @@ static VALUE rb_gsl_vector_logspace(int argc, VALUE *argv, VALUE klass)
     /* do nothing */
     break;
   default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)");
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)", argc);
     break;
   }
   Need_Float(argv[0]);   Need_Float(argv[1]); 
@@ -124,7 +124,7 @@ static VALUE rb_gsl_vector_logspace2(int argc, VALUE *argv, VALUE klass)
     /* do nothing */
     break;
   default:
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)");
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)", argc);
     break;
   }
   Need_Float(argv[0]);   Need_Float(argv[1]); 
@@ -732,7 +732,7 @@ static void draw_vector_array(VALUE ary, FILE *fp)
     break;
   default:
     rb_raise(rb_eRuntimeError, "wrong array length (%d for 1 or 2)", 
-	     RARRAY_LEN(ary));
+	     (int) RARRAY_LEN(ary));
     break;
   }
   switch (flag) {

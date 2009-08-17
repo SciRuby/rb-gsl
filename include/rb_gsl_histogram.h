@@ -13,8 +13,6 @@
 #ifndef ___RB_GSL_HISTOGRAM_H___
 #define ___RB_GSL_HISTOGRAM_H___
 
-#include "ruby.h"
-#include "rubyio.h"
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_histogram.h>
 #include <gsl/gsl_histogram2d.h>

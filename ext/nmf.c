@@ -1,3 +1,10 @@
+/**
+ * NMF: Non-Negative Matrix Factorization
+ *
+ * Written by Roman Shterenzon
+ * (Slightly modified by Y.Tsunesada: just added "const" qualifiers etc.)
+ */
+
 #include <math.h>
 #include <time.h>
 #include <gsl/gsl_matrix.h>
@@ -9,7 +16,8 @@
 #undef DEBUG
 
 #define mm(a, b) gsl_matrix_mult(a, b)
-gsl_matrix * gsl_matrix_mult(gsl_matrix *a, gsl_matrix *b)
+//gsl_matrix * gsl_matrix_mult(gsl_matrix *a, gsl_matrix *b)
+gsl_matrix * gsl_matrix_mult(const gsl_matrix *a, const gsl_matrix *b)
 {
   gsl_matrix *c;
   c = gsl_matrix_alloc(a->size1, b->size2);
@@ -19,7 +27,8 @@ gsl_matrix * gsl_matrix_mult(gsl_matrix *a, gsl_matrix *b)
 }
 
 // pretty print
-void pp(gsl_matrix *m)
+//void pp(gsl_matrix *m)
+void pp(const gsl_matrix *m)
 {
   int r, c;
 
@@ -32,16 +41,19 @@ void pp(gsl_matrix *m)
 }
 
 /* Returns a distance cost */
-double difcost(gsl_matrix *a, gsl_matrix *b)
+//double difcost(gsl_matrix *a, gsl_matrix *b)
+double difcost(const gsl_matrix *a, const gsl_matrix *b)
 {
   int i, j;
-  double dif=0;
+  double dif=0, d;
 
   for (i=0; i < a->size1; i++)
   {
     for (j=0; j < a->size2; j++)
     {
-      dif += pow(gsl_matrix_get(a, i, j) - gsl_matrix_get(b, i, j), 2);
+      d = gsl_matrix_get(a, i, j) - gsl_matrix_get(b, i, j);
+      dif += d*d;
+	//      dif += pow(gsl_matrix_get(a, i, j) - gsl_matrix_get(b, i, j), 2);
     }
   }
   return dif;
