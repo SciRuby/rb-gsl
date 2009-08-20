@@ -11,6 +11,7 @@ require 'gsl'
 XMP.new(IRB::Frame.top(-1)).puts <<END
 # Create a 3x3 matrix
 m = GSL::Matrix.alloc([1, 2, 3, 4, 5, 6, 7, 8, 9], 3, 3)
+
 # Create a 3x4 matrix
 m = GSL::Matrix.indgen(3, 4)
 
