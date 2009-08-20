@@ -153,7 +153,18 @@ irb(main):007:0&gt; m.shape
 <dt><a name="label-29" id="label-29"><code>GSL::Matrix#set(<var>args</var>, <var>val</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#set" -->
 <dt><a name="label-30" id="label-30"><code>GSL::Matrix#[args]=val</code></a></dt><!-- RDLabel: "GSL::Matrix#[args]=val" -->
 <dd>
-<p>If <var>args</var> is empty, behaves as <code>#set_all(<var>val</var>)</code>.</p>
+<p>If <var>args</var> is empty and <var>val</var> is an Array (i.e. called with just a
+single Array argument), the Array's elements are taken as row contents.
+Each given row must have exactly the same number of elements as the Matrix
+has columns, but the number of rows given need not match the Matrix's row
+count.  Extra given rows are ignored, while Matrix rows beyond those given
+are not affected.  Otherwise, if <var>args</var> is empty, behaves as
+<code>#set_all(<var>val</var>)</code>.</p>
+<p>If <var>args</var> is an Array and val is not, the first two elements of
+<var>args</var> must be Fixnums which specify the row and column of the element
+that will be set to the value of <var>val</var>.  This special case exists to
+allow values returned by Matrix#max_index and Matrix#min_index to be used
+as indexes.</p>
 <p>If <var>args</var> are two <code>Fixnums</code>, <var>i</var> and <var>j</var>, this method
 sets the <var>(i,j)</var>-th element of the matrix <var>self</var> to <var>val</var>. </p>
 <p>If <var>args</var> is a single <code>Fixnum</code>, <var>i</var>, this method sets the

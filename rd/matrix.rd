@@ -138,7 +138,19 @@ For 32-bit CPU, the maximum of matrix dimension is 2^30 ~ 1e9.
 
 --- GSL::Matrix#set(args, val)
 --- GSL::Matrix#[args]=val
-    If ((|args|)) is empty, behaves as (({#set_all(((|val|)))})).
+    If ((|args|)) is empty and ((|val|)) is an Array (i.e. called with just a
+    single Array argument), the Array's elements are taken as row contents.
+    Each given row must have exactly the same number of elements as the Matrix
+    has columns, but the number of rows given need not match the Matrix's row
+    count.  Extra given rows are ignored, while Matrix rows beyond those given
+    are not affected.  Otherwise, if ((|args|)) is empty, behaves as
+    (({#set_all(((|val|)))})).
+
+    If ((|args|)) is an Array and val is not, the first two elements of
+    ((|args|)) must be Fixnums which specify the row and column of the element
+    that will be set to the value of ((|val|)).  This special case exists to
+    allow values returned by Matrix#max_index and Matrix#min_index to be used
+    as indexes.
 
     If ((|args|)) are two (({Fixnums})), ((|i|)) and ((|j|)), this method
     sets the ((|(i,j)|))-th element of the matrix ((|self|)) to ((|val|)). 

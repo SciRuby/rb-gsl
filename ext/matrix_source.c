@@ -733,9 +733,28 @@ static VALUE FUNCTION(rb_gsl_matrix,set)(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
   other = argv[argc-1];
 
-  if(argc == 1) {
+  if(argc == 1 && TYPE(argv[0]) == T_ARRAY) {
+    // m.set([row0,row1,...])
+    n1 = RARRAY_LEN(argv[0]);
+    if(n1 > m->size1) n1 = m->size1;
+    row_set_argv[0] = INT2FIX(0);
+    // Each given row must have as manay elements as m has columns.
+    // The bounds check happens inside rb_gsl_vector*set_subvector().
+    row_set_argv[1] = INT2FIX(m->size2);
+    for(k = 0; k < n1 && k < m->size1; k++) {
+      vv = FUNCTION(gsl_matrix,row)(m, k);
+      FUNCTION(rb_gsl_vector,set_subvector)(2, row_set_argv, &vv.vector, rb_ary_entry(argv[0], k));
+    }
+  } else if(argc == 1) {
     // m[] = x
     FUNCTION(gsl_matrix,set_all)(m, NUMCONV2(other));
+  } else if(argc==2 && TYPE(argv[0]) == T_ARRAY && TYPE(argv[1]) != T_ARRAY) {
+    // m.set([i, j], x) or m[[i,j]] = x
+    ii = FIX2INT(rb_ary_entry(argv[0], 0));
+    ij = FIX2INT(rb_ary_entry(argv[0], 1));
+    if(ii < 0) ii += m->size1;
+    if(ij < 0) ij += m->size2;
+    FUNCTION(gsl_matrix,set)(m, (size_t)ii, (size_t)ij, NUMCONV2(argv[1]));
   } else if(argc == 3 && TYPE(argv[0]) == T_FIXNUM && TYPE(argv[1]) == T_FIXNUM) {
     // m[i,j] = x
     ii = FIX2INT(argv[0]);
@@ -744,11 +763,12 @@ static VALUE FUNCTION(rb_gsl_matrix,set)(int argc, VALUE *argv, VALUE obj)
     if(ij < 0) ij += m->size2;
     FUNCTION(gsl_matrix,set)(m, (size_t)ii, (size_t)ij, NUMCONV2(other));
   } else if(TYPE(argv[0]) == T_ARRAY) {
-    // m.set(row0...)
+    // m.set(row0,row1,...)
+    n1 = argc;
+    if(n1 > m->size1) n1 = m->size1;
     row_set_argv[0] = INT2FIX(0);
     row_set_argv[1] = INT2FIX(m->size2);
-
-    for(k = 0; k < argc && k < m->size1; k++) {
+    for(k = 0; k < n1 && k < m->size1; k++) {
       vv = FUNCTION(gsl_matrix,row)(m, k);
       FUNCTION(rb_gsl_vector,set_subvector)(2, row_set_argv, &vv.vector, argv[k]);
     }
