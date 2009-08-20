@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ALF: a collection of routines for computing associated Legendre polynomials (ALFs)</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">ALF: a collection of routines for computing associated Legendre polynomials (ALFs)</a></h1><!-- RDLabel: "ALF: a collection of routines for computing associated Legendre polynomials (ALFs)" -->
+
+<p>ALF is an extension library for GSL to compute associated Legendre polynomialsdeveloped by Patrick Alken.
+Ruby/GSL includes interfaces to it if ALF is installed found by extconf.</p>
+<p>The class and method descriptions below are based on references from the document of ALF (alf-1.0/doc/alf.texi) by P.Alken.</p>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Module structure</a></h2><!-- RDLabel: "Module structure" -->
+
+<pre>GSL::ALF (module)
+     GSL::ALF::Workspace (Class)</pre>
+<h2><a name="2" href="#2">2</a> <a name="label-2">Creating ALF workspace</a></h2><!-- RDLabel: "Creating ALF workspace" -->
+
+<dl>
+<dt><a name="label-3" id="label-3"><code>GSL::ALF::Workspace.alloc(<var>lmax</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace.alloc" -->
+<dt><a name="label-4" id="label-4"><code>GSL::ALF.alloc(<var>lmax</var>)</code></a></dt><!-- RDLabel: "GSL::ALF.alloc" -->
+</dl>
+<p>Creates a workspace for computing associated Legendre polynomials (ALFs). The maximum ALF degree is specified by lmax. The size of this workspace is O(lmax).</p>
+<h2><a name="3" href="#3">3</a> <a name="label-5">Methods</a></h2><!-- RDLabel: "Methods" -->
+
+<dl>
+<dt><a name="label-6" id="label-6"><code>GSL::ALF::Workspace#params(<var>csphase</var>, <var>cnorm</var>, <var>norm</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#params" -->
+<dd>
+Sets various parameters for the subsequent computation of ALFs. If <var>csphase</var> is set to a non-zero value, the Condon-Shortley phase of (-1)^m will be applied to the associated Legendre functions. The Condon-Shortley phase is included by default. If <var>cnorm</var> is set to zero, the real normalization of the associated Legendre functions will be used. The default is to use complex normalization. The norm parameter defines the type of normalization which will be used. The possible values are as follows.
+<ul>
+<li>ALF::NORM_SCHMIDT: Schmidt semi-normalized associated Legendre polynomials S_l^m(x). (default)</li>
+<li>ALF::NORM_SPHARM: Associated Legendre polynomials Y_l^m(x) suitable for the calculation of spherical harmonics.</li>
+<li>ALF::NORM_ORTHO: Fully orthonormalized associated Legendre polynomials N_l^m(x).</li>
+<li>ALF::NORM_NONE:: Unnormalized associated Legendre polynomials P_l^m(x).</li>
+</ul></dd>
+<dt><a name="label-7" id="label-7"><code>GSL::ALF::Workspace#Plm_array(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#Plm_array" -->
+<dt><a name="label-8" id="label-8"><code>GSL::ALF::Workspace#Plm_array(<var>lmax</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#Plm_array" -->
+<dt><a name="label-9" id="label-9"><code>GSL::ALF::Workspace#Plm_array(<var>x</var>, <var>result</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#Plm_array" -->
+<dt><a name="label-10" id="label-10"><code>GSL::ALF::Workspace#Plm_array(<var>lmax</var>, <var>x</var>, <var>result</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#Plm_array" -->
+<dt><a name="label-11" id="label-11"><code>GSL::ALF::Workspace#Plm_array(<var>x</var>, <var>result</var>, <var>deriv</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#Plm_array" -->
+<dt><a name="label-12" id="label-12"><code>GSL::ALF::Workspace#Plm_array(<var>lmax</var>, <var>x</var>, <var>result</var>, <var>deriv</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#Plm_array" -->
+<dd>
+<p>Compute all associated Legendre polynomials P_l^m(x) and optionally their first derivatives dP_l^m(x)/dx for 0 &lt;= l &lt;= lmax, 0 &lt;= m &lt;= l. The value of <var>lmax</var> cannot exceed the previously specified lmax parameter to <code>ALF.alloc</code>, but may be less. If <var>lmax</var> is not given, the parameter to <code>ALF.alloc()</code> is used. The results are stored in <var>result</var>, an instance of <code>GSL::Vector</code>. Note that this vector must have enough length to store all the values for the polynomial P_l^m(x), and the length required can be known using <code>ALF::array_size(lmax)</code>. If a vector is not given, a new vector is created and returned. </p>
+<pre>The indices of ((|result|)) (and ((|deriv|)) corresponding to the associated Legendre function of degree ((|l|)) and order ((|m|)) can be obtained by calling (({ALF::array_index(l, m)})).</pre></dd>
+<dt><a name="label-13" id="label-13"><code>GSL::ALF::Workspace#Plm_deriv_array(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#Plm_deriv_array" -->
+<dt><a name="label-14" id="label-14"><code>GSL::ALF::Workspace#Plm_deriv_array(<var>lmax</var>, <var>x</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#Plm_deriv_array" -->
+<dt><a name="label-15" id="label-15"><code>GSL::ALF::Workspace#Plm_deriv_array(<var>x</var>, <var>result</var>, <var>deriv</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#Plm_deriv_array" -->
+<dt><a name="label-16" id="label-16"><code>GSL::ALF::Workspace#Plm_deriv_array(<var>lmax</var>, <var>x</var>, <var>result</var>, <var>deriv</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::Workspace#Plm_deriv_array" -->
+<dd>
+Compute all associated Legendre polynomials P_l^m(x) and their first derivatives dP_l^m(x)/dx for 0 &lt;= l &lt;= lmax, 0 &lt;= m &lt;= l. </dd>
+<dt><a name="label-17" id="label-17"><code>GSL::ALF::array_size(<var>lmax</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::array_size" -->
+<dd>
+Returns the size of arrays needed for the array versions of P_l^m(x).</dd>
+<dt><a name="label-18" id="label-18"><code>GSL::ALF::array_index(<var>l</var>, <var>m</var>)</code></a></dt><!-- RDLabel: "GSL::ALF::array_index" -->
+<dd>
+Returns the array index of results of <code>Plm_array()</code> and <code>Plm_deriv_array()</code> corresponding to P_l^m(x) and dP_l^m(x)/dx respectively. The index is given by l(l + 1)/2 + m.</dd>
+</dl>
+
+</body>
+</html>
