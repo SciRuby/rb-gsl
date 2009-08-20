@@ -74,8 +74,8 @@ This includes cut&paste from the ((<GSL Reference|URL:http://www.gnu.org/softwar
        (7) ((<NDLINEAR: multi-linear, multi-parameter least squares fitting|URL:ndlinear.html>))
        (8) ((<ALF: associated Legendre polynomials|URL:alf.html>))
   (42) ((<NArray compatibilities|URL:narray.html>))
-
-  (43) ((<GNU Free Documentation Licence|URL:http://www.gnu.org/software/gsl/manual/html_node/GNU-Free-Documentation-License.html>))
+  (43) ((<Changes since RubyGSL 1.10.3|URL:changes.html>))
+  (44) ((<GNU Free Documentation Licence|URL:http://www.gnu.org/software/gsl/manual/html_node/GNU-Free-Documentation-License.html>))
 
 ((<next|URL:intro.html>))
 

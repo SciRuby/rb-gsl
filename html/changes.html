@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Changes since Ruby/GSL 1.10.3</title>
+<!-- head-element:nil -->
+</head>
+<body>
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Changes since Ruby/GSL 1.10.3</a></h1><!-- RDLabel: "Changes since Ruby/GSL 1.10.3" -->
+
+<p>Ruby/GSL 1.11.2 introduced enhancements and some important bug fixes since the
+earlier 1.10.3 release.  Some of the enhancements and bug fixes involve changes
+that are not backwards compatible.  Existing scripts that work with Ruby/GSL
+1.10.3 may break under 1.11.2 (or later) if they use certain constructs that
+are no longer supported or have changed in an incompatible way.</p>
+<p>The changes that could break old scripts are described below.  They are
+followed by highlights of the other enhancements and new features.</p>
+<p>A complete log of changes since Ruby/GSL version 1.10.3 can be obtained by
+using Subversion's log command to look at the repository...</p>
+<pre>svn log http://rb-gsl.rubyforge.org/svn/trunk/rb-gsl</pre>
+<h2><a name="1" href="#1">1</a> <a name="label-1">Changes that could break existing scripts</a></h2><!-- RDLabel: "Changes that could break existing scripts" -->
+
+<ul>
+<li>FFT interface has been extensively changed.</li>
+<li>Matrix#get has been modified.</li>
+<li>Size changing methods of GSL::Vector et al have, in general, been removed.</li>
+<li>The #shift, #unshift, #push, and #pop methods have been removed from
+  GSL::Vector et al since they result increasing the size of <var>self</var>.  This
+  can cause new memory to be allocated and old memory to be freed, but because
+  existing Views contain pointers to the old memory, this cannot be allowed.
+  Also removed #up and #down aliases from GSL::Poly.</li>
+<li>The #concat method of GSL::Vector et al has been changed to always return a
+  new, longer instance rather than reallocating memory for <var>self</var>.</li>
+<li>Return values from #delete, #delete_at, and #delete_if now follow same
+  convention as similarly named methods in Ruby's Array class.  These methods
+  should be considered deprecated because existing Views could still refer to
+  now unmanged (but still allocated) memory.</li>
+<li>GSL::Complex objects are now immutable.</li>
+</ul>
+<h2><a name="2" href="#2">2</a> <a name="label-2">Highlights of enhancements and other new features</a></h2><!-- RDLabel: "Highlights of enhancements and other new features" -->
+
+<ul>
+<li>Now distributed and installable as a Ruby Gem.</li>
+<li>Allow nil for real and/or imag in GSL::Vector::Complex#set(i,re,im) to NOT
+  set that component.  For example, "z=GSL::Vector::Complex[1]; z[0] = [nil,
+  1]" will set z[0] to GSL::Complex[0,1].</li>
+<li>Added GSL::Vector::Complex#to_s method.</li>
+<li>Improved GSL::Vector::Complex#inspect.</li>
+<li>Added GSL::Vector::Complex#set_real and GSL::Vector::Complex#set_imag methods
+  (and real=, re=, imag=, im= aliases).  Currently only work with Numerics, but
+  could be made to work with GSL::Vectors (and Arrays of Floats).</li>
+<li>Added GSL::Vector::Complex#conjugate and GSL::Vector::Complex#conjugate!
+  methods along with corresponding "conj" and "conj!" aliases.</li>
+<li>Added "#add!", "#sub!", "#mul!", and "#div!" methods to GSL::Vector::Complex.
+  Also "add_constant!", and "scale!" aliases.</li>
+<li>Added the following stats methods to GSL::Vector::Complex, #sum, #mean, #tss,
+  #tss_m, #variance, #variance_m, #variance_fm, #sd, #sd_m, and #sd_fm.  #sum
+  and #mean return GSL::Complex; all others return Float.</li>
+<li>Added "dup" alias for "clone" method of Vector and Maxtrix.</li>
+<li>Added support for three parameter call to #subvector to support stride.</li>
+<li>Added #shape method with alias #size for Matrix.</li>
+<li>Provide GSL_Object#dup method to override Object#dup.  GSL_Object#dup simply
+  raises NotImplementedError.  Subclasses that want dup functionality should
+  provide their own implementation.</li>
+<li>Added length alias to Vector and Vector::Complex.</li>
+<li>Added #angle alias for #arg method of Complex, Vector::Complex, and
+  Matrix::Complex</li>
+<li>Added #conj alias for #conjugate for GSL::Complex.  Added #conjugate! method
+  with #conj! alias for GSL::Complex.</li>
+<li>Added #[]= alias for #set method, #conj alias for #conjugate method, and
+  #conj! alias for #conjugate! method to GSL::Matrix::Complex</li>
+<li>Support GSL::Permutation as parameter to Vector::Complex#get (and #[]).</li>
+<li>Disallow the stride and length parameters of the various FFT methods.  The
+  Vector being transformed could really be a Vector::View (e.g. a view of a
+  Matrix column).  In that case, we need to use the stride of the Vector::View.
+  Users wishing to use a custom stride or length will be able to do so by
+  transforming  a subvector of the Vector.</li>
+<li>Added Block#length alias for Block#size.</li>
+<li>Fixed bug #16023.</li>
+<li>Calling #to_v on a single column matrix view will return column vector.
+  Related to #19757.</li>
+<li>Provided GSL::Matrix::Complex with reasonable #to_s and #inspect
+  implementations.</li>
+<li>Made Vector#{add,sub,mul,div}! methods work with non-Vector parameter (i.e.
+  constant).</li>
+<li>Added #collect and #collect! methods to Matrix::Complex.</li>
+<li>Added #map and #map! aliases for collect and collect! to Block, Vector et al,
+  and Matrix et al.</li>
+<li>Vector::Complex#each, #reverse_each, #collect, and #collect! now yield
+  objects that are allocated on heap rather than stack.</li>
+<li>Made Vector#subvector work with negative offsets</li>
+<li>Added Vector#sgn and Matrix#sgn, both with #signum alias.</li>
+<li>Added support for a Range parameter (with optional stride) to
+  Vector#subvector and Vector::Complex#subvector.</li>
+<li>Modified Vector#get and Vector::Complex#get to return Views (via #subvector)
+  if more than one (or none) parameters are given or if a single Range
+  parameter is given.</li>
+<li>Enhanced Matrix#submatrix with many new options and updated docs to reflect
+  changes</li>
+<li>Modified Matrix#get to use new Matrix#submatrix functionality.</li>
+<li>Added Matrix#to_a and Matrix::Complex#to_a methods.</li>
+<li>Enhanced Vector#set functionality.</li>
+<li>Added more details, examples, and a warning to Vector#set documentation.</li>
+<li>Changed Range handling to support Floats for begin and end values where
+  appropriate.</li>
+<li>Changed Vector#view_with_stride to require non-zero stride rather then
+  positive stride.</li>
+<li>Enhanced Vector::Complex#set functionality.</li>
+<li>Enhanced Matrix#set.  Changed behavior of Matrix#get when called with a
+  single Fixnum argument; now returns individual element rather than
+  Vector::View of row.  See html/matrix.html for more details.  Changed tests
+  and examples to accomdate the change in Matrix#get.</li>
+<li>Match to the latest tensor extension (version 0.99)</li>
+<li>Modified GSL::Matrix::Complex#set to have same (i.e. newly enhanced)
+  functionality as GSL::Matrix#set.  [Possibly incomplete; please report any
+  discrepancies.]</li>
+<li>Added #diag alias for Matrix#diagonal.</li>
+<li>Added #fftshift, #fftshift!, #ifftshift, and #ifftshift!  methods to
+  GSL::Vector::Complex and documented them.</li>
+</ul>
+
+</body>
+</html>
