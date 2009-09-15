@@ -188,6 +188,7 @@ static void rb_gsl_const_cgs(VALUE module)
   rb_define_const(module, "RYDBERG", rb_float_new(GSL_CONST_CGS_RYDBERG));
   rb_define_const(module, "BOHR_MAGNETON", 
 		  rb_float_new(GSL_CONST_CGS_BOHR_MAGNETON));
+
   rb_define_const(module, "NUCLEAR_MAGNETON", 
 		  rb_float_new(GSL_CONST_CGS_NUCLEAR_MAGNETON));
   rb_define_const(module, "ELECTRON_MAGNETIC_MOMENT", 
@@ -515,8 +516,10 @@ static void rb_gsl_const_cgs(VALUE module)
   rb_define_const(module, "MASS_PROTON", rb_float_new(GSL_CONST_CGSM_MASS_PROTON));
   rb_define_const(module, "MASS_NEUTRON", rb_float_new(GSL_CONST_CGSM_MASS_NEUTRON));
   rb_define_const(module, "RYDBERG", rb_float_new(GSL_CONST_CGSM_RYDBERG));
+
   rb_define_const(module, "BOHR_MAGNETON", 
 		  rb_float_new(GSL_CONST_CGSM_BOHR_MAGNETON));
+
   rb_define_const(module, "NUCLEAR_MAGNETON",
 		  rb_float_new(GSL_CONST_CGSM_NUCLEAR_MAGNETON));
   rb_define_const(module, "ELECTRON_MAGNETIC_MOMENT", 
@@ -599,7 +602,9 @@ static void rb_gsl_const_cgs(VALUE module)
 		  rb_float_new(GSL_CONST_CGSM_ELECTRON_CHARGE));
   rb_define_const(module, "ELECTRON_CHARGE_ESU",
 		  rb_float_new(GSL_CONST_CGSM_ELECTRON_CHARGE*GSL_CONST_CGSM_SPEED_OF_LIGHT));
+#ifndef GSL_1_13_LATER
   rb_define_const(module, "GAUSS", rb_float_new(GSL_CONST_CGSM_GAUSS));
+#endif
   rb_define_const(module, "STILB", rb_float_new(GSL_CONST_CGSM_STILB));
   rb_define_const(module, "LUMEN", rb_float_new(GSL_CONST_CGSM_LUMEN));
   rb_define_const(module, "LUX", rb_float_new(GSL_CONST_CGSM_LUX));

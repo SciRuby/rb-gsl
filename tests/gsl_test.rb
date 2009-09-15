@@ -40,7 +40,7 @@ module GSL
       end
     end
 
-   def test_factor2(result, expected, factor, desc)
+    def test_factor2(result, expected, factor, desc)
       status = nil
       if result == expected
         status = false
@@ -59,7 +59,7 @@ module GSL
         printf("FAIL: #{desc} (%.18g observed vs %.18g expected)\n", result, expected) 
       end
     end
-
+    
     def test_rel(result, expected, relerr, desc)
       status = nil
       if isnan?(result) or isnan?(expected)

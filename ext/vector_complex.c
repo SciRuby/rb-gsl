@@ -2055,7 +2055,7 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "coerce", rb_gsl_vector_complex_coerce, 1);  
 
   /* 2.Aug.2004 */
-  rb_define_singleton_method(cgsl_vector, "inner_product", rb_gsl_vector_complex_inner_product, -1);
+  rb_define_singleton_method(cgsl_vector_complex, "inner_product", rb_gsl_vector_complex_inner_product, -1);
   rb_define_singleton_method(cgsl_vector_complex, "dot", rb_gsl_vector_complex_inner_product, -1);
   rb_define_method(cgsl_vector_complex, "inner_product", rb_gsl_vector_complex_inner_product, -1);
   /*  rb_define_alias(cgsl_vector_complex, "dot", "inner_product");*/

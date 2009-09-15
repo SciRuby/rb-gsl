@@ -962,10 +962,9 @@ void Init_gsl_complex(VALUE module)
   rb_define_singleton_method(cgsl_complex, "arccoth", rb_gsl_complex_arccoth, -1);
 
   /***/
-  rb_define_method(cgsl_complex, "sqrt", rb_gsl_complex_sqrt, -1);
+
   rb_define_method(cgsl_complex, "pow", rb_gsl_complex_pow, -1);
   rb_define_method(cgsl_complex, "pow_real", rb_gsl_complex_pow_real, -1);
-  rb_define_method(cgsl_complex, "exp", rb_gsl_complex_exp, -1);
 
   rb_define_method(cgsl_complex, "exp", rb_gsl_complex_exp, -1);
   rb_define_method(cgsl_complex, "log", rb_gsl_complex_log, -1);

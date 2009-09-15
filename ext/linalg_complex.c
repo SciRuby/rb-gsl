@@ -709,8 +709,6 @@ void Init_gsl_linalg_complex(VALUE module)
   rb_define_singleton_method(mgsl_linalg_complex_chol, "decomp", rb_gsl_linalg_cholesky_decomp, -1);
   rb_define_method(cgsl_matrix_complex, "cholesky_decomp", rb_gsl_linalg_cholesky_decomp, -1);  
   rb_define_singleton_method(mgsl_linalg_complex_chol, "solve", rb_gsl_linalg_cholesky_solve, -1);
-  rb_define_method(cgsl_matrix_complex, "cholesky_solve", rb_gsl_linalg_cholesky_solve, -1);   
-  
   rb_define_method(cgsl_matrix_complex, "cholesky_solve", rb_gsl_linalg_cholesky_solve, -1);
   rb_define_method(cgsl_matrix_complex_C, "solve", rb_gsl_linalg_cholesky_solve, -1);
   rb_define_singleton_method(mgsl_linalg_complex_chol, "svx", rb_gsl_linalg_cholesky_svx, -1);
@@ -722,7 +720,7 @@ void Init_gsl_linalg_complex(VALUE module)
 			     rb_gsl_linalg_complex_householder_transform, -1);
   rb_define_singleton_method(mgsl_linalg_complex_Householder, "transform", 
 			     rb_gsl_linalg_complex_householder_transform, -1);
-  rb_define_method(cgsl_vector, "householder_transform", 
+  rb_define_method(cgsl_vector_complex, "householder_transform", 
 		   rb_gsl_linalg_complex_householder_transform, -1);
 
   rb_define_singleton_method(mgsl_linalg_complex, "householder_hm", 

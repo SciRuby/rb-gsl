@@ -2553,8 +2553,6 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_matrix), "+@",  
 		   FUNCTION(rb_gsl_matrix,uplus), 0);
 
-  rb_define_method(GSL_TYPE(cgsl_matrix), "power", 
-		   FUNCTION(rb_gsl_matrix,power), 1);
 
 /*****/
   rb_define_method(GSL_TYPE(cgsl_matrix), "submatrix", 

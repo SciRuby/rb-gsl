@@ -1793,7 +1793,7 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
 #endif
 
 #ifdef BASE_DOUBLE
-  rb_define_singleton_method(cgsl_poly, "eval", rb_gsl_poly_eval_singleton, 2);
+  //  rb_define_singleton_method(cgsl_poly, "eval", rb_gsl_poly_eval_singleton, 2);
   rb_define_method(cgsl_poly, "to_i", rb_gsl_poly_to_i, 0);
 #ifdef GSL_1_11_LATER
   rb_define_singleton_method(cgsl_poly, "complex_eval", rb_gsl_poly_eval_singleton, 2);

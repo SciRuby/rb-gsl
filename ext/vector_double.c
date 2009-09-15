@@ -839,16 +839,6 @@ static VALUE rb_gsl_vector_plot2(int argc, VALUE *argv, VALUE obj)
   return Qtrue;
 }
 
-static VALUE rb_gsl_vector_sqrt(VALUE obj)
-{
-  gsl_vector *v = NULL, *vnew = NULL;
-  size_t i;
-  Data_Get_Vector(obj, v);
-  vnew = gsl_vector_alloc(v->size);
-  for (i = 0; i < v->size; i++) gsl_vector_set(vnew, i, sqrt(gsl_vector_get(v, i)));
-  return Data_Wrap_Struct(VECTOR_ROW_COL(obj), 0, gsl_vector_free, vnew);  
-}
-
 static VALUE rb_gsl_vector_normalize(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector *v = NULL, *vnew = NULL;
@@ -1398,8 +1388,6 @@ void Init_gsl_vector(VALUE module)
   rb_define_singleton_method(cgsl_vector, "plot", rb_gsl_vector_plot2, -1);
 
   /*****/
-
-  rb_define_method(cgsl_vector, "sqrt", rb_gsl_vector_sqrt, 0);
 
   rb_define_method(cgsl_vector, "normalize", rb_gsl_vector_normalize, -1);
   rb_define_method(cgsl_vector, "normalize!", rb_gsl_vector_normalize_bang, -1);

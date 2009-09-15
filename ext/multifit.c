@@ -1808,7 +1808,7 @@ void Init_gsl_multifit(VALUE module)
   rb_define_method(cgsl_multifit_fdfsolver, "name", rb_gsl_multifit_fdfsolver_name, 0);
   rb_define_method(cgsl_multifit_fdfsolver, "iterate", rb_gsl_multifit_fdfsolver_iterate, 0);
   rb_define_method(cgsl_multifit_fdfsolver, "position", rb_gsl_multifit_fdfsolver_position, 0);
-  rb_define_alias(cgsl_multifit_fdfsolver, "x", "position");
+  //  rb_define_alias(cgsl_multifit_fdfsolver, "x", "position");
   rb_define_method(cgsl_multifit_fdfsolver, "print_state", rb_gsl_multifit_fdfsolver_print_state, 1);
   rb_define_method(cgsl_multifit_fdfsolver, "fdf", rb_gsl_multifit_fdfsolver_fdf, 0);
   rb_define_method(cgsl_multifit_fdfsolver, "test_delta", rb_gsl_multifit_fdfsolver_test_delta, 2);

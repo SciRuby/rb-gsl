@@ -2180,7 +2180,7 @@ void Init_gsl_eigen(VALUE module)
 			     rb_gsl_eigen_symmv, -1);
   rb_define_module_function(mgsl_eigen, "herm",
 			     rb_gsl_eigen_herm, -1);
-  rb_define_module_function(mgsl_eigen, "herm",
+  rb_define_module_function(mgsl_eigen, "hermv",
 			     rb_gsl_eigen_hermv, -1);
 
   rb_define_module_function(module, "eigen_symm",

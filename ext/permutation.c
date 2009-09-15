@@ -531,7 +531,6 @@ void Init_gsl_permutation(VALUE module)
   rb_define_singleton_method(cgsl_permutation, "calloc", rb_gsl_permutation_calloc, 1);
   rb_define_method(cgsl_permutation, "size", rb_gsl_permutation_size, 0);
   rb_define_method(cgsl_permutation, "init", rb_gsl_permutation_init, 0);
-  rb_define_method(cgsl_permutation, "print", rb_gsl_permutation_print, 0);
   rb_define_method(cgsl_permutation, "inspect", rb_gsl_permutation_inspect, 0);
   rb_define_method(cgsl_permutation, "to_s", rb_gsl_permutation_to_s, 0);
   rb_define_method(cgsl_permutation, "get", rb_gsl_permutation_get, -1);
