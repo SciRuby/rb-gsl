@@ -2149,7 +2149,8 @@ static VALUE FUNCTION(rb_gsl_matrix,rot90)(int argc, VALUE *argv, VALUE obj)
   switch (p) {
   case 0:
     mnew = FUNCTION(gsl_matrix,alloc)(m->size1, m->size2);
-    FUNCTION(gsl_matrix,memcpy(mnew, m));
+    //    FUNCTION(gsl_matrix,memcpy(mnew, m));
+    FUNCTION(gsl_matrix,memcpy)(mnew, m);
     break;
   case 1:
   case -3:
