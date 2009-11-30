@@ -1302,6 +1302,20 @@ static VALUE rb_gsl_vector_complex_XXXz(VALUE obj, gsl_complex (*f)(gsl_complex)
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, v);
 }
 
+/* In-place version of rb_gsl_vector_complex_XXXz */
+static VALUE rb_gsl_vector_complex_XXXz_bang(VALUE obj, gsl_complex (*f)(gsl_complex))
+{
+  gsl_vector_complex *v;
+  gsl_complex c;
+  size_t i;
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  for (i = 0; i < v->size; i++) {
+    c = gsl_vector_complex_get(v, i);
+    gsl_vector_complex_set(v, i, (*f)(c));
+  }
+  return obj;
+}
+
 static VALUE rb_gsl_vector_complex_XXXz2(VALUE obj, VALUE a, 
 					 gsl_complex (*f)(gsl_complex, gsl_complex))
 {
@@ -1317,6 +1331,22 @@ static VALUE rb_gsl_vector_complex_XXXz2(VALUE obj, VALUE a,
     gsl_vector_complex_set(v, i, (*f)(c, *z));
   }
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, v);
+}
+
+static VALUE rb_gsl_vector_complex_XXXz2_bang(VALUE obj, VALUE a, 
+					 gsl_complex (*f)(gsl_complex, gsl_complex))
+{
+  gsl_vector_complex *v;
+  gsl_complex c, *z;
+  size_t i;
+  CHECK_COMPLEX(a);
+  Data_Get_Struct(obj, gsl_vector_complex, v);
+  Data_Get_Struct(a, gsl_complex, z);
+  for (i = 0; i < v->size; i++) {
+    c = gsl_vector_complex_get(v, i);
+    gsl_vector_complex_set(v, i, (*f)(c, *z));
+  }
+  return obj;
 }
 
 static VALUE rb_gsl_vector_complex_abs2(VALUE obj)
@@ -1344,9 +1374,19 @@ static VALUE rb_gsl_vector_complex_sqrt(VALUE obj)
   return rb_gsl_vector_complex_XXXz(obj, gsl_complex_sqrt);
 }
 
+static VALUE rb_gsl_vector_complex_sqrt_bang(VALUE obj)
+{
+  return rb_gsl_vector_complex_XXXz_bang(obj, gsl_complex_sqrt);
+}
+
 static VALUE rb_gsl_vector_complex_exp(VALUE obj)
 {
   return rb_gsl_vector_complex_XXXz(obj, gsl_complex_exp);
+}
+
+static VALUE rb_gsl_vector_complex_exp_bang(VALUE obj)
+{
+  return rb_gsl_vector_complex_XXXz_bang(obj, gsl_complex_exp);
 }
 
 static VALUE rb_gsl_vector_complex_pow(VALUE obj, VALUE a)
@@ -1354,9 +1394,19 @@ static VALUE rb_gsl_vector_complex_pow(VALUE obj, VALUE a)
   return rb_gsl_vector_complex_XXXz2(obj, a, gsl_complex_pow);
 }
 
+static VALUE rb_gsl_vector_complex_pow_bang(VALUE obj, VALUE a)
+{
+  return rb_gsl_vector_complex_XXXz2_bang(obj, a, gsl_complex_pow);
+}
+
 static VALUE rb_gsl_vector_complex_log(VALUE obj)
 {
   return rb_gsl_vector_complex_XXXz(obj, gsl_complex_log);
+}
+
+static VALUE rb_gsl_vector_complex_log_bang(VALUE obj)
+{
+  return rb_gsl_vector_complex_XXXz_bang(obj, gsl_complex_log);
 }
 
 static VALUE rb_gsl_vector_complex_log10(VALUE obj)
@@ -1364,9 +1414,19 @@ static VALUE rb_gsl_vector_complex_log10(VALUE obj)
   return rb_gsl_vector_complex_XXXz(obj, gsl_complex_log10);
 }
 
+static VALUE rb_gsl_vector_complex_log10_bang(VALUE obj)
+{
+  return rb_gsl_vector_complex_XXXz_bang(obj, gsl_complex_log10);
+}
+
 static VALUE rb_gsl_vector_complex_log_b(VALUE obj, VALUE a)
 {
   return rb_gsl_vector_complex_XXXz2(obj, a, gsl_complex_log_b);
+}
+
+static VALUE rb_gsl_vector_complex_log_b_bang(VALUE obj, VALUE a)
+{
+  return rb_gsl_vector_complex_XXXz2_bang(obj, a, gsl_complex_log_b);
 }
 
 /* gsl_vector_complex_sum */
@@ -1800,11 +1860,11 @@ static VALUE rb_gsl_vector_complex_indgen(int argc, VALUE *argv, VALUE obj)
   case 0:
     break;
   case 1:
-    start = FIX2INT(argv[0]);
+    start = NUM2DBL(argv[0]);
     break;
   case 2:
-    start = FIX2INT(argv[0]);
-    step = FIX2INT(argv[1]);
+    start = NUM2DBL(argv[0]);
+    step = NUM2DBL(argv[1]);
     break;
   default:
     rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-2)", argc);
@@ -1820,31 +1880,61 @@ static VALUE rb_gsl_vector_complex_indgen(int argc, VALUE *argv, VALUE obj)
 static VALUE rb_gsl_vector_complex_indgen_singleton(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector_complex *vnew;
-  size_t n, start = 0, step = 1;
-  size_t i, j;
+  double start = 0, step = 1, x;
+  size_t n, i;
   switch (argc) {
   case 1:
     n = (size_t) FIX2INT(argv[0]);
     break;
   case 2:
     n = (size_t) FIX2INT(argv[0]);
-    start = FIX2INT(argv[1]);
+    start = NUM2DBL(argv[1]);
     break;
   case 3:
     n = (size_t) FIX2INT(argv[0]);
-    start = FIX2INT(argv[1]);
-    step = FIX2INT(argv[2]);
+    start = NUM2DBL(argv[1]);
+    step = NUM2DBL(argv[2]);
     break;
   default:
     rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-3)",argc);
   }
   vnew = gsl_vector_complex_calloc(n);
-  for (i = 0, j = start; i < vnew->size; i++, j += step) {
-    gsl_vector_complex_set(vnew, i, gsl_complex_rect((double)j,0));
+  for (i = 0, x = start; i < vnew->size; i++, x += step) {
+    gsl_vector_complex_set(vnew, i, gsl_complex_rect(x,0));
   }
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
 }
 
+static VALUE rb_gsl_vector_complex_phasor_singleton(int argc, VALUE *argv, VALUE obj)
+{
+  gsl_vector_complex *vnew;
+  double start, step, theta;
+  size_t n, i;
+  switch (argc) {
+  case 1:
+    n = (size_t) FIX2INT(argv[0]);
+    start = 0;
+    step  = 2 * M_PI / n;
+    break;
+  case 2:
+    n = (size_t) FIX2INT(argv[0]);
+    start = NUM2DBL(argv[1]);
+    step  = 2 * M_PI / n;
+    break;
+  case 3:
+    n = (size_t) FIX2INT(argv[0]);
+    start = NUM2DBL(argv[1]);
+    step  = NUM2DBL(argv[2]);
+    break;
+  default:
+    rb_raise(rb_eArgError, "Wrong number of arguments (%d for 0-3)",argc);
+  }
+  vnew = gsl_vector_complex_alloc(n);
+  for (i = 0, theta = start; i < vnew->size; i++, theta += step) {
+    gsl_vector_complex_set(vnew, i, gsl_complex_polar(1.0,theta));
+  }
+  return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
+}
 
 static VALUE rb_gsl_vector_complex_zip(int argc, VALUE *argv, VALUE obj)
 {
@@ -2075,11 +2165,17 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "logabs", rb_gsl_vector_complex_logabs, 0);
 
   rb_define_method(cgsl_vector_complex, "sqrt", rb_gsl_vector_complex_sqrt, 0);
+  rb_define_method(cgsl_vector_complex, "sqrt!", rb_gsl_vector_complex_sqrt_bang, 0);
   rb_define_method(cgsl_vector_complex, "exp", rb_gsl_vector_complex_exp, 0);
+  rb_define_method(cgsl_vector_complex, "exp!", rb_gsl_vector_complex_exp_bang, 0);
   rb_define_method(cgsl_vector_complex, "pow", rb_gsl_vector_complex_pow, 1);
+  rb_define_method(cgsl_vector_complex, "pow!", rb_gsl_vector_complex_pow_bang, 1);
   rb_define_method(cgsl_vector_complex, "log", rb_gsl_vector_complex_log, 0);
+  rb_define_method(cgsl_vector_complex, "log!", rb_gsl_vector_complex_log_bang, 0);
   rb_define_method(cgsl_vector_complex, "log10", rb_gsl_vector_complex_log10, 0);
+  rb_define_method(cgsl_vector_complex, "log10!", rb_gsl_vector_complex_log10_bang, 0);
   rb_define_method(cgsl_vector_complex, "log_b", rb_gsl_vector_complex_log_b, 1);
+  rb_define_method(cgsl_vector_complex, "log_b!", rb_gsl_vector_complex_log_b_bang, 1);
 
   rb_define_method(cgsl_vector_complex, "sum", rb_gsl_vector_complex_sum, 0);
   rb_define_method(cgsl_vector_complex, "mean", rb_gsl_vector_complex_mean, 0);
@@ -2127,6 +2223,7 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "indgen", rb_gsl_vector_complex_indgen, -1);
   rb_define_method(cgsl_vector_complex, "indgen!", rb_gsl_vector_complex_indgen_bang, -1);
   rb_define_singleton_method(cgsl_vector_complex, "indgen", rb_gsl_vector_complex_indgen_singleton, -1);
+  rb_define_singleton_method(cgsl_vector_complex, "phasor", rb_gsl_vector_complex_phasor_singleton, -1);
 
   rb_define_method(cgsl_vector_complex, "zip", rb_gsl_vector_complex_zip, -1);
   rb_define_singleton_method(cgsl_vector_complex, "zip", rb_gsl_vector_complex_zip, -1);
