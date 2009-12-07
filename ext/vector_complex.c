@@ -289,7 +289,14 @@ static VALUE rb_gsl_vector_complex_set(int argc, VALUE *argv, VALUE obj)
   other = argv[argc-1];
 
   if(argc == 1) {
-    rb_gsl_vector_complex_set_all(argc, argv, obj);
+    // // If assigning from another vector
+    if(VECTOR_P(other) || VECTOR_COMPLEX_P(other)) {
+      // treat as assignment to v.subvector(...)
+      rb_gsl_vector_complex_set_subvector(argc-1, argv, v, other);
+    } else {
+      // treat as set_all
+      rb_gsl_vector_complex_set_all(argc, argv, obj);
+    }
   } else if(argc == 2 && TYPE(argv[0]) == T_FIXNUM) {
     // v[i] = x
     ii = FIX2INT(argv[0]);

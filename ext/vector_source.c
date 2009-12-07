@@ -446,7 +446,13 @@ static VALUE FUNCTION(rb_gsl_vector,set)(int argc, VALUE *argv, VALUE obj)
   other = argv[argc-1];
 
   if(argc == 1) {
-    FUNCTION(gsl_vector,set_all)(v, NUMCONV2(other));
+    // // If assigning from another vector
+    if(VECTOR_P(other) || VECTOR_INT_P(other)) {
+      // treat as assignment to v.subvector(...)
+      FUNCTION(rb_gsl_vector,set_subvector)(argc-1, argv, v, other);
+    } else {
+      FUNCTION(gsl_vector,set_all)(v, NUMCONV2(other));
+    }
   } else if(argc == 2 && TYPE(argv[0]) == T_FIXNUM) {
     // v[i] = x
     ii = FIX2INT(argv[0]);
