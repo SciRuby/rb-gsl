@@ -347,6 +347,17 @@ requires a table of Chebyshev moments.
          p f457.qawf(0.0, limit, w, table)       # Error
          p f457.qawf(0.0, limit, wc, table)      # Error
 
+== Gauss-Legendre integration
+(GSL-1.14)
+The fixed-order Gauss-Legendre integration routines are provided for fast integration of smooth functions with known polynomial order. The n-point Gauss-Legendre rule is exact for polynomials of order 2*n-1 or less. For example, these rules are useful when integrating basis functions to form mass matrices for the Galerkin method. Unlike other numerical integration routines within the library, these routines do not accept absolute or relative error bounds.
+
+---GSL::Integration::Glfixed_table.alloc(n)
+Determines the Gauss-Legendre abscissae and weights necessary for an ((|n|))-point fixed order 
+integration scheme. If possible, high precision precomputed coefficients are used. 
+If precomputed weights are not available, lower precision coefficients are computed on the fly.
+---GSL::Function#glfixed(a, b, t)
+Applies the Gauss-Legendre integration rule contained in table ((|t|)) and returns the result.
+
 ((<prev|URL:wavelet.html>))
 ((<next|URL:rng.html>))
 

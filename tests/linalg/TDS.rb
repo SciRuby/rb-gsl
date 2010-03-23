@@ -5,20 +5,20 @@ require("./linalg.rb")
 include GSL::Test
 
 def test_TDS_solve_dim(dim, d, od, actual, eps)
-	s = 0
-
-	diag = GSL::Vector.alloc(dim)
-	diag.set_all(d)
-	rhs = GSL::Vector.indgen(dim) + 1
-	offdiag = GSL::Vector.alloc(dim-1)
-	offdiag.set_all(od)
-
-	x = GSL::Linalg::solve_symm_tridiag(diag, offdiag, rhs)
-	p x 
-	p actual
-	for i in 0...dim do
-		si = x[i]
-		ai = actual[i]
+  s = 0
+  
+  diag = GSL::Vector.alloc(dim)
+  diag.set_all(d)
+  rhs = GSL::Vector.indgen(dim) + 1
+  offdiag = GSL::Vector.alloc(dim-1)
+  offdiag.set_all(od)
+  
+  x = GSL::Linalg::solve_symm_tridiag(diag, offdiag, rhs)
+  p x 
+  p actual
+  for i in 0...dim do
+    si = x[i]
+    ai = actual[i]
     foo = check(si, ai, eps);
     if foo > 0
       printf("%3lu[%lu]: %22.18g   %22.18g\n", dim, i,s[i], actual[i]);
@@ -29,8 +29,8 @@ def test_TDS_solve_dim(dim, d, od, actual, eps)
 end
 
 def test_TDS_solve()
-	s = 0
-	
+  s = 0
+  
   actual =  GSL::Vector[0.0, 2.0]
   f = test_TDS_solve_dim(2, 1.0, 0.5, actual, 8.0 * GSL::DBL_EPSILON)
   GSL::test(f, "  solve_TDS dim=2 A");
@@ -47,18 +47,18 @@ def test_TDS_solve()
 end
 
 def test_TDS_cyc_solve_one(dim, d, od, r, actual, eps)
-	s = 0
-	
-	diag = d.duplicate()
-	offdiag = od.duplicate()
-	rhs = r.duplicate()
-
-	x = GSL::Linalg::solve_symm_cyc_tridiag(diag, offdiag, rhs)
-	p x
-	p actual
-	for i in 0...dim do
-		si = x[i]
-		ai = actual[i]
+  s = 0
+  
+  diag = d.duplicate()
+  offdiag = od.duplicate()
+  rhs = r.duplicate()
+  
+  x = GSL::Linalg::solve_symm_cyc_tridiag(diag, offdiag, rhs)
+  p x
+  p actual
+  for i in 0...dim do
+    si = x[i]
+    ai = actual[i]
     foo = check(si, ai, eps);
     if foo > 0
       printf("%3lu[%lu]: %22.18g   %22.18g\n", dim, i, si, actual[i]);
@@ -69,7 +69,7 @@ def test_TDS_cyc_solve_one(dim, d, od, r, actual, eps)
 end
 
 def test_TDS_cyc_solve()
-	s = 0
+  s = 0
 =begin
 	dim = 1
 	diag = GSL::Vector.alloc(1)
@@ -95,26 +95,26 @@ def test_TDS_cyc_solve()
   GSL::test(f, "  solve_TDS_cyc dim=%lu A", dim);
   s += f;
 =end
-	dim = 3
-	diag = GSL::Vector[1, 1, 1]
-	offdiag = GSL::Vector[3, 3, 3]
-	rhs = GSL::Vector[7, -7, 7]
-	actual = GSL::Vector[-2, 5, -2]
-
+  dim = 3
+  diag = GSL::Vector[1, 1, 1]
+  offdiag = GSL::Vector[3, 3, 3]
+  rhs = GSL::Vector[7, -7, 7]
+  actual = GSL::Vector[-2, 5, -2]
+  
   f = test_TDS_cyc_solve_one(dim, diag, offdiag, rhs, actual, 28.0 * GSL::DBL_EPSILON);
   GSL::test(f, "  solve_TDS_cyc dim=#{dim} A");
   s += f;
-
-	dim = 5
-	diag = GSL::Vector[4, 2, 1, 2, 4]
-	offdiag = GSL::Vector[1, 1, 1, 1, 1]
-	rhs = GSL::Vector[30, -24, 3, 21, -30]
-	actual = GSL::Vector[ 12, 3, -42, 42, -21 ]
-
+  
+  dim = 5
+  diag = GSL::Vector[4, 2, 1, 2, 4]
+  offdiag = GSL::Vector[1, 1, 1, 1, 1]
+  rhs = GSL::Vector[30, -24, 3, 21, -30]
+  actual = GSL::Vector[ 12, 3, -42, 42, -21 ]
+  
   f = test_TDS_cyc_solve_one(dim, diag, offdiag, rhs, actual, 35.0 * GSL::DBL_EPSILON);
   GSL::test(f, "  solve_TDS_cyc dim=#{dim} B");
   s += f;
-	return s
+  return s
 end
 
 test_TDS_solve()

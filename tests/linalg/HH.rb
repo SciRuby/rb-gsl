@@ -5,17 +5,17 @@ require("./linalg.rb")
 include GSL::Test
 
 def test_HH_solve_dim(m, actual, eps)
-	dim = m.size1
-	s = 0
-	perm = GSL::Permutation.alloc(dim)
-	x = GSL::Vector.indgen(dim) + 1
-	hh = m.duplicate
-	GSL::Linalg::HH.svx(hh, x)
-	for i in 0...dim do
+  dim = m.size1
+  s = 0
+  perm = GSL::Permutation.alloc(dim)
+  x = GSL::Vector.indgen(dim) + 1
+  hh = m.duplicate
+  GSL::Linalg::HH.svx(hh, x)
+  for i in 0...dim do
     foo = check(x[i],actual[i],eps)
     if foo > 0
       printf("%3lu[%lu]: %22.18g   %22.18g\n", dim, i, x[i], actual[i])
-		end
+    end
     s += foo;
   end
   return s

@@ -188,6 +188,10 @@ void Init_rb_gsl()
 
 	Init_geometry(mgsl);
 
+#ifdef GSL_1_14_LATER
+	Init_multiset(mgsl);
+#endif
+
   rb_gsl_define_methods(mgsl);
 }
 
@@ -243,6 +247,11 @@ static void rb_gsl_define_const(VALUE module)
   rb_define_const(module, "ROOT5_DBL_MIN", rb_float_new(GSL_ROOT5_DBL_MIN));
   rb_define_const(module, "ROOT6_DBL_MIN", rb_float_new(GSL_ROOT6_DBL_MIN));
   rb_define_const(module, "LOG_DBL_MIN", rb_float_new(GSL_LOG_DBL_MIN));
+
+#ifndef GSL_1_14_LATER
+  rb_define_const(module, "MAJOR_VERSION", INT2FIX(GSL_MAJOR_VERSION));
+  rb_define_const(module, "MINOR_VERSION", INT2FIX(GSL_MINOR_VERSION));
+#endif
 
 }
 

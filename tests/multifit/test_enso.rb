@@ -240,6 +240,7 @@ enso_df = Proc.new { |x, t, y, df|
 
 fdf = GSL::MultiFit::Function_fdf.alloc(enso_f, enso_df, Enso_P)
 
-fdf.set_data(GSL::Vector.alloc(1..168), Enso_F)
+#fdf.set_data(GSL::Vector.alloc(1..168), Enso_F)
+fdf.set_data(GSL::Vector.indgen(168, 1), Enso_F)
 
 test_fdf("nist-ENSO", fdf, Enso_x0, Enso_x, Enso_sumsq, Enso_sigma)

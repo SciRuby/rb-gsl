@@ -4,7 +4,7 @@ require("../gsl_test2.rb")
 include GSL::Test
 include Linalg
 
-A = GSL::Matrix[1..4, 2, 2]
+A = GSL::Matrix.alloc([1, 2, 3, 4], 2, 2)
 I = GSL::Matrix.identity(2)
 Ainv = A.inv
 

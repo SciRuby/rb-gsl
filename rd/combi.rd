@@ -91,7 +91,7 @@ Contents:
      end
 
 ((<prev|URL:perm.html>))
-((<next|URL:sort.html>))
+((<next|URL:multiset.html>))
 
 ((<Reference index|URL:ref.html>))
 ((<top|URL:index.html>))

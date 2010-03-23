@@ -164,10 +164,11 @@ permutations.
     The permutation ((|p|)) is equivalent to applying ((|pb|)) first 
     and then ((|pa|)). 
 
-right
+
 ((<prev|URL:matrix.html>))
 ((<next|URL:combi.html>))
 
 ((<Reference index|URL:ref.html>))
 ((<top|URL:index.html>))
 
+=end

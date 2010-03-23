@@ -8,7 +8,7 @@
 <!-- head-element:nil -->
 </head>
 <body>
-<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Permutations</a></h1><!-- RDLabel: "Permutations" -->
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">["Permutations"]</a></h1><!-- RDLabel: "Permutations" -->
 
 <p>Contents:</p>
 <ol>
@@ -23,7 +23,7 @@
 </ol></li>
 <li><a href="perm.html#3">Applying Permutations</a></li>
 </ol>
-<h2><a name="1" href="#1">1</a> <a name="label-1">Permuation allocations</a></h2><!-- RDLabel: "Permuation allocations" -->
+<h2><a name="1" href="#1">1</a> <a name="label-1">["Permuation allocations"]</a></h2><!-- RDLabel: "Permuation allocations" -->
 
 <dl>
 <dt><a name="label-2" id="label-2"><code>GSL::Permutation.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Permutation.alloc" -->
@@ -36,7 +36,7 @@ which is initialized to the identity. </dd>
 <dd>
 This creates a new permutation of size <var>n</var> and initializes it to the identity. </dd>
 </dl>
-<h2><a name="2" href="#2">2</a> <a name="label-4">Methods</a></h2><!-- RDLabel: "Methods" -->
+<h2><a name="2" href="#2">2</a> <a name="label-4">["Methods"]</a></h2><!-- RDLabel: "Methods" -->
 
 <dl>
 <dt><a name="label-5" id="label-5"><code>GSL::Permutation#init()</code></a></dt><!-- RDLabel: "GSL::Permutation#init" -->
@@ -50,7 +50,7 @@ into the permutation <var>dest</var>. The two permutations must have the same si
 <dd>
 This creates a new permutation with the same elements of <var>self</var>.</dd>
 </dl>
-<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-8">Accessing permutation elements</a></h3><!-- RDLabel: "Accessing permutation elements" -->
+<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-8">["Accessing permutation elements"]</a></h3><!-- RDLabel: "Accessing permutation elements" -->
 
 <dl>
 <dt><a name="label-9" id="label-9"><code>GSL::Permutation#get(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Permutation#get" -->
@@ -60,7 +60,7 @@ Returns the value of the <var>i</var>-th element of the permutation. </dd>
 <dd>
 This exchanges the <var>i</var>-th and <var>j</var>-th elements of the permutation.</dd>
 </dl>
-<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-11">Permutation properties</a></h3><!-- RDLabel: "Permutation properties" -->
+<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-11">["Permutation properties"]</a></h3><!-- RDLabel: "Permutation properties" -->
 
 <dl>
 <dt><a name="label-12" id="label-12"><code>GSL::Permutation#size</code></a></dt><!-- RDLabel: "GSL::Permutation#size" -->
@@ -74,7 +74,7 @@ The n elements should contain each of the numbers 0 .. n-1 once and only once.</
 <dd>
 This returns true if the permutation <var>self</var> is valid, and false otherwise.</dd>
 </dl>
-<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-15">Permutation functions</a></h3><!-- RDLabel: "Permutation functions" -->
+<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-15">["Permutation functions"]</a></h3><!-- RDLabel: "Permutation functions" -->
 
 <dl>
 <dt><a name="label-16" id="label-16"><code>GSL::Permutation#reverse</code></a></dt><!-- RDLabel: "GSL::Permutation#reverse" -->
@@ -98,7 +98,7 @@ permutation in lexicographic order, returning <code>GSL_SUCCESS</code>.
 If no previous permutation is available it returns <code>GSL_FAILURE</code> 
 and leaves <var>self</var> unmodified.</dd>
 </dl>
-<h3><a name="2.4" href="#2.4">2.4</a> <a name="label-20">Reading and writing permutations</a></h3><!-- RDLabel: "Reading and writing permutations" -->
+<h3><a name="2.4" href="#2.4">2.4</a> <a name="label-20">["Reading and writing permutations"]</a></h3><!-- RDLabel: "Reading and writing permutations" -->
 
 <dl>
 <dt><a name="label-21" id="label-21"><code>GSL::Permutation#fwrite(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Permutation#fwrite" -->
@@ -110,7 +110,7 @@ and leaves <var>self</var> unmodified.</dd>
 <dt><a name="label-27" id="label-27"><code>GSL::Permutation#fscanf(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Permutation#fscanf" -->
 <dt><a name="label-28" id="label-28"><code>GSL::Permutation#fscanf(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Permutation#fscanf" -->
 </dl>
-<h3><a name="2.5" href="#2.5">2.5</a> <a name="label-29">Permutations in cyclic Form</a></h3><!-- RDLabel: "Permutations in cyclic Form" -->
+<h3><a name="2.5" href="#2.5">2.5</a> <a name="label-29">["Permutations in cyclic Form"]</a></h3><!-- RDLabel: "Permutations in cyclic Form" -->
 
 <p>A permutation can be represented in both <var>linear</var> and 
 <var>cyclic</var> notations. The functions described in this section convert 
@@ -171,7 +171,7 @@ given in linear form. </dd>
 Counts the number of cycles in the permutation <var>self</var>, 
 given in canonical form. </dd>
 </dl>
-<h2><a name="3" href="#3">3</a> <a name="label-37">Applying Permutations</a></h2><!-- RDLabel: "Applying Permutations" -->
+<h2><a name="3" href="#3">3</a> <a name="label-37">["Applying Permutations"]</a></h2><!-- RDLabel: "Applying Permutations" -->
 
 <dl>
 <dt><a name="label-38" id="label-38"><code>GSL::Permutation::permute(<var>v</var>)</code></a></dt><!-- RDLabel: "GSL::Permutation::permute" -->
@@ -197,8 +197,7 @@ permutation <var>p</var> and returns it.
 The permutation <var>p</var> is equivalent to applying <var>pb</var> first 
 and then <var>pa</var>. </dd>
 </dl>
-<p>right
-<a href="matrix.html">prev</a>
+<p><a href="matrix.html">prev</a>
 <a href="combi.html">next</a></p>
 <p><a href="ref.html">Reference index</a>
 <a href="index.html">top</a></p>

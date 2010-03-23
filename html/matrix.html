@@ -8,7 +8,7 @@
 <!-- head-element:nil -->
 </head>
 <body>
-<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Matrices</a></h1><!-- RDLabel: "Matrices" -->
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">["Matrices"]</a></h1><!-- RDLabel: "Matrices" -->
 
 <p>Contents:</p>
 <ol>
@@ -31,7 +31,7 @@
 <li><a href="matrix.html#3">NArray</a></li>
 <li><a href="matrix.html#4">Special matrices</a></li>
 </ol>
-<h2><a name="1" href="#1">1</a> <a name="label-1">Class methods</a></h2><!-- RDLabel: "Class methods" -->
+<h2><a name="1" href="#1">1</a> <a name="label-1">["Class methods"]</a></h2><!-- RDLabel: "Class methods" -->
 
 <dl>
 <dt><a name="label-2" id="label-2"><code>GSL::Matrix.alloc(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.alloc" -->
@@ -125,13 +125,13 @@ irb(main):018:0&gt; m = GSL::Matrix.indgen(2, 3, 4.5, 6.7)
 [  4.500e+00  1.120e+01  1.790e+01 
    2.460e+01  3.130e+01  3.800e+01 ]</pre></dd>
 </dl>
-<h3><a name="1.1" href="#1.1">1.1</a> <a name="label-23">NOTE:</a></h3><!-- RDLabel: "NOTE:" -->
+<h3><a name="1.1" href="#1.1">1.1</a> <a name="label-23">["NOTE:"]</a></h3><!-- RDLabel: "NOTE:" -->
 
 <p>Matrix dimensions are limited within the range of Fixnum.
 For 32-bit CPU, the maximum of matrix dimension is 2^30 ~ 1e9.</p>
-<h2><a name="2" href="#2">2</a> <a name="label-24">Instance Methods</a></h2><!-- RDLabel: "Instance Methods" -->
+<h2><a name="2" href="#2">2</a> <a name="label-24">["Instance Methods"]</a></h2><!-- RDLabel: "Instance Methods" -->
 
-<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-25">Accessing matrix elements</a></h3><!-- RDLabel: "Accessing matrix elements" -->
+<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-25">["Accessing matrix elements"]</a></h3><!-- RDLabel: "Accessing matrix elements" -->
 
 <dl>
 <dt><a name="label-26" id="label-26"><code>GSL::Matrix#size1</code></a></dt><!-- RDLabel: "GSL::Matrix#size1" -->
@@ -253,7 +253,7 @@ irb(main):014:0&gt; m[1][3]   # Bit 3 of m[0,1]
 <pre>irb(main):001:0&gt; GSL::Matrix.eye(3).to_a
 =&gt; [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]</pre></dd>
 </dl>
-<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-34">Initializing matrix elements</a></h3><!-- RDLabel: "Initializing matrix elements" -->
+<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-34">["Initializing matrix elements"]</a></h3><!-- RDLabel: "Initializing matrix elements" -->
 
 <dl>
 <dt><a name="label-35" id="label-35"><code>GSL::Matrix#set_all(<var>x</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#set_all" -->
@@ -268,7 +268,7 @@ This method sets the elements of the matrix to the corresponding
 elements of the identity matrix, i.e. a unit diagonal with all off-diagonal 
 elements zero. This applies to both square and rectangular matrices. </dd>
 </dl>
-<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-38">IO</a></h3><!-- RDLabel: "IO" -->
+<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-38">["IO"]</a></h3><!-- RDLabel: "IO" -->
 
 <dl>
 <dt><a name="label-39" id="label-39"><code>GSL::Matrix#fwrite(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#fwrite" -->
@@ -280,7 +280,7 @@ elements zero. This applies to both square and rectangular matrices. </dd>
 <dt><a name="label-45" id="label-45"><code>GSL::Matrix#fscanf(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#fscanf" -->
 <dt><a name="label-46" id="label-46"><code>GSL::Matrix#fscanf(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#fscanf" -->
 </dl>
-<h3><a name="2.4" href="#2.4">2.4</a> <a name="label-47">Matrix views</a></h3><!-- RDLabel: "Matrix views" -->
+<h3><a name="2.4" href="#2.4">2.4</a> <a name="label-47">["Matrix views"]</a></h3><!-- RDLabel: "Matrix views" -->
 
 <p>The <code>GSL::Matrix::View</code> class is defined to be used as "references" to
 matrices. The <code>Matrix::View</code> class is a subclass of <code>Matrix</code>, and an
@@ -365,7 +365,7 @@ irb(main):005:0&gt; v
 [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 9.999e+01 6.000e+00 7.000e+00 8.000e+00 9.000e+00 ]
 irb(main):006:0&gt; </pre></dd>
 </dl>
-<h3><a name="2.5" href="#2.5">2.5</a> <a name="label-65">Creating row and column views</a></h3><!-- RDLabel: "Creating row and column views" -->
+<h3><a name="2.5" href="#2.5">2.5</a> <a name="label-65">["Creating row and column views"]</a></h3><!-- RDLabel: "Creating row and column views" -->
 
 <dl>
 <dt><a name="label-66" id="label-66"><code>GSL::Matrix#row(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#row" -->
@@ -439,7 +439,7 @@ irb(main):003:0&gt; m.to_v
 =&gt; GSL::Vector 
 [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 6.000e+00 ]</pre></dd>
 </dl>
-<h3><a name="2.6" href="#2.6">2.6</a> <a name="label-76">Iterators</a></h3><!-- RDLabel: "Iterators" -->
+<h3><a name="2.6" href="#2.6">2.6</a> <a name="label-76">["Iterators"]</a></h3><!-- RDLabel: "Iterators" -->
 
 <dl>
 <dt><a name="label-77" id="label-77"><code>GSL::Matrix#each_row</code></a></dt><!-- RDLabel: "GSL::Matrix#each_row" -->
@@ -453,7 +453,7 @@ Iterator for each of columns in the matrix <var>self</var>. </dd>
 <dt><a name="label-81" id="label-81"><code>GSL::Matrix#collect! { |<var>item</var>| .. }</code></a></dt><!-- RDLabel: "GSL::Matrix#collect!" -->
 <dt><a name="label-82" id="label-82"><code>GSL::Matrix#map! { |<var>item</var>| .. }</code></a></dt><!-- RDLabel: "GSL::Matrix#map!" -->
 </dl>
-<h3><a name="2.7" href="#2.7">2.7</a> <a name="label-83">Copying matrices</a></h3><!-- RDLabel: "Copying matrices" -->
+<h3><a name="2.7" href="#2.7">2.7</a> <a name="label-83">["Copying matrices"]</a></h3><!-- RDLabel: "Copying matrices" -->
 
 <dl>
 <dt><a name="label-84" id="label-84"><code>GSL::Matrix#clone</code></a></dt><!-- RDLabel: "GSL::Matrix#clone" -->
@@ -463,7 +463,7 @@ Create a new matrix of the same elements.</dd>
 <dt><a name="label-86" id="label-86"><code>GSL::Matrix.memcpy(<var>dest</var>, <var>src</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.memcpy" -->
 <dt><a name="label-87" id="label-87"><code>GSL::Matrix.swap(<var>dest</var>, <var>src</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.swap" -->
 </dl>
-<h3><a name="2.8" href="#2.8">2.8</a> <a name="label-88">Copying rows and columns</a></h3><!-- RDLabel: "Copying rows and columns" -->
+<h3><a name="2.8" href="#2.8">2.8</a> <a name="label-88">["Copying rows and columns"]</a></h3><!-- RDLabel: "Copying rows and columns" -->
 
 <dl>
 <dt><a name="label-89" id="label-89"><code>GSL::Matrix#get_row(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#get_row" -->
@@ -485,7 +485,7 @@ This method copies the elements of the vector <var>v</var> into the <var>j</var>
 column of the matrix. The length of the vector must be the same as the length 
 of the column. </dd>
 </dl>
-<h3><a name="2.9" href="#2.9">2.9</a> <a name="label-93">Exchanging rows and columns</a></h3><!-- RDLabel: "Exchanging rows and columns" -->
+<h3><a name="2.9" href="#2.9">2.9</a> <a name="label-93">["Exchanging rows and columns"]</a></h3><!-- RDLabel: "Exchanging rows and columns" -->
 
 <dl>
 <dt><a name="label-94" id="label-94"><code>GSL::Matrix#swap_rows!(<var>i</var>, <var>j</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#swap_rows!" -->
@@ -635,7 +635,7 @@ irb(main):004:0&gt; a.vertcat(b)
    7  8 
    9 10 ]</pre></dd>
 </dl>
-<h3><a name="2.10" href="#2.10">2.10</a> <a name="label-111">Matrix operations</a></h3><!-- RDLabel: "Matrix operations" -->
+<h3><a name="2.10" href="#2.10">2.10</a> <a name="label-111">["Matrix operations"]</a></h3><!-- RDLabel: "Matrix operations" -->
 
 <dl>
 <dt><a name="label-112" id="label-112"><code>GSL::Matrix#add(<var>b</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix#add" -->
@@ -727,7 +727,7 @@ irb(main):006:0&gt; m*x
 <dd>
 Computes matrix power of <var>b</var>.</dd>
 </dl>
-<h3><a name="2.11" href="#2.11">2.11</a> <a name="label-123">Finding maximum and minimum elements of matrices</a></h3><!-- RDLabel: "Finding maximum and minimum elements of matrices" -->
+<h3><a name="2.11" href="#2.11">2.11</a> <a name="label-123">["Finding maximum and minimum elements of matrices"]</a></h3><!-- RDLabel: "Finding maximum and minimum elements of matrices" -->
 
 <dl>
 <dt><a name="label-124" id="label-124"><code>GSL::Matrix#max</code></a></dt><!-- RDLabel: "GSL::Matrix#max" -->
@@ -749,7 +749,7 @@ This method returns a two elements array [imin, imax],
 which contains the indices
 of the minimum and the maximum value in the matrix.</dd>
 </dl>
-<h3><a name="2.12" href="#2.12">2.12</a> <a name="label-130">Matrix properties</a></h3><!-- RDLabel: "Matrix properties" -->
+<h3><a name="2.12" href="#2.12">2.12</a> <a name="label-130">["Matrix properties"]</a></h3><!-- RDLabel: "Matrix properties" -->
 
 <dl>
 <dt><a name="label-131" id="label-131"><code>GSL::Matrix#isnull</code></a></dt><!-- RDLabel: "GSL::Matrix#isnull" -->
@@ -815,7 +815,7 @@ Returns <code>true</code> if the matrices have same size and elements
 equal to absolute accurary <var>eps</var> for all the indices, 
 and <code>false</code> otherwise.</dd>
 </dl>
-<h2><a name="3" href="#3">3</a> <a name="label-149">NArray</a></h2><!-- RDLabel: "NArray" -->
+<h2><a name="3" href="#3">3</a> <a name="label-149">["NArray"]</a></h2><!-- RDLabel: "NArray" -->
 
 <dl>
 <dt><a name="label-150" id="label-150"><code>GSL::Matrix#to_na</code></a></dt><!-- RDLabel: "GSL::Matrix#to_na" -->
@@ -835,7 +835,7 @@ not copied, thus any modifications to the View object affect on the original
 NArray object <var>na</var>. 
 The View object can be used as a reference to the NMatrix object.</dd>
 </dl>
-<h2><a name="4" href="#4">4</a> <a name="label-155">Special matrices</a></h2><!-- RDLabel: "Special matrices" -->
+<h2><a name="4" href="#4">4</a> <a name="label-155">["Special matrices"]</a></h2><!-- RDLabel: "Special matrices" -->
 
 <dl>
 <dt><a name="label-156" id="label-156"><code>GSL::Matrix.hirbert(<var>n</var>)</code></a></dt><!-- RDLabel: "GSL::Matrix.hirbert" -->

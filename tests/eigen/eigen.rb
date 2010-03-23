@@ -5,79 +5,79 @@ require("../gsl_test.rb")
 include GSL::Test
 
 def create_random_symm_matrix(size1, size2, rng, lower, upper)
-	m = GSL::Matrix.alloc(size1, size2)
+  m = GSL::Matrix.alloc(size1, size2)
   for i in 0...size1 do
-  	for j in i...size2 do
-  		x = rng.uniform()*(upper-lower) + lower
-  		m[i,j] = x
-  		m[j,i] = x
-		end
-	end
-	m
+    for j in i...size2 do
+      x = rng.uniform()*(upper-lower) + lower
+      m[i,j] = x
+      m[j,i] = x
+    end
+  end
+  m
 end
 
 def create_random_herm_matrix(size1, size2, rng, lower, upper)
-	m = GSL::Matrix::Complex.alloc(size1, size2)
-	for i in 0...size1 do
-		for j in i...size2 do
-			re = rng.uniform()* (upper - lower) + lower
+  m = GSL::Matrix::Complex.alloc(size1, size2)
+  for i in 0...size1 do
+    for j in i...size2 do
+      re = rng.uniform()* (upper - lower) + lower
       if i == j
       	im = 0.0
       else
-				im = rng.uniform()* (upper - lower) + lower
-			end
-			z = GSL::Complex.alloc(re, im)
-			m[i,j] = z
-			m[j,i] = z.conjugate
-		end
-	end
-	m
+        im = rng.uniform()* (upper - lower) + lower
+      end
+      z = GSL::Complex.alloc(re, im)
+      m[i,j] = z
+      m[j,i] = z.conjugate
+    end
+  end
+  m
 end
 
 def create_random_posdef_matrix(size1, size2, rng)
-	m = GSL::Matrix.alloc(size1, size2)
-	x = rng.uniform()
+  m = GSL::Matrix.alloc(size1, size2)
+  x = rng.uniform()
   for i in 0...size1 do
-  	for j in i...size2 do
-        a = pow(x, (j - i).to_f)
-				m[i,j] = a
-				m[j,i] = a
-		end
-	end
-	m
+    for j in i...size2 do
+      a = pow(x, (j - i).to_f)
+      m[i,j] = a
+      m[j,i] = a
+    end
+  end
+  m
 end
 
 def create_random_complex_posdef_matrix(size1, size2, rng)
-	m = GSL::Matrix::Complex.calloc(size1, size2)
-	n = size1
-
-	for i in 0...n do
-		x = rng.uniform()
-		z = GSL::Complex.alloc(x, 0.0)
-		m[i,i] = z
-	end
-	
-	work = GSL::Vector::Complex.alloc(n)
-	for i in 0...n do
-		for j in 0...n do
-			x = 2.0*rng.uniform() - 1.0
-			y = 2.0*rng.uniform() - 1.0			
-			z = GSL::Complex.alloc(x, y)
-			work[j] 
-		end
-		tau = GSL::Linalg::Complex::householder_transform(work)
-		GSL::Linalg::Complex::householder_hm(tau, work, m)
-		GSL::Linalg::Complex::householder_mh(tau.conjugate, work, m)		
-	end
-	m
+  m = GSL::Matrix::Complex.calloc(size1, size2)
+  n = size1
+  
+  for i in 0...n do
+    x = rng.uniform()
+    z = GSL::Complex.alloc(x, 0.0)
+    m[i,i] = z
+  end
+  
+  work = GSL::Vector::Complex.alloc(n)
+  for i in 0...n do
+    for j in 0...n do
+      x = 2.0*rng.uniform() - 1.0
+      y = 2.0*rng.uniform() - 1.0			
+      z = GSL::Complex.alloc(x, y)
+      work[j] 
+    end
+    tau = GSL::Linalg::Complex::householder_transform(work)
+    GSL::Linalg::Complex::householder_hm(tau, work, m)
+    GSL::Linalg::Complex::householder_mh(tau.conjugate, work, m)		
+  end
+  m
 end
 
 def create_random_nonsymm_matrix(size1, size2, rng, lower, upper)
-	m = GSL::Matrix.alloc(size1, size2)
+  m = GSL::Matrix.alloc(size1, size2)
   for i in 0...size1 do
-  	for j in 0...size2 do
-  		m[i,j] = rng.uniform()*(upper - lower) + lower
-  	end
+    for j in 0...size2 do
+      m[i,j] = rng.uniform()*(upper - lower) + lower
+    end
   end
   m
 end
@@ -85,8 +85,8 @@ end
 def test_eigen_results(n, m, eval, evec, desc, desc2)
   x = GSL::Vector.alloc(n)
   y = GSL::Vector.alloc(n)
-
-# check eigenvalues
+  
+  # check eigenvalues
   for i in 0...n
     ei = eval[i]
     vi = evec.col(i)
@@ -174,47 +174,47 @@ def chop_subnormals(x)
 end
 
 def test_eigenvalues_real(eval, eval2, desc, desc2)
-	n = eval.size
-	emax = 0
+  n = eval.size
+  emax = 0
   # check eigenvalues 
   for i in 0...n do
-		ei = eval[i]
-		if ei.abs > emax
-			emax = ei.abs
-		end
-	end
-
+    ei = eval[i]
+    if ei.abs > emax
+      emax = ei.abs
+    end
+  end
+  
   for i in 0...n do
-  	ei = eval[i]
-  	e2i = chop_subnormals(eval2[i])
-		GSL::Test::test_abs(ei, e2i, emax * 1e8 * GSL::DBL_EPSILON,  "#{desc}, direct eigenvalue(#{i}), #{desc2}")
+    ei = eval[i]
+    e2i = chop_subnormals(eval2[i])
+    GSL::Test::test_abs(ei, e2i, emax * 1e8 * GSL::DBL_EPSILON,  "#{desc}, direct eigenvalue(#{i}), #{desc2}")
   end
 end
 
 def test_eigenvalues_complex(eval, eval2, desc, desc2)
-	n = eval.size
-	for i in 0...n do
-		ei = eval[i]
-		e2i = eval2[i]
-		GSL::Test::test_rel(ei.real, e2i.real, 10*n*GSL::DBL_EPSILON, 
-                   "#{desc}, direct eigenvalue(#{i}) real, #{desc2}")
-
-		GSL::Test::test_rel(ei.imag, e2i.imag, 10*n*GSL::DBL_EPSILON, 
-                   "#{desc}, direct eigenvalue(#{i}) imag, #{desc2}")		
-	end
+  n = eval.size
+  for i in 0...n do
+    ei = eval[i]
+    e2i = eval2[i]
+    GSL::Test::test_rel(ei.real, e2i.real, 10*n*GSL::DBL_EPSILON, 
+                        "#{desc}, direct eigenvalue(#{i}) real, #{desc2}")
+    
+    GSL::Test::test_rel(ei.imag, e2i.imag, 10*n*GSL::DBL_EPSILON, 
+                        "#{desc}, direct eigenvalue(#{i}) imag, #{desc2}")		
+  end
 end
 
 def test_eigen_schur(a, s, q, z, count, desc, desc2)
-	n = a.size1
-
-	t1 = a*z
-	t2 = q*s
-	for i in 0...n do
-		for j in 0...n do
-			x = t1[i,j]
-			y = t2[i,j]
-	    GSL::test_abs(x, y, 1.0e8 * GSL::DBL_EPSILON,
-                       "#{desc}(N=#{n},cnt=#{count}), #{desc2}, schur(#{i},#{j})")
-  	end
- 	end
+  n = a.size1
+  
+  t1 = a*z
+  t2 = q*s
+  for i in 0...n do
+    for j in 0...n do
+      x = t1[i,j]
+      y = t2[i,j]
+      GSL::test_abs(x, y, 1.0e8 * GSL::DBL_EPSILON,
+                    "#{desc}(N=#{n},cnt=#{count}), #{desc2}, schur(#{i},#{j})")
+    end
+  end
 end

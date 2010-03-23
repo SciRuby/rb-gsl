@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # Written by Roman Shterenzon
 #
-$:.unshift(*['lib','ext'].collect{|d| File.join(File.dirname(__FILE__),'..','..',d)})
+#$:.unshift(*['lib','ext'].collect{|d| File.join(File.dirname(__FILE__),'..','..',d)})
 require 'rubygems'
 require 'test/unit'
 require 'gsl'

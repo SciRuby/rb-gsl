@@ -1144,7 +1144,9 @@ static int Gaussian_f(const gsl_vector *v, void *params, gsl_vector *f)
       rb_raise(rb_eIndexError, "wrong index");
     xi = (xl + xh)/2.0;
     yi = h->bin[i];
-    sqw = sqrt(yi);
+    //    sqw = sqrt(yi);
+    if (yi >= 1.0) sqw = 1.0/sqrt(yi);
+    else sqw = 1.0;
     gsl_vector_set(f, i-binstart, (amp*exp(-(xi - mu)*(xi - mu)/var/2.0) - yi)*sqw);
   }
   return GSL_SUCCESS;
@@ -1168,7 +1170,9 @@ static int Gaussian_df(const gsl_vector *v, void *params, gsl_matrix *J)
       rb_raise(rb_eIndexError, "wrong index");
     xi = (xl + xh)/2.0;
     yi = h->bin[i];
-    sqw = sqrt(yi);
+    //    sqw = sqrt(yi);
+    if (yi >= 1.0) sqw = 1.0/sqrt(yi);
+    else sqw = 1.0;
     y = exp(-(xi - mu)*(xi - mu)/var/2.0);
     gsl_matrix_set(J, i-binstart, 0, amp*y*(xi - mu)*(xi - mu)/2/var/var*sqw);
     gsl_matrix_set(J, i-binstart, 1, amp*y*(xi - mu)/var*sqw);

@@ -69,7 +69,7 @@ Contents:
     ((|k|)) must be less than or equal to the length of the vector.
 
 
-((<prev|URL:combi.html>))
+((<prev|URL:multiset.html>))
 ((<next|URL:blas.html>))
 
 ((<Reference index|URL:ref.html>))

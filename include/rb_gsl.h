@@ -148,4 +148,11 @@ void Init_bspline(VALUE module);
 void Init_alf(VALUE module);
 void Init_geometry(VALUE module);
 
+#ifdef GSL_1_14_LATER
+#include <gsl/gsl_multiset.h>
+extern VALUE cMultiset;
+void Init_multiset(VALUE module);
+
+#endif
+
 #endif
