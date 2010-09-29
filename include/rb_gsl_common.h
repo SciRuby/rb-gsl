@@ -313,6 +313,11 @@ int str_head_grep(const char *s0, const char *s1);
 #define STR2CHARPTR STR2CSTR
 #endif
 
+// Added 2010/Sep/29
+#ifdef RUBY_1_9_2_LATER
+#define STR2CSTR StringValuePtr
+#endif
+
 void make_graphcommand(char *command, VALUE hash);
 int rbgsl_complex_equal(const gsl_complex *z1, const gsl_complex *z2, double eps);
 

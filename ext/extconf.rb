@@ -224,6 +224,10 @@ begin
   end
   if RUBY_VERSION2 >= "1.9"
     RB_GSL_CONFIG.printf("#ifndef RUBY_1_9_LATER\n#define RUBY_1_9_LATER\n#endif\n")
+# Added 2010/Sep/29
+    if RUBY_VERSION2 >= "1.9.2"
+      RB_GSL_CONFIG.printf("#ifndef RUBY_1_9_2_LATER\n#define RUBY_1_9_2_LATER\n#endif\n")
+    end
   end
 
   RB_GSL_CONFIG.printf("\n#endif\n")
