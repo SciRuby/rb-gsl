@@ -8,7 +8,7 @@
 <!-- head-element:nil -->
 </head>
 <body>
-<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">["Combinations"]</a></h1><!-- RDLabel: "Combinations" -->
+<h1><a name="Title:" href="#Title:">Title:</a> <a name="label-0">Combinations</a></h1><!-- RDLabel: "Combinations" -->
 
 <p>Contents:</p>
 <ol>
@@ -21,7 +21,7 @@
 <li><a href="combi.html#2.4">Reading and writing combinations</a></li>
 </ol></li>
 </ol>
-<h2><a name="1" href="#1">1</a> <a name="label-1">["Combination allocation"]</a></h2><!-- RDLabel: "Combination allocation" -->
+<h2><a name="1" href="#1">1</a> <a name="label-1">Combination allocation</a></h2><!-- RDLabel: "Combination allocation" -->
 
 <dl>
 <dt><a name="label-2" id="label-2"><code>GSL::Combination.alloc(<var>n</var>, <var>k</var>)</code></a></dt><!-- RDLabel: "GSL::Combination.alloc" -->
@@ -35,7 +35,7 @@ combination which is initialized to the lexicographically first combination. </d
 This creates a new combination with parameters <var>n, k</var> and initializes 
 it to the lexicographically first combination. </dd>
 </dl>
-<h2><a name="2" href="#2">2</a> <a name="label-4">["Methods"]</a></h2><!-- RDLabel: "Methods" -->
+<h2><a name="2" href="#2">2</a> <a name="label-4">Methods</a></h2><!-- RDLabel: "Methods" -->
 
 <dl>
 <dt><a name="label-5" id="label-5"><code>GSL::Combination#init_first</code></a></dt><!-- RDLabel: "GSL::Combination#init_first" -->
@@ -47,7 +47,7 @@ first combination, i.e. (0,1,2,...,k-1).</dd>
 This method initializes the combination <var>self</var> to the lexicographically last 
 combination, i.e. (n-k,n-k+1,...,n-1).</dd>
 </dl>
-<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-7">["Accessing combination elements"]</a></h3><!-- RDLabel: "Accessing combination elements" -->
+<h3><a name="2.1" href="#2.1">2.1</a> <a name="label-7">Accessing combination elements</a></h3><!-- RDLabel: "Accessing combination elements" -->
 
 <dl>
 <dt><a name="label-8" id="label-8"><code>GSL::Combination#get(<var>i</var>)</code></a></dt><!-- RDLabel: "GSL::Combination#get" -->
@@ -55,7 +55,7 @@ combination, i.e. (n-k,n-k+1,...,n-1).</dd>
 <dd>
 This returns the value of the <var>i</var>-th element of the combination <var>self</var>. </dd>
 </dl>
-<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-10">["Combination properties"]</a></h3><!-- RDLabel: "Combination properties" -->
+<h3><a name="2.2" href="#2.2">2.2</a> <a name="label-10">Combination properties</a></h3><!-- RDLabel: "Combination properties" -->
 
 <dl>
 <dt><a name="label-11" id="label-11"><code>GSL::Combination#n</code></a></dt><!-- RDLabel: "GSL::Combination#n" -->
@@ -76,7 +76,7 @@ each number at most once. The numbers have to be in increasing order.</dd>
 <dd>
 Thie returns true if the combination is valid, and false otherwise.</dd>
 </dl>
-<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-16">["Combination functions"]</a></h3><!-- RDLabel: "Combination functions" -->
+<h3><a name="2.3" href="#2.3">2.3</a> <a name="label-16">Combination functions</a></h3><!-- RDLabel: "Combination functions" -->
 
 <dl>
 <dt><a name="label-17" id="label-17"><code>GSL::Combination#next</code></a></dt><!-- RDLabel: "GSL::Combination#next" -->
@@ -93,7 +93,7 @@ combination in lexicographic order, returning <code>GSL::SUCCESS</code>.
 If no previous combination is available it returns <code>GSL::FAILURE</code> 
 and leaves <var>self</var> unmodified.</dd>
 </dl>
-<h3><a name="2.4" href="#2.4">2.4</a> <a name="label-19">["Reading and writing combinations"]</a></h3><!-- RDLabel: "Reading and writing combinations" -->
+<h3><a name="2.4" href="#2.4">2.4</a> <a name="label-19">Reading and writing combinations</a></h3><!-- RDLabel: "Reading and writing combinations" -->
 
 <dl>
 <dt><a name="label-20" id="label-20"><code>GSL::Combination#fwrite(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Combination#fwrite" -->
@@ -105,7 +105,7 @@ and leaves <var>self</var> unmodified.</dd>
 <dt><a name="label-26" id="label-26"><code>GSL::Combination#fscanf(<var>filename</var>)</code></a></dt><!-- RDLabel: "GSL::Combination#fscanf" -->
 <dt><a name="label-27" id="label-27"><code>GSL::Combination#fscanf(<var>io</var>)</code></a></dt><!-- RDLabel: "GSL::Combination#fscanf" -->
 </dl>
-<h2><a name="3" href="#3">3</a> <a name="label-28">["Example"]</a></h2><!-- RDLabel: "Example" -->
+<h2><a name="3" href="#3">3</a> <a name="label-28">Example</a></h2><!-- RDLabel: "Example" -->
 
 <pre>#!/usr/bin/env ruby
 require("rbgsl")
