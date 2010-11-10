@@ -76,7 +76,12 @@ class VectorTest < Test::Unit::TestCase
     # args = [Fixnum]
     vv = v.subvector(3)
     assert_equal([0, 1, 2], vv.to_a)
-#    assert_raise(ArgumentError) {v.subvector(-1)}
+    assert_nothing_raised("subvector(-1)") {v.subvector(-1)}
+    vv = v.subvector(-1)
+    assert_equal([11], vv.to_a)
+    vv = v.subvector(-2)
+    assert_equal([10, 11], vv.to_a)
+    assert_raise(RangeError) {v.subvector(-13)}
 
     # args = [Fixnum, Fixnum]
     vv = v.subvector(2, 3)
@@ -84,7 +89,10 @@ class VectorTest < Test::Unit::TestCase
 
     vv = v.subvector(-4, 3)
     assert_equal([8, 9, 10], vv.to_a)
-#    assert_raise(ArgumentError) {v.subvector(2, -1)}
+    assert_nothing_raised("subvector(-4, -3)") {v.subvector(-4, -3)}
+    vv = v.subvector(-4, -3)
+    assert_equal([8, 7, 6], vv.to_a)
+    assert_raise(GSL::ERROR::EINVAL) {v.subvector(-11, -3)}
 
     # args = [Fixnum, Fixnum, Fixnum]
     vv = v.subvector(1, 3, 4)
@@ -112,8 +120,8 @@ class VectorTest < Test::Unit::TestCase
       # Add more test cases here...
     }
     tests.each do |r, x|
-#      assert_nothing_raised("subvector(#{r})") {v.subvector(r)}
-#      assert_equal(x, v.subvector(r).to_a, "subvector(#{r})")
+      assert_nothing_raised("subvector(#{r})") {v.subvector(r)}
+      assert_equal(x, v.subvector(r).to_a, "subvector(#{r})")
     end
 
     # args = [Range, Fixnum]
@@ -126,8 +134,8 @@ class VectorTest < Test::Unit::TestCase
       # Add more test cases here...
     }
     tests.each do |(r,s), x|
-#      assert_nothing_raised("subvector(#{r},#{s})") {v.subvector(r)}
-#      assert_equal(x, v.subvector(r,s).to_a, "subvector(#{r},#{s})")
+      assert_nothing_raised("subvector(#{r},#{s})") {v.subvector(r)}
+      assert_equal(x, v.subvector(r,s).to_a, "subvector(#{r},#{s})")
     end
   end
 end

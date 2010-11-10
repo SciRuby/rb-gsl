@@ -36,7 +36,12 @@ class VectorComplexTest < Test::Unit::TestCase
     # args = [Fixnum]
     vv = v.subvector(3)
     assert_equal([0, 0, 1, 0, 2, 0], vv.to_a)
-    assert_raise(ArgumentError) {v.subvector(-1)}
+    assert_nothing_raised("subvector(-1)") {v.subvector(-1)}
+    vv = v.subvector(-1)
+    assert_equal([11, 0], vv.to_a)
+    vv = v.subvector(-2)
+    assert_equal([10, 0, 11, 0], vv.to_a)
+    assert_raise(RangeError) {v.subvector(-13)}
 
     # args = [Fixnum, Fixnum]
     vv = v.subvector(2, 3)
@@ -44,7 +49,10 @@ class VectorComplexTest < Test::Unit::TestCase
 
     vv = v.subvector(-4, 3)
     assert_equal([8, 0, 9, 0, 10, 0], vv.to_a)
-    assert_raise(ArgumentError) {v.subvector(2, -1)}
+    assert_nothing_raised("subvector(-4, -3)") {v.subvector(-4, -3)}
+    vv = v.subvector(-4, -3)
+    assert_equal([8, 0, 7, 0, 6, 0], vv.to_a)
+    assert_raise(GSL::ERROR::EINVAL) {v.subvector(-11, -3)}
 
     # args = [Fixnum, Fixnum, Fixnum]
     vv = v.subvector(1, 3, 4)
