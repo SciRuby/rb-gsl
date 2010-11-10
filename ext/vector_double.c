@@ -325,9 +325,9 @@ VALUE rb_gsl_range_to_gv(VALUE obj)
   int beg, en;
   size_t n, i;
   gsl_vector *v = NULL;
-  beg = NUM2INT(rb_ivar_get(obj, rb_gsl_id_beg));
-  en = NUM2INT(rb_ivar_get(obj, rb_gsl_id_end));
-  if (RTEST(rb_ivar_get(obj, rb_gsl_id_excl))) n = en - beg;
+  beg = NUM2INT(rb_funcall3(obj, rb_gsl_id_beg, 0, NULL));
+  en = NUM2INT(rb_funcall3(obj, rb_gsl_id_end, 0, NULL));
+  if (RTEST(rb_funcall3(obj, rb_gsl_id_excl, 0, NULL))) n = en - beg;
   else n = en - beg + 1;
   v = gsl_vector_alloc(n);
   for (i = 0; i < n; i++) gsl_vector_set(v, i, beg + (int)i);

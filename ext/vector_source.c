@@ -46,35 +46,22 @@ void parse_subvector_args(int argc, VALUE *argv, size_t size,
 
 void FUNCTION(get_range,beg_en_n)(VALUE range, BASE *beg, BASE *en, size_t *n, int *step)
 {
-  VALUE val;
-  //  *beg = NUMCONV2(rb_ivar_get(range, rb_gsl_id_beg));
-  //  *beg = NUMCONV2(rb_ivar_get(range, rb_intern("first")));
-  //  *beg = NUMCONV2(RSTRUCT(range)->as.ary[0]);
-  char *str;
-  str = rb_id2name(rb_gsl_id_beg);
-  printf("Str %s %s\n", str, rb_class2name(CLASS_OF(range)));
-  val = rb_ivar_get(range, rb_intern("min"));
-  printf("Hoge %s\n", rb_class2name(CLASS_OF(val)));
-  *beg = NUMCONV2(val);
-  //  *en = NUMCONV2(rb_ivar_get(range, rb_gsl_id_end));
-  //  *en = NUMCONV2(RSTRUCT(range)->as.ary[1]);
-  printf("Yoshiki 3\n");
+  *beg = NUMCONV2(rb_funcall3(range, rb_gsl_id_beg, 0, NULL));
+  *en = NUMCONV2(rb_funcall3(range, rb_gsl_id_end, 0, NULL));
   *n = (size_t) fabs(*en - *beg);
-  if (!RTEST(rb_ivar_get(range, rb_gsl_id_excl))) *n += 1;
-  printf("Yoshiki 4\n");
+  if (!RTEST(rb_funcall3(range, rb_gsl_id_excl, 0, NULL))) *n += 1;
   if (*en < *beg) *step = -1; else *step = 1;
-  printf("Yoshiki 5\n");
 }
 
 #ifdef BASE_INT
 void get_range_beg_en_n_for_size(VALUE range, int *beg, int *en, size_t *n, int *step, size_t size)
 {
-  *beg = NUM2INT(rb_ivar_get(range, rb_gsl_id_beg));
+  *beg = NUM2INT(rb_funcall3(range, rb_gsl_id_beg, 0, NULL));
   if(*beg < 0) *beg += size;
-  *en = NUM2INT(rb_ivar_get(range, rb_gsl_id_end));
+  *en = NUM2INT(rb_funcall3(range, rb_gsl_id_end, 0, NULL));
   if(*en < 0) *en += size;
   *n = (size_t) fabs(*en - *beg);
-  if (!RTEST(rb_ivar_get(range, rb_gsl_id_excl))) *n += 1;
+  if (!RTEST(rb_funcall3(range, rb_gsl_id_excl, 0, NULL))) *n += 1;
   if (*en < *beg) *step = -1; else *step = 1;
 }
 
@@ -275,9 +262,7 @@ VALUE FUNCTION(rb_gsl_vector,new)(int argc, VALUE *argv, VALUE klass)
 #endif
     default:
       if (CLASS_OF(argv[0]) == rb_cRange) {
-	printf("OK 1 %s\n", rb_class2name(CLASS_OF(argv[0])));
 	FUNCTION(get_range,beg_en_n)(argv[0], &beg, &en, &n, &step);
-	printf("OK 2\n");
 	v = FUNCTION(gsl_vector,alloc)(n);
 	FUNCTION(set_ptr_data,by_range)(v->data, v->size, argv[0]);
 	return Data_Wrap_Struct(klass, 0, FUNCTION(gsl_vector,free), v);

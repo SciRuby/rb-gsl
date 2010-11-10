@@ -201,7 +201,7 @@ static void rb_gsl_define_intern(VALUE module)
 {
   rb_gsl_id_beg  = rb_intern("begin");
   rb_gsl_id_end  = rb_intern("end");
-  rb_gsl_id_excl = rb_intern("excl");
+  rb_gsl_id_excl = rb_intern("exclude_end?");
   rb_gsl_id_to_a = rb_intern("to_a");
   rb_gsl_id_name  = rb_intern("name");
   rb_gsl_id_size  = rb_intern("size");
