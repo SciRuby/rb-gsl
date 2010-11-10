@@ -651,7 +651,7 @@ static VALUE rb_gsl_matrix_complex_inspect(int argc, VALUE *argv, VALUE obj)
   gsl_matrix_complex *m;
 
   Data_Get_Struct(obj, gsl_matrix_complex, m);
-  sprintf(buf, "#<%s[%lu,%lu]:%#x>\n", rb_class2name(CLASS_OF(obj)), m->size1, m->size2, NUM2UINT(rb_obj_id(obj)));
+  sprintf(buf, "#<%s[%lu,%lu]:%#lx>\n", rb_class2name(CLASS_OF(obj)), m->size1, m->size2, NUM2ULONG(rb_obj_id(obj)));
   str = rb_str_new2(buf);
   return rb_str_concat(str, rb_gsl_matrix_complex_to_s(argc, argv, obj));
 }

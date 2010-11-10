@@ -463,7 +463,7 @@ static VALUE rb_gsl_vector_complex_inspect(VALUE obj)
   gsl_vector_complex *v;
 
   Data_Get_Struct(obj, gsl_vector_complex, v);
-  sprintf(buf, "#<%s[%lu]:%#x>\n", rb_class2name(CLASS_OF(obj)), v->size, NUM2UINT(rb_obj_id(obj)));
+  sprintf(buf, "#<%s[%lu]:%#lx>\n", rb_class2name(CLASS_OF(obj)), v->size, NUM2ULONG(rb_obj_id(obj)));
   str = rb_str_new2(buf);
   return rb_str_concat(str, rb_gsl_vector_complex_to_s(obj));
 }
