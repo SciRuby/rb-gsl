@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake/gempackagetask'
+require 'rake/rdoctask'
 
 spec = Gem::Specification.new do |s|
   # Basics
@@ -26,7 +27,8 @@ spec = Gem::Specification.new do |s|
     'Rakefile',
     'ext/*',
     'lib/**/*',
-    'include/*'
+    'include/*',
+    'rdoc/*'
   ].to_a
   s.require_paths = ['lib', 'lib/gsl', 'lib/ool', 'ext']
   #s.autorequire = nil
@@ -37,10 +39,16 @@ spec = Gem::Specification.new do |s|
   # C compilation
   s.extensions = %w[ ext/extconf.rb ]
 
-  # Documentation TODO
-  #s.rdoc_options = []
-  #s.has_rdoc = false
-  #s.extra_rdoc_files = []
+  # Documentation
+  s.has_rdoc = true
+  s.rdoc_options = [
+    '--title', 'Ruby/GSL',
+    '--main', 'rdoc/index.rdoc',
+    '--exclude', 'ext/',
+    '--exclude', 'include/',
+    '--exclude', 'lib/',
+  ]
+  s.extra_rdoc_files = FileList['rdoc/*'].to_a
 
   # Testing TODO
   #s.test_files = []
@@ -52,3 +60,25 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 task :default => :gem
+
+# --------------------------------------------------------------------
+# Create a task to build the RDOC documentation tree.
+
+desc "Create the RDoc html files"
+Rake::RDocTask.new("rdoc") { |rdoc|
+  rdoc.rdoc_dir = 'html'
+  rdoc.title    = 'Ruby/GSL'
+  rdoc.main     = 'rdoc/index.rdoc'
+  rdoc.options << '--exclude' << 'ext/'
+  rdoc.options << '--exclude' << 'include/'
+  rdoc.options << '--exclude' << 'lib/'
+  rdoc.rdoc_files.include('rdoc/*.rdoc')
+}
+
+# TODO Make dependencies work for this task
+desc "Publish the RDoc files on RubyForge"
+task :pub_rdoc => ["html/index.html"] do
+  mkdir_p "emptydir"
+  sh "scp -rq html/* www.rubyforge.org:/var/www/gforge-projects/rb-gsl/."
+  rm_r "emptydir"
+end
