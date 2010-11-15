@@ -2,10 +2,12 @@ require 'rubygems'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 
+RB_GSL_VERSION = File.readlines('VERSION')[0].chomp
+
 spec = Gem::Specification.new do |s|
   # Basics
   s.name = 'gsl'
-  s.version = File.readlines('VERSION')[0].chomp
+  s.version = RB_GSL_VERSION
   s.summary = 'Ruby interface to GSL'
   s.description = 'RubyGSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby'
   #s.platform = Gem::Platform::Ruby
@@ -22,13 +24,20 @@ spec = Gem::Specification.new do |s|
 
   # Files, Libraries, and Extensions
   s.files = FileList[
+    'AUTHORS',
+    'COPYING',
+    'ChangeLog',
     'README',
-    'VERSION',
     'Rakefile',
+    'setup.rb',
+    'THANKS',
+    'VERSION',
+    'examples/**/*',
     'ext/*',
     'lib/**/*',
     'include/*',
-    'rdoc/*'
+    'rdoc/*',
+    'tests/**/*'
   ].to_a
   s.require_paths = ['lib', 'lib/gsl', 'lib/ool', 'ext']
   #s.autorequire = nil
@@ -54,12 +63,18 @@ spec = Gem::Specification.new do |s|
   #s.test_files = []
 end
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Rake::PackageTask.new('rb-gsl', RB_GSL_VERSION) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
+  pkg.package_files = spec.files
 end
 
-task :default => :gem
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.need_zip = false
+  pkg.need_tar = false
+end
+
+task :default => [:package, :gem]
 
 # --------------------------------------------------------------------
 # Create a task to build the RDOC documentation tree.
@@ -75,7 +90,6 @@ Rake::RDocTask.new("rdoc") { |rdoc|
   rdoc.rdoc_files.include('rdoc/*.rdoc')
 }
 
-# TODO Make dependencies work for this task
 desc "Publish the RDoc files on RubyForge"
 task :pub_rdoc => ["html/index.html"] do
   mkdir_p "emptydir"

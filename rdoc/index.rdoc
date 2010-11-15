@@ -18,7 +18,7 @@
 # === {}[link:index.html"name="3.2] Using the setup.rb command
 # If you prefer, Ruby/GSL may still be installed using setup.rb.
 # 1. Get and install {GSL}[http://www.gnu.org/software/gsl/#downloading"target="_top]. Make sure the command "gsl-config" is in command search path.
-# 1. {Download}[http://rubyforge.org/frs/?group_id=285"target="_top] Ruby/GSL, ungzip and untar the archive <tt>rb-gsl-xxx.tar.gz</tt>. 
+# 1. {Download}[http://rubyforge.org/frs/?group_id=285"target="_top] Ruby/GSL, ungzip and untar the archive <tt>rb-gsl-xxx.tgz</tt>. 
 # 1. <tt> % cd rb-gsl-xxx/</tt>
 # 1. <tt> % ruby setup.rb config</tt>
 # 1. <tt> % ruby setup.rb setup</tt>
