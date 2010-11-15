@@ -1,0 +1,210 @@
+#
+# = Complex Numbers
+# Contents:
+# 1. {Class methods}[link:files/complex_rdoc.html#1]
+# 1. {Properties of Complex Numbers}[link:files/complex_rdoc.html#2]
+# 1. {Complex Arithmetic Operators}[link:files/complex_rdoc.html#3]
+# 1. {Elementary Complex Functions}[link:files/complex_rdoc.html#4]
+# 1. {Complex Trigonometric Functions}[link:files/complex_rdoc.html#5]
+# 1. {Inverse Complex Trigonometric Functions}[link:files/complex_rdoc.html#6]
+# 1. {Complex Hyperbolic Functions}[link:files/complex_rdoc.html#7]
+# 1. {Inverse Complex Hyperbolic Functions}[link:files/complex_rdoc.html#8]
+#
+# == {}[link:files/index_rdoc.html"name="1] Class Methods
+# ---
+# * GSL::Complex.alloc(re, im)
+# * GSL::Complex.rect(re, im)
+# * GSL::Complex[re, im]
+#
+#   These create a GSL::Complex object with real and imaginary part <tt>re, im</tt>.
+#
+# ---
+# * GSL::Complex.polar(r, theta)
+#
+#   This returns a GSL::Complex object in polar representation, with the amplitude <tt>r</tt> and the phase (argument) <tt>theta</tt>.
+#
+# == {}[link:files/index_rdoc.html"name="2] Properties of complex numbers
+# ---
+# * GSL::Complex#real
+# * GSL::Complex#re
+# * GSL::Complex#REAL
+#
+#   Returns the real part
+#
+# ---
+# * GSL::Complex#imag
+# * GSL::Complex#im
+# * GSL::Complex#IMAG
+#
+#   Returns the imaginary part
+#
+# ---
+# * GSL::Complex#arg
+# * GSL::Complex#angle
+# * GSL::Complex#phase
+#
+#   Returns the argument (i.e. phase angle in radians) of <tt>self</tt>.
+#
+# ---
+# * GSL::Complex#abs, abs2, logabs
+#
+#   Returns the magnitude, squared magnitude, and the logarithm of the magnitude
+#
+# == {}[link:files/index_rdoc.html"name="3] Complex arithmetic operators
+# ---
+# * GSL::Complex#add(b)
+# * GSL::Complex#+(b)
+#
+#   Return the sum of the complex numbers <tt>self</tt> and <tt>b</tt>. 
+# ---
+# * GSL::Complex#sub(b)
+# * GSL::Complex#-(b)
+#
+#   Return the difference of the complex numbers <tt>self</tt> and <tt>b</tt>. 
+# ---
+# * GSL::Complex#mul(b)
+# * GSL::Complex#*(b)
+#
+#   Returns the product of the complex numbers  <tt>self</tt> and <tt>b</tt>.
+# ---
+# * GSL::Complex#div(b)
+# * GSL::Complex#/(b)
+#
+#   Returns the quotient of the complex numbers  <tt>self</tt> and <tt>b</tt>.
+#
+# ---
+# * GSL::Complex#add_real
+# * GSL::Complex#sub_real
+# * GSL::Complex#mul_real
+# * GSL::Complex#div_real
+# * GSL::Complex#add_imag
+# * GSL::Complex#sub_imag
+# * GSL::Complex#mul_imag
+# * GSL::Complex#div_imag
+#
+#
+# ---
+# * GSL::Complex#conjugate
+# * GSL::Complex#conj
+#
+#   Returns the complex conjugate of the complex number <tt>self</tt>.
+# ---
+# * GSL::Complex#inverse
+#
+#   Returns the inverse of the complex number <tt>self</tt>.
+# ---
+# * GSL::Complex#negative
+#
+#   Returns the negative of the complex number <tt>self</tt>.
+#
+# == {}[link:files/index_rdoc.html"name="4] Elementary Complex Functions
+# ---
+# * GSL::Complex#sqrt
+# * GSL::Complex#pow(az)
+# * GSL::Complex#pow_real(a)
+# * GSL::Complex#exp
+# * GSL::Complex#log
+# * GSL::Complex#log10
+# * GSL::Complex#log_b(b)
+#
+#
+# ---
+# * GSL::Complex.sqrt(z)
+# * GSL::Complex.sqrt_real(a)
+# * GSL::Complex.pow(z, za)
+# * GSL::Complex.pow_real(z, a)
+# * GSL::Complex.exp(z)
+# * GSL::Complex.log(z)
+# * GSL::Complex.log10(z)
+# * GSL::Complex.log_b(z, b)
+#
+#
+# == {}[link:files/index_rdoc.html"name="5] Complex Trigonometric Functions
+# ---
+# * GSL::Complex#sin
+# * GSL::Complex#cos
+# * GSL::Complex#tan
+# * GSL::Complex#sec
+# * GSL::Complex#csc
+# * GSL::Complex#cot
+#
+#
+# ---
+# * GSL::Complex.sin(z)
+# * GSL::Complex.cos(z)
+# * GSL::Complex.tan(z)
+# * GSL::Complex.sec(z)
+# * GSL::Complex.csc(z)
+# * GSL::Complex.cot(z)
+#
+#
+# == {}[link:files/index_rdoc.html"name="6] Inverse Complex Trigonometric Functions
+# ---
+# * GSL::Complex#arcsin
+# * GSL::Complex#arccos
+# * GSL::Complex#arctan
+# * GSL::Complex#arcsec
+# * GSL::Complex#arccsc
+# * GSL::Complex#arccot
+#
+#
+# ---
+# * GSL::Complex.arcsin(z)
+# * GSL::Complex.arcsin_real(a)
+# * GSL::Complex.arccos(z)
+# * GSL::Complex.arccos_real(a)
+# * GSL::Complex.arctan(z)
+# * GSL::Complex.arcsec(z)
+# * GSL::Complex.arcsec_real(a)
+# * GSL::Complex.arccsc(z)
+# * GSL::Complex.arccsc_real(z)
+# * GSL::Complex.arccot(z)
+#
+#
+# == {}[link:files/index_rdoc.html"name="7] Complex Hyperbolic Functions
+# ---
+# * GSL::Complex#sinh
+# * GSL::Complex#cosh
+# * GSL::Complex#tanh
+# * GSL::Complex#sech
+# * GSL::Complex#csch
+# * GSL::Complex#coth
+#
+#
+# ---
+# * GSL::Complex.sinh(z)
+# * GSL::Complex.cosh(z)
+# * GSL::Complex.tanh(z)
+# * GSL::Complex.sech(z)
+# * GSL::Complex.csch(z)
+# * GSL::Complex.coth(z)
+#
+#
+# == {}[link:files/index_rdoc.html"name="8] Inverse Complex Hyperbolic Functions
+# ---
+# * GSL::Complex#arcsinh
+# * GSL::Complex#arccosh
+# * GSL::Complex#arctanh
+# * GSL::Complex#arcsech
+# * GSL::Complex#arccsch
+# * GSL::Complex#arccoth
+#
+#
+# ---
+# * GSL::Complex#arcsinh(z)
+# * GSL::Complex#arccosh(z)
+# * GSL::Complex#arccosh_real(a)
+# * GSL::Complex#arctanh(z)
+# * GSL::Complex#arctanh_real(z)
+# * GSL::Complex#arcsech(z)
+# * GSL::Complex#arccsch(z)
+# * GSL::Complex#arccoth(z)
+#
+#
+# {prev}[link:files/math_rdoc.html]
+# {next}[link:files/poly_rdoc.html]
+#
+# {Reference index}[link:files/ref_rdoc.html]
+# {top}[link:files/index_rdoc.html]
+#
+#

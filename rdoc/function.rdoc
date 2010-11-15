@@ -1,0 +1,94 @@
+#
+# = GSL::Function class
+#
+# == {}[link:files/index_rdoc.html"name="1] Class Methods
+#
+# ---
+# * GSL::Function.alloc
+#
+#   Constructor.
+#    
+#   * ex:
+#      require("gsl")
+#      f = GSL::Function.alloc { |x| sin(x) }
+#
+#   The value of the function is calculated by the method <tt>Function#eval</tt>, as
+#
+#      p f.eval(x)
+#
+#   The function can have parameters of arbitrary numbers. Here is an
+#   example in case of exponential function <tt>f(x; a, b) = a*exp(-b*x)</tt>.
+#     
+#      f = GSL::Function.alloc { |x, params|    # x: a scalar, params: an array
+#        a = params[0]; b = params[1]
+#        a*exp(-b*x)
+#      }
+#   To evaluate the function <tt>f(x) = 2*exp(-3*x)</tt>, 
+#      f.set_params([2, 3])
+#      f.eval(x)
+#
+# == {}[link:files/index_rdoc.html"name="2] Methods
+#
+# ---
+# * GSL::Function#eval(x)
+# * GSL::Function#call(x)
+# * GSL::Function#at(x)
+# * GSL::Function#[x]
+#
+#   These methods return a value of the function at <tt>x</tt>.
+#     p f.eval(2.5)
+#     p f.call(2.5)
+#     p f[2.5]
+#   The argument <tt>x</tt> can be a scalar, a Vector, Matrix, Array or Range.
+#
+# ---
+# * GSL::Function#set { |x| ... }
+# * GSL::Function#set(proc, params)
+#
+#   This method sets or resets the procedure of <tt>self</tt>, as
+#
+#     f = GSL::Function.alloc { |x| sin(x) }
+#     p f.eval(1.0)               <- sin(1.0)
+#     f.set { |x| cos(x) }
+#     p f.eval(1.0)               <- cos(1.0)
+#
+# ---
+# * GSL::Function#set_params(params)
+#
+#   This set the constant parameters of the function.
+#
+# == {}[link:files/index_rdoc.html"name="3] Graph
+# ---
+# * GSL::Function#graph(x[, options])
+#
+#   This method uses <tt>GNU graph</tt> to plot the function <tt>self</tt>.
+#   The argument <tt>x</tt> is given by a <tt>GSL::Vector</tt> or an <tt>Array</tt>.
+#
+#   Ex: Plot sin(x)
+#        f = Function.alloc { |x| Math::sin(x) }
+#        x = Vector.linspace(0, 2*M_PI, 50)
+#        f.graph(x, "-T X -g 3 -C -L 'sin(x)'")
+#
+#
+# == {}[link:files/index_rdoc.html"name="4] Example
+# A quadratic function, f(x) = x^2 + 2x + 3.
+#
+#     >> require("gsl")
+#     => true
+#     >> f = Function.alloc { |x, param| x*x + param[0]*x + param[1] } 
+#     => #<GSL::Function:0x6e8eb0>
+#     >> f.set_params(2, 3)
+#     => #<GSL::Function:0x6e8eb0>
+#     >> f.eval(2)                             <--- Scalar
+#     => 11
+#     >> f.eval(1..4)                          <--- Range
+#     => [6.0, 11.0, 18.0, 27.0]
+#     >> f.eval([1, 2, 3])                     <--- Array
+#     => [6.0, 11.0, 18.0]
+#     >> f.eval(Matrix.alloc([1, 2], [3, 4]))    <--- GSL::Matrix
+#     [ 6.000e+00 1.100e+01 
+#       1.800e+01 2.700e+01 ]
+#     => #<GSL::Matrix:0x6dd1b4>
+#
+# {back}[link:files/index_rdoc.html]
+#

@@ -1,0 +1,176 @@
+#
+# = Using Ruby/GSL
+# == {}[link:files/index_rdoc.html"name="1] Installation
+# See {here}[link:files/index_rdoc.html].
+#
+# == {}[link:files/index_rdoc.html"name="2] Load the library
+# Put at the head of your scripts,
+#     
+#     require("gsl")
+#
+# == {}[link:files/index_rdoc.html"name="3] Naming conventions, C Structs and Ruby Classes
+#
+# Most of the GSL data types, functions or constants are named as <tt>gsl_xxx</tt> or <tt>GSL_XXX</tt>. 
+# In Ruby/GSL, the prefix <tt>gsl_</tt> is replaced by the module identifier <tt>GSL::</tt>, 
+# where <tt>GSL</tt> is the top level module of Ruby/GSL,
+# and the Ruby classes are defined for each of the GSL C structs under the <tt>GSL</tt> module.
+# According to the Ruby manner, the name of each class begins with a capital. For example,
+#
+#   * Struct <tt>gsl_vector</tt> ---> Ruby class <tt>GSL::Vector</tt>
+#     * Function call as <tt>v = gsl_vector_alloc(5);</tt> ---> Class method <tt>v = GSL::Vector.alloc(5)</tt>
+#     * Function call as <tt>gsl_vector_set(v, i, 1.5);</tt> ---> Method <tt>v.set(i, 1.5)</tt> or <tt>v[i] = 1.5</tt>
+#   * Constant <tt>GSL_SUCCESS</tt> ---> Ruby module constant <tt>GSL::SUCCESS</tt>
+#   * Function <tt>gsl_sf_bessel_J0(x)</tt> --->
+#     * Submodule <tt>GSL::Sf</tt>
+#     * Module function <tt>GSL::Sf::bessel_J0(x)</tt>
+#       * <tt>GSL::Sf::Bessel::J0(x)</tt> is also OK, where <tt>J0(x)</tt> is a module function of the sub-sub-module <tt>GSL::Sf::Bessel</tt>.
+#   * Function <tt>gsl_linalg_LU_decomp</tt> --->
+#     * Module <tt>GSL::Linalg::LU</tt>
+#       * Singleton method <tt>GSL::Linalg::LU_decomp</tt>
+#       * Submodule <tt>GSL::Linalg::LU</tt>
+#         * Singleton method <tt>GSL::Linalg::LU.decomp</tt>
+#     * Method <tt>GSL::Matrix#LU_decomp</tt>
+#
+# == {}[link:files/index_rdoc.html"name="4] Examples
+# See the directories "examples/" and "tests/".
+#
+# Some of the examples use the <tt>graph</tt> utility to show the results. The <tt>graph</tt>
+# utility is included in the {GNU plotutils}[http://www.gnu.org/software/plotutils/plotutils.html"target="_top] package. Windows-cygwin binaries of <tt>GNU plotutils</tt> and 
+# related packages are available from 
+# {here}[http://rustam.uwp.edu/support"target="_top].
+#
+# == {}[link:files/index_rdoc.html"name="5] Modules and Classes
+# The following is the list of Ruby/GSL modules and classes, <Name> (<Module or Class>)
+#
+# * GSL (Module) 
+#   * Complex (Class) 
+#   * Poly (Class) 
+#     * Workspace (Class)
+#     * DividedDifferenceRepresentation (Class)
+#     * Taylor (Class)
+#   * Sf (Module) 
+#     * Result (Class)
+#   * Block (Class)
+#     * Int (Class)
+#     * Byte (Class)
+#     * Index < Permutation
+#   * Vector (Class) 
+#     * View < Vector
+#     * Complex (Class)
+#       * View < Vector::Complex
+#   * Matrix (Class) 
+#     * View < Matrix (Class)
+#     * Complex (Class)
+#       * View < Matrix::Complex
+#   * Permutation (Class) 
+#   * Combination (Class) 
+#   * Linalg (Module) 
+#     * LU (Module)
+#     * QR (Module)
+#     * QRPT (Module)
+#     * LQ (Module)
+#     * LQPT (Module)
+#     * SV (Module)
+#     * Cholesky (Module)
+#     * Symmtd (Module)
+#     * HH (Module)
+#   * Eigen (Module)
+#     * EigenValues < Vector
+#     * EigenVectors < Matrix
+#     * Symm (Module)
+#       * Workspace (Class)
+#     * Symmv (Module)
+#       * Workspace (Class)
+#     * Unsymm (Module)
+#       * Workspace (Class)
+#     * Unsymmv (Module)
+#       * Workspace (Class)
+#     * Herm (Module)
+#       * Workspace (Class)
+#     * Hermv (Module)
+#       * Workspace (Class)
+#   * FFT (Module) 
+#     * ComplexWavetable (Class)
+#     * ComplexWorkspace (Class)
+#     * HalfComplexWavetable (Class)
+#     * RealWavetable (Class)
+#     * RealWorkspace (Class)      
+#   * Wavelet (Class)
+#       * Wavelet2d < Wavelet
+#   * Function (Class)
+#   * Function_fdf (Class)
+#   * Integration (Module)
+#     * Workspace
+#     * QAWS_Table
+#     * QAWO_Table
+#   * Rng (Class) 
+#   * QRng (Class)
+#   * Ran (Module)
+#   * Stats (Module) 
+#   * Histogram (Class) 
+#     * Integral < Histogram
+#     * Pdf (Class)
+#   * Histogram2d (Class)
+#   * N-tuples 
+#     * SelectFn (Class)
+#     * ValueFn (Class)
+#   * Monte (Module)
+#     * Function (Class)
+#     * Plain (Class)
+#     * Miser (Class)
+#     * Vegas (Class)
+#   * Siman (Module)
+#     * Efunc (Class)
+#     * Step (Class)
+#     * Metric (Class)
+#     * Print (Class)
+#     * Params (Class)
+#     * Solver (Class)
+#   * Odeiv (Module)
+#     * Control (Class)
+#     * Evolve (Class)
+#     * System (Class)
+#     * Solver (Class)
+#   * Interp (Class)
+#     * Accel (Class)
+#   * Spline (Class)
+#   * Diff (Module) 
+#   * Deriv (Module)
+#   * Cheb (Class) 
+#   * Sum (Module) 
+#     * Levin_u (Class)
+#     * Levin_utrunc (Class)
+#   * Dht (Class) 
+#   * Root (Module)
+#     * Solver (Class)
+#     * FdfSolver (Class)
+#   * Min(Module) 
+#     * FMinimizer (Class)
+#   * MultiRoot (Module)
+#     * Function (Class)
+#     * FSolver (Class)
+#     * Function_fdf (Class)
+#     * FdfSolver (Class)
+#   * MultiMin (Module) 
+#     * Function (Class)
+#     * FMinimizer (Class)
+#     * Function_fdf (Class)
+#     * FdfMinimizer (Class)
+#   * Fit (Module) 
+#   * MultiFit (Module)
+#     * Workspace (Class)
+#     * Solver (Class)
+#     * Function_fdf (Class)
+#     * FdfSolver (Class)
+#   * CONST (Module) 
+#     * MKSA (Module)
+#     * CGSM (Module)
+#     * NUM (Module)
+#
+# {prev}[link:files/intro_rdoc.html]
+# {next}[link:files/ehandling_rdoc.html]
+#
+# {Reference index}[link:files/ref_rdoc.html]
+# {top}[link:files/index_rdoc.html]
+#
+#

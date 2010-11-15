@@ -1,0 +1,125 @@
+#
+# = Combinations
+# Contents:
+# 1. {Combination allocation}[link:files/combi_rdoc.html#1]
+# 1. {Methods}[link:files/combi_rdoc.html#2]
+# 1. {Accessing combination elements}[link:files/combi_rdoc.html#2.1]
+# 1. {Combination properties}[link:files/combi_rdoc.html#2.2]
+# 1. {Combination functions}[link:files/combi_rdoc.html#2.3]
+# 1. {Reading and writing combinations}[link:files/combi_rdoc.html#2.4]
+#
+# == {}[link:files/index_rdoc.html"name="1] Combination allocation
+# ---
+# * GSL::Combination.alloc(n, k)
+#
+#   These create a new combination with parameters <tt>n, k</tt>. 
+#   The combination is not initialized and its elements are undefined. 
+#   Use the method <tt>GSL::Combination.calloc</tt> if you want to create a 
+#   combination which is initialized to the lexicographically first combination. 
+#
+# ---
+# * GSL::Combination.calloc(n, k)
+#
+#   This creates a new combination with parameters <tt>n, k</tt> and initializes 
+#   it to the lexicographically first combination. 
+#
+# == {}[link:files/index_rdoc.html"name="2] Methods
+#
+# ---
+# * GSL::Combination#init_first
+#
+#   This method initializes the combination <tt>self</tt> to the lexicographically 
+#   first combination, i.e. (0,1,2,...,k-1).
+#
+# ---
+# * GSL::Combination#init_last
+#
+#   This method initializes the combination <tt>self</tt> to the lexicographically last 
+#   combination, i.e. (n-k,n-k+1,...,n-1).
+#
+# === {}[link:files/index_rdoc.html"name="2.1] Accessing combination elements
+# ---
+# * GSL::Combination#get(i)
+# * GSL::Combination#[i]
+#
+#   This returns the value of the <tt>i</tt>-th element of the combination <tt>self</tt>. 
+#
+# === {}[link:files/index_rdoc.html"name="2.2] Combination properties
+# ---
+# * GSL::Combination#n
+#
+#   Returns the <tt>n</tt> parameter of the combination <tt>self</tt>.
+#
+# ---
+# * GSL::Combination#k
+#
+#   Returns the <tt>k</tt> parameter of the combination <tt>self</tt>.
+#
+# ---
+# * GSL::Combination#data
+#
+#   Returns the vector of elements in the combination <tt>self</tt>.
+#
+# ---
+# * GSL::Combination#valid
+#
+#   This method checks that the combination <tt>self</tt> is valid. 
+#   The <tt>k</tt> elements should contain numbers from range 0 .. n-1, 
+#   each number at most once. The numbers have to be in increasing order.
+#
+# ---
+# * GSL::Combination#valid?
+#
+#   Thie returns true if the combination is valid, and false otherwise.
+#
+# === {}[link:files/index_rdoc.html"name="2.3] Combination functions
+# ---
+# * GSL::Combination#next
+#
+#   This method advances the combination <tt>self</tt> to the next combination in 
+#   lexicographic order and returns <tt>GSL::SUCCESS</tt>. If no further combinations are 
+#   available it returns <tt>GSL::FAILURE</tt> and leaves <tt>self</tt> unmodified. 
+#   Starting with the first combination and repeatedly applying this function will 
+#   iterate through all possible combinations of a given order.
+#
+# ---
+# * GSL::Combination#prev
+#
+#   This method steps backwards from the combination <tt>self</tt> to the previous 
+#   combination in lexicographic order, returning <tt>GSL::SUCCESS</tt>. 
+#   If no previous combination is available it returns <tt>GSL::FAILURE</tt> 
+#   and leaves <tt>self</tt> unmodified.
+#
+# === {}[link:files/index_rdoc.html"name="2.4] Reading and writing combinations
+# ---
+# * GSL::Combination#fwrite(filename)
+# * GSL::Combination#fwrite(io)
+# * GSL::Combination#fread(filename)
+# * GSL::Combination#fread(io)
+# * GSL::Combination#fprintf(filename, format = "%u")
+# * GSL::Combination#fprintf(io, format = "%u")
+# * GSL::Combination#fscanf(filename)
+# * GSL::Combination#fscanf(io)
+#
+#
+# == {}[link:files/index_rdoc.html"name="3] Example
+#      #!/usr/bin/env ruby
+#      require("rbgsl")
+#
+#      printf("All subsets of {0,1,2,3} by size:\n") ;
+#      for i in 0...4 do
+#        c = GSL::Combination.calloc(4, i);
+#        begin
+#          printf("{");
+#          c.fprintf(STDOUT, " %u");
+#          printf(" }\n");
+#        end while c.next == GSL::SUCCESS
+#      end
+#
+# {prev}[link:files/perm_rdoc.html]
+# {next}[link:files/multiset_rdoc.html]
+#
+# {Reference index}[link:files/ref_rdoc.html]
+# {top}[link:files/index_rdoc.html]
+#
+#

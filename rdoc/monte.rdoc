@@ -1,0 +1,234 @@
+#
+# = Monte Carlo Integration
+#
+# == {}[link:files/index_rdoc.html"name="1] The GSL::Monte::Function class
+# The function to be integrated has its own datatype, the <tt>GSL::Monte::Function</tt> class.
+#
+# ---
+# * GSL::Munte::Function.alloc(proc, dim, params)
+# * GSL::Munte::Function.alloc(proc, dim)
+#
+#   Constructor. The following example shows how to use this:
+#
+#   * ex:
+#       proc_f = Proc.new { |x, dim, params|
+#         a = params[0]; b = params[1]; c = params[2]
+#         if dim != 2; raise("dim != 2"); end
+#         a*x[0]*x[0] + b*x[0]*x[1] + c*x[1]*x[1]
+#       }
+#       dim = 2
+#       mf = Monte::Function.alloc(proc_f, dim)
+#       mf.set_params([3, 2, 1])    
+#
+# ---
+# * GSL::Munte::Function#set(proc, dim, params)
+# * GSL::Munte::Function#set(proc, dim)
+# * GSL::Munte::Function#set(proc)
+# * GSL::Munte::Function#set_proc(proc)
+# * GSL::Munte::Function#set_proc(proc, dim)
+# * GSL::Munte::Function#set_params(params)
+# * GSL::Munte::Function#params
+# * GSL::Munte::Function#eval
+# * GSL::Munte::Function#call
+#
+#
+# == {}[link:files/index_rdoc.html"name="2] Monte Carlo plans, alrgorithms 
+# === {}[link:files/index_rdoc.html"name="2.1] PLAIN Monte Carlo
+# ---
+# * GSL::Monte::Plain.alloc(dim)
+# * GSL::Monte::Plain#init
+#
+# === {}[link:files/index_rdoc.html"name="2.2] Miser
+# ---
+# * GSL::Monte::Miser.alloc(dim)
+# * GSL::Monte::Miser#init
+#
+# === {}[link:files/index_rdoc.html"name="2.3] Vegas
+# ---
+# * GSL::Monte::Vegas.alloc(dim)
+# * GSL::Monte::Vegas#init
+#
+#
+# == {}[link:files/index_rdoc.html"name="3] Integration
+# ---
+# * GSL:Monte::Function#integrate(xl, xu, dim, calls, rng, s)
+# * GSL:Monte::Function#integrate(xl, xu, dim, calls, s)
+# * GSL:Monte::Function#integrate(xl, xu, calls, rng, s)
+# * GSL:Monte::Function#integrate(xl, xu, calls, s)
+#
+#   This method performs Monte-Carlo integration of the function <tt>self</tt> 
+#   using the algorithm <tt>s</tt>, over the <tt>dim</tt>-dimensional hypercubic 
+#   region defined by the lower and upper 
+#   limits in the arrays <tt>xl</tt> and <tt>xu</tt>, each of size <tt>dim</tt>. 
+#   The integration uses a fixed number of function calls <tt>calls</tt>.
+#   The argument <tt>rng</tt> is a random number generator (optional). If it is not
+#   given, a new generator is created internally and freed when the calculation
+#   finishes.
+#
+#   See sample scripts <tt>sample/monte*.rb</tt> for more details.
+#
+# == {}[link:files/index_rdoc.html"name="4] Accessing internal state of the Monte Carlo classes
+# ---
+# * GSL::Monte::Miser#estimate_frac
+# * GSL::Monte::Miser#estimate_frac=
+# * GSL::Monte::Miser#min_calls
+# * GSL::Monte::Miser#min_calls=
+# * GSL::Monte::Miser#min_call_per_bisection
+# * GSL::Monte::Miser#min_calls_per_bisection=
+# * GSL::Monte::Miser#alpha
+# * GSL::Monte::Miser#alpha=
+# * GSL::Monte::Miser#dither
+# * GSL::Monte::Miser#dither=
+# * GSL::Monte::Vegas#alpha
+# * GSL::Monte::Vegas#result
+# * GSL::Monte::Vegas#sigma
+# * GSL::Monte::Vegas#chisq
+#
+#   Returns the chi-squared per degree of freedom for the weighted estimate of the integral. The returned value should be close to 1. A value which differs significantly from 1 indicates that the values from different iterations are inconsistent. In this case the weighted error will be under-estimated, and further iterations of the algorithm are needed to obtain reliable results.
+# ---
+# * GSL::Monte::Vegas#runval
+#
+#   Returns the raw (unaveraged) values of the integral and its error <tt>[result, sigma]</tt> from the most recent iteration of the algorithm.
+# ---
+# * GSL::Monte::Vegas#iterations
+# * GSL::Monte::Vegas#iterations=
+# * GSL::Monte::Vegas#alpha
+# * GSL::Monte::Vegas#alpha=
+# * GSL::Monte::Vegas#stage
+# * GSL::Monte::Vegas#stage=
+# * GSL::Monte::Vegas#mode
+# * GSL::Monte::Vegas#mode=
+# * GSL::Monte::Vegas#verbose
+# * GSL::Monte::Vegas#verbose=
+#
+#
+# == {}[link:files/index_rdoc.html"name="5] Miser Parameters (GSL-1.13 or later)
+# ---
+# * GSL::Monte::Miser#params_get
+#
+#   Returns the parameters of the integrator state as an instance of <tt>GSL::Monte::Miser::Params</tt> class.
+# ---
+# * GSL::Monte::Miser#params_set(params)
+#
+#   Sets the integrator parameters based on values provided in an object of the <tt>GSL::Monte::Miser::Params</tt> class <tt>params</tt>.
+# === {}[link:files/index_rdoc.html"name="5.1] Accessors of <tt>GSL::Monte::Miser::Params</tt>
+# ---
+# * GSL::Monte::Miser::Params#estimate_frac
+# * GSL::Monte::Miser::Params#estimate_frac=
+#
+#   The fraction of the currently available number of function calls which are allocated to estimating the variance at each recursive step. The default value is 0.1.
+# ---
+# * GSL::Monte::Miser::Params#min_calls
+# * GSL::Monte::Miser::Params#min_calls=
+#
+#   The minimum number of function calls required for each estimate of the variance. If the number of function calls allocated to the estimate using <tt>estimate_frac</tt> falls below <tt>min_calls</tt> then <tt>min_calls</tt> are used instead. This ensures that each estimate maintains a reasonable level of accuracy. The default value of min_calls is 16 * dim.
+# ---
+# * GSL::Monte::Miser::Params#min_calls_per_bisection
+# * GSL::Monte::Miser::Params#min_calls_per_bisection=
+#
+#   The minimum number of function calls required to proceed with a bisection step. When a recursive step has fewer calls available than <tt>min_calls_per_bisection</tt> it performs a plain Monte Carlo estimate of the current sub-region and terminates its branch of the recursion. The default value of this parameter is 32 * min_calls.
+# ---
+# * GSL::Monte::Miser::Params#alpha
+# * GSL::Monte::Miser::Params#alpha=
+#
+#   This parameter controls how the estimated variances for the two sub-regions of a bisection are combined when allocating points. With recursive sampling the overall variance should scale better than 1/N, since the values from the sub-regions will be obtained using a procedure which explicitly minimizes their variance. To accommodate this behavior the MISER algorithm allows the total variance to depend on a scaling parameter <tt>alpha</tt>, The authors of the original paper describing MISER recommend the value <tt>alpha</tt> = 2 as a good choice, obtained from numerical experiments, and this is used as the default value in this implementation.
+# ---
+# * GSL::Monte::Miser::Params#dither
+# * GSL::Monte::Miser::Params#dither=
+#
+# This parameter introduces a random fractional variation of size dither into each bisection, which can be used to break the symmetry of integrands which are concentrated near the exact center of the hypercubic integration region. The default value of dither is zero, so no variation is introduced. If needed, a typical value of dither is 0.1.
+#
+# == {}[link:files/index_rdoc.html"name="6] Vegas Parameters (GSL-1.13 or later)
+# ---
+# * GSL::Monte::Vegas#params_get
+#
+#   Returns the parameters of the integrator state as an instance of <tt>GSL::Monte::Vegas::Params</tt> class.
+# ---
+# * GSL::Monte::Vegas#params_set(params)
+#
+#   Sets the integrator parameters based on values provided in an object of the <tt>GSL::Monte::Vegas::Params</tt> class <tt>params</tt>.
+#
+# === {}[link:files/index_rdoc.html"name="6.1] Accessors of <tt>GSL::Monte::Vegas::Params</tt>
+# ---
+# * GSL::Monte::Vegas::Params#alpha
+# * GSL::Monte::Vegas::Params#alpha=
+#
+#   Controls the stiffness of the rebinning algorithm. It is typically set between one and two. A value of zero prevents rebinning of the grid. The default value is 1.5.
+# ---
+# * GSL::Monte::Vegas::Params#iterations
+# * GSL::Monte::Vegas::Params#iterations=
+#
+#   The number of iterations to perform for each call to the routine. The default value is 5 iterations.
+# ---
+# * GSL::Monte::Vegas::Params#stage
+# * GSL::Monte::Vegas::Params#stage=
+#
+#   Setting this determines the stage of the calculation. Normally, stage = 0 which begins with a new uniform grid and empty weighted average. Calling vegas with stage = 1 retains the grid from the previous run but discards the weighted average, so that one can "tune" the grid using a relatively small number of points and then do a large run with stage = 1 on the optimized grid. Setting stage = 2 keeps the grid and the weighted average from the previous run, but may increase (or decrease) the number of histogram bins in the grid depending on the number of calls available. Choosing stage = 3 enters at the main loop, so that nothing is changed, and is equivalent to performing additional iterations in a previous call.
+# ---
+# * GSL::Monte::Vegas::Params#mode
+# * GSL::Monte::Vegas::Params#mode=
+#
+#   The possible choices are <tt>GSL::VEGAS::MODE_IMPORTANCE</tt>, <tt>GSL::VEGAS::MODE_STRATIFIED</tt>, <tt>GSL::VEGAS::MODE_IMPORTANCE_ONLY</tt>. This determines whether VEGAS will use importance sampling or stratified sampling, or whether it can pick on its own. In low dimensions VEGAS uses strict stratified sampling (more precisely, stratified sampling is chosen if there are fewer than 2 bins per box).
+# ---
+# * GSL::Monte::Vegas::Params#verbose
+# * GSL::Monte::Vegas::Params#verbose=
+#
+#   Set the level of information printed by VEGAS. All information is written to the stream ostream. The default setting of verbose is -1, which turns off all output. A verbose value of 0 prints summary information about the weighted average and final result, while a value of 1 also displays the grid coordinates. A value of 2 prints information from the rebinning procedure for each iteration.
+#
+# == {}[link:files/index_rdoc.html"name="7] Example
+#
+#      #!/usr/bin/env ruby
+#      require("gsl")
+#      include GSL::Monte
+#      include Math
+#
+#      proc_f = Proc.new { |k, dim, params|
+#        pi = Math::PI
+#        a = 1.0/(pi*pi*pi)
+#        a/(1.0 - cos(k[0])*cos(k[1])*cos(k[2]))
+#      }
+#
+#      def display_results(title, result, error)
+#        exact = 1.3932039296856768591842462603255
+#
+#        diff = result - exact
+#        printf("%s ==================\n", title);
+#        printf("result = % .6f\n", result);
+#        printf("sigma  = % .6f\n", error);
+#        printf("exact  = % .6f\n", exact);
+#        printf("error  = % .6f = %.1g sigma\n", diff, diff.abs/error)
+#      end
+#
+#      dim = 3
+#      xl = Vector.alloc(0, 0, 0)
+#      xu = Vector.alloc(PI, PI, PI)
+#      G = Monte::Function.alloc(proc_f, dim)
+#      calls = 500000
+#      r = GSL::Rng.alloc(Rng::DEFAULT)
+#
+#      plain = Monte::Plain.alloc(dim)
+#      result, error = G.integrate(xl, xu, dim, calls, r, plain)
+#      display_results("plain", result, error)
+#
+#      miser = Monte::Miser.alloc(dim)
+#      result, error = G.integrate(xl, xu, dim, calls, r, miser)
+#      display_results("miser", result, error)
+#
+#      vegas = Monte::Vegas.alloc(dim)
+#      result, error = G.integrate(xl, xu, dim, 10000, r, vegas)
+#      display_results("vegas warm-up", result, error)
+#      puts("converging...");
+#      begin
+#        result, error = G.integrate(xl, xu, dim, calls/5, r, vegas)
+#        printf("result = % .6f sigma = % .6f chisq/dof = %.1f\n", 
+#                result, error, vegas.chisq)
+#      end while (vegas.chisq-1.0).abs > 0.5
+#      display_results("vegas final", result, error)
+#
+# {prev}[link:files/ntuple_rdoc.html]
+# {next}[link:files/siman_rdoc.html]
+#
+# {Reference index}[link:files/ref_rdoc.html]
+# {top}[link:files/index_rdoc.html]
+#
+#
