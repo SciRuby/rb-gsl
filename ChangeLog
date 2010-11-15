@@ -1,3 +1,9 @@
+Sun Nov 14 17:01:07 PST 2010
+  * Ruby/GSL 1.14.5
+    * Convert docs from rdtool to rdoc
+    * Fix object id handling bugs on 64-bit systems
+    * Fix Vector's handling of Range parameters
+
 Wed Sep 29 00:37:44 BOT 2010
   * Modification for ruby-1.9.2
     * Replaced STR2CSTR to StringValuePtr
