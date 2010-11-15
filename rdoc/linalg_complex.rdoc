@@ -1,6 +1,5 @@
 #
-#
-# === {}[link:index.html"name="0.1] Complex LU decomposition
+# === Complex LU decomposition
 #
 # ---
 # * GSL::Linalg::Complex::LU_decomp!(A)

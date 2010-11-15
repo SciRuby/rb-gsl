@@ -1,6 +1,5 @@
 #
-#
-# === {}[link:index.html"name="1] Cholesky decomposition (>= GSL-1.10)
+# === Cholesky decomposition (>= GSL-1.10)
 # A symmetric, positive definite square matrix <tt>A</tt> has 
 # a Cholesky decomposition into a product of a lower triangular matrix 
 # <tt>L</tt> and its transpose <tt>L^T</tt>.

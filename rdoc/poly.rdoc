@@ -1,5 +1,4 @@
 #
-#
 # = Polynomials
 # Contents:
 # 1. {Polynomial Evaluation}[link:files/rdoc/poly_rdoc.html#1]
