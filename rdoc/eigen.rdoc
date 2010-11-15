@@ -1,16 +1,16 @@
 #
 # = Eigensystems
-# === {}[link:files/index_rdoc.html"name="0.1] Contentes
-# 1. {Modules and classes}[link:files/eigen_rdoc.html#1]
-# 1. {Real Symmetric Matrices}[link:files/eigen_rdoc.html#2]
-# 1. {Complex Hermitian Matrices}[link:files/eigen_rdoc.html#3]
-# 1. {Real Nonsymmetric Matrices}[link:files/eigen_rdoc.html#4] (>= GSL-1.9)
-# 1. {Real Generalized Symmetric-Definite Eigensystems}[link:files/eigen_rdoc.html#5] (>= GSL-1.10)
-# 1. {Complex Generalized Hermitian-Definite Eigensystems}[link:files/eigen_rdoc.html#6] (>= GSL-1.10)
-# 1. {Real Generalized Nonsymmetric Eigensystems}[link:files/eigen_rdoc.html#7] (>= GSL-1.10)
-# 1. {Sorting Eigenvalues and Eigenvectors }[link:files/eigen_rdoc.html#8]
+# === {}[link:index.html"name="0.1] Contentes
+# 1. {Modules and classes}[link:files/rdoc/eigen_rdoc.html#1]
+# 1. {Real Symmetric Matrices}[link:files/rdoc/eigen_rdoc.html#2]
+# 1. {Complex Hermitian Matrices}[link:files/rdoc/eigen_rdoc.html#3]
+# 1. {Real Nonsymmetric Matrices}[link:files/rdoc/eigen_rdoc.html#4] (>= GSL-1.9)
+# 1. {Real Generalized Symmetric-Definite Eigensystems}[link:files/rdoc/eigen_rdoc.html#5] (>= GSL-1.10)
+# 1. {Complex Generalized Hermitian-Definite Eigensystems}[link:files/rdoc/eigen_rdoc.html#6] (>= GSL-1.10)
+# 1. {Real Generalized Nonsymmetric Eigensystems}[link:files/rdoc/eigen_rdoc.html#7] (>= GSL-1.10)
+# 1. {Sorting Eigenvalues and Eigenvectors }[link:files/rdoc/eigen_rdoc.html#8]
 #
-# == {}[link:files/index_rdoc.html"name="1] Modules and classes
+# == {}[link:index.html"name="1] Modules and classes
 #
 # * GSL
 #   * Eigen
@@ -42,8 +42,8 @@
 #     * Genv (Module, >= GSL-1.10)
 #       * Workspace (Class)
 #
-# == {}[link:files/index_rdoc.html"name="2] Real Symmetric Matrices, GSL::Eigen::Symm module
-# === {}[link:files/index_rdoc.html"name="2.1] Workspace classes
+# == {}[link:index.html"name="2] Real Symmetric Matrices, GSL::Eigen::Symm module
+# === {}[link:index.html"name="2.1] Workspace classes
 # ---
 # * GSL::Eigen::Symm::Workspace.alloc(n)
 # * GSL::Eigen::Symmv::Workspace.alloc(n)
@@ -51,7 +51,7 @@
 # * GSL::Eigen::Hermv::Workspace.alloc(n)
 #
 #
-# === {}[link:files/index_rdoc.html"name="2.2] Methods to solve eigensystems
+# === {}[link:index.html"name="2.2] Methods to solve eigensystems
 # ---
 # * GSL::Eigen::symm(A)
 # * GSL::Eigen::symm(A, workspace)
@@ -81,7 +81,7 @@
 #
 #         eigval, eigvec = m.eigen_symmv
 #
-# == {}[link:files/index_rdoc.html"name="3] Complex Hermitian Matrices
+# == {}[link:index.html"name="3] Complex Hermitian Matrices
 # ---
 # * GSL::Eigen::herm(A)
 # * GSL::Eigen::herm(A, workspace)
@@ -97,7 +97,7 @@
 # * GSL::Matrix::Complex#eigen_hermv(workspace
 #
 #
-# == {}[link:files/index_rdoc.html"name="4] Real Nonsymmetric Matrices (>= GSL-1.9)
+# == {}[link:index.html"name="4] Real Nonsymmetric Matrices (>= GSL-1.9)
 #
 # ---
 # * GSL::Eigen::Nonsymm.alloc(n)
@@ -174,7 +174,7 @@
 #   matrix. The computed eigenvectors are normalized to have Euclidean norm 1.
 #   On output, the upper portion of <tt>m</tt> contains the Schur form <tt>T</tt>. 
 #
-# == {}[link:files/index_rdoc.html"name="5] Real Generalized Symmetric-Definite Eigensystems (GSL-1.10)
+# == {}[link:index.html"name="5] Real Generalized Symmetric-Definite Eigensystems (GSL-1.10)
 # The real generalized symmetric-definite eigenvalue problem is to 
 # find eigenvalues <tt>lambda</tt> and eigenvectors <tt>x</tt> such that 
 # where <tt>A</tt> and <tt>B</tt> are symmetric matrices, and <tt>B</tt> 
@@ -210,7 +210,7 @@
 #   The computed eigenvectors are normalized to have unit magnitude. 
 #   On output, <tt>B</tt> contains its Cholesky decomposition.
 #
-# == {}[link:files/index_rdoc.html"name="6] Complex Generalized Hermitian-Definite Eigensystems (>= GSL-1.10)
+# == {}[link:index.html"name="6] Complex Generalized Hermitian-Definite Eigensystems (>= GSL-1.10)
 # The complex generalized hermitian-definite eigenvalue problem is to 
 # find eigenvalues <tt>lambda</tt> and eigenvectors <tt>x</tt> such that 
 # where <tt>A</tt> and <tt>B</tt> are hermitian matrices, and <tt>B</tt> 
@@ -244,7 +244,7 @@
 #   The computed eigenvectors are normalized to have unit magnitude. 
 #   On output, <tt>B</tt> contains its Cholesky decomposition.
 #
-# == {}[link:files/index_rdoc.html"name="7] Real Generalized Nonsymmetric Eigensystems (>= GSL-1.10)
+# == {}[link:index.html"name="7] Real Generalized Nonsymmetric Eigensystems (>= GSL-1.10)
 #
 # ---
 # * GSL::Eigen::Gen.alloc(n)
@@ -322,7 +322,7 @@
 #   This method is identical to <tt>GSL::Eigen::genv</tt> except it also computes 
 #   the left and right Schur vectors and returns them.
 #
-# == {}[link:files/index_rdoc.html"name="8] Sorting Eigenvalues and Eigenvectors
+# == {}[link:index.html"name="8] Sorting Eigenvalues and Eigenvectors
 # ---
 # * GSL::Eigen::symmv_sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
 # * GSL::Eigen::Symmv::sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
@@ -392,10 +392,10 @@
 #   and <tt>GSL::EIGEN_SORT_ABS_DESC</tt> are supported due to the eigenvalues 
 #   being complex. 
 #
-# {prev}[link:files/linalg_rdoc.html]
-# {next}[link:files/fft_rdoc.html]
+# {prev}[link:files/rdoc/linalg_rdoc.html]
+# {next}[link:files/rdoc/fft_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

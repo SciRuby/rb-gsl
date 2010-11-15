@@ -15,25 +15,25 @@
 # See also the {GSL reference}[http://www.gnu.org/software/gsl/manual/gsl-ref_37.html#SEC479"target="_top]
 #
 # Contents:
-# 1. {Fundamental Constants}[link:files/const_rdoc.html#1]
-# 1. {Astronomy and Astrophysics}[link:files/const_rdoc.html#2]
-# 1. {Atomic and Nuclear Physics}[link:files/const_rdoc.html#3]
-# 1. {Measurement of Time}[link:files/const_rdoc.html#4]
-# 1. {Imperial Units}[link:files/const_rdoc.html#5]
-# 1. {Nautical Units}[link:files/const_rdoc.html#6]
-# 1. {Printers Units}[link:files/const_rdoc.html#7]
-# 1. {Volume}[link:files/const_rdoc.html#8]
-# 1. {Mass and Weight}[link:files/const_rdoc.html#9]
-# 1. {Thermal Energy and Power}[link:files/const_rdoc.html#10]
-# 1. {Pressure}[link:files/const_rdoc.html#11]
-# 1. {Viscosity}[link:files/const_rdoc.html#12]
-# 1. {Light and Illumination}[link:files/const_rdoc.html#13]
-# 1. {Radioactivity}[link:files/const_rdoc.html#14]
-# 1. {Force and Energy}[link:files/const_rdoc.html#15]
-# 1. {Prefixes}[link:files/const_rdoc.html#16]
-# 1. {Examples}[link:files/const_rdoc.html#17]
+# 1. {Fundamental Constants}[link:files/rdoc/const_rdoc.html#1]
+# 1. {Astronomy and Astrophysics}[link:files/rdoc/const_rdoc.html#2]
+# 1. {Atomic and Nuclear Physics}[link:files/rdoc/const_rdoc.html#3]
+# 1. {Measurement of Time}[link:files/rdoc/const_rdoc.html#4]
+# 1. {Imperial Units}[link:files/rdoc/const_rdoc.html#5]
+# 1. {Nautical Units}[link:files/rdoc/const_rdoc.html#6]
+# 1. {Printers Units}[link:files/rdoc/const_rdoc.html#7]
+# 1. {Volume}[link:files/rdoc/const_rdoc.html#8]
+# 1. {Mass and Weight}[link:files/rdoc/const_rdoc.html#9]
+# 1. {Thermal Energy and Power}[link:files/rdoc/const_rdoc.html#10]
+# 1. {Pressure}[link:files/rdoc/const_rdoc.html#11]
+# 1. {Viscosity}[link:files/rdoc/const_rdoc.html#12]
+# 1. {Light and Illumination}[link:files/rdoc/const_rdoc.html#13]
+# 1. {Radioactivity}[link:files/rdoc/const_rdoc.html#14]
+# 1. {Force and Energy}[link:files/rdoc/const_rdoc.html#15]
+# 1. {Prefixes}[link:files/rdoc/const_rdoc.html#16]
+# 1. {Examples}[link:files/rdoc/const_rdoc.html#17]
 #
-# == {}[link:files/index_rdoc.html"name="1] Fundamental Constants
+# == {}[link:index.html"name="1] Fundamental Constants
 # ---
 # * GSL::CONST::MKSA::SPEED_OF_LIGHT
 #
@@ -83,7 +83,7 @@
 #
 #   The magnetic field of 1 Gauss.
 #
-# == {}[link:files/index_rdoc.html"name="2] Astronomy and Astrophysics
+# == {}[link:index.html"name="2] Astronomy and Astrophysics
 # ---
 # * GSL::CONST::MKSA::ASTRONOMICAL_UNIT
 #
@@ -109,7 +109,7 @@
 #
 #   The mass of the Sun.
 #
-# == {}[link:files/index_rdoc.html"name="3] Atomic and Nuclear Physics
+# == {}[link:index.html"name="3] Atomic and Nuclear Physics
 # ---
 # * GSL::CONST::MKSA::ELECTRON_CHARGE
 #
@@ -183,7 +183,7 @@
 #
 #   The magnetic moment of the proton, mu_p.
 #
-# == {}[link:files/index_rdoc.html"name="4] Measurement of Time
+# == {}[link:index.html"name="4] Measurement of Time
 # ---
 # * GSL::CONST::MKSA::MINUTE
 #
@@ -201,7 +201,7 @@
 #
 #   The number of seconds in 1 week.
 #
-# == {}[link:files/index_rdoc.html"name="5] Imperial Units
+# == {}[link:index.html"name="5] Imperial Units
 # ---
 # * GSL::CONST::MKSA::INCH
 #
@@ -223,7 +223,7 @@
 #
 #   The length of 1 mil (1/1000th of an inch).
 #
-# == {}[link:files/index_rdoc.html"name="6] Nautical Units
+# == {}[link:index.html"name="6] Nautical Units
 # ---
 # * GSL::CONST::MKSA::NAUTICAL_MILE
 #
@@ -237,7 +237,7 @@
 #
 #   The speed of 1 knot.
 #
-# == {}[link:files/index_rdoc.html"name="7] Printers Units
+# == {}[link:index.html"name="7] Printers Units
 # ---
 # * GSL::CONST::MKSA::POINT
 #
@@ -247,7 +247,7 @@
 #
 #   The length of 1 TeX point (1/72.27 inch).
 #
-# == {}[link:files/index_rdoc.html"name="8] Volume
+# == {}[link:index.html"name="8] Volume
 # ---
 # * GSL::CONST::MKSA::ACRE
 #
@@ -277,7 +277,7 @@
 #
 #   The volume of 1 pint.
 #
-# == {}[link:files/index_rdoc.html"name="9] Mass and Weight
+# == {}[link:index.html"name="9] Mass and Weight
 # ---
 # * GSL::CONST::MKSA::POUND_MASS
 #
@@ -323,7 +323,7 @@
 #
 #   The force of 1 poundal.
 #
-# == {}[link:files/index_rdoc.html"name="10] Thermal Energy and Power
+# == {}[link:index.html"name="10] Thermal Energy and Power
 # ---
 # * GSL::CONST::MKSA::CALORIE
 #
@@ -341,7 +341,7 @@
 #
 #   The power of 1 horsepower.
 #
-# == {}[link:files/index_rdoc.html"name="11] Pressure
+# == {}[link:index.html"name="11] Pressure
 # ---
 # * GSL::CONST::MKSA::BAR
 #
@@ -371,7 +371,7 @@
 #
 #   The pressure of 1 pound per square inch.
 #
-# == {}[link:files/index_rdoc.html"name="12] Viscosity
+# == {}[link:index.html"name="12] Viscosity
 # ---
 # * GSL::CONST::MKSA::POISE
 #
@@ -381,7 +381,7 @@
 #
 #   The kinematic viscosity of 1 stokes.
 #
-# == {}[link:files/index_rdoc.html"name="13] Light and Illumination
+# == {}[link:index.html"name="13] Light and Illumination
 # ---
 # * GSL::CONST::MKSA::STILB
 #
@@ -411,7 +411,7 @@
 #
 #   The luminance of 1 footlambert.
 #
-# == {}[link:files/index_rdoc.html"name="14] Radioactivity
+# == {}[link:index.html"name="14] Radioactivity
 # ---
 # * GSL::CONST::MKSA::CURIE
 #
@@ -425,7 +425,7 @@
 #
 #   The absorbed dose of 1 rad.
 #
-# == {}[link:files/index_rdoc.html"name="15] Force and Energy
+# == {}[link:index.html"name="15] Force and Energy
 # ---
 # * GSL::CONST::MKSA::NEWTON
 #
@@ -443,7 +443,7 @@
 #
 #   The energy 1 erg = 10^-7 Joule.
 #
-# == {}[link:files/index_rdoc.html"name="16] Prefixes
+# == {}[link:index.html"name="16] Prefixes
 # ---
 # * GSL::CONST::NUM::YOTTA
 #
@@ -509,7 +509,7 @@
 #
 #   10^-24
 #
-# == {}[link:files/index_rdoc.html"name="17] Example
+# == {}[link:index.html"name="17] Example
 # The following program demonstrates the use of the physical constants in a 
 # calculation. In this case, the goal is to calculate the range of light-travel 
 # times from Earth to Mars.
@@ -537,10 +537,10 @@
 #      printf("minimum = %.1f minutes\n", t_min / minutes);
 #      printf("maximum = %.1f minutes\n\n", t_max / minutes);
 #
-# {prev}[link:files/bspline_rdoc.html]
-# {next}[link:files/graph_rdoc.html]
+# {prev}[link:files/rdoc/bspline_rdoc.html]
+# {next}[link:files/rdoc/graph_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

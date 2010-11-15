@@ -1,7 +1,7 @@
 #
 # = GSL::Function class
 #
-# == {}[link:files/index_rdoc.html"name="1] Class Methods
+# == {}[link:index.html"name="1] Class Methods
 #
 # ---
 # * GSL::Function.alloc
@@ -27,7 +27,7 @@
 #      f.set_params([2, 3])
 #      f.eval(x)
 #
-# == {}[link:files/index_rdoc.html"name="2] Methods
+# == {}[link:index.html"name="2] Methods
 #
 # ---
 # * GSL::Function#eval(x)
@@ -57,7 +57,7 @@
 #
 #   This set the constant parameters of the function.
 #
-# == {}[link:files/index_rdoc.html"name="3] Graph
+# == {}[link:index.html"name="3] Graph
 # ---
 # * GSL::Function#graph(x[, options])
 #
@@ -70,7 +70,7 @@
 #        f.graph(x, "-T X -g 3 -C -L 'sin(x)'")
 #
 #
-# == {}[link:files/index_rdoc.html"name="4] Example
+# == {}[link:index.html"name="4] Example
 # A quadratic function, f(x) = x^2 + 2x + 3.
 #
 #     >> require("gsl")
@@ -90,5 +90,5 @@
 #       1.800e+01 2.700e+01 ]
 #     => #<GSL::Matrix:0x6dd1b4>
 #
-# {back}[link:files/index_rdoc.html]
+# {back}[link:files/rdoc/index_rdoc.html]
 #

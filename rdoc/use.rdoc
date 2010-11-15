@@ -1,15 +1,15 @@
 #
 # = Using Ruby/GSL
-# == {}[link:files/index_rdoc.html"name="1] Installation
-# See {here}[link:files/index_rdoc.html].
+# == {}[link:index.html"name="1] Installation
+# See {here}[link:files/rdoc/index_rdoc.html].
 #
-# == {}[link:files/index_rdoc.html"name="2] Load the library
+# == {}[link:index.html"name="2] Load the library
 # Put at the head of your scripts,
 #     
 #     require 'rubygems' # if installed via RubyGems
 #     require 'gsl'
 #
-# == {}[link:files/index_rdoc.html"name="3] Naming conventions, C Structs and Ruby Classes
+# == {}[link:index.html"name="3] Naming conventions, C Structs and Ruby Classes
 #
 # Most of the GSL data types, functions or constants are named as <tt>gsl_xxx</tt> or <tt>GSL_XXX</tt>. 
 # In Ruby/GSL, the prefix <tt>gsl_</tt> is replaced by the module identifier <tt>GSL::</tt>, 
@@ -32,7 +32,7 @@
 #       * Singleton method <tt>GSL::Linalg::LU.decomp</tt>
 #   * Method <tt>GSL::Matrix#LU_decomp</tt>
 #
-# == {}[link:files/index_rdoc.html"name="4] Examples
+# == {}[link:index.html"name="4] Examples
 # See the directories "examples/" and "tests/".
 #
 # Some of the examples use the <tt>graph</tt> utility to show the results. The <tt>graph</tt>
@@ -40,7 +40,7 @@
 # related packages are available from 
 # {here}[http://rustam.uwp.edu/support"target="_top].
 #
-# == {}[link:files/index_rdoc.html"name="5] Modules and Classes
+# == {}[link:index.html"name="5] Modules and Classes
 # The following is the list of Ruby/GSL modules and classes, <Name> (<Module or Class>)
 #
 # * GSL (Module) 
@@ -168,10 +168,10 @@
 #     * CGSM (Module)
 #     * NUM (Module)
 #
-# {prev}[link:files/intro_rdoc.html]
-# {next}[link:files/ehandling_rdoc.html]
+# {prev}[link:files/rdoc/intro_rdoc.html]
+# {next}[link:files/rdoc/ehandling_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

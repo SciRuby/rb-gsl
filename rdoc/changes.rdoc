@@ -15,7 +15,7 @@
 #
 #   svn log http://rb-gsl.rubyforge.org/svn/trunk/rb-gsl
 #
-# == {}[link:files/index_rdoc.html"name="1] Backwards incompatibilities introduced in Ruby/GSL 1.11.2
+# == {}[link:index.html"name="1] Backwards incompatibilities introduced in Ruby/GSL 1.11.2
 #
 # * FFT interface has been extensively changed.
 #
@@ -39,7 +39,7 @@
 #
 # * GSL::Complex objects are now immutable.
 #
-# == {}[link:files/index_rdoc.html"name="2] Enhancements and features introduced in Ruby/GSL 1.11.2
+# == {}[link:index.html"name="2] Enhancements and features introduced in Ruby/GSL 1.11.2
 #
 # * Now distributed and installable as a Ruby Gem.
 #

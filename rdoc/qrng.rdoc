@@ -9,13 +9,13 @@
 # to the interface for random number generators.
 #
 # Contents:
-# 1. {Quasi-random number generator initialization}[link:files/qrng_rdoc.html#1]
-# 1. {Sampling from a quasi-random number generator}[link:files/qrng_rdoc.html#2]
-# 1. {Auxiliary quasi-random number generator functions}[link:files/qrng_rdoc.html#3]
-# 1. {Saving and resorting quasi-random number generator state}[link:files/qrng_rdoc.html#4]
-# 1. {Quasi-random number generator algorithms}[link:files/qrng_rdoc.html#5]
+# 1. {Quasi-random number generator initialization}[link:files/rdoc/qrng_rdoc.html#1]
+# 1. {Sampling from a quasi-random number generator}[link:files/rdoc/qrng_rdoc.html#2]
+# 1. {Auxiliary quasi-random number generator functions}[link:files/rdoc/qrng_rdoc.html#3]
+# 1. {Saving and resorting quasi-random number generator state}[link:files/rdoc/qrng_rdoc.html#4]
+# 1. {Quasi-random number generator algorithms}[link:files/rdoc/qrng_rdoc.html#5]
 #
-# == {}[link:files/index_rdoc.html"name="1] Quasi-random number generator initialization
+# == {}[link:index.html"name="1] Quasi-random number generator initialization
 #
 # ---
 # * GSL::QRng.alloc(T, d)
@@ -27,12 +27,12 @@
 #
 #   This reinitializes the generator to its starting point. 
 #
-# == {}[link:files/index_rdoc.html"name="2] Sampling from a quasi-random number generator 
+# == {}[link:index.html"name="2] Sampling from a quasi-random number generator 
 #
 # ---
 # * GSL::QRng::get(x)
 #
-#   This calculate the next point <tt>x</tt> from the sequence generator. Here <tt>x</tt> is an instance of the {GSL::Vector}[link:files/vector_rdoc.html] class. The space available for <tt>x</tt> must match the dimension of the generator. The point <tt>x</tt> will lie in the range 0 < x_i < 1 for each x_i. 
+#   This calculate the next point <tt>x</tt> from the sequence generator. Here <tt>x</tt> is an instance of the {GSL::Vector}[link:files/rdoc/vector_rdoc.html] class. The space available for <tt>x</tt> must match the dimension of the generator. The point <tt>x</tt> will lie in the range 0 < x_i < 1 for each x_i. 
 #
 #   This is used as
 #     q = QRng.alloc(QRng::SOBOL, dim)
@@ -42,7 +42,7 @@
 #       printf("%.5f %.5f\n", v[0], v[1])
 #     end
 #
-# == {}[link:files/index_rdoc.html"name="3] Auxiliary quasi-random number generator functions 
+# == {}[link:index.html"name="3] Auxiliary quasi-random number generator functions 
 #
 # ---
 # * GSL::QRng::name
@@ -53,13 +53,13 @@
 # * GSL::QRng::size
 #
 #
-# == {}[link:files/index_rdoc.html"name="4] Saving and resorting quasi-random number generator state
+# == {}[link:index.html"name="4] Saving and resorting quasi-random number generator state
 # ---
 # * GSL::QRng::clone
 # * GSL::QRng::duplicate
 #
 #   Return a newly created generator which is an exact copy of the generator <tt>self</tt>.
-# == {}[link:files/index_rdoc.html"name="5] Quasi-random number generator algorithms
+# == {}[link:index.html"name="5] Quasi-random number generator algorithms
 # In creating a generator by the method <tt>GSL::QRng.alloc(T, d)</tt>, 
 # the algorithm type <tt>T</tt> is given by a String or a Fixnum constant.
 # The following quasi-random sequence algorithms are available,
@@ -81,10 +81,10 @@
 #
 #   (GSL-1.11 or later) These generators use the Halton and reverse Halton sequences described in J.H. Halton, Numerische Mathematik 2, 84-90 (1960) and B. Vandewoestyne and R. Cools Computational and Applied Mathematics 189, 1&2, 341-361 (2006). They are valid up to 1229 dimensions.
 #
-# {prev}[link:files/rng_rdoc.html]
-# {next}[link:files/randist_rdoc.html]
+# {prev}[link:files/rdoc/rng_rdoc.html]
+# {next}[link:files/rdoc/randist_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

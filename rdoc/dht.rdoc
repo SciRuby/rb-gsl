@@ -3,11 +3,11 @@
 # This chapter describes functions for performing Discrete Hankel Transforms 
 # (DHTs). 
 #
-# 1. {Definitions}[link:files/dht_rdoc.html#1]
-# 1. {Initialization}[link:files/dht_rdoc.html#2]
-# 1. {Methods}[link:files/dht_rdoc.html#3]
+# 1. {Definitions}[link:files/rdoc/dht_rdoc.html#1]
+# 1. {Initialization}[link:files/rdoc/dht_rdoc.html#2]
+# 1. {Methods}[link:files/rdoc/dht_rdoc.html#3]
 #
-# == {}[link:files/index_rdoc.html"name="1] Definitions
+# == {}[link:index.html"name="1] Definitions
 # The discrete Hankel transform acts on a vector of sampled data, where the 
 # samples are assumed to have been taken at points related to the zeroes of a 
 # Bessel function of fixed order; compare this to the case of the discrete 
@@ -36,7 +36,7 @@
 # eigenfunctions of the Dirichlet problem for the Bessel differential equation. 
 #
 #
-# == {}[link:files/index_rdoc.html"name="2] Initialization
+# == {}[link:index.html"name="2] Initialization
 #
 # ---
 # * GSL::Dht.alloc(size)
@@ -52,7 +52,7 @@
 #
 #   This initializes the transform <tt>self</tt> for the given values of <tt>nu</tt> and <tt>xmax</tt>.
 #
-# == {}[link:files/index_rdoc.html"name="3] Methods
+# == {}[link:index.html"name="3] Methods
 # ---
 # * GSL::Dht#apply(vin, vout)
 # * GSL::Dht#apply(vin)
@@ -113,10 +113,10 @@
 #
 #   Return the (n,m)-th transform coefficient.
 #
-# {prev}[link:files/sum_rdoc.html]
-# {next}[link:files/roots_rdoc.html]
+# {prev}[link:files/rdoc/sum_rdoc.html]
+# {next}[link:files/rdoc/roots_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

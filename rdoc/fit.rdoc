@@ -11,21 +11,21 @@
 # two-parameter regression and multiple-parameter fits. 
 #
 # Contents:
-# 1. {Overview}[link:files/fit_rdoc.html#1]
-# 1. {Linear regression}[link:files/fit_rdoc.html#2]
-#    1. {Module functions for linear regression}[link:files/fit_rdoc.html#2.1]
-# 1. {Linear fitting without a constant term}[link:files/fit_rdoc.html#3]
-# 1. {Multi-parameter fitting}[link:files/fit_rdoc.html#4]
-#    1. {GSL::MultiFit::Workspace class}[link:files/fit_rdoc.html#4.1]
-#    1. {Module functions}[link:files/fit_rdoc.html#4.2]
-#    1. {Higer level interface}[link:files/fit_rdoc.html#4.3]
-#    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:files/ndlinear_rdoc.html] (GSL extension)
-# 1. {Examples}[link:files/fit_rdoc.html#5]
-#    1. {Linear regression}[link:files/fit_rdoc.html#5.1]
-#    1. {Exponential fitting}[link:files/fit_rdoc.html#5.2]
-#    1. {Multi-parameter fitting}[link:files/fit_rdoc.html#5.3]
+# 1. {Overview}[link:files/rdoc/fit_rdoc.html#1]
+# 1. {Linear regression}[link:files/rdoc/fit_rdoc.html#2]
+#    1. {Module functions for linear regression}[link:files/rdoc/fit_rdoc.html#2.1]
+# 1. {Linear fitting without a constant term}[link:files/rdoc/fit_rdoc.html#3]
+# 1. {Multi-parameter fitting}[link:files/rdoc/fit_rdoc.html#4]
+#    1. {GSL::MultiFit::Workspace class}[link:files/rdoc/fit_rdoc.html#4.1]
+#    1. {Module functions}[link:files/rdoc/fit_rdoc.html#4.2]
+#    1. {Higer level interface}[link:files/rdoc/fit_rdoc.html#4.3]
+#    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:files/rdoc/ndlinear_rdoc.html] (GSL extension)
+# 1. {Examples}[link:files/rdoc/fit_rdoc.html#5]
+#    1. {Linear regression}[link:files/rdoc/fit_rdoc.html#5.1]
+#    1. {Exponential fitting}[link:files/rdoc/fit_rdoc.html#5.2]
+#    1. {Multi-parameter fitting}[link:files/rdoc/fit_rdoc.html#5.3]
 #
-# == {}[link:files/index_rdoc.html"name="1] Overview
+# == {}[link:index.html"name="1] Overview
 # Least-squares fits are found by minimizing \chi^2 (chi-squared), the weighted 
 # sum of squared residuals over n experimental datapoints (x_i, y_i) for the 
 # model Y(c,x), The p parameters of the model are c = {c_0, c_1, Åc}. The weight 
@@ -59,7 +59,7 @@
 # parameters c_a and c_b is given by \rho_{ab} = C_{ab} / \sqrt{C_{aa} C_{bb}}. 
 #
 #
-# == {}[link:files/index_rdoc.html"name="2] Linear regression
+# == {}[link:index.html"name="2] Linear regression
 # The functions described in this section can be used to perform least-squares 
 # fits to a straight line model, Y = c_0 + c_1 X. For weighted data the best-fit 
 # is found by minimizing the weighted sum of squared residuals, chi^2,
@@ -69,7 +69,7 @@
 # for the parameters <tt>c0, c1</tt>. For unweighted data the sum is computed with 
 # <tt>w_i = 1</tt>.
 #
-# === {}[link:files/index_rdoc.html"name="2.1] Module functions for linear regression
+# === {}[link:index.html"name="2.1] Module functions for linear regression
 # ---
 # * GSL::Fit::linear(x, y)
 #
@@ -99,7 +99,7 @@
 #   and its standard deviation for the model Y = c_0 + c_1 X at the point <tt>x</tt>.
 #   The returned value is an array of <tt>[y, yerr]</tt>.
 #
-# == {}[link:files/index_rdoc.html"name="3] Linear fitting without a constant term
+# == {}[link:index.html"name="3] Linear fitting without a constant term
 # ---
 # * GSL::Fit::mul(x, y)
 #
@@ -126,15 +126,15 @@
 #   for the model Y = c_1 X at the point <tt>x</tt>.  
 #   The returned value is an array of <tt>[y, yerr]</tt>.
 #
-# == {}[link:files/index_rdoc.html"name="4] Multi-parameter fitting
-# === {}[link:files/index_rdoc.html"name="4.1] GSL::MultiFit::Workspace class
+# == {}[link:index.html"name="4] Multi-parameter fitting
+# === {}[link:index.html"name="4.1] GSL::MultiFit::Workspace class
 # ---
 # * GSL::MultiFit::Workspace.alloc(n, p)
 #
 #   This creates a workspace for fitting a model to <tt>n</tt> 
 #   observations using <tt>p</tt> parameters.
 #
-# === {}[link:files/index_rdoc.html"name="4.2] Module functions
+# === {}[link:index.html"name="4.2] Module functions
 # ---
 # * GSL::MultiFit::linear(X, y, work)
 # * GSL::MultiFit::linear(X, y)
@@ -145,9 +145,9 @@
 #   from the scatter of the observations about the best-fit. The sum of squares 
 #   of the residuals from the best-fit is also calculated. The returned value is
 #   an array of 4 elements, <tt>[c, cov, chisq, status]</tt>, where <tt>c</tt> is a
-#   {GSL::Vector}[link:files/vector_rdoc.html] object which contains the best-fit parameters,
+#   {GSL::Vector}[link:files/rdoc/vector_rdoc.html] object which contains the best-fit parameters,
 #   and <tt>cov</tt> is the variance-covariance matrix as a 
-#   {GSL::Matrix}[link:files/matrix_rdoc.html] object.
+#   {GSL::Matrix}[link:files/rdoc/matrix_rdoc.html] object.
 #
 #   The best-fit is found by singular value decomposition of the matrix <tt>X</tt> 
 #   using the workspace provided in <tt>work</tt> (optional, if not given, it is allocated
@@ -181,7 +181,7 @@
 #
 #   (GSL-1.11 or later) This method computes the vector of residuals <tt>r = y - X c</tt> for the observations <tt>y</tt>, coefficients <tt>c</tt> and matrix of predictor variables <tt>X</tt>, and returns <tt>r</tt>.
 #
-# === {}[link:files/index_rdoc.html"name="4.3] Higer level interface
+# === {}[link:index.html"name="4.3] Higer level interface
 #
 # ---
 # * GSL::MultiFit::polyfit(x, y, order)
@@ -201,8 +201,8 @@
 #     x2 = Vector.linspace(1, 5, 20)
 #     graph([x, y], [x2, coef.eval(x2)], "-C -g 3 -S 4")
 #
-# == {}[link:files/index_rdoc.html"name="5] Examples
-# === {}[link:files/index_rdoc.html"name="5.1] Linear regression
+# == {}[link:index.html"name="5] Examples
+# === {}[link:index.html"name="5.1] Linear regression
 #      #!/usr/bin/env ruby
 #      require("gsl")
 #      include GSL::Fit
@@ -224,7 +224,7 @@
 #              cov00, cov01, cov01, cov11);
 #      printf("# chisq = %g\n", chisq);
 #
-# === {}[link:files/index_rdoc.html"name="5.2] Exponential fitting
+# === {}[link:index.html"name="5.2] Exponential fitting
 #     #!/usr/bin/env ruby
 #     require("gsl")
 #
@@ -245,7 +245,7 @@
 #     printf("Result: a = %f, b = %f\n", A, b2)
 #     graph([x, y], [x2, A*Sf::exp(b2*x2)], "-C -g 3 -S 4")
 #
-# === {}[link:files/index_rdoc.html"name="5.3] Multi-parameter fitting
+# === {}[link:index.html"name="5.3] Multi-parameter fitting
 #      #!/usr/bin/env ruby
 #      require("gsl")
 #      include GSL::MultiFit
@@ -275,10 +275,10 @@
 #
 #      c, cov, chisq, status = MultiFit.wlinear(X, w, y)
 #
-# {prev}[link:files/multimin_rdoc.html]
-# {next}[link:files/nonlinearfit_rdoc.html]
+# {prev}[link:files/rdoc/multimin_rdoc.html]
+# {next}[link:files/rdoc/nonlinearfit_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

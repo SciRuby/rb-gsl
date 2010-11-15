@@ -1,7 +1,7 @@
 #
 # = GSL::Histogram2d class
 #
-# == {}[link:files/index_rdoc.html"name="1] Class methods
+# == {}[link:index.html"name="1] Class methods
 # ---
 # * GSL::Histogram2d.alloc(nx, ny)
 # * GSL::Histogram2d.alloc(xrange, yrange)
@@ -52,12 +52,12 @@
 # * GSL::Histogram2d.equal_bins_p(h1, h2)
 #
 #
-# == {}[link:files/index_rdoc.html"name="2] Methods
+# == {}[link:index.html"name="2] Methods
 # ---
 # * GSL::Histogram2d#set_ranges(vx, vy)
 #
 #   This sets the ranges of the existing histogram using 
-#   two {GSL::Vector}[link:files/vector_rdoc.html] objects or arrays.
+#   two {GSL::Vector}[link:files/rdoc/vector_rdoc.html] objects or arrays.
 # ---
 # * GSL::Histogram2d#set_ranges_uniform(xmin, xmax, ymin, ymax)
 # * GSL::Histogram2d#set_ranges_uniform([xmin, xmax], [ymin, ymax])
@@ -231,7 +231,7 @@
 #   Creates a <tt>GSL::Histogram</tt> object by projecting the 2D histogram 
 #   <tt>self</tt> onto the y-axis over the x-range from <tt>istart</tt> to <tt>iend</tt>.
 #
-# == {}[link:files/index_rdoc.html"name="3] GSL::Histogram2d::Pdf class
+# == {}[link:index.html"name="3] GSL::Histogram2d::Pdf class
 # ---
 # * GSL::Histogram2d::Pdf.alloc(nx, ny)
 #
@@ -246,7 +246,7 @@
 # * GSL::Histogram2d::Pdf#sample(r1, r2)
 #
 #
-# == {}[link:files/index_rdoc.html"name="4] Example
+# == {}[link:index.html"name="4] Example
 #   #!/usr/bin/env ruby
 #   require("gsl")
 #
@@ -271,9 +271,9 @@
 #   GSL::graph(hx, hy, "-T X -C -g 3")
 #
 #
-# {prev}[link:files/hist_rdoc.html]
-# {next}[link:files/hist3d_rdoc.html]
+# {prev}[link:files/rdoc/hist_rdoc.html]
+# {next}[link:files/rdoc/hist3d_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #

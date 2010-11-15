@@ -8,22 +8,22 @@
 # functions are available for computing derivatives and integrals of 
 # interpolating functions. 
 #
-# 1. {Interpolation classes}[link:files/interp_rdoc.html#1]
-# 1. {Initializing interpolation objects}[link:files/interp_rdoc.html#2]
-# 1. {Index Look-up and Acceleration}[link:files/interp_rdoc.html#3]
-# 1. {Evaluation of Interpolating Functions}[link:files/interp_rdoc.html#4]
-# 1. {Higher level interface: GSL::Spline class}[link:files/interp_rdoc.html#5]
-#    1. {Class initialization}[link:files/interp_rdoc.html#5.1]
-#    1. {Evaluation}[link:files/interp_rdoc.html#5.2]
-#    1. {Finding and acceleration}[link:files/interp_rdoc.html#5.3]
+# 1. {Interpolation classes}[link:files/rdoc/interp_rdoc.html#1]
+# 1. {Initializing interpolation objects}[link:files/rdoc/interp_rdoc.html#2]
+# 1. {Index Look-up and Acceleration}[link:files/rdoc/interp_rdoc.html#3]
+# 1. {Evaluation of Interpolating Functions}[link:files/rdoc/interp_rdoc.html#4]
+# 1. {Higher level interface: GSL::Spline class}[link:files/rdoc/interp_rdoc.html#5]
+#    1. {Class initialization}[link:files/rdoc/interp_rdoc.html#5.1]
+#    1. {Evaluation}[link:files/rdoc/interp_rdoc.html#5.2]
+#    1. {Finding and acceleration}[link:files/rdoc/interp_rdoc.html#5.3]
 #
-# == {}[link:files/index_rdoc.html"name="1] Interpolation Classes
+# == {}[link:index.html"name="1] Interpolation Classes
 # * GSL
 #   * Interp (class)
 #     * Accel (class)
 #   * Spline (class)
 #   
-# == {}[link:files/index_rdoc.html"name="2] Initializing interpolation objects
+# == {}[link:index.html"name="2] Initializing interpolation objects
 #
 # ---
 # * GSL::Interp.alloc(T, n)
@@ -84,7 +84,7 @@
 #   type of <tt>self</tt>. For example, Akima spline interpolation requires 
 #   a minimum of 5 points.
 #
-# == {}[link:files/index_rdoc.html"name="3] Index Look-up and Acceleration 
+# == {}[link:index.html"name="3] Index Look-up and Acceleration 
 # ---
 # * GSL::Interp.bsearch(xa, x, index_lo, index_hi)
 #
@@ -115,7 +115,7 @@
 #   <tt>xa[i] <= x < xa[i+1]</tt>.
 #
 #
-# == {}[link:files/index_rdoc.html"name="4] Evaluation of Interpolating Functions 
+# == {}[link:index.html"name="4] Evaluation of Interpolating Functions 
 #
 # ---
 # * GSL::Interp#eval(xa, ya, x)
@@ -148,8 +148,8 @@
 #   function over the range <tt>[a, b]</tt>, using the interpolation object <tt>self</tt>, 
 #   data vectors <tt>xa</tt> and <tt>ya</tt>.
 #
-# == {}[link:files/index_rdoc.html"name="5] Higher level interface: GSL::Spline class
-# === {}[link:files/index_rdoc.html"name="5.1] Class initialization
+# == {}[link:index.html"name="5] Higher level interface: GSL::Spline class
+# === {}[link:index.html"name="5.1] Class initialization
 #
 # ---
 # * GSL::Spline.alloc(T, n)
@@ -179,7 +179,7 @@
 #
 #   This returns the name of the spline type used by <tt>self</tt>.
 #
-# === {}[link:files/index_rdoc.html"name="5.2] Evaluation
+# === {}[link:index.html"name="5.2] Evaluation
 # ---
 # * GSL::Spline#eval(x)
 #
@@ -209,7 +209,7 @@
 #
 #   Returns the numerical integral over the range [<tt>a, b</tt>].
 #
-# === {}[link:files/index_rdoc.html"name="5.3] Finding and acceleration
+# === {}[link:index.html"name="5.3] Finding and acceleration
 # ---
 # * GSL::Spline#find(xa, x)
 # * GSL::Spline#accel_find(xa, x)
@@ -221,11 +221,11 @@
 #
 # See also the GSL manual and the examples in <tt>examples/</tt>
 #
-# {prev}[link:files/odeiv_rdoc.html]
-# {next}[link:files/diff_rdoc.html]
+# {prev}[link:files/rdoc/odeiv_rdoc.html]
+# {next}[link:files/rdoc/diff_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #
 #   

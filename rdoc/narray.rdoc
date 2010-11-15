@@ -1,11 +1,11 @@
 #
 # = NArray compatibilities
-# === {}[link:files/index_rdoc.html"name="0.1] Contents:
-# 1. {Data type conversions}[link:files/narray_rdoc.html#1]
-# 1. {Methods which accepts NArray}[link:files/narray_rdoc.html#2]
+# === {}[link:index.html"name="0.1] Contents:
+# 1. {Data type conversions}[link:files/rdoc/narray_rdoc.html#1]
+# 1. {Methods which accepts NArray}[link:files/rdoc/narray_rdoc.html#2]
 #
-# == {}[link:files/index_rdoc.html"name="1] Data type conversions
-# === {}[link:files/index_rdoc.html"name="1.1] GSL to NArray
+# == {}[link:index.html"name="1] Data type conversions
+# === {}[link:index.html"name="1.1] GSL to NArray
 #
 # ---
 # * GSL::Vector#to_na
@@ -39,7 +39,7 @@
 #     => GSL::Vector::Int
 #     [ 0 1 2 999 4 5 ]
 #
-# === {}[link:files/index_rdoc.html"name="1.2] NArray to GSL
+# === {}[link:index.html"name="1.2] NArray to GSL
 # ---
 # * NArray#to_gv
 # * NArray#to_gm
@@ -68,8 +68,8 @@
 #     => NArray.int(6): 
 #     [ 0, 1, -99, 3, 4, 5 ]
 #
-# == {}[link:files/index_rdoc.html"name="2] Methods which accepts NArray
-# === {}[link:files/index_rdoc.html"name="2.1] <tt>GSL</tt> module
+# == {}[link:index.html"name="2] Methods which accepts NArray
+# === {}[link:index.html"name="2.1] <tt>GSL</tt> module
 # ---
 # * GSL::graph()
 # * GSL::log1p(x)
@@ -83,11 +83,11 @@
 # * GSL::pow_2(x), ..., GSL::pow_9(x)
 #
 #
-# === {}[link:files/index_rdoc.html"name="2.2] <tt>GSL::Sf</tt> module
+# === {}[link:index.html"name="2.2] <tt>GSL::Sf</tt> module
 # ---
-# * {Any}[link:files/sf_rdoc.html]
+# * {Any}[link:files/rdoc/sf_rdoc.html]
 #
-# === {}[link:files/index_rdoc.html"name="2.3] <tt>GSL::Linalg</tt> module
+# === {}[link:index.html"name="2.3] <tt>GSL::Linalg</tt> module
 # ---
 # * GSL::Linalg::LU.decomp(na)
 # * GSL::Linalg::LU.solve(lu, b)
@@ -108,17 +108,17 @@
 # * GSL::Linalg::HH.svx(m, bx)
 #
 #
-# === {}[link:files/index_rdoc.html"name="2.4] <tt>GSL::Eigen</tt> module
+# === {}[link:index.html"name="2.4] <tt>GSL::Eigen</tt> module
 # ---
 # * GSL::Eigen::symm(na)
 # * GSL::Eigen::symmv(na)
 #
 #
-# === {}[link:files/index_rdoc.html"name="2.5] <tt>GSL::FFT</tt> module
+# === {}[link:index.html"name="2.5] <tt>GSL::FFT</tt> module
 # ---
-# * {Many}[link:files/FFT_rdoc.html]
+# * {Many}[link:files/rdoc/FFT_rdoc.html]
 #
-# === {}[link:files/index_rdoc.html"name="2.6] <tt>GSL::Function</tt> class
+# === {}[link:index.html"name="2.6] <tt>GSL::Function</tt> class
 # ---
 # * GSL::Function#eval
 # * GSL::Function#deriv_central(x, h)
@@ -129,15 +129,15 @@
 # * GSL::Function#diff_backward(x, h)
 #
 #
-# === {}[link:files/index_rdoc.html"name="2.7] <tt>GSL::Ran</tt> and <tt>GSL::Cdf</tt> module
+# === {}[link:index.html"name="2.7] <tt>GSL::Ran</tt> and <tt>GSL::Cdf</tt> module
 # ---
-# * {Many}[link:files/randist_rdoc.html]
+# * {Many}[link:files/rdoc/randist_rdoc.html]
 #
-# === {}[link:files/index_rdoc.html"name="2.8] <tt>GSL::Stats</tt> module
+# === {}[link:index.html"name="2.8] <tt>GSL::Stats</tt> module
 # ---
-# * {Any}[link:files/stats_rdoc.html]
+# * {Any}[link:files/rdoc/stats_rdoc.html]
 #
-# === {}[link:files/index_rdoc.html"name="2.9] <tt>GSL::Interp</tt> and <tt>GSL::Spline</tt> class
+# === {}[link:index.html"name="2.9] <tt>GSL::Interp</tt> and <tt>GSL::Spline</tt> class
 # ---
 # * GSL::Interp#init
 # * GSL::Interp#eval
@@ -145,7 +145,7 @@
 # * GSL::Spline#eval
 #
 #
-# === {}[link:files/index_rdoc.html"name="2.10] <tt>GSL::Deriv</tt> and <tt>GSL::Diff</tt> module
+# === {}[link:index.html"name="2.10] <tt>GSL::Deriv</tt> and <tt>GSL::Diff</tt> module
 # ---
 # * GSL::Deriv.central(f, x, h)
 # * GSL::Deriv.forward(f, x, h)
@@ -155,19 +155,19 @@
 # * GSL::Diff.backward(f, x, h)
 #
 #
-# === {}[link:files/index_rdoc.html"name="2.11] <tt>GSL::Cheb</tt> class
+# === {}[link:index.html"name="2.11] <tt>GSL::Cheb</tt> class
 # ---
 # * GSL::Cheb#eval(x)
 # * GSL::Cheb#eval_n(n, x)
 #
 #
-# === {}[link:files/index_rdoc.html"name="2.12] <tt>GSL::Wavelet</tt> class
+# === {}[link:index.html"name="2.12] <tt>GSL::Wavelet</tt> class
 # ---
-# * {Many}[link:files/wavelet_rdoc.html]
+# * {Many}[link:files/rdoc/wavelet_rdoc.html]
 #
-# {prev}[link:files/tensor_rdoc.html]
+# {prev}[link:files/rdoc/tensor_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

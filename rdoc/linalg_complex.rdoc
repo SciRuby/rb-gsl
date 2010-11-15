@@ -1,6 +1,6 @@
 #
 #
-# === {}[link:files/index_rdoc.html"name="0.1] Complex LU decomposition
+# === {}[link:index.html"name="0.1] Complex LU decomposition
 #
 # ---
 # * GSL::Linalg::Complex::LU_decomp!(A)
@@ -84,6 +84,6 @@
 # * GSL::Linalg::Complex::LU::LUMatrix#sgndet(signum)
 #
 #
-# {back}[link:files/linalg_rdoc.html]
+# {back}[link:files/rdoc/linalg_rdoc.html]
 #
 #

@@ -1,6 +1,6 @@
 #
 #
-# === {}[link:files/index_rdoc.html"name="1] Cholesky decomposition (>= GSL-1.10)
+# === {}[link:index.html"name="1] Cholesky decomposition (>= GSL-1.10)
 # A symmetric, positive definite square matrix <tt>A</tt> has 
 # a Cholesky decomposition into a product of a lower triangular matrix 
 # <tt>L</tt> and its transpose <tt>L^T</tt>.
@@ -43,5 +43,5 @@
 #   should contain the right-hand side <tt>b</tt>, 
 #   which is replaced by the solution on output. 
 #
-# {back}[link:files/linalg_rdoc.html]
+# {back}[link:files/rdoc/linalg_rdoc.html]
 #

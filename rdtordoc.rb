@@ -41,9 +41,9 @@ class RdToRdoc
     # TODO: use link: and _top trick
     # Local HTML hyperlink, auto detected by rdoc
     # Add _rdoc suffix to stem
-    [/\(\(\<(.*?)\|URL:(.*?).html([^>]*)\>\)\)/, '{\1}[link:files/\2_rdoc.html\3]'],
+    [/\(\(\<(.*?)\|URL:(.*?).html([^>]*)\>\)\)/, '{\1}[link:files/rdoc/\2_rdoc.html\3]'],
     # Local non-HTML hyperlink, auto detected by rdoc
-    [/\(\(\<(.*?)\|URL:(.*?)\>\)\)/, '{\1}[link:files/\2]'],
+    [/\(\(\<(.*?)\|URL:(.*?)\>\)\)/, '{\1}[link:files/rdoc/\2]'],
     # Footnote, not supported.
     [/\(\(\-/, '(Note: '], [/\-\)\)/, ')'],
     # Verbatim text.
@@ -82,7 +82,7 @@ class RdToRdoc
             header_levels += [0] until header_levels.length >= $1.length
             header_levels = header_levels[0, $1.length]
             header_levels[-1] += 1
-            line = %Q{=#{$1} {}[link:files/index_rdoc.html"name="#{header_levels.join('.')}] #{$2}}
+            line = %Q{=#{$1} {}[link:index.html"name="#{header_levels.join('.')}] #{$2}}
           end
           # If method line, turn on "strip mode", which strips off 4 leading
           # spaces.

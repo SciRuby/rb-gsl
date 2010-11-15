@@ -2,21 +2,21 @@
 #
 # = Polynomials
 # Contents:
-# 1. {Polynomial Evaluation}[link:files/poly_rdoc.html#1]
-# 1. {Solving polynomial equations}[link:files/poly_rdoc.html#2]
-#    1. {Quadratic Equations}[link:files/poly_rdoc.html#2.1]
-#    1. {Cubic Equations}[link:files/poly_rdoc.html#2.2]
-#    1. {General Polynomial Equations}[link:files/poly_rdoc.html#2.3]
-# 1. {GSL::Poly Class}[link:files/poly_rdoc.html#3]
-#    1. {Constructors}[link:files/poly_rdoc.html#3.1]
-#    1. {Methods}[link:files/poly_rdoc.html#3.2]
-# 1. {Polynomial Fitting}[link:files/poly_rdoc.html#4]
-# 1. {Divided-difference representations}[link:files/poly_rdoc.html#5]
-# 1. {Extensions}[link:files/poly_rdoc.html#6]
-#    1. {Special Polynomials}[link:files/poly_rdoc.html#6.1]
-#    1. {Polynomial Operations}[link:files/poly_rdoc.html#6.2]
+# 1. {Polynomial Evaluation}[link:files/rdoc/poly_rdoc.html#1]
+# 1. {Solving polynomial equations}[link:files/rdoc/poly_rdoc.html#2]
+#    1. {Quadratic Equations}[link:files/rdoc/poly_rdoc.html#2.1]
+#    1. {Cubic Equations}[link:files/rdoc/poly_rdoc.html#2.2]
+#    1. {General Polynomial Equations}[link:files/rdoc/poly_rdoc.html#2.3]
+# 1. {GSL::Poly Class}[link:files/rdoc/poly_rdoc.html#3]
+#    1. {Constructors}[link:files/rdoc/poly_rdoc.html#3.1]
+#    1. {Methods}[link:files/rdoc/poly_rdoc.html#3.2]
+# 1. {Polynomial Fitting}[link:files/rdoc/poly_rdoc.html#4]
+# 1. {Divided-difference representations}[link:files/rdoc/poly_rdoc.html#5]
+# 1. {Extensions}[link:files/rdoc/poly_rdoc.html#6]
+#    1. {Special Polynomials}[link:files/rdoc/poly_rdoc.html#6.1]
+#    1. {Polynomial Operations}[link:files/rdoc/poly_rdoc.html#6.2]
 #
-# == {}[link:files/index_rdoc.html"name="1] Polynomial Evaluation
+# == {}[link:index.html"name="1] Polynomial Evaluation
 # ---
 # * GSL::Poly.eval(c, x)
 #
@@ -80,8 +80,8 @@
 #    => GSL::Poly
 #    [ 6.000e+00 8.000e+00 6.000e+00 ]
 #
-# == {}[link:files/index_rdoc.html"name="2] Solving polynomial equations
-# === {}[link:files/index_rdoc.html"name="2.1] Quadratic Equations
+# == {}[link:index.html"name="2] Solving polynomial equations
+# === {}[link:index.html"name="2.1] Quadratic Equations
 # ---
 # * GSL::Poly::solve_quadratic(a, b, c)
 # * GSL::Poly::solve_quadratic([a, b, c])
@@ -117,7 +117,7 @@
 #      => GSL::Vector::View: 
 #      [ 1.000e+00 2.000e+00 ]
 #
-# === {}[link:files/index_rdoc.html"name="2.2] Cubic Equations
+# === {}[link:index.html"name="2.2] Cubic Equations
 # ---
 # * GSL::Poly::solve_cubic(same as solve_quadratic)
 #
@@ -130,7 +130,7 @@
 #   This method finds the complex roots of the cubic equation,
 #     z^3 + a z^2 + b z + c = 0
 #
-# === {}[link:files/index_rdoc.html"name="2.3] General Polynomial Equations
+# === {}[link:index.html"name="2.3] General Polynomial Equations
 # ---
 # * GSL::Poly::complex_solve(c0, c1, c2,,, )
 # * GSL::Poly::solve(c0, c1, c2,,, )
@@ -143,10 +143,10 @@
 #        [ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] ]
 #        => #<GSL::Vector::Complex:0x75e614>
 #
-# == {}[link:files/index_rdoc.html"name="3] GSL::Poly Class
+# == {}[link:index.html"name="3] GSL::Poly Class
 # This class expresses polynomials of arbitrary orders.
 #
-# === {}[link:files/index_rdoc.html"name="3.1] Constructors
+# === {}[link:index.html"name="3.1] Constructors
 # ---
 # * GSL::Poly.alloc(c0, c1, c2, ....)
 # * GSL::Poly[c0, c1, c2, ....]
@@ -159,7 +159,7 @@
 #   * Ex: x^2 - 3 x + 2
 #       poly = GSL::Poly.alloc([2, -3, 1])
 #
-# === {}[link:files/index_rdoc.html"name="3.2] Instance Methods
+# === {}[link:index.html"name="3.2] Instance Methods
 # ---
 # * GSL::Poly#eval(x)
 # * GSL::Poly#at(x)
@@ -203,7 +203,7 @@
 #       [ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] ]
 #       => #<GSL::Vector::Complex:0x35db28>
 #
-# == {}[link:files/index_rdoc.html"name="4] Polynomial fitting
+# == {}[link:index.html"name="4] Polynomial fitting
 # ---
 # * GSL::Poly.fit(x, y, order)
 # * GSL::Poly.wfit(x, w, y, order)
@@ -211,7 +211,7 @@
 #   Finds the coefficient of a polynomial of order <tt>order</tt> 
 #   that fits the vector data (<tt>x, y</tt>) in a least-square sense.
 #   This provides a higher-level interface to the method
-#   {GSL::Multifit#linear}[link:files/fit_rdoc.html] in a case of polynomial fitting.
+#   {GSL::Multifit#linear}[link:files/rdoc/fit_rdoc.html] in a case of polynomial fitting.
 #
 #   Example:
 #     #!/usr/bin/env ruby
@@ -225,7 +225,7 @@
 #     x2 = GSL::Vector.linspace(1, 5, 20)
 #     graph([x, y], [x2, coef.eval(x2)], "-C -g 3 -S 4")
 #
-# == {}[link:files/index_rdoc.html"name="5] Divided-difference representations
+# == {}[link:index.html"name="5] Divided-difference representations
 #
 # ---
 # * GSL::Poly::dd_init(xa, ya)
@@ -246,8 +246,8 @@
 #   to a Taylor expansion. On output the Taylor coefficients of the polynomial 
 #   expanded about the point <tt>xp</tt> are returned.
 #
-# == {}[link:files/index_rdoc.html"name="6] Extensions
-# === {}[link:files/index_rdoc.html"name="6.1] Special Polynomials
+# == {}[link:index.html"name="6] Extensions
+# === {}[link:index.html"name="6.1] Special Polynomials
 # ---
 # * GSL::Poly.hermite(n)
 #
@@ -316,7 +316,7 @@
 #        => GSL::Poly::Int:  
 #        [ 24 -96 72 -16 1 ]                <--- (x^4 - 16x^3 + 72x^2 - 96x + 24)/4!
 #  
-# === {}[link:files/index_rdoc.html"name="6.2] Polynomial Operations
+# === {}[link:index.html"name="6.2] Polynomial Operations
 # ---
 # * GSL::Poly#conv
 # * GSL::Poly#deconv
@@ -326,11 +326,11 @@
 # * GSL::Poly#compan
 #
 #
-# {prev}[link:files/complex_rdoc.html]
-# {next}[link:files/sf_rdoc.html]
+# {prev}[link:files/rdoc/complex_rdoc.html]
+# {next}[link:files/rdoc/sf_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #
 #

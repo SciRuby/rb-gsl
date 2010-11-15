@@ -6,11 +6,11 @@
 # {Patric Alken's page}[http://ucsu.colorado.edu/~alken/gsl/"target="_top].
 #
 # Contents:
-# 1. {Introduction}[link:files/ndlinear_rdoc.html#1]
-# 1. {Class and methods}[link:files/ndlinear_rdoc.html#2]
-# 1. {Examples}[link:files/ndlinear_rdoc.html#3]
+# 1. {Introduction}[link:files/rdoc/ndlinear_rdoc.html#1]
+# 1. {Class and methods}[link:files/rdoc/ndlinear_rdoc.html#2]
+# 1. {Examples}[link:files/rdoc/ndlinear_rdoc.html#3]
 #
-# == {}[link:files/index_rdoc.html"name="1] Introduction
+# == {}[link:index.html"name="1] Introduction
 # The NDLINEAR extension provides support for general linear least squares 
 # fitting to data which is a function of more than one variable (multi-linear or 
 # multi-dimensional least squares fitting). This model has the form where 
@@ -30,7 +30,7 @@
 # construct the design matrix X. 
 #
 #
-# == {}[link:files/index_rdoc.html"name="2] Class and Methods
+# == {}[link:index.html"name="2] Class and Methods
 # ---
 # * GSL::MultiFit::Ndlinear.alloc(n_dim, N, u, params)
 # * GSL::MultiFit::Ndlinear::Workspace.alloc(n_dim, N, u, params)
@@ -113,7 +113,7 @@
 #
 #   This method is similar to <tt>GSL::MultiFit::Ndlinear.est</tt>, but does not compute the model error. It computes the model value at the data point <tt>x</tt>  using the coefficient vector <tt>c</tt> and returns the model value.
 #
-# == {}[link:files/index_rdoc.html"name="3] Examples
+# == {}[link:index.html"name="3] Examples
 # This example program generates data from the 3D isotropic harmonic oscillator 
 # wavefunction (real part) and then fits a model to the data using B-splines in 
 # the r coordinate, Legendre polynomials in theta, and sines/cosines in phi. 
@@ -241,7 +241,7 @@
 #  STDERR.printf("rms error over all parameter space = %e\n", eps_rms)
 #
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

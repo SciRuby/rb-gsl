@@ -1,7 +1,7 @@
 #
 # = GSL::Histogram3d class
 #
-# == {}[link:files/index_rdoc.html"name="1] Class methods
+# == {}[link:index.html"name="1] Class methods
 # ---
 # * GSL::Histogram3d.alloc(nx, ny, nz)
 # * GSL::Histogram3d.alloc(xrange, yrange, zrange)
@@ -16,7 +16,7 @@
 # * GSL::Histogram3d.equal_bins_?p(h1, h2)
 #
 #
-# == {}[link:files/index_rdoc.html"name="2] Methods
+# == {}[link:index.html"name="2] Methods
 # ---
 # * GSL::Histogram3d#set_ranges(xrange, yrange, zrange)
 # * GSL::Histogram3d#set_ranges_uniform(xmin, xmax, ymin, ymax, zmin, zmax)
@@ -104,9 +104,9 @@
 #   Creates a <tt>GSL::Histogram2d</tt> object by projecting the 3D histogram 
 #   <tt>self</tt> onto the yz-plane over the x-range from <tt>istart</tt> to <tt>iend</tt>.
 #
-# {prev}[link:files/hist2d_rdoc.html]
-# {next}[link:files/ntuple_rdoc.html]
+# {prev}[link:files/rdoc/hist2d_rdoc.html]
+# {next}[link:files/rdoc/ntuple_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #

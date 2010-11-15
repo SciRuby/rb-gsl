@@ -3,13 +3,13 @@
 # = Ruby/GSL Reference
 # (See also {Gnu Scientific Library -- Reference Manual}[http://www.gnu.org/software/gsl/manual/html_node/"target="_top])
 #
-# == {}[link:files/index_rdoc.html"name="1] Front Matter
+# == {}[link:index.html"name="1] Front Matter
 # This document describes the modules, classes and the methods of Ruby/GSL.  This
 # includes cut-and-paste from the
 # {GNU Scientific Library -- Reference Manual}[http://www.gnu.org/software/gsl/manual/html_node/"target="_top],
 # and documents of the extention libraries.
 #
-# === {}[link:files/index_rdoc.html"name="1.1] Copyright of the GSL Reference
+# === {}[link:index.html"name="1.1] Copyright of the GSL Reference
 #
 # Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
 # 2007, 2008 The GSL Team.
@@ -23,72 +23,72 @@
 # Free Documentation License".  (a) The Back-Cover Text is: "You have the freedom
 # to copy and modify this GNU Manual."
 #
-# === {}[link:files/index_rdoc.html"name="1.2] Copyright of this reference
+# === {}[link:index.html"name="1.2] Copyright of this reference
 #
 # 2009,2010 Yoshiki Tsunesada, David MacMahon
 #
 # Permission is granted to copy, distribute and/or modify this document under
 # the terms of the GNU Free Documentation License.
 #
-# == {}[link:files/index_rdoc.html"name="2] Ruby/GSL Reference
+# == {}[link:index.html"name="2] Ruby/GSL Reference
 #
-# 1. {Introduction}[link:files/intro_rdoc.html]
-# 1. {Using Ruby/GSL}[link:files/use_rdoc.html]
-# 1. {Error Handling}[link:files/ehandling_rdoc.html]
-# 1. {Mathematical Functions}[link:files/math_rdoc.html]
-# 1. {Complex Numbers}[link:files/complex_rdoc.html]
-# 1. {Polynomials}[link:files/poly_rdoc.html]
-# 1. {Special Functions}[link:files/sf_rdoc.html]
-# 1. {Vectors}[link:files/vector_rdoc.html] and {Matrices}[link:files/matrix_rdoc.html]
-# 1. {Permutations}[link:files/perm_rdoc.html]
-# 1. {Combinations}[link:files/combi_rdoc.html]
+# 1. {Introduction}[link:files/rdoc/intro_rdoc.html]
+# 1. {Using Ruby/GSL}[link:files/rdoc/use_rdoc.html]
+# 1. {Error Handling}[link:files/rdoc/ehandling_rdoc.html]
+# 1. {Mathematical Functions}[link:files/rdoc/math_rdoc.html]
+# 1. {Complex Numbers}[link:files/rdoc/complex_rdoc.html]
+# 1. {Polynomials}[link:files/rdoc/poly_rdoc.html]
+# 1. {Special Functions}[link:files/rdoc/sf_rdoc.html]
+# 1. {Vectors}[link:files/rdoc/vector_rdoc.html] and {Matrices}[link:files/rdoc/matrix_rdoc.html]
+# 1. {Permutations}[link:files/rdoc/perm_rdoc.html]
+# 1. {Combinations}[link:files/rdoc/combi_rdoc.html]
 --
-# 1. {Multiset}[link:files/sort_rdoc.html] (GSL-1.14)
+# 1. {Multiset}[link:files/rdoc/sort_rdoc.html] (GSL-1.14)
 ++
-# 1. {Sorting}[link:files/sort_rdoc.html]
-# 1. {BLAS Support}[link:files/blas_rdoc.html]
-# 1. {Linear Algebra}[link:files/linalg_rdoc.html]
-# 1. {Eigen Systems}[link:files/eigen_rdoc.html]
-# 1. {Fast Fourier Transform}[link:files/fft_rdoc.html]
-# 1. {Numerical Integration}[link:files/integration_rdoc.html]
-# 1. {Random Number Generation}[link:files/rng_rdoc.html]
-# 1. {Quasi-Random Sequences}[link:files/qrng_rdoc.html]
-# 1. {Random Number Distributions}[link:files/randist_rdoc.html]
-# 1. {Statistics}[link:files/stats_rdoc.html]
-# 1. {1d-Histograms}[link:files/hist_rdoc.html], {2d-Histograms}[link:files/hist2d_rdoc.html] and {3d-Histograms}[link:files/hist3d_rdoc.html]
-# 1. {N-tuples}[link:files/ntuple_rdoc.html]
-# 1. {Monte-Carlo Integration}[link:files/monte_rdoc.html]
-# 1. {Simulated Annealing}[link:files/siman_rdoc.html]
-# 1. {Ordinary Differential Equations}[link:files/odeiv_rdoc.html]
-# 1. {Interpolation}[link:files/interp_rdoc.html]
-# 1. {Numerical Differentiation}[link:files/diff_rdoc.html]
-# 1. {Chebyshev Approximations}[link:files/cheb_rdoc.html]
-# 1. {Series Acceleration}[link:files/sum_rdoc.html]
-# 1. {Wavelet Transforms}[link:files/wavelet_rdoc.html] (GSL-1.6 feature)
-# 1. {Discrete Hankel Transforms}[link:files/dht_rdoc.html]
-# 1. {One dimensional Root-Finding}[link:files/roots_rdoc.html]
-# 1. {One dimensional Minimization}[link:files/min_rdoc.html]
-# 1. {Multidimensional Root-Finding}[link:files/multiroot_rdoc.html]
-# 1. {Multidimensional Minimization}[link:files/multimin_rdoc.html]
-# 1. {Least-Squares Fitting}[link:files/fit_rdoc.html]
-# 1. {Nonlinear Least-Squares Fitting}[link:files/nonlinearfit_rdoc.html]
-# 1. {Basis Splines}[link:files/bspline_rdoc.html]  
-# 1. {Physical Constants}[link:files/const_rdoc.html]
-# 1. {Graphics}[link:files/graph_rdoc.html]
+# 1. {Sorting}[link:files/rdoc/sort_rdoc.html]
+# 1. {BLAS Support}[link:files/rdoc/blas_rdoc.html]
+# 1. {Linear Algebra}[link:files/rdoc/linalg_rdoc.html]
+# 1. {Eigen Systems}[link:files/rdoc/eigen_rdoc.html]
+# 1. {Fast Fourier Transform}[link:files/rdoc/fft_rdoc.html]
+# 1. {Numerical Integration}[link:files/rdoc/integration_rdoc.html]
+# 1. {Random Number Generation}[link:files/rdoc/rng_rdoc.html]
+# 1. {Quasi-Random Sequences}[link:files/rdoc/qrng_rdoc.html]
+# 1. {Random Number Distributions}[link:files/rdoc/randist_rdoc.html]
+# 1. {Statistics}[link:files/rdoc/stats_rdoc.html]
+# 1. {1d-Histograms}[link:files/rdoc/hist_rdoc.html], {2d-Histograms}[link:files/rdoc/hist2d_rdoc.html] and {3d-Histograms}[link:files/rdoc/hist3d_rdoc.html]
+# 1. {N-tuples}[link:files/rdoc/ntuple_rdoc.html]
+# 1. {Monte-Carlo Integration}[link:files/rdoc/monte_rdoc.html]
+# 1. {Simulated Annealing}[link:files/rdoc/siman_rdoc.html]
+# 1. {Ordinary Differential Equations}[link:files/rdoc/odeiv_rdoc.html]
+# 1. {Interpolation}[link:files/rdoc/interp_rdoc.html]
+# 1. {Numerical Differentiation}[link:files/rdoc/diff_rdoc.html]
+# 1. {Chebyshev Approximations}[link:files/rdoc/cheb_rdoc.html]
+# 1. {Series Acceleration}[link:files/rdoc/sum_rdoc.html]
+# 1. {Wavelet Transforms}[link:files/rdoc/wavelet_rdoc.html] (GSL-1.6 feature)
+# 1. {Discrete Hankel Transforms}[link:files/rdoc/dht_rdoc.html]
+# 1. {One dimensional Root-Finding}[link:files/rdoc/roots_rdoc.html]
+# 1. {One dimensional Minimization}[link:files/rdoc/min_rdoc.html]
+# 1. {Multidimensional Root-Finding}[link:files/rdoc/multiroot_rdoc.html]
+# 1. {Multidimensional Minimization}[link:files/rdoc/multimin_rdoc.html]
+# 1. {Least-Squares Fitting}[link:files/rdoc/fit_rdoc.html]
+# 1. {Nonlinear Least-Squares Fitting}[link:files/rdoc/nonlinearfit_rdoc.html]
+# 1. {Basis Splines}[link:files/rdoc/bspline_rdoc.html]  
+# 1. {Physical Constants}[link:files/rdoc/const_rdoc.html]
+# 1. {Graphics}[link:files/rdoc/graph_rdoc.html]
 # 1. Supported GSL add-on packages
-#    1. {rngextra}[link:files/rngextra_rdoc.html]
-#    1. {Tensor manipulations}[link:files/tensor_rdoc.html]
+#    1. {rngextra}[link:files/rdoc/rngextra_rdoc.html]
+#    1. {Tensor manipulations}[link:files/rdoc/tensor_rdoc.html]
 #    1. OOL: Open Optimization library (see examples/ool/*.rb)
 #    1. CQP and Bundle (see examples/multimin/cqp.rb, bundle.rb)
 #    1. quartic
 #    1. jacobi (see examples/jacobi/*.rb)
-#    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:files/ndlinear_rdoc.html]
-#    1. {ALF: associated Legendre polynomials}[link:files/alf_rdoc.html]
-# 1. {NArray compatibilities}[link:files/narray_rdoc.html]
-# 1. {Changes since Ruby/GSL 1.10.3}[link:files/changes_rdoc.html]
+#    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:files/rdoc/ndlinear_rdoc.html]
+#    1. {ALF: associated Legendre polynomials}[link:files/rdoc/alf_rdoc.html]
+# 1. {NArray compatibilities}[link:files/rdoc/narray_rdoc.html]
+# 1. {Changes since Ruby/GSL 1.10.3}[link:files/rdoc/changes_rdoc.html]
 # 1. {GNU Free Documentation Licence}[http://www.gnu.org/software/gsl/manual/html_node/GNU-Free-Documentation-License.html"target="_top]
 #
-# {next}[link:files/intro_rdoc.html]
+# {next}[link:files/rdoc/intro_rdoc.html]
 #
-# {top}[link:files/index_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #

@@ -1,26 +1,26 @@
 #
 # = Fast Fourier Transforms
 # Contents:
-# 1. {Mathematical Definitions}[link:files/fft_rdoc.html#1]
-# 1. {Complex data FFTs}[link:files/fft_rdoc.html#2]
-#    1. {Overview of complex data FFTs}[link:files/fft_rdoc.html#2.1]
-#    1. {Radix-2 FFT routines for complex data}[link:files/fft_rdoc.html#2.2]
-#       1. {Example of the complex Radix-2 FFT}[link:files/fft_rdoc.html#2.2.1]
-#    1. {Mixed-radix FFT routines for complex data}[link:files/fft_rdoc.html#2.3]
-#       1. {GSL::FFT::ComplexWavetable class}[link:files/fft_rdoc.html#2.3.1]
-#       1. {GSL::FFT::ComplexWorkspace class}[link:files/fft_rdoc.html#2.3.2]
-#       1. {Methods to compute the transform}[link:files/fft_rdoc.html#2.3.3]
-#       1. {Example of the mixed-radix FFT}[link:files/fft_rdoc.html#2.3.4]
-# 1. {Real data FFTs}[link:files/fft_rdoc.html#3]
-#    1. {Overview of real data FFTs}[link:files/fft_rdoc.html#3.1]
-#    1. {Radix-2 FFT routines for real data}[link:files/fft_rdoc.html#3.2]
-#    1. {Mixed-radix FFT routines for real data}[link:files/fft_rdoc.html#3.3]
-#       1. {Data storage scheme}[link:files/fft_rdoc.html#3.3.1]
-#       1. {Wavetable and Workspace classes}[link:files/fft_rdoc.html#3.3.2]
-#       1. {Methods for real FFTs}[link:files/fft_rdoc.html#3.3.3]
-#       1. {Examples}[link:files/fft_rdoc.html#3.3.4]
+# 1. {Mathematical Definitions}[link:files/rdoc/fft_rdoc.html#1]
+# 1. {Complex data FFTs}[link:files/rdoc/fft_rdoc.html#2]
+#    1. {Overview of complex data FFTs}[link:files/rdoc/fft_rdoc.html#2.1]
+#    1. {Radix-2 FFT routines for complex data}[link:files/rdoc/fft_rdoc.html#2.2]
+#       1. {Example of the complex Radix-2 FFT}[link:files/rdoc/fft_rdoc.html#2.2.1]
+#    1. {Mixed-radix FFT routines for complex data}[link:files/rdoc/fft_rdoc.html#2.3]
+#       1. {GSL::FFT::ComplexWavetable class}[link:files/rdoc/fft_rdoc.html#2.3.1]
+#       1. {GSL::FFT::ComplexWorkspace class}[link:files/rdoc/fft_rdoc.html#2.3.2]
+#       1. {Methods to compute the transform}[link:files/rdoc/fft_rdoc.html#2.3.3]
+#       1. {Example of the mixed-radix FFT}[link:files/rdoc/fft_rdoc.html#2.3.4]
+# 1. {Real data FFTs}[link:files/rdoc/fft_rdoc.html#3]
+#    1. {Overview of real data FFTs}[link:files/rdoc/fft_rdoc.html#3.1]
+#    1. {Radix-2 FFT routines for real data}[link:files/rdoc/fft_rdoc.html#3.2]
+#    1. {Mixed-radix FFT routines for real data}[link:files/rdoc/fft_rdoc.html#3.3]
+#       1. {Data storage scheme}[link:files/rdoc/fft_rdoc.html#3.3.1]
+#       1. {Wavetable and Workspace classes}[link:files/rdoc/fft_rdoc.html#3.3.2]
+#       1. {Methods for real FFTs}[link:files/rdoc/fft_rdoc.html#3.3.3]
+#       1. {Examples}[link:files/rdoc/fft_rdoc.html#3.3.4]
 #
-# == {}[link:files/index_rdoc.html"name="1] Mathematical Definitions 
+# == {}[link:index.html"name="1] Mathematical Definitions 
 # Fast Fourier Transforms are efficient algorithms for calculating the discrete 
 # fourier transform (DFT), 
 #
@@ -56,10 +56,10 @@
 # divisions. 
 #
 #
-# == {}[link:files/index_rdoc.html"name="2] Complex data FFTs
-# === {}[link:files/index_rdoc.html"name="2.1] Overview of complex data FFTs
+# == {}[link:index.html"name="2] Complex data FFTs
+# === {}[link:index.html"name="2.1] Overview of complex data FFTs
 # The complex data FFT routines are provided as instance methods of
-# {GSL::Vector::Complex}[link:files/vector_complex_rdoc.html].
+# {GSL::Vector::Complex}[link:files/rdoc/vector_complex_rdoc.html].
 #
 # Here is a table which shows the layout of the array data, and the correspondence 
 # between the time-domain complex data z, and the frequency-domain complex data x.
@@ -82,7 +82,7 @@
 # frequencies +1/(2 Delta), -1/(2 Delta) which are equivalent. If N is odd then
 # general structure of the table above still applies, but N/2 does not appear.
 #
-# {GSL::Vector::Complex}[link:files/vector_complex_rdoc.html] provides four methods for
+# {GSL::Vector::Complex}[link:files/rdoc/vector_complex_rdoc.html] provides four methods for
 # shifting the frequency domain data between <b>FFT order</b>, shown in the table
 # above, and <b>natural order</b>, which has the most negative freqeuncy component
 # first, the zero frequency component in the middle, and the most positive
@@ -110,7 +110,7 @@
 #   <tt>self</tt>.  Note that <tt>#fftshift</tt> and <tt>#ifftshift</tt> are equivalent
 #   for even lengths, but not for odd lengths.
 #
-# === {}[link:files/index_rdoc.html"name="2.2] Radix-2 FFT routines for complex data
+# === {}[link:index.html"name="2.2] Radix-2 FFT routines for complex data
 # The radix-2 algorithms are simple and compact, although not necessarily the 
 # most efficient. They use the Cooley-Tukey algorithm to compute complex 
 # FFTs for lengths which are a power of 2 -- no additional storage is required. 
@@ -146,7 +146,7 @@
 #
 #   These are decimation-in-frequency versions of the radix-2 FFT functions.
 #
-# ==== {}[link:files/index_rdoc.html"name="2.2.1] Example of complex Radix-2 FFT
+# ==== {}[link:index.html"name="2.2.1] Example of complex Radix-2 FFT
 # Here is an example program which computes the FFT of a short pulse in a 
 # sample of length  128. To make the resulting Fourier transform real the pulse 
 # is defined for equal positive and negative times (-10 ... 10), where the 
@@ -176,9 +176,9 @@
 #           printf("%d %e %e\n", i, ffted[i].re, ffted[i].im)
 #         end
 #
-# === {}[link:files/index_rdoc.html"name="2.3] Mixed-radix FFT routines for complex data
+# === {}[link:index.html"name="2.3] Mixed-radix FFT routines for complex data
 #
-# ==== {}[link:files/index_rdoc.html"name="2.3.1] GSL::FFT::ComplexWavetable class
+# ==== {}[link:index.html"name="2.3.1] GSL::FFT::ComplexWavetable class
 # ---
 # * GSL::FFT::ComplexWavetable.alloc(n)
 #
@@ -201,14 +201,14 @@
 # * GSL::FFT::ComplexWavetable#factor
 #
 #
-# ==== {}[link:files/index_rdoc.html"name="2.3.2] GSL::FFT::ComplexWorkspace class
+# ==== {}[link:index.html"name="2.3.2] GSL::FFT::ComplexWorkspace class
 # ---
 # * GSL::FFT::ComplexWorkspace.alloc(n)
 #
 #
 #   Creates a workspace for a complex transform of length <tt>n</tt>.
 #
-# ==== {}[link:files/index_rdoc.html"name="2.3.3] Methods to compute transform
+# ==== {}[link:index.html"name="2.3.3] Methods to compute transform
 # <b>The FFT methods described below return FFTed data, and the input vector is not changed. Use methods with '!' as <tt>tranform!</tt> for in-place transform.</b>
 #
 # ---
@@ -235,7 +235,7 @@
 #
 #   These methods return the FFTed data, and the input data is not changed.
 #
-# ==== {}[link:files/index_rdoc.html"name="2.3.4] Example to use the mixed-radix FFT algorithm
+# ==== {}[link:index.html"name="2.3.4] Example to use the mixed-radix FFT algorithm
 #       require 'gsl'
 #       include GSL
 #
@@ -259,11 +259,11 @@
 #         printf("%d %e %e\n", i, data[i].re, data[i].im)
 #       end
 #
-# == {}[link:files/index_rdoc.html"name="3] Real data FFTs
-# === {}[link:files/index_rdoc.html"name="3.1] Overview of real data FFTs 
+# == {}[link:index.html"name="3] Real data FFTs
+# === {}[link:index.html"name="3.1] Overview of real data FFTs 
 #
 # The functions for real data FFTs are provided as instance methods of
-# {GSL::Vector}[link:files/vector.class].  While they are similar to those for
+# {GSL::Vector}[link:files/rdoc/vector.class].  While they are similar to those for
 # complex data, there is an important difference in the data storage layout
 # between forward and inverse transforms.  The Fourier transform of a real
 # sequence is not real. It is a complex sequence with a special symmetry.  A
@@ -274,7 +274,7 @@
 # Forward transforms of real sequences produce half complex sequences of the same
 # length.  Backward and inverse transforms of half complex sequences produce real
 # sequences of the same length.  In both cases, the input and output sequences
-# are instances of {GSL::Vector}[link:files/vector_rdoc.html].
+# are instances of {GSL::Vector}[link:files/rdoc/vector_rdoc.html].
 #
 # The precise storage arrangements of half complex seqeunces depend on the
 # algorithm, and are different for radix-2 and mixed-radix routines. The radix-2
@@ -286,9 +286,9 @@
 # complex sequence produces by a radix-2 forward transform <b>cannot</b> be
 # recovered by a mixed-radix inverse transform (and vice versa).
 #
-# === {}[link:files/index_rdoc.html"name="3.2] Radix-2 FFT routines for real data
+# === {}[link:index.html"name="3.2] Radix-2 FFT routines for real data
 # The routines for readix-2 real FFTs are provided as instance methods of
-# {GSL::Vector}[link:files/vector_rdoc.html].
+# {GSL::Vector}[link:files/rdoc/vector_rdoc.html].
 #
 # <b>The FFT methods described below return FFTed data, and the input vector is
 # not changed. Use methods with '!' as <tt>radix2_tranform!</tt> for in-place
@@ -344,7 +344,7 @@
 #   half-complex sequence data stored according the output scheme used by
 #   gsl_fft_real_radix2.  The result is a real array stored in natural order.
 #
-# == {}[link:files/index_rdoc.html"name="4] Mixed-radix FFT routines for real data
+# == {}[link:index.html"name="4] Mixed-radix FFT routines for real data
 #
 # This section describes mixed-radix FFT algorithms for real data. 
 # The mixed-radix functions work for FFTs of any length. They are a 
@@ -366,7 +366,7 @@
 # the symmetry z_k = z_{N-k}^* implies that this is purely real too. 
 #
 #
-# === {}[link:files/index_rdoc.html"name="4.1] Data storage scheme
+# === {}[link:index.html"name="4.1] Data storage scheme
 #
 # The storage scheme is best shown by some examples. 
 # The table below shows the output for an odd-length sequence, n=5. 
@@ -411,7 +411,7 @@
 # and <tt>complex[5]</tt> are filled in using the symmetry condition. 
 # Both <tt>complex[0].imag</tt> and <tt>complex[3].imag</tt> are known to be zero.
 #
-# ==== {}[link:files/index_rdoc.html"name="4.1.1] Wavetable and Workspace classes
+# ==== {}[link:index.html"name="4.1.1] Wavetable and Workspace classes
 # ---
 # * GSL::FFT::RealWavetable.alloc(n)
 # * GSL::FFT::HalfComplexWavetable.alloc(n)
@@ -439,7 +439,7 @@
 #   <tt>n</tt>.  The same workspace can be used for both forward real and inverse
 #   halfcomplex transforms.
 #
-# ==== {}[link:files/index_rdoc.html"name="4.1.2] Methods for mixed-radix real FFTs
+# ==== {}[link:index.html"name="4.1.2] Methods for mixed-radix real FFTs
 #
 # <b>The FFT methods described below return FFTed data, and the input vector is not changed. Use methods with '!' as <tt>real_tranform!</tt> for in-place transform.</b>
 #
@@ -470,9 +470,9 @@
 # * GSL::Vector#ifft
 #
 #
-# == {}[link:files/index_rdoc.html"name="5] Examples
+# == {}[link:index.html"name="5] Examples
 #
-# === {}[link:files/index_rdoc.html"name="5.1] Example 1
+# === {}[link:index.html"name="5.1] Example 1
 #
 #     #!/usr/bin/env ruby
 #     require("gsl")
@@ -493,7 +493,7 @@
 #     f = Vector.linspace(0, SAMPLING/2, mag.size)
 #     graph(f, mag, "-C -g 3 -x 0 200 -X 'Frequency [Hz]'")
 #
-# === {}[link:files/index_rdoc.html"name="5.2] Example 2
+# === {}[link:index.html"name="5.2] Example 2
 #     #!/usr/bin/env ruby
 #     require("gsl")
 #     include GSL
@@ -526,10 +526,10 @@
 #
 #     graph(nil, data, data2, "-T X -C -g 3 -L 'Real-halfcomplex' -x 0 #{data.size}")
 #
-# {prev}[link:files/eigen_rdoc.html]
-# {next}[link:files/wavelet_rdoc.html]
+# {prev}[link:files/rdoc/eigen_rdoc.html]
+# {next}[link:files/rdoc/wavelet_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

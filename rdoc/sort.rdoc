@@ -1,11 +1,11 @@
 #
 # = Sorting
 # Contents:
-# 1. {Heapsort of vectors}[link:files/sort_rdoc.html#1]
-# 1. {Sorting vectors}[link:files/sort_rdoc.html#2]
-# 1. {Selecting the k smallest or largest elements}[link:files/sort_rdoc.html#3]
+# 1. {Heapsort of vectors}[link:files/rdoc/sort_rdoc.html#1]
+# 1. {Sorting vectors}[link:files/rdoc/sort_rdoc.html#2]
+# 1. {Selecting the k smallest or largest elements}[link:files/rdoc/sort_rdoc.html#3]
 #
-# == {}[link:files/index_rdoc.html"name="1] Heapsort
+# == {}[link:index.html"name="1] Heapsort
 #
 # ---
 # * GSL::Vector#heapsort
@@ -39,7 +39,7 @@
 #   function given by a block, and return the result
 #   as a permutation object. The vector itself is not changed.
 #   
-# == {}[link:files/index_rdoc.html"name="2] Sorting vectors
+# == {}[link:index.html"name="2] Sorting vectors
 # ---
 # * GSL::Vector#sort!
 #
@@ -66,7 +66,7 @@
 #   of the greatest element in 
 #   <tt>self</tt>. The vector <tt>self</tt> is not changed.
 #
-# == {}[link:files/index_rdoc.html"name="3] Selecting the k smallest or largest elements
+# == {}[link:index.html"name="3] Selecting the k smallest or largest elements
 # ---
 # * GSL::Vector#sort_smallest(k)
 # * GSL::Vector#sort_largest(k)
@@ -85,10 +85,10 @@
 #   <tt>k</tt> must be less than or equal to the length of the vector.
 #
 #
-# {prev}[link:files/multiset_rdoc.html]
-# {next}[link:files/blas_rdoc.html]
+# {prev}[link:files/rdoc/multiset_rdoc.html]
+# {next}[link:files/rdoc/blas_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

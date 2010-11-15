@@ -3,7 +3,7 @@
 # The tensor library is developed by J. Burguet and distributed 
 # as an add-on package of GSL. See {here}[http://sources.redhat.com/ml/gsl-discuss/2004-q4/msg00053.html"target="_top] and {here}[http://sources.redhat.com/ml/gsl-discuss/2004-q4/msg00055.html"target="_top].
 #
-# == {}[link:files/index_rdoc.html"name="1] Class methods
+# == {}[link:index.html"name="1] Class methods
 # ---
 # * GSL::Tensor.new(rank, dimention)
 # * GSL::Tensor.alloc(rank, dimention)
@@ -33,8 +33,8 @@
 #
 #   Exchanges the elements of the tensor <tt>a</tt> and <tt>b</tt>.
 #
-# == {}[link:files/index_rdoc.html"name="2] Instance methods
-# === {}[link:files/index_rdoc.html"name="2.1] Accessing tensor elements
+# == {}[link:index.html"name="2] Instance methods
+# === {}[link:index.html"name="2.1] Accessing tensor elements
 # ---
 # * GSL::Tensor#set_zero
 #
@@ -116,7 +116,7 @@
 #
 #   Converts the tensor of rank 2 into a <tt>GSL::Matrix::View</tt> object.
 #   
-# === {}[link:files/index_rdoc.html"name="2.2] IO
+# === {}[link:index.html"name="2.2] IO
 # ---
 # * GSL::Tensor#fwrite(io)
 # * GSL::Tensor#fwrite(filename)
@@ -128,7 +128,7 @@
 # * GSL::Tensor#fscanf(filename)
 #
 #
-# === {}[link:files/index_rdoc.html"name="2.3] Max, min
+# === {}[link:index.html"name="2.3] Max, min
 # ---
 # * GSL::Tensor#max
 # * GSL::Tensor#min
@@ -138,7 +138,7 @@
 # * GSL::Tensor#minmax_index
 #
 #
-# === {}[link:files/index_rdoc.html"name="2.4] Tensor operations
+# === {}[link:index.html"name="2.4] Tensor operations
 # ---
 # * GSL::Tensor#add(b)
 # * GSL::Tensor#+(b)
@@ -219,7 +219,7 @@
 #   equal to absolute accurary <tt>eps</tt> for all the indices, 
 #   and <tt>false</tt> otherwise.
 #
-# === {}[link:files/index_rdoc.html"name="2.5] Tensor properties
+# === {}[link:index.html"name="2.5] Tensor properties
 # ---
 # * GSL::Tensor#isnull
 #
@@ -242,10 +242,10 @@
 #
 #   Returns the size
 #
-# {prev}[link:files/rngextra_rdoc.html]
-# {next}[link:files/narray_rdoc.html]
+# {prev}[link:files/rdoc/rngextra_rdoc.html]
+# {next}[link:files/rdoc/narray_rdoc.html]
 #
-# {Reference index}[link:files/ref_rdoc.html]
-# {top}[link:files/index_rdoc.html]
+# {Reference index}[link:files/rdoc/ref_rdoc.html]
+# {top}[link:files/rdoc/index_rdoc.html]
 #
 #

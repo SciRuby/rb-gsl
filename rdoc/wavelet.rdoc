@@ -5,14 +5,14 @@
 # The library includes wavelets for real data in both one and two dimensions. 
 #
 # Contents:
-# 1. {Definitions}[link:files/wavelet_rdoc.html#1]
-# 1. {Initialization}[link:files/wavelet_rdoc.html#2]
-# 1. {Transform methods}[link:files/wavelet_rdoc.html#3]
-#    1. {Wavelet transforms in one dimension}[link:files/wavelet_rdoc.html#3.1]
-#    1. {Wavelet transforms in two dimension}[link:files/wavelet_rdoc.html#3.2]
-# 1. {Examples}[link:files/wavelet_rdoc.html#4]
+# 1. {Definitions}[link:files/rdoc/rdoc/wavelet_rdoc.html#1]
+# 1. {Initialization}[link:files/rdoc/rdoc/wavelet_rdoc.html#2]
+# 1. {Transform methods}[link:files/rdoc/rdoc/wavelet_rdoc.html#3]
+#    1. {Wavelet transforms in one dimension}[link:files/rdoc/rdoc/wavelet_rdoc.html#3.1]
+#    1. {Wavelet transforms in two dimension}[link:files/rdoc/rdoc/wavelet_rdoc.html#3.2]
+# 1. {Examples}[link:files/rdoc/rdoc/wavelet_rdoc.html#4]
 #
-# == {}[link:files/index_rdoc.html"name="1] Definitions
+# == {}[link:index.html"name="1] Definitions
 #
 # The continuous wavelet transform and its inverse are defined by the relations,
 # and,
@@ -28,7 +28,7 @@
 # The discrete wavelet transform is an O(N) algorithm, and is also referred to as 
 # the fast wavelet transform.
 #
-# == {}[link:files/index_rdoc.html"name="2] Initialization
+# == {}[link:index.html"name="2] Initialization
 #
 # ---
 # * GSL::Wavelet.alloc(type, k)
@@ -66,8 +66,8 @@
 #   matrices it is sufficient to allocate a workspace of size <tt>n</tt>, 
 #   since the transform operates on individual rows and columns.
 #
-# == {}[link:files/index_rdoc.html"name="3] Transform Methods
-# === {}[link:files/index_rdoc.html"name="3.1] Wavelet transforms in one dimension
+# == {}[link:index.html"name="3] Transform Methods
+# === {}[link:index.html"name="3.1] Wavelet transforms in one dimension
 #
 # ---
 # * GSL::Wavelet.transform(w, v, dir = GSL::Wavelet::FORWARD, work)
@@ -107,7 +107,7 @@
 #
 #   These methods return a transformed data, and the input vector is not changed.
 #
-# === {}[link:files/index_rdoc.html"name="3.2] Wavelet transforms in two dimension
+# === {}[link:index.html"name="3.2] Wavelet transforms in two dimension
 # ---
 # * GSL::Wavelet.transform(same as the methods for one dimensional transforms)
 # * GSL::Wavelet.transform_matrix()
@@ -162,7 +162,7 @@
 # * GSL::Wavelet2d#nstransform_inverse()
 #
 #
-# == {}[link:files/index_rdoc.html"name="4] Example
+# == {}[link:index.html"name="4] Example
 #   #!/usr/bin/env ruby
 #   require("gsl")
 #
@@ -211,8 +211,8 @@
 #   #If you have GNU graph utility...
 #   GSL::graph(nil, data, data3, "-T X -C -g 3")
 #   
-# {prev}[link:files/fft_rdoc.html]
-# {next}[link:files/integration_rdoc.html]
+# {prev}[link:files/rdoc/rdoc/fft_rdoc.html]
+# {next}[link:files/rdoc/rdoc/integration_rdoc.html]
 #
-# {back}[link:files/index_rdoc.html]
+# {back}[link:files/rdoc/rdoc/index_rdoc.html]
 #
