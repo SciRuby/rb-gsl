@@ -1,26 +1,34 @@
 =begin
 
 = Ruby/GSL Reference
-(See also ((<GSL reference manual|URL:http://www.gnu.org/software/gsl/manual/gsl-ref_toc.html>)))
+(See also ((<Gnu Scientific Library -- Reference Manual|URL:http://www.gnu.org/software/gsl/manual/html_node/>)))
 
 == Front Matter
-This document describes the modules, classes and the methods of Ruby/GSL. 
-This includes cut&paste from the ((<GSL Reference|URL:http://www.gnu.org/software/gsl/manual/html_node/>)), and documents of the extention libraries.
+This document describes the modules, classes and the methods of Ruby/GSL.  This
+includes cut-and-paste from the
+((<GNU Scientific Library -- Reference Manual|URL:http://www.gnu.org/software/gsl/manual/html_node/>)),
+and documents of the extention libraries.
 
 === Copyright of the GSL Reference
-  Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 The GSL Team.
-  Permission is granted to copy, distribute and/or modify this document under the terms of 
-  the GNU Free Documentation License, Version 1.3 or any later version published by the 
-  Free Software Foundation; with the Invariant Sections being "GNU General Public License"
-  and "Free Software Needs Free Documentation", the Front-Cover text being "A GNU Manual", 
-  and with the Back-Cover Text being (a) (see below). A copy of the license is included in 
-  the section entitled "GNU Free Documentation License".
-  (a) The Back-Cover Text is: "You have the freedom to copy and modify this GNU Manual."
+
+Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+2007, 2008 The GSL Team.
+
+Permission is granted to copy, distribute and/or modify this document under the
+terms of the GNU Free Documentation License, Version 1.3 or any later version
+published by the Free Software Foundation; with the Invariant Sections being
+"GNU General Public License" and "Free Software Needs Free Documentation", the
+Front-Cover text being "A GNU Manual", and with the Back-Cover Text being (a)
+(see below). A copy of the license is included in the section entitled "GNU
+Free Documentation License".  (a) The Back-Cover Text is: "You have the freedom
+to copy and modify this GNU Manual."
 
 === Copyright of this reference
-  2009 Yoshiki Tsunesada
-  Permission is granted to copy, distribute and/or modify this document under the terms of 
-  the GNU Free Documentation License.
+
+2009,2010 Yoshiki Tsunesada, David MacMahon
+
+Permission is granted to copy, distribute and/or modify this document under
+the terms of the GNU Free Documentation License.
 
 == Ruby/GSL Reference
 
