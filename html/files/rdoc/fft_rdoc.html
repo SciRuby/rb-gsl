@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: fft.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>fft.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/fft.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Fast Fourier Transforms</h1>
+<p>
+Contents:
+</p>
+<ol>
+<li><a href="fft_rdoc.html#1">Mathematical Definitions</a>
+
+</li>
+<li><a href="fft_rdoc.html#2">Complex data FFTs</a>
+
+<ol>
+<li><a href="fft_rdoc.html#2.1">Overview of complex data FFTs</a>
+
+</li>
+<li><a href="fft_rdoc.html#2.2">Radix-2 FFT routines for complex data</a>
+
+<ol>
+<li><a href="fft_rdoc.html#2.2.1">Example of the complex Radix-2 FFT</a>
+
+</li>
+</ol>
+</li>
+<li><a href="fft_rdoc.html#2.3">Mixed-radix FFT routines for complex data</a>
+
+<ol>
+<li><a href="fft_rdoc.html#2.3.1">GSL::FFT::ComplexWavetable class</a>
+
+</li>
+<li><a href="fft_rdoc.html#2.3.2">GSL::FFT::ComplexWorkspace class</a>
+
+</li>
+<li><a href="fft_rdoc.html#2.3.3">Methods to compute the transform</a>
+
+</li>
+<li><a href="fft_rdoc.html#2.3.4">Example of the mixed-radix FFT</a>
+
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><a href="fft_rdoc.html#3">Real data FFTs</a>
+
+<ol>
+<li><a href="fft_rdoc.html#3.1">Overview of real data FFTs</a>
+
+</li>
+<li><a href="fft_rdoc.html#3.2">Radix-2 FFT routines for real data</a>
+
+</li>
+<li><a href="fft_rdoc.html#3.3">Mixed-radix FFT routines for real data</a>
+
+<ol>
+<li><a href="fft_rdoc.html#3.3.1">Data storage scheme</a>
+
+</li>
+<li><a href="fft_rdoc.html#3.3.2">Wavetable and Workspace classes</a>
+
+</li>
+<li><a href="fft_rdoc.html#3.3.3">Methods for real FFTs</a>
+
+</li>
+<li><a href="fft_rdoc.html#3.3.4">Examples</a>
+
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> Mathematical Definitions</h2>
+<p>
+Fast Fourier Transforms are efficient algorithms for calculating the
+discrete fourier transform (DFT),
+</p>
+<p>
+The DFT usually arises as an approximation to the continuous fourier
+transform when functions are sampled at discrete intervals in space or
+time. The naive evaluation of the discrete fourier transform is a
+matrix-vector multiplication W\vec{z}. A general matrix-vector
+multiplication takes O(N^2) operations for N data-points. Fast fourier
+transform algorithms use a divide-and-conquer strategy to factorize the
+matrix W into smaller sub-matrices, corresponding to the integer factors of
+the length N. If N can be factorized into a product of integers f_1 f_2
+&#8230; f_n then the DFT can be computed in O(N \sum f_i) operations. For a
+radix-2 FFT this gives an operation count of O(N \log_2 N).
+</p>
+<p>
+All the FFT functions offer three types of transform: forwards, inverse and
+backwards, based on the same mathematical definitions. The definition of
+the forward fourier transform, x = FFT(z), is, and the definition of the
+inverse fourier transform, x = IFFT(z), is, The factor of 1/N makes this a
+true inverse. For example, a call to gsl_fft_complex_forward followed by a
+call to gsl_fft_complex_inverse should return the original data (within
+numerical errors).
+</p>
+<p>
+In general there are two possible choices for the sign of the exponential
+in the transform/ inverse-transform pair. GSL follows the same convention
+as FFTPACK, using a negative exponential for the forward transform. The
+advantage of this convention is that the inverse transform recreates the
+original function with simple fourier synthesis. Numerical Recipes uses the
+opposite convention, a positive exponential in the forward transform.
+</p>
+<p>
+The backwards FFT is simply our terminology for an unscaled version of the
+inverse FFT, When the overall scale of the result is unimportant it is
+often convenient to use the backwards FFT instead of the inverse to save
+unnecessary divisions.
+</p>
+<h2><a href="../.././index.html"name="2"></a> Complex data FFTs</h2>
+<h3><a href="../.././index.html"name="2.1"></a> Overview of complex data FFTs</h3>
+<p>
+The complex data FFT routines are provided as instance methods of <a
+href="vector_complex_rdoc.html">GSL::Vector::Complex</a>.
+</p>
+<p>
+Here is a table which shows the layout of the array data, and the
+correspondence between the time-domain complex data z, and the
+frequency-domain complex data x.
+</p>
+<pre>
+        index    z               x = FFT(z)
+
+        0        z(t = 0)        x(f = 0)
+        1        z(t = 1)        x(f = 1/(N Delta))
+        2        z(t = 2)        x(f = 2/(N Delta))
+        .        ........        ..................
+        N/2      z(t = N/2)      x(f = +1/(2 Delta),
+                                       -1/(2 Delta))
+        .        ........        ..................
+        N-3      z(t = N-3)      x(f = -3/(N Delta))
+        N-2      z(t = N-2)      x(f = -2/(N Delta))
+        N-1      z(t = N-1)      x(f = -1/(N Delta))
+</pre>
+<p>
+When N is even the location N/2 contains the most positive and negative
+frequencies +1/(2 Delta), -1/(2 Delta) which are equivalent. If N is odd
+then general structure of the table above still applies, but N/2 does not
+appear.
+</p>
+<p>
+<a href="vector_complex_rdoc.html">GSL::Vector::Complex</a> provides four
+methods for shifting the frequency domain data between <b>FFT order</b>,
+shown in the table above, and <b>natural order</b>, which has the most
+negative freqeuncy component first, the zero frequency component in the
+middle, and the most positive frequency component last.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#fftshift
+
+</li>
+<li>GSL::Vector::Complex#fftshift!
+
+<p>
+Shifts the data of <tt>self</tt> from FFT order to natural order. The
+<tt>fftshift</tt> method leaves <tt>self</tt> unmodified and returns a new
+<tt>GSL::Vector::Complex</tt> object containing the shifted data. The
+<tt>fftshift!</tt> method modifies <tt>self</tt> in-place and returns
+<tt>self</tt>. Note that <tt>fftshift</tt> and <tt>ifftshift</tt> are
+equivalent for even lengths, but not for odd lengths.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#ifftshift
+
+</li>
+<li>GSL::Vector::Complex#ifftshift!
+
+<p>
+Shifts the data of <tt>self</tt> from natural order to FFT order. The
+<tt>ifftshift</tt> method leaves <tt>self</tt> unmodified and returns a new
+<tt>GSL::Vector::Complex</tt> object containing the shifted data. The
+<tt>ifftshift!</tt> method modifies <tt>self</tt> in-place and returns
+<tt>self</tt>. Note that <tt>fftshift</tt> and <tt>ifftshift</tt> are
+equivalent for even lengths, but not for odd lengths.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.2"></a> Radix-2 FFT routines for complex data</h3>
+<p>
+The radix-2 algorithms are simple and compact, although not necessarily the
+most efficient. They use the Cooley-Tukey algorithm to compute complex FFTs
+for lengths which are a power of 2 &#8212; no additional storage is
+required. The corresponding self-sorting mixed-radix routines offer better
+performance at the expense of requiring additional working space.
+</p>
+<p>
+<b>The FFT methods described below return FFTed data, and the input vector
+is not changed. Use methods with &#8217;!&#8217; as <tt>tranform!</tt> for
+in-place transform.</b>
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#radix2_forward
+
+</li>
+<li>GSL::Vector::Complex#radix2_backward
+
+</li>
+<li>GSL::Vector::Complex#radix2_inverse
+
+<p>
+These functions compute forward, backward and inverse FFTs of the complex
+vector using a radix-2 decimation-in-time algorithm. The length of the
+transform is restricted to powers of two. These methods return the FFTed
+data, and the input data is not changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#radix2_transform(sign)
+
+<p>
+The sign argument can be either <tt>GSL::FFT::FORWARD</tt> or
+<tt>GSL::FFT::BACKWARD</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#radix2_dif_forward
+
+</li>
+<li>GSL::Vector::Complex#radix2_dif_backward
+
+</li>
+<li>GSL::Vector::Complex#radix2_dif_inverse
+
+</li>
+<li>GSL::Vector::Complex#radix2_dif_transform
+
+<p>
+These are decimation-in-frequency versions of the radix-2 FFT functions.
+</p>
+</li>
+</ul>
+<h4><a href="../.././index.html"name="2.2.1"></a> Example of complex Radix-2 FFT</h4>
+<p>
+Here is an example program which computes the FFT of a short pulse in a
+sample of length 128. To make the resulting Fourier transform real the
+pulse is defined for equal positive and negative times (-10 &#8230; 10),
+where the negative times wrap around the end of the array.
+</p>
+<pre>
+        require(&quot;gsl&quot;)
+        include GSL
+
+        n = 128
+        data = Vector::Complex[n]
+
+        data[0] = 1.0
+        for i in 1..10 do
+          data[i] = 1.0
+          data[n-i] = 1.0
+        end
+
+        #for i in 0...n do
+        #  printf(&quot;%d %e %e\n&quot;, i, data[i].re, data[i].im)
+        #end
+
+        # You can choose whichever you like
+        #ffted = data.radix2_forward()
+        ffted = data.radix2_transform(FFT::FORWARD)
+        ffted /= Math::sqrt(n)
+        for i in 0...n do
+          printf(&quot;%d %e %e\n&quot;, i, ffted[i].re, ffted[i].im)
+        end
+</pre>
+<h3><a href="../.././index.html"name="2.3"></a> Mixed-radix FFT routines for complex data</h3>
+<h4><a href="../.././index.html"name="2.3.1"></a> GSL::FFT::ComplexWavetable class</h4>
+<hr size="1"></hr><ul>
+<li>GSL::FFT::ComplexWavetable.alloc(n)
+
+<p>
+This method prepares a trigonometric lookup table for a complex FFT of
+length <tt>n</tt>. The length <tt>n</tt> is factorized into a product of
+subtransforms, and the factors and their trigonometric coefficients are
+stored in the wavetable. The trigonometric coefficients are computed using
+direct calls to sin and cos, for accuracy. Recursion relations could be
+used to compute the lookup table faster, but if an application performs
+many FFTs of the same length then this computation is a one-off overhead
+which does not affect the final throughput.
+</p>
+<p>
+The <tt>Wavetable</tt> object can be used repeatedly for any transform of
+the same length. The table is not modified by calls to any of the other FFT
+functions. The same wavetable can be used for both forward and backward (or
+inverse) transforms of a given length.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::FFT::ComplexWavetable#n
+
+</li>
+<li>GSL::FFT::ComplexWavetable#nf
+
+</li>
+<li>GSL::FFT::ComplexWavetable#factor
+
+</li>
+</ul>
+<h4><a href="../.././index.html"name="2.3.2"></a> GSL::FFT::ComplexWorkspace class</h4>
+<hr size="1"></hr><ul>
+<li>GSL::FFT::ComplexWorkspace.alloc(n)
+
+<p>
+Creates a workspace for a complex transform of length <tt>n</tt>.
+</p>
+</li>
+</ul>
+<h4><a href="../.././index.html"name="2.3.3"></a> Methods to compute transform</h4>
+<p>
+<b>The FFT methods described below return FFTed data, and the input vector
+is not changed. Use methods with &#8217;!&#8217; as <tt>tranform!</tt> for
+in-place transform.</b>
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#forward(table, work)
+
+</li>
+<li>GSL::Vector::Complex#forward(table)
+
+</li>
+<li>GSL::Vector::Complex#forward(work)
+
+</li>
+<li>GSL::Vector::Complex#forward()
+
+</li>
+<li>GSL::Vector::Complex#backward(arguments same as forward)
+
+</li>
+<li>GSL::Vector::Complex#inverse(arguments same as forward)
+
+</li>
+<li>GSL::Vector::Complex#transform(arguments same as forward, sign)
+
+<p>
+These methods compute forward, backward and inverse FFTs of the complex
+vector <tt>self</tt>, using a mixed radix decimation-in-frequency
+algorithm. There is no restriction on the length. Efficient modules are
+provided for subtransforms of length 2, 3, 4, 5, 6 and 7. Any remaining
+factors are computed with a slow, O(n^2), general-n module.
+</p>
+<p>
+The caller can supply a <tt>table</tt> containing the trigonometric lookup
+tables and a workspace <tt>work</tt> (they are optional).
+</p>
+<p>
+The sign argument for the method <tt>transform</tt> can be either
+<tt>GSL::FFT::FORWARD</tt> or <tt>GSL::FFT::BACKWARD</tt>.
+</p>
+<p>
+These methods return the FFTed data, and the input data is not changed.
+</p>
+</li>
+</ul>
+<h4><a href="../.././index.html"name="2.3.4"></a> Example to use the mixed-radix FFT algorithm</h4>
+<pre>
+      require 'gsl'
+      include GSL
+
+      n = 630
+      data = FFT::Vector::Complex[n]
+
+      table = FFT::ComplexWavetable.alloc(n)
+      space = FFT::ComplexWorkspace.alloc(n)
+
+      data[0] = 1.0
+      for i in 1..10 do
+        data[i] = 1.0
+      end
+
+      ffted = data.forward(table, space)
+      #ffted = data.forward()
+      #ffted = data.transform(FFT:Forward)
+
+      ffted /= Math::sqrt(n)
+      for i in 0...n do
+        printf(&quot;%d %e %e\n&quot;, i, data[i].re, data[i].im)
+      end
+</pre>
+<h2><a href="../.././index.html"name="3"></a> Real data FFTs</h2>
+<h3><a href="../.././index.html"name="3.1"></a> Overview of real data FFTs</h3>
+<p>
+The functions for real data FFTs are provided as instance methods of <a
+href="vector.class">GSL::Vector</a>. While they are similar to those for
+complex data, there is an important difference in the data storage layout
+between forward and inverse transforms. The Fourier transform of a real
+sequence is not real. It is a complex sequence with a special symmetry. A
+sequence with this symmetry is called <tt>conjugate-complex</tt> or
+<tt>half-complex</tt> and requires only as much storage as the original
+real sequence instead of twice as much.
+</p>
+<p>
+Forward transforms of real sequences produce half complex sequences of the
+same length. Backward and inverse transforms of half complex sequences
+produce real sequences of the same length. In both cases, the input and
+output sequences are instances of <a
+href="vector_rdoc.html">GSL::Vector</a>.
+</p>
+<p>
+The precise storage arrangements of half complex seqeunces depend on the
+algorithm, and are different for radix-2 and mixed-radix routines. The
+radix-2 functions operate in-place, which constrains the locations where
+each element can be stored. The restriction forces real and imaginary parts
+to be stored far apart. The mixed-radix algorithm does not have this
+restriction, and it stores the real and imaginary parts of a given term in
+neighboring locations (which is desirable for better locality of memory
+accesses). This means that a half complex sequence produces by a radix-2
+forward transform <b>cannot</b> be recovered by a mixed-radix inverse
+transform (and vice versa).
+</p>
+<h3><a href="../.././index.html"name="3.2"></a> Radix-2 FFT routines for real data</h3>
+<p>
+The routines for readix-2 real FFTs are provided as instance methods of <a
+href="vector_rdoc.html">GSL::Vector</a>.
+</p>
+<p>
+<b>The FFT methods described below return FFTed data, and the input vector
+is not changed. Use methods with &#8217;!&#8217; as
+<tt>radix2_tranform!</tt> for in-place transform.</b>
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#real_radix2_transform
+
+</li>
+<li>GSL::Vector#radix2_transform
+
+</li>
+<li>GSL::Vector#real_radix2_forward
+
+</li>
+<li>GSL::Vector#radix2_forward
+
+<p>
+These methods compute a radix-2 FFT of the real vector <tt>self</tt>. The
+output is a half-complex sequence. The arrangement of the half-complex
+terms uses the following scheme: for k &lt; N/2 the real part of the k-th
+term is stored in location k, and the corresponding imaginary part is
+stored in location N-k. Terms with k &gt; N/2 can be reconstructed using
+the symmetry z_k = z^*_{N-k}. The terms for k=0 and k=N/2 are both purely
+real, and count as a special case. Their real parts are stored in locations
+0 and N/2 respectively, while their imaginary parts which are zero are not
+stored.
+</p>
+<p>
+These methods return the FFTed data, and the input data is not changed.
+</p>
+<p>
+The following table shows the correspondence between the output
+<tt>self</tt> and the equivalent results obtained by considering the input
+data as a complex sequence with zero imaginary part,
+</p>
+<pre>
+      complex[0].real    =    self[0]
+      complex[0].imag    =    0
+      complex[1].real    =    self[1]
+      complex[1].imag    =    self[N-1]
+          ...............         ................
+      complex[k].real    =    self[k]
+      complex[k].imag    =    self[N-k]
+          ...............         ................
+      complex[N/2].real  =    self[N/2]
+      complex[N/2].real  =    0
+          ...............         ................
+      complex[k'].real   =    self[k]        k' = N - k
+      complex[k'].imag   =   -self[N-k]
+          ...............         ................
+      complex[N-1].real  =    self[1]
+      complex[N-1].imag  =   -self[N-1]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#halfcomplex_radix2_inverse
+
+</li>
+<li>GSL::Vector#radix2_inverse
+
+</li>
+<li>GSL::Vector#halfcomplex_radix2_backward
+
+</li>
+<li>GSL::Vector#radix2_backward
+
+<p>
+These methods compute the inverse or backwards radix-2 FFT of the
+half-complex sequence data stored according the output scheme used by
+gsl_fft_real_radix2. The result is a real array stored in natural order.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Mixed-radix FFT routines for real data</h2>
+<p>
+This section describes mixed-radix FFT algorithms for real data. The
+mixed-radix functions work for FFTs of any length. They are a
+reimplementation of the real-FFT routines in the Fortran FFTPACK library by
+Paul Swarztrauber. The theory behind the algorithm is explained in the
+article <tt>Fast Mixed-Radix Real Fourier Transforms</tt> by Clive
+Temperton. The routines here use the same indexing scheme and basic
+algorithms as FFTPACK.
+</p>
+<p>
+The functions use the FFTPACK storage convention for half-complex
+sequences. In this convention the half-complex transform of a real sequence
+is stored with frequencies in increasing order, starting at zero, with the
+real and imaginary parts of each frequency in neighboring locations. When a
+value is known to be real the imaginary part is not stored. The imaginary
+part of the zero-frequency component is never stored. It is known to be
+zero since the zero frequency component is simply the sum of the input data
+(all real). For a sequence of even length the imaginary part of the
+frequency n/2 is not stored either, since the symmetry z_k = z_{N-k}^*
+implies that this is purely real too.
+</p>
+<h3><a href="../.././index.html"name="4.1"></a> Data storage scheme</h3>
+<p>
+The storage scheme is best shown by some examples. The table below shows
+the output for an odd-length sequence, n=5. The two columns give the
+correspondence between the 5 values in the half-complex sequence computed
+<tt>real_transform</tt>, <tt>halfcomplex[]</tt> and the values
+<tt>complex[]</tt> that would be returned if the same real input sequence
+were passed to <tt>complex_backward</tt> as a complex sequence (with
+imaginary parts set to 0),
+</p>
+<pre>
+     complex[0].real  =  halfcomplex[0]
+     complex[0].imag  =  0
+     complex[1].real  =  halfcomplex[1]
+     complex[1].imag  =  halfcomplex[2]
+     complex[2].real  =  halfcomplex[3]
+     complex[2].imag  =  halfcomplex[4]
+     complex[3].real  =  halfcomplex[3]
+     complex[3].imag  = -halfcomplex[4]
+     complex[4].real  =  halfcomplex[1]
+     complex[4].imag  = -halfcomplex[2]
+</pre>
+<p>
+The upper elements of the <tt>complex</tt> array, <tt>complex[3]</tt> and
+<tt>complex[4]</tt> are filled in using the symmetry condition. The
+imaginary part of the zero-frequency term <tt>complex[0].imag</tt> is known
+to be zero by the symmetry.
+</p>
+<p>
+The next table shows the output for an even-length sequence, n=5 In the
+even case there are two values which are purely real,
+</p>
+<pre>
+     complex[0].real  =  halfcomplex[0]
+     complex[0].imag  =  0
+     complex[1].real  =  halfcomplex[1]
+     complex[1].imag  =  halfcomplex[2]
+     complex[2].real  =  halfcomplex[3]
+     complex[2].imag  =  halfcomplex[4]
+     complex[3].real  =  halfcomplex[5]
+     complex[3].imag  =  0
+     complex[4].real  =  halfcomplex[3]
+     complex[4].imag  = -halfcomplex[4]
+     complex[5].real  =  halfcomplex[1]
+     complex[5].imag  = -halfcomplex[2]
+</pre>
+<p>
+The upper elements of the <tt>complex</tt> array, <tt>complex[4]</tt> and
+<tt>complex[5]</tt> are filled in using the symmetry condition. Both
+<tt>complex[0].imag</tt> and <tt>complex[3].imag</tt> are known to be zero.
+</p>
+<h4><a href="../.././index.html"name="4.1.1"></a> Wavetable and Workspace classes</h4>
+<hr size="1"></hr><ul>
+<li>GSL::FFT::RealWavetable.alloc(n)
+
+</li>
+<li>GSL::FFT::HalfComplexWavetable.alloc(n)
+
+<p>
+These methods create trigonometric lookup tables for an FFT of size
+<tt>n</tt> real elements. The length <tt>n</tt> is factorized into a
+product of subtransforms, and the factors and their trigonometric
+coefficients are stored in the wavetable. The trigonometric coefficients
+are computed using direct calls to sin and cos, for accuracy. Recursion
+relations could be used to compute the lookup table faster, but if an
+application performs many FFTs of the same length then computing the
+wavetable is a one-off overhead which does not affect the final throughput.
+</p>
+<p>
+The wavetable structure can be used repeatedly for any transform of the
+same length. The table is not modified by calls to any of the other FFT
+functions. The appropriate type of wavetable must be used for forward real
+or inverse half-complex transforms.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::FFT::RealWorkspace.alloc(n)
+
+<p>
+This method creates a workspace object for a real transform of length
+<tt>n</tt>. The same workspace can be used for both forward real and
+inverse halfcomplex transforms.
+</p>
+</li>
+</ul>
+<h4><a href="../.././index.html"name="4.1.2"></a> Methods for mixed-radix real FFTs</h4>
+<p>
+<b>The FFT methods described below return FFTed data, and the input vector
+is not changed. Use methods with &#8217;!&#8217; as <tt>real_tranform!</tt>
+for in-place transform.</b>
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#real_transform(table, work)
+
+</li>
+<li>GSL::Vector#halfcomplex_transform(table, work)
+
+</li>
+<li>GSL::Vector#fft
+
+<p>
+These methods compute the FFT of <tt>self</tt>, a real or half-complex
+array, using a mixed radix decimation-in-frequency algorithm. For
+<tt>real_transform</tt> <tt>self</tt> is an array of time-ordered real
+data. For <tt>halfcomplex_transform</tt> <tt>self</tt> contains Fourier
+coefficients in the half-complex ordering described above. There is no
+restriction on the length <tt>n</tt>.
+</p>
+<p>
+Efficient modules are provided for subtransforms of length 2, 3, 4 and 5.
+Any remaining factors are computed with a slow, O(n^2), general-n module.
+</p>
+<p>
+The caller can supply a <tt>table</tt> containing trigonometric lookup
+tables and a workspace <tt>work</tt> (optional).
+</p>
+<p>
+These methods return the FFTed data, and the input data is not changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#halfcomplex_inverse(table, work)
+
+</li>
+<li>GSL::Vector#halfcomplex_backward(table, work)
+
+</li>
+<li>GSL::Vector#ifft
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="5"></a> Examples</h2>
+<h3><a href="../.././index.html"name="5.1"></a> Example 1</h3>
+<pre>
+    #!/usr/bin/env ruby
+    require(&quot;gsl&quot;)
+    include GSL
+
+    N = 2048
+    SAMPLING = 1000   # 1 kHz
+    TMAX = 1.0/SAMPLING*N
+    FREQ1 = 50
+    FREQ2 = 120
+    t = Vector.linspace(0, TMAX, N)
+    x = Sf::sin(2*M_PI*FREQ1*t) + Sf::sin(2*M_PI*FREQ2*t)
+    y = x.fft
+
+    y2 = y.subvector(1, N-2).to_complex2
+    mag = y2.abs
+    phase = y2.arg
+    f = Vector.linspace(0, SAMPLING/2, mag.size)
+    graph(f, mag, &quot;-C -g 3 -x 0 200 -X 'Frequency [Hz]'&quot;)
+</pre>
+<h3><a href="../.././index.html"name="5.2"></a> Example 2</h3>
+<pre>
+    #!/usr/bin/env ruby
+    require(&quot;gsl&quot;)
+    include GSL
+
+    n = 100
+    data = Vector.alloc(n)
+
+    for i in (n/3)...(2*n/3) do
+      data[i] = 1.0
+    end
+
+    rtable = FFT::RealWavetable.alloc(n)
+    rwork = FFT::RealWorkspace.alloc(n)
+
+    #ffted = data.real_transform(rtable, rwork)
+    #ffted = data.real_transform(rtable)
+    #ffted = data.real_transform(rwork)
+    #ffted = data.real_transform()
+    ffted = data.fft
+
+    for i in 11...n do
+      ffted[i] = 0.0
+    end
+
+    hctable = FFT::HalfComplexWavetable.alloc(n)
+
+    #data2 = ffted.halfcomplex_inverse(hctable, rwork)
+    #data2 = ffted.halfcomplex_inverse()
+    data2 = ffted.ifft
+
+    graph(nil, data, data2, &quot;-T X -C -g 3 -L 'Real-halfcomplex' -x 0 #{data.size}&quot;)
+</pre>
+<p>
+<a href="eigen_rdoc.html">prev</a> <a href="wavelet_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

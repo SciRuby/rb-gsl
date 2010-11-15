@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: function.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>function.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/function.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>GSL::Function class</h1>
+<h2><a href="../.././index.html"name="1"></a> Class Methods</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Function.alloc
+
+<p>
+Constructor.
+</p>
+<ul>
+<li>ex:
+
+<pre>
+ require(&quot;gsl&quot;)
+ f = GSL::Function.alloc { |x| sin(x) }
+</pre>
+</li>
+</ul>
+<p>
+The value of the function is calculated by the method
+<tt>Function#eval</tt>, as
+</p>
+<pre>
+   p f.eval(x)
+</pre>
+<p>
+The function can have parameters of arbitrary numbers. Here is an example
+in case of exponential function <tt>f(x; a, b) = a*exp(-b*x)</tt>.
+</p>
+<pre>
+   f = GSL::Function.alloc { |x, params|    # x: a scalar, params: an array
+     a = params[0]; b = params[1]
+     a*exp(-b*x)
+   }
+</pre>
+<p>
+To evaluate the function <tt>f(x) = 2*exp(-3*x)</tt>,
+</p>
+<pre>
+   f.set_params([2, 3])
+   f.eval(x)
+</pre>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Methods</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Function#eval(x)
+
+</li>
+<li>GSL::Function#call(x)
+
+</li>
+<li>GSL::Function#at(x)
+
+</li>
+<li>GSL::Function#[x]
+
+<p>
+These methods return a value of the function at <tt>x</tt>.
+</p>
+<pre>
+  p f.eval(2.5)
+  p f.call(2.5)
+  p f[2.5]
+</pre>
+<p>
+The argument <tt>x</tt> can be a scalar, a Vector, Matrix, Array or Range.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Function#set { |x| &#8230; }
+
+</li>
+<li>GSL::Function#set(proc, params)
+
+<p>
+This method sets or resets the procedure of <tt>self</tt>, as
+</p>
+<pre>
+  f = GSL::Function.alloc { |x| sin(x) }
+  p f.eval(1.0)               &lt;- sin(1.0)
+  f.set { |x| cos(x) }
+  p f.eval(1.0)               &lt;- cos(1.0)
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Function#set_params(params)
+
+<p>
+This set the constant parameters of the function.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Graph</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Function#graph(x[, options])
+
+<p>
+This method uses <tt>GNU graph</tt> to plot the function <tt>self</tt>. The
+argument <tt>x</tt> is given by a <tt>GSL::Vector</tt> or an
+<tt>Array</tt>.
+</p>
+<p>
+Ex: Plot sin(x)
+</p>
+<pre>
+     f = Function.alloc { |x| Math::sin(x) }
+     x = Vector.linspace(0, 2*M_PI, 50)
+     f.graph(x, &quot;-T X -g 3 -C -L 'sin(x)'&quot;)
+</pre>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Example</h2>
+<p>
+A quadratic function, f(x) = x^2 + 2x + 3.
+</p>
+<pre>
+    &gt;&gt; require(&quot;gsl&quot;)
+    =&gt; true
+    &gt;&gt; f = Function.alloc { |x, param| x*x + param[0]*x + param[1] }
+    =&gt; #&lt;GSL::Function:0x6e8eb0&gt;
+    &gt;&gt; f.set_params(2, 3)
+    =&gt; #&lt;GSL::Function:0x6e8eb0&gt;
+    &gt;&gt; f.eval(2)                             &lt;--- Scalar
+    =&gt; 11
+    &gt;&gt; f.eval(1..4)                          &lt;--- Range
+    =&gt; [6.0, 11.0, 18.0, 27.0]
+    &gt;&gt; f.eval([1, 2, 3])                     &lt;--- Array
+    =&gt; [6.0, 11.0, 18.0]
+    &gt;&gt; f.eval(Matrix.alloc([1, 2], [3, 4]))    &lt;--- GSL::Matrix
+    [ 6.000e+00 1.100e+01
+      1.800e+01 2.700e+01 ]
+    =&gt; #&lt;GSL::Matrix:0x6dd1b4&gt;
+</pre>
+<p>
+<a href="index_rdoc.html">back</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

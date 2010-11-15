@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: tensor.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>tensor.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/tensor.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Tensor manipulations</h1>
+<p>
+The tensor library is developed by J. Burguet and distributed as an add-on
+package of GSL. See <a
+href="http://sources.redhat.com/ml/gsl-discuss/2004-q4/msg00053.html"target="_top">here</a>
+and <a
+href="http://sources.redhat.com/ml/gsl-discuss/2004-q4/msg00055.html"target="_top">here</a>.
+</p>
+<h2><a href="../.././index.html"name="1"></a> Class methods</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor.new(rank, dimention)
+
+</li>
+<li>GSL::Tensor.alloc(rank, dimention)
+
+</li>
+<li>GSL::Tensor[rank, dimention]
+
+<p>
+Create a tensor of rank <tt>rank</tt> and dimension <tt>dimention</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor.calloc(rank, dimention)
+
+<p>
+Creates a tensor of rank <tt>rank</tt> and dimension <tt>dimention</tt>,
+and initializes all the elements to zero.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor.copy(tensor)
+
+<p>
+Create a tensor copying the existing tensor <tt>tensor</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor.memcpy(dest, src)
+
+<p>
+Copies the tensor <tt>src</tt> to another <tt>dest</tt>. The two tensors
+must have the same shape.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor.swap(a, b)
+
+<p>
+Exchanges the elements of the tensor <tt>a</tt> and <tt>b</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Instance methods</h2>
+<h3><a href="../.././index.html"name="2.1"></a> Accessing tensor elements</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#set_zero
+
+<p>
+Sets all the element of the tensor <tt>self</tt> to zero.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#set_all(x)
+
+<p>
+Sets all the element of the tensor <tt>self</tt> to <tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#set(indices, x)
+
+</li>
+<li>GSL::Tensor#[indices]=x
+
+<p>
+Sets the element of the given indices to <tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#get(indices)
+
+</li>
+<li>GSL::Tensor#[indices]
+
+<p>
+Returns the tensor element. If the number of indices given is smaller than
+the rank of the tensor, the method GSL::Tensor#subtensor is called.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+    &gt;&gt; t = Tensor.new(2, 3)
+    =&gt; #&lt;GSL::Tensor:0x762ae8&gt;
+    &gt;&gt; t.set(1, 2, 2, 123)
+    =&gt; #&lt;GSL::Tensor:0x762ae8&gt;
+    &gt;&gt; t.get(1, 2, 2)
+    =&gt; 123.0
+    &gt;&gt; t[0, 0, 2] = 456
+    =&gt; 456
+    &gt;&gt; t[0, 0, 2]
+    =&gt; 456.0
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#subtensor(indices)
+
+</li>
+<li>GSL::Tensor#[indices]
+
+<p>
+Return a subtensor.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+    &gt;&gt; require(&quot;gsl&quot;)
+    =&gt; true
+    &gt;&gt; t = Vector[1..125].to_tensor(3, 5)
+    =&gt; GSL::Tensor:
+    [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 6.000e+00 7.000e+00 ... ]
+    &gt;&gt; t[0]
+    =&gt; GSL::Tensor::View:
+    [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00
+      6.000e+00 7.000e+00 8.000e+00 9.000e+00 1.000e+01
+      1.100e+01 1.200e+01 1.300e+01 1.400e+01 1.500e+01
+      1.600e+01 1.700e+01 1.800e+01 1.900e+01 2.000e+01
+      2.100e+01 2.200e+01 2.300e+01 2.400e+01 2.500e+01 ]
+    &gt;&gt; t[0,2]
+    =&gt; GSL::Tensor::View:
+    [ 1.100e+01 1.200e+01 1.300e+01 1.400e+01 1.500e+01 ]
+    &gt;&gt; t[3,1]
+    =&gt; GSL::Tensor::View:
+    [ 8.100e+01 8.200e+01 8.300e+01 8.400e+01 8.500e+01 ]
+    &gt;&gt; t[1][2]
+    =&gt; GSL::Tensor::View:
+    [ 3.600e+01 3.700e+01 3.800e+01 3.900e+01 4.000e+01 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#swap_indices(i, j)
+
+</li>
+<li>GSL::Tensor#data
+
+<p>
+Returns the data as <tt>GSL::Vector::View</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#to_v
+
+<p>
+Creates a new vector from the tensor.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#to_vector
+
+<p>
+Converts the tensor of rank 1 into a <tt>GSL::Vector::View</tt> object.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#to_matrix
+
+<p>
+Converts the tensor of rank 2 into a <tt>GSL::Matrix::View</tt> object.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.2"></a> IO</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#fwrite(io)
+
+</li>
+<li>GSL::Tensor#fwrite(filename)
+
+</li>
+<li>GSL::Tensor#fread(io)
+
+</li>
+<li>GSL::Tensor#fread(filename)
+
+</li>
+<li>GSL::Tensor#fprintf(io, format=&quot;%g&quot;)
+
+</li>
+<li>GSL::Tensor#fprintf(filename, format=&quot;%g&quot;)
+
+</li>
+<li>GSL::Tensor#fscanf(io)
+
+</li>
+<li>GSL::Tensor#fscanf(filename)
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.3"></a> Max, min</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#max
+
+</li>
+<li>GSL::Tensor#min
+
+</li>
+<li>GSL::Tensor#minmax
+
+</li>
+<li>GSL::Tensor#max_index
+
+</li>
+<li>GSL::Tensor#min_index
+
+</li>
+<li>GSL::Tensor#minmax_index
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.4"></a> Tensor operations</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#add(b)
+
+</li>
+<li>GSL::Tensor#+(b)
+
+<p>
+Creates a new tensor adding two tensors <tt>self</tt> and <tt>b</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#add!(b)
+
+<p>
+Adds the element of tensor <tt>b</tt> to the elements of <tt>self</tt> ,
+<tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#sub(b)
+
+</li>
+<li>GSL::Tensor#+(b)
+
+<p>
+Creates a new tensor subtracting the tensors <tt>b</tt> from <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#sub!(b)
+
+<p>
+Subtracts the element of tensor <tt>b</tt> from the elements of
+<tt>self</tt> , <tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#mul_elements(b)
+
+<p>
+This calculate element-by-element multiplication of <tt>self</tt> and
+<tt>b</tt>, and returns a new tensor.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#mul_elements!(b)
+
+<p>
+Multiplies the elements of tensor <tt>self</tt> to the elements of
+<tt>b</tt> , <tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#div_elements(b)
+
+</li>
+<li>GSL::Tensor#/(b)
+
+<p>
+This calculate element-by-element division of <tt>self</tt> and <tt>b</tt>,
+and returns a new tensor. Multiplies the elements of tensor <tt>b</tt> to
+the elements of <tt>self</tt> , <tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#div_elements!(b)
+
+<p>
+Divides the elements of tensor <tt>self</tt> to the elements of <tt>b</tt>
+, <tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#add_constant(x)
+
+<p>
+Creates a new tensor adding the constant <tt>x</tt> to the tensor
+<tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#add_constant!(x)
+
+<p>
+Adds the constant <tt>x</tt> to the elements of tensor <tt>self</tt> ,
+<tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#scale(x)
+
+<p>
+Creates a new tensor scaling the tensor <tt>self</tt> by the constant
+<tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#scale!(x)
+
+<p>
+Multiplies the constant <tt>x</tt> to the elements of tensor <tt>self</tt>
+, <tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#add_diagonal(x)
+
+<p>
+Creates a new tensor adding the constant <tt>x</tt> to the diagonal
+elements of the tensor <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#add_diagonal!(x)
+
+<p>
+Adds the constant <tt>x</tt> to the diagonal elements of tensor
+<tt>self</tt> , <tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#product(b)
+
+</li>
+<li>GSL::Tensor#*(b)
+
+<p>
+Calculate tensorian product of <tt>self</tt> and <tt>b</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#contract(i, j)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#equal?(b, eps = 1e-10)
+
+</li>
+<li>GSL::Tensor#==(b)
+
+<p>
+Returns <tt>true</tt> if the tensors have same size and elements equal to
+absolute accurary <tt>eps</tt> for all the indices, and <tt>false</tt>
+otherwise.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.5"></a> Tensor properties</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#isnull
+
+<p>
+Returns 1 if all the elements of the tensor are zero, and 0 otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#isnull?
+
+<p>
+Returns <tt>true</tt> if all the elements of the tensor are zero, and
+<tt>false</tt> otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#rank
+
+<p>
+Returns the rank
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#dimension
+
+<p>
+Returns the dimension
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Tensor#size
+
+<p>
+Returns the size
+</p>
+</li>
+</ul>
+<p>
+<a href="rngextra_rdoc.html">prev</a> <a href="narray_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

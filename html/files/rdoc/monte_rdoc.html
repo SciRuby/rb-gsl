@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: monte.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>monte.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/monte.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Monte Carlo Integration</h1>
+<h2><a href="../.././index.html"name="1"></a> The GSL::Monte::Function class</h2>
+<p>
+The function to be integrated has its own datatype, the
+<tt>GSL::Monte::Function</tt> class.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Munte::Function.alloc(proc, dim, params)
+
+</li>
+<li>GSL::Munte::Function.alloc(proc, dim)
+
+<p>
+Constructor. The following example shows how to use this:
+</p>
+<ul>
+<li>ex:
+
+<pre>
+  proc_f = Proc.new { |x, dim, params|
+    a = params[0]; b = params[1]; c = params[2]
+    if dim != 2; raise(&quot;dim != 2&quot;); end
+    a*x[0]*x[0] + b*x[0]*x[1] + c*x[1]*x[1]
+  }
+  dim = 2
+  mf = Monte::Function.alloc(proc_f, dim)
+  mf.set_params([3, 2, 1])
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Munte::Function#set(proc, dim, params)
+
+</li>
+<li>GSL::Munte::Function#set(proc, dim)
+
+</li>
+<li>GSL::Munte::Function#set(proc)
+
+</li>
+<li>GSL::Munte::Function#set_proc(proc)
+
+</li>
+<li>GSL::Munte::Function#set_proc(proc, dim)
+
+</li>
+<li>GSL::Munte::Function#set_params(params)
+
+</li>
+<li>GSL::Munte::Function#params
+
+</li>
+<li>GSL::Munte::Function#eval
+
+</li>
+<li>GSL::Munte::Function#call
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Monte Carlo plans, alrgorithms</h2>
+<h3><a href="../.././index.html"name="2.1"></a> PLAIN Monte Carlo</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Plain.alloc(dim)
+
+</li>
+<li>GSL::Monte::Plain#init
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.2"></a> Miser</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Miser.alloc(dim)
+
+</li>
+<li>GSL::Monte::Miser#init
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.3"></a> Vegas</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Vegas.alloc(dim)
+
+</li>
+<li>GSL::Monte::Vegas#init
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Integration</h2>
+<hr size="1"></hr><ul>
+<li>GSL:Monte::Function#integrate(xl, xu, dim, calls, rng, s)
+
+</li>
+<li>GSL:Monte::Function#integrate(xl, xu, dim, calls, s)
+
+</li>
+<li>GSL:Monte::Function#integrate(xl, xu, calls, rng, s)
+
+</li>
+<li>GSL:Monte::Function#integrate(xl, xu, calls, s)
+
+<p>
+This method performs Monte-Carlo integration of the function <tt>self</tt>
+using the algorithm <tt>s</tt>, over the <tt>dim</tt>-dimensional
+hypercubic region defined by the lower and upper limits in the arrays
+<tt>xl</tt> and <tt>xu</tt>, each of size <tt>dim</tt>. The integration
+uses a fixed number of function calls <tt>calls</tt>. The argument
+<tt>rng</tt> is a random number generator (optional). If it is not given, a
+new generator is created internally and freed when the calculation
+finishes.
+</p>
+<p>
+See sample scripts <tt>sample/monte*.rb</tt> for more details.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Accessing internal state of the Monte Carlo classes</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Miser#estimate_frac
+
+</li>
+<li>GSL::Monte::Miser#estimate_frac=
+
+</li>
+<li>GSL::Monte::Miser#min_calls
+
+</li>
+<li>GSL::Monte::Miser#min_calls=
+
+</li>
+<li>GSL::Monte::Miser#min_call_per_bisection
+
+</li>
+<li>GSL::Monte::Miser#min_calls_per_bisection=
+
+</li>
+<li>GSL::Monte::Miser#alpha
+
+</li>
+<li>GSL::Monte::Miser#alpha=
+
+</li>
+<li>GSL::Monte::Miser#dither
+
+</li>
+<li>GSL::Monte::Miser#dither=
+
+</li>
+<li>GSL::Monte::Vegas#alpha
+
+</li>
+<li>GSL::Monte::Vegas#result
+
+</li>
+<li>GSL::Monte::Vegas#sigma
+
+</li>
+<li>GSL::Monte::Vegas#chisq
+
+<p>
+Returns the chi-squared per degree of freedom for the weighted estimate of
+the integral. The returned value should be close to 1. A value which
+differs significantly from 1 indicates that the values from different
+iterations are inconsistent. In this case the weighted error will be
+under-estimated, and further iterations of the algorithm are needed to
+obtain reliable results.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Vegas#runval
+
+<p>
+Returns the raw (unaveraged) values of the integral and its error
+<tt>[result, sigma]</tt> from the most recent iteration of the algorithm.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Vegas#iterations
+
+</li>
+<li>GSL::Monte::Vegas#iterations=
+
+</li>
+<li>GSL::Monte::Vegas#alpha
+
+</li>
+<li>GSL::Monte::Vegas#alpha=
+
+</li>
+<li>GSL::Monte::Vegas#stage
+
+</li>
+<li>GSL::Monte::Vegas#stage=
+
+</li>
+<li>GSL::Monte::Vegas#mode
+
+</li>
+<li>GSL::Monte::Vegas#mode=
+
+</li>
+<li>GSL::Monte::Vegas#verbose
+
+</li>
+<li>GSL::Monte::Vegas#verbose=
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="5"></a> Miser Parameters (GSL-1.13 or later)</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Miser#params_get
+
+<p>
+Returns the parameters of the integrator state as an instance of
+<tt>GSL::Monte::Miser::Params</tt> class.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Miser#params_set(params)
+
+<p>
+Sets the integrator parameters based on values provided in an object of the
+<tt>GSL::Monte::Miser::Params</tt> class <tt>params</tt>.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.1"></a> Accessors of <tt>GSL::Monte::Miser::Params</tt></h3>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Miser::Params#estimate_frac
+
+</li>
+<li>GSL::Monte::Miser::Params#estimate_frac=
+
+<p>
+The fraction of the currently available number of function calls which are
+allocated to estimating the variance at each recursive step. The default
+value is 0.1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Miser::Params#min_calls
+
+</li>
+<li>GSL::Monte::Miser::Params#min_calls=
+
+<p>
+The minimum number of function calls required for each estimate of the
+variance. If the number of function calls allocated to the estimate using
+<tt>estimate_frac</tt> falls below <tt>min_calls</tt> then
+<tt>min_calls</tt> are used instead. This ensures that each estimate
+maintains a reasonable level of accuracy. The default value of min_calls is
+16 * dim.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Miser::Params#min_calls_per_bisection
+
+</li>
+<li>GSL::Monte::Miser::Params#min_calls_per_bisection=
+
+<p>
+The minimum number of function calls required to proceed with a bisection
+step. When a recursive step has fewer calls available than
+<tt>min_calls_per_bisection</tt> it performs a plain Monte Carlo estimate
+of the current sub-region and terminates its branch of the recursion. The
+default value of this parameter is 32 * min_calls.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Miser::Params#alpha
+
+</li>
+<li>GSL::Monte::Miser::Params#alpha=
+
+<p>
+This parameter controls how the estimated variances for the two sub-regions
+of a bisection are combined when allocating points. With recursive sampling
+the overall variance should scale better than 1/N, since the values from
+the sub-regions will be obtained using a procedure which explicitly
+minimizes their variance. To accommodate this behavior the MISER algorithm
+allows the total variance to depend on a scaling parameter <tt>alpha</tt>,
+The authors of the original paper describing MISER recommend the value
+<tt>alpha</tt> = 2 as a good choice, obtained from numerical experiments,
+and this is used as the default value in this implementation.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Miser::Params#dither
+
+</li>
+<li>GSL::Monte::Miser::Params#dither=
+
+</li>
+</ul>
+<p>
+This parameter introduces a random fractional variation of size dither into
+each bisection, which can be used to break the symmetry of integrands which
+are concentrated near the exact center of the hypercubic integration
+region. The default value of dither is zero, so no variation is introduced.
+If needed, a typical value of dither is 0.1.
+</p>
+<h2><a href="../.././index.html"name="6"></a> Vegas Parameters (GSL-1.13 or later)</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Vegas#params_get
+
+<p>
+Returns the parameters of the integrator state as an instance of
+<tt>GSL::Monte::Vegas::Params</tt> class.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Vegas#params_set(params)
+
+<p>
+Sets the integrator parameters based on values provided in an object of the
+<tt>GSL::Monte::Vegas::Params</tt> class <tt>params</tt>.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="6.1"></a> Accessors of <tt>GSL::Monte::Vegas::Params</tt></h3>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Vegas::Params#alpha
+
+</li>
+<li>GSL::Monte::Vegas::Params#alpha=
+
+<p>
+Controls the stiffness of the rebinning algorithm. It is typically set
+between one and two. A value of zero prevents rebinning of the grid. The
+default value is 1.5.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Vegas::Params#iterations
+
+</li>
+<li>GSL::Monte::Vegas::Params#iterations=
+
+<p>
+The number of iterations to perform for each call to the routine. The
+default value is 5 iterations.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Vegas::Params#stage
+
+</li>
+<li>GSL::Monte::Vegas::Params#stage=
+
+<p>
+Setting this determines the stage of the calculation. Normally, stage = 0
+which begins with a new uniform grid and empty weighted average. Calling
+vegas with stage = 1 retains the grid from the previous run but discards
+the weighted average, so that one can &quot;tune&quot; the grid using a
+relatively small number of points and then do a large run with stage = 1 on
+the optimized grid. Setting stage = 2 keeps the grid and the weighted
+average from the previous run, but may increase (or decrease) the number of
+histogram bins in the grid depending on the number of calls available.
+Choosing stage = 3 enters at the main loop, so that nothing is changed, and
+is equivalent to performing additional iterations in a previous call.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Vegas::Params#mode
+
+</li>
+<li>GSL::Monte::Vegas::Params#mode=
+
+<p>
+The possible choices are <tt>GSL::VEGAS::MODE_IMPORTANCE</tt>,
+<tt>GSL::VEGAS::MODE_STRATIFIED</tt>,
+<tt>GSL::VEGAS::MODE_IMPORTANCE_ONLY</tt>. This determines whether VEGAS
+will use importance sampling or stratified sampling, or whether it can pick
+on its own. In low dimensions VEGAS uses strict stratified sampling (more
+precisely, stratified sampling is chosen if there are fewer than 2 bins per
+box).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Monte::Vegas::Params#verbose
+
+</li>
+<li>GSL::Monte::Vegas::Params#verbose=
+
+<p>
+Set the level of information printed by VEGAS. All information is written
+to the stream ostream. The default setting of verbose is -1, which turns
+off all output. A verbose value of 0 prints summary information about the
+weighted average and final result, while a value of 1 also displays the
+grid coordinates. A value of 2 prints information from the rebinning
+procedure for each iteration.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="7"></a> Example</h2>
+<pre>
+     #!/usr/bin/env ruby
+     require(&quot;gsl&quot;)
+     include GSL::Monte
+     include Math
+
+     proc_f = Proc.new { |k, dim, params|
+       pi = Math::PI
+       a = 1.0/(pi*pi*pi)
+       a/(1.0 - cos(k[0])*cos(k[1])*cos(k[2]))
+     }
+
+     def display_results(title, result, error)
+       exact = 1.3932039296856768591842462603255
+
+       diff = result - exact
+       printf(&quot;%s ==================\n&quot;, title);
+       printf(&quot;result = % .6f\n&quot;, result);
+       printf(&quot;sigma  = % .6f\n&quot;, error);
+       printf(&quot;exact  = % .6f\n&quot;, exact);
+       printf(&quot;error  = % .6f = %.1g sigma\n&quot;, diff, diff.abs/error)
+     end
+
+     dim = 3
+     xl = Vector.alloc(0, 0, 0)
+     xu = Vector.alloc(PI, PI, PI)
+     G = Monte::Function.alloc(proc_f, dim)
+     calls = 500000
+     r = GSL::Rng.alloc(Rng::DEFAULT)
+
+     plain = Monte::Plain.alloc(dim)
+     result, error = G.integrate(xl, xu, dim, calls, r, plain)
+     display_results(&quot;plain&quot;, result, error)
+
+     miser = Monte::Miser.alloc(dim)
+     result, error = G.integrate(xl, xu, dim, calls, r, miser)
+     display_results(&quot;miser&quot;, result, error)
+
+     vegas = Monte::Vegas.alloc(dim)
+     result, error = G.integrate(xl, xu, dim, 10000, r, vegas)
+     display_results(&quot;vegas warm-up&quot;, result, error)
+     puts(&quot;converging...&quot;);
+     begin
+       result, error = G.integrate(xl, xu, dim, calls/5, r, vegas)
+       printf(&quot;result = % .6f sigma = % .6f chisq/dof = %.1f\n&quot;,
+               result, error, vegas.chisq)
+     end while (vegas.chisq-1.0).abs &gt; 0.5
+     display_results(&quot;vegas final&quot;, result, error)
+</pre>
+<p>
+<a href="ntuple_rdoc.html">prev</a> <a href="siman_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

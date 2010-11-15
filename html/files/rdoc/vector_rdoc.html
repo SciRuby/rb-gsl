@@ -1,0 +1,2002 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: vector.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>vector.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/vector.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>GSL::Vector class</h1>
+<p>
+Contents:
+</p>
+<ol>
+<li><a href="vector_rdoc.html#1">Class methods</a>
+
+</li>
+<li><a href="vector_rdoc.html#2">Notes</a>
+
+</li>
+<li><a href="vector_rdoc.html#3">Methods</a>
+
+<ol>
+<li><a href="vector_rdoc.html#3.1">Accessing vector elements</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.2">Initializing vector elements</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.3">Iterators</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.4">IO</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.5">Copying vectors</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.6">Vector views</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.7">Vector operations</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.8">Vector operations with size changes</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.9">Finding maximum and minimum elements of
+vectors</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.10">Vector properties</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.11">Element-wise vector comparison</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.12">Histogram</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.13">Sorting</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.14">BLAS methods</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.15">Data type conversions</a>
+
+</li>
+</ol>
+</li>
+<li><a href="vector_rdoc.html#3.16">NArray</a>
+
+</li>
+<li><a href="vector_rdoc.html#3.17">GNU graph interface</a>
+
+</li>
+</ol>
+<p>
+See also <a href="vector_complex_rdoc.html">GSL::Vector::Complex</a>.
+</p>
+<h2><a href="../.././index.html"name="1"></a> Class methods</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Vector.alloc(ary)
+
+</li>
+<li>GSL::Vector.alloc(ary)
+
+</li>
+<li>GSL::Vector.alloc(range)
+
+</li>
+<li>GSL::Vector.alloc(size)
+
+</li>
+<li>GSL::Vector.alloc(elm0, elm1, .&#8230;)
+
+</li>
+<li>GSL::Vector[elm0, elm1, .&#8230;]
+
+<p>
+Constructors.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+   &gt;&gt; v1 = GSL::Vector.alloc(5)
+   =&gt; GSL::Vector: [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
+   &gt;&gt; v2 = GSL::Vector.alloc(1, 3, 5, 2)
+   =&gt; GSL::Vector: [ 1.000e+00 3.000e+00 5.000e+00 2.000e+00 ]
+   &gt;&gt; v3 = GSL::Vector[1, 3, 5, 2]
+   =&gt; GSL::Vector: [ 1.000e+00 3.000e+00 5.000e+00 2.000e+00 ]
+   &gt;&gt; v4 = GSL::Vector.alloc([1, 3, 5, 2])
+   =&gt; GSL::Vector: [ 1.000e+00 3.000e+00 5.000e+00 2.000e+00 ]
+   &gt;&gt; v5 = GSL::Vector[1..6]
+   =&gt; GSL::Vector: [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 6.000e+00 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector.calloc(size)
+
+<p>
+This method creates a vector object, and initializes all the elements to
+zero.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector.linspace(min, max, n = 10)
+
+<p>
+Creates an <tt>GSL::Vector</tt> with <tt>n</tt> linearly spaced elements
+between <tt>min</tt> and <tt>max</tt>. If <tt>min</tt> is greater than
+<tt>max</tt>, the elements are stored in decreasing order. This mimics the
+<tt>linspace</tt> function of <a
+href="http://www.octave.org/"target="_top">GNU Octave</a>.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+    &gt;&gt; x = GSL::Vector.linspace(0, 10, 5)
+    [ 0.000e+00 2.500e+00 5.000e+00 7.500e+00 1.000e+01 ]
+    &gt;&gt; y = GSL::Vector.linspace(10, 0, 5)
+    [ 1.000e+01 7.500e+00 5.000e+00 2.500e+00 0.000e+00 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector.logspace(min, max, n)
+
+<p>
+Similar to <tt>GSL::Vector#linspace</tt> except that the values are
+logarithmically spaced from 10^<tt>min</tt> to 10^<tt>max</tt>.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+    &gt;&gt; x = GSL::Vector.logspace(1, 3, 5)
+    [ 1.000e+01 3.162e+01 1.000e+02 3.162e+02 1.000e+03 ]
+    &gt;&gt; x = GSL::Vector.logspace(3, 1, 5)
+    [ 1.000e+03 3.162e+02 1.000e+02 3.162e+01 1.000e+01 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector.logspace2(min, max, n)
+
+<p>
+Similar to <tt>GSL::Vector#linspace</tt> except that the values are
+logarithmically spaced from <tt>min</tt> to <tt>max</tt>.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+    &gt;&gt; x = GSL::Vector.logspace2(10, 1000, 5)
+    [ 1.000e+01 3.162e+01 1.000e+02 3.162e+02 1.000e+03 ]
+    &gt;&gt; x = GSL::Vector.logspace2(1000, 10, 5)
+    [ 1.000e+03 3.162e+02 1.000e+02 3.162e+01 1.000e+01 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector.indgen(n, start=0, step=1)
+
+<p>
+This creates a vector of length <tt>n</tt> with elements from
+<tt>start</tt> with interval <tt>step</tt> (mimics NArray#indgen).
+</p>
+<p>
+Ex:
+</p>
+<pre>
+    &gt;&gt; v = GSL::Vector::Int.indgen(5)
+    =&gt; GSL::Vector::Int:
+    [ 0 1 2 3 4 ]
+    &gt;&gt; v = GSL::Vector::Int.indgen(5, 3)
+    =&gt; GSL::Vector::Int:
+    [ 3 4 5 6 7 ]
+    &gt;&gt; v = GSL::Vector.indgen(4, 1.2, 0.3)
+    =&gt; GSL::Vector
+    [ 1.200e+00 1.500e+00 1.800e+00 2.100e+00 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector.filescan(filename)
+
+<p>
+Reads a formatted ascii file and returns an array of vectors. For a data
+file <tt>a.dat</tt> as
+</p>
+<pre>
+  1 5 6 5
+  3 5 6 7
+  5 6 7 9
+</pre>
+<p>
+then <tt>a, b, c, d = Vetor.filescan(&quot;a.dat&quot;)</tt> yields
+</p>
+<pre>
+  a = [1, 3, 5]
+  b = [5, 5, 6]
+  c = [6, 6, 7]
+  d = [5, 7, 9]
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="1.1"></a> NArray Extension</h3>
+<p>
+If an <tt>NArray</tt> object is given, a newly allocated vector is created.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+        na = NArray[1.0, 2, 3, 4, 5]
+        p na                &lt;----- NArray.float(5):
+                                   [ 1.0, 2.0, 3.0, 4.0, 5.0]
+        v = GSL::Vector.alloc(na)
+        p v                 &lt;----- [ 1 2 3 4 5 ]
+</pre>
+<p>
+See also <a href="vector_rdoc.html#3.16">here</a>.
+</p>
+<h2><a href="../.././index.html"name="2"></a> NOTE:</h2>
+<p>
+In Ruby/GSL, vector length is limited within the range of Fixnum. For
+32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.
+</p>
+<h2><a href="../.././index.html"name="3"></a> Methods</h2>
+<h3><a href="../.././index.html"name="3.1"></a> Accessing vector elements</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#get(args)
+
+</li>
+<li>GSL::Vector#[args]
+
+<p>
+Returns elements(s) of the vector <tt>self</tt> if <tt>args</tt> is a
+single <tt>Fixnum</tt>, a single <tt>Array</tt> of <tt>Fixnums</tt>, or a
+single <tt>GSL::Permutation</tt> (or <tt>GSL::Index</tt>). For all other
+<tt>args</tt>, the arguments are treated as with <tt>Vector#subvector</tt>
+and a <tt>Vector::View</tt> is returned.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#set(args, val)
+
+</li>
+<li>GSL::Vector#[args] = val
+
+<p>
+If <tt>args</tt> is empty, behaves as <tt>set_all</tt> and <tt>val</tt>
+must be a <tt>Numeric</tt>.
+</p>
+<p>
+If <tt>args</tt> is a single <tt>Fixnum</tt>, <tt>i</tt>, sets the
+<tt>i</tt>-th element of the vector <tt>self</tt> to <tt>val</tt>, which
+must be a <tt>Numeric</tt>.
+</p>
+<p>
+All other <tt>args</tt> specify a subvector (as with <tt>subvector</tt>)
+whose elements are assigned from <tt>val</tt>. In this case, <tt>val</tt>
+can be an <tt>Array</tt>, <tt>Range</tt>, <tt>GSL::Vector</tt>, or
+<tt>Numeric</tt>.
+</p>
+<p>
+NOTE: GSL does not provide a vector copy function that properly copies data
+across overlapping memory regions, so watch out if assigning to part of a
+Vector from another part of itself (see example below).
+</p>
+<p>
+Ex:
+</p>
+<pre>
+    &gt;&gt; require 'gsl'
+    =&gt; true
+    &gt;&gt; v = GSL::Vector[0..5]
+    =&gt; GSL::Vector
+    [ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 ]
+    &gt;&gt; v[2]
+    =&gt; 2.0
+    &gt;&gt; v[1,2,3]
+    =&gt; GSL::Vector::View
+    [ 1.000e+00 3.000e+00 5.000e+00 ]
+    &gt;&gt; v[[1,2,3]]
+    =&gt; GSL::Vector
+    [ 1.000e+00 2.000e+00 3.000e+00 ]
+    &gt;&gt; v[3] = 9
+    =&gt; 9
+    &gt;&gt; v[-1] = 123
+    =&gt; 123
+    &gt;&gt; v
+    =&gt; GSL::Vector
+    [ 0.000e+00 1.000e+00 2.000e+00 9.000e+00 4.000e+00 1.230e+02 ]
+    &gt;&gt; v[2,3] = 0
+    =&gt; 0
+    &gt;&gt; v
+    =&gt; GSL::Vector
+    [ 0.000e+00 1.000e+00 0.000e+00 0.000e+00 0.000e+00 1.230e+02 ]
+    &gt;&gt; v[2,3] = [4,5,6]
+    =&gt; [4, 5, 6]
+    &gt;&gt; v
+    =&gt; GSL::Vector
+    [ 0.000e+00 1.000e+00 4.000e+00 5.000e+00 6.000e+00 1.230e+02 ]
+    &gt;&gt; v[1,4] = v[0,4] # !!! Overlapping !!!
+    =&gt; GSL::Vector::View
+    [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
+    &gt;&gt; v
+    =&gt; GSL::Vector
+    [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 1.230e+02 ]
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.2"></a> Initializing vector elements</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#set_all(x)
+
+<p>
+This method sets all the elements of the vector to the value <tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#set_zero
+
+<p>
+This method sets all the elements of the vector to zero.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#set_basis!(i)
+
+<p>
+This method makes a basis vector by setting all the elements of the vector
+to zero except for the <tt>i</tt>-th element, which is set to one. For a
+vector <tt>v</tt> of size 10, the method
+</p>
+<pre>
+  v.set_basis!(4)
+</pre>
+<p>
+sets the vector <tt>v</tt> to a basis vector <tt>[0, 0, 0, 0, 1, 0, 0, 0,
+0, 0]</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#set_basis(i)
+
+<p>
+This method returns a new basis vector by setting all the elements of the
+vector to zero except for the i-th element which is set to one. For a
+vector <tt>v</tt> of size 10, the method
+</p>
+<pre>
+  vb = v.set_basis(4)
+</pre>
+<p>
+creates a new vector <tt>vb</tt> with elements <tt>[0, 0, 0, 0, 1, 0, 0, 0,
+0, 0]</tt>. The vector <tt>v</tt> is not changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#indgen!(start=0, step=1)
+
+</li>
+<li>GSL::Vector#indgen(start=0, step=1)
+
+<p>
+Mimics NArray#indgen!.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.3"></a> Iterators</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#each
+
+</li>
+<li>GSL::Vector#reverse_each
+
+<p>
+An iterator for each of the vector elements, used as
+</p>
+<pre>
+  v.each do |x|    # Show all the elements
+    p x
+  end
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#each_index
+
+</li>
+<li>GSL::Vector#reverse_each_index
+
+<p>
+Iterators
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#collect { |item| .. }
+
+</li>
+<li>GSL::Vector#map { |item| .. }
+
+<p>
+Creates a new vector by collecting the vector elements modified with some
+operations.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; a = GSL::Vector::Int[0..5]
+  =&gt; GSL::Vector::Int
+  [ 0 1 2 3 4 5 ]
+  &gt;&gt; b = a.collect {|v| v*v}
+  =&gt; GSL::Vector::Int
+  [ 0 1 4 9 16 25 ]
+  &gt;&gt; a
+  =&gt; GSL::Vector::Int
+  [ 0 1 2 3 4 5 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#collect! { |item| .. }
+
+</li>
+<li>GSL::Vector#map! { |item| .. }
+
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; a = GSL::Vector::Int[0..5]
+  =&gt; GSL::Vector::Int
+  [ 0 1 2 3 4 5 ]
+  &gt;&gt; a.collect! {|v| v*v}
+  =&gt; GSL::Vector::Int
+  [ 0 1 4 9 16 25 ]
+  &gt;&gt; a
+  =&gt; GSL::Vector::Int
+  [ 0 1 4 9 16 25 ]
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.4"></a> IO</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#print
+
+</li>
+<li>GSL::Vector#fprintf(io, format = &quot;%e&quot;)
+
+</li>
+<li>GSL::Vector#fprintf(filename, format = &quot;%e&quot;)
+
+</li>
+<li>GSL::Vector#fscanf(io)
+
+</li>
+<li>GSL::Vector#fscanf(filename)
+
+</li>
+<li>GSL::Vector#fwrite(io)
+
+</li>
+<li>GSL::Vector#fwrite(filename)
+
+</li>
+<li>GSL::Vector#fread(io)
+
+</li>
+<li>GSL::Vector#fread(filename)
+
+<p>
+Methods for writing or reading the vector. The first argument is an
+<tt>IO</tt> or a <tt>String</tt> object.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.5"></a> Copying vectors</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#clone
+
+</li>
+<li>GSL::Vector#duplicate
+
+<p>
+Create a new vector of the same elements.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.6"></a> Vector views</h3>
+<p>
+The <tt>GSL::Vector::View</tt> class is defined to be used as
+&quot;references&quot; to vectors. Since the <tt>Vector::View</tt> class is
+a subclass of <tt>Vector</tt>, an instance of the <tt>View</tt> class
+created by slicing a <tt>Vector</tt> object can be used same as the
+original vector. A <tt>View</tt> object shares the data with the original
+vector, i.e. any changes in the elements of the <tt>View</tt> object affect
+to the original vector.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#subvector
+
+</li>
+<li>GSL::Vector#subvector(n)
+
+</li>
+<li>GSL::Vector#subvector(offset, n)
+
+</li>
+<li>GSL::Vector#subvector(offset, stride, n)
+
+</li>
+<li>GSL::Vector#subvector(range, stride=1)
+
+<p>
+Create a <tt>Vector::View</tt> object slicing <tt>n</tt> elements of the
+vector <tt>self</tt> from the offset <tt>offset</tt>. If called with one
+argument <tt>n</tt>, <tt>offset</tt> is set to 0. With no arguments, a view
+is created with the same length of the original vector. If called with a
+<tt>range</tt> parameter (and optional <tt>stride</tt>), a view is created
+for that range (and stride). Note the <tt>n</tt>, if given, is the length
+of the returned View.
+</p>
+<ul>
+<li>Example:
+
+<pre>
+ #!/usr/bin/env ruby
+ require(&quot;gsl&quot;)
+
+ v = GSL::Vector[1, 2, 3, 4, 5, 6]
+ view = v.subvector(1, 4)
+ p view.class         &lt;----- GSL::Vector::View
+ view.print           &lt;----- [ 2 3 4 5 ]
+
+ view[2] = 99
+ view.print           &lt;----- [ 2 3 99 5 ]
+ v.print              &lt;----- [ 1 2 3 99 5 6 ]
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#subvector_with_stride(stride)
+
+</li>
+<li>GSL::Vector#subvector_with_stride(offset, stride)
+
+</li>
+<li>GSL::Vector#subvector_with_stride(offset, stride, n)
+
+<p>
+Return a <tt>Vector::View</tt> object of a subvector of another vector
+<tt>self</tt> with an additional stride argument. The subvector is formed
+in the same way as for <tt>Vector#subvector</tt> but the new vector view
+has <tt>n</tt> elements with a step-size of <tt>stride</tt> from one
+element to the next in the original vector. Note that <tt>n</tt>, if given,
+is the length of the returned View.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#matrix_view(n1, n2)
+
+<p>
+This creates a <tt>Matrix::View</tt> object from the vector <tt>self</tt>.
+It enables to use the vector as a <a href="matrix_rdoc.html">Matrix</a>
+object.
+</p>
+<ul>
+<li>Ex:
+
+<pre>
+  &gt;&gt; v = GSL::Vector::Int.alloc(1..9)
+  =&gt; GSL::Vector::Int:
+  [ 1 2 3 4 5 6 7 8 9 ]
+  &gt;&gt; m = v.matrix_view(3, 3)
+  =&gt; GSL::Matrix::Int::View:
+  [ 1 2 3
+    4 5 6
+    7 8 9 ]
+  &gt;&gt; m[1][2] = 99
+  =&gt; 99
+  &gt;&gt; v
+  =&gt; GSL::Vector::Int:
+  [ 1 2 3 4 5 99 7 8 9 ]
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.7"></a> Vector operations</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#swap_elements(i, j)
+
+<p>
+This method exchanges the i-th and j-th elements of the vector
+<tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#reverse
+
+<p>
+Reverses the order of the elements of the vector.
+</p>
+<pre>
+  &gt;&gt; v = GSL::Vector::Int[1..5]
+  =&gt; GSL::Vector::Int:
+  [ 1 2 3 4 5 ]
+  &gt;&gt; v.reverse
+  =&gt; GSL::Vector::Int:
+  [ 5 4 3 2 1 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#trans
+
+</li>
+<li>GSL::Vector#transpose
+
+</li>
+<li>GSL::Vector#col
+
+</li>
+<li>GSL::Vector#row
+
+<p>
+Transpose the vector from a row vector into a column vector and vice versa.
+</p>
+<pre>
+  &gt;&gt; v = GSL::Vector::Int[1..5]
+  =&gt; GSL::Vector::Int:
+  [ 1 2 3 4 5 ]
+  &gt;&gt; v.col
+  =&gt; GSL::Vector::Int::Col:
+  [ 1
+    2
+    3
+    4
+    5 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#add(b)
+
+<p>
+Adds the elements of vector <tt>b</tt> to the elements of the vector
+<tt>self</tt>. A new vector is created, and the vector <tt>self</tt> is not
+changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sub(b)
+
+<p>
+Subtracts the element of vector <tt>b</tt> from the elements of
+<tt>self</tt>. A new vector is created, and the vector <tt>self</tt> is not
+changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#mul(b)
+
+<p>
+Multiplies the elements of vector <tt>self</tt> by the elements of vector
+<tt>b</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#div(b)
+
+<p>
+Divides the elements of vector <tt>self</tt> by the elements of vector
+<tt>b</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#scale(x)
+
+</li>
+<li>GSL::Vector#scale!(x)
+
+<p>
+This method multiplies the elements of vector <tt>self</tt> by the constant
+factor <tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#add_constant(x)
+
+</li>
+<li>GSL::Vector#add_constant!(x)
+
+<p>
+Adds the constant value <tt>x</tt> to the elements of the vector
+<tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#+(b)
+
+<p>
+For <tt>b</tt>,
+</p>
+<pre>
+  * a Number: ---&gt; &lt;tt&gt;self.add_constanb(b)&lt;/tt&gt;
+  * a Vector: ---&gt; &lt;tt&gt;self.add(b)&lt;/tt&gt;
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#-(b)
+
+<p>
+For <tt>b</tt>,
+</p>
+<pre>
+  * a Number: ---&gt; &lt;tt&gt;self.add_constanb(-b)&lt;/tt&gt;
+  * a Vector: ---&gt; &lt;tt&gt;self.sub(b)&lt;/tt&gt;
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#/(b)
+
+<p>
+For <tt>b</tt>,
+</p>
+<pre>
+  * a Number: ---&gt; &lt;tt&gt;self.scale(1/b)&lt;/tt&gt;
+  * a Vector: ---&gt; &lt;tt&gt;self.div(b)&lt;/tt&gt;
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#*(b)
+
+<p>
+Vector multiplication.
+</p>
+</li>
+</ul>
+<ol>
+<li>Scale
+
+<pre>
+     &gt;&gt; v = GSL::Vector[1, 2]
+     [ 1 2 ]
+     &gt;&gt; v*2
+     [ 2 4 ]
+</pre>
+</li>
+<li>Element-by-element multiplication
+
+<pre>
+     &gt;&gt; a = GSL::Vector[1, 2]; b = GSL::Vector[3, 4]
+     [ 3 4 ]
+     &gt;&gt; a*b
+     [ 3 8 ]
+</pre>
+</li>
+<li>Inner product
+
+<pre>
+     &gt;&gt; a = GSL::Vector[1, 2]; b = GSL::Vector[3, 4]
+     [ 3
+       4 ]
+     &gt;&gt; a*b.col
+     =&gt; 11.0
+</pre>
+</li>
+<li>GSL::Vector::Col*Vector -&gt; GSL::Matrix
+
+<pre>
+     &gt;&gt; a = GSL::Vector::Col[1, 2]; b = GSL::Vector[3, 4]
+     [ 3 4 ]
+     &gt;&gt; a*b
+     [ 3 4
+       6 8 ]
+</pre>
+</li>
+<li>GSL::Matrix*Vector::Col -&gt; GSL::Vector::Col
+
+<pre>
+     &gt;&gt; a = GSL::Vector[1, 2]; m = GSL::Matrix[[2, 3], [4, 5]]
+     [ 2 3
+       4 5 ]
+     &gt;&gt; m*a          &lt;--- Error
+     TypeError: Operation with GSL::Vector is not defined (GSL::Vector::Col expected)
+             from (irb):30:in `*'
+             from (irb):30
+     &gt;&gt; m*a.col
+     [ 8
+       14 ]
+</pre>
+</li>
+</ol>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#add!(b)
+
+</li>
+<li>GSL::Vector#sub!(b)
+
+</li>
+<li>GSL::Vector#mul!(b)
+
+</li>
+<li>GSL::Vector#div!(b)
+
+<p>
+In-place operations with a vector <tt>b</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#pow(p)
+
+</li>
+<li>GSL::Vector#**(p)
+
+</li>
+<li>GSL::Vector#pow!(p)
+
+<p>
+Element-wise calculation of power p.
+</p>
+<p>
+Ex)
+</p>
+<pre>
+   &gt;&gt; require(&quot;gsl&quot;)
+   &gt;&gt; v = GSL::Vector[1, 2, 3]
+   =&gt; GSL::Vector
+   [ 1.000e+00 2.000e+00 3.000e+00 ]
+   &gt;&gt; v.pow(2)
+   =&gt; GSL::Vector
+   [ 1.000e+00 4.000e+00 9.000e+00 ]
+   &gt;&gt; v**2
+   =&gt; GSL::Vector
+   [ 1.000e+00 4.000e+00 9.000e+00 ]
+   &gt;&gt; v
+   =&gt; GSL::Vector
+   [ 1.000e+00 2.000e+00 3.000e+00 ]
+   &gt;&gt; v.pow!(2)
+   =&gt; GSL::Vector
+   [ 1.000e+00 4.000e+00 9.000e+00 ]
+   &gt;&gt; v
+   =&gt; GSL::Vector
+   [ 1.000e+00 4.000e+00 9.000e+00 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#swap_elements(i, j)
+
+<p>
+This exchanges the <tt>i</tt>-th and <tt>j</tt>-th elements of the vector
+<tt>self</tt> in-place.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#clone
+
+</li>
+<li>GSL::Vector#duplicate
+
+<p>
+These create a copy of the vector <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector.connect(v1, v2, v3, &#8230;)
+
+</li>
+<li>GSL::Vector#connect(v2, v3, &#8230;)
+
+<p>
+Creates a new vector by connecting all the elements of the given vectors.
+</p>
+<pre>
+  &gt;&gt; v1 = GSL::Vector::Int[1, 3]
+  =&gt; GSL::Vector::Int:
+  [ 1 3 ]
+  &gt;&gt; v2 = GSL::Vector::Int[4, 3, 5]
+  =&gt; GSL::Vector::Int:
+  [ 4 3 5 ]
+  &gt;&gt; v1.connect(v2)
+  =&gt; GSL::Vector::Int:
+  [ 1 3 4 3 5 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sgn
+
+</li>
+<li>GSL::Vector#signum
+
+<p>
+Creates a new vector, with elements +1 if <tt>x_i</tt> &gt; 0, -1 if
+<tt>x_i</tt> &lt; 0, otherwise 0. Note that this definition gives the
+signum of NaN as 0 rather than NaN.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#abs
+
+</li>
+<li>GSL::Vector#fabs
+
+<p>
+Creates a new vector, with elements <tt>fabs(x_i)</tt>.
+</p>
+<pre>
+  &gt;&gt; v = GSL::Vector::Int[-3, 2, -5, 4]
+  =&gt; GSL::Vector::Int:
+  [ -3 2 -5 4 ]
+  &gt;&gt; v.abs
+  =&gt; GSL::Vector::Int:
+  [ 3 2 5 4 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#square
+
+</li>
+<li>GSL::Vector#abs2
+
+<p>
+Create a new vector, with elements <tt>x_i*x_i</tt>.
+</p>
+<pre>
+  &gt;&gt; v = GSL::Vector::Int[1..4]
+  =&gt; GSL::Vector::Int:
+  [ 1 2 3 4 ]
+  &gt;&gt; v.square
+  =&gt; GSL::Vector::Int:
+  [ 1 4 9 16 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sqrt
+
+<p>
+Creates a new vector, with elements <tt>sqrt</tt>(<tt>x_i</tt>).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#floor
+
+</li>
+<li>GSL::Vector#ceil
+
+</li>
+<li>GSL::Vector#round
+
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; v = GSL::Vector[1.1, 2.7, 3.5, 4.3]
+  =&gt; GSL::Vector
+  [ 1.100e+00 2.700e+00 3.500e+00 4.300e+00 ]
+  &gt;&gt; v.floor
+  =&gt; GSL::Vector::Int
+  [ 1 2 3 4 ]
+  &gt;&gt; v.ceil
+  =&gt; GSL::Vector::Int
+  [ 2 3 4 5 ]
+  &gt;&gt; v.round
+  =&gt; GSL::Vector::Int
+  [ 1 3 4 4 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#normalize(nrm = 1.0)
+
+<p>
+Creates a new vector of norm <tt>nrm</tt>, by scaling the vector
+<tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#normalize!(nrm = 1.0)
+
+<p>
+This normalizes the vector <tt>self</tt> in-place.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  tcsh&gt; irb
+  &gt;&gt; require(&quot;gsl&quot;)
+  =&gt; true
+  &gt;&gt; a = GSL::Vector[-1, -2, -3, -4]
+  =&gt; GSL::Vector:
+  [ -1.000e+00 -2.000e+00 -3.000e+00 -4.000e+00 ]
+  &gt;&gt; b = a.abs
+  =&gt; GSL::Vector:
+  [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 ]
+  &gt;&gt; b.sqrt
+  =&gt; GSL::Vector:
+  [ 1.000e+00 1.414e+00 1.732e+00 2.000e+00 ]
+  &gt;&gt; b.square
+  =&gt; GSL::Vector:
+  [ 1.000e+00 4.000e+00 9.000e+00 1.600e+01 ]
+  &gt;&gt; c = b.normalize(2)
+  =&gt; GSL::Vector:
+  [ 2.582e-01 5.164e-01 7.746e-01 1.033e+00 ]
+  &gt;&gt; c.square.sum
+  =&gt; 2.0
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#decimate(n)
+
+<p>
+Creates a new vector by averaring every <tt>n</tt> points of the vector
+<tt>self</tt> down to one point.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#diff(k = 1)
+
+<p>
+Calculate <tt>k</tt>-th differences of a vector <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#join(sep = &quot; &quot;)
+
+<p>
+Converts the vector to a <tt>String</tt> by joining all the elements with a
+separator <tt>sep</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#zip(vec, &#8230;)
+
+</li>
+<li>GSL::Vector.zip(vec, &#8230;)
+
+<p>
+Create an <tt>Array</tt> of vectors by merging the elements of
+<tt>self</tt> with corresponding elements from each arguments.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; require(&quot;gsl&quot;)
+  &gt;&gt; a = GSL::Vector[4, 5, 6]
+  &gt;&gt; b = GSL::Vector[7, 8, 9]
+  &gt;&gt; GSL::Vector[1, 2, 3].zip(a, b)
+  [[ 1.000e+00 4.000e+00 7.000e+00 ],
+   [ 2.000e+00 5.000e+00 8.000e+00 ],
+   [ 3.000e+00 6.000e+00 9.000e+00 ]]
+  &gt;&gt; GSL::Vector[1, 2].zip(a, b)
+  [[ 1.000e+00 4.000e+00 7.000e+00 ],
+   [ 2.000e+00 5.000e+00 8.000e+00 ]]
+  &gt;&gt; a.zip(GSL::Vector[1, 2], GSL::Vector[8.0])
+  [[ 4.000e+00 1.000e+00 8.000e+00 ],
+   [ 5.000e+00 2.000e+00 0.000e+00 ],
+   [ 6.000e+00 0.000e+00 0.000e+00 ]]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#concat(x)
+
+<p>
+Returns a new Vector that contains the concatenation <tt>self</tt> and
+<tt>x</tt>, which must be an <tt>Array</tt>, <tt>Fixnum</tt>,
+<tt>Bignum</tt>, <tt>Float</tt>, <tt>Range</tt>, or <tt>GSL::Vector</tt>.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.8"></a> Vector operations with size changes</h3>
+<p>
+The methods below change vector length of <tt>self</tt>. A Vector&#8216;s
+length may not extend past its original allocation. Use of these methods is
+discouraged. Existing Views may still refer to elements beyond the end of
+the shortened Vector. These elements remain allocated, but are effectvely
+unmanaged.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#delete(x)
+
+<p>
+Deletes items from <tt>self</tt> that are equal to <tt>x</tt>. If the item
+is not found, returns <tt>nil</tt>, otherwise returns <tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#delete_at(i)
+
+<p>
+Deletes the element at the specified index <tt>i</tt>, returning that
+element, or <tt>nil</tt> if the index is out of range.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#delete_if { |x| &#8230; }
+
+<p>
+Deletes every element of <tt>self</tt> for which block evaluates to
+<tt>true</tt> and returns <tt>self</tt>.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.9"></a> Finding maximum and minimum elements of vectors</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#max
+
+<p>
+This method returns the maximum value in the vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#min
+
+<p>
+This method returns the minimum value in the vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#minmax
+
+<p>
+This method returns an array of two elements, the minimum and the maximum
+values in the vector <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#max_index
+
+<p>
+This method returns the index of the maximum value in the vector. When
+there are several equal maximum elements then the lowest index is returned.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#min_index
+
+<p>
+This method returns the index of the minimum value in the vector. When
+there are several equal minimum elements then the lowest index is returned.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#minmax_index
+
+<p>
+This method returns an array of two elements which has the indices of the
+minimum and the maximum values in the vector <tt>self</tt>.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.10"></a> Vector Properties</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#size
+
+</li>
+<li>GSL::Vector#len
+
+</li>
+<li>GSL::Vector#length
+
+<p>
+Return the vector length.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#stride
+
+<p>
+Return the vector stride.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sum
+
+<p>
+Returns the sum of the vector elements.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#prod
+
+<p>
+Returns the product of the vector elements.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#cumsum
+
+<p>
+Calculate the cumulative sum of elements of <tt>self</tt> and returns as a
+new vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#cumprod
+
+<p>
+Calculate the cumulative product of elements of <tt>self</tt> and returns
+as a new vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#isnull
+
+<p>
+Returns 1 if all the elements of the vector <tt>self</tt> are zero, and 0
+otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#isnull?
+
+<p>
+Return <tt>true</tt> if all the elements of the vector <tt>self</tt> are
+zero, and <tt>false</tt> otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#ispos
+
+</li>
+<li>GSL::Vector#ispos?
+
+</li>
+<li>GSL::Vector#isneg
+
+</li>
+<li>GSL::Vector#isneg?
+
+<p>
+(GSL-1.9 or later) Return 1 (true) if all the elements of the vector
+<tt>self</tt> are zero, strictly positive, strictly negative respectively,
+and 0 (false) otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#isnonneg
+
+</li>
+<li>GSL::Vector#isnonneg?
+
+<p>
+(GSL-1.10 or later) Return 1 (true) if all the elements of the vector
+<tt>self</tt> are non-negative , and 0 (false) otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#all?
+
+<p>
+Returns <tt>true</tt> if all the vector elements are non-zero, and
+<tt>false</tt> otherwise. If a block is given, the method returns
+<tt>true</tt> if the tests are true for all the elements.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#any?
+
+<p>
+Returns <tt>true</tt> if any the vector elements are non-zero, and
+<tt>false</tt> otherwise. If a block is given, the method returns
+<tt>true</tt> if the tests are true for any of the elements.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#none?
+
+<p>
+Returns <tt>true</tt> if all the elements of the vector <tt>self</tt> are
+zero, and <tt>false</tt> otherwise (just as <tt>GSL::Vector#isnull?</tt>).
+If a block is given, the method returns <tt>true</tt> if the tests are
+false for all the elements.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; a = GSL::Vector[1, 2, 3]
+  &gt;&gt; b = GSL::Vector[1, 2, 0]
+  &gt;&gt; c = GSL::Vector[0, 0, 0]
+  &gt;&gt; a.all?
+  =&gt; true
+  &gt;&gt; b.all?
+  =&gt; false
+  &gt;&gt; b.any?
+  =&gt; true
+  &gt;&gt; c.any?
+  =&gt; false
+  &gt;&gt; a.none?
+  =&gt; false
+  &gt;&gt; c.none?
+  =&gt; true
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#all
+
+</li>
+<li>GSL::Vector#any
+
+</li>
+<li>GSL::Vector#none
+
+<p>
+Returns 1 or 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#equal?(other, eps = 1e-10)
+
+</li>
+<li>GSL::Vector#==(other, eps = 1e-10)
+
+<p>
+Returns <tt>true</tt> if the vectors have same size and elements equal to
+absolute accurary <tt>eps</tt> for all the indices, and <tt>false</tt>
+otherwise.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.11"></a> Element-wise vector comparison</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#eq(other)
+
+</li>
+<li>GSL::Vector#ne(other)
+
+</li>
+<li>GSL::Vector#gt(other)
+
+</li>
+<li>GSL::Vector#ge(other)
+
+</li>
+<li>GSL::Vector#lt(other)
+
+</li>
+<li>GSL::Vector#le(other)
+
+<p>
+Return a <tt>Block::Byte</tt> object with elements 0/1 by comparing the two
+vectors <tt>self</tt> and <tt>other</tt>. Note that the values returned are
+0/1, not <tt>true/false</tt>, thus all of the elements are &quot;true&quot;
+in Ruby.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+   &gt;&gt; a = GSL::Vector[1, 2, 3]
+   &gt;&gt; b = GSL::Vector[1, 2, 5]
+   &gt;&gt; a.eq(b)
+   [ 1 1 0 ]
+   &gt;&gt; a.ne(b)
+   [ 0 0 1 ]
+   &gt;&gt; a.gt(b)
+   [ 0 0 0 ]
+   &gt;&gt; a.ge(b)
+   [ 1 1 0 ]
+   &gt;&gt; a.eq(3)
+   [ 0 0 1 ]
+   &gt;&gt; a.ne(2)
+   [ 1 0 1 ]
+   &gt;&gt; a.ge(2)
+   [ 0 1 1 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#and(other)
+
+</li>
+<li>GSL::Vector#or(other)
+
+</li>
+<li>GSL::Vector#xor(other)
+
+</li>
+<li>GSL::Vector#not
+
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; a = GSL::Vector[1, 0, 3, 0]
+  &gt;&gt; b = GSL::Vector[3, 4, 0, 0]
+  &gt;&gt; a.and(b)
+  [ 1 0 0 0 ]
+  &gt;&gt; a.or(b)
+  [ 1 1 1 0 ]
+  &gt;&gt; a.xor(b)
+  [ 0 1 1 0 ]
+  &gt;&gt; a.not
+  [ 0 1 0 1 ]
+  &gt;&gt; b.not
+  [ 0 0 1 1 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#where
+
+</li>
+<li>GSL::Vector#where { |elm| &#8230; }
+
+<p>
+Returns the vector indices where the tests are true. If all the test failed
+<tt>nil</tt> is returned.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; v = GSL::Vector::Int[0, 3, 0, -2, 3, 5, 0, 3]
+  &gt;&gt; v.where
+  [ 1 3 4 5 7 ]                   # where elements are non-zero
+  &gt;&gt; v.where { |elm| elm == -2 }
+  [ 3 ]
+  &gt;&gt; a = GSL::Vector[0, 0, 0]
+  &gt;&gt; a.where
+  =&gt; nil
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.12"></a> Histogram</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#histogram(n)
+
+</li>
+<li>GSL::Vector#histogram(ranges)
+
+</li>
+<li>GSL::Vector#histogram(n, min, max)
+
+</li>
+<li>GSL::Vector#histogram(n, [min, max])
+
+<p>
+Creates a histogram filling the vector <tt>self</tt>.
+</p>
+<p>
+Example:
+</p>
+<pre>
+   &gt;&gt; r = GSL::Rng.alloc           # Random number generator
+   =&gt; #&lt;GSL::Rng:0x6d8594&gt;
+   &gt;&gt; v = r.gaussian(1, 1000)    # Generate 1000 Gaussian random numbers
+   =&gt; GSL::Vector
+   [ 1.339e-01 -8.810e-02 1.674e+00 7.336e-01 9.975e-01 -1.278e+00 -2.397e+00 ... ]
+   &gt;&gt; h = v.histogram(50, [-4, 4])  # Creates a histogram of size 50, range [-4, 4)
+   =&gt; #&lt;GSL::Histogram:0x6d28b0&gt;
+   &gt;&gt; h.graph(&quot;-T X -C -g 3&quot;)    # Show the histogram
+   =&gt; true
+</pre>
+<p>
+This is equivalent to
+</p>
+<pre>
+   h = Histogram.alloc(50, [-4, 4])
+   h.increment(v)
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.13"></a> Sorting</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sort
+
+</li>
+<li>GSL::Vector#sort!
+
+<p>
+These methods sort the vector <tt>self</tt> in ascending numerical order.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sort_index
+
+<p>
+This method indirectly sorts the elements of the vector <tt>self</tt> into
+ascending order, and returns the resulting permutation. The elements of
+permutation give the index of the vector element which would have been
+stored in that position if the vector had been sorted in place. The first
+element of permutation gives the index of the least element in the vector,
+and the last element of permutation gives the index of the greatest vector
+element. The vector <tt>self</tt> is not changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sort_smallest(n)
+
+</li>
+<li>GSL::Vector#sort_largest(n)
+
+</li>
+<li>GSL::Vector#sort_smallest_index(n)
+
+</li>
+<li>GSL::Vector#sort_largest_index(n)
+
+<p>
+Ex:
+</p>
+<pre>
+    &gt;&gt; v = GSL::Vector::Int[8, 2, 3, 7, 9, 1, 4]
+    =&gt; GSL::Vector::Int:
+    [ 8 2 3 7 9 1 4 ]
+    &gt;&gt; v.sort
+    =&gt; GSL::Vector::Int:
+    [ 1 2 3 4 7 8 9 ]
+    &gt;&gt; v.sort_index
+    =&gt; GSL::Permutation:
+    [ 5 1 2 6 3 0 4 ]
+    &gt;&gt; v.sort_largest(3)
+    =&gt; GSL::Vector::Int:
+    [ 9 8 7 ]
+    &gt;&gt; v.sort_smallest(3)
+    =&gt; GSL::Vector::Int:
+    [ 1 2 3 ]
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.14"></a> BLAS Methods</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#nrm2
+
+</li>
+<li>GSL::Vector#dnrm2
+
+<p>
+Compute the Euclidean norm ||x||_2 = sqrt {sum x_i^2} of the vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#asum
+
+</li>
+<li>GSL::Vector#dasum
+
+<p>
+Compute the absolute sum \sum |x_i| of the elements of the vector.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.15"></a> Data type conversions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#to_a
+
+<p>
+This method converts the vector into a Ruby array. A Ruby array also can be
+converted into a GSL::Vector object with the <tt>to_gv</tt> method. For
+example,
+</p>
+<pre>
+  v = GSL::Vector.alloc([1, 2, 3, 4, 5])
+  a = v.to_a   -&gt; GSL::Vector to an array
+  p a          -&gt; [1.0, 2.0, 3.0, 4.0, 5.0]
+  a[2] = 12.0
+  v2 = a.to_gv  -&gt; a new GSL::Vector object
+  v2.print     -&gt; 1.0000e+00 2.0000e+00 1.2000e+01 4.0000e+00 5.0000e+00
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#to_m(nrow, ncol)
+
+<p>
+Creates a <tt>GSL::Matrix</tt> object of <tt>nrow</tt> rows and
+<tt>ncol</tt> columns.
+</p>
+<pre>
+  &gt;&gt; v = GSL::Vector::Int[1..5]
+  =&gt; GSL::Vector::Int:
+  [ 1 2 3 4 5 ]
+  &gt;&gt; v.to_m(2, 3)
+  =&gt; GSL::Matrix::Int:
+  [ 1 2 3
+    4 5 0 ]
+  &gt;&gt; v.to_m(2, 2)
+  =&gt; GSL::Matrix::Int:
+  [ 1 2
+    3 4 ]
+  &gt;&gt; v.to_m(3, 2)
+  =&gt; GSL::Matrix::Int:
+  [ 1 2
+    3 4
+    5 0 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#to_m_diagonal
+
+<p>
+Converts the vector into a diagonal matrix. See also <a
+href="matrix_rdoc.html">GSL::Matrix.diagonal(v)</a>.
+</p>
+<pre>
+   &gt;&gt; v = GSL::Vector[1..4].to_i
+   =&gt; GSL::Vector::Int:
+   [ 1 2 3 4 ]
+   &gt;&gt; v.to_m_diagonal
+   =&gt; GSL::Matrix::Int:
+   [ 1 0 0 0
+     0 2 0 0
+     0 0 3 0
+     0 0 0 4 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#to_m_circulant
+
+<p>
+Creates a circulant matrix.
+</p>
+<pre>
+  &gt;&gt; v = GSL::Vector::Int[1..5]
+  =&gt; GSL::Vector::Int:
+  [ 1 2 3 4 5 ]
+  &gt;&gt; v.to_m_circulant
+  =&gt; GSL::Matrix::Int:
+  [ 5 1 2 3 4
+    4 5 1 2 3
+    3 4 5 1 2
+    2 3 4 5 1
+    1 2 3 4 5 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#to_complex
+
+</li>
+<li>GSL::Vector#to_complex2
+
+<p>
+Example:
+</p>
+<pre>
+  &gt;&gt; v = GSL::Vector[1..4]
+  =&gt; GSL::Vector
+  [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 ]
+  &gt;&gt; v.to_complex
+  [ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] [3.000e+00 0.000e+00] [4.000e+00 0.000e+00] ]
+  =&gt; #&lt;GSL::Vector::Complex:0x6d7d24&gt;
+  &gt;&gt; v.to_complex2
+  [ [1.000e+00 2.000e+00] [3.000e+00 4.000e+00] ]
+  =&gt; #&lt;GSL::Vector::Complex:0x6d6424&gt;
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#to_tensor(rank, dimension)
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.16"></a> GSL::Vector &lt;&#8212;&gt; NArray</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#to_na
+
+<p>
+Converts a vector <tt>self</tt> into an <tt>NArray</tt> object. The data
+are copied to newly allocated memory.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#to_na2
+
+</li>
+<li>GSL::Vector#to_na_ref
+
+<p>
+Create an <tt>NArray</tt> reference of the vector <tt>self</tt>.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  &gt;&gt; v = GSL::Vector::Int[1, 2, 3, 4]
+  =&gt; GSL::Vector::Int
+  [ 1 2 3 4 ]
+  &gt;&gt; na = v.to_na
+  =&gt; NArray.int(4):
+  [ 1, 2, 3, 4 ]
+  &gt;&gt; na2 = v.to_na2
+  =&gt; NArray(ref).int(4):
+  [ 1, 2, 3, 4 ]
+  &gt;&gt; na[1] = 99
+  =&gt; 99
+  &gt;&gt; v              # na and v are independent
+  =&gt; GSL::Vector::Int
+  [ 1 2 3 4 ]
+  &gt;&gt; na2[1] = 99    # na2 points to the data of v
+  =&gt; 99
+  &gt;&gt; v
+  =&gt; GSL::Vector::Int
+  [ 1 99 3 4 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>NArray#to_gv
+
+</li>
+<li>NArray#to_gslv
+
+<p>
+Create <tt>GSL::Vector</tt> object from the <tt>NArray</tt> object
+<tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>NArray#to_gv_view
+
+</li>
+<li>NArray#to_gv2
+
+</li>
+<li>NArray#to_gslv_view
+
+<p>
+A <tt>GSL::Vector::View</tt> object is created from the NArray object
+<tt>self</tt>. This method does not allocate memory for the data: the data
+of <tt>self</tt> are not copied, but shared with the <tt>View</tt> object
+created, thus any modifications to the <tt>View</tt> object affect on the
+original NArray object. In other words, the <tt>View</tt> object can be
+used as a <tt>reference</tt> to the NArray object.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+   tcsh&gt; irb
+   &gt;&gt; require(&quot;gsl&quot;)
+   =&gt; true
+   &gt;&gt; na = NArray[1.0, 2, 3, 4, 5]
+   =&gt; NArray.float(5):
+   [ 1.0, 2.0, 3.0, 4.0, 5.0 ]
+   &gt;&gt; vv = na.to_gv_view   # Create a view sharing the memory
+   =&gt; GSL::Vector::View
+   [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 ]
+   &gt;&gt; vv[3] = 9
+   =&gt; 9
+   &gt;&gt; na
+   =&gt; NArray.float(5):
+   [ 1.0, 2.0, 3.0, 9.0, 5.0 ]           # The data are changed
+   &gt;&gt; v = na.to_gv         # A vector with newly allocated memory
+   =&gt; GSL::Vector
+   [ 1.000e+00 2.000e+00 3.000e+00 9.000e+00 5.000e+00 ]
+   &gt;&gt; v[1] = 123
+   =&gt; 123
+   &gt;&gt; v
+   =&gt; GSL::Vector
+   [ 1.000e+00 1.230e+02 3.000e+00 9.000e+00 5.000e+00 ]
+   &gt;&gt; na
+   =&gt; NArray.float(5):
+   [ 1.0, 2.0, 3.0, 9.0, 5.0 ]           # v and na are independent
+   &gt;&gt; na = NArray[1.0, 2, 3, 4, 5, 6]
+   =&gt; NArray.float(6):
+   [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0 ]
+   &gt;&gt; m = na.to_gv_view.matrix_view(2, 3)
+   =&gt; GSL::Matrix::View
+   [  1.000e+00  2.000e+00  3.000e+00
+      4.000e+00  5.000e+00  6.000e+00 ]
+   &gt;&gt; m[1][2] = 9
+   =&gt; 9
+   &gt;&gt; na
+   =&gt; NArray.float(6):
+   [ 1.0, 2.0, 3.0, 4.0, 5.0, 9.0 ]
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.17"></a> Graphics</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector.graph(y)
+
+</li>
+<li>GSL::Vector.graph(y, options)
+
+</li>
+<li>GSL::Vector.graph(x, y)
+
+</li>
+<li>GSL::Vector.graph(x, y, options)
+
+</li>
+<li>GSL::Vector#graph(options)
+
+</li>
+<li>GSL::Vector#graph(x, options)
+
+<p>
+These methods use the GNU plotutils <tt>graph</tt> application to plot a
+vector <tt>self</tt>. The options of <tt>graph</tt> as &quot;-T X -C&quot;
+can be given by a String.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  &gt;&gt; x = GSL::Vector.linspace(0, 2.0*M_PI, 20)
+  &gt;&gt; c = GSL::Sf::cos(x)
+  &gt;&gt; s = GSL::Sf::sin(x)
+  &gt;&gt; GSL::Vector.graph(x, c, s, &quot;-T X -C -L 'cos(x), sin(x)'&quot;)
+</pre>
+</li>
+</ul>
+<p>
+<a href="sf_rdoc.html">prev</a> <a href="matrix_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

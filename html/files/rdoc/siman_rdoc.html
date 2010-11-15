@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: siman.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>siman.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/siman.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Simulated Annealing</h1>
+<h3><a href="../.././index.html"name="0.1"></a> Library</h3>
+<h2><a href="../.././index.html"name="1"></a> Module and classes</h2>
+<ul>
+<li>GSL::
+
+<ul>
+<li>Siman:: (Module)
+
+<ul>
+<li>Params (Class)
+
+</li>
+<li>Efunc (Class)
+
+</li>
+<li>Step (Class)
+
+</li>
+<li>Metric (Class)
+
+</li>
+<li>Print (Class)
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> <tt>Siman</tt> Module</h2>
+<h3><a href="../.././index.html"name="2.1"></a> Singleton method</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Siman.solve(rng, x0_p, efunc, stepper, metric, printer, params)
+
+<p>
+This performs a simulated annealing search through a given space. The space
+is specified by providing the functions <tt>efunc</tt> and <tt>metric</tt>.
+The simulated annealing steps are generated using the random number
+generator <tt>rng</tt> and the function <tt>stepper</tt>. The starting
+configuration of the system should be given by a <tt>Vector</tt> object
+<tt>x0_p</tt>.
+</p>
+<p>
+The parameter <tt>params</tt> controls the run by providing the temperature
+schedule and other tunable parameters to the algorithm.
+</p>
+<p>
+On exit the best result achieved during the search is placed in
+<tt>x0_p</tt>. If the annealing process has been successful this should be
+a good approximation to the optimal point in the space.
+</p>
+<p>
+If the function <tt>printer</tt> is not <tt>nil</tt>, a debugging log will
+be printed to stdout with the following columns:
+</p>
+<pre>
+    number_of_iterations   temperature    x    x-(x0_p)   efunc(x)
+</pre>
+<p>
+and the output of <tt>printer</tt> itself. If <tt>printer</tt> is
+<tt>nil</tt> then no information is printed.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Example</h2>
+<pre>
+     #!/usr/bin/env ruby
+     require(&quot;gsl&quot;)
+     include GSL::Siman
+
+     N_TRIES = 200
+     ITERS_FIXED_T = 10
+     STEP_SIZE = 10
+     K = 1.0
+     T_INITIAL = 0.002
+     MU_T = 1.005
+     T_MIN = 2.0e-6
+
+     params = Siman::Params.alloc(N_TRIES, ITERS_FIXED_T, STEP_SIZE, K, T_INITIAL,
+                                MU_T, T_MIN)
+
+     efunc = Efunc.alloc { |vx|
+       x = vx[0]
+       s = (x - 1.0)
+       Math::exp(-s*s)*Math::sin(8*x)
+     }
+
+     metric = Metric.alloc { |vx, vy|
+       (x[0] - y[0]).abs
+     }
+
+     step = Step.alloc { |rng, vx, step_size|
+       r = rng.uniform
+       old_x = vx[0]
+       a =  r * 2 * step_size - step_size + old_x
+       vx[0] = a
+     }
+
+     simanprint = Print.alloc { |vx|
+       printf(&quot;%12g&quot;, vx[0])
+     }
+
+     x = Vector.alloc([15.5])
+     Rng.env_setup()
+     rng = Rng.alloc()
+
+     #Siman::solve(rng, x, efunc, step, metric, simanprint, params)
+     Siman::solve(rng, x, efunc, step, metric, nil, params)
+     p x
+</pre>
+<p>
+<a href="monte_rdoc.html">prev</a> <a href="odeiv_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

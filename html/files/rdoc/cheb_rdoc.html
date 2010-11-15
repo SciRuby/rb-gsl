@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: cheb.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>cheb.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/cheb.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Chebyshev Approximations</h1>
+<p>
+This chapter describes routines for computing Chebyshev approximations to
+univariate functions. A Chebyshev approximation is a truncation of the
+series f(x) = \sum c_n T_n(x), where the Chebyshev polynomials T_n(x) =
+\cos(n \arccos x) provide an orthogonal basis of polynomials on the
+interval [-1,1] with the weight function 1 / \sqrt{1-x^2}. The first few
+Chebyshev polynomials are, T_0(x) = 1, T_1(x) = x, T_2(x) = 2 x^2 - 1. For
+further information see Abramowitz &amp; Stegun, Chapter 22.
+</p>
+<ol>
+<li><a href="cheb_rdoc.html#1">GSL::Cheb class</a>
+
+</li>
+<li><a href="cheb_rdoc.html#2">Chebyshev Series Evaluation</a>
+
+</li>
+<li><a href="cheb_rdoc.html#3">Derivatives and Integrals</a>
+
+</li>
+<li><a href="cheb_rdoc.html#4">Examples</a>
+
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> <tt>GSL::Cheb</tt> class</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Cheb.alloc(n)
+
+<p>
+This create an instance of the GSL::Cheb class for a Chebyshev series of
+order n.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Cheb#init(f, a, b)
+
+<p>
+This computes the Chebyshev approximation the function <tt>f</tt> over the
+range (<tt>a,b</tt>) to the previously specified order. Where <tt>f</tt> is
+a <a href="function_rdoc.html">GSL::Function</a> object. The computation of
+the Chebyshev approximation is an O(n^2) process, and requires <tt>n</tt>
+function evaluations.
+</p>
+<ul>
+<li>ex: Approximate a step function defined in (0, 1) by a Chebyshev series of
+order 40.
+
+<pre>
+  f = GSL::Function.alloc { |x|
+    if x &lt; 0.5
+      0.25
+    else
+      0.75
+    end
+  }
+
+  cs = GSL::Cheb.alloc(40)
+  cs.init(f, 0, 1)
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Chebyshev Series Evaluation</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Cheb#eval(x)
+
+<p>
+This evaluates the Chebyshev series at a given point <tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Cheb#eval_n(n, x)
+
+<p>
+This evaluates the Chebyshev series at a given point <tt>x</tt>, to (at
+most) the given order <tt>n</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Derivatives and Integrals</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Cheb#calc_deriv()
+
+</li>
+<li>GSL::Cheb#deriv()
+
+<p>
+This computes the derivative of the series, and returns a new GSL::Cheb
+object which contains the computed derivative. The reciever is not changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Cheb#calc_integ()
+
+</li>
+<li>GSL::Cheb#integ()
+
+<p>
+This computes the integral of the series, and returns a new GSL::Cheb
+object which contains the computed integral coefficients. The reciever is
+not changed.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Example</h2>
+<pre>
+   #!/usr/bin/env ruby
+   require(&quot;gsl&quot;)
+
+   f = GSL::Function.alloc { |x|
+     if x &lt; 0.5
+       0.25
+     else
+       0.75
+     end
+   }
+
+   n = 1000
+   order = 40
+   cs = GSL::Cheb.alloc(order)
+   cs.init(f, 0, 1)
+
+   x = Vector.linspace(0, 1, n)
+   ff = f.eval(x)
+   r10 = cs.eval_n(10, x)
+   r40 = cs.eval(x)
+   GSL::graph(x, ff, r10, r40)
+</pre>
+<p>
+See also the example scripts in <tt>examples/cheb/</tt>.
+</p>
+<p>
+<a href="diff_rdoc.html">prev</a> <a href="sum_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

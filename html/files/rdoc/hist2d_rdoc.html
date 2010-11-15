@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: hist2d.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>hist2d.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/hist2d.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>GSL::Histogram2d class</h1>
+<h2><a href="../.././index.html"name="1"></a> Class methods</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d.alloc(nx, ny)
+
+</li>
+<li>GSL::Histogram2d.alloc(xrange, yrange)
+
+</li>
+<li>GSL::Histogram2d.alloc(nx, xmin, xmax, ny, ymin, ymax)
+
+</li>
+<li>GSL::Histogram2d.alloc(nx, [xmin, xmax], ny, [ymin, ymax])
+
+<p>
+Constructors.
+</p>
+<ol>
+<li>With sizes
+
+<pre>
+   &gt;&gt; h2 = GSL::Histogram2d.alloc(2, 3)  # size 6
+   &gt;&gt; h2.xrange
+   =&gt; GSL::Histogram::Range:
+   [ 0.000e+00 1.000e+00 2.000e+00 ]
+   &gt;&gt; h2.yrange
+   =&gt; GSL::Histogram::Range:
+   [ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 ]
+   &gt;&gt; h2.bin
+   =&gt; GSL::Histogram::Bin:
+   [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
+   &gt;&gt; h2.xrange.class.superclass
+   =&gt; GSL::Vector::View::ReadOnly
+   &gt;&gt; h2.bin.class.superclass
+   =&gt; GSL::Vector::View::ReadOnly
+</pre>
+</li>
+<li>With ranges
+
+<pre>
+    &gt;&gt; h2 = Histogram2d.alloc([3, 6, 7], [2, 3, 8])
+    &gt;&gt; h2.xrange
+    =&gt; GSL::Histogram::Range:
+    [ 3.000e+00 6.000e+00 7.000e+00 ]
+    &gt;&gt; h2.yrange
+    =&gt; GSL::Histogram::Range:
+    [ 2.000e+00 3.000e+00 8.000e+00 ]
+    &gt;&gt; h2.bin
+    =&gt; GSL::Histogram::Bin:
+    [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
+</pre>
+</li>
+<li>With sizes and ranges
+
+<pre>
+    &gt;&gt; h2 = Histogram2d.alloc(4, [0, 4], 3, [1, 5])
+    &gt;&gt; h2.xrange
+    =&gt; GSL::Histogram::Range:
+    [ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 4.000e+00 ]
+    &gt;&gt; h2.yrange
+    =&gt; GSL::Histogram::Range:
+    [ 1.000e+00 2.333e+00 3.667e+00 5.000e+00 ]
+</pre>
+</li>
+</ol>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d.alloc_uniform(nx, xmin, xmax, ny, ymin, ymax)
+
+</li>
+<li>GSL::Histogram2d.equal_bins_p(h1, h2)
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Methods</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#set_ranges(vx, vy)
+
+<p>
+This sets the ranges of the existing histogram using two <a
+href="vector_rdoc.html">GSL::Vector</a> objects or arrays.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#set_ranges_uniform(xmin, xmax, ymin, ymax)
+
+</li>
+<li>GSL::Histogram2d#set_ranges_uniform([xmin, xmax], [ymin, ymax])
+
+<p>
+This sets the ranges of the existing histogram <tt>self</tt> to cover the
+ranges <tt>xmin</tt> to <tt>xmax</tt> and <tt>ymin</tt> to <tt>ymax</tt>
+uniformly. The values of the histogram bins are reset to zero.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#clone
+
+</li>
+<li>GSL::Histogram2d#duplicate
+
+<p>
+Returns a newly created histogram which is an exact copy of the histogram
+<tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#increment(x, y, weight = 1)
+
+</li>
+<li>GSL::Histogram2d#accumulate(x, y, weight = 1)
+
+</li>
+<li>GSL::Histogram2d#fill(x, y, weight = 1)
+
+<p>
+These method update the histogram <tt>self</tt> by adding <tt>weight</tt>
+to the bin whose <tt>x</tt> and <tt>y</tt> ranges contain the coordinates
+(x,y). If (x,y) lies outside the limits of the histogram then none of the
+bins are modified.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#increment2(x, y, weight = 1)
+
+</li>
+<li>GSL::Histogram2d#accumulate2(x, y, weight = 1)
+
+</li>
+<li>GSL::Histogram2d#fill2(x, y, weight = 1)
+
+<p>
+These are similar to <tt>GSL::Histogram#increment/accumulate/fill</tt>, but
+when (x,y) lies outside the limits of the histogram then the edge bin is
+incremented.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#get(i[, j])
+
+</li>
+<li>GSL::Histogram2d#get([i, j])
+
+</li>
+<li>GSL::Histogram2d#[i, j]
+
+<p>
+Return the contents of the <tt>(i,j)</tt>-th bin of the histogram
+<tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#get_xrange(i)
+
+</li>
+<li>GSL::Histogram2d#get_yrange(j)
+
+<p>
+These methods find the upper and lower range limits of the <tt>i</tt>-th
+and <tt>j</tt>-th bins in the x and y directions of the histogram
+<tt>self</tt>.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+   &gt;&gt; h2 = Histogram2d.alloc(2, [0, 2], 3, [1, 4])
+   &gt;&gt; h2.get_xrange(1)
+   =&gt; [1.0, 2.0]
+   &gt;&gt; h2.get_yrange(1)
+   =&gt; [2.0, 3.0]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#xrange
+
+</li>
+<li>GSL::Histogram2d#yrange
+
+<p>
+These methods returns the range of histogram as <tt>Vector::View</tt>
+objects.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#xmax
+
+</li>
+<li>GSL::Histogram2d#xmin
+
+</li>
+<li>GSL::Histogram2d#ymax
+
+</li>
+<li>GSL::Histogram2d#ymin
+
+</li>
+<li>GSL::Histogram2d#nx
+
+</li>
+<li>GSL::Histogram2d#ny
+
+<p>
+These methodss return the maximum upper and minimum lower range limits and
+the number of bins for the x and y directions of the histogram
+<tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#reset
+
+<p>
+Resets all the bins of the histogram <tt>self</tt> to zero.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#find(x, y)
+
+<p>
+Finds the indices i and j to the to the bin which covers the coordinates
+(<tt>x,y</tt>).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#max_val
+
+<p>
+Returns the maximum value contained in the histogram bins.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#max_bin
+
+<p>
+Returns the indices (i,j) of the bin containing the maximum value in the
+histogram <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#min_val
+
+<p>
+Returns the minimum value contained in the histogram bins.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#min_bin
+
+<p>
+Returns the indices (i,j) of the bin containing the minimum value in the
+histogram <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#xmean
+
+<p>
+Returns the mean of the histogrammed x variable, where the histogram is
+regarded as a probability distribution. Negative bin values are ignored for
+the purposes of this calculation.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#xsigma
+
+<p>
+Returns the standard deviation of the histogrammed x variable, where the
+histogram is regarded as a probability distribution. Negative bin values
+are ignored for the purposes of this calculation.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#ymean
+
+<p>
+Returns the mean of the histogrammed y variable, where the histogram is
+regarded as a probability distribution. Negative bin values are ignored for
+the purposes of this calculation.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#ysigma
+
+<p>
+Returns the standard deviation of the histogrammed y variable, where the
+histogram is regarded as a probability distribution. Negative bin values
+are ignored for the purposes of this calculation.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#cov
+
+<p>
+Returns the covariance of the histogrammed x and y variables, where the
+histogram is regarded as a probability distribution. Negative bin values
+are ignored for the purposes of this calculation.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#sum
+
+</li>
+<li>GSL::Histogram2d#integral
+
+<p>
+Return the sum of all bin values. Negative bin values are included in the
+sum.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#add
+
+</li>
+<li>GSL::Histogram2d#sub
+
+</li>
+<li>GSL::Histogram2d#mul
+
+</li>
+<li>GSL::Histogram2d#div
+
+</li>
+<li>GSL::Histogram2d#scale(val)
+
+</li>
+<li>GSL::Histogram2d#shift(val)
+
+</li>
+<li>GSL::Histogram2d#fwrite(io)
+
+</li>
+<li>GSL::Histogram2d#fwrite(filename)
+
+</li>
+<li>GSL::Histogram2d#fread(io)
+
+</li>
+<li>GSL::Histogram2d#fread(filename)
+
+</li>
+<li>GSL::Histogram2d#fprintf(io, range_format, bin_format)
+
+</li>
+<li>GSL::Histogram2d#fprintf(filename, range_format, bin_format)
+
+</li>
+<li>GSL::Histogram2d#fscanf(io)
+
+</li>
+<li>GSL::Histogram2d#fscanf(filename)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#xproject(jstart = 0, jend = ny-1)
+
+<p>
+Creates a <tt>GSL::Histogram</tt> object by projecting the 2D histogram
+<tt>self</tt> onto the x-axis over the y-range from <tt>jstart</tt> to
+<tt>jend</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d#yproject(istart = 0, iend = nx-1)
+
+<p>
+Creates a <tt>GSL::Histogram</tt> object by projecting the 2D histogram
+<tt>self</tt> onto the y-axis over the x-range from <tt>istart</tt> to
+<tt>iend</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> GSL::Histogram2d::Pdf class</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d::Pdf.alloc(nx, ny)
+
+<p>
+Constructors
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d::Pdf#init(h)
+
+<p>
+Initializer with a GSL::Histogram2d object <tt>h</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Histogram2d::Pdf#sample(r1, r2)
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Example</h2>
+<pre>
+  #!/usr/bin/env ruby
+  require(&quot;gsl&quot;)
+
+  N = 10000
+  BINS = 100
+
+  rng = Rng.new(2)
+  h2 = Histogram2d.alloc(BINS, [-5, 5], BINS, [-8, 8])
+
+  sig1 = 1.0
+  sig2 = 2.0
+
+  for i in 0...N do
+    r1 = rng.gaussian(sig1)
+    r2 = rng.gaussian(sig2)
+    h2.increment(r1, r2)
+  end
+
+  hx = h2.xproject
+  hy = h2.yproject
+  printf(&quot;%f %f %f %f\n&quot;, h2.xsigma, h2.ysigma, hx.sigma, hy.sigma)
+  GSL::graph(hx, hy, &quot;-T X -C -g 3&quot;)
+</pre>
+<p>
+<a href="hist_rdoc.html">prev</a> <a href="hist3d_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,720 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: vector_complex.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>vector_complex.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/vector_complex.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>GSL::Vector::Complex</h1>
+<h2><a href="../.././index.html"name="1"></a> Class methods</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex.alloc(size)
+
+</li>
+<li>GSL::Vector::Complex.alloc(re, im)
+
+</li>
+<li>GSL::Vector::Complex.alloc(z0, z1, z2, &#8230;)
+
+</li>
+<li>GSL::Vector::Complex.alloc( &#8230; )
+
+</li>
+<li>GSL::Vector::Complex[ &#8230; ]
+
+<p>
+Constructors.
+</p>
+</li>
+</ul>
+<ol>
+<li>With two (real) vectors:
+
+<pre>
+     &gt;&gt; re = Vector[0..3]
+     &gt;&gt; im = Vector[5..8]
+     &gt;&gt; z = Vector::Complex[re, im]
+     [ [0.000e+00 5.000e+00] [1.000e+00 6.000e+00] [2.000e+00 7.000e+00] [3.000e+00 8.000e+00] ]
+</pre>
+</li>
+<li>With arrays
+
+<pre>
+     &gt;&gt; z = Vector::Complex.alloc([0, 1], [2, 5], [-3, 4])
+     [ [0.000e+00 1.000e+00] [2.000e+00 5.000e+00] [-3.000e+00 4.000e+00] ]
+</pre>
+</li>
+</ol>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex.calloc(n)
+
+<p>
+Creates a complex vector of length <tt>n</tt> and initializes all the
+elements of the vector to zero.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Instance methods</h2>
+<h3><a href="../.././index.html"name="2.1"></a> Accessing vector elements</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#get(args)
+
+</li>
+<li>GSL::Vector::Complex#[args]
+
+<p>
+Returns elements(s) of the complex vector <tt>self</tt> if <tt>args</tt> is
+a single Fixnum, a single Array of Fixnums, or a single GSL::Permutation
+(or GSL::Index). For all other <tt>args</tt>, the parameters are treated as
+with <tt>Vector#subvector</tt> and a <tt>Vector::View</tt> is returned.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  &gt;&gt; z
+  [ [0.000e+00 1.000e+00] [2.000e+00 5.000e+00] [-3.000e+00 4.000e+00] ]
+  =&gt; #&lt;GSL::Vector::Complex:0x6c5b9c&gt;
+  &gt;&gt; z[1]
+  =&gt; GSL::Complex
+  [ 2.000000 5.000000 ]
+  &gt;&gt; z[-1]
+  =&gt; GSL::Complex
+  [ -3.000000 4.000000 ]
+  &gt;&gt; z[0, 2]
+  [ [0.000e+00 1.000e+00] [-3.000e+00 4.000e+00] ]
+  =&gt; #&lt;GSL::Vector::Complex:0x6bfbac&gt;
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#set(args, val)
+
+</li>
+<li>GSL::Vector::Complex#[args]=val
+
+<p>
+If <tt>args</tt> is empty, behaves as <tt>set_all</tt> and <tt>val</tt>
+must be a <tt>[re,im]</tt> <tt>Array</tt>, <tt>Float</tt>,
+<tt>Integer</tt>, or <tt>GSL::Complex</tt>.
+</p>
+<p>
+If <tt>args</tt> is a single <tt>Fixnum</tt>, <tt>i</tt>, sets the
+<tt>i</tt>-th element of the vector <tt>self</tt> to <tt>val</tt>, which
+must be a <tt>[re,im]</tt> <tt>Array</tt>, <tt>Float</tt>,
+<tt>Integer</tt>, or <tt>GSL::Complex</tt>.
+</p>
+<p>
+All other <tt>args</tt> specify a subvector (as with <tt>subvector</tt>)
+whose elements are assigned from <tt>val</tt>. In this case, <tt>val</tt>
+can be an <tt>Array</tt>, <tt>Range</tt>, <tt>GSL::Vector::Complex</tt>, or
+one of the classes listed in the previous cases.
+</p>
+<p>
+NOTE: GSL does not provide a vector copy function that properly copies data
+across overlapping memory regions, so watch out if assigning to part of a
+Vector from another part of itself (see <tt>set</tt> example of <a
+href="vector_rdoc.html">GSL::Vector</a>).
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.2"></a> Initializing vector elements</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#set_all(z)
+
+<p>
+Sets all the elements of the complex vector <tt>self</tt> to the complex
+<tt>z</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#set_zero
+
+<p>
+Sets all the elements of the vector <tt>self</tt> to zero.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#set_real(x)
+
+</li>
+<li>GSL::Vector::Complex#real=(x)
+
+</li>
+<li>GSL::Vector::Complex#re=(x)
+
+<p>
+Sets the real component of all elements of the vector <tt>self</tt> to
+<tt>x</tt>. Currently, <tt>x</tt> must be a scalar, but a future Ruby GSL
+version could accept a GSL::Vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#set_imag(x)
+
+</li>
+<li>GSL::Vector::Complex#imag=(x)
+
+</li>
+<li>GSL::Vector::Complex#im=(x)
+
+<p>
+Sets the imaginary component of all elements of the vector <tt>self</tt> to
+<tt>x</tt>. Currently, <tt>x</tt> must be a scalar, but a future Ruby GSL
+version could accept a GSL::Vector.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.3"></a> Vector Properties</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#size
+
+</li>
+<li>GSL::Vector::Complex#len
+
+</li>
+<li>GSL::Vector::Complex#length
+
+<p>
+Return the vector length.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#stride
+
+<p>
+Return the vector stride.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.4"></a> Iterators</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#each
+
+</li>
+<li>GSL::Vector::Complex#each_index
+
+</li>
+<li>GSL::Vector::Complex#collect
+
+</li>
+<li>GSL::Vector::Complex#map
+
+</li>
+<li>GSL::Vector::Complex#collect!
+
+</li>
+<li>GSL::Vector::Complex#map!
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.5"></a> Reordering Elements</h3>
+<p>
+<tt>GSL::Vector::Complex</tt> provides four methods for shifting the
+frequency domain data between <b>FFT order</b>, shown in the table in the
+((&lt;Overview of complex data FFTs|URL:fft.html#2.1&gt;)), and <b>natural
+order</b>, which has the most negative freqeuncy component first, the zero
+frequency component in the middle, and the most positive frequency
+component last. For more information on Ruby/GSL and FFTs, see <a
+href="fft_rdoc.html">Fast Fourier Transforms</a>.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#fftshift
+
+</li>
+<li>GSL::Vector::Complex#fftshift!
+
+<p>
+Shifts the data of <tt>self</tt> from FFT order to natural order. The
+<tt>fftshift</tt> method leaves <tt>self</tt> unmodified and returns a new
+<tt>GSL::Vector::Complex</tt> object containing the shifted data. The
+<tt>fftshift!</tt> method modifies <tt>self</tt> in-place and returns
+<tt>self</tt>. Note that <tt>fftshift</tt> and <tt>ifftshift</tt> are
+equivalent for even lengths, but not for odd lengths.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#ifftshift
+
+</li>
+<li>GSL::Vector::Complex#ifftshift!
+
+<p>
+Shifts the data of <tt>self</tt> from natural order to FFT order. The
+<tt>ifftshift</tt> method leaves <tt>self</tt> unmodified and returns a new
+<tt>GSL::Vector::Complex</tt> object containing the shifted data. The
+<tt>ifftshift!</tt> method modifies <tt>self</tt> in-place and returns
+<tt>self</tt>. Note that <tt>fftshift</tt> and <tt>ifftshift</tt> are
+equivalent for even lengths, but not for odd lengths.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.6"></a> Arithmetic</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#+(other)
+
+</li>
+<li>GSL::Vector::Complex#-(other)
+
+</li>
+<li>GSL::Vector::Complex#*(other)
+
+</li>
+<li>GSL::Vector::Complex#/(other)
+
+</li>
+<li>GSL::Vector::Complex#add(other)
+
+</li>
+<li>GSL::Vector::Complex#sub(other)
+
+</li>
+<li>GSL::Vector::Complex#mul(other)
+
+</li>
+<li>GSL::Vector::Complex#div(other)
+
+<p>
+Returns a new <tt>GSL::Vector::Complex</tt> instance containing the result
+of the appropriate arithmetic operation on <tt>self</tt> and
+<tt>other</tt>. The inputs are unchanged. The <tt>other</tt> parameter may
+be a scalar, <tt><a href="vector_rdoc.html">GSL::Vector</a></tt>, or
+<tt>GSL::Vector::Complex</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#+=(other)
+
+</li>
+<li>GSL::Vector::Complex#-=(other)
+
+</li>
+<li>GSL::Vector::Complex#*=(other)
+
+</li>
+<li>GSL::Vector::Complex#/=(other)
+
+</li>
+<li>GSL::Vector::Complex#add!(other)
+
+</li>
+<li>GSL::Vector::Complex#sub!(other)
+
+</li>
+<li>GSL::Vector::Complex#mul!(other)
+
+</li>
+<li>GSL::Vector::Complex#div!(other)
+
+<p>
+Modifies <tt>self</tt> in place to contain the result of the appropriate
+arithmetic operation on <tt>self</tt> and <tt>other</tt>. The
+<tt>other</tt> parameter may be a scalar, <tt><a
+href="vector_rdoc.html">GSL::Vector</a></tt>, or
+<tt>GSL::Vector::Complex</tt>.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.7"></a> Reading and writing vectors</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#fwite(io)
+
+</li>
+<li>GSL::Vector::Complex#fread(io)
+
+</li>
+<li>GSL::Vector::Complex#fprintf(io, format)
+
+</li>
+<li>GSL::Vector::Complex#fscanf(io)
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.8"></a> Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#conj
+
+</li>
+<li>GSL::Vector::Complex#conjugate
+
+<p>
+Returns a new <tt>GSL::Vector::Complex</tt> that is the complex conjugate
+of <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#conj!
+
+</li>
+<li>GSL::Vector::Complex#conjugate!
+
+<p>
+Conjugates <tt>self</tt> in-place and returns <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#arg
+
+</li>
+<li>GSL::Vector::Complex#angle
+
+</li>
+<li>GSL::Vector::Complex#phase
+
+<p>
+Calculates the argument (i.e. phase angle in radians) of each of the
+complex elements of the vector <tt>self</tt> and returns a real vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#abs2
+
+<p>
+Calculates the squared magnitude of the complex elements of the vector
+<tt>self</tt> and returns a real vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#abs
+
+</li>
+<li>GSL::Vector::Complex#amp
+
+<p>
+Calculates the magnitude of the complex elements of the vector
+<tt>self</tt> and returns a real vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#logabs
+
+<p>
+Calculates the natural logarithm of the magnitude of the complex elements
+of the vector <tt>self</tt> and returns a real vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#sqrt
+
+<p>
+Calculates the square root of the complex elements of the vector
+<tt>self</tt> and returns a new complex vector.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#exp
+
+</li>
+<li>GSL::Vector::Complex#pow(a)
+
+</li>
+<li>GSL::Vector::Complex#log
+
+</li>
+<li>GSL::Vector::Complex#log10
+
+</li>
+<li>GSL::Vector::Complex#log_b(base)
+
+</li>
+<li>GSL::Vector::Complex#sin
+
+</li>
+<li>GSL::Vector::Complex#cos
+
+</li>
+<li>GSL::Vector::Complex#tan
+
+</li>
+<li>GSL::Vector::Complex#sec
+
+</li>
+<li>GSL::Vector::Complex#csc
+
+</li>
+<li>GSL::Vector::Complex#cot
+
+</li>
+<li>GSL::Vector::Complex#arcsin
+
+</li>
+<li>GSL::Vector::Complex#arccos
+
+</li>
+<li>GSL::Vector::Complex#arctan
+
+</li>
+<li>GSL::Vector::Complex#arcsec
+
+</li>
+<li>GSL::Vector::Complex#arccsc
+
+</li>
+<li>GSL::Vector::Complex#arccot
+
+</li>
+<li>GSL::Vector::Complex#sinh
+
+</li>
+<li>GSL::Vector::Complex#cosh
+
+</li>
+<li>GSL::Vector::Complex#tanh
+
+</li>
+<li>GSL::Vector::Complex#sech
+
+</li>
+<li>GSL::Vector::Complex#csch
+
+</li>
+<li>GSL::Vector::Complex#coth
+
+</li>
+<li>GSL::Vector::Complex#arcsinh
+
+</li>
+<li>GSL::Vector::Complex#arccosh
+
+</li>
+<li>GSL::Vector::Complex#arctanh
+
+</li>
+<li>GSL::Vector::Complex#arcsech
+
+</li>
+<li>GSL::Vector::Complex#arccsch
+
+</li>
+<li>GSL::Vector::Complex#arccoth
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.9"></a> Statistics</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#sum
+
+<p>
+Returns a <tt>GSL::Complex</tt> object representing the sum of all elements
+of <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#mean
+
+<p>
+Returns a <tt>GSL::Complex</tt> object representing the mean of all
+elements of <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#tss
+
+<p>
+Returns the total sum of squares about <tt>self.mean</tt>. This is a real
+number, i.e. a <tt>Float</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#tss_m(mean)
+
+<p>
+Returns the total sum of squares about <tt>mean</tt>. This is a real
+number, i.e. a <tt>Float.</tt>
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#variance
+
+<p>
+Returns the variance of <tt>self</tt>. This is a real number, i.e. a
+<tt>Float.</tt>
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#variance_m(mean)
+
+<p>
+Returns the variance of <tt>self</tt> around <tt>mean</tt>. This is a real
+number, i.e. a <tt>Float</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#variance_fm(mean)
+
+<p>
+Returns the variance of <tt>self</tt> around the fixed mean <tt>mean</tt>.
+This is a real number, i.e. a <tt>Float</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#sd
+
+<p>
+Returns the standard deviation of <tt>self</tt>. This is a real number,
+i.e. a <tt>Float</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#sd_m(mean)
+
+<p>
+Returns the standard deviation of <tt>self</tt> around <tt>mean</tt>. This
+is a real number, i.e. a <tt>Float</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector::Complex#sd_fm(mean)
+
+<p>
+Returns the standard deviation of <tt>self</tt> around the fixed mean
+<tt>mean</tt>. This is a real number, i.e. a <tt>Float</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Data Conversions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#to_complex
+
+</li>
+<li>GSL::Vector#to_complex2
+
+<p>
+Create a complex vector from a real vector.
+</p>
+<pre>
+  &gt;&gt; v = Vector[1..4]
+  =&gt; GSL::Vector
+  [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 ]
+  &gt;&gt; v.to_complex
+  [ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] [3.000e+00 0.000e+00] [4.000e+00 0.000e+00] ]
+  =&gt; #&lt;GSL::Vector::Complex:0x6d7d24&gt;
+  &gt;&gt; v.to_complex2
+  [ [1.000e+00 2.000e+00] [3.000e+00 4.000e+00] ]
+  =&gt; #&lt;GSL::Vector::Complex:0x6d6424&gt;
+</pre>
+</li>
+</ul>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

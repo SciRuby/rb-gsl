@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: use.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>use.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/use.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Using Ruby/GSL</h1>
+<h2><a href="../.././index.html"name="1"></a> Installation</h2>
+<p>
+See <a href="index_rdoc.html">here</a>.
+</p>
+<h2><a href="../.././index.html"name="2"></a> Load the library</h2>
+<p>
+Put at the head of your scripts,
+</p>
+<pre>
+    require 'rubygems' # if installed via RubyGems
+    require 'gsl'
+</pre>
+<h2><a href="../.././index.html"name="3"></a> Naming conventions, C Structs and Ruby Classes</h2>
+<p>
+Most of the GSL data types, functions or constants are named as
+<tt>gsl_xxx</tt> or <tt>GSL_XXX</tt>. In Ruby/GSL, the prefix <tt>gsl_</tt>
+is replaced by the module identifier <tt>GSL::</tt>, where <tt>GSL</tt> is
+the top level module of Ruby/GSL, and the Ruby classes are defined for each
+of the GSL C structs under the <tt>GSL</tt> module. According to the Ruby
+manner, the name of each class begins with a capital. For example,
+</p>
+<ul>
+<li>Struct <tt>gsl_vector</tt> &#8212;&gt; Ruby class <tt>GSL::Vector</tt>
+
+<ul>
+<li>Function call as <tt>v = gsl_vector_alloc(5);</tt> &#8212;&gt; Class method
+<tt>v = GSL::Vector.alloc(5)</tt>
+
+</li>
+<li>Function call as <tt>gsl_vector_set(v, i, 1.5);</tt> &#8212;&gt; Method
+<tt>v.set(i, 1.5)</tt> or <tt>v[i] = 1.5</tt>
+
+</li>
+</ul>
+</li>
+<li>Constant <tt>GSL_SUCCESS</tt> &#8212;&gt; Ruby module constant
+<tt>GSL::SUCCESS</tt>
+
+</li>
+<li>Function <tt>gsl_sf_bessel_J0(x)</tt> &#8212;&gt;
+
+<ul>
+<li>Submodule <tt>GSL::Sf</tt>
+
+</li>
+<li>Module function <tt>GSL::Sf::bessel_J0(x)</tt>
+
+<ul>
+<li><tt>GSL::Sf::Bessel::J0(x)</tt> is also OK, where <tt>J0(x)</tt> is a
+module function of the sub-sub-module <tt>GSL::Sf::Bessel</tt>.
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Function <tt>gsl_linalg_LU_decomp</tt> &#8212;&gt;
+
+<ul>
+<li>Module <tt>GSL::Linalg::LU</tt>
+
+<ul>
+<li>Singleton method <tt>GSL::Linalg::LU_decomp</tt>
+
+</li>
+<li>Submodule <tt>GSL::Linalg::LU</tt>
+
+<ul>
+<li>Singleton method <tt>GSL::Linalg::LU.decomp</tt>
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Method <tt>GSL::Matrix#LU_decomp</tt>
+
+</li>
+</ul>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Examples</h2>
+<p>
+See the directories &quot;examples/&quot; and &quot;tests/&quot;.
+</p>
+<p>
+Some of the examples use the <tt>graph</tt> utility to show the results.
+The <tt>graph</tt> utility is included in the <a
+href="http://www.gnu.org/software/plotutils/plotutils.html"target="_top">GNU
+plotutils</a> package. Windows-cygwin binaries of <tt>GNU plotutils</tt>
+and related packages are available from <a
+href="http://rustam.uwp.edu/support"target="_top">here</a>.
+</p>
+<h2><a href="../.././index.html"name="5"></a> Modules and Classes</h2>
+<p>
+The following is the list of Ruby/GSL modules and classes, &lt;Name&gt;
+(&lt;Module or Class&gt;)
+</p>
+<ul>
+<li>GSL (Module)
+
+<ul>
+<li>Complex (Class)
+
+</li>
+<li>Poly (Class)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+<li>DividedDifferenceRepresentation (Class)
+
+</li>
+<li>Taylor (Class)
+
+</li>
+</ul>
+</li>
+<li>Sf (Module)
+
+<ul>
+<li>Result (Class)
+
+</li>
+</ul>
+</li>
+<li>Block (Class)
+
+<ul>
+<li>Int (Class)
+
+</li>
+<li>Byte (Class)
+
+</li>
+<li>Index &lt; Permutation
+
+</li>
+</ul>
+</li>
+<li>Vector (Class)
+
+<ul>
+<li>View &lt; Vector
+
+</li>
+<li>Complex (Class)
+
+<ul>
+<li>View &lt; Vector::Complex
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Matrix (Class)
+
+<ul>
+<li>View &lt; Matrix (Class)
+
+</li>
+<li>Complex (Class)
+
+<ul>
+<li>View &lt; Matrix::Complex
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Permutation (Class)
+
+</li>
+<li>Combination (Class)
+
+</li>
+<li>Linalg (Module)
+
+<ul>
+<li>LU (Module)
+
+</li>
+<li>QR (Module)
+
+</li>
+<li>QRPT (Module)
+
+</li>
+<li>LQ (Module)
+
+</li>
+<li>LQPT (Module)
+
+</li>
+<li>SV (Module)
+
+</li>
+<li>Cholesky (Module)
+
+</li>
+<li>Symmtd (Module)
+
+</li>
+<li>HH (Module)
+
+</li>
+</ul>
+</li>
+<li>Eigen (Module)
+
+<ul>
+<li>EigenValues &lt; Vector
+
+</li>
+<li>EigenVectors &lt; Matrix
+
+</li>
+<li>Symm (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Symmv (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Unsymm (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Unsymmv (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Herm (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Hermv (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>FFT (Module)
+
+<ul>
+<li>ComplexWavetable (Class)
+
+</li>
+<li>ComplexWorkspace (Class)
+
+</li>
+<li>HalfComplexWavetable (Class)
+
+</li>
+<li>RealWavetable (Class)
+
+</li>
+<li>RealWorkspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Wavelet (Class)
+
+<ul>
+<li>Wavelet2d &lt; Wavelet
+
+</li>
+</ul>
+</li>
+<li>Function (Class)
+
+</li>
+<li>Function_fdf (Class)
+
+</li>
+<li>Integration (Module)
+
+<ul>
+<li>Workspace
+
+</li>
+<li>QAWS_Table
+
+</li>
+<li>QAWO_Table
+
+</li>
+</ul>
+</li>
+<li>Rng (Class)
+
+</li>
+<li>QRng (Class)
+
+</li>
+<li>Ran (Module)
+
+</li>
+<li>Stats (Module)
+
+</li>
+<li>Histogram (Class)
+
+<ul>
+<li>Integral &lt; Histogram
+
+</li>
+<li>Pdf (Class)
+
+</li>
+</ul>
+</li>
+<li>Histogram2d (Class)
+
+</li>
+<li>N-tuples
+
+<ul>
+<li>SelectFn (Class)
+
+</li>
+<li>ValueFn (Class)
+
+</li>
+</ul>
+</li>
+<li>Monte (Module)
+
+<ul>
+<li>Function (Class)
+
+</li>
+<li>Plain (Class)
+
+</li>
+<li>Miser (Class)
+
+</li>
+<li>Vegas (Class)
+
+</li>
+</ul>
+</li>
+<li>Siman (Module)
+
+<ul>
+<li>Efunc (Class)
+
+</li>
+<li>Step (Class)
+
+</li>
+<li>Metric (Class)
+
+</li>
+<li>Print (Class)
+
+</li>
+<li>Params (Class)
+
+</li>
+<li>Solver (Class)
+
+</li>
+</ul>
+</li>
+<li>Odeiv (Module)
+
+<ul>
+<li>Control (Class)
+
+</li>
+<li>Evolve (Class)
+
+</li>
+<li>System (Class)
+
+</li>
+<li>Solver (Class)
+
+</li>
+</ul>
+</li>
+<li>Interp (Class)
+
+<ul>
+<li>Accel (Class)
+
+</li>
+</ul>
+</li>
+<li>Spline (Class)
+
+</li>
+<li>Diff (Module)
+
+</li>
+<li>Deriv (Module)
+
+</li>
+<li>Cheb (Class)
+
+</li>
+<li>Sum (Module)
+
+<ul>
+<li>Levin_u (Class)
+
+</li>
+<li>Levin_utrunc (Class)
+
+</li>
+</ul>
+</li>
+<li>Dht (Class)
+
+</li>
+<li>Root (Module)
+
+<ul>
+<li>Solver (Class)
+
+</li>
+<li>FdfSolver (Class)
+
+</li>
+</ul>
+</li>
+<li>Min(Module)
+
+<ul>
+<li>FMinimizer (Class)
+
+</li>
+</ul>
+</li>
+<li>MultiRoot (Module)
+
+<ul>
+<li>Function (Class)
+
+</li>
+<li>FSolver (Class)
+
+</li>
+<li>Function_fdf (Class)
+
+</li>
+<li>FdfSolver (Class)
+
+</li>
+</ul>
+</li>
+<li>MultiMin (Module)
+
+<ul>
+<li>Function (Class)
+
+</li>
+<li>FMinimizer (Class)
+
+</li>
+<li>Function_fdf (Class)
+
+</li>
+<li>FdfMinimizer (Class)
+
+</li>
+</ul>
+</li>
+<li>Fit (Module)
+
+</li>
+<li>MultiFit (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+<li>Solver (Class)
+
+</li>
+<li>Function_fdf (Class)
+
+</li>
+<li>FdfSolver (Class)
+
+</li>
+</ul>
+</li>
+<li>CONST (Module)
+
+<ul>
+<li>MKSA (Module)
+
+</li>
+<li>CGSM (Module)
+
+</li>
+<li>NUM (Module)
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>
+<a href="intro_rdoc.html">prev</a> <a href="ehandling_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

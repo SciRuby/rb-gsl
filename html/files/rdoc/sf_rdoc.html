@@ -1,0 +1,2886 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: sf.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>sf.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/sf.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Special Functions</h1>
+<h3><a href="../.././index.html"name="0.1"></a> Contents:</h3>
+<ol>
+<li><a href="sf_rdoc.html#1">Usage:</a>
+
+</li>
+<li><a href="sf_rdoc.html#2">GSL::Sf::Result class</a>
+
+</li>
+<li><a href="sf_rdoc.html#3">Modes</a>
+
+</li>
+<li><a href="sf_rdoc.html#4">Airy functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#5">Bessel functins</a>
+
+</li>
+<li><a href="sf_rdoc.html#6">Clausen functins</a>
+
+</li>
+<li><a href="sf_rdoc.html#7">Coulomb functins</a>
+
+</li>
+<li><a href="sf_rdoc.html#8">Coupling coefficients</a>
+
+</li>
+<li><a href="sf_rdoc.html#9">Dawson coefficients</a>
+
+</li>
+<li><a href="sf_rdoc.html#10">Debye coefficients</a>
+
+</li>
+<li><a href="sf_rdoc.html#11">Dilogarithm</a>
+
+</li>
+<li><a href="sf_rdoc.html#12">Elementary operations</a>
+
+</li>
+<li><a href="sf_rdoc.html#13">Elliptic integrals</a>
+
+</li>
+<li><a href="sf_rdoc.html#14">Elliptic functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#15">Error functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#16">Exponential functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#17">Exponential integrals</a>
+
+</li>
+<li><a href="sf_rdoc.html#18">Fermi-Dirac function</a>
+
+</li>
+<li><a href="sf_rdoc.html#19">Gamma function</a>
+
+</li>
+<li><a href="sf_rdoc.html#20">Gegenbauer functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#21">Hypergeometric functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#22">Laguerre functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#23">Lambert W functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#24">Legendre functions and spherical harmonics</a>
+
+</li>
+<li><a href="sf_rdoc.html#25">Logarithm and related functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#26">Mathieu functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#27">Power function</a>
+
+</li>
+<li><a href="sf_rdoc.html#28">Psi (digamma) function</a>
+
+</li>
+<li><a href="sf_rdoc.html#29">Synchrotron functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#30">Transport functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#31">Trigonometric functions</a>
+
+</li>
+<li><a href="sf_rdoc.html#32">Zeta functions</a>
+
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> Usage</h2>
+<p>
+Ruby/GSL provides all the (documented) GSL special functions as module
+functions under the <tt>GSL::Sf</tt> module. The prefix <tt>gsl_sf_</tt> in
+C functions is replaced by the module identifier <tt>GSL::Sf::</tt>. For
+example, the regular Bessel function of 0-th order is evaluated as
+</p>
+<pre>
+  y = GSL::Sf::bessel_J0(x)
+</pre>
+<p>
+or
+</p>
+<pre>
+  include GSL::Sf
+  y = bessel_J0(x)
+</pre>
+<p>
+where the argument <tt>x</tt> can be a <tt>Numeric</tt>,
+<tt>GSL::Vector</tt>, <tt>GSL::Matrix</tt>, or an <tt>NArray</tt> object.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  &gt;&gt; require(&quot;gsl&quot;)
+  =&gt; true
+  &gt;&gt; x = 1.0
+  =&gt; 1.0
+  &gt;&gt; Sf::bessel_J0(x)
+  =&gt; 0.765197686557967
+  &gt;&gt; x = Vector[1, 2, 3, 4]
+  =&gt; GSL::Vector
+  [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 ]
+  &gt;&gt; Sf::bessel_J0(x)
+  =&gt; GSL::Vector
+  [ 7.652e-01 2.239e-01 -2.601e-01 -3.971e-01 ]
+  &gt;&gt; x = Matrix[1..4, 2, 2]
+  =&gt; GSL::Matrix
+  [  1.000e+00  2.000e+00
+     3.000e+00  4.000e+00 ]
+  &gt;&gt; Sf::bessel_J0(x)
+  =&gt; GSL::Matrix
+  [  7.652e-01  2.239e-01
+    -2.601e-01 -3.971e-01 ]
+  &gt;&gt; x = NArray[1.0, 2, 3, 4]
+  =&gt; NArray.float(4):
+  [ 1.0, 2.0, 3.0, 4.0 ]
+  &gt;&gt; Sf::bessel_J0(x)
+  =&gt; NArray.float(4):
+  [ 0.765198, 0.223891, -0.260052, -0.39715 ]
+</pre>
+<h2><a href="../.././index.html"name="2"></a> <tt>GSL::Sf::Result</tt> Class</h2>
+<p>
+The Ruby methods as wrappers of GSL functions with the suffix
+&quot;<tt>_e</tt>&quot; return <tt>GSL::Sf::Result</tt> objects which
+contain the function values as well as error information.
+</p>
+<h3><tt>GSL::Sf::Result</tt> instance methods</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::Result#val Returns the value.
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::Result#err Returns the error.
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::Result_e10#val Returns the value.
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::Result_e10#err Returns the error.
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Modes</h2>
+<p>
+The goal of the library is to achieve double precision accuracy wherever
+possible. However the cost of evaluating some special functions to double
+precision can be significant, particularly where very high order terms are
+required. In these cases a <tt>mode</tt> argument allows the accuracy of
+the function to be reduced in order to improve performance. The following
+precision levels are available for the mode argument, given by Fixnum
+constants under the <tt>GSL</tt> module,
+</p>
+<ul>
+<li><tt>GSL::PREC_DOUBLE</tt> Double-precision, a relative accuracy of
+approximately 2 * 10^-16.
+
+</li>
+<li><tt>GSL::PREC_SINGLE</tt> Single-precision, a relative accuracy of
+approximately 10^-7.
+
+</li>
+<li><tt>GSL::PREC_APPROX</tt> Approximate values, a relative accuracy of
+approximately 5 * 10^-4.
+
+</li>
+</ul>
+<p>
+The approximate mode provides the fastest evaluation at the lowest
+accuracy.
+</p>
+<h2><a href="../.././index.html"name="4"></a> Airy Functions and Derivatives</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_Ai(x, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the Airy function Ai(x) with an accuracy specified by
+<tt>mode</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_Bi(x, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the Airy function Bi(x) with an accuracy specified by
+<tt>mode</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_Ai_scaled(x, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes a scaled version of the Airy function S_A(x) Ai(x). For x&gt;0 the
+scaling factor S_A(x) is exp(+(2/3) x^(3/2)), and is 1 for x&lt;0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_Bi_scaled(x, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes a scaled version of the Airy function S_B(x) Bi(x). For x&gt;0 the
+scaling factor S_B(x) is exp(-(2/3) x^(3/2)), and is 1 for x&lt;0.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="4.1"></a> Derivatives of Airy Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_Ai_deriv(x, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the Airy function derivative Ai&#8217;(x) with an accuracy
+specified by <tt>mode</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_Bi_deriv(x, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the Airy function derivative Bi&#8217;(x) with an accuracy
+specified by <tt>mode</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_Ai_deriv_scaled(x, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the derivative of the scaled Airy function S_A(x) Ai(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_Bi_deriv_scaled(x, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the derivative of the scaled Airy function S_B(x) Bi(x).
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="4.2"></a> Zeros of Airy Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_zero_Ai(s)
+
+<p>
+Computes the location of the <tt>s</tt>-th zero of the Airy function Ai(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_zero_Bi(s)
+
+<p>
+Computes the location of the <tt>s</tt>-th zero of the Airy function Bi(x).
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="4.3"></a> Zeros of Derivatives of Airy Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_zero_Ai_deriv(s)
+
+<p>
+Computes the location of the <tt>s</tt>-th zero of the Airy function
+derivative Ai&#8217;(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::airy_zero_Bi_deriv(s)
+
+<p>
+Computes the location of the <tt>s</tt>-th zero of the Airy function
+derivative Bi&#8217;(x).
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="5"></a> Bessel Functions</h2>
+<h3><a href="../.././index.html"name="5.1"></a> Regular Cylindrical Bessel Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_J0(x)
+
+<p>
+Computes the regular cylindrical Bessel function of zeroth order, J_0(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_J1(x)
+
+<p>
+Computes the regular cylindrical Bessel function of first order, J_1(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Jn(n, x)
+
+<p>
+Computes the regular cylindrical Bessel function of order <tt>n</tt>,
+J_n(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Jn_array(nmin, nmax, x)
+
+<p>
+Computes the values of the regular cylindrical Bessel functions J_n(x) for
+n from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and returns the results as
+a <tt>GSL::Vector</tt> object. The values are computed using recurrence
+relations, for efficiency, and therefore may differ slightly from the exact
+values.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.2"></a> Irregular Cylindrical Bessel Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Y0(x)
+
+<p>
+Computes the irregular cylindrical Bessel function of zeroth order, Y_0(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Y1(x)
+
+<p>
+Computes the irregular cylindrical Bessel function of first order, Y_1(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Yn(n, x)
+
+<p>
+Computes the irregular cylindrical Bessel function of order <tt>n</tt>,
+Y_n(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Yn_array(nmin, nmax, x)
+
+<p>
+Computes the values of the irregular cylindrical Bessel functions Y_n(x)
+for n from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and returns the
+results as a <tt>GSL::Vector</tt> object. The values are computed using
+recurrence relations, for efficiency, and therefore may differ slightly
+from the exact values.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.3"></a> Regular Modified Cylindrical Bessel Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_I0(x)
+
+<p>
+Computes the regular modified cylindrical Bessel function of zeroth order,
+I_0(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_I1(x)
+
+<p>
+Computes the regular modified cylindrical Bessel function of first order,
+I_1(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_In(n, x)
+
+<p>
+Computes the regular modified cylindrical Bessel function of order
+<tt>n</tt>, I_n(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_In_array(nmin, nmax, x)
+
+<p>
+Computes the values of the regular modified cylindrical Bessel functions
+I_n(x) for n from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and returns the
+results as a <tt>GSL::Vector</tt> object. The start of the range
+<tt>nmin</tt> must be positive or zero. The values are computed using
+recurrence relations, for efficiency, and therefore may differ slightly
+from the exact values.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_I0_scaled(x)
+
+<p>
+Computes the scaled regular modified cylindrical Bessel function of zeroth
+order, exp(-|x|) I_0(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_I1_scaled(x)
+
+<p>
+Computes the scaled regular modified cylindrical Bessel function of first
+order, exp(-|x|)I_1(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_In_scaled(n, x)
+
+<p>
+Computes the scaled regular modified cylindrical Bessel function of order
+<tt>n</tt>, exp(-|x|) I_n(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_In_scaled_array(nmin, nmax, x)
+
+<p>
+Computes the values of the scaled regular modified cylindrical Bessel
+functions exp(-|x|) I_n(x) for n from <tt>nmin</tt> to <tt>nmax</tt>
+inclusive, and returns the results as a <tt>GSL::Vector</tt> object. The
+start of the range <tt>nmin</tt> must be positive or zero. The values are
+computed using recurrence relations, for efficiency, and therefore may
+differ slightly from the exact values.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.4"></a> Irregular Modified Cylindrical Bessel Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_K0(x)
+
+<p>
+Computes the irregular modified cylindrical Bessel function of zeroth
+order, K_0(x), for x &gt; 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_K1(x)
+
+<p>
+Computes the irregular modified cylindrical Bessel function of first order,
+K_1(x), for x &gt; 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Kn(n, x)
+
+<p>
+Computes the irregular modified cylindrical Bessel function of order
+<tt>n</tt>, K_n(x), for x &gt; 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Kn_array(nmin, nmax, x)
+
+<p>
+Computes the values of the irregular modified cylindrical Bessel functions
+K_n(x) for n from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and returns the
+results as a <tt>GSL::Vector</tt> object. The start of the range
+<tt>nmin</tt> must be positive or zero. The domain of the function is
+<tt>x&gt;0</tt>. The values are computed using recurrence relations, for
+efficiency, and therefore may differ slightly from the exact values.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_K0_scaled(x)
+
+<p>
+Computes the scaled irregular modified cylindrical Bessel function of
+zeroth order exp(x) K_0(x) for x&gt;0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_K1_scaled(x)
+
+<p>
+Computes the scaled irregular modified cylindrical Bessel function of first
+order exp(x) K_1(x) for x&gt;0
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Kn_scaled(n, x)
+
+<p>
+Computes the scaled irregular modified cylindrical Bessel function of order
+<tt>n</tt>, exp(x) K_n(x), for x&gt;0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Kn_scaled_array(nmin, nmax, x)
+
+<p>
+Computes the values of the scaled irregular cylindrical Bessel functions
+exp(x) K_n(x) for n from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and
+returns the results as a <tt>GSL::Vector</tt> object. The start of the
+range nmin must be positive or zero. The domain of the function is x&gt;0.
+The values are computed using recurrence relations, for efficiency, and
+therefore may differ slightly from the exact values.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.5"></a> Regular Spherical Bessel Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_j0(x)
+
+<p>
+Computes the regular spherical Bessel function of zeroth order, j0(x) =
+sin(x)/x.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_j1(x)
+
+<p>
+Computes the regular spherical Bessel function of first order, j1(x) =
+(sin(x)/x - cos(x))/x.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_j2(x)
+
+<p>
+Computes the regular spherical Bessel function of second order, j2(x) =
+((3/x^2 - 1)sin(x) - 3cos(x)/x)/x.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_jl(l, x)
+
+<p>
+Computes the regular spherical Bessel function of order l, j_l(x), for l
+&gt;= 0 and x &gt;= 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_jl_array(lmax, x)
+
+<p>
+Computes the values of the regular spherical Bessel functions j_l(x) for l
+from 0 to <tt>lmax</tt> inclusive for lmax &gt;= 0 and x &gt;= 0, and
+returns the results as a <tt>GSL::Vector</tt> object. The values are
+computed using recurrence relations, for efficiency, and therefore may
+differ slightly from the exact values.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_jl_steed_array(lmax, x)
+
+<p>
+This method uses Steed&#8216;s method to compute the values of the regular
+spherical Bessel functions j_l(x) for l from 0 to <tt>lmax</tt> inclusive
+for <tt>lmax</tt> &gt;= 0 and x &gt;= 0, and returns the results as a
+<tt>GSL::Vector</tt> object. The Steed/Barnett algorithm is described in
+Comp. Phys. Comm. 21, 297 (1981). Steed&#8216;s method is more stable than
+the recurrence used in the other functions but is also slower.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.6"></a> Irregular Spherical Bessel Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_y0(x)
+
+<p>
+Computes the irregular spherical Bessel function of zeroth order, y_0(x) =
+-cos(x)/x.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_y1(x)
+
+<p>
+Computes the irregular spherical Bessel function of first order, y_1(x) =
+-(cos(x)/x + sin(x))/x.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_y2(x)
+
+<p>
+Computes the irregular spherical Bessel function of second order, y_2(x) =
+(-3/x^3 + 1/x)cos(x) - (3/x^2)sin(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_yl(l, x)
+
+<p>
+Computes the irregular spherical Bessel function of order <tt>l</tt>,
+y_l(x), for l &gt;= 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_yl_array(lmax, x)
+
+<p>
+This method computes the values of the irregular spherical Bessel functions
+y_l(x) for l from 0 to <tt>lmax</tt> inclusive for <tt>lmax &gt;= 0</tt>),
+and returns the results as a <tt>GSL::Vector</tt> object. The values are
+computed using recurrence relations, for efficiency, and therefore may
+differ slightly from the exact values.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.7"></a> Regular Modified Spherical Bessel Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_i0_scaled(x)
+
+<p>
+Computes the scaled regular modified spherical Bessel function of zeroth
+order, exp(-|x|) i_0(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_i1_scaled(x)
+
+<p>
+Computes the scaled regular modified spherical Bessel function of first
+order, exp(-|x|) i_1(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_i2_scaled(x)
+
+<p>
+Computes the scaled regular modified spherical Bessel function of second
+order, exp(-|x|) i_2(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_il_scaled(l, x)
+
+<p>
+Computes the scaled regular modified spherical Bessel function of order
+<tt>l</tt>, exp(-|x|) i_l(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_il_scaled_array(lmax, x)
+
+<p>
+This routine computes the values of the scaled regular modified cylindrical
+Bessel functions exp(-|x|) i_l(x) for l from 0 to <tt>lmax</tt> inclusive
+for <tt>lmax &gt;= 0</tt>, and returns the results as a
+<tt>GSL::Vector</tt> object. The values are computed using recurrence
+relations, for efficiency, and therefore may differ slightly from the exact
+values.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.8"></a> Irregular Modified Spherical Bessel Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_k0_scaled(x)
+
+<p>
+Computes the scaled irregular modified spherical Bessel function of zeroth
+order, exp(-|x|) k_0(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_k1_scaled(x)
+
+<p>
+Computes the scaled irregular modified spherical Bessel function of first
+order, exp(-|x|) k_1(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_k2_scaled(x)
+
+<p>
+Computes the scaled irregular modified spherical Bessel function of second
+order, exp(-|x|) k_2(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_kl_scaled(l, x)
+
+<p>
+Computes the scaled irregular modified spherical Bessel function of order
+<tt>l</tt>, exp(-|x|) k_l(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_kl_scaled_array(lmax, x)
+
+<p>
+This routine computes the values of the scaled irregular modified
+cylindrical Bessel functions exp(-|x|) k_l(x) for l from 0 to <tt>lmax</tt>
+inclusive for <tt>lmax &gt;= 0</tt>, and returns the results as a
+<tt>GSL::Vector</tt> object. The values are computed using recurrence
+relations, for efficiency, and therefore may differ slightly from the exact
+values.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.9"></a> Regular Bessel Function - Fractional Order</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Jnu(nu, x)
+
+<p>
+Computes the regular cylindrical Bessel function of fractional order
+<tt>nu</tt>, J_nu(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_sequence_Jnu_e(nu, v)
+
+</li>
+<li>GSL::Sf::bessel_sequence_Jnu_e(nu, mode, v)
+
+<p>
+These compute the regular cylindrical Bessel function of fractional order
+nu, J_nu(x), evaluated at a series of x values. The <tt>GSL::Vector</tt>
+object <tt>v</tt> contains the x values. They are assumed to be strictly
+ordered and positive. The vector is over-written with the values of
+J_nu(x_i).
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.10"></a> Irregular Bessel Functions - Fractional Order</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Ynu(nu, x)
+
+<p>
+Computes the irregular cylindrical Bessel function of fractional order
+<tt>nu</tt>, Y_nu(x).
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.11"></a> Regular Modified Bessel Functions - Fractional Order</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Inu(nu, x)
+
+<p>
+Computes the regular modified Bessel function of fractional order
+<tt>nu</tt>, I_nu(x) for x&gt;0, nu&gt;0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Inu_scaled(nu, x)
+
+<p>
+Computes the scaled regular modified Bessel function of fractional order
+<tt>nu</tt>, exp(-|x|) I_nu(x) for x&gt;0, nu&gt;0.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.12"></a> Irregular Modified Bessel Functions - Fractional Order</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Knu(nu, x)
+
+<p>
+Computes the irregular modified Bessel function of fractional order
+<tt>nu</tt>, K_nu(x) for x&gt;0, nu&gt;0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_lnKnu(nu, x)
+
+<p>
+Computes the logarithm of the irregular modified Bessel function of
+fractional order <tt>nu</tt>, ln(K_nu(x)) for x&gt;0, nu&gt;0
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_Knu_scaled(nu, x)
+
+<p>
+Computes the scaled irregular modified Bessel function of fractional order
+<tt>nu</tt>, exp(+|x|) K_nu(x) for x&gt;0, nu&gt;0.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.13"></a> Zeros of Regular Bessel Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_zero_J0(s)
+
+<p>
+Computes the location of the <tt>s</tt>-th positive zero of the Bessel
+function J_0(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_zero_J1(s)
+
+<p>
+Computes the location of the <tt>s</tt>-th positive zero of the Bessel
+function J_1(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::bessel_zero_Jnu(nu, s)
+
+<p>
+Computes the location of the <tt>s</tt>-th positive zero of the Bessel
+function J_nu(x). The current implementation does not support negative
+values of <tt>nu</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="6"></a> Clausen Functions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::clausen(x)
+
+<p>
+The Clausen function is defined by the following integral,
+</p>
+<pre>
+    Cl_2(x) = - int_0^x dt log(2 sin(t/2))
+</pre>
+<p>
+It is related to the dilogarithm by Cl_2(theta) = Im Li_2(exp(i theta)).
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="7"></a> Coulomb Functions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hydrogenicR_1(Z, r)
+
+<p>
+Computes the lowest-order normalized hydrogenic bound state radial
+wavefunction R_1 := 2Z sqrt{Z} exp(-Z r).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hydrogenicR(n, l, Z, r)
+
+<p>
+Computes the <tt>n</tt>-th normalized hydrogenic bound state radial
+wavefunction,
+</p>
+<pre>
+     R_n := 2 (Z^{3/2}/n^2) sqrt{(n-l-1)!/(n+l)!}exp(-Z r/n) (2Z/n)^l L^{2l+1}_{n-l-1}(2Z/n r).
+</pre>
+<p>
+The normalization is chosen such that the wavefunction psi is given by
+psi(n,l,r) = R_n Y_{lm}.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="7.1"></a> Coulomb Wave Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::coulomb_wave_FG_e(eta, x, L, k)
+
+<p>
+This method computes the coulomb wave functions F_L(eta,x), G_{L-k}(eta,x)
+and their derivatives with respect to x, F&#8216;_L(eta,x)
+G&#8216;_{L-k}(eta,x). The parameters are restricted to <tt>L</tt>, <tt>L-k
+&gt; -1/2</tt>, <tt>x &gt; 0</tt> and integer <tt>k</tt>. Note that
+<tt>L</tt> itself is not restricted to being an integer. The results are
+returned as an array of 7 elements, <tt>[F, G, Fp, Gp, exp_F, exp_G,
+status]</tt>, as <tt>F, G</tt> for the function values, <tt>Fp, Gp</tt> for
+the derivative values, and <tt>exp_F, exp_G</tt> for scaling exponents in
+the case of overflow occurs.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::coulomb_wave_F_array(Lmin, kmax, eta, x)
+
+<p>
+This method computes the function F_L(eta,x) for L = <tt>Lmin &#8230; Lmin
++ kmax</tt> and returns the results as an array of 3 elements,
+<tt>[fc_array, F_exponent, status]</tt>. In the case of overflow, the
+exponent is returned in <tt>F_exponent</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::coulomb_wave_FG_array(Lmin, kmax, eta, x)
+
+<p>
+This method computes the functions F_L(eta,x), G_L(eta,x) for L =
+<tt>Lmin</tt> &#8230; <tt>Lmin + kmax</tt> and returns the results as an
+array of 5 elements, <tt>[fc_array, gc_array, F_exponent, G_exponent,
+status]</tt>. In the case of overflow the exponents are stored in
+<tt>F_exponent</tt> and <tt>G_exponent</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::coulomb_wave_FGp_array(Lmin, kmax, eta, x)
+
+<p>
+This method computes the functions F_L(eta,x), G_L(eta,x) and their
+derivatives F&#8216;_L(eta,x), G&#8216;_L(eta,x) for L = <tt>Lmin</tt>
+&#8230; <tt>Lmin + kmax</tt> and returns the results as an array of 7
+elements, <tt>[fc_array, gc_array, fcp_array, gcp_array, F_exponent,
+G_exponent, status]</tt>. In the case of overflow the exponents are stored
+in <tt>F_exponent</tt> and <tt>G_exponent</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::coulomb_wave_sphF_array(Lmin, kmax, eta, x)
+
+<p>
+This method computes the Coulomb wave function divided by the argument
+F_L(eta, x)/x for L = <tt>Lmin</tt> &#8230; <tt>Lmin + kmax</tt>, and
+returns the results as an array of 3 elememnts, <tt>[fc_array, F_exponent,
+status]</tt>. In the case of overflow the exponent is stored in
+<tt>F_exponent</tt>. This function reduces to spherical Bessel functions in
+the limit <tt>eta</tt> to 0.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="7.2"></a> Coulomb Wave Function Normalization Constant</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::coulomb_CL_e(L, eta)
+
+<p>
+This method computes the Coulomb wave function normalization constant
+C_L(eta) for L &gt; -1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gsl_sf_coulomb_CL_array(Lmin, kmax, eta)
+
+<p>
+This method computes the coulomb wave function normalization constant
+C_L(eta) for L = Lmin &#8230; Lmin + kmax, Lmin &gt; -1.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="8"></a> Coupling Coefficients</h2>
+<p>
+The Wigner 3-j, 6-j and 9-j symbols give the coupling coefficients for
+combined angular momentum vectors. Since the arguments of the standard
+coupling coefficient functions are integer or half-integer, the arguments
+of the following functions are, by convention, integers equal to twice the
+actual spin value. For information on the 3-j coefficients see Abramowitz
+&amp; Stegun, Section 27.9.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::coupling_3j(two_ja, two_jb, two_jc, two_ma, two_mb, two_mc)
+
+<p>
+Computes the Wigner 3-j coefficient,
+</p>
+<pre>
+    ja jb jc
+    ma mb mc
+</pre>
+<p>
+where the arguments are given in half-integer units, <tt>ja = two_ja/2, ma
+= two_ma/2</tt>, etc.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::coupling_6j(two_ja, two_jb, two_jc, two_jd, two_je, two_jf)
+
+<p>
+Computes the Wigner 6-j coefficient,
+</p>
+<pre>
+    ja jb jc
+    jd je jf
+</pre>
+<p>
+where the arguments are given in half-integer units, <tt>ja = two_ja/2, ma
+= two_ma/2</tt>, etc.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::coupling_9j(two_ja, two_jb, two_jc, two_jd, two_je, two_jf,
+two_jg, two_jh, two_ji)
+
+<p>
+Computes the Wigner 9-j coefficient,
+</p>
+<pre>
+    ja jb jc
+    jd je jf
+    jg jh ji
+</pre>
+<p>
+where the arguments are given in half-integer units, <tt>ja = two_ja/2, ma
+= two_ma/2</tt>, etc.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="9"></a> Dawson Function</h2>
+<p>
+The Dawson integral is defined by exp(-x^2) int_0^x dt exp(t^2). A table of
+Dawson&#8216;s integral can be found in Abramowitz &amp; Stegun, Table 7.5.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::dawson(x)
+
+<p>
+This method computes the value of Dawson&#8216;s integral for <tt>x</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="10"></a> Debye Functions</h2>
+<p>
+The Debye functions are defined by the integral D_n(x) = n/x^n int_0^x dt
+(t^n/(e^t - 1)). For further information see Abramowitz &amp; Stegun,
+Section 27.1.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::debye_1(x)
+
+</li>
+<li>GSL::Sf::debye_2(x)
+
+</li>
+<li>GSL::Sf::debye_3(x)
+
+</li>
+<li>GSL::Sf::debye_4(x)
+
+<p>
+These methods Compute the n-th order Debye functions.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="11"></a> Dilogarithm</h2>
+<h3><a href="../.././index.html"name="11.1"></a> Real Argument</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::dilog(x)
+
+<p>
+Computes the dilogarithm for a real argument. In Lewin&#8216;s notation
+this is Li_2(x), the real part of the dilogarithm of a real <tt>x</tt>. It
+is defined by the integral representation Li_2(x) = - Re int_0^x ds
+log(1-s) / s. Note that Im(Li_2(x)) = 0 for x &lt;= 1, and -pi log(x) for x
+&gt; 1.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="11.2"></a> Complex Argument</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::complex_dilog_e(r, theta)
+
+<p>
+This method computes the full complex-valued dilogarithm for the complex
+argument z = r exp(i theta). The result is returned as an array of 2
+elements, <tt>[re, im]</tt>, each of them is a <tt>GSL::Sf::Result</tt>
+object.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="12"></a> Elementary Operations</h2>
+<p>
+The following methods allow for the propagation of errors when combining
+quantities by multiplication.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::multiply_e(x, y)
+
+<p>
+This method multiplies <tt>x</tt> and <tt>y</tt> and returns the product as
+a <tt>GSL::Sf::Result</tt> object.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::multiply_err_e(x, dx, y, dy)
+
+<p>
+This method multiplies <tt>x</tt> and <tt>y</tt> with associated absolute
+errors <tt>dx</tt> and <tt>dy</tt>, and returns the product as a
+<tt>GSL::Sf::Result</tt> object.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="13"></a> Elliptic Integrals</h2>
+<h3><a href="../.././index.html"name="13.1"></a> Legendre Form of Complete Elliptic Integrals</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::ellint_Kcomp(k, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the complete elliptic integral K(k) to the accuracy specified by
+the mode variable <tt>mode</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::ellint_Ecomp(k, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the complete elliptic integral E(k) to the accuracy specified by
+the mode variable <tt>mode</tt>.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="13.2"></a> Legendre Form of Incomplete Elliptic Integrals</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::ellint_F(phi, k, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the incomplete elliptic integral E(phi, k) to the accuracy
+specified by the mode variable <tt>mode</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::ellint_P(phi, k, n, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the incomplete elliptic integral P(phi, k, n) to the accuracy
+specified by the mode variable <tt>mode</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::ellint_D(phi, k, n, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the incomplete elliptic integral D(phi, k, n) which is defined
+through the Carlson form RD(x, y, z) by the following relation,
+</p>
+<pre>
+   D(phi, k, n) = RD (1-sin^2(phi), 1-k^2 sin^2(phi), 1).
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="13.3"></a> Carlson Forms</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::ellint_RC(x, y, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the incomplete elliptic integral RC(x, y) to the accuracy
+specified by the mode variable <tt>mode</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::ellint_RD(x, y, z, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the incomplete elliptic integral RD(x, y, z) to the accuracy
+specified by the mode variable <tt>mode</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::ellint_RF(x, y, z, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the incomplete elliptic integral RF(x, y, z) to the accuracy
+specified by the mode variable <tt>mode</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::ellint_RJ(x, y, z, p, mode = GSL::PREC_DOUBLE)
+
+<p>
+Computes the incomplete elliptic integral RJ(x, y, z, p) to the accuracy
+specified by the mode variable <tt>mode</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="14"></a> Elliptic Functions (Jacobi)</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gsl_sf_elljac(u, m)
+
+</li>
+<li>GSL::Sf::gsl_sf_elljac_e(u, m)
+
+<p>
+These methods compute the Jacobian elliptic functions sn(u|m), cn(u|m),
+dn(u|m) by descending Landen transformations, and returns the result as an
+array of 3 elements.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="15"></a> Error Functions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::erf(x)
+
+<p>
+Computes the error function erf(x) = (2/sqrt(pi)) int_0^x dt exp(-t^2).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::erfc(x)
+
+<p>
+Computes the complementary error function.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::log_erfc(x)
+
+<p>
+Computes the logarithm of the complementary error function log(erfc(x)).
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="15.1"></a> Probability functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::erf_Z(x)
+
+<p>
+Computes the Gaussian probability density function Z(x) = (1/sqrt{2 pi})
+exp(-x^2/2).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::erf_Q(x)
+
+<p>
+Computes the upper tail of the Gaussian probability function Q(x) =
+(1/sqrt{2 pi}) int_x^infty dt exp(-t^2/2).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hazard(x)
+
+<p>
+The hazard function for the normal distribution, also known as the inverse
+Mill&#8216;s ratio, is defined as h(x) = Z(x)/Q(x) = sqrt{2/pi exp(-x^2 /
+2) / erfc(x/sqrt 2)}. It decreases rapidly as x approaches -infty and
+asymptotes to h(x) sim x as x approaches +infty.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="16"></a> Exponential Functions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::exp(x)
+
+</li>
+<li>GSL::Sf::exp_e(x)
+
+<p>
+These methods provide an exponential function exp(x) using GSL semantics
+and error checking.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::exp_e10_e(x)
+
+<p>
+This method computes the exponential exp(x) using the
+<tt>GSL::Sf::Result_e10</tt> type to return a result with extended range.
+This may be useful if the value of exp(x) would overflow the numeric range
+of <tt>double</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::exp_mult(x, y)
+
+</li>
+<li>GSL::Sf::exp_mult_e(x, y)
+
+</li>
+<li>GSL::Sf::exp_mult_e10_e(x, y)
+
+<p>
+Exponentiate <tt>x</tt> and multiply by the factor <tt>y</tt> to return the
+product y exp(x).
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="16.1"></a> Relative Exponential Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::expm1(x)
+
+<p>
+Computes the quantity exp(x)-1 using an algorithm that is accurate for
+small <tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::exprel(x)
+
+<p>
+Computes the quantity (exp(x)-1)/x using an algorithm that is accurate for
+small <tt>x</tt>. For small <tt>x</tt> the algorithm is based on the
+expansion (exp(x)-1)/x = 1 + x/2 + x^2/(2*3) + x^3/(2*3*4) + &#8230; .
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::exprel_2(x)
+
+<p>
+Computes the quantity 2(exp(x)-1-x)/x^2 using an algorithm that is accurate
+for small <tt>x</tt>. For small <tt>x</tt> the algorithm is based on the
+expansion 2(exp(x)-1-x)/x^2 = 1 + x/3 + x^2/(3*4) + x^3/(3*4*5) + &#8230; .
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::exprel_n(n, x)
+
+<p>
+Computes the N-relative exponential, which is the <tt>n</tt>-th
+generalization of the methods <tt>exprel</tt> and <tt>exprel2</tt>. The
+N-relative exponential is given by,
+</p>
+<pre>
+   exprel_N(x) = N!/x^N (exp(x) - sum_{k=0}^{N-1} x^k/k!)
+               = 1 + x/(N+1) + x^2/((N+1)(N+2)) + ...
+               = 1F1 (1,1+N,x)
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="16.2"></a> Exponentiation With Error Estimate</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::exp_err_e(x, dx)
+
+<p>
+Exponentiates <tt>x</tt> with an associated absolute error <tt>dx</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::exp_err_e10_e(x, dx)
+
+<p>
+Exponentiates a quantity <tt>x</tt> with an associated absolute error
+<tt>dx</tt> using the <tt>GSL::Sf::Result_e10</tt> type to return a result
+with extended range.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::exp_mult_err_e(x, dx, y, dy)
+
+<p>
+Computes the product y exp(x) for the quantities <tt>x, y</tt> with
+associated absolute errors <tt>dx, dy</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::exp_mult_err_e10_e(x, dx, y, dy)
+
+<p>
+Computes the product y exp(x) for the quantities <tt>x, y</tt> with
+associated absolute errors <tt>dx, dy</tt> using the
+<tt>GSL::Sf::Result_e10</tt> type to return a result with extended range.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="17"></a> Exponential Integrals</h2>
+<h3><a href="../.././index.html"name="17.1"></a> Exponential Integral</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::expint_E1(x)
+
+<p>
+Computes the exponential integral E_1(x),
+</p>
+<pre>
+     E_1(x) := int_1^infty dt exp(-xt)/t.
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::expint_E2(x)
+
+<p>
+Computes the second-order exponential integral E_2(x),
+</p>
+<pre>
+     E_2(x) := int_1^infty dt exp(-xt)/t^2.
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::expint_En(n, x)
+
+<p>
+Computes the exponential integral E_n(n, x) of order <tt>n</tt>. (&gt;=
+GSL-1.10)
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="17.2"></a> Ei(x)</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::expint_Ei(x)
+
+<p>
+Computes the exponential integral E_i(x),
+</p>
+<pre>
+     Ei(x) := - PV(int_{-x}^infty dt exp(-t)/t)
+</pre>
+<p>
+where PV denotes the principal value of the integral.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="17.3"></a> Hyperbolic Integrals</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::Shi(x)
+
+<p>
+Computes the integral Shi(x) = int_0^x dt sinh(t)/t.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::Chi(x)
+
+<p>
+Computes the integral
+</p>
+<pre>
+   Chi(x) := Re[ gamma_E + log(x) + int_0^x dt (cosh[t]-1)/t] ,
+</pre>
+<p>
+where gamma_E is the Euler constant (available as the constant
+<tt>GSL::M_EULER</tt>).
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="17.4"></a> Ei_3(x)</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::expint_3(x)
+
+<p>
+Computes the exponential integral Ei_3(x) = int_0^x dt exp(-t^3) for x
+&gt;= 0
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="17.5"></a> Trigonometric Integrals</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::Si(x)
+
+<p>
+Computes the Sine integral Si(x) = int_0^x dt sin(t)/t.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::Ci(x)
+
+<p>
+Computes the Cosine integral Ci(x) = -int_x^infty dt cos(t)/t for x &gt; 0.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="17.6"></a> Arctangent Integral</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::atanint(x)
+
+<p>
+Computes the Arctangent integral AtanInt(x) = int_0^x dt arctan(t)/t.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="18"></a> Fermi-Dirac Functions</h2>
+<h3><a href="../.././index.html"name="18.1"></a> Complete Fermi-Dirac Integrals</h3>
+<p>
+The complete Fermi-Dirac integral F_j(x) is given by,
+</p>
+<pre>
+    F_j(x)   := (1/r Gamma(j+1)) int_0^infty dt (t^j / (exp(t-x) + 1))
+</pre>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::fermi_dirac_m1(x)
+
+<p>
+Computes the complete Fermi-Dirac integral with an index of -1. This
+integral is given by F_{-1}(x) = e^x / (1 + e^x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::fermi_dirac_0(x)
+
+<p>
+Computes the complete Fermi-Dirac integral with an index of 0. This
+integral is given by F_0(x) = ln(1 + e^x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::fermi_dirac_1(x)
+
+<p>
+Compute the complete Fermi-Dirac integral with an index of 1, F_1(x) =
+int_0^infty dt (t /(exp(t-x)+1)).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::fermi_dirac_2(x)
+
+<p>
+Computes the complete Fermi-Dirac integral with an index of 2, F_2(x) =
+(1/2) int_0^infty dt (t^2 /(exp(t-x)+1)).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::fermi_dirac_int(j, x)
+
+<p>
+Computes the complete Fermi-Dirac integral with an integer index of
+<tt>j</tt>, F_j(x) = (1/Gamma(j+1)) int_0^infty dt (t^j /(exp(t-x)+1)).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::fermi_dirac_mhalf(x)
+
+<p>
+Computes the complete Fermi-Dirac integral F_{-1/2}(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::fermi_dirac_half(x)
+
+<p>
+Computes the complete Fermi-Dirac integral F_{1/2}(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::fermi_dirac_3half(x)
+
+<p>
+Computes the complete Fermi-Dirac integral F_{3/2}(x).
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="18.2"></a> Incomplete Fermi-Dirac Integrals</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::fermi_dirac_inc_0(x, b)
+
+<p>
+Computes the incomplete Fermi-Dirac integral with an index of zero,
+F_0(x,b) = ln(1 + e^{b-x}) - (b-x).
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="19"></a> Gamma Function</h2>
+<p>
+The Gamma function is defined by the following integral,
+</p>
+<pre>
+   Gamma(x) = int_0^infty dt  t^{x-1} exp(-t)
+</pre>
+<p>
+Further information on the Gamma function can be found in Abramowitz &amp;
+Stegun, Chapter 6.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gamma(x)
+
+<p>
+Computes the Gamma function, subject to <tt>x</tt> not being a negative
+integer. The function is computed using the real Lanczos method. The
+maximum value of <tt>x</tt> such that Gamma(x) is not considered an
+overflow is given by the constant <tt>GSL::Sf::GAMMA_XMAX</tt> and is
+171.0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lngamma(x)
+
+<p>
+Computes the logarithm of the Gamma function, log(Gamma(x)), subject to
+<tt>x</tt> not a being negative integer. For x&lt;0 the real part of
+log(Gamma(x)) is returned, which is equivalent to log(|Gamma(x)|). The
+function is computed using the real Lanczos method.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lngamma_sgn_e(x)
+
+<p>
+Computes the sign of the gamma function and the logarithm its magnitude,
+subject to <tt>x</tt> not being a negative integer, and returns the result
+as an array of 2 elements, <tt>[result, sng]</tt>. The function is computed
+using the real Lanczos method. The value of the gamma function can be
+reconstructed using the relation Gamma(x) = sgn * exp(result).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gammastar(x)
+
+<p>
+Computes the regulated Gamma Function Gamma^*(x) for x &gt; 0. The
+regulated gamma function is given by,
+</p>
+<pre>
+   Gamma^*(x) = Gamma(x)/(sqrt{2 pi} x^{(x-1/2)} exp(-x))
+              = (1 + (1/12x) + ...)  for x -&gt; infty
+</pre>
+<p>
+and is a useful suggestion of Temme.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gammainv(x)
+
+<p>
+Computes the reciprocal of the gamma function, 1/Gamma(x) using the real
+Lanczos method.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::ngamma_complex_e(zr, zi)
+
+<p>
+These method compute log(Gamma(z)) for complex z = zr + i zi and z not a
+negative integer, using the complex Lanczos method. The result is returned
+as an array of 2 elements, <tt>[lnr, arg, status]</tt>, where lnr =
+log|Gamma(z)| and arg = arg(Gamma(z)) in (-pi,pi]. Note that the phase part
+(arg) is not well-determined when |z| is very large, due to inevitable
+roundoff in restricting to (-pi,pi]. This will result in a
+<tt>GSL::ELOSS</tt> error when it occurs. The absolute value part (lnr),
+however, never suffers from loss of precision.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::taylorcoeff(n, x)
+
+<p>
+Computes the Taylor coefficient x^n / n! for x &gt;= 0, n &gt;= 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::fact(n)
+
+<p>
+Computes the factorial n!. The factorial is related to the Gamma function
+by n! = Gamma(n+1).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::doublefact(n)
+
+<p>
+Computes the double factorial n!! = n(n-2)(n-4)&#8230; .
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lnfact(n)
+
+<p>
+Computes the logarithm of the factorial of <tt>n</tt>, log(n!). The
+algorithm is faster than computing ln(Gamma(n+1)) via
+<tt>GSL::Sf::lngamma</tt> for n &lt; 170, but defers for larger n.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lndoublefact(n)
+
+<p>
+Computes the logarithm of the double factorial of n, log(n!!).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::choose(n, m)
+
+<p>
+Computes the combinatorial factor n choose m = n!/(m!(n-m)!).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lnchoose(n, m)
+
+<p>
+Computes the logarithm of n choose m. This is equivalent to the sum log(n!)
+- log(m!) - log((n-m)!).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::poch(a, x)
+
+<p>
+Computes the Pochhammer symbol (a)_x := Gamma(a + x)/Gamma(a), subject to
+<tt>a</tt> and <tt>a+x</tt> not being negative integers. The Pochhammer
+symbol is also known as the Apell symbol.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lnpoch(a, x)
+
+<p>
+Computes the logarithm of the Pochhammer symbol, log((a)_x) = log(Gamma(a +
+x)/Gamma(a)) for a &gt; 0, a+x &gt; 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lnpoch_sgn_e(a, x)
+
+<p>
+Computes the sign of the Pochhammer symbol and the logarithm of its
+magnitude, subject to a, a+x not being negative integers. The result is
+returned as an array of 2 elements, <tt>[result, sng]</tt>, where result =
+log(|(a)_x|), sgn = sgn((a)_x), and (a)_x := Gamma(a + x)/Gamma(a).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::pochrel(a, x)
+
+<p>
+Computes the relative Pochhammer symbol ((a,x) - 1)/x where (a,x) = (a)_x
+:= Gamma(a + x)/Gamma(a).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gamma_inc_Q(a, x)
+
+<p>
+Computes the normalized incomplete Gamma Function Q(a,x) = 1/Gamma(a)
+int_x^infty dt t^{a-1} exp(-t) for a &gt; 0, x &gt;= 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gamma_inc_P(a, x)
+
+<p>
+Computes the complementary normalized incomplete Gamma Function P(a,x) =
+1/Gamma(a) int_0^x dt t^{a-1} exp(-t) for a &gt; 0, x &gt;= 0. Note that
+Abramowitz &amp; Stegun call P(a,x) the incomplete gamma function (section
+6.5).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gamma_inc(a, x)
+
+<p>
+Computes the incomplete Gamma Function the normalization factor included in
+the previously defined functions: Gamma(a,x) = int_x^infty dt t^{a-1}
+exp(-t) for a real and x &gt;= 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::beta(a, b)
+
+<p>
+Computes the Beta Function, B(a,b) = Gamma(a)Gamma(b)/Gamma(a+b) for a &gt;
+0, b &gt; 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lnbeta(a, b)
+
+<p>
+Computes the logarithm of the Beta Function, log(B(a,b)) for a &gt; 0, b
+&gt; 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::beta_inc(a, b, x)
+
+<p>
+Computes the normalize incomplete Beta function B_x(a,b)/B(a,b) for a &gt;
+0, b &gt; 0, and 0 &lt;= x &lt;= 1.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="20"></a> Gegenbauer Functions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gegenpoly_1(lambda, x)
+
+</li>
+<li>GSL::Sf::gegenpoly_2(lambda, x)
+
+</li>
+<li>GSL::Sf::gegenpoly_3(lambda, x)
+
+<p>
+These methods evaluate the Gegenbauer polynomials C^{(lambda)}_n(x) using
+explicit representations for n =1, 2, 3.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gegenpoly_n(n, lambda, x)
+
+<p>
+This evaluates the Gegenbauer polynomial C^{(lambda)}_n(x) for a specific
+value of <tt>n, lambda, x</tt> subject to lambda &gt; -1/2, n &gt;= 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::gegenpoly_array(nmax, lambda, x)
+
+<p>
+This method computes Gegenbauer polynomials C^{(lambda)}_n(x) for n = 0, 1,
+2, &#8230;, nmax, subject to lambda &gt; -1/2, nmax &gt;= 0. The result is
+returned as a <tt>GSL::Vector</tt> object.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="21"></a> Hypergeometric Functions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_0F1(c, x)
+
+<p>
+Computes the hypergeometric function 0F1(c, x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_1F1_int(m, n, x)
+
+<p>
+Computes the confluent hypergeometric function 1F1(m,n,x) = M(m,n,x) for
+integer parameters <tt>m, n</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_1F1(a, b, x)
+
+<p>
+Computes the confluent hypergeometric function 1F1(a,b,x) = M(a,b,x) for
+general parameters <tt>a, b</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_U_int(m, n, x)
+
+<p>
+Computes the confluent hypergeometric function U(m,n,x) for integer
+parameters <tt>m, n</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_U_int_e10_e(m, n, x)
+
+<p>
+Computes the confluent hypergeometric function U(m,n,x) for integer
+parameters <tt>m, n</tt> using the <tt>GSL::Sf::Result_e10</tt> type to
+return a result with extended range.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_U(a, b, x)
+
+<p>
+Computes the confluent hypergeometric function U(a,b,x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_U_e10_e(a, b, x)
+
+<p>
+Computes the confluent hypergeometric function U(a,b,x) using the
+<tt>GSL::Sf::Result_e10</tt> type to return a result with extended range.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_2F1(a, b, c, x)
+
+</li>
+<li>GSL::Sf::hyperg_2F1_e(a, b, c, x)
+
+<p>
+These methods compute the Gauss hypergeometric function 2F1(a,b,c,x) for
+|x| &lt; 1. If the arguments (a,b,c,x) are too close to a singularity then
+the function can return the error code <tt>GSL::EMAXITER</tt> when the
+series approximation converges too slowly. This occurs in the region of
+x=1, c - a - b = m for integer m.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_2F1_conj(aR, aI, c, x)
+
+<p>
+Computes the Gauss hypergeometric function 2F1(a_R + i a_I, a_R - i a_I, c,
+x) with complex parameters for |x| &lt; 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_2F1_renorm(a, b, c, x)
+
+<p>
+Computes the renormalized Gauss hypergeometric function 2F1(a,b,c,x) /
+Gamma(c) for |x| &lt; 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_2F1_renorm(aR, aI, c, x)
+
+<p>
+Computes the renormalized Gauss hypergeometric function 2F1(a_R + i a_I,
+a_R - i a_I, c, x) / Gamma(c) for |x| &lt; 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hyperg_2F0(a, b, x)
+
+<p>
+Computes the hypergeometric function 2F0(a,b,x). The series representation
+is a divergent hypergeometric series. However, for x &lt; 0 we have
+2F0(a,b,x) = (-1/x)^a U(a,1+a-b,-1/x).
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="22"></a> Laguerre Functions</h2>
+<p>
+The Laguerre polynomials are defined in terms of confluent hypergeometric
+functions as L^a_n(x) = ((a+1)_n / n!) 1F1(-n,a+1,x).
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::laguerre_1(a, x)
+
+</li>
+<li>GSL::Sf::laguerre_2(a, x)
+
+</li>
+<li>GSL::Sf::laguerre_3(a, x)
+
+<p>
+These methods evaluate the generalized Laguerre polynomials L^a_1(x),
+L^a_2(x), L^a_3(x) using explicit representations.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::laguerre_n(n, a, x)
+
+<p>
+This evaluates the generalized Laguerre polynomials L^a_n(x) for a &gt; -1,
+n &gt;= 0.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="23"></a> Lambert W Functions</h2>
+<p>
+Lambert&#8216;s W functions, W(x), are defined to be solutions of the
+equation W(x) exp(W(x)) = x. This function has multiple branches for x &lt;
+0; however, it has only two real-valued branches. We define W_0(x) to be
+the principal branch, where W &gt; -1 for x &lt; 0, and W_{-1}(x) to be the
+other real branch, where W &lt; -1 for x &lt; 0.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lambert_W0(x)
+
+<p>
+This computes the principal branch of the Lambert W function, W_0(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lambert_Wm1(x)
+
+<p>
+This computes the secondary real-valued branch of the Lambert W function,
+W_{-1}(x).
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="24"></a> Legendre Functions and Spherical Harmonics</h2>
+<h3><a href="../.././index.html"name="24.1"></a> Legendre Polynomials</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_P1(x)
+
+</li>
+<li>GSL::Sf::legendre_P2(x)
+
+</li>
+<li>GSL::Sf::legendre_P3(x)
+
+<p>
+These methods evaluate the Legendre polynomials P_l(x) using explicit
+representations for l=1, 2, 3.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_Pl(l, x)
+
+<p>
+This evaluates the Legendre polynomial P_l(x) for a specific value of
+<tt>l, x</tt>, subject to l &gt;= 0, |x| &lt;= 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_Pl_array(lmax, x)
+
+<p>
+This function computes Legendre polynomials P_l(x) for l = 0, &#8230;,
+lmax, and returns the result as a <tt>GSL::Vector</tt> object.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_Q0(x)
+
+<p>
+This computes the Legendre function Q_0(x) for x &gt; -1, x != 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_Q1(x)
+
+<p>
+This computes the Legendre function Q_1(x) for x &gt; -1, x != 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_Ql(l, x)
+
+<p>
+This computes the Legendre function Q_l(x) for x &gt; -1, x != 1 and l
+&gt;= 0.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="24.2"></a> Associated Legendre Polynomials and Spherical Harmonics</h3>
+<p>
+The following functions compute the associated Legendre Polynomials
+P_l^m(x). Note that this function grows combinatorially with <tt>l</tt> and
+can overflow for <tt>l</tt> larger than about 150. There is no trouble for
+small <tt>m</tt>, but overflow occurs when <tt>m</tt> and <tt>l</tt> are
+both large. Rather than allow overflows, these functions refuse to
+calculate P_l^m(x) and return <tt>GSL::EOVRFLW</tt> when they can sense
+that <tt>l</tt> and <tt>m</tt> are too big. If you want to calculate a
+spherical harmonic, then do not use these functions. Instead use
+<tt>GSL::Sf::legendre_sphPlm()</tt> below, which uses a similar recursion,
+but with the normalized functions.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_Plm(l, m, x)
+
+</li>
+<li>GSL::Sf::legendre_Plm_e(l, m, x)
+
+<p>
+These methods compute the associated Legendre polynomial P_l^m(x) for m
+&gt;= 0, l &gt;= m, |x| &lt;= 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_Plm_array(lmax, m, x)
+
+<p>
+This method computes Legendre polynomials P_l^m(x) for m &gt;= 0, l = |m|,
+&#8230;, lmax, |x| &lt;= 1, and returns the result as a
+<tt>GSL::Vector</tt> object.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_sphPlm(l, m, x)
+
+</li>
+<li>GSL::Sf::legendre_sphPlm_e(l, m, x)
+
+<p>
+These methods compute the normalized associated Legendre polynomial
+sqrt{(2l+1)/(4pi)} sqrt{(l-m)!/(l+m)!} P_l^m(x) suitable for use in
+spherical harmonics. The parameters must satisfy m &gt;= 0, l &gt;= m, |x|
+&lt;= 1. Theses routines avoid the overflows that occur for the standard
+normalization of P_l^m(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_sphPlm_array(lmax, m, x)
+
+<p>
+This method computes an array of normalized associated Legendre functions
+sqrt{(2l+1)/(4pi)} sqrt{(l-m)!/(l+m)!} P_l^m(x)$ for m &gt;= 0, l = |m|,
+&#8230;, lmax, |x| &lt;= 1.0, and returns the result as a
+<tt>GSL::Vector</tt> object.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_array_size(lmax, m)
+
+<p>
+This returns the size of resulting array needed for the array versions of
+P_l^m(x), lmax - m + 1.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="24.3"></a> Conical Functions</h3>
+<p>
+The Conical Functions P^mu_{-(1/2)+i lambda}(x), Q^mu_{-(1/2)+i lambda} are
+described in Abramowitz &amp; Stegun, Section 8.12.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::conicalP_half(lambda, x)
+
+<p>
+Computes the irregular Spherical Conical Function P^{1/2}_{-1/2 + i
+lambda}(x) for x &gt; -1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::conicalP_mhalf(lambda, x)
+
+<p>
+Computes the regular Spherical Conical Function P^{-1/2}_{-1/2 + i
+lambda}(x) for x &gt; -1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::conicalP_0(lambda, x)
+
+</li>
+<li>GSL::Sf::conicalP_1(lambda, x)
+
+<p>
+These methods compute the conical function P^0_{-1/2 + i lambda}(x),
+P^1_{-1/2 + i lambda}(x)for x &gt; -1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::conicalP_sph_reg(l, lambda, x)
+
+<p>
+Computes the Regular Spherical Conical Function P^{-1/2-l}_{-1/2 + i
+lambda}(x) for x &gt; -1, l &gt;= -1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::conicalP_cyc_reg(m, lambda, x)
+
+<p>
+Computes the Regular Cylindrical Conical Function P^{-m}_{-1/2 + i
+lambda}(x) for x &gt; -1, m &gt;= -1.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="24.4"></a> Radial Functions for Hyperbolic Space</h3>
+<p>
+The following spherical functions are specializations of Legendre functions
+which give the regular eigenfunctions of the Laplacian on a 3-dimensional
+hyperbolic space H3d. Of particular interest is the flat limit, lambda to
+infty, eta to 0, lambda eta fixed.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_H3d_0(lambda, eta)
+
+<p>
+Computes the zeroth radial eigenfunction of the Laplacian on the
+3-dimensional hyperbolic space, L^{H3d}_0(lambda,eta) := sin(lambda
+eta)/(lambda sinh(eta)) for eta &gt;= 0. In the flat limit this takes the
+form L^{H3d}_0(lambda, eta) = j_0( lambda eta).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_H3d_1(lambda, eta)
+
+<p>
+Computes the first radial eigenfunction of the Laplacian on the
+3-dimensional hyperbolic space, L^{H3d}_1(lambda, eta) := 1/sqrt{lambda^2 +
+1} sin(lambda eta)/(lambda sinh(eta)) (coth(eta) - lambda cot(lambda eta))
+for eta &gt;= 0. In the flat limit this takes the form L^{H3d}_1(lambda,
+eta) = j_1( lambda eta).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_H3d(l, lambda, eta)
+
+<p>
+Computes the <tt>l</tt>-th radial eigenfunction of the Laplacian on the
+3-dimensional hyperbolic space eta &gt;= 0, l &gt;= 0. In the flat limit
+this takes the form L^{H3d}_l(lambda, eta) = j_l(lambda eta).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::legendre_H3d_array(lmax, lambda, eta)
+
+<p>
+This method computes radial eigenfunctions L^{H3d}_l(lambda, eta) for 0
+&lt;= l &lt;= lmax, and returns the result as a <tt>GSL::Vector</tt>
+object.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="25"></a> Logarithm and Related Functions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::log(x)
+
+<p>
+Computes the logarithm of <tt>x</tt>, log(x), for x &gt; 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::log_abs(x)
+
+<p>
+Computes the logarithm of the magnitude of <tt>x</tt>, log(|x|), for x !=
+0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::complex_log_e(zr, zi)
+
+</li>
+<li>GSL::Sf::complex_log_e(z)
+
+<p>
+This method computes the complex logarithm of z = z_r + i z_i. The results
+are returned as an array <tt>[lnr, theta]</tt> such that exp(lnr + i theta)
+= z_r + i z_i, where theta lies in the range [-pi, pi].
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::log_1plusx(x)
+
+<p>
+Computes log(1 + x) for x &gt; -1 using an algorithm that is accurate for
+small x.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::log_1plusx_mx(x)
+
+<p>
+Computes log(1 + x) - x for x &gt; -1 using an algorithm that is accurate
+for small x.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="26"></a> Mathieu functions</h2>
+<p>
+The methods described in this section compute the angular and radial
+Mathieu functions, and their characteristic values. Mathieu functions are
+the solutions of the following two differential equations: The angular
+Mathieu functions ce_r(x,q), se_r(x,q) are the even and odd periodic
+solutions of the first equation, which is known as Mathieu&#8216;s
+equation. These exist only for the discrete sequence of characteristic
+values a=a_r(q) (even-periodic) and a=b_r(q) (odd-periodic).
+</p>
+<p>
+The radial Mathieu functions Mc^{(j)}_{r}(z,q), Ms^{(j)}_{r}(z,q) are the
+solutions of the second equation, which is referred to as Mathieu&#8216;s
+modified equation. The radial Mathieu functions of the first, second, third
+and fourth kind are denoted by the parameter <tt>j</tt>, which takes the
+value 1, 2, 3 or 4.
+</p>
+<p>
+For more information on the Mathieu functions, see Abramowitz and Stegun,
+Chapter 20.
+</p>
+<h3><a href="../.././index.html"name="26.1"></a> Mathieu Function Workspace</h3>
+<p>
+The Mathieu functions can be computed for a single order or for multiple
+orders, using array-based routines.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::Mathieu.alloc(n, qmax)
+
+<p>
+This method returns a workspace for the array versions of the Mathieu
+routines. The arguments <tt>n</tt> and <tt>qmax</tt> specify the maximum
+order and q-value of Mathieu functions which can be computed with this
+workspace.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="26.2"></a> Mathieu Function Characteristic Values</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::mathieu_a(n, q)
+
+</li>
+<li>GSL::Sf::mathieu_a_e(n, q)
+
+</li>
+<li>GSL::Sf::mathieu_b(n, q)
+
+</li>
+<li>GSL::Sf::mathieu_b_e(n, q)
+
+<p>
+These methodss compute the characteristic values a_n(q), b_n(q) of the
+Mathieu functions ce_n(q,x) and se_n(q,x), respectively.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::mathieu_a_array(nmin, nmax, q, work)
+
+</li>
+<li>GSL::Sf::mathieu_b_array(nminm nmax, q, work)
+
+<p>
+These methods compute a series of Mathieu characteristic values a_n(q),
+b_n(q) for n from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and return the
+results as a <tt>GSL::Vector</tt> object.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="26.3"></a> Angular Mathieu Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::mathieu_ce(n, q, x)
+
+</li>
+<li>GSL::Sf::mathieu_ce_e(n, q, x)
+
+</li>
+<li>GSL::Sf::mathieu_se(n, q, x)
+
+</li>
+<li>GSL::Sf::mathieu_se_e(n, q, x)
+
+<p>
+These methods compute the angular Mathieu functions ce_n(q,x) and
+se_n(q,x), respectively.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::mathieu_ce_array(nmin, nmax, q, x, work)
+
+</li>
+<li>GSL::Sf::mathieu_se_array(nmin, nmax, q, x, work)
+
+<p>
+These methods compute a series of the angular Mathieu functions ce_n(q,x)
+and se_n(q,x) of order n from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and
+return the results as a <tt>GSL::Vector</tt> object.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="26.4"></a> Radial Mathieu Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::mathieu_Mc(j, n, q, x)
+
+</li>
+<li>GSL::Sf::mathieu_Mc_e(j, n, q, x)
+
+</li>
+<li>GSL::Sf::mathieu_Ms(j, n, q, x)
+
+</li>
+<li>GSL::Sf::mathieu_Ms_e(j, n, q, x)
+
+<p>
+These methods compute the radial <tt>j</tt>-th kind Mathieu functions
+Mc_n^{(j)}(q,x) and Ms_n^{(j)}(q,x) of order <tt>n</tt>.
+</p>
+<p>
+The allowed values of <tt>j</tt> are 1 and 2. The functions for <tt>j =
+3,4</tt> can be computed as M_n^{(3)} = M_n^{(1)} + iM_n^{(2)} and
+M_n^{(4)} = M_n^{(1)} - iM_n^{(2)}, where M_n^{(j)} = Mc_n^{(j)} or
+Ms_n^{(j)}.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::mathieu_Mc_array(j, nmin, nmax, q, x, work)
+
+</li>
+<li>GSL::Sf::mathieu_Ms_array(j, nmin, nmax, q, x, work)
+
+<p>
+These methods compute a series of the radial Mathieu functions of kind
+<tt>j</tt>, with order from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and
+return the results as a <tt>GSL::Vector</tt> object.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="27"></a> Power Functions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::pow_int(x, n)
+
+</li>
+<li>GSL::Sf::pow_int_e(x, n)
+
+<p>
+These methods compute the power x^n for integer n. The power is computed
+using the minimum number of multiplications. For example, x^8 is computed
+as ((x^2)^2)^2, requiring only 3 multiplications. For reasons of
+efficiency, these functions do not check for overflow or underflow
+conditions.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="28"></a> Psi (Digamma) Function</h2>
+<p>
+The polygamma functions of order <tt>m</tt> defined by psi^{(m)}(x) =
+(d/dx)^m psi(x) = (d/dx)^{m+1} log(Gamma(x)), where psi(x) =
+Gamma&#8217;(x)/Gamma(x) is known as the digamma function.
+</p>
+<h3><a href="../.././index.html"name="28.1"></a> Digamma Function</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::psi_int(n)
+
+<p>
+Computes the digamma function psi(n) for positive integer <tt>n</tt>. The
+digamma function is also called the Psi function.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::psi(x)
+
+<p>
+Computes the digamma function psi(x) for general x, x != 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::psi_1piy(x)
+
+<p>
+Computes the real part of the digamma function on the line 1+i y, Re[psi(1
++ i y)].
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="28.2"></a> Trigamma Function</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::psi_1_int(n)
+
+<p>
+Computes the Trigamma function psi&#8217;(n) for positive integer
+<tt>n</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::psi_1(x)
+
+<p>
+Computes the Trigamma function psi&#8217;(x) for general <tt>x</tt>.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="28.3"></a> Polygamma Function</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::psi_n(m, x)
+
+<p>
+Computes the polygamma function psi^{(m)}(x) for m &gt;= 0, x &gt; 0.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="29"></a> Synchrotron Functions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::synchrotron_1(x)
+
+<p>
+Computes the first synchrotron function x int_x^infty dt K_{5/3}(t) for x
+&gt;= 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::synchrotron_2(x)
+
+<p>
+Computes the second synchrotron function x K_{2/3}(x) for x &gt;= 0.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="30"></a> Transport Functions</h2>
+<p>
+The transport functions J(n,x) are defined by the integral representations
+J(n,x) := int_0^x dt t^n e^t /(e^t - 1)^2.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::transport_2(x)
+
+</li>
+<li>GSL::Sf::transport_3(x)
+
+</li>
+<li>GSL::Sf::transport_4(x)
+
+</li>
+<li>GSL::Sf::transport_5(x)
+
+<p>
+These methods compute the transport function J(n, x), for n = 2, 3, 4, and
+5.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="31"></a> Trigonometric Functions</h2>
+<h3><a href="../.././index.html"name="31.1"></a> Circular Trigonometric Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::sin(x)
+
+</li>
+<li>GSL::Sf::cos(x)
+
+</li>
+<li>GSL::Sf::hypot(x, y)
+
+<p>
+sqrt{x^2 + y^2}
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::sinc(x)
+
+<p>
+sinc(x) = sin(pi x) / (pi x)
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="31.2"></a> Trigonometric Functions for Complex Arguments</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::complex_sin_e(zr, zi)
+
+</li>
+<li>GSL::Sf::complex_sin_e(z)
+
+</li>
+<li>GSL::Sf::complex_cos_e(zr, zi)
+
+</li>
+<li>GSL::Sf::complex_cos_e(z)
+
+</li>
+<li>GSL::Sf::complex_logsin_e(zr, zi)
+
+</li>
+<li>GSL::Sf::complex_logsin_e(z)
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="31.3"></a> Hyperbolic Trigonometric Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::lnsinh(x)
+
+</li>
+<li>GSL::Sf::lncosh(x)
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="31.4"></a> Conversion Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::polar_to_rect(r, theta)
+
+</li>
+<li>GSL::Sf::rect_to_polar(x, y)
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="31.5"></a> Restriction Functions</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::angle_restrict_symm(theta)
+
+<p>
+This forces the angle <tt>theta</tt> to lie in the range (-pi, pi].
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::angle_restrict_pos(theta)
+
+<p>
+This forces the angle <tt>theta</tt> to lie in the range [0, 2pi).
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="31.6"></a> Trigonometric Functions With Error Estimates</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::sin_err(x, dx)
+
+<p>
+Computes the sine of an angle <tt>x</tt> with an associated absolute error
+<tt>dx</tt>, sin(x +- dx).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::cos_err(x, dx)
+
+<p>
+Computes the cosine of an angle <tt>x</tt> with an associated absolute
+error <tt>dx</tt>, cos(x +- dx).
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="32"></a> Zeta Functions</h2>
+<h3><a href="../.././index.html"name="32.1"></a> Riemann Zeta Function</h3>
+<p>
+The Riemann zeta function is defined by the infinite sum zeta(s) =
+sum_{k=1}^infty k^{-s}.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::zeta_int(n)
+
+<p>
+Computes the Riemann zeta function zeta(n) for integer n, n != 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::zeta(s)
+
+<p>
+Computes the Riemann zeta function zeta(s) for arbitrary s, s != 1.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="32.2"></a> Riemann Zeta Function Minus One</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::zetam1_int(n)
+
+<p>
+Computes zeta(n) - 1 for integer n, n != 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::zetam1(s)
+
+<p>
+Computes zeta(s) - 1 for arbitrary s, s != 1.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="32.3"></a> Hurwitz Zeta Function</h3>
+<p>
+The Hurwitz zeta function is defined by zeta(s,q) = sum_0^infty (k+q)^{-s}.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::hzeta(s, q)
+
+<p>
+Computes the Hurwitz zeta function zeta(s,q) for s &gt; 1, q &gt; 0.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="32.4"></a> Eta Function</h3>
+<p>
+The eta function is defined by eta(s) = (1-2^{1-s}) zeta(s).
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::eta_int(n)
+
+<p>
+Computes the eta function eta(n) for integer n.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sf::eta(s)
+
+<p>
+Computes the eta function eta(s) for arbitrary s.
+</p>
+</li>
+</ul>
+<p>
+<a href="poly_rdoc.html">prev</a> <a href="vector_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

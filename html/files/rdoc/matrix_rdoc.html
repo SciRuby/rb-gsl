@@ -1,0 +1,1712 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: matrix.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>matrix.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/matrix.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Matrices</h1>
+<p>
+Contents:
+</p>
+<ol>
+<li><a href="matrix_rdoc.html#1">Class methods</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2">Instance methods</a>
+
+<ol>
+<li><a href="matrix_rdoc.html#2.1">Accessing matrix elements</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.2">Initializing matrix elements</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.3">IO</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.4">Matrix views</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.5">Creating row and column views</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.6">Iterators</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.7">Copying matrices</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.8">Copying rows and columns</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.9">Exchanging rows and columns</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.10">Matrix operations</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.11">Finding maximum and minimum elements of
+matrices</a>
+
+</li>
+<li><a href="matrix_rdoc.html#2.12">Matrix properties</a>
+
+</li>
+</ol>
+</li>
+<li><a href="matrix_rdoc.html#3">NArray</a>
+
+</li>
+<li><a href="matrix_rdoc.html#4">Special matrices</a>
+
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> Class methods</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.alloc(n)
+
+</li>
+<li>GSL::Matrix.alloc(size1, size2)
+
+</li>
+<li>GSL::Matrix.alloc(array)
+
+</li>
+<li>GSL::Matrix.alloc(arrays)
+
+</li>
+<li>GSL::Matrix.alloc( &#8230; )
+
+</li>
+<li>GSL::Matrix[ &#8230; ]
+
+<p>
+These methods create a <tt>GSL::Matrix</tt> object.
+</p>
+</li>
+</ul>
+<ol>
+<li>From arrays
+
+<pre>
+    &gt;&gt; m = GSL::Matrix[[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    =&gt; GSL::Matrix
+    [ 1.000e+00 2.000e+00 3.000e+00
+      4.000e+00 5.000e+00 6.000e+00
+      7.000e+00 8.000e+00 9.000e+00 ]
+</pre>
+</li>
+<li>With an array and rows&amp;cols,
+
+<pre>
+       m = GSL::Matrix.alloc([1, 2, 3, 4, 5, 6, 7, 8, 9], 3, 3)
+</pre>
+</li>
+<li>With Range objects,
+
+<pre>
+       &gt;&gt; m = GSL::Matrix.alloc(1..3, 4..6, 7..9)
+       [ 1.000e+00 2.000e+00 3.000e+00
+         4.000e+00 5.000e+00 6.000e+00
+         7.000e+00 8.000e+00 9.000e+00 ]
+       &gt;&gt; m2 = GSL::Matrix[1..6, 2, 3]
+       [ 1.000e+00 2.000e+00 3.000e+00
+         4.000e+00 5.000e+00 6.000e+00 ]
+</pre>
+</li>
+</ol>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.eye(n)
+
+</li>
+<li>GSL::Matrix.eye(n1, n2)
+
+<p>
+Examples:
+</p>
+<pre>
+  &gt;&gt; m = GSL::Matrix::Int.eye(3)
+  =&gt; GSL::Matrix::Int
+  [ 1 0 0
+    0 1 0
+    0 0 1 ]
+  &gt;&gt; m = GSL::Matrix::Int.eye(2, 4)
+  =&gt; GSL::Matrix::Int
+  [ 1 0 0 0
+    0 1 0 0 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.identity(n)
+
+</li>
+<li>GSL::Matrix.scalar(n)
+
+</li>
+<li>GSL::Matrix.unit(n)
+
+</li>
+<li>GSL::Matrix.I(n)
+
+<p>
+Create diagonal matrices of dimensions n*n, of values 1.0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.diagonal(a, b, c, &#8230;)
+
+</li>
+<li>GSL::Matrix.diagonal(Ary)
+
+</li>
+<li>GSL::Matrix.diagonal(Range)
+
+</li>
+<li>GSL::Matrix.diagonal(Vector)
+
+<p>
+Creates a diagonal matrix of given elements.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  &gt;&gt; GSL::Matrix::Int.diagonal(1..4)
+  =&gt; GSL::Matrix::Int
+  [ 1 0 0 0
+    0 2 0 0
+    0 0 3 0
+    0 0 0 4 ]
+  &gt;&gt; GSL::Matrix::Int.diagonal(2, 5, 3)
+  =&gt; GSL::Matrix::Int
+  [ 2 0 0
+    0 5 0
+    0 0 3 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.ones(n)
+
+</li>
+<li>GSL::Matrix.ones(n1, n2)
+
+<p>
+Create a matrix of all the elements 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.zeros(n)
+
+</li>
+<li>GSL::Matrix.zeros(n1, n2)
+
+<p>
+Create a matrix of all the elements 1.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.indgen(n1, n2, start=0, step=1)
+
+<p>
+Example:
+</p>
+<pre>
+  &gt;&gt; m = GSL::Matrix::Int.indgen(3, 5)
+  =&gt; GSL::Matrix::Int
+  [  0  1  2  3  4
+     5  6  7  8  9
+    10 11 12 13 14 ]
+  &gt;&gt; m = GSL::Matrix::Int.indgen(3, 5, 2)
+  =&gt; GSL::Matrix::Int
+  [  2  3  4  5  6
+     7  8  9 10 11
+    12 13 14 15 16 ]
+  &gt;&gt; m = GSL::Matrix.indgen(2, 3, 4.5, 6.7)
+  =&gt; GSL::Matrix
+  [  4.500e+00  1.120e+01  1.790e+01
+     2.460e+01  3.130e+01  3.800e+01 ]
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="1.1"></a> NOTE:</h3>
+<p>
+Matrix dimensions are limited within the range of Fixnum. For 32-bit CPU,
+the maximum of matrix dimension is 2^30 ~ 1e9.
+</p>
+<h2><a href="../.././index.html"name="2"></a> Instance Methods</h2>
+<h3><a href="../.././index.html"name="2.1"></a> Accessing matrix elements</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#size1
+
+<p>
+Returns the number of rows of matrix <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#size2
+
+<p>
+Returns the number of columns of matrix <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#shape
+
+<p>
+Returns the number of rows and columns as an array.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+   &gt;&gt; m.size1
+   =&gt; 3
+   &gt;&gt; m.size2
+   =&gt; 5
+   &gt;&gt; m.shape
+   =&gt; [3, 5]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#set(args, val)
+
+</li>
+<li>GSL::Matrix#[args]=val
+
+<p>
+If <tt>args</tt> is empty and <tt>val</tt> is an Array (i.e. called with
+just a single Array argument), the Array&#8216;s elements are taken as row
+contents. Each given row must have exactly the same number of elements as
+the Matrix has columns, but the number of rows given need not match the
+Matrix&#8216;s row count. Extra given rows are ignored, while Matrix rows
+beyond those given are not affected. Otherwise, if <tt>args</tt> is empty,
+behaves as <tt>set_all(val)</tt>.
+</p>
+<p>
+If <tt>args</tt> is an Array and val is not, the first two elements of
+<tt>args</tt> must be Fixnums which specify the row and column of the
+element that will be set to the value of <tt>val</tt>. This special case
+exists to allow values returned by Matrix#max_index and Matrix#min_index to
+be used as indexes.
+</p>
+<p>
+If <tt>args</tt> are two <tt>Fixnums</tt>, <tt>i</tt> and <tt>j</tt>, this
+method sets the <tt>(i,j)</tt>-th element of the matrix <tt>self</tt> to
+<tt>val</tt>.
+</p>
+<p>
+If <tt>args</tt> is a single <tt>Fixnum</tt>, <tt>i</tt>, this method sets
+the element at row <tt>i</tt>/<tt>size2</tt>, column
+<tt>i</tt>%<tt>size2</tt> to <tt>val</tt>.
+</p>
+<p>
+For <tt>set</tt>, if <tt>args</tt> is empty and <tt>val</tt> is an
+<tt>Array</tt> of <tt>Arrays</tt>, the contents of <tt>self</tt> are set
+row by row from the elements (i.e. <tt>Arrays</tt>) of <tt>val</tt>.
+</p>
+<p>
+All other <tt>args</tt> specify a submatrix (as with <tt>submatrix</tt>)
+whose elements are assigned from <tt>val</tt>. In this case, <tt>val</tt>
+can be an <tt>Array</tt> whose elements will be assigned to the rows of the
+submatrix, <tt>Range</tt> whose elements will be assigned to the elements
+of the submatrix, <tt>GSL::Matrix</tt> whose elements will be assigned to
+the elements of the submatrix, or <tt>Numeric</tt> that will be assigned to
+all elements of the submatrix.
+</p>
+<p>
+NOTE: GSL does not provide a matrix copy function that properly copies data
+across overlapping memory regions, so watch out if assigning to part of a
+Matrix from another part of itself (see <tt>set</tt> example of <a
+href="vector_rdoc.html">GSL::Vector</a>).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#get(args)
+
+</li>
+<li>GSL::Matrix#[args]
+
+<p>
+If <tt>args</tt> are two <tt>Fixnums</tt>, <tt>i</tt> and <tt>j</tt>, this
+method returns the <tt>(i,j)</tt>-th element of the matrix <tt>self</tt>.
+</p>
+<p>
+If <tt>args</tt> is a single <tt>Fixnum</tt>, <tt>i</tt>, this method
+returns the element at row <tt>i</tt>/<tt>size2</tt>, column
+<tt>i</tt>%<tt>size2</tt>.
+</p>
+<p>
+All other forms of <tt>args</tt> are treated as with
+<tt>Matrix#submatrix</tt> and a View object is returned.
+</p>
+<p>
+NOTE: The behavior of the single <tt>Fixnum</tt> argument case is different
+from earlier versions (&lt; 1.11.2) of Ruby/GSL. These earlier versions
+returned a <tt>Vector::View</tt> in this case, thereby allowing element
+(<tt>i</tt>,<tt>j</tt>) to be accessed as <tt>m[i][j]</tt>. THIS FORM IS NO
+LONGER SUPPORTED as of Ruby/GSL 1.11.2. Existing occurences of this
+construct will need to be replaced with the backwards compatible and more
+efficient <tt>m[i,j]</tt> or, equivalent to the old and less efficient
+form, <tt>m[i,nil][j]</tt>. For GSL::Matrix, the old form will now raise a
+<tt>NoMethodError</tt> because <tt>Float</tt> has no <tt>#[]</tt> method.
+For GSL::Matrix::Int, however, the old form will return a single bit from
+an element of the matrix because <tt>Fixnum</tt> and <tt>Bignum</tt> have a
+<tt>#[]</tt> method that allows access to the number&#8216;s individual
+bits.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &gt;&gt; m = GSL::Matrix[1..9, 3, 3]
+  =&gt; GSL::Matrix
+  [ 1.000e+00 2.000e+00 3.000e+00
+    4.000e+00 5.000e+00 6.000e+00
+    7.000e+00 8.000e+00 9.000e+00 ]
+  &gt;&gt; m[1, 2]
+  =&gt; 6.0
+  &gt;&gt; m[1, 2] = 123     # m.set(1, 2, 123)
+  =&gt; 123
+  &gt;&gt; m
+  =&gt; GSL::Matrix
+  [ 1.000e+00 2.000e+00 3.000e+00
+    4.000e+00 5.000e+00 1.230e+02
+    7.000e+00 8.000e+00 9.000e+00 ]
+  &gt;&gt; m[1]
+  =&gt; 2.0
+  &gt;&gt; m.set([3, 5, 2], [4, 5, 3], [7, 1, 5])
+  =&gt; GSL::Matrix
+  [ 3.000e+00 5.000e+00 2.000e+00
+    4.000e+00 5.000e+00 3.000e+00
+    7.000e+00 1.000e+00 5.000e+00 ]
+  &gt;&gt; m[1][1]   # old/unsupported form
+  NoMethodError: undefined method `[]' for 2.0:Float
+          from (irb):8
+  &gt;&gt; m = GSL::Matrix::Int[1..9, 3, 3]
+  =&gt; GSL::Matrix::Int
+  [ 1 2 3
+    4 5 6
+    7 8 9 ]
+  &gt;&gt; m[1]      # m[0,1]
+  =&gt; 2
+  &gt;&gt; m[1][0]   # Bit 0 of m[0,1]
+  =&gt; 0
+  &gt;&gt; m[1][1]   # Bit 1 of m[0,1]
+  =&gt; 1
+  &gt;&gt; m[1][2]   # Bit 2 of m[0,1]
+  =&gt; 0
+  &gt;&gt; m[1][3]   # Bit 3 of m[0,1]
+  =&gt; 0
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#to_a
+
+<p>
+Converts the <tt>Matrix</tt> <tt>self</tt> to a Ruby <tt>Array</tt> of
+<tt>Arrays</tt>.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  &gt;&gt; GSL::Matrix.eye(3).to_a
+  =&gt; [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.2"></a> Initializing matrix elements</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#set_all(x)
+
+<p>
+This method sets all the elements of the matrix <tt>self</tt> to the value
+x.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#set_zero
+
+<p>
+This method sets all the elements of the matrix to zero.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#set_identity
+
+<p>
+This method sets the elements of the matrix to the corresponding elements
+of the identity matrix, i.e. a unit diagonal with all off-diagonal elements
+zero. This applies to both square and rectangular matrices.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.3"></a> IO</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#fwrite(io)
+
+</li>
+<li>GSL::Matrix#fwrite(filename)
+
+</li>
+<li>GSL::Matrix#fread(io)
+
+</li>
+<li>GSL::Matrix#fread(filename)
+
+</li>
+<li>GSL::Matrix#fprintf(io, format = &quot;%e&quot;)
+
+</li>
+<li>GSL::Matrix#fprintf(filename, format = &quot;%e&quot;)
+
+</li>
+<li>GSL::Matrix#fscanf(io)
+
+</li>
+<li>GSL::Matrix#fscanf(filename)
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.4"></a> Matrix views</h3>
+<p>
+The <tt>GSL::Matrix::View</tt> class is defined to be used as
+&quot;references&quot; to matrices. The <tt>Matrix::View</tt> class is a
+subclass of <tt>Matrix</tt>, and an instance of the <tt>View</tt> class
+created by slicing a <tt>Matrix</tt> object can be used same as the
+original matrix. The <tt>View</tt> object shares the data with the original
+matrix, i.e. any changes in the elements of the <tt>View</tt> object affect
+to the original.
+</p>
+<p>
+The primary means of generating <tt>Matrix::View</tt> objects is with
+<tt>GSL::Matrix#submatrix</tt> (or its alias <tt>GSL::Matrix#view</tt>).
+Many forms are supported and they are documented here individually. All
+forms return a <tt>Matrix::View</tt> unless otherwise documented. In the
+list below, the parameter name indicates the type of the parameter:
+<tt>i</tt>, <tt>row</tt>, <tt>col</tt>, <tt>len</tt>, <tt>len1</tt>, and
+<tt>len2</tt> are <tt>Fixnums</tt>; <tt>rows</tt> and <tt>cols</tt> are
+<tt>Ranges</tt>.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix()
+
+<p>
+View covers all rows and all columns.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(i)
+
+<p>
+View covers single element at row <tt>i</tt>/<tt>size2</tt>, column
+<tt>i</tt>%<tt>size2</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(nil,nil)
+
+<p>
+View covers all rows and all columns.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(nil,cols)
+
+<p>
+View covers all rows with columns specified by <tt>cols</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(nil,col)
+
+<p>
+Returns a <tt>Vector::Col::View</tt> for the column <tt>col</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(rows, nil)
+
+<p>
+View covers rows specified by <tt>rows</tt> and all columns.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(rows, cols)
+
+<p>
+View covers rows specified by <tt>rows</tt>, columns specified by
+<tt>cols</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(rows, col)
+
+<p>
+Returns a <tt>Vector::Col::View</tt> for column <tt>col</tt>, rows
+<tt>rows</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(row, nil)
+
+<p>
+Returns a <tt>Vector::View</tt> for row <tt>row</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(row, cols)
+
+<p>
+Returns a <tt>Vector::View</tt> for row <tt>row</tt>, columns
+<tt>cols</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(row, col)
+
+<p>
+View covers a single element at row <tt>row</tt>, column <tt>col</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(nil, col, len)
+
+<p>
+View covers all rows and <tt>len</tt> columns starting at column
+<tt>col</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(rows, col, len)
+
+<p>
+View covers <tt>rows</tt> rows and <tt>len</tt> columns starting at column
+<tt>col</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(row, len, nil)
+
+<p>
+View covers <tt>len</tt> rows starting at row <tt>row</tt> and all columns.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(row, len, cols)
+
+<p>
+View covers <tt>len</tt> rows starting at row <tt>row</tt> and
+<tt>cols</tt> columns.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#submatrix(row, col, len1, len2)
+
+<p>
+View covers <tt>len1</tt> rows starting at row <tt>row</tt> and
+<tt>len2</tt> columns starting at column <tt>col</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#matrix_view(n1, n2)
+
+<p>
+This creates a <tt>Matrix::View</tt> object from the vector <tt>self</tt>.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+   &gt;&gt; v = Vector[1..9]
+   =&gt; GSL::Vector
+   [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 6.000e+00 7.000e+00 8.000e+00 9.000e+00 ]
+   &gt;&gt; m = v.matrix_view(3, 3)
+   =&gt; GSL::Matrix::View
+   [ 1.000e+00 2.000e+00 3.000e+00
+     4.000e+00 5.000e+00 6.000e+00
+     7.000e+00 8.000e+00 9.000e+00 ]
+   &gt;&gt; m[1][1] = 99.99
+   =&gt; 99.99
+   &gt;&gt; v
+   =&gt; GSL::Vector
+   [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 9.999e+01 6.000e+00 7.000e+00 8.000e+00 9.000e+00 ]
+   &gt;&gt;
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.5"></a> Creating row and column views</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#row(i)
+
+<p>
+These methods return <tt>i</tt>-th row of the matrix as a
+<tt>Vector::View</tt> object. Any modifications to the
+<tt>Vectror::View</tt> object returned by this method propagate to the
+original matrix.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#column(i)
+
+</li>
+<li>GSL::Matrix#col(i)
+
+<p>
+These methods return a vector view of the <tt>j</tt>-th column of the
+matrix.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#subrow(i, offset, n)
+
+<p>
+Returns a vector view of the <tt>i</tt>-th row of the matrix <tt>self</tt>
+beginning at <tt>offset</tt> elements past the first column and containing
+<tt>n</tt> elements. (&gt;= GSL-1.10)
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#subcolumn(j, offset, n)
+
+<p>
+Returns a vector view of the <tt>j</tt>-th column of the matrix
+<tt>self</tt> beginning at <tt>offset</tt> elements past the first row and
+containing <tt>n</tt> elements. (&gt;= GSL-1.10)
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#diag
+
+</li>
+<li>GSL::Matrix#diagonal
+
+<p>
+This method returns a <tt>Vector::View</tt> of the diagonal of the matrix.
+The matrix is not required to be square. For a rectangular matrix the
+length of the diagonal is the same as the smaller dimension of the matrix.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; m = GSL::Matrix[1..9, 3, 3]
+  =&gt; GSL::Matrix
+  [ 1.000e+00 2.000e+00 3.000e+00
+    4.000e+00 5.000e+00 6.000e+00
+    7.000e+00 8.000e+00 9.000e+00 ]
+  &gt;&gt; m.row(1)
+  =&gt; GSL::Vector::View
+  [ 4.000e+00 5.000e+00 6.000e+00 ]
+  &gt;&gt; m.col(2)
+  =&gt; GSL::Vector::Col::View
+  [ 3.000e+00
+    6.000e+00
+    9.000e+00 ]
+  &gt;&gt; m.col(2)[2] = 123
+  =&gt; 123
+  &gt;&gt; m
+  =&gt; GSL::Matrix
+  [ 1.000e+00 2.000e+00 3.000e+00
+    4.000e+00 5.000e+00 6.000e+00
+    7.000e+00 8.000e+00 1.230e+02 ]
+  &gt;&gt; m.diagonal
+  =&gt; GSL::Vector::View:
+  [ 1.000e+00 5.000e+00 1.230e+02 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#subdiagonal(k)
+
+<p>
+Returns a vector view view of the <tt>k</tt>-th subdiagonal of the matrix
+<tt>self</tt>. The matrix is not required to be square. The diagonal of the
+matrix corresponds to k = 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#superdiagonal(k)
+
+<p>
+Returns a vector view of the <tt>k</tt>-th superdiagonal of the matrix
+<tt>self</tt>. The matrix is not required to be square. The diagonal of the
+matrix corresponds to k = 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#to_v
+
+<p>
+Creates a <tt>GSL::Vector</tt> object &quot;flattening&quot; the rows of
+the matrix <tt>self</tt>.
+</p>
+<pre>
+    &gt;&gt; m = GSL::Matrix[1..6, 2, 3]
+    =&gt; GSL::Matrix
+    [ 1.000e+00 2.000e+00 3.000e+00
+      4.000e+00 5.000e+00 6.000e+00 ]
+    &gt;&gt; m.to_v
+    =&gt; GSL::Vector
+    [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 6.000e+00 ]
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.6"></a> Iterators</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#each_row
+
+<p>
+Iterator for each of rows in the matrix <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#each_col
+
+<p>
+Iterator for each of columns in the matrix <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#collect { |item| .. }
+
+</li>
+<li>GSL::Matrix#map { |item| .. }
+
+</li>
+<li>GSL::Matrix#collect! { |item| .. }
+
+</li>
+<li>GSL::Matrix#map! { |item| .. }
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.7"></a> Copying matrices</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#clone
+
+</li>
+<li>GSL::Matrix#duplicate
+
+<p>
+Create a new matrix of the same elements.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.memcpy(dest, src)
+
+</li>
+<li>GSL::Matrix.swap(dest, src)
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.8"></a> Copying rows and columns</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#get_row(i)
+
+<p>
+This method returns a new vector (not a view) which contains the elements
+of the <tt>i</tt>-th row of the matrix <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#get_col(j)
+
+<p>
+This method returns a new vector (not a view) which contains the elements
+of the <tt>j</tt>-th column of the matrix <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#set_row(i, v)
+
+<p>
+This method copies the elements of the vector <tt>v</tt> into the
+<tt>i</tt>-th row of the matrix. The length of the vector must be the same
+as the length of the row.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#set_col(j, v)
+
+<p>
+This method copies the elements of the vector <tt>v</tt> into the
+<tt>j</tt>-th column of the matrix. The length of the vector must be the
+same as the length of the column.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.9"></a> Exchanging rows and columns</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#swap_rows!(i, j)
+
+<p>
+This method exchanges the <tt>i</tt>-th and <tt>j</tt>-th rows of the
+matrix <tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#swap_rows(i, j)
+
+<p>
+This method creates a new matrix exchanging the <tt>i</tt>-th and
+<tt>j</tt>-th rows of the matrix <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#swap_columns!(i, j)
+
+<p>
+This method exchanges the <tt>i</tt>-th and <tt>j</tt>-th columns of the
+matrix <tt>in-place</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#swap_columns(i, j)
+
+<p>
+This method creates a new matrix exchanging the <tt>i</tt>-th and
+<tt>j</tt>-th columns of the matrix <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#swap_rowcol(i, j)
+
+<p>
+This method exchanges the <tt>i</tt>-th row and <tt>j</tt>-th column of the
+matrix. The matrix must be square for this operation to be possible.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#transpose_memcpy
+
+</li>
+<li>GSL::Matrix#transpose
+
+<p>
+This method returns a matrix of a transpose of the matrix. The matrix
+<tt>self</tt> is not modified.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#transpose!
+
+<p>
+This method replaces the matrix by its transpose by copying the elements of
+the matrix <tt>in-place</tt>. The matrix must be square for this operation
+to be possible.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#reverse_rows
+
+</li>
+<li>GSL::Matrix#flipud
+
+<p>
+Example:
+</p>
+<pre>
+    &gt;&gt; m = GSL::Matrix::Int[1..9, 3, 3]
+    =&gt; GSL::Matrix::Int
+    [ 1 2 3
+      4 5 6
+      7 8 9 ]
+    &gt;&gt; m.reverse_rows
+    =&gt; GSL::Matrix::Int
+    [ 7 8 9
+      4 5 6
+      1 2 3 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#reverse_columns
+
+</li>
+<li>GSL::Matrix#fliplr
+
+<p>
+Example:
+</p>
+<pre>
+    &gt;&gt; m = GSL::Matrix::Int[1..9, 3, 3]
+    =&gt; GSL::Matrix::Int
+    [ 1 2 3
+      4 5 6
+      7 8 9 ]
+    &gt;&gt; m.reverse_rows.reverse_columns
+    =&gt; GSL::Matrix::Int
+    [ 9 8 7
+      6 5 4
+      3 2 1 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#rot90(n = 1)
+
+<p>
+Return a copy of <tt>self</tt> with the elements rotated counterclockwise
+in 90-degree increments. The argument <tt>n</tt> is optional, and specifies
+how many 90-degree rotations are to be applied (the default value is 1).
+Negative values of <tt>n</tt> rotate the matrix in a clockwise direction.
+</p>
+<p>
+Examples:
+</p>
+<pre>
+  &gt;&gt; m = GSL::Matrix::Int[1..6, 2, 3]
+  =&gt; GSL::Matrix::Int
+  [ 1 2 3
+    4 5 6 ]
+  &gt;&gt; m.rot90
+  =&gt; GSL::Matrix::Int
+  [ 3 6
+    2 5
+    1 4 ]
+  &gt;&gt; m.rot90(2)
+  =&gt; GSL::Matrix::Int
+  [ 6 5 4
+    3 2 1 ]
+  &gt;&gt; m.rot90(3)
+  =&gt; GSL::Matrix::Int
+  [ 4 1
+    5 2
+    6 3 ]
+  &gt;&gt; m.rot90(-1)
+  =&gt; GSL::Matrix::Int
+  [ 4 1
+    5 2
+    6 3 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#upper
+
+<p>
+This creates a matrix copying the upper half part of the matrix
+<tt>self</tt>, including the diagonal elements.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#lower
+
+<p>
+This creates a matrix copying the lower half part of the matrix
+<tt>self</tt>, including the diagonal elements.
+</p>
+<pre>
+     &gt;&gt; m = GSL::Matrix[1..9, 3, 3]
+     =&gt; GSL::Matrix
+     [ 1.000e+00 2.000e+00 3.000e+00
+       4.000e+00 5.000e+00 6.000e+00
+       7.000e+00 8.000e+00 9.000e+00 ]
+     &gt;&gt; m.upper
+     =&gt; GSL::Matrix
+     [ 1.000e+00 2.000e+00 3.000e+00
+       0.000e+00 5.000e+00 6.000e+00
+       0.000e+00 0.000e+00 9.000e+00 ]
+     &gt;&gt; m.lower
+     =&gt; GSL::Matrix
+     [ 1.000e+00 0.000e+00 0.000e+00
+       4.000e+00 5.000e+00 0.000e+00
+       7.000e+00 8.000e+00 9.000e+00 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#horzcat(other)
+
+<p>
+Returns the horizontal concatenation of <tt>self</tt> and <tt>other</tt>.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; require(&quot;gsl&quot;)
+  =&gt; true
+  &gt;&gt; a = GSL::Matrix::Int[1..4, 2, 2]
+  =&gt; GSL::Matrix::Int
+  [ 1 2
+    3 4 ]
+  &gt;&gt; b = GSL::Matrix::Int[5..10, 2, 3]
+  =&gt; GSL::Matrix::Int
+  [  5  6  7
+     8  9 10 ]
+  &gt;&gt; a.horzcat(b)
+  =&gt; GSL::Matrix::Int
+  [  1  2  5  6  7
+     3  4  8  9 10 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#vertcat(other)
+
+<p>
+Returns the vertical concatenation of <tt>self</tt> and <tt>other</tt>.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; a = GSL::Matrix::Int[1..4, 2, 2]
+  =&gt; GSL::Matrix::Int
+  [ 1 2
+    3 4 ]
+  &gt;&gt; b = GSL::Matrix::Int[5..10, 3, 2]
+  =&gt; GSL::Matrix::Int
+  [  5  6
+     7  8
+     9 10 ]
+  &gt;&gt; a.vertcat(b)
+  =&gt; GSL::Matrix::Int
+  [  1  2
+     3  4
+     5  6
+     7  8
+     9 10 ]
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.10"></a> Matrix operations</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#add(b)
+
+</li>
+<li>GSL::Matrix#+(b)
+
+<p>
+This method adds the elements of matrix <tt>b</tt> to the elements of the
+matrix. The two matrices must have the same dimensions.
+</p>
+<p>
+If <tt>b</tt> is a scalar, these methods add it to all the elements of the
+matrix <tt>self</tt> (equivalent to the method <tt>add_constant</tt>).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#sub(b)
+
+</li>
+<li>GSL::Matrix#-(b)
+
+<p>
+This method subtracts the elements of matrix <tt>b</tt> from the elements
+of the matrix. The two matrices must have the same dimensions.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#mul_elements(b)
+
+<p>
+This method multiplies the elements of the matrix by the elements of matrix
+<tt>b</tt>. The two matrices must have the same dimensions. If <tt>b</tt>
+is a scalar, the method <tt>scale</tt> (see below) is called.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#div_elements(b)
+
+<p>
+This method divides the elements of the matrix by the elements of matrix
+<tt>b</tt>. The two matrices must have the same dimensions.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#scale(x)
+
+<p>
+This method multiplies the elements of the matrix by the constant factor
+<tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#add_constant(x)
+
+<p>
+This method adds the constant value <tt>x</tt> to the elements of the
+matrix.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#*(b)
+
+<p>
+Matrix multiplication.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+   &gt;&gt; a = GSL::Matrix[1..4, 2, 2]
+   =&gt; GSL::Matrix
+   [ 1.000e+00 2.000e+00
+     3.000e+00 4.000e+00 ]
+   &gt;&gt; b = GSL::Matrix[5..8, 2, 2]
+   =&gt; GSL::Matrix
+   [ 5.000e+00 6.000e+00
+     7.000e+00 8.000e+00 ]
+   &gt;&gt; a*b
+   =&gt; GSL::Matrix
+   [ 1.900e+01 2.200e+01
+     4.300e+01 5.000e+01 ]
+   &gt;&gt; a*2
+   =&gt; GSL::Matrix
+   [ 2.000e+00 4.000e+00
+     6.000e+00 8.000e+00 ]
+   &gt;&gt; c = Vector[1, 2]
+   =&gt; GSL::Vector
+   [ 1.000e+00 2.000e+00 ]
+   &gt;&gt; a*c.col
+   =&gt; GSL::Vector::Col
+   [ 5.000e+00
+     1.100e+01 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#/(b)
+
+<p>
+If <tt>b</tt> is a scalar or a <tt>Matrix</tt>, this method calculates the
+element-by-element divisions. If a <tt>Vector::Col</tt> is given, this
+method solves the linear system by using LU decomposition.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+    &gt;&gt; m = GSL::Matrix[1..4, 2, 2]
+    =&gt; GSL::Matrix
+    [ 1.000e+00 2.000e+00
+      3.000e+00 4.000e+00 ]
+    &gt;&gt; m/3
+    =&gt; GSL::Matrix
+    [ 3.333e-01 6.667e-01         &lt;--- 1/3, 2/3
+      1.000e+00 1.333e+00 ]       &lt;--- 3/3, 4/3
+    &gt;&gt; b = Vector[5, 6].col
+    =&gt; GSL::Vector::Col
+    [ 5.000e+00
+      6.000e+00 ]
+    &gt;&gt; x = m/b          &lt;--- Solve m (x,y) = b
+    =&gt; GSL::Vector::Col
+    [ -4.000e+00                  &lt;--- x = -4
+      4.500e+00 ]                 &lt;--- y = 4.5
+    &gt;&gt; m*x
+    =&gt; GSL::Vector::Col
+    [  5.000e+00
+       6.000e+00 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#^(b)
+
+<p>
+Computes matrix power of <tt>b</tt>.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.11"></a> Finding maximum and minimum elements of matrices</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#max
+
+</li>
+<li>GSL::Matrix#min
+
+<p>
+These methods return the max/min value in the matrix.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#minmax
+
+<p>
+This method returns a two elements array [min, max], which contains the
+minimum and the maximum values in the matrix.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#max_index
+
+</li>
+<li>GSL::Matrix#min_index
+
+<p>
+These methods return the index of the max/min value in the matrix.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#minmax_index
+
+<p>
+This method returns a two elements array [imin, imax], which contains the
+indices of the minimum and the maximum value in the matrix.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.12"></a> Matrix properties</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#isnull
+
+<p>
+This returns 1 if all the elements of the matrix <tt>self</tt> are zero,
+and 0 otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#isnull?
+
+<p>
+This returns <tt>true</tt> if all the elements of the matrix <tt>self</tt>
+are zero, and <tt>false</tt> otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#ispos
+
+</li>
+<li>GSL::Matrix#ispos?
+
+<p>
+(GSL-1.9 or later) Return 1 (true) if all the elements of the matrix
+<tt>self</tt> are strictly positive, and 0 (false) otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#isneg
+
+</li>
+<li>GSL::Matrix#isneg?
+
+<p>
+(GSL-1.9 or later) Return 1 (true) if all the elements of the matrix
+<tt>self</tt> are strictly negative, and 0 (false) otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#isnonneg
+
+</li>
+<li>GSL::Matrix#isnonneg?
+
+<p>
+(GSL-1.10 or later) Return 1 (true) if all the elements of the matrix
+<tt>self</tt> are non-negative , and 0 (false) otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#any
+
+<p>
+Returns a Vector of ones and zeros with each element indicating whether any
+of the elements of the corresponding column of the matrix are nonzero.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#all
+
+<p>
+Behaves like the method <tt>any</tt>, except that it returns 1 only if all
+the elements of the matrix.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL:Matrix#trace
+
+<p>
+This returns trace of the matrix <tt>self</tt>, the sum of the diagonal
+elements.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL:Matrix#norm
+
+<p>
+Returns matrix norm, sqrt(sum_{ij} m_{ij}^2).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#sgn
+
+</li>
+<li>GSL::Matrix#signum
+
+<p>
+Creates a new matrix, with elements +1 if <tt>x_i,j</tt> &gt; 0, -1 if
+<tt>x_i,j</tt> &lt; 0, otherwise 0. Note that this definition gives the
+signum of NaN as 0 rather than NaN.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL:Matrix#abs
+
+</li>
+<li>GSL:Matrix#fabs
+
+<p>
+Example:
+</p>
+<pre>
+  &gt;&gt; m = GSL::Matrix::Int[-5..4, 3, 3]
+  =&gt; GSL::Matrix::Int
+  [ -5 -4 -3
+    -2 -1  0
+     1  2  3 ]
+  &gt;&gt; m.abs
+  =&gt; GSL::Matrix::Int
+  [ 5 4 3
+    2 1 0
+    1 2 3 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#equal?(other, eps = 1e-10)
+
+</li>
+<li>GSL::Matrix#==(other, eps = 1e-10)
+
+<p>
+Returns <tt>true</tt> if the matrices have same size and elements equal to
+absolute accurary <tt>eps</tt> for all the indices, and <tt>false</tt>
+otherwise.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> NArray</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix#to_na
+
+<p>
+The Matrix object <tt>self</tt> is converted into an <tt>NMatrix</tt>
+object. The matrix data are copied to newly allocated memory.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>NArray#to_gm
+
+</li>
+<li>NArray#to_gslm
+
+<p>
+Convert <tt>NArray</tt> object into <tt>GSL::Matrix</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>NArray#to_gm_view
+
+</li>
+<li>NArray#to_gslm_view
+
+<p>
+A <tt>GSL::Matrix::View</tt> object is created from the NArray object
+<tt>na</tt>. The data of <tt>na</tt> are not copied, thus any modifications
+to the View object affect on the original NArray object <tt>na</tt>. The
+View object can be used as a reference to the NMatrix object.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Special matrices</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.hirbert(n)
+
+<p>
+Returns the Hilbert matrix of order <tt>n</tt>. The <tt>ij</tt> element is
+defined as 1/(i+j+1).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.invhirbert(n)
+
+<p>
+Returns the inverse of a Hilbert matrix of order <tt>n</tt>.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; m = GSL::Matrix.hilbert(4)
+  =&gt; GSL::Matrix
+  [ 1.000e+00 5.000e-01 3.333e-01 2.500e-01
+    5.000e-01 3.333e-01 2.500e-01 2.000e-01
+    3.333e-01 2.500e-01 2.000e-01 1.667e-01
+    2.500e-01 2.000e-01 1.667e-01 1.429e-01 ]
+  &gt;&gt; invm = GSL::Matrix.invhilbert(4)
+  =&gt; GSL::Matrix
+  [ 1.600e+01 -1.200e+02 2.400e+02 -1.400e+02
+    -1.200e+02 1.200e+03 -2.700e+03 1.680e+03
+    2.400e+02 -2.700e+03 6.480e+03 -4.200e+03
+    -1.400e+02 1.680e+03 -4.200e+03 2.800e+03 ]
+  &gt;&gt; invm2 = m.inv
+  =&gt; GSL::Matrix
+  [ 1.600e+01 -1.200e+02 2.400e+02 -1.400e+02
+    -1.200e+02 1.200e+03 -2.700e+03 1.680e+03
+    2.400e+02 -2.700e+03 6.480e+03 -4.200e+03
+    -1.400e+02 1.680e+03 -4.200e+03 2.800e+03 ]
+  &gt;&gt; m*invm
+  =&gt; GSL::Matrix
+  [ 1.000e+00 5.684e-14 -2.274e-13 1.137e-13
+    1.998e-15 1.000e+00 -4.663e-14 3.109e-14
+    3.664e-15 -7.239e-14 1.000e+00 -1.017e-13
+    -2.442e-15 1.510e-14 -8.038e-14 1.000e+00 ]
+  &gt;&gt; m*invm2
+  =&gt; GSL::Matrix
+  [ 1.000e+00 0.000e+00 0.000e+00 0.000e+00
+    -1.554e-15 1.000e+00 -2.389e-14 8.349e-15
+    1.295e-15 3.405e-15 1.000e+00 -6.957e-15
+    1.110e-15 1.916e-14 1.707e-14 1.000e+00 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.pascal(n)
+
+<p>
+Returns the Pascal matrix of order <tt>n</tt>, created from Pascal&#8216;s
+triangle.
+</p>
+<pre>
+  &gt;&gt; GSL::Matrix::Int.pascal(10)
+  =&gt; GSL::Matrix::Int
+  [     1     1     1     1     1     1     1     1     1     1
+        1     2     3     4     5     6     7     8     9    10
+        1     3     6    10    15    21    28    36    45    55
+        1     4    10    20    35    56    84   120   165   220
+        1     5    15    35    70   126   210   330   495   715
+        1     6    21    56   126   252   462   792  1287  2002
+        1     7    28    84   210   462   924  1716  3003  5005
+        1     8    36   120   330   792  1716  3432  6435 11440
+        1     9    45   165   495  1287  3003  6435 12870 24310
+        1    10    55   220   715  2002  5005 11440 24310 48620 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.vandermonde(v)
+
+<p>
+Creates a Vendermonde matrix from a vector or an array <tt>v</tt>.
+</p>
+<pre>
+   &gt;&gt; GSL::Matrix.vander([1, 2, 3, 4])
+   =&gt; GSL::Matrix
+   [ 1.000e+00 1.000e+00 1.000e+00 1.000e+00
+     8.000e+00 4.000e+00 2.000e+00 1.000e+00
+     2.700e+01 9.000e+00 3.000e+00 1.000e+00
+     6.400e+01 1.600e+01 4.000e+00 1.000e+00 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.toeplitz(v)
+
+<p>
+Creates a Toeplitz matrix from a vector or an array <tt>v</tt>.
+</p>
+<pre>
+    &gt;&gt; GSL::Matrix::Int.toeplitz([1, 2, 3, 4, 5])
+    =&gt; GSL::Matrix::Int
+    [ 1 2 3 4 5
+      2 1 2 3 4
+      3 2 1 2 3
+      4 3 2 1 2
+      5 4 3 2 1 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Matrix.circulant(v)
+
+<p>
+Creates a circulant matrix from a vector or an array <tt>v</tt>.
+</p>
+<pre>
+    &gt;&gt; GSL::Matrix::Int.circulant([1, 2, 3, 4])
+    =&gt; GSL::Matrix::Int
+    [ 4 1 2 3
+      3 4 1 2
+      2 3 4 1
+      1 2 3 4 ]
+</pre>
+</li>
+</ul>
+<p>
+<a href="vector_rdoc.html">prev</a> <a href="perm_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

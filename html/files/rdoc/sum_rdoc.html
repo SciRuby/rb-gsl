@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: sum.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>sum.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/sum.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Series Acceleration</h1>
+<p>
+In Ruby/GSL, series acceleration functions are provided as singleton
+methods for the <tt>GSL::Sum::Levin_u, Levin_utrunc</tt> classes, and
+methods of an object of the <a href="vector_rdoc.html">GSL::Vector</a>
+class.
+</p>
+<h2><a href="../.././index.html"name="1"></a> Modules and classes</h2>
+<ul>
+<li>GSL
+
+<ul>
+<li>Sum (Module)
+
+<ul>
+<li>Levin_u (Class)
+
+</li>
+<li>Levin_utrunc (Class)
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Methods</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Sum::Levin_u.alloc(size)
+
+</li>
+<li>GSL::Sum::Levin_utrunc.alloc(size)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sum::Levin_u.accel(v)
+
+<p>
+This method takes the terms of a series in vector <tt>v</tt> and computes
+the extrapolated limit of the series using a Levin u-transform. This
+returns an array of <tt>[sum, abserr, sum_plain, terms_used]</tt>, where
+<tt>sum</tt> is the extrapolated sum, <tt>abserr</tt> is an estimate of the
+absolute error, and <tt>sum_plain</tt> is the actual term-by-term sum.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sum::Levin_utrunc.accel(v)
+
+<p>
+This method takes the terms of a series in vector <tt>v</tt> and computes
+the extrapolated limit of the series using a Levin u-transform. This
+returns an array of <tt>[sum, abserr_trunc, sum_plain, terms_used]</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Sum::Levin_u#accel(v)
+
+</li>
+<li>GSL::Sum::Levin_u#sum_plain
+
+</li>
+<li>GSL::Sum::Levin_u#terms_used
+
+</li>
+<li>GSL::Sum::Levin_utrunc#accel(v)
+
+</li>
+<li>GSL::Sum::Levin_utrunc#sum_plain
+
+</li>
+<li>GSL::Sum::Levin_utrunc#terms_used
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#accel
+
+</li>
+<li>GSL::Vector#accel_sum
+
+</li>
+<li>GSL::Vector#sum_accel
+
+</li>
+<li>GSL::Vector#sum
+
+<p>
+These calculate the &quot;extrapolated&quot; sum of the terms contained in
+a GSL::Vector object, using a Levin u-transform. The returned values is a
+Ruby array with 4 elements, as [<tt>sum_accel, err, sum_plain,
+terms_used</tt>], where <tt>sum_accel</tt> is the extraplated sum,
+<tt>err</tt> is the absolute error, <tt>sum_plain</tt> is the term-by-term
+sum, and <tt>terms_used</tt> is the number of terms actually used in the
+calculation.
+</p>
+</li>
+</ul>
+<p>
+<a href="cheb_rdoc.html">prev</a> <a href="dht_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

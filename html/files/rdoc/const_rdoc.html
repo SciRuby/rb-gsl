@@ -1,0 +1,1134 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: const.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>const.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/const.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Physical Constants</h1>
+<p>
+The GSL physical constants are defined as Ruby constants under the modules
+</p>
+<ul>
+<li><tt>GSL::CONST::MKSA</tt> (MKSA unit)
+
+</li>
+<li><tt>GSL::CONST:CGSM</tt> (CGSM unit)
+
+</li>
+<li><tt>GSL::CONST:NUM</tt> (Dimension-less constants)
+
+</li>
+</ul>
+<p>
+For example, the GSL C constant <tt>GSL_CONST_MKSA_SPEED_OF_LIGHT</tt> is
+represented by a Ruby constant,
+</p>
+<pre>
+      GSL_CONST_MKSA_SPEED_OF_LIGHT  ---&gt; GSL::CONST::MKSA::SPEED_OF_LIGHT
+</pre>
+<p>
+The following lists a part of the constants. Most of the constants are
+defined both in the modules <tt>GSL::CONST::MKSA</tt> and
+<tt>GSL::CONST::CGSM</tt>. See also the <a
+href="http://www.gnu.org/software/gsl/manual/gsl-ref_37.html#SEC479"target="_top">GSL
+reference</a>
+</p>
+<p>
+Contents:
+</p>
+<ol>
+<li><a href="const_rdoc.html#1">Fundamental Constants</a>
+
+</li>
+<li><a href="const_rdoc.html#2">Astronomy and Astrophysics</a>
+
+</li>
+<li><a href="const_rdoc.html#3">Atomic and Nuclear Physics</a>
+
+</li>
+<li><a href="const_rdoc.html#4">Measurement of Time</a>
+
+</li>
+<li><a href="const_rdoc.html#5">Imperial Units</a>
+
+</li>
+<li><a href="const_rdoc.html#6">Nautical Units</a>
+
+</li>
+<li><a href="const_rdoc.html#7">Printers Units</a>
+
+</li>
+<li><a href="const_rdoc.html#8">Volume</a>
+
+</li>
+<li><a href="const_rdoc.html#9">Mass and Weight</a>
+
+</li>
+<li><a href="const_rdoc.html#10">Thermal Energy and Power</a>
+
+</li>
+<li><a href="const_rdoc.html#11">Pressure</a>
+
+</li>
+<li><a href="const_rdoc.html#12">Viscosity</a>
+
+</li>
+<li><a href="const_rdoc.html#13">Light and Illumination</a>
+
+</li>
+<li><a href="const_rdoc.html#14">Radioactivity</a>
+
+</li>
+<li><a href="const_rdoc.html#15">Force and Energy</a>
+
+</li>
+<li><a href="const_rdoc.html#16">Prefixes</a>
+
+</li>
+<li><a href="const_rdoc.html#17">Examples</a>
+
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> Fundamental Constants</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::SPEED_OF_LIGHT
+
+<p>
+The speed of light in vacuum, c.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::VACUUM_PERMEABILITY
+
+<p>
+The permeability of free space, \mu (not defined in GSL::CONST::CGSM).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::VACUUM_PERMITTIVITY
+
+<p>
+The permittivity of free space, \epsilon_0 (not defined in
+GSL::CONST::CGSM).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::PLANCKS_CONSTANT_H
+
+<p>
+Planck&#8216;s constant, <tt>h</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::PLANCKS_CONSTANT_HBAR
+
+<p>
+Planck&#8216;s constant divided by 2\pi, \hbar.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::AVOGADRO
+
+<p>
+Avogadro&#8216;s number
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::FARADAY
+
+<p>
+The molar charge of 1 Faraday.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::BOLTZMANN
+
+<p>
+The Boltzmann constant, k.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::STEFAN_BOLTZMANN_CONSTANT
+
+<p>
+The Stefan-Boltzmann constant, \sigma.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::MOLAR_GAS
+
+<p>
+The molar gas constant, R_0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::STANDARD_GAS_VOLUME
+
+<p>
+The standard gas volume, V_0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::GAUSS
+
+<p>
+The magnetic field of 1 Gauss.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Astronomy and Astrophysics</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::ASTRONOMICAL_UNIT
+
+<p>
+The length of 1 astronomical unit (mean earth-sun distance), AU.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::GRAVITATIONAL_CONSTANT
+
+<p>
+The gravitational constant, G.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::LIGHT_YEAR
+
+<p>
+The distance of 1 light-year, ly.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::PARSEC
+
+<p>
+The distance of 1 parsec, pc.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::GRAV_ACCEL
+
+<p>
+The standard gravitational acceleration on Earth, g.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::SOLAR_MASS
+
+<p>
+The mass of the Sun.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Atomic and Nuclear Physics</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::ELECTRON_CHARGE
+
+<p>
+The charge of the electron, e.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::CGSM::ELECTRON_CHARGE_ESU
+
+<p>
+The charge of the electron, e, in esu unit (not defined in
+GSL::CONST::MKSA).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::ELECTRON_VOLT
+
+<p>
+The energy of 1 electron volt, eV.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::UNIFIED_ATOMIC_MASS
+
+<p>
+The unified atomic mass, amu.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::MASS_ELECTRON
+
+<p>
+The mass of the electron, m_e.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::MASS_MUON
+
+<p>
+The mass of the muon, m_\mu.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::MASS_PROTON
+
+<p>
+The mass of the proton, m_p.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::MASS_NEUTRON
+
+<p>
+The mass of the proton, m_n.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::FINE_STRUCTURE
+
+<p>
+The electromagnetic fine structure constant alpha.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::RYDBERG
+
+<p>
+The Rydberg constant, Ry, in units of energy. This is related to the
+Rydberg inverse wavelength R by Ry = h c R.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::THOMSON_CROSS_SECTION
+
+<p>
+The Thomson cross section of photon scattering by electrons.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::BOHR_RADIUS
+
+<p>
+The Bohr radius, a_0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::ANGSTROM
+
+<p>
+The length of 1 angstrom.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::BARN
+
+<p>
+The area of 1 barn.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::BOHR_MAGNETON
+
+<p>
+The Bohr Magneton, mu_B.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::NUCLEAR_MAGNETON
+
+<p>
+The Nuclear Magneton, mu_N.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::ELECTRON_MAGNETIC_MOMENT
+
+<p>
+The absolute value of the magnetic moment of the electron, mu_e. The
+physical magnetic moment of the electron is negative.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::PROTON_MAGNETIC_MOMENT
+
+<p>
+The magnetic moment of the proton, mu_p.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Measurement of Time</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::MINUTE
+
+<p>
+The number of seconds in 1 minute.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::HOUR
+
+<p>
+The number of seconds in 1 hour.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::DAY
+
+<p>
+The number of seconds in 1 day.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::WEEK
+
+<p>
+The number of seconds in 1 week.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="5"></a> Imperial Units</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::INCH
+
+<p>
+The length of 1 inch.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::FOOT
+
+<p>
+The length of 1 foot.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::YARD
+
+<p>
+The length of 1 yard.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::MILE
+
+<p>
+The length of 1 mile.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::MIL
+
+<p>
+The length of 1 mil (1/1000th of an inch).
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="6"></a> Nautical Units</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::NAUTICAL_MILE
+
+<p>
+The length of 1 nautical mile.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::FATHOM
+
+<p>
+The length of 1 fathom.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::KNOT
+
+<p>
+The speed of 1 knot.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="7"></a> Printers Units</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::POINT
+
+<p>
+The length of 1 printer&#8216;s point (1/72 inch).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::TEXPOINT
+
+<p>
+The length of 1 TeX point (1/72.27 inch).
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="8"></a> Volume</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::ACRE
+
+<p>
+The area of 1 acre.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::LITER
+
+<p>
+The volume of 1 liter.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::US_GALLON
+
+<p>
+The volume of 1 US gallon.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::CANADIAN_GALLON
+
+<p>
+The volume of 1 Canadian gallon.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::UK_GALLON
+
+<p>
+The volume of 1 UK gallon.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::QUART
+
+<p>
+The volume of 1 quart.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::PINT
+
+<p>
+The volume of 1 pint.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="9"></a> Mass and Weight</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::POUND_MASS
+
+<p>
+The mass of 1 pound.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::OUNCE_MASS
+
+<p>
+The mass of 1 ounce.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::TON
+
+<p>
+The mass of 1 ton.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::METRIC_TON
+
+<p>
+The mass of 1 metric ton (1000 kg).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::UK_TON
+
+<p>
+The mass of 1 UK ton.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::TROY_OUNCE
+
+<p>
+The mass of 1 troy ounce.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::CARAT
+
+<p>
+The mass of 1 carat.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::GRAM_FORCE
+
+<p>
+The force of 1 gram weight.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::POUND_FORCE
+
+<p>
+The force of 1 pound weight.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::KILOPOUND_FORCE
+
+<p>
+The force of 1 kilopound weight.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::POUNDAL
+
+<p>
+The force of 1 poundal.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="10"></a> Thermal Energy and Power</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::CALORIE
+
+<p>
+The energy of 1 calorie.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::BTU
+
+<p>
+The energy of 1 British Thermal Unit, btu.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::THERM
+
+<p>
+The energy of 1 Therm.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::HORSEPOWER
+
+<p>
+The power of 1 horsepower.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="11"></a> Pressure</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::BAR
+
+<p>
+The pressure of 1 bar.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::STD_ATMOSPHERE
+
+<p>
+The pressure of 1 standard atmosphere.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::TORR
+
+<p>
+The pressure of 1 torr.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::METER_OF_MERCURY
+
+<p>
+The pressure of 1 meter of mercury.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::INCH_OF_MERCURY
+
+<p>
+The pressure of 1 inch of mercury.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::INCH_OF_WATER
+
+<p>
+The pressure of 1 inch of water.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::PSI
+
+<p>
+The pressure of 1 pound per square inch.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="12"></a> Viscosity</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::POISE
+
+<p>
+The dynamic viscosity of 1 poise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::STOKES
+
+<p>
+The kinematic viscosity of 1 stokes.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="13"></a> Light and Illumination</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::STILB
+
+<p>
+The luminance of 1 stilb.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::LUMEN
+
+<p>
+The luminous flux of 1 lumen.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::LUX
+
+<p>
+The illuminance of 1 lux.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::PHOT
+
+<p>
+The illuminance of 1 phot.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::FOOTCANDLE
+
+<p>
+The illuminance of 1 footcandle.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::LAMBERT
+
+<p>
+The luminance of 1 lambert.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::FOOTLAMBERT
+
+<p>
+The luminance of 1 footlambert.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="14"></a> Radioactivity</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::CURIE
+
+<p>
+The activity of 1 curie.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::ROENTGEN
+
+<p>
+The exposure of 1 roentgen.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::RAD
+
+<p>
+The absorbed dose of 1 rad.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="15"></a> Force and Energy</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::NEWTON
+
+<p>
+The SI unit of force, 1 Newton.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::DYNE
+
+<p>
+he force of 1 Dyne = 10^-5 Newton.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::JOULE
+
+<p>
+The SI unit of energy, 1 Joule.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::MKSA::ERG
+
+<p>
+The energy 1 erg = 10^-7 Joule.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="16"></a> Prefixes</h2>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::YOTTA
+
+<p>
+10^24
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::ZETTA
+
+<p>
+10^21
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::EXA
+
+<p>
+10^18
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::PETA
+
+<p>
+10^15
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::TERA
+
+<p>
+10^12
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::GIGA
+
+<p>
+10^9
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::MEGA
+
+<p>
+10^6
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::KILO
+
+<p>
+10^3
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::MILLI
+
+<p>
+10^-3
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::MICRO
+
+<p>
+10^-6
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::NANO
+
+<p>
+10^-9
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::PICO
+
+<p>
+10^-12
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::FEMTO
+
+<p>
+10^-15
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::ATTO
+
+<p>
+10^-18
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::ZEPTO
+
+<p>
+10^-21
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::CONST::NUM::YOCTO
+
+<p>
+10^-24
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="17"></a> Example</h2>
+<p>
+The following program demonstrates the use of the physical constants in a
+calculation. In this case, the goal is to calculate the range of
+light-travel times from Earth to Mars.
+</p>
+<pre>
+     require(&quot;gsl&quot;)
+     include GSL::CONST::MKSA
+
+     puts(&quot;In MKSA unit&quot;)
+
+     c  = SPEED_OF_LIGHT;
+     au = ASTRONOMICAL_UNIT;
+     minutes = MINUTE;
+
+     # distance stored in meters
+     r_earth = 1.00 * au;
+     r_mars  = 1.52 * au;
+
+     t_min = (r_mars - r_earth) / c;
+     t_max = (r_mars + r_earth) / c;
+
+     printf(&quot;light travel time from Earth to Mars:\n&quot;);
+     printf(&quot;c = %e [m/s]\n&quot;, c)
+     printf(&quot;AU = %e [m]\n&quot;, au)
+     printf(&quot;minutes = %e [s]\n&quot;, minutes)
+     printf(&quot;minimum = %.1f minutes\n&quot;, t_min / minutes);
+     printf(&quot;maximum = %.1f minutes\n\n&quot;, t_max / minutes);
+</pre>
+<p>
+<a href="bspline_rdoc.html">prev</a> <a href="graph_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

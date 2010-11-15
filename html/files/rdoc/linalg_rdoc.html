@@ -1,0 +1,1284 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: linalg.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>linalg.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/linalg.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Linear Algebra</h1>
+<p>
+Contents:
+</p>
+<ol>
+<li><a href="linalg_rdoc.html#1">LU Decomposition</a>
+
+</li>
+<li><a href="linalg_rdoc.html#2">QR Decomposition</a>
+
+</li>
+<li><a href="linalg_rdoc.html#3">QR Decomposition with Column Pivoting</a>
+
+</li>
+<li><a href="linalg_rdoc.html#4">Singular Value Decomposition</a>
+
+</li>
+<li><a href="linalg_rdoc.html#5">Cholesky Decomposition</a>
+
+</li>
+<li><a href="linalg_rdoc.html#6">Tridiagonal Decomposition of Real Symmetric
+Matrices</a>
+
+</li>
+<li><a href="linalg_rdoc.html#7">Tridiagonal Decomposition of Hermitian
+Matrices</a>
+
+</li>
+<li><a href="linalg_rdoc.html#8">Hessenberg Decomposition of Real Matrices</a>
+
+</li>
+<li><a href="linalg_rdoc.html#9">Hessenberg-Triangular Decomposition of Real
+Matrices</a>
+
+</li>
+<li><a href="linalg_rdoc.html#10">Bidiagonalization</a>
+
+</li>
+<li><a href="linalg_rdoc.html#11">Householder Transformations</a>
+
+</li>
+<li><a href="linalg_rdoc.html#12">Householder solver for linear systems</a>
+
+</li>
+<li><a href="linalg_rdoc.html#13">Tridiagonal Systems</a>
+
+</li>
+<li><a href="linalg_rdoc.html#14">Balancing</a>
+
+</li>
+<li><a href="linalg_rdoc.html#15">NArray</a>
+
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> LU Decomposition</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::LU.decomp(A)
+
+</li>
+<li>GSL::Matrix#LU_decomp
+
+<p>
+These method calculate the LU decomposition of the matrix. The returned
+value is an array of <tt>[LU, perm, sign]</tt>.
+</p>
+<p>
+Examples:
+</p>
+</li>
+</ul>
+<ol>
+<li>Singleton method of the <tt>GSL::Linalg::LU</tt> module
+
+<pre>
+     &gt;&gt; m = Matrix[1..9, 3, 3]
+     =&gt; GSL::Matrix:
+     [ 1.000e+00 2.000e+00 3.000e+00
+       4.000e+00 5.000e+00 6.000e+00
+       7.000e+00 8.000e+00 9.000e+00 ]
+     &gt;&gt; lu, perm, sign = Linalg::LU.decomp(m)
+</pre>
+</li>
+<li>Instance method of <tt>GSL::Matrix</tt> class
+
+<pre>
+     &gt;&gt; lu, perm, sign = m.LU_decomp
+</pre>
+</li>
+</ol>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::LU.solve(A, b)
+
+</li>
+<li>GSL::Linalg::LU.solve(lu, perm, b)
+
+</li>
+<li>GSL::Matrix#LU_solve(b)
+
+</li>
+<li>GSL::Linalg::LUMatrix#solve(perm, b)
+
+<p>
+The following is an example to solve a linear system
+</p>
+<pre>
+   A x = b, b = [1, 2, 3, 4]
+</pre>
+<p>
+using LU decomposition.
+</p>
+</li>
+</ul>
+<ol>
+<li>Singleton method of the <tt>GSL::Linalg::LU</tt> module
+
+<pre>
+     A = Matrix[[0.18, 0.60, 0.57, 0.96], [0.41, 0.24, 0.99, 0.58],
+                [0.14, 0.30, 0.97, 0.66], [0.51, 0.13, 0.19, 0.85]]
+     lu, perm, sign = A.LU_decomp
+     b = Vector[1, 2, 3, 4]
+     x = Linalg::LU.solve(lu, perm, b)
+</pre>
+</li>
+<li>Instance method of <tt>GSL::Linalg::LUMatrix</tt> class
+
+<pre>
+     lu, perm, sign = A.LU_decomp  # lu is an instance of Linalg::LUMatrix class
+     b = Vector[1, 2, 3, 4]
+     x = lu.solve(perm, b)
+</pre>
+</li>
+<li>Solve directly
+
+<pre>
+     x = Linalg::LU.solve(A, b)  # LU decomposition is calculated internally (A is not modified)
+</pre>
+</li>
+</ol>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::LU.svx(A, b)
+
+</li>
+<li>GSL::Linalg::LU.svx(lu, perm, b)
+
+</li>
+<li>GSL::Matrix#svx(b)
+
+</li>
+<li>GSL::Linalg::LUMatrix#svx(perm, b)
+
+<p>
+These solve the system Ax = b. The input vector <tt>b</tt> is overwitten by
+the solution <tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::LU.refine(A, lu, perm, b, x)
+
+<p>
+This method applys an iterative improvement to <tt>x</tt>, the solution of
+<tt>A x = b</tt>, using the LU decomposition of <tt>A</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::LU.invert(A)
+
+</li>
+<li>GSL::Linalg::LU.invert(lu, perm)
+
+</li>
+<li>GSL::Matrix#invert
+
+</li>
+<li>GSL::Linalg::LUMatrix#invert(perm)
+
+<p>
+These computes and returns the inverse of the matrix.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::LU.det(A)
+
+</li>
+<li>GSL::Linalg::LU.det(lu, signum)
+
+</li>
+<li>GSL::Matrix#det
+
+</li>
+<li>GSL::Linalg::LUMatrix#det(signum)
+
+<p>
+These methods return the determinant of the matrix.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="1.1"></a> <a href="linalg_complex_rdoc.html">Complex LU decomposition</a></h3>
+<h2><a href="../.././index.html"name="2"></a> QR decomposition</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QR_decomp(A)
+
+</li>
+<li>GSL::Linalg::QR.decomp(A)
+
+</li>
+<li>GSL::Matrix#QR_decomp
+
+<p>
+These compute QR decomposition of the matrix and return an array [QR, tau].
+</p>
+</li>
+</ul>
+<ol>
+<li>Singleton method of the module <tt>GSL::Linalg</tt>
+
+<pre>
+     qr, tau = Linalg::QR_decomp(m)
+     p qr.class                 # GSL::Linalg::QRMatrix, subclass of GSL::Matrix
+     p tau.class                # GSL::Linalg::TauVector, subclass of GSL::Vector
+</pre>
+</li>
+<li>Singleton method of the module <tt>GSL::Linalg:QR</tt>
+
+<pre>
+     qr, tau = Linalg::QR.decomp(m)
+</pre>
+</li>
+<li>Instance method of <tt>GSL::Matrix</tt>
+
+<pre>
+     qr, tau = m.QR_decomp
+</pre>
+</li>
+</ol>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QR.solve(A, b)
+
+</li>
+<li>GSL::Linalg::QR.solve(QR, tau, b)
+
+</li>
+<li>GSL::Matrix#QR_solve(b)
+
+</li>
+<li>GSL::Linalg::QRMatrix#solve(tau, b)
+
+<p>
+Solve the system A x = b using the QR decomposition.
+</p>
+<ul>
+<li>Ex1:
+
+<pre>
+  m = Matrix.alloc(...)
+  b = Vector.alloc(...)
+  x = Linalg::QR.solve(m, b)
+</pre>
+</li>
+<li>Ex2:
+
+<pre>
+  x = m.QR_solve(b)
+</pre>
+</li>
+<li>Ex3:
+
+<pre>
+  qr, tau = Linalg::QR.decomp(m)   # or m.QR_decomp
+  x = Linalg::QR.solve(qr, tau, b)
+</pre>
+</li>
+<li>Ex4:
+
+<pre>
+  qr, tau = m.QR_decomp
+  x = qr.solve(tau, b)
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QR.svx(A, x)
+
+</li>
+<li>GSL::Linalg::QR.svx(QR, tau, x)
+
+</li>
+<li>GSL::Matrix#QR_svx(x)
+
+</li>
+<li>GSL::Linalg::QRMatrix#svx(tau, x)
+
+<p>
+Solve the system A x = b. The input vector <tt>x</tt> is first give by the
+right-hand side vector <tt>b</tt>, and is overwritten by the solution.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QR.unpack(QR, tau)
+
+</li>
+<li>GSL::Linalg::QRMatrix#unpack(tau)
+
+<p>
+Unpack the encoded QR decomposition <tt>QR,tau</tt> and return an array
+<tt>[Q, R]</tt>.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; m = Matrix[1..9, 3, 3]
+  =&gt; GSL::Matrix:
+  [ 1.000e+00 2.000e+00 3.000e+00
+    4.000e+00 5.000e+00 6.000e+00
+    7.000e+00 8.000e+00 9.000e+00 ]
+  &gt;&gt; qr, tau = m.QR_decomp
+  &gt;&gt; q, r = qr.unpack(tau)
+  &gt;&gt; q*r               # Reconstruct the metrix m
+  =&gt; GSL::Matrix:
+  [ 1.000e+00 2.000e+00 3.000e+00
+    4.000e+00 5.000e+00 6.000e+00
+    7.000e+00 8.000e+00 9.000e+00 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QR.QRsolve(Q, R, tau)
+
+<p>
+This method solves the system <tt>R x = Q^T b</tt> for <tt>x</tt>. It can
+be used when the QR decomposition of a matrix is available in unpacked form
+as <tt>Q,R</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> QR Decomposition with Column Pivoting</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QRPT.decomp(A)
+
+</li>
+<li>GSL::Matrix#QRPT_decomp
+
+<p>
+These methods factorize the M-by-N matrix <tt>A</tt> into the QRP^T
+decomposition A = Q R P^T, and return an array <tt>[QR, tau, perm,
+signum]</tt>.
+</p>
+<ul>
+<li>Ex1:
+
+<pre>
+  require(&quot;gsl&quot;)
+  include GSL::Linalg
+  m = Matrix.alloc(...)
+  qr, tau, perm = QRPT.decomp(m)
+  p qr.class                 # GSL::Linalg::QRPTMatrix, subclass of GSL::Matrix
+</pre>
+</li>
+<li>Ex2:
+
+<pre>
+  qr, tau, perm = m.QROT_decomp
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QRPT.decomp2(A)
+
+</li>
+<li>GSL::Matrix#QRPT_decomp2
+
+<p>
+These return an array <tt>[Q, R, tau, perm, signum]</tt>.
+</p>
+<ul>
+<li>Ex
+
+<pre>
+  q, r, tau, perm = QRPT.decomp2(m)
+  p q.class                  &lt;----- GSL::Linalg::QMatrix
+  p r.class                  &lt;----- GSL::Linalg::RMatrix
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QRPT.solve(m, b)
+
+</li>
+<li>GSL::Linalg::QRPT.solve(qr, tau, perm, b)
+
+</li>
+<li>GSL::Matrix#QRPT_solve(A, b)
+
+</li>
+<li>GSL::Linalg::QRPQMatrix#solve(qr, tau, perm, b)
+
+<p>
+These methods solve the system <tt>A x = b</tt> using the QRP^T
+decomposition of <tt>A</tt> into <tt>QR, tau, perm</tt>. The solution
+<tt>x</tt> is returned as a Vector.
+</p>
+<ul>
+<li>Ex1:
+
+<pre>
+  m = Matrix.alloc(...)
+  qr, tau, perm = m.QRPT_decomp
+  b = Vector.alloc([1, 2, 3, 4])
+  x = Linalg::QRPT.solve(qr, tau, perm, b)
+</pre>
+</li>
+<li>Ex2:
+
+<pre>
+  x = Linalg::QRPT.solve(m, b)
+</pre>
+</li>
+<li>Ex3:
+
+<pre>
+  x = qr.solve(tau, p, b)
+</pre>
+</li>
+<li>Ex4:
+
+<pre>
+  x = m.QRPT_solve(b)
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QRPT.svx(m, b)
+
+</li>
+<li>GSL::Linalg::QRPT.svx(qr, tau, perm, b)
+
+</li>
+<li>GSL::Matrix#QRPT_svx(A, b)
+
+<p>
+These methods solve the system <tt>A x = b</tt> using the QRP^T
+decomposition of <tt>A</tt> into <tt>QR, tau, perm</tt>. The input
+<tt>b</tt> is overwritten by the solution <tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QRPT.QRsolve(q, r, tau, perm, b)
+
+<p>
+This method solves the system <tt>R P^T x = Q^T b</tt> for x. It can be
+used when the QR decomposition of a matrix is available in unpacked form as
+<tt>q, r</tt> obtained by the method <tt>decomp2</tt>.
+</p>
+<ul>
+<li>Ex:
+
+<pre>
+ q, r, tau, perm = QRPT_decomp2
+ x = Linalg::QRPT.QRsolve(q, r, perm, b)
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::QRPT.update(q, r, perm, u, v)
+
+</li>
+<li>GSL::Linalg::QRPT.Rsolve(qr, perm, b)
+
+</li>
+<li>GSL::Linalg::QRPTMatrix#Rsolve(perm, b)
+
+</li>
+<li>GSL::Linalg::QRPT.Rsvx(qr, perm, b)
+
+</li>
+<li>GSL::Linalg::QRPTMatrix#Rsvx(perm, b)
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Singular Value Decomposition</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::SV.decomp(A[, work])
+
+</li>
+<li>GSL::Matrix#SV_decomp([work])
+
+<p>
+These methods factorize the M-by-N matrix <tt>A</tt> into the singular
+value decomposition <tt>A = U S V^T</tt> using the Golub-Reinsch SVD
+algorithm, and return an array <tt>[U, V, S]</tt>.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+   &gt;&gt; m = Matrix[[3, 5, 2], [5, 1, 4], [7, 6, 3]]
+   =&gt; GSL::Matrix:
+   [ 3.000e+00 5.000e+00 2.000e+00
+     5.000e+00 1.000e+00 4.000e+00
+     7.000e+00 6.000e+00 3.000e+00 ]
+   &gt;&gt; u, v, s = m.SV_decomp  # u, v: Matrix, s: Vector (singular values)
+   &gt;&gt; u*u.trans              # u is orthnormal
+   =&gt; GSL::Matrix:
+   [  1.000e+00  2.452e-17 -4.083e-16
+      2.452e-17  1.000e+00 -3.245e-16
+     -4.083e-16 -3.245e-16  1.000e+00 ]
+   &gt;&gt; v*v.trans              # v is also orthnormal
+   =&gt; GSL::Matrix:
+   [  1.000e+00  3.555e-17 -1.867e-16
+      3.555e-17  1.000e+00 -1.403e-16
+     -1.867e-16 -1.403e-16  1.000e+00 ]
+   &gt;&gt; u*Matrix.diagonal(s)*v.trans # Reconstruct the matrix
+   =&gt; GSL::Matrix:
+   [ 3.000e+00 5.000e+00 2.000e+00
+     5.000e+00 1.000e+00 4.000e+00
+     7.000e+00 6.000e+00 3.000e+00 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::SV.decomp_mod(A)
+
+</li>
+<li>GSL::Matrix#SV_decomp_mod
+
+<p>
+These compute the SVD using the modified Golub-Reinsch algorithm, which is
+faster for M&gt;&gt;N.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::SV.decomp_jacobi(A)
+
+</li>
+<li>GSL::Matrix#SV_decomp_jacobi
+
+<p>
+These compute the SVD using one-sided Jacobi orthogonalization. The Jacobi
+method can compute singular values to higher relative accuracy than
+Golub-Reinsch algorithms.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::SV.solve(A, b)
+
+</li>
+<li>GSL::Linalg::SV.solve(U, V, S, b)
+
+</li>
+<li>GSL::Matrix#SV_solve(b)
+
+<p>
+These methods solve the system <tt>A x = b</tt> using the singular value
+decomposition <tt>U, S, V</tt> of <tt>A</tt>.
+</p>
+<ul>
+<li>Ex1:
+
+<pre>
+  m = Matrix.alloc(...)
+  b = Vector.alloc(...)
+  u, v, s = GSL::Linalg::SV.decomp(m)
+  x = GSL::Linalg::SV.solve(u, v, s, b)
+</pre>
+</li>
+<li>Ex2:
+
+<pre>
+  x = GSL::Linalg::SV.solve(m, b)
+</pre>
+</li>
+<li>Ex3:
+
+<pre>
+  x = m.SV_solve(b)
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="6"></a> Cholesky Decomposition</h2>
+<p>
+A symmetric, positive definite square matrix <tt>A</tt> has a Cholesky
+decomposition into a product of a lower triangular matrix L and its
+transpose L^T, as <tt>A = L L^T</tt>. This is sometimes referred to as
+taking the square-root of a matrix. The Cholesky decomposition can only be
+carried out when all the eigenvalues of the matrix are positive. This
+decomposition can be used to convert the linear system <tt>A x = b</tt>
+into a pair of triangular systems (<tt>L y = b, L^T x = y</tt>), which can
+be solved by forward and back-substitution.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Cholesky.decomp(A)
+
+<p>
+This method factorizes the positive-definite square matrix <tt>A</tt> into
+the Cholesky decomposition <tt>A = L L^T</tt>. The upper triangular part of
+the matrix returned contains L^T, the diagonal terms being identical for
+both L and L^T. If the matrix is not positive-definite then the
+decomposition will fail.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+  &gt;&gt; m = Matrix.pascal(3)
+  =&gt; GSL::Matrix
+  [  1.000e+00  1.000e+00  1.000e+00
+     1.000e+00  2.000e+00  3.000e+00
+     1.000e+00  3.000e+00  6.000e+00 ]
+  &gt;&gt; c = Linalg::Cholesky.decomp(m)
+  =&gt; GSL::Linalg::Cholesky::CholeskyMatrix
+  [  1.000e+00  1.000e+00  1.000e+00
+     1.000e+00  1.000e+00  2.000e+00
+     1.000e+00  2.000e+00  1.000e+00 ]
+  &gt;&gt; l = c.lower
+  =&gt; GSL::Matrix
+  [  1.000e+00  0.000e+00  0.000e+00
+     1.000e+00  1.000e+00  0.000e+00
+     1.000e+00  2.000e+00  1.000e+00 ]
+  &gt;&gt; (l*l.trans) == m
+  =&gt; true
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Cholesky.solve(cholesky, b)
+
+</li>
+<li>GSL::Linalg::Cholesky.svx(cholesky, x)
+
+<p>
+These methods solve the system <tt>A x = b</tt> using the Cholesky
+decomposition of <tt>A</tt> into the matrix <tt>cholesky</tt> given by
+<tt>GSL::Linalg::Cholesky.decomp</tt>.
+</p>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="5.1"></a> <a href="cholesky_complex_rdoc.html">Complex Cholesky decomposition</a></h3>
+<h2><a href="../.././index.html"name="6"></a> Tridiagonal Decomposition of Real Symmetric Matrices</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Symmtd::decomp(A)
+
+<p>
+Factorizes the symmetric square matrix <tt>A</tt> into the symmetric
+tridiagonal decomposition Q T Q^T, and returns the results <tt>(A&#8217;,
+tau)</tt>. On output the diagonal and subdiagonal part of the matrix
+<tt>A&#8216;</tt> contain the tridiagonal matrix <tt>T</tt>. The remaining
+lower triangular part of the matrix <tt>A&#8216;</tt> contains the
+Householder vectors which, together with the Householder coefficients
+<tt>tau</tt>, encode the orthogonal matrix <tt>Q</tt>. This storage scheme
+is the same as used by LAPACK. The upper triangular part of <tt>A</tt> is
+not referenced.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Symmtd::unpack(A&#8217;, tau)
+
+<p>
+Unpacks the encoded symmetric tridiagonal decomposition <tt>(A&#8217;,
+tau)</tt> obtained from <tt>GSL::Linalg::Symmtd::decomp</tt> into the
+orthogonal matrix <tt>Q</tt>, the vector of diagonal elements <tt>diag</tt>
+and the vector of subdiagonal elements <tt>subdiag</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Symmtd::unpack_T(A&#8217;, tau)
+
+<p>
+Unpacks the diagonal and subdiagonal of the encoded symmetric tridiagonal
+decomposition <tt>(A&#8217;, tau)</tt> obtained from
+<tt>GSL::Linalg::Symmtd::decomp</tt> into the vectors <tt>diag</tt> and
+<tt>subdiag</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="7"></a> Tridiagonal Decomposition of Hermitian Matrices</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Hermtd::decomp(A)
+
+<p>
+Factorizes the hermitian matrix <tt>A</tt> into the symmetric tridiagonal
+decomposition U T U^T, and returns the result as <tt>(A&#8217;, tau)</tt>.
+On output the real parts of the diagonal and subdiagonal part of the matrix
+<tt>A&#8216;</tt> contain the tridiagonal matrix <tt>T</tt>. The remaining
+lower triangular part of the matrix <tt>A&#8216;</tt> contains the
+Householder vectors which, together with the Householder coefficients
+<tt>tau</tt>, encode the orthogonal matrix <tt>Q</tt>. This storage scheme
+is the same as used by LAPACK. The upper triangular part of <tt>A</tt> and
+imaginary parts of the diagonal are not referenced.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Hermtd::unpack(A&#8217;, tau)
+
+<p>
+Unpacks the encoded tridiagonal decomposition <tt>(A&#8217;, tau)</tt>
+obtained from <tt>GSL::Linalg::Hermtd::decomp</tt> into the unitary matrix
+<tt>U</tt>, the real vector of diagonal elements <tt>diag</tt> and the real
+vector of subdiagonal elements <tt>subdiag</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Hermtd::unpack_T(A&#8217;, tau)
+
+<p>
+Unpacks the diagonal and subdiagonal of the encoded tridiagonal
+decomposition <tt>(A, tau)</tt> obtained from the
+<tt>GSL::Linalg::Hermtd::decomp</tt> into the real vectors <tt>diag</tt>
+and <tt>subdiag</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="8"></a> Hessenberg Decomposition of Real Matrices</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Hessenberg::decomp(A)
+
+</li>
+<li>GSL::Linalg::hessenberg_decomp(A)
+
+<p>
+Computes the Hessenberg decomposition of the matrix <tt>A</tt> by applying
+the similarity transformation <tt>H = U^T A U</tt>, and returns the result
+as <tt>(A&#8217;, tau</tt>. On output, <tt>H</tt> is stored in the upper
+portion of <tt>A&#8216;</tt>. The information required to construct the
+matrix <tt>U</tt> is stored in the lower triangular portion of
+<tt>A&#8216;</tt>. <tt>U</tt> is a product of N - 2 Householder matrices.
+The Householder vectors are stored in the lower portion of
+<tt>A&#8216;</tt> (below the subdiagonal) and the Householder coefficients
+are stored in the vector <tt>tau</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Hessenberg::unpack(A&#8217;, tau)
+
+</li>
+<li>GSL::Linalg::hessenberg_unpack(A&#8217;, tau)
+
+<p>
+Constructs the orthogonal matrix <tt>U</tt> and returns it from the
+information stored in the Hessenberg matrix <tt>A&#8216;</tt> along with
+the vector <tt>tau</tt>. <tt>A&#8216;</tt> and <tt>tau</tt> are outputs
+from <tt>GSL::Linalg::Hessenberg::decomp</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Hessenberg::unpack_accum(A&#8217;, tau, V = I)
+
+</li>
+<li>GSL::Linalg::hessenberg_unpack_accum(A&#8217;, tau, V = I)
+
+<p>
+This method is similar to <tt>GSL::Linalg::Hessenberg::unpack</tt>, except
+it accumulates the matrix <tt>U</tt> into <tt>V</tt>, so that <tt>V&#8217;
+= VU</tt>, and returns <tt>V</tt>. Setting V to the identity matrix
+provides the same result <tt>GSL::Linalg::Hessenberg::unpack</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Hessenberg::set_zero(A&#8217;)
+
+</li>
+<li>GSL::Linalg::hessenberg_set_zero(A&#8217;)
+
+<p>
+Sets the lower triangular portion of <tt>A&#8216;</tt>, below the
+subdiagonal, to zero. It is useful for clearing out the Householder vectors
+after calling <tt>GSL::Linalg::Hessenberg::decomp</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="9"></a> Hessenberg-Triangular Decomposition of Real Matrices</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::hesstri_decomp(A, B)
+
+</li>
+<li>GSL::Linalg::hesstri_decomp(A, B, work)
+
+</li>
+<li>GSL::Linalg::hesstri_decomp(A, B, U, V)
+
+</li>
+<li>GSL::Linalg::hesstri_decomp(A, B, U, V, work)
+
+<p>
+Compute the Hessenberg-Triangular decomposition of the matrix pair <tt>(A,
+B)</tt>, and return <tt>(H, R</tt>. If U and V are provided (they may be
+null), the similarity transformations are stored in them. <tt>work</tt> is
+an additional workspace of length <tt>N</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::hesstri_decomp!(A, B)
+
+</li>
+<li>GSL::Linalg::hesstri_decomp!(A, B, work)
+
+</li>
+<li>GSL::Linalg::hesstri_decomp!(A, B, U, V)
+
+</li>
+<li>GSL::Linalg::hesstri_decomp!(A, B, U, V, work)
+
+<p>
+Compute the Hessenberg-Triangular decomposition of the matrix pair <tt>(A,
+B)</tt>. On output, <tt>H</tt> is stored in <tt>A</tt>, and <tt>R</tt> is
+stored in <tt>B</tt>. If U and V are provided (they may be null), the
+similarity transformations are stored in them. <tt>work</tt> is an
+additional workspace of length <tt>N</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="10"></a> Bidiagonalization</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Bidiag::decomp!(A)
+
+</li>
+<li>GSL::Linalg::bidiag_decomp!(A)
+
+</li>
+<li>GSL::Linalg::Bidiag::decomp(A)
+
+</li>
+<li>GSL::Linalg::bidiag_decomp(A)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Bidiag::unpack
+
+</li>
+<li>GSL::Linalg::bidiag_unpack
+
+</li>
+<li>GSL::Linalg::Bidiag::unpack2
+
+</li>
+<li>GSL::Linalg::bidiag_unpack2
+
+</li>
+<li>GSL::Linalg::Bidiag::unpack_B
+
+</li>
+<li>GSL::Linalg::bidiag_unpack_B
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="11"></a> Householder Transformations</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Householder::transform(v)
+
+</li>
+<li>GSL::Linalg::HH::transform(v)
+
+</li>
+<li>GSL::Vector#householder_transform
+
+<p>
+These methods prepare a Householder transformation P = I - tau v v^T which
+can be used to zero all the elements of the input vector except the first.
+On output the transformation is stored in the vector <tt>v</tt> and the
+scalar tau is returned.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Householder::hm(tau, v, A)
+
+</li>
+<li>GSL::Linalg::HH::hm(tau, v, A)
+
+<p>
+These methods apply the Householder matrix P defined by the scalar
+<tt>tau</tt> and the vector <tt>v</tt> to the left-hand side of the matrix
+<tt>A</tt>. On output the result P A is stored in <tt>A</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Householder::mh(tau, v, A)
+
+</li>
+<li>GSL::Linalg::HH::mh(tau, v, A)
+
+<p>
+These methods apply the Householder matrix P defined by the scalar
+<tt>tau</tt> and the vector <tt>v</tt> to the right-hand side of the matrix
+<tt>A</tt>. On output the result A P is stored in <tt>A</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Householder::hv(tau, v, w)
+
+</li>
+<li>GSL::Linalg::HH::hv(tau, v, w)
+
+<p>
+These methods apply the Householder transformation P defined by the scalar
+<tt>tau</tt> and the vector <tt>v</tt> to the vector <tt>w</tt>. On output
+the result P w is stored in <tt>w</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="12"></a> Householder solver for linear systems</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::HH.solve(A, b)
+
+</li>
+<li>GSL::Matrix#HH_solve(b)
+
+<p>
+These methods solve the system <tt>A x = b</tt> directly using Householder
+transformations. The matrix <tt>A</tt> is not modified.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::HH.solve!(A, b)
+
+</li>
+<li>GSL::Matrix#HH_solve!(b)
+
+<p>
+These methods solve the system <tt>A x = b</tt> directly using Householder
+transformations. The matrix <tt>A</tt> is destroyed by the Householder
+transformations.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::HH.svx(A, b)
+
+</li>
+<li>GSL::Matrix#HH_svx(b)
+
+<p>
+These methods solve the system <tt>A x = b</tt> in-place directly using
+Householder transformations. The input vector <tt>b</tt> is replaced by the
+solution.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="13"></a> Tridiagonal Systems</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Linglg::solve_tridiag(diag, e, f, b)
+
+</li>
+<li>GSL::Linglg::Tridiag::solve(diag, e, f, b)
+
+<p>
+These methods solve the general N-by-N system A x = b where <tt>A</tt> is
+tridiagonal ( N &gt;= 2). The super-diagonal and sub-diagonal vectors
+<tt>e</tt> and <tt>f</tt> must be one element shorter than the diagonal
+vector <tt>diag</tt>. The form of <tt>A</tt> for the 4-by-4 case is shown
+below,
+</p>
+<pre>
+     A = ( d_0 e_0  0   0  )
+         ( f_0 d_1 e_1  0  )
+         (  0  f_1 d_2 e_2 )
+         (  0   0  f_2 d_3 )
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linglg::solve_symm_tridiag(diag, e, b)
+
+</li>
+<li>GSL::Linglg::Tridiag::solve_symm(diag, e, b)
+
+<p>
+These methods solve the general N-by-N system A x = b where <tt>A</tt> is
+symmetric tridiagonal ( N &gt;= 2). The off-diagonal vector <tt>e</tt> must
+be one element shorter than the diagonal vector <tt>diag</tt>. The form of
+<tt>A</tt> for the 4-by-4 case is shown below,
+</p>
+<pre>
+     A = ( d_0 e_0  0   0  )
+         ( e_0 d_1 e_1  0  )
+         (  0  e_1 d_2 e_2 )
+         (  0   0  e_2 d_3 )
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linglg::solve_cyc_tridiag(diag, e, f, b)
+
+</li>
+<li>GSL::Linglg::Tridiag::solve_cyc(diag, e, f, b)
+
+<p>
+These methods solve the general N-by-N system A x = b where <tt>A</tt> is
+cyclic tridiagonal ( N &gt;= 3). The cyclic super-diagonal and sub-diagonal
+vectors <tt>e</tt> and <tt>f</tt> must have the same number of elements as
+the diagonal vector <tt>diag</tt>. The form of <tt>A</tt> for the 4-by-4
+case is shown below,
+</p>
+<pre>
+     A = ( d_0 e_0  0  f_3 )
+         ( f_0 d_1 e_1  0  )
+         (  0  f_1 d_2 e_2 )
+         ( e_3  0  f_2 d_3 )
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linglg::solve_symm_cyc_tridiag(diag, e, b)
+
+</li>
+<li>GSL::Linglg::Tridiag::solve_symm_cyc(diag, e, b)
+
+<p>
+These methods solve the general N-by-N system A x = b where <tt>A</tt> is
+symmetric cyclic tridiagonal ( N &gt;= 3). The cyclic off-diagonal vector
+<tt>e</tt> must have the same number of elements as the diagonal vector
+<tt>diag</tt>. The form of <tt>A</tt> for the 4-by-4 case is shown below,
+</p>
+<pre>
+     A = ( d_0 e_0  0  e_3 )
+         ( e_0 d_1 e_1  0  )
+         (  0  e_1 d_2 e_2 )
+         ( e_3  0  e_2 d_3 )
+</pre>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="14"></a> Balancing</h2>
+<p>
+The process of balancing a matrix applies similarity transformations to
+make the rows and columns have comparable norms. This is useful, for
+example, to reduce roundoff errors in the solution of eigenvalue problems.
+Balancing a matrix <tt>A</tt> consists of replacing <tt>A</tt> with a
+similar matrix where <tt>D</tt> is a diagonal matrix whose entries are
+powers of the floating point radix.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::balance(A)
+
+</li>
+<li>GSL::Linalg::balance(A, D)
+
+<p>
+Calculates the balanced counterpart of <tt>A</tt> and the diagonal elements
+of the similarity transformation. The result is returned as <tt>(A&#8217;,
+D)</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::balance!(A)
+
+</li>
+<li>GSL::Linalg::balance!(A, D)
+
+<p>
+Replaces the matrix <tt>A</tt> with its balanced counterpart and stores the
+diagonal elements of the similarity transformation into the vector
+<tt>D</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="15"></a> NArray</h2>
+<p>
+The following Linalg methods can handle NArray objects:
+</p>
+<ul>
+<li>GSL::Linalg::
+
+<ul>
+<li>LU::
+
+<ul>
+<li>LU.decomp(m)
+
+</li>
+<li>LU.solve(lu, b)
+
+</li>
+<li>LU.svx(lu, bx)
+
+</li>
+<li>LU.det(lu, sign)
+
+</li>
+<li>LU.lndet(lu)
+
+</li>
+<li>LU.invert(lu, perm)
+
+</li>
+</ul>
+</li>
+<li>QR::
+
+<ul>
+<li>QR.decomp(m)
+
+</li>
+<li>QR.solve(qr, tau, b)
+
+</li>
+<li>QR.svx(qr, tau, bx)
+
+</li>
+</ul>
+</li>
+<li>SV::
+
+<ul>
+<li>SV.decomp(m)
+
+</li>
+<li>SV.solve(u, v, s, b)
+
+</li>
+<li>SV.svx(u, v, s, bx)
+
+</li>
+</ul>
+</li>
+<li>Cholesky::
+
+<ul>
+<li>Cholesky.decomp(m)
+
+</li>
+<li>Cholesky.solve(u, v, s, b)
+
+</li>
+<li>Cholesky.svx(u, v, s, bx)
+
+</li>
+</ul>
+</li>
+<li>HH::
+
+<ul>
+<li>HH.solve(m, b)
+
+</li>
+<li>HH.svx(m, bx)
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>
+<a href="blas_rdoc.html">prev</a> <a href="eigen_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

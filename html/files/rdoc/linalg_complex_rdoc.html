@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: linalg_complex.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>linalg_complex.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/linalg_complex.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 15:16:04 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h3>Complex LU decomposition</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::LU_decomp!(A)
+
+</li>
+<li>GSL::Linalg::Complex::LU::decomp!(A)
+
+</li>
+<li>GSL::Matrix::Complex#LU_decomp!
+
+</li>
+<li>GSL::Matrix::Complex#LU_decomp!
+
+<p>
+Factorizes the square matrix <tt>A</tt> into the LU decomposition PA = LU,
+and returns an array, <tt>[perm, signum]</tt>. <tt>A</tt> is changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::LU_decomp(A)
+
+</li>
+<li>GSL::Linalg::Complex::LU::decomp(A)
+
+</li>
+<li>GSL::Matrix::Complex#LU_decomp
+
+<p>
+Factorizes the square matrix <tt>A</tt> into the LU decomposition PA = LU,
+and returns an array, <tt>[LU, perm, signum]</tt>. <tt>A</tt> is not
+changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::LU_solve(A, b)
+
+</li>
+<li>GSL::Linalg::Complex::LU::solve(A, b)
+
+</li>
+<li>GSL::Linalg::Complex::LU_solve(A, b)
+
+</li>
+<li>GSL::Matrix::Complex#LU_solve(b)
+
+</li>
+<li>GSL::Linalg::Complex::solve(LU, perm, b)
+
+</li>
+<li>GSL::Linalg::Complex::LU::solve(LU, perm, b)
+
+</li>
+<li>GSL::Linalg::Complex::LU::LUMatirx#solve(perm, b)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::LU_svx(A, x)
+
+</li>
+<li>GSL::Linalg::Complex::LU::svx(A, x)
+
+</li>
+<li>GSL::Linalg::Complex::LU_svx(A, x)
+
+</li>
+<li>GSL::Matrix::Complex#LU_svx(x)
+
+</li>
+<li>GSL::Linalg::Complex::svx(LU, perm, x)
+
+</li>
+<li>GSL::Linalg::Complex::LU::svx(LU, perm, x)
+
+</li>
+<li>GSL::Linalg::Complex::LU::LUMatirx#svx(perm, x)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::LU_refine(A, LU, perm, b, x)
+
+</li>
+<li>GSL::Linalg::Complex::LU_::refine(A, LU, perm, b, x)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::LU_invert(A)
+
+</li>
+<li>GSL::Linalg::Complex::LU::invert(A)
+
+</li>
+<li>GSL::Linalg::Complex::LU_invert(LU, perm)
+
+</li>
+<li>GSL::Linalg::Complex::LU::invert(LU, perm)
+
+</li>
+<li>GSL::Matrix::Complex#LU_invert
+
+</li>
+<li>GSL::Matrix::Complex#invert
+
+</li>
+<li>GSL::Linalg::Complex::LU::LUMatrix#invert(perm)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::LU_det(A)
+
+</li>
+<li>GSL::Linalg::Complex::LU::det(A)
+
+</li>
+<li>GSL::Linalg::Complex::LU_det(LU, signum)
+
+</li>
+<li>GSL::Linalg::Complex::LU::det(LU, signum)
+
+</li>
+<li>GSL::Matrix::Complex#LU_det
+
+</li>
+<li>GSL::Matrix::Complex#det
+
+</li>
+<li>GSL::Linalg::Complex::LU::LUMatrix#det(signum)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::LU_lndet(A)
+
+</li>
+<li>GSL::Linalg::Complex::LU::lndet(A)
+
+</li>
+<li>GSL::Linalg::Complex::LU_lndet(LU)
+
+</li>
+<li>GSL::Linalg::Complex::LU::lndet(LU)
+
+</li>
+<li>GSL::Matrix::Complex#LU_lndet
+
+</li>
+<li>GSL::Matrix::Complex#lndet
+
+</li>
+<li>GSL::Linalg::Complex::LU::LUMatrix#lndet
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::LU_sgndet(A)
+
+</li>
+<li>GSL::Linalg::Complex::LU::sgndet(A)
+
+</li>
+<li>GSL::Linalg::Complex::LU_sgndet(LU, signum)
+
+</li>
+<li>GSL::Linalg::Complex::LU::sgndet(LU, signum)
+
+</li>
+<li>GSL::Matrix::Complex#LU_sgndet
+
+</li>
+<li>GSL::Matrix::Complex#sgndet
+
+</li>
+<li>GSL::Linalg::Complex::LU::LUMatrix#sgndet(signum)
+
+</li>
+</ul>
+<p>
+<a href="linalg_rdoc.html">back</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

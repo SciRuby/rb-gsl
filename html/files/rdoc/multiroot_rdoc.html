@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: multiroot.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>multiroot.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/multiroot.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Multidimensional Root-Finding</h1>
+<p>
+This chapter describes functions for multidimensional root-finding (solving
+nonlinear systems with n equations in n unknowns). The library provides low
+level components for a variety of iterative solvers and convergence tests.
+These can be combined by the user to achieve the desired solution, with
+full access to the intermediate steps of the iteration. Each class of
+methods uses the same framework, so that you can switch between solvers at
+runtime without needing to recompile your program. Each instance of a
+solver keeps track of its own state, allowing the solvers to be used in
+multi-threaded programs.
+</p>
+<ol>
+<li><a href="multiroot_rdoc.html#1">Overview</a>
+
+</li>
+<li><a href="multiroot_rdoc.html#2">Initializing the Solver</a>
+
+</li>
+<li><a href="multiroot_rdoc.html#3">Providing the function to solve</a>
+
+</li>
+<li><a href="multiroot_rdoc.html#4">Iteration</a>
+
+</li>
+<li><a href="multiroot_rdoc.html#5">Search Stopping Parameters</a>
+
+</li>
+<li><a href="multiroot_rdoc.html#6">Higher Level Interface</a>
+
+</li>
+<li><a href="multiroot_rdoc.html#7">Examples</a>
+
+<ol>
+<li><a href="multiroot_rdoc.html#7.1">FSolver</a>
+
+</li>
+<li><a href="multiroot_rdoc.html#7.2">FdfSolver</a>
+
+</li>
+</ol>
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> Overview</h2>
+<p>
+The problem of multidimensional root finding requires the simultaneous
+solution of n equations, f_i, in n variables, x_i, In general there are no
+bracketing methods available for n dimensional systems, and no way of
+knowing whether any solutions exist. All algorithms proceed from an initial
+guess using a variant of the Newton iteration, where x, f are vector
+quantities and J is the Jacobian matrix J_{ij} = d f_i / d x_j. Additional
+strategies can be used to enlarge the region of convergence. These include
+requiring a decrease in the norm |f| on each step proposed by
+Newton&#8216;s method, or taking steepest-descent steps in the direction of
+the negative gradient of |f|.
+</p>
+<p>
+Several root-finding algorithms are available within a single framework.
+The user provides a high-level driver for the algorithms, and the library
+provides the individual functions necessary for each of the steps. There
+are three main phases of the iteration. The steps are,
+</p>
+<ul>
+<li>initialize solver state, <tt>s</tt>, for algorithm <tt>T</tt>
+
+</li>
+<li>update <tt>s</tt> using the iteration <tt>T</tt>
+
+</li>
+<li>test <tt>s</tt> for convergence, and repeat iteration if necessary
+
+</li>
+</ul>
+<p>
+The evaluation of the Jacobian matrix can be problematic, either because
+programming the derivatives is intractable or because computation of the
+n^2 terms of the matrix becomes too expensive. For these reasons the
+algorithms provided by the library are divided into two classes according
+to whether the derivatives are available or not.
+</p>
+<p>
+The state for solvers with an analytic Jacobian matrix is held in a
+<tt>GSL::MultiRoot::FdfSolver</tt> object. The updating procedure requires
+both the function and its derivatives to be supplied by the user.
+</p>
+<p>
+The state for solvers which do not use an analytic Jacobian matrix is held
+in a <tt>GSL::MultiRoot::FSolver</tt> object. The updating procedure uses
+only function evaluations (not derivatives). The algorithms estimate the
+matrix J or J^{-1} by approximate methods.
+</p>
+<h2><a href="../.././index.html"name="2"></a> Initializing the Solver</h2>
+<p>
+Two types of solvers are available. The solver itself depends only on the
+dimension of the problem and the algorithm and can be reused for different
+problems. The <tt>FdfSolver</tt> requires derivatives of the function to
+solve.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FSolver.alloc(T, n)
+
+<p>
+This creates an instance of the <tt>FSolver</tt> class of type <tt>T</tt>
+for a system of <tt>n</tt> dimensions. The type is given by a constant or a
+string,
+</p>
+<ul>
+<li>GSL::MultiRoot:FSolver::HYBRIDS, or &quot;hybrids&quot;
+
+</li>
+<li>GSL::MultiRoot:FSolver::HYBRID, or &quot;hybrid&quot;
+
+</li>
+<li>GSL::MultiRoot:FSolver::DNEWTON, or &quot;dnewton&quot;
+
+</li>
+<li>GSL::MultiRoot:FSolver::BROYDEN, or &quot;broyden&quot;
+
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FdfSolver.alloc(T, n)
+
+<p>
+This creates an instance of the <tt>FdfSolver</tt> class of type <tt>T</tt>
+for a system of <tt>n</tt> dimensions. The type is given by a constant,
+</p>
+<ul>
+<li>GSL::MultiRoot:FdfSolver::HYBRIDSJ, or &quot;hybridsj&quot;
+
+</li>
+<li>GSL::MultiRoot:FdfSolver::HYBRIDJ, or &quot;hybridj&quot;,
+
+</li>
+<li>GSL::MultiRoot:FdfSolver::NEWTON, or &quot;newton&quot;,
+
+</li>
+<li>GSL::MultiRoot:FdfSolver::GNEWTON, or &quot;gnewton
+
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FSolver#set(func, x)
+
+<p>
+This method sets, or resets, an existing solver <tt>self</tt> to use the
+function <tt>func</tt> and the initial guess <tt>x</tt>. Here <tt>x</tt> is
+a <tt>Vector</tt>, and <tt>func</tt> is a <tt>MultiRoot:Function</tt>
+object.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FdfSolver#set(func_fdf, x)
+
+<p>
+This method sets, or resets, an existing solver <tt>self</tt> to use the
+function <tt>func_fdf</tt> and the initial guess <tt>x</tt>. Here
+<tt>x</tt> is a <tt>Vector</tt>, and <tt>func_fdf</tt> is a
+<tt>MultiRoot:Function_fdf</tt> object.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FSolver#name
+
+</li>
+<li>GSL::MultiRoot::FdfSolver#name
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Providing the function to solve</h2>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot:Function.alloc(proc, dim, params)
+
+<p>
+See example below:
+</p>
+<pre>
+  # x: vector, current guess
+  # params: a scalar or an array
+  # f: vector, function value
+  proc = Proc.new { |x, params, f|
+    a = params[0]; b = params[1]
+    x0 = x[0]; x1 = x[1]
+    f[0] = a*(1 - x0)
+    f[1] = b*(x1 - x0*x0)
+  }
+
+  params = [1.0, 10.0]
+  func = MultiRoot::Function.alloc(proc, 2, params)
+  fsolver = MultiRoot::FSolver.alloc(&quot;broyden&quot;, 2)
+  x = [-10, -5]    # initial guess
+  fsolver.set(func, x)
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot:Function_fdf.alloc(proc, dim, params)
+
+<p>
+See the example below:
+</p>
+<pre>
+  procf = Proc.new { |x, params, f|
+    a = params[0]; b = params[1]
+    x0 = x[0]; x1 = x[1]
+    f[0] = a*(1 - x0)
+    f[1] = b*(x1 - x0*x0)
+  }
+
+  procdf = Proc.new { |x, params, jac|
+    a = params[0]; b = params[1]
+    jac.set(0, 0, -a)
+    jac.set(0, 1, 0)
+    jac.set(1, 0, -2*b*x[0])
+    jac.set(1, 1, b)
+  }
+
+  params = [1.0, 10.0]
+  func_fdf = MultiRoot::Function_fdf.alloc(procf, procdf, n, params)
+
+  fdfsolver = MultiRoot::FdfSolver.alloc(&quot;gnewton&quot;, n)
+  x = [-10.0, -5.0]
+  fdfsolver.set(func_fdf, x)
+</pre>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Iteration</h2>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FSolver#interate
+
+</li>
+<li>GSL::MultiRoot::FdfSolver#interate
+
+<p>
+These methods perform a single iteration of the solver <tt>self</tt>. If
+the iteration encounters an unexpected problem then an error code will be
+returned,
+</p>
+<ul>
+<li>GSL_EBADFUNC: the iteration encountered a singular point where the function
+or its derivative evaluated to Inf or NaN.
+
+</li>
+<li>GSL_ENOPROG: the iteration is not making any progress, preventing the
+algorithm from continuing.
+
+</li>
+</ul>
+<p>
+The solver maintains a current best estimate of the root at all times. This
+information can be accessed with the following auxiliary methods.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FSolver#root
+
+</li>
+<li>GSL::MultiRoot::FdfSolver#root
+
+<p>
+These methods return the current estimate of the root (Vector) for the
+solver <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FSolver#f
+
+</li>
+<li>GSL::MultiRoot::FdfSolver#f
+
+<p>
+These methds return the function value <tt>f(x)</tt> (Vector) at the
+current estimate of the root for the solver <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FSolver#dx
+
+</li>
+<li>GSL::MultiRoot::FdfSolver#dx
+
+<p>
+These method return the last step <tt>dx</tt> (Vector) taken by the solver
+<tt>self</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="5"></a> Search Stopping Parameters</h2>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FSolver#test_delta(epsabs, epsrel)
+
+</li>
+<li>GSL::MultiRoot::FdfSolver#test_delta(epsabs, epsrel)
+
+<p>
+This method tests for the convergence of the sequence by comparing the last
+step <tt>dx</tt> with the absolute error <tt>epsabs</tt> and relative error
+<tt>epsrel</tt> to the current position <tt>x</tt>. The test returns
+<tt>GSL::SUCCESS</tt> if the following condition is achieved,
+</p>
+<pre>
+  |dx_i| &lt; epsabs + epsrel |x_i|
+</pre>
+<p>
+for each component of <tt>x</tt> and returns <tt>GSL::CONTINUE</tt>
+otherwise.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::FSolver#test_residual(epsabs)
+
+</li>
+<li>GSL::MultiRoot::FdfSolver#test_residual(epsabs)
+
+<p>
+This method tests the residual value <tt>f</tt> against the absolute error
+bound <tt>epsabs</tt>. The test returns <tt>GSL::SUCCESS</tt> if the
+following condition is achieved,
+</p>
+<pre>
+   sum_i |f_i| &lt; epsabs
+</pre>
+<p>
+and returns <tt>GSL::CONTINUE</tt> otherwise. This criterion is suitable
+for situations where the precise location of the root, <tt>x</tt>, is
+unimportant provided a value can be found where the residual is small
+enough.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="6"></a> Higher Level Interface</h2>
+<hr size="1"></hr><ul>
+<li>GSL::MultiRoot::Function#solve(x0, max_iter = 1000, eps = 1e-7, type =
+&quot;hybrids&quot;)
+
+</li>
+<li>GSL::MultiRoot::FSolver#solve(max_iter = 1000, eps = 1e-7)
+
+</li>
+<li>GSL::MultiRoot::FSolver.solve(fsolver, max_iter = 1000, eps = 1e-7)
+
+</li>
+</ul>
+<p>
+See sample script <tt>examples/multiroot/fsolver3.rb</tt>.
+</p>
+<h2><a href="../.././index.html"name="7"></a> Example</h2>
+<h3><a href="../.././index.html"name="7.1"></a> FSolver</h3>
+<pre>
+     proc = Proc.new { |x, params, f|
+       a = params[0];  b = params[1]
+       x0 = x[0];  x1 = x[1]
+       f[0] = a*(1 - x0)
+       f[1] = b*(x1 - x0*x0)
+     }
+
+     params = [1.0, 10.0]
+     func = MultiRoot::Function.alloc(proc, 2, params)
+
+     fsolver = MultiRoot::FSolver.alloc(&quot;hybrid&quot;, 2)
+     x = [-10, -5]
+     fsolver.set(func, x)
+
+     iter = 0
+     begin
+       iter += 1
+       status = fsolver.iterate
+       root = fsolver.root
+       f = fsolver.f
+       printf(&quot;iter = %3u x = % .3f % .3f f(x) = % .3e % .3e\n&quot;,
+               iter, root[0], root[1], f[0], f[1])
+       status = fsolver.test_residual(1e-7)
+     end while status == GSL::CONTINUE and iter &lt; 1000
+</pre>
+<h3><a href="../.././index.html"name="7.2"></a> FdfSolver</h3>
+<pre>
+     n = 2
+
+     procf = Proc.new { |x, params, f|
+       a = params[0]; b = params[1]
+       x0 = x[0]; x1 = x[1]
+       f[0] = a*(1 - x0)
+       f[1] = b*(x1 - x0*x0)
+     }
+
+     procdf = Proc.new { |x, params, jac|
+       a = params[0]; b = params[1]
+       jac.set(0, 0, -a)
+       jac.set(0, 1, 0)
+       jac.set(1, 0, -2*b*x[0])
+       jac.set(1, 1, b)
+     }
+
+     params = [1.0, 10.0]
+     f = MultiRoot::Function_fdf.alloc(procf, procdf, n, params)
+
+     fdfsolver = MultiRoot::FdfSolver.alloc(&quot;gnewton&quot;, n)
+
+     x = [-10.0, -5.0]
+
+     fdfsolver.set(f, x)
+
+     iter = 0
+     begin
+       iter += 1
+       status = fdfsolver.iterate
+       root = fdfsolver.root
+       f = fdfsolver.f
+       printf(&quot;iter = %3u x = % .3f % .3f f(x) = % .3e % .3e\n&quot;,
+               iter, root[0], root[1], f[0], f[1])
+       status = fdfsolver.test_residual(1e-7)
+     end while status == GSL::CONTINUE and iter &lt; 1000
+</pre>
+<p>
+<a href="min_rdoc.html">prev</a> <a href="multimin_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

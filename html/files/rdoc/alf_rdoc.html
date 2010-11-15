@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: alf.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>alf.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/alf.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>ALF: a collection of routines for computing associated Legendre polynomials (ALFs)</h1>
+<p>
+ALF is an extension library for GSL to compute associated Legendre
+polynomials developed by Patrick Alken. Ruby/GSL includes interfaces to it
+if ALF is found during installlation.
+</p>
+<p>
+The class and method descriptions below are based on references from the
+document of ALF (alf-1.0/doc/alf.texi) by P.Alken.
+</p>
+<h2><a href="../.././index.html"name="1"></a> Module structure</h2>
+<ul>
+<li>GSL::ALF (module)
+
+<ul>
+<li>GSL::ALF::Workspace (Class)
+
+</li>
+</ul>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Creating ALF workspace</h2>
+<hr size="1"></hr><ul>
+<li>GSL::ALF::Workspace.alloc(lmax)
+
+</li>
+<li>GSL::ALF.alloc(lmax)
+
+</li>
+</ul>
+<p>
+Creates a workspace for computing associated Legendre polynomials (ALFs).
+The maximum ALF degree is specified by lmax. The size of this workspace is
+O(lmax).
+</p>
+<h2><a href="../.././index.html"name="3"></a> Methods</h2>
+<hr size="1"></hr><ul>
+<li>GSL::ALF::Workspace#params(csphase, cnorm, norm)
+
+<p>
+Sets various parameters for the subsequent computation of ALFs. If
+<tt>csphase</tt> is set to a non-zero value, the Condon-Shortley phase of
+(-1)^m will be applied to the associated Legendre functions. The
+Condon-Shortley phase is included by default. If <tt>cnorm</tt> is set to
+zero, the real normalization of the associated Legendre functions will be
+used. The default is to use complex normalization. The norm parameter
+defines the type of normalization which will be used. The possible values
+are as follows.
+</p>
+<ul>
+<li>ALF::NORM_SCHMIDT: Schmidt semi-normalized associated Legendre polynomials
+S_l^m(x). (default)
+
+</li>
+<li>ALF::NORM_SPHARM: Associated Legendre polynomials Y_l^m(x) suitable for the
+calculation of spherical harmonics.
+
+</li>
+<li>ALF::NORM_ORTHO: Fully orthonormalized associated Legendre polynomials
+N_l^m(x).
+
+</li>
+<li>ALF::NORM_NONE:: Unnormalized associated Legendre polynomials P_l^m(x).
+
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::ALF::Workspace#Plm_array(x)
+
+</li>
+<li>GSL::ALF::Workspace#Plm_array(lmax, x)
+
+</li>
+<li>GSL::ALF::Workspace#Plm_array(x, result)
+
+</li>
+<li>GSL::ALF::Workspace#Plm_array(lmax, x, result)
+
+</li>
+<li>GSL::ALF::Workspace#Plm_array(x, result, deriv)
+
+</li>
+<li>GSL::ALF::Workspace#Plm_array(lmax, x, result, deriv)
+
+<p>
+Compute all associated Legendre polynomials P_l^m(x) and optionally their
+first derivatives dP_l^m(x)/dx for 0 &lt;= l &lt;= lmax, 0 &lt;= m &lt;= l.
+The value of <tt>lmax</tt> cannot exceed the previously specified lmax
+parameter to <tt>ALF.alloc</tt>, but may be less. If <tt>lmax</tt> is not
+given, the parameter to <tt>ALF.alloc()</tt> is used. The results are
+stored in <tt>result</tt>, an instance of <tt>GSL::Vector</tt>. Note that
+this vector must have enough length to store all the values for the
+polynomial P_l^m(x), and the length required can be known using
+<tt>ALF::array_size(lmax)</tt>. If a vector is not given, a new vector is
+created and returned.
+</p>
+<p>
+The indices of <tt>result</tt> (and <tt>deriv</tt> corresponding to the
+associated Legendre function of degree <tt>l</tt> and order <tt>m</tt> can
+be obtained by calling <tt>ALF::array_index(l, m)</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::ALF::Workspace#Plm_deriv_array(x)
+
+</li>
+<li>GSL::ALF::Workspace#Plm_deriv_array(lmax, x)
+
+</li>
+<li>GSL::ALF::Workspace#Plm_deriv_array(x, result, deriv)
+
+</li>
+<li>GSL::ALF::Workspace#Plm_deriv_array(lmax, x, result, deriv)
+
+<p>
+Compute all associated Legendre polynomials P_l^m(x) and their first
+derivatives dP_l^m(x)/dx for 0 &lt;= l &lt;= lmax, 0 &lt;= m &lt;= l.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::ALF::array_size(lmax)
+
+<p>
+Returns the size of arrays needed for the array versions of P_l^m(x).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::ALF::array_index(l, m)
+
+<p>
+Returns the array index of results of <tt>Plm_array()</tt> and
+<tt>Plm_deriv_array()</tt> corresponding to P_l^m(x) and dP_l^m(x)/dx
+respectively. The index is given by l(l + 1)/2 + m.
+</p>
+</li>
+</ul>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

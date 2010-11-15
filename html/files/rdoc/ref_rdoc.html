@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: ref.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>ref.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/ref.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 15:24:30 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1><a href="ref_rdoc.html"target="_parent">Ruby/GSL Reference</a></h1>
+<p>
+(See also <a
+href="http://www.gnu.org/software/gsl/manual/html_node/"target="_top">Gnu
+Scientific Library -- Reference Manual</a>)
+</p>
+<h2><a href="../.././index.html"name="1"></a> Front Matter</h2>
+<p>
+This document describes the modules, classes and the methods of Ruby/GSL.
+This includes cut-and-paste from the <a
+href="http://www.gnu.org/software/gsl/manual/html_node/"target="_top">GNU
+Scientific Library -- Reference Manual</a>, and documents of the extention
+libraries.
+</p>
+<h3><a href="../.././index.html"name="1.1"></a> Copyright of the GSL Reference</h3>
+<p>
+Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+2007, 2008 The GSL Team.
+</p>
+<p>
+Permission is granted to copy, distribute and/or modify this document under
+the terms of the GNU Free Documentation License, Version 1.3 or any later
+version published by the Free Software Foundation; with the Invariant
+Sections being &quot;GNU General Public License&quot; and &quot;Free
+Software Needs Free Documentation&quot;, the Front-Cover text being &quot;A
+GNU Manual&quot;, and with the Back-Cover Text being (a) (see below). A
+copy of the license is included in the section entitled &quot;GNU Free
+Documentation License&quot;. (a) The Back-Cover Text is: &quot;You have the
+freedom to copy and modify this GNU Manual.&quot;
+</p>
+<h3><a href="../.././index.html"name="1.2"></a> Copyright of this reference</h3>
+<p>
+2009,2010 Yoshiki Tsunesada, David MacMahon
+</p>
+<p>
+Permission is granted to copy, distribute and/or modify this document under
+the terms of the GNU Free Documentation License.
+</p>
+<h2><a href="../.././index.html"name="2"></a> Ruby/GSL Reference</h2>
+<ol>
+<li><a href="intro_rdoc.html">Introduction</a>
+
+</li>
+<li><a href="use_rdoc.html">Using Ruby/GSL</a>
+
+</li>
+<li><a href="ehandling_rdoc.html">Error Handling</a>
+
+</li>
+<li><a href="math_rdoc.html">Mathematical Functions</a>
+
+</li>
+<li><a href="complex_rdoc.html">Complex Numbers</a>
+
+</li>
+<li><a href="poly_rdoc.html">Polynomials</a>
+
+</li>
+<li><a href="sf_rdoc.html">Special Functions</a>
+
+</li>
+<li><a href="vector_rdoc.html">Vectors</a> and <a
+href="matrix_rdoc.html">Matrices</a>
+
+</li>
+<li><a href="perm_rdoc.html">Permutations</a>
+
+</li>
+<li><a href="combi_rdoc.html">Combinations</a>
+
+</li>
+<li><a href="sort_rdoc.html">Sorting</a>
+
+</li>
+<li><a href="blas_rdoc.html">BLAS Support</a>
+
+</li>
+<li><a href="linalg_rdoc.html">Linear Algebra</a>
+
+</li>
+<li><a href="eigen_rdoc.html">Eigen Systems</a>
+
+</li>
+<li><a href="fft_rdoc.html">Fast Fourier Transform</a>
+
+</li>
+<li><a href="integration_rdoc.html">Numerical Integration</a>
+
+</li>
+<li><a href="rng_rdoc.html">Random Number Generation</a>
+
+</li>
+<li><a href="qrng_rdoc.html">Quasi-Random Sequences</a>
+
+</li>
+<li><a href="randist_rdoc.html">Random Number Distributions</a>
+
+</li>
+<li><a href="stats_rdoc.html">Statistics</a>
+
+</li>
+<li><a href="hist_rdoc.html">1d-Histograms</a>, <a
+href="hist2d_rdoc.html">2d-Histograms</a> and <a
+href="hist3d_rdoc.html">3d-Histograms</a>
+
+</li>
+<li><a href="ntuple_rdoc.html">N-tuples</a>
+
+</li>
+<li><a href="monte_rdoc.html">Monte-Carlo Integration</a>
+
+</li>
+<li><a href="siman_rdoc.html">Simulated Annealing</a>
+
+</li>
+<li><a href="odeiv_rdoc.html">Ordinary Differential Equations</a>
+
+</li>
+<li><a href="interp_rdoc.html">Interpolation</a>
+
+</li>
+<li><a href="diff_rdoc.html">Numerical Differentiation</a>
+
+</li>
+<li><a href="cheb_rdoc.html">Chebyshev Approximations</a>
+
+</li>
+<li><a href="sum_rdoc.html">Series Acceleration</a>
+
+</li>
+<li><a href="wavelet_rdoc.html">Wavelet Transforms</a> (GSL-1.6 feature)
+
+</li>
+<li><a href="dht_rdoc.html">Discrete Hankel Transforms</a>
+
+</li>
+<li><a href="roots_rdoc.html">One dimensional Root-Finding</a>
+
+</li>
+<li><a href="min_rdoc.html">One dimensional Minimization</a>
+
+</li>
+<li><a href="multiroot_rdoc.html">Multidimensional Root-Finding</a>
+
+</li>
+<li><a href="multimin_rdoc.html">Multidimensional Minimization</a>
+
+</li>
+<li><a href="fit_rdoc.html">Least-Squares Fitting</a>
+
+</li>
+<li><a href="nonlinearfit_rdoc.html">Nonlinear Least-Squares Fitting</a>
+
+</li>
+<li><a href="bspline_rdoc.html">Basis Splines</a>
+
+</li>
+<li><a href="const_rdoc.html">Physical Constants</a>
+
+</li>
+<li><a href="graph_rdoc.html">Graphics</a>
+
+</li>
+<li>Supported GSL add-on packages
+
+<ol>
+<li><a href="rngextra_rdoc.html">rngextra</a>
+
+</li>
+<li><a href="tensor_rdoc.html">Tensor manipulations</a>
+
+</li>
+<li>OOL: Open Optimization library (see examples/ool/*.rb)
+
+</li>
+<li>CQP and Bundle (see examples/multimin/cqp.rb, bundle.rb)
+
+</li>
+<li>quartic
+
+</li>
+<li>jacobi (see examples/jacobi/*.rb)
+
+</li>
+<li><a href="ndlinear_rdoc.html">NDLINEAR: multi-linear, multi-parameter least
+squares fitting</a>
+
+</li>
+<li><a href="alf_rdoc.html">ALF: associated Legendre polynomials</a>
+
+</li>
+</ol>
+</li>
+<li><a href="narray_rdoc.html">NArray compatibilities</a>
+
+</li>
+<li><a href="changes_rdoc.html">Changes since Ruby/GSL 1.10.3</a>
+
+</li>
+<li><a
+href="http://www.gnu.org/software/gsl/manual/html_node/GNU-Free-Documentation-License.html"target="_top">GNU
+Free Documentation Licence</a>
+
+</li>
+</ol>
+<p>
+<a href="intro_rdoc.html">next</a>
+</p>
+<p>
+<a href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

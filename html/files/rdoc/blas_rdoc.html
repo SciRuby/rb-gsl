@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: blas.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>blas.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/blas.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>BLAS Support</h1>
+<p>
+The following is the list of the methods defined in <tt>GSL::Blas</tt>
+module. See <a
+href="http://www.gnu.org/software/gsl/manual/gsl-ref_12.html#SEC212"target="_top">GSL
+reference</a> for details.
+</p>
+<h2><a href="../.././index.html"name="1"></a> Level 1</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::ddot(x, y)
+
+</li>
+<li>GSL::Vector#blas_ddot(y)
+
+</li>
+<li>GSL::Vector#ddot(y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::zdotu(x, y)
+
+</li>
+<li>GSL::Vector::Complex#blas_zdotu(y)
+
+</li>
+<li>GSL::Vector::Complex#zdotu(y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::zdotc(x, y)
+
+</li>
+<li>GSL::Vector::Complex#blas_zdotc(y)
+
+</li>
+<li>GSL::Vector::Complex#zdotc(y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dnrm2(x)
+
+</li>
+<li>GSL::Vector#blas_dnrm2
+
+</li>
+<li>GSL::Vector#dnrm2
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dznrm2(x)
+
+</li>
+<li>GSL::Vector::Complex#blas_dznrm2
+
+</li>
+<li>GSL::Vector::Complex#dznrm2
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dasum(x)
+
+</li>
+<li>GSL::Vector#blas_dasum
+
+</li>
+<li>GSL::Vector#dasum
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dzasum(x)
+
+</li>
+<li>GSL::Vector::Complex#blas_dzasum
+
+</li>
+<li>GSL::Vector::Complex#dzasum
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::idamax(x)
+
+</li>
+<li>GSL::Vector#blas_idamax
+
+</li>
+<li>GSL::Vector#idamax
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::izamax(x)
+
+</li>
+<li>GSL::Vector::Complex#blas_izamax
+
+</li>
+<li>GSL::Vector::Complex#izamax
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dswap(x, y)
+
+</li>
+<li>GSL::Vector#blas_dswap(y)
+
+</li>
+<li>GSL::Vector#dswap(y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::zswap(x, y)
+
+</li>
+<li>GSL::Vector::Complex#blas_zswap(y)
+
+</li>
+<li>GSL::Vector::Complex#zswap(y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dcopy(x, y)
+
+</li>
+<li>GSL::Vector#blas_dcopy(y)
+
+</li>
+<li>GSL::Vector#dcopy(y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::zcopy(x, y)
+
+</li>
+<li>GSL::Vector::Complex#blas_zcopy(y)
+
+</li>
+<li>GSL::Vector::Complex#zcopy(y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::daxpy!(a, x, y)
+
+</li>
+<li>GSL::Vector#blas_daxpy!(a, y)
+
+</li>
+<li>GSL::Vector#daxpy!(a, y)
+
+</li>
+<li>GSL::Blas::daxpy(a, x, y)
+
+</li>
+<li>GSL::Vector#blas_daxpy(a, y)
+
+</li>
+<li>GSL::Vector#daxpy(a, y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::zaxpy!(a, x, y)
+
+</li>
+<li>GSL::Vector::Complex#blas_zaxpy!(a, y)
+
+</li>
+<li>GSL::Vector::Complex#zaxpy!(a, y)
+
+</li>
+<li>GSL::Blas::zaxpy(a, x, y)
+
+</li>
+<li>GSL::Vector::Complex#blas_zaxpy(a, y)
+
+</li>
+<li>GSL::Vector::Complex#zaxpy(a, y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dscal!(a, x)
+
+</li>
+<li>GSL::Vector#blas_dscal!(a)
+
+</li>
+<li>GSL::Vector#dscal!(a)
+
+</li>
+<li>GSL::Blas::dscal(a, x)
+
+</li>
+<li>GSL::Vector#blas_dscal(a)
+
+</li>
+<li>GSL::Vector#dscal(a)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::zscal!(a, x)
+
+</li>
+<li>GSL::Vector::Complex#blas_zscal!(a)
+
+</li>
+<li>GSL::Vector::Complex#zscal!(a)
+
+</li>
+<li>GSL::Blas::zscal(a, x)
+
+</li>
+<li>GSL::Vector::Complex#blas_zscal(a)
+
+</li>
+<li>GSL::Vector::Complex#zscal(a)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::zdscal!(a, x)
+
+</li>
+<li>GSL::Vector::Complex#blas_zdscal!(a)
+
+</li>
+<li>GSL::Vector::Complex#zdscal!(a)
+
+</li>
+<li>GSL::Blas::zdscal(a, x)
+
+</li>
+<li>GSL::Vector::Complex#blas_zdscal(a)
+
+</li>
+<li>GSL::Vector::Complex#zdscal(a)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::drot(x, y, c, s)
+
+</li>
+<li>GSL::Blas::drot!(x, y, c, s)
+
+</li>
+<li>GSL::Blas::drotm(x, y, p)
+
+</li>
+<li>GSL::Blas::drotm!(x, y, p)
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Level 2</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dgemv(trans, a, A, x, b, y)
+
+</li>
+<li>GSL::Blas::dgemv!(trans, a, A, x, b, y)
+
+</li>
+<li>GSL::Blas::zgemv(trans, a, A, x, b, y)
+
+</li>
+<li>GSL::Blas::zgemv!(trans, a, A, x, b, y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dtrmv(trans, a, A, x, b, y)
+
+</li>
+<li>GSL::Blas::dtrmv!(trans, a, A, x, b, y)
+
+</li>
+<li>GSL::Blas::ztrmv(trans, a, A, x, b, y)
+
+</li>
+<li>GSL::Blas::ztrmv!(trans, a, A, x, b, y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dtrsv(uplo, trans, diag, A, x)
+
+</li>
+<li>GSL::Blas::dtrsv!uplo, trans, diag, A, x)
+
+</li>
+<li>GSL::Blas::ztrsvuplo, trans, diag, A, x)
+
+</li>
+<li>GSL::Blas::ztrsv!uplo, trans, diag, A, x)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dsymv(uplo, a, A, x, b, y)
+
+</li>
+<li>GSL::Blas::dsymv!(uplo, a, A, x, b, y)
+
+</li>
+<li>GSL::Blas::zhemv(uplo, a, A, x, b, y)
+
+</li>
+<li>GSL::Blas::zhemv!(uplo, a, A, x, b, y)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dger(a, x, y, A)
+
+</li>
+<li>GSL::Blas::dger!(a, x, y, A)
+
+</li>
+<li>GSL::Blas::zgeru(a, x, y, A)
+
+</li>
+<li>GSL::Blas::zgeru!(a, x, y, A)
+
+</li>
+<li>GSL::Blas::zgerc(a, x, y, A)
+
+</li>
+<li>GSL::Blas::zgerc!(a, x, y, A)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dsyr(uplo, a, x, A)
+
+</li>
+<li>GSL::Blas::dsyr!(uplo, a, x, A)
+
+</li>
+<li>GSL::Blas::zher(uplo, a, x, A)
+
+</li>
+<li>GSL::Blas::zher!(uplo, a, x, A)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dsyr2(uplo, a, x, y, A)
+
+</li>
+<li>GSL::Blas::dsyr2!(uplo, a, x, y, A)
+
+</li>
+<li>GSL::Blas::zher2(uplo, a, x, y, A)
+
+</li>
+<li>GSL::Blas::zher2!(uplo, a, x, y, A)
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Level 3</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dgemm(transA, transB, alpha, A, B, beta, C)
+
+</li>
+<li>GSL::Blas::dgemm(A, B)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::zgemm(transA, transB, alpha, A, B, beta, C)
+
+</li>
+<li>GSL::Blas::zgemm(A, B)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dsymm(transA, transB, alpha, A, B, beta, C)
+
+</li>
+<li>GSL::Blas::dsymm(A, B)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::zsymm(transA, transB, alpha, A, B, beta, C)
+
+</li>
+<li>GSL::Blas::zsymm(A, B)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::zhemm(transA, transB, alpha, A, B, beta, C)
+
+</li>
+<li>GSL::Blas::zhemm(A, B)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dtrmm(side, uplo, trans, diag, alpha, A, B)
+
+</li>
+<li>GSL::Blas::ztrmm(side, uplo, trans, diag, alpha, A, B)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dtrsm(side, uplo, trans, diag, alpha, A, B)
+
+</li>
+<li>GSL::Blas::ztrsm(side, uplo, trans, diag, alpha, A, B)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dsyrk(uplo, trans, diag, alpha, A, beta, C)
+
+</li>
+<li>GSL::Blas::zsyrk(uplo, trans, diag, alpha, A, beta, C)
+
+</li>
+<li>GSL::Blas::zherk(uplo, trans, diag, alpha, A, beta, C)
+
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::dsyr2k(uplo, trans, diag, alpha, A, B, beta, C)
+
+</li>
+<li>GSL::Blas::zsyr2k(uplo, trans, diag, alpha, A, B, beta, C)
+
+</li>
+<li>GSL::Blas::zher2k(uplo, trans, diag, alpha, A, B, beta, C)
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Constants</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Blas::CblasRowMajor
+
+</li>
+<li>GSL::Blas::RowMajor
+
+</li>
+<li>GSL::Blas::CblasColMajor
+
+</li>
+<li>GSL::Blas::ColMajor
+
+</li>
+<li>GSL::Blas::CblasNoTrans
+
+</li>
+<li>GSL::Blas::NoTrans
+
+</li>
+<li>GSL::Blas::CblasTrans
+
+</li>
+<li>GSL::Blas::Trans
+
+</li>
+<li>GSL::Blas::CblasConjTrans
+
+</li>
+<li>GSL::Blas::ConjTrans
+
+</li>
+<li>GSL::Blas::CblasUpper
+
+</li>
+<li>GSL::Blas::Upper
+
+</li>
+<li>GSL::Blas::CblasTrans
+
+</li>
+<li>GSL::Blas::Lower
+
+</li>
+<li>GSL::Blas::CblasNonUnit
+
+</li>
+<li>GSL::Blas::NonUnit
+
+</li>
+<li>GSL::Blas::CblasUnit
+
+</li>
+<li>GSL::Blas::Unit
+
+</li>
+<li>GSL::Blas::CblasLeft
+
+</li>
+<li>GSL::Blas::Left
+
+</li>
+<li>GSL::Blas::CblasRight
+
+</li>
+<li>GSL::Blas::Right
+
+</li>
+</ul>
+<p>
+<a href="sort_rdoc.html">prev</a> <a href="linalg_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

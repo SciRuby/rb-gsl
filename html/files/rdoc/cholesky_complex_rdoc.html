@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: cholesky_complex.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>cholesky_complex.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/cholesky_complex.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 15:15:45 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h3>Cholesky decomposition (&gt;= GSL-1.10)</h3>
+<p>
+A symmetric, positive definite square matrix <tt>A</tt> has a Cholesky
+decomposition into a product of a lower triangular matrix <tt>L</tt> and
+its transpose <tt>L^T</tt>. This is sometimes referred to as taking the
+square-root of a matrix. The Cholesky decomposition can only be carried out
+when all the eigenvalues of the matrix are positive. This decomposition can
+be used to convert the linear system <tt>A x = b</tt> into a pair of
+triangular systems <tt>L y = b, L^T x = y</tt>, which can be solved by
+forward and back-substitution.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::Cholesky::decomp(A)
+
+</li>
+<li>GSL::Linalg::Complex::cholesky_decomp(A)
+
+<p>
+Factorize the positive-definite square matrix <tt>A</tt> into the Cholesky
+decomposition <tt>A = L L^H</tt>. On input only the diagonal and
+lower-triangular part of the matrix <tt>A</tt> are needed. The diagonal and
+lower triangular part of the returned matrix contain the matrix <tt>L</tt>.
+The upper triangular part of the returned matrix contains L^T, and the
+diagonal terms being identical for both L and L^T. If the input matrix is
+not positive-definite then the decomposition will fail, returning the error
+code <tt>GSL::EDOM</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::Cholesky::solve(chol, b, x)
+
+</li>
+<li>GSL::Linalg::Complex::cholesky_solve(chol, b, x)
+
+<p>
+Solve the system <tt>A x = b</tt> using the Cholesky decomposition of
+<tt>A</tt> into the matrix <tt>chol</tt> given by
+<tt>GSL::Linalg::Complex::Cholesky::decomp</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Linalg::Complex::Cholesky::svx(chol, x)
+
+</li>
+<li>GSL::Linalg::Complex::cholesky_svx(chol, x)
+
+<p>
+Solve the system <tt>A x = b</tt> in-place using the Cholesky decomposition
+of <tt>A</tt> into the matrix <tt>chol</tt> given by
+<tt>GSL::Linalg::Complex::Cholesky::decomp</tt>. On input <tt>x</tt> should
+contain the right-hand side <tt>b</tt>, which is replaced by the solution
+on output.
+</p>
+</li>
+</ul>
+<p>
+<a href="linalg_rdoc.html">back</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

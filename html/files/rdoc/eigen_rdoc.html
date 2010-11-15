@@ -1,0 +1,791 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: eigen.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>eigen.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/eigen.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Eigensystems</h1>
+<h3><a href="../.././index.html"name="0.1"></a> Contentes</h3>
+<ol>
+<li><a href="eigen_rdoc.html#1">Modules and classes</a>
+
+</li>
+<li><a href="eigen_rdoc.html#2">Real Symmetric Matrices</a>
+
+</li>
+<li><a href="eigen_rdoc.html#3">Complex Hermitian Matrices</a>
+
+</li>
+<li><a href="eigen_rdoc.html#4">Real Nonsymmetric Matrices</a> (&gt;= GSL-1.9)
+
+</li>
+<li><a href="eigen_rdoc.html#5">Real Generalized Symmetric-Definite
+Eigensystems</a> (&gt;= GSL-1.10)
+
+</li>
+<li><a href="eigen_rdoc.html#6">Complex Generalized Hermitian-Definite
+Eigensystems</a> (&gt;= GSL-1.10)
+
+</li>
+<li><a href="eigen_rdoc.html#7">Real Generalized Nonsymmetric Eigensystems</a>
+(&gt;= GSL-1.10)
+
+</li>
+<li><a href="eigen_rdoc.html#8">Sorting Eigenvalues and Eigenvectors </a>
+
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> Modules and classes</h2>
+<ul>
+<li>GSL
+
+<ul>
+<li>Eigen
+
+<ul>
+<li>EigenValues &lt; Vector
+
+</li>
+<li>EigenVectors &lt; Matrix
+
+</li>
+<li>Symm (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Symmv (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Nonsymm (Module, &gt;= GSL-1.9)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Nonsymmv (Module, &gt;= GSL-1.9)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Gensymm (Module, &gt;= GSL-1.10)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Gensymmv (Module, &gt;= GSL-1.10)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Herm (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Hermv (Module)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+<li>Vectors &lt; Matrix::Complex
+
+</li>
+</ul>
+</li>
+<li>Genherm (Module, &gt;= GSL-1.10)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Genhermv (Module, &gt;= GSL-1.10)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Gen (Module, &gt;= GSL-1.10)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+<li>Genv (Module, &gt;= GSL-1.10)
+
+<ul>
+<li>Workspace (Class)
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Real Symmetric Matrices, GSL::Eigen::Symm module</h2>
+<h3><a href="../.././index.html"name="2.1"></a> Workspace classes</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::Symm::Workspace.alloc(n)
+
+</li>
+<li>GSL::Eigen::Symmv::Workspace.alloc(n)
+
+</li>
+<li>GSL::Eigen::Herm::Workspace.alloc(n)
+
+</li>
+<li>GSL::Eigen::Hermv::Workspace.alloc(n)
+
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.2"></a> Methods to solve eigensystems</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::symm(A)
+
+</li>
+<li>GSL::Eigen::symm(A, workspace)
+
+</li>
+<li>GSL::Matrix#eigen_symm
+
+</li>
+<li>GSL::Matrix#eigen_symm(workspace)
+
+<p>
+These methods compute the eigenvalues of the real symmetric matrix. The
+workspace object <tt>workspace</tt> can be omitted.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::symmv(A)
+
+</li>
+<li>GSL::Matrix#eigen_symmv
+
+<p>
+These methods compute the eigenvalues and eigenvectors of the real
+symmetric matrix, and return an array of two elements: The first is a
+<tt>GSL::Vector</tt> object which stores all the eigenvalues. The second is
+a <tt>GSL::Matrix object</tt>, whose columns contain eigenvectors.
+</p>
+</li>
+</ul>
+<ol>
+<li>Singleton method of the <tt>GSL::Eigen</tt> module,
+<tt>GSL::Eigen::symm</tt>
+
+<pre>
+     m = GSL::Matrix.alloc([1.0, 1/2.0, 1/3.0, 1/4.0], [1/2.0, 1/3.0, 1/4.0, 1/5.0],
+                        [1/3.0, 1/4.0, 1/5.0, 1/6.0], [1/4.0, 1/5.0, 1/6.0, 1/7.0])
+     eigval, eigvec = Eigen::symmv(m)
+</pre>
+</li>
+<li>Instance method of <tt>GSL::Matrix</tt> class
+
+<pre>
+     eigval, eigvec = m.eigen_symmv
+</pre>
+</li>
+</ol>
+<h2><a href="../.././index.html"name="3"></a> Complex Hermitian Matrices</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::herm(A)
+
+</li>
+<li>GSL::Eigen::herm(A, workspace)
+
+</li>
+<li>GSL::Matrix::Complex#eigen_herm
+
+</li>
+<li>GSL::Matrix::Complex#eigen_herm(workspace)
+
+<p>
+These methods compute the eigenvalues of the complex hermitian matrix.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::hermv(A)
+
+</li>
+<li>GSL::Eigen::hermv(A, workspace)
+
+</li>
+<li>GSL::Matrix::Complex#eigen_hermv
+
+</li>
+<li>GSL::Matrix::Complex#eigen_hermv(workspace
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Real Nonsymmetric Matrices (&gt;= GSL-1.9)</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::Nonsymm.alloc(n)
+
+<p>
+This allocates a workspace for computing eigenvalues of n-by-n real
+nonsymmetric matrices. The size of the workspace is O(2n).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::Nonsymm::params(compute_t, balance, wspace)
+
+</li>
+<li>GSL::Eigen::Nonsymm::Workspace#params(compute_t, balance)
+
+<p>
+This method sets some parameters which determine how the eigenvalue problem
+is solved in subsequent calls to <tt>GSL::Eigen::nonsymm</tt>. If
+<tt>compute_t</tt> is set to 1, the full Schur form <tt>T</tt> will be
+computed by gsl_eigen_nonsymm. If it is set to 0, <tt>T</tt> will not be
+computed (this is the default setting). Computing the full Schur form
+<tt>T</tt> requires approximately 1.5-2 times the number of flops.
+</p>
+<p>
+If <tt>balance</tt> is set to 1, a balancing transformation is applied to
+the matrix prior to computing eigenvalues. This transformation is designed
+to make the rows and columns of the matrix have comparable norms, and can
+result in more accurate eigenvalues for matrices whose entries vary widely
+in magnitude. See section Balancing for more information. Note that the
+balancing transformation does not preserve the orthogonality of the Schur
+vectors, so if you wish to compute the Schur vectors with
+<tt>GSL::Eigen::nonsymm_Z</tt> you will obtain the Schur vectors of the
+balanced matrix instead of the original matrix. The relationship will be
+where Q is the matrix of Schur vectors for the balanced matrix, and
+<tt>D</tt> is the balancing transformation. Then
+<tt>GSL::Eigen::nonsymm_Z</tt> will compute a matrix <tt>Z</tt> which
+satisfies with <tt>Z = D Q</tt>. Note that <tt>Z</tt> will not be
+orthogonal. For this reason, balancing is not performed by default.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::nonsymm(m, eval, wspace)
+
+</li>
+<li>GSL::Eigen::nonsymm(m)
+
+</li>
+<li>GSL::Matrix#eigen_nonsymm()
+
+</li>
+<li>GSL::Matrix#eigen_nonsymm(wspace)
+
+</li>
+<li>GSL::Matrix#eigen_nonsymm(eval, wspace)
+
+<p>
+These methods compute the eigenvalues of the real nonsymmetric matrix
+<tt>m</tt> and return them, or store in the vector <tt>eval</tt> if it
+given. If <tt>T</tt> is desired, it is stored in <tt>m</tt> on output,
+however the lower triangular portion will not be zeroed out. Otherwise, on
+output, the diagonal of <tt>m</tt> will contain the 1-by-1 real eigenvalues
+and 2-by-2 complex conjugate eigenvalue systems, and the rest of <tt>m</tt>
+is destroyed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::nonsymm_Z(m, eval, Z, wspace)
+
+</li>
+<li>GSL::Eigen::nonsymm_Z(m)
+
+</li>
+<li>GSL::Matrix#eigen_nonsymm_Z()
+
+</li>
+<li>GSL::Matrix#eigen_nonsymm(eval, Z, wspace)
+
+<p>
+These methods are identical to <tt>GSL::Eigen::nonsymm</tt> except they
+also compute the Schur vectors and return them (or store into <tt>Z</tt>).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::Nonsymmv.alloc(n)
+
+<p>
+Allocates a workspace for computing eigenvalues and eigenvectors of n-by-n
+real nonsymmetric matrices. The size of the workspace is O(5n).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::nonsymm(m)
+
+</li>
+<li>GSL::Eigen::nonsymm(m, wspace)
+
+</li>
+<li>GSL::Eigen::nonsymm(m, eval, evec)
+
+</li>
+<li>GSL::Eigen::nonsymm(m, eval, evec, wspace)
+
+</li>
+<li>GSL::Matrix#eigen_nonsymmv()
+
+</li>
+<li>GSL::Matrix#eigen_nonsymmv(wspace)
+
+</li>
+<li>GSL::Matrix#eigen_nonsymmv(eval, evec)
+
+</li>
+<li>GSL::Matrix#eigen_nonsymmv(eval, evec, wspace)
+
+<p>
+Compute eigenvalues and right eigenvectors of the n-by-n real nonsymmetric
+matrix. The computed eigenvectors are normalized to have Euclidean norm 1.
+On output, the upper portion of <tt>m</tt> contains the Schur form
+<tt>T</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="5"></a> Real Generalized Symmetric-Definite Eigensystems (GSL-1.10)</h2>
+<p>
+The real generalized symmetric-definite eigenvalue problem is to find
+eigenvalues <tt>lambda</tt> and eigenvectors <tt>x</tt> such that where
+<tt>A</tt> and <tt>B</tt> are symmetric matrices, and <tt>B</tt> is
+positive-definite. This problem reduces to the standard symmetric
+eigenvalue problem by applying the Cholesky decomposition to <tt>B</tt>:
+Therefore, the problem becomes <tt>C y = lambda y</tt> where <tt>C = L^{-1}
+A L^{-t}</tt> is symmetric, and <tt>y = L^t x</tt>. The standard symmetric
+eigensolver can be applied to the matrix <tt>C</tt>. The resulting
+eigenvectors are backtransformed to find the vectors of the original
+problem. The eigenvalues and eigenvectors of the generalized
+symmetric-definite eigenproblem are always real.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::Gensymm.alloc(n)
+
+</li>
+<li>GSL::Eigen::Gensymm::Workspace.alloc(n)
+
+<p>
+Allocates a workspace for computing eigenvalues of n-by-n real generalized
+symmetric-definite eigensystems. The size of the workspace is O(2n).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::gensymm(A, B, w)
+
+<p>
+Computes the eigenvalues of the real generalized symmetric-definite matrix
+pair <tt>A, B</tt>, and returns them as a <tt>GSL::Vector</tt>, using the
+method outlined above. On output, B contains its Cholesky decomposition.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::gensymmv(A, B, w)
+
+<p>
+Computes the eigenvalues and eigenvectors of the real generalized
+symmetric-definite matrix pair <tt>A, B</tt>, and returns them as a
+<tt>GSL::Vector</tt> and a <tt>GSL::Matrix</tt>. The computed eigenvectors
+are normalized to have unit magnitude. On output, <tt>B</tt> contains its
+Cholesky decomposition.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="6"></a> Complex Generalized Hermitian-Definite Eigensystems (&gt;= GSL-1.10)</h2>
+<p>
+The complex generalized hermitian-definite eigenvalue problem is to find
+eigenvalues <tt>lambda</tt> and eigenvectors <tt>x</tt> such that where
+<tt>A</tt> and <tt>B</tt> are hermitian matrices, and <tt>B</tt> is
+positive-definite. Similarly to the real case, this can be reduced to <tt>C
+y = lambda y</tt> where <tt>C = L^{-1} A L^{-H}</tt> is hermitian, and
+<tt>y = L^H x</tt>. The standard hermitian eigensolver can be applied to
+the matrix <tt>C</tt>. The resulting eigenvectors are backtransformed to
+find the vectors of the original problem. The eigenvalues of the
+generalized hermitian-definite eigenproblem are always real.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::Genherm.alloc(n)
+
+<p>
+Allocates a workspace for computing eigenvalues of n-by-n complex
+generalized hermitian-definite eigensystems. The size of the workspace is
+O(3n).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::genherm(A, B, w)
+
+<p>
+Computes the eigenvalues of the complex generalized hermitian-definite
+matrix pair <tt>A, B</tt>, and returns them as a <tt>GSL::Vector</tt>,
+using the method outlined above. On output, <tt>B</tt> contains its
+Cholesky decomposition.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::genherm(A, B, w)
+
+<p>
+Computes the eigenvalues and eigenvectors of the complex generalized
+hermitian-definite matrix pair <tt>A, B</tt>, and returns them as a
+<tt>GSL::Vector</tt> and a <tt>GSL::Matrix::Complex</tt>. The computed
+eigenvectors are normalized to have unit magnitude. On output, <tt>B</tt>
+contains its Cholesky decomposition.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="7"></a> Real Generalized Nonsymmetric Eigensystems (&gt;= GSL-1.10)</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::Gen.alloc(n)
+
+</li>
+<li>GSL::Eigen::Gen::Workspace.alloc(n)
+
+<p>
+Allocates a workspace for computing eigenvalues of n-by-n real generalized
+nonsymmetric eigensystems. The size of the workspace is O(n).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::Gen::params(compute_s, compute_t, balance, w)
+
+</li>
+<li>GSL::Eigen::gen_params(compute_s, compute_t, balance, w)
+
+<p>
+Set some parameters which determine how the eigenvalue problem is solved in
+subsequent calls to <tt>GSL::Eigen::gen</tt>.
+</p>
+<p>
+If <tt>compute_s</tt> is set to 1, the full Schur form <tt>S</tt> will be
+computed by <tt>GSL::Eigen::gen</tt>. If it is set to 0, <tt>S</tt> will
+not be computed (this is the default setting). <tt>S</tt> is a quasi upper
+triangular matrix with 1-by-1 and 2-by-2 blocks on its diagonal. 1-by-1
+blocks correspond to real eigenvalues, and 2-by-2 blocks correspond to
+complex eigenvalues.
+</p>
+<p>
+If <tt>compute_t</tt> is set to 1, the full Schur form <tt>T</tt> will be
+computed by <tt>GSL::Eigen::gen</tt>. If it is set to 0, <tt>T</tt> will
+not be computed (this is the default setting). <tt>T</tt> is an upper
+triangular matrix with non-negative elements on its diagonal. Any 2-by-2
+blocks in <tt>S</tt> will correspond to a 2-by-2 diagonal block in
+<tt>T</tt>.
+</p>
+<p>
+The <tt>balance</tt> parameter is currently ignored, since generalized
+balancing is not yet implemented.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::gen(A, B, w)
+
+<p>
+Computes the eigenvalues of the real generalized nonsymmetric matrix pair
+<tt>A, B</tt>, and returns them as pairs in (alpha, beta), where alpha is
+<tt>GSL::Vector::Complex</tt> and beta is <tt>GSL::Vector</tt>. If beta_i
+is non-zero, then lambda = alpha_i / beta_i is an eigenvalue. Likewise, if
+alpha_i is non-zero, then mu = beta_i / alpha_i is an eigenvalue of the
+alternate problem mu A y = B y. The elements of <tt>beta</tt> are
+normalized to be non-negative.
+</p>
+<p>
+If <tt>S</tt> is desired, it is stored in <tt>A</tt> on output. If
+<tt>T</tt> is desired, it is stored in <tt>B</tt> on output. The ordering
+of eigenvalues in <tt>alpha, beta</tt> follows the ordering of the diagonal
+blocks in the Schur forms <tt>S</tt> and <tt>T</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::gen_QZ(A, B, w)
+
+<p>
+This method is identical to <tt>GSL::Eigen::gen</tt> except it also
+computes the left and right Schur vectors and returns them.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::Genv.alloc(n)
+
+</li>
+<li>GSL::Eigen::Genv::Workspace.alloc(n)
+
+<p>
+Allocatesa workspace for computing eigenvalues and eigenvectors of n-by-n
+real generalized nonsymmetric eigensystems. The size of the workspace is
+O(7n).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::genv(A, B, w)
+
+<p>
+Computes eigenvalues and right eigenvectors of the n-by-n real generalized
+nonsymmetric matrix pair <tt>A, B</tt>. The eigenvalues and eigenvectors
+are returned in <tt>alpha, beta, evec</tt>. On output, <tt>A, B</tt>
+contains the generalized Schur form <tt>S, T</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::genv_QZ(A, B, w)
+
+<p>
+This method is identical to <tt>GSL::Eigen::genv</tt> except it also
+computes the left and right Schur vectors and returns them.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="8"></a> Sorting Eigenvalues and Eigenvectors</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::symmv_sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+</li>
+<li>GSL::Eigen::Symmv::sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+<p>
+These methods simultaneously sort the eigenvalues stored in the vector
+<tt>eval</tt> and the corresponding real eigenvectors stored in the columns
+of the matrix <tt>evec</tt> into ascending or descending order according to
+the value of the parameter <tt>type</tt>,
+</p>
+<ul>
+<li><tt>GSL::Eigen::SORT_VAL_ASC</tt> ascending order in numerical value
+
+</li>
+<li><tt>GSL::Eigen::SORT_VAL_DESC</tt> escending order in numerical value
+
+</li>
+<li><tt>GSL::Eigen::SORT_ABS_ASC</tt> scending order in magnitude
+
+</li>
+<li><tt>GSL::Eigen::SORT_ABS_DESC</tt> descending order in magnitude
+
+</li>
+</ul>
+<p>
+The sorting is carried out in-place!
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::hermv_sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+</li>
+<li>GSL::Eigen::Hermv::sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+<p>
+These methods simultaneously sort the eigenvalues stored in the vector
+<tt>eval</tt> and the corresponding complex eigenvectors stored in the
+columns of the matrix <tt>evec</tt> into ascending or descending order
+according to the value of the parameter <tt>type</tt> as shown above.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::nonsymmv_sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+</li>
+<li>GSL::Eigen::Nonsymmv::sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+<p>
+Sorts the eigenvalues stored in the vector <tt>eval</tt> and the
+corresponding complex eigenvectors stored in the columns of the matrix
+<tt>evec</tt> into ascending or descending order according to the value of
+the parameter <tt>type</tt> as shown above. Only
+<tt>GSL::EIGEN_SORT_ABS_ASC</tt> and <tt>GSL::EIGEN_SORT_ABS_DESC</tt> are
+supported due to the eigenvalues being complex.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::gensymmv_sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+</li>
+<li>GSL::Eigen::Gensymmv::sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+<p>
+Sorts the eigenvalues stored in the vector <tt>eval</tt> and the
+corresponding real eigenvectors stored in the columns of the matrix
+<tt>evec</tt> into ascending or descending order according to the value of
+the parameter <tt>type</tt> as shown above.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::gensymmv_sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+</li>
+<li>GSL::Eigen::Gensymmv::sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+<p>
+Sorts the eigenvalues stored in the vector <tt>eval</tt> and the
+corresponding complex eigenvectors stored in the columns of the matrix
+<tt>evec</tt> into ascending or descending order according to the value of
+the parameter <tt>type</tt> as shown above.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Eigen::genv_sort(alpha, beta, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+</li>
+<li>GSL::Eigen::Genv::sort(alpha, beta, evec, type = GSL::Eigen::SORT_VAL_ASC)
+
+<p>
+Sorts the eigenvalues stored in the vectors <tt>alpha, beta</tt> and the
+corresponding complex eigenvectors stored in the columns of the matrix
+<tt>evec</tt> into ascending or descending order according to the value of
+the parameter <tt>type</tt> as shown above. Only
+<tt>GSL::EIGEN_SORT_ABS_ASC</tt> and <tt>GSL::EIGEN_SORT_ABS_DESC</tt> are
+supported due to the eigenvalues being complex.
+</p>
+</li>
+</ul>
+<p>
+<a href="linalg_rdoc.html">prev</a> <a href="fft_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

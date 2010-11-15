@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: rng.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>rng.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/rng.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Random Number Generation</h1>
+<p>
+The library provides a large collection of random number generators which
+can be accessed through a uniform interface. Environment variables allow
+you to select different generators and seeds at runtime, so that you can
+easily switch between generators without needing to recompile your program.
+Each instance of a generator keeps track of its own state, allowing the
+generators to be used in multi-threaded programs. Additional functions are
+available for transforming uniform random numbers into samples from
+continuous or discrete probability distributions such as the Gaussian,
+log-normal or Poisson distributions.
+</p>
+<p>
+Contents:
+</p>
+<ol>
+<li><a href="rng_rdoc.html#1">General comments on random numbers</a>
+
+</li>
+<li><a href="rng_rdoc.html#2">The Random Number Generator Interface: GSL::Rng
+class</a>
+
+</li>
+<li><a href="rng_rdoc.html#3">Random number generator initialization</a>
+
+</li>
+<li><a href="rng_rdoc.html#4">Sampling from a random number generator</a>
+
+</li>
+<li><a href="rng_rdoc.html#5">Auxiliary random number generator functions</a>
+
+</li>
+<li><a href="rng_rdoc.html#6">Random number environment variables</a>
+
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> General comments on random numbers</h2>
+<p>
+In 1988, Park and Miller wrote a paper entitled &quot;Random number
+generators: good ones are hard to find.&quot; [Commun. ACM, 31, 1192-1201].
+Fortunately, some excellent random number generators are available, though
+poor ones are still in common use. You may be happy with the
+system-supplied random number generator on your computer, but you should be
+aware that as computers get faster, requirements on random number
+generators increase. Nowadays, a simulation that calls a random number
+generator millions of times can often finish before you can make it down
+the hall to the coffee machine and back.
+</p>
+<p>
+A very nice review of random number generators was written by Pierre
+L&#8216;Ecuyer, as Chapter 4 of the book: Handbook on Simulation, Jerry
+Banks, ed. (Wiley, 1997). The chapter is available in postscript from
+L&#8216;Ecuyer&#8216;s ftp site (see references). Knuth&#8216;s volume on
+Seminumerical Algorithms (originally published in 1968) devotes 170 pages
+to random number generators, and has recently been updated in its 3rd
+edition (1997). It is brilliant, a classic. If you don&#8216;t own it, you
+should stop reading right now, run to the nearest bookstore, and buy it.
+</p>
+<p>
+A good random number generator will satisfy both theoretical and
+statistical properties. Theoretical properties are often hard to obtain
+(they require real math!), but one prefers a random number generator with a
+long period, low serial correlation, and a tendency not to &quot;fall
+mainly on the planes.&quot; Statistical tests are performed with numerical
+simulations. Generally, a random number generator is used to estimate some
+quantity for which the theory of probability provides an exact answer.
+Comparison to this exact answer provides a measure of
+&quot;randomness&quot;.
+</p>
+<h2><a href="../.././index.html"name="2"></a> The Random Number Generator Interface</h2>
+<p>
+It is important to remember that a random number generator is not a
+&quot;real&quot; function like sine or cosine. Unlike real functions,
+successive calls to a random number generator yield different return
+values. Of course that is just what you want for a random number generator,
+but to achieve this effect, the generator must keep track of some kind of
+&quot;state&quot; variable. Sometimes this state is just an integer
+(sometimes just the value of the previously generated random number), but
+often it is more complicated than that and may involve a whole array of
+numbers, possibly with some indices thrown in. To use the random number
+generators, you do not need to know the details of what comprises the
+state, and besides that varies from algorithm to algorithm.
+</p>
+<p>
+The random number generator library uses <tt>GSL::Rng</tt> class for the
+interface.
+</p>
+<h2><a href="../.././index.html"name="3"></a> Random number generator initialization</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Rng.alloc(rng_type[, seed])
+
+<p>
+This method returns a GSL::Rng object of a random number generator of type
+<tt>rng_type</tt> with a seed <tt>seed</tt>. These two arguments can be
+omitted, and the generator &#8216;gsl_rng_mt19937&#8217; and a seed 0 are
+used as defaults. The GSL library provides a number of random number
+generator types, and one can choose with a constant <tt>GSL::RNG_xxx</tt>
+or a String, as
+</p>
+<ul>
+<li><tt>GSL::Rng::MT19937</tt> or <tt>&quot;gsl_rng_mt19937&quot;</tt> or
+<tt>&quot;mt19937&quot;</tt>
+
+</li>
+<li><tt>GSL::Rng::RANLXS0</tt> or <tt>&quot;gsl_rng_ranlsx0&quot;</tt> or
+<tt>&quot;ranlxs0&quot;</tt>
+
+</li>
+<li><tt>GSL::Rng::ZUF</tt> or <tt>&quot;gsl_rng_zuf&quot;</tt> or
+<tt>&quot;zuf&quot;</tt>
+
+</li>
+<li>&#8230;
+
+</li>
+</ul>
+<p>
+See the <a
+href="http://www.gnu.org/software/gsl/manual/html_node/Random-number-generator-algorithms.html#Random-number-generator-algorithms"target="_top">GSL
+reference manual</a> for the complete list. The following demonstrates how
+to use this class,
+</p>
+<pre>
+  require 'gsl'
+
+  r = Rng.alloc(Rng::TAUS, 1)
+  r2 = Rng.alloc(&quot;ran0&quot;, 2)
+  p r.name                &lt;- &quot;taus&quot;
+  p r.get                 &lt;- get an integer
+  p r2.uniform            &lt;- get a float of [0, 1)
+</pre>
+<p>
+A generator of the type <tt>gsl_rng_taus</tt> is created with seed 1, and
+<tt>gsl_rng_ran0</tt> with seed 2. The method <tt>get</tt> returns a random
+integer. The method <tt>uniform</tt> returns a floating number uniformly
+distributed in the range [0, 1).
+</p>
+<p>
+If the package <a
+href="http://www.network-theory.co.uk/download/rngextra/"target="_top">rngextra</a>
+is installed, additional two generators are available,
+</p>
+<ul>
+<li><tt>GSL::Rng::RNGEXTRA_RNG1</tt>, <tt>&quot;rngextra_rng1&quot;</tt>
+
+</li>
+<li><tt>GSL::Rng::RNGEXTRA_RNG2</tt>, <tt>&quot;rngextra_rng2&quot;</tt>
+
+</li>
+</ul>
+<p>
+They are created as
+</p>
+<pre>
+  r1 = Rng.alloc(Rng::RNGEXTRA_RNG1)
+  p r1.name                &lt;- &quot;rng1&quot;
+
+  r2 = Rng.alloc(&quot;rngextra_rng2&quot;)
+  p r2.name                &lt;- &quot;rng2&quot;
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Rng.default_seed
+
+<p>
+Returns the default seed
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Rng.set_default_seed(seed)
+
+</li>
+<li>GSL::Rng.default_seed=(seed)
+
+<p>
+Override the default seed by <tt>seed</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Rng.types_setup()
+
+<p>
+Returns an array of all the available generators&#8217; names.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSK::Rng.memcpy(dest, src)
+
+<p>
+Copies the random number generator <tt>src</tt>) into the pre-existing
+generator <tt>dest</tt>, making dest into an exact copy of <tt>src</tt>.
+The two generators must be of the same type.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Rng#set(s)
+
+<p>
+This method initializes the random number generator with a given seed
+<tt>s</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Sampling from a random number generator</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Rng#get
+
+<p>
+This returns a random integer from the reciever generator.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Rng#uniform
+
+<p>
+This method returns a double precision floating point number uniformly
+distributed in the range [0,1).
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Rng#uniform_pos
+
+<p>
+This returns a positive double precision floating point number uniformly
+distributed in the range (0,1), excluding both 0.0 and 1.0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Rng#uniform_int(n)
+
+<p>
+This method returns a random integer from 0 to n-1 inclusive.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="5"></a> Auxiliary random number generator functions</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Rng#name
+
+<p>
+This method returns a Sting object of the name of the generator.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Rng#max
+
+</li>
+<li>GSL::Rng#min
+
+<p>
+These method return the largest/smallest value that the method <tt>get</tt>
+can return.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Rng#clone
+
+</li>
+<li>GSL::Rng#duplicate
+
+<p>
+Return a newly created generator which is an exact copy of the generator
+<tt>self</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="6"></a> Random number environment variables</h2>
+<p>
+The library allows you to choose a default generator and seed from the
+environment variables <tt>GSL_RNG_TYPE</tt> and <tt>GSL_RNG_SEED</tt> and
+the method <tt>GSL::Rng::env_setup</tt>.
+</p>
+<hr size="1"></hr><ul>
+<li>GSL::Rng.env_setup()
+
+<p>
+Reads the environment variables <tt>GSL_RNG_TYPE</tt> and
+<tt>GSL_RNG_SEED</tt> and uses their values to set the corresponding
+library variables.
+</p>
+<p>
+If you don&#8216;t specify a generator for <tt>GSL_RNG_TYPE</tt> then
+&quot;mt19937&quot; is used as the default. The initial value of the
+default seed is zero.
+</p>
+</li>
+</ul>
+<p>
+<a href="integration_rdoc.html">prev</a> <a href="qrng_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

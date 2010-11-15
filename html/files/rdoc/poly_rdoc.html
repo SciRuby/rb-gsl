@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: poly.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>poly.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/poly.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 15:16:16 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Polynomials</h1>
+<p>
+Contents:
+</p>
+<ol>
+<li><a href="poly_rdoc.html#1">Polynomial Evaluation</a>
+
+</li>
+<li><a href="poly_rdoc.html#2">Solving polynomial equations</a>
+
+<ol>
+<li><a href="poly_rdoc.html#2.1">Quadratic Equations</a>
+
+</li>
+<li><a href="poly_rdoc.html#2.2">Cubic Equations</a>
+
+</li>
+<li><a href="poly_rdoc.html#2.3">General Polynomial Equations</a>
+
+</li>
+</ol>
+</li>
+<li><a href="poly_rdoc.html#3">GSL::Poly Class</a>
+
+<ol>
+<li><a href="poly_rdoc.html#3.1">Constructors</a>
+
+</li>
+<li><a href="poly_rdoc.html#3.2">Methods</a>
+
+</li>
+</ol>
+</li>
+<li><a href="poly_rdoc.html#4">Polynomial Fitting</a>
+
+</li>
+<li><a href="poly_rdoc.html#5">Divided-difference representations</a>
+
+</li>
+<li><a href="poly_rdoc.html#6">Extensions</a>
+
+<ol>
+<li><a href="poly_rdoc.html#6.1">Special Polynomials</a>
+
+</li>
+<li><a href="poly_rdoc.html#6.2">Polynomial Operations</a>
+
+</li>
+</ol>
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> Polynomial Evaluation</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Poly.eval(c, x)
+
+<p>
+Evaluates the polynomial <tt>c[0] + c[1]x + c[2]x^2 + &#8230;</tt>. The
+polynomial coefficients <tt>c</tt> can be an <tt>Array</tt>, a
+<tt>GSL::Vector</tt>, or an <tt>NArray</tt>. The evaluation point
+<tt>x</tt> is a <tt>Numeric</tt>, <tt>Array</tt>, <tt>GSL::Vector</tt> or
+<tt>NArray</tt>. From GSL 1.11, <tt>x</tt> can be a complex number, and
+<tt>c</tt> can be a complex polynomial given by a
+<tt>GSL::Vector::Complex</tt> or an <tt>Array</tt>.
+</p>
+<p>
+Ex)
+</p>
+<pre>
+   &gt;&gt; require(&quot;gsl&quot;)
+   =&gt; true
+   &gt;&gt; GSL::Poly.eval([1, 2, 3], 2)
+   =&gt; 17.0
+   &gt;&gt; GSL::Poly.eval(GSL::Vector[1, 2, 3], 2)
+   =&gt; 17.0
+   &gt;&gt; GSL::Poly.eval(NArray[1.0, 2, 3], 2)
+   =&gt; 17.0
+   &gt;&gt; GSL::Poly.eval([1, 2, 3], [1, 2, 3])
+   =&gt; [6.0, 17.0, 34.0]
+   &gt;&gt; GSL::Poly.eval([1, 2, 3], GSL::Vector[1, 2, 3])
+   =&gt; GSL::Vector
+   [ 6.000e+00 1.700e+01 3.400e+01 ]
+   &gt;&gt; GSL::Poly.eval([1, 2, 3], NArray[1.0, 2, 3])
+   =&gt; NArray.float(3):
+   [ 6.0, 17.0, 34.0 ]
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly.eval_derivs(c, x)
+
+</li>
+<li>GSL::Poly.eval_derivs(c, x, lenres)
+
+<p>
+(GSL-1.13) Evaluate and return a polynomial and its derivatives. The output
+contains the values of d^k P/d x^k for the specified value of x starting
+with k = 0. The input polynomial <tt>c</tt> can be an <tt>Array</tt>,
+<tt>GSL::Poly</tt> or an <tt>NArray</tt>. If <tt>lenres</tt> is not given,
+<tt>lenres = LENGTH(c) + 1</tt> is used, therefore the last element of the
+output is 0.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly#eval_derivs(x)
+
+</li>
+<li>GSL::Poly#eval_derivs(x, lenres)
+
+<p>
+(GSL-1.13) Evaluate and return a polynomial and its derivatives. The output
+contains the values of d^k P/d x^k for the specified value of x starting
+with k = 0. If <tt>lenres</tt> is not given, <tt>lenres = LENGTH(self) +
+1</tt> is used, therefore the last element of the output is 0.
+</p>
+<p>
+Ex.)
+</p>
+<pre>
+ &gt;&gt; ary = [1, 2, 3]
+ =&gt; [1, 2, 3]
+ &gt;&gt; GSL::Poly.eval_derivs(ary, 1)
+ =&gt; [6.0, 8.0, 6.0, 0.0]
+ &gt;&gt; na = NArray[1.0, 2, 3]
+ =&gt; NArray.float(3):
+ [ 1.0, 2.0, 3.0 ]
+ &gt;&gt; GSL::Poly.eval_derivs(na, 1)
+ =&gt; NArray.float(4):
+ [ 6.0, 8.0, 6.0, 0.0 ]
+ &gt;&gt; poly = GSL::Poly[1.0, 2, 3]
+ =&gt; GSL::Poly
+ [ 1.000e+00 2.000e+00 3.000e+00 ]
+ &gt;&gt; GSL::Poly.eval_derivs(poly, 1)
+ =&gt; GSL::Poly
+ [ 6.000e+00 8.000e+00 6.000e+00 0.000e+00 ]
+ &gt;&gt; poly.eval_derivs(1)
+ =&gt; GSL::Poly
+ [ 6.000e+00 8.000e+00 6.000e+00 0.000e+00 ]
+ &gt;&gt; poly.eval_derivs(1, 3)
+ =&gt; GSL::Poly
+ [ 6.000e+00 8.000e+00 6.000e+00 ]
+</pre>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Solving polynomial equations</h2>
+<h3><a href="../.././index.html"name="2.1"></a> Quadratic Equations</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Poly::solve_quadratic(a, b, c)
+
+</li>
+<li>GSL::Poly::solve_quadratic([a, b, c])
+
+<p>
+Find the real roots of the quadratic equation,
+</p>
+<pre>
+  a x^2 + b x + c = 0
+</pre>
+<p>
+The coefficients are given by 3 numbers, or a Ruby array, or a
+<tt>GSL::Vector</tt> object. The roots are returned as a
+<tt>GSL::Vector</tt>.
+</p>
+<ul>
+<li>Ex: z^2 - 3z + 2 = 0
+
+<pre>
+  &gt;&gt; GSL::Poly::solve_quadratic(1, -3, 2)
+  =&gt; GSL::Vector:
+  [ 1.000e+00 2.000e+00 ]
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly::complex_solve_quadratic(a, b, c)
+
+</li>
+<li>GSL::Poly::complex_solve_quadratic([a, b, c])
+
+<p>
+Find the complex roots of the quadratic equation,
+</p>
+<pre>
+  a z^2 + b z + z = 0
+</pre>
+<p>
+The coefficients are given by 3 numbers or a Ruby array, or a
+<tt>GSL::Vector</tt>. The roots are returned as a
+<tt>GSL::Vector::Complex</tt> of two elements.
+</p>
+<ul>
+<li>Ex: z^2 - 3z + 2 = 0
+
+<pre>
+ &gt;&gt; require(&quot;gsl&quot;)
+ =&gt; true
+ &gt;&gt; GSL::Poly::complex_solve_quadratic(1, -3, 2)
+ [ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] ]
+ =&gt; #&lt;GSL::Vector::Complex:0x764014&gt;
+ &gt;&gt; GSL::Poly::complex_solve_quadratic(1, -3, 2).real  &lt;--- Real part
+ =&gt; GSL::Vector::View:
+ [ 1.000e+00 2.000e+00 ]
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.2"></a> Cubic Equations</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Poly::solve_cubic(same as solve_quadratic)
+
+<p>
+This method finds the real roots of the cubic equation,
+</p>
+<pre>
+  x^3 + a x^2 + b x + c = 0
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly::complex_solve_cubic(same as solve_cubic)
+
+<p>
+This method finds the complex roots of the cubic equation,
+</p>
+<pre>
+  z^3 + a z^2 + b z + c = 0
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="2.3"></a> General Polynomial Equations</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Poly::complex_solve(c0, c1, c2,,, )
+
+</li>
+<li>GSL::Poly::solve(c0, c1, c2,,, )
+
+<p>
+Find the complex roots of the polynomial equation. Note that the
+coefficients are given by &quot;ascending&quot; order.
+</p>
+<ul>
+<li>Ex: x^2 - 3 x + 2 == 0
+
+<pre>
+   &gt;&gt; GSL::Poly::complex_solve(2, -3, 1)    &lt;--- different from Poly::quadratic_solve
+   [ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] ]
+   =&gt; #&lt;GSL::Vector::Complex:0x75e614&gt;
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> GSL::Poly Class</h2>
+<p>
+This class expresses polynomials of arbitrary orders.
+</p>
+<h3><a href="../.././index.html"name="3.1"></a> Constructors</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Poly.alloc(c0, c1, c2, .&#8230;)
+
+</li>
+<li>GSL::Poly[c0, c1, c2, .&#8230;]
+
+<p>
+This creates an instance of the <tt>GSL::Poly</tt> class, which represents
+a polynomial
+</p>
+<pre>
+    c0 + c1 x + c2 x^2 + ....
+</pre>
+<p>
+This class is derived from <tt>GSL::Vector</tt>.
+</p>
+<ul>
+<li>Ex: x^2 - 3 x + 2
+
+<pre>
+  poly = GSL::Poly.alloc([2, -3, 1])
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="3.2"></a> Instance Methods</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Poly#eval(x)
+
+</li>
+<li>GSL::Poly#at(x)
+
+<p>
+Evaluates the polynomial c[0] + c[1] x + c[2] x^2 + &#8230; + c[len-1]
+x^{len-1} using Horner&#8216;s method for stability. The argument
+<tt>x</tt> is a <tt>Numeric</tt>, <tt>GSL::Vector, Matrix</tt> or an
+<tt>Array</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly#solve_quadratic
+
+<p>
+Solve the quadratic equation.
+</p>
+<ul>
+<li>Ex: z^2 - 3 z + 2 = 0:
+
+<pre>
+  &gt;&gt; a = GSL::Poly[2, -3, 1]
+  =&gt; GSL::Poly:
+  [ 2.000e+00 -3.000e+00 1.000e+00 ]
+  &gt;&gt; a.solve_quadratic
+  =&gt; GSL::Vector:
+  [ 1.000e+00 2.000e+00 ]
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly#solve_cubic
+
+<p>
+Solve the cubic equation.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly#complex_solve
+
+</li>
+<li>GSL::Poly#solve
+
+</li>
+<li>GSL::Poly#roots
+
+<p>
+These methods find the complex roots of the quadratic equation,
+</p>
+<pre>
+  c0 + c1 z + c2 z^2 + .... = 0
+</pre>
+<ul>
+<li>Ex: z^2 - 3 z + 2 = 0:
+
+<pre>
+  &gt;&gt; a = GSL::Poly[2, -3, 1]
+  =&gt; GSL::Poly:
+  [ 2.000e+00 -3.000e+00 1.000e+00 ]
+  &gt;&gt; a.solve
+  [ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] ]
+  =&gt; #&lt;GSL::Vector::Complex:0x35db28&gt;
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Polynomial fitting</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Poly.fit(x, y, order)
+
+</li>
+<li>GSL::Poly.wfit(x, w, y, order)
+
+<p>
+Finds the coefficient of a polynomial of order <tt>order</tt> that fits the
+vector data (<tt>x, y</tt>) in a least-square sense. This provides a
+higher-level interface to the method <a
+href="fit_rdoc.html">GSL::Multifit#linear</a> in a case of polynomial
+fitting.
+</p>
+<p>
+Example:
+</p>
+<pre>
+  #!/usr/bin/env ruby
+  require(&quot;gsl&quot;)
+
+  x = GSL::Vector[1, 2, 3, 4, 5]
+  y = GSL::Vector[5.5, 43.1, 128, 290.7, 498.4]
+  # The results are stored in a polynomial &quot;coef&quot;
+  coef, cov, chisq, status = Poly.fit(x, y, 3)
+
+  x2 = GSL::Vector.linspace(1, 5, 20)
+  graph([x, y], [x2, coef.eval(x2)], &quot;-C -g 3 -S 4&quot;)
+</pre>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="5"></a> Divided-difference representations</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Poly::dd_init(xa, ya)
+
+<p>
+This method computes a divided-difference representation of the
+interpolating polynomial for the points <tt>(xa, ya)</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly::DividedDifference#eval(x)
+
+<p>
+This method evaluates the polynomial stored in divided-difference form
+<tt>self</tt> at the point <tt>x</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly::DividedDifference#taylor(xp)
+
+<p>
+This method converts the divided-difference representation of a polynomial
+to a Taylor expansion. On output the Taylor coefficients of the polynomial
+expanded about the point <tt>xp</tt> are returned.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="6"></a> Extensions</h2>
+<h3><a href="../.././index.html"name="6.1"></a> Special Polynomials</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Poly.hermite(n)
+
+<p>
+This returns coefficients of the <tt>n</tt>-th order Hermite polynomial,
+<tt>H(x; n)</tt>. For order of <tt>n</tt> &gt;= 3, this method uses the
+recurrence relation
+</p>
+<pre>
+     H(x; n+1) = 2 x H(x; n) - 2 n H(x; n-1)
+</pre>
+<ul>
+<li>Ex:
+
+<pre>
+  &gt;&gt; GSL::Poly.hermite(2)
+  =&gt; GSL::Poly::Int:
+  [ -2 0 4 ]                            &lt;----- 4x^2 - 2
+  &gt;&gt; GSL::Poly.hermite(5)
+  =&gt; GSL::Poly::Int:
+  [ 0 120 0 -160 0 32 ]                 &lt;----- 32x^5 - 160x^3 + 120x
+  &gt;&gt; GSL::Poly.hermite(7)
+  =&gt; GSL::Poly::Int:
+  [ 0 -1680 0 3360 0 -1344 0 128 ]
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly.cheb(n)
+
+</li>
+<li>GSL::Poly.chebyshev(n)
+
+<p>
+Return the coefficients of the <tt>n</tt>-th order Chebyshev polynomial,
+<tt>T(x; n</tt>. For order of <tt>n</tt> &gt;= 3, this method uses the
+recurrence relation
+</p>
+<pre>
+     T(x; n+1) = 2 x T(x; n) - T(x; n-1)
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly.cheb_II(n)
+
+</li>
+<li>GSL::Poly.chebyshev_II(n)
+
+<p>
+Return the coefficients of the <tt>n</tt>-th order Chebyshev polynomial of
+type II, <tt>U(x; n</tt>.
+</p>
+<pre>
+     U(x; n+1) = 2 x U(x; n) - U(x; n-1)
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly.bell(n)
+
+<p>
+Bell polynomial
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly.bessel(n)
+
+<p>
+Bessel polynomial
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Poly.laguerre(n)
+
+<p>
+Retunrs the coefficients of the <tt>n</tt>-th order Laguerre polynomial
+multiplied by n!.
+</p>
+<p>
+Ex:
+</p>
+<pre>
+     rb(main):001:0&gt; require(&quot;gsl&quot;)
+     =&gt; true
+     &gt;&gt; GSL::Poly.laguerre(0)
+     =&gt; GSL::Poly::Int:
+     [ 1 ]                              &lt;--- 1
+     &gt;&gt; GSL::Poly.laguerre(1)
+     =&gt; GSL::Poly::Int:
+     [ 1 -1 ]                           &lt;--- -x + 1
+     &gt;&gt; GSL::Poly.laguerre(2)
+     =&gt; GSL::Poly::Int:
+     [ 2 -4 1 ]                         &lt;--- (x^2 - 4x + 2)/2!
+     &gt;&gt; GSL::Poly.laguerre(3)
+     =&gt; GSL::Poly::Int:
+     [ 6 -18 9 -1 ]                     &lt;--- (-x^3 + 9x^2 - 18x + 6)/3!
+     &gt;&gt; GSL::Poly.laguerre(4)
+     =&gt; GSL::Poly::Int:
+     [ 24 -96 72 -16 1 ]                &lt;--- (x^4 - 16x^3 + 72x^2 - 96x + 24)/4!
+</pre>
+</li>
+</ul>
+<h3><a href="../.././index.html"name="6.2"></a> Polynomial Operations</h3>
+<hr size="1"></hr><ul>
+<li>GSL::Poly#conv
+
+</li>
+<li>GSL::Poly#deconv
+
+</li>
+<li>GSL::Poly#reduce
+
+</li>
+<li>GSL::Poly#deriv
+
+</li>
+<li>GSL::Poly#integ
+
+</li>
+<li>GSL::Poly#compan
+
+</li>
+</ul>
+<p>
+<a href="complex_rdoc.html">prev</a> <a href="sf_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

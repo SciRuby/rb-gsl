@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: index.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>index.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/index.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 15:24:32 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1><a href="index_rdoc.html"target="_parent">Ruby/GSL</a></h1>
+<p>
+Permission is granted to copy, distribute and/or modify this document under
+the terms of the GNU Free Documentation License.
+</p>
+<h2><a href="../.././index.html"name="1"></a> Description</h2>
+<p>
+<a href="http://rubyforge.org/projects/rb-gsl/"target="_top">Ruby/GSL</a>
+is a ruby interface to the <a
+href="http://www.gnu.org/software/gsl/"target="_top">GNU Scientific
+Library</a> (GSL), for numerical computing with <a
+href="http://www.ruby-lang.org/en/"target="_top">Ruby</a>.
+</p>
+<h2><a href="../.././index.html"name="3"></a> Installation</h2>
+<h3><a href="../.././index.html"name="3.1"></a> Using the gem command</h3>
+<p>
+Ruby/GSL may now be installed as a Ruby Gem by simply running
+</p>
+<pre>
+  gem install gsl
+</pre>
+<p>
+Note that the GSL libraries must already be installed before Ruby/GSL can
+be installed.
+</p>
+<h3><a href="../.././index.html"name="3.2"></a> Using the setup.rb command</h3>
+<p>
+If you prefer, Ruby/GSL may still be installed using setup.rb.
+</p>
+<ol>
+<li>Get and install <a
+href="http://www.gnu.org/software/gsl/#downloading"target="_top">GSL</a>.
+Make sure the command &quot;gsl-config&quot; is in command search path.
+
+</li>
+<li><a href="http://rubyforge.org/frs/?group_id=285"target="_top">Download</a>
+Ruby/GSL, ungzip and untar the archive <tt>rb-gsl-xxx.tar.gz</tt>.
+
+</li>
+<li><tt> % cd rb-gsl-xxx/</tt>
+
+</li>
+<li><tt> % ruby setup.rb config</tt>
+
+</li>
+<li><tt> % ruby setup.rb setup</tt>
+
+</li>
+<li><tt> % ruby setup.rb install</tt> (as root)
+
+</li>
+</ol>
+<ul>
+<li>It is recommended to install the <a
+href="http://www.gnu.org/software/plotutils/plotutils.html"target="_top">GNU
+plotutils</a> package. Some of the example scripts in the
+&#8216;examples/&#8217; directory use the <tt>graph</tt> utility included
+in the package to plot the results. Windows-cygwin binaries of <tt>GNU
+plotutils</tt> and related packages are available from <a
+href="http://rustam.uwp.edu/support"target="_top">here</a>.
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Screenshot</h2>
+<p>
+Ruby/GSL can be seen in action in these <a
+href="screenshot_rdoc.html">screenshots</a>.
+</p>
+<h2><a href="../.././index.html"name="5"></a> Reference</h2>
+<p>
+The <a href="ref_rdoc.html">Ruby/GSL reference manual</a> follows and
+borrows large parts of the GSL reference manual.
+</p>
+<h2><a href="../.././index.html"name="6"></a> Examples</h2>
+<p>
+See scripts in <tt>examples/</tt> and <tt>tests/</tt> directories.
+</p>
+<h2><a href="../.././index.html"name="7"></a> Related Projects</h2>
+<ul>
+<li><a href="http://ruby-gsl.sourceforge.net/"target="_top">ruby-gsl:</a>
+Another Ruby biding, developed by Arno Erpenbeck.
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="8"></a> Licence</h2>
+<p>
+Ruby/GSL is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License. This library is distributed in
+the hope that it will be useful, but WITHOUT ANY WARRANTY.
+</p>
+<h2><a href="../.././index.html"name="9"></a> Bug Report</h2>
+<p>
+If you encounter bugs in Ruby/GSL, please e-mail to me, or submit reports
+from <a href="http://rubyforge.org/projects/rb-gsl/"target="_top">RubyForge
+page</a>.
+</p>
+<h2><a href="../.././index.html"name="10"></a> Author</h2>
+<table>
+<tr><td valign="top">Yoshiki Tsunesada:</td><td>July, 2004
+
+</td></tr>
+<tr><td valign="top">David MacMahon:</td><td>November, 2010
+
+</td></tr>
+</table>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

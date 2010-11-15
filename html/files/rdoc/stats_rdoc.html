@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: stats.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>stats.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/stats.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Statistics</h1>
+<ol>
+<li><a href="stats_rdoc.html#1">Mean, Standard Deviation and Variance</a>
+
+</li>
+<li><a href="stats_rdoc.html#2">Absolute deviation</a>
+
+</li>
+<li><a href="stats_rdoc.html#3">Higher moments (skewness and kurtosis)</a>
+
+</li>
+<li><a href="stats_rdoc.html#4">Autocorrelation</a>
+
+</li>
+<li><a href="stats_rdoc.html#5">Covariance</a>
+
+</li>
+<li><a href="stats_rdoc.html#6">Correlation</a>
+
+</li>
+<li><a href="stats_rdoc.html#7">Weighted samples</a>
+
+</li>
+<li><a href="stats_rdoc.html#8">Maximum and minimum values</a>
+
+</li>
+<li><a href="stats_rdoc.html#9">Median and percentiles</a>
+
+</li>
+<li><a href="stats_rdoc.html#10">Examples</a>
+
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> Mean, Standard Deviation and Variance</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::mean(v)
+
+</li>
+<li>GSL::Vector#mean
+
+<p>
+Arithmetic mean.
+</p>
+<ul>
+<li>Ex:
+
+<pre>
+   &gt;&gt; require(&quot;gsl&quot;)
+   =&gt; true
+   &gt;&gt; v = Vector[1..7]
+   =&gt; GSL::Vector:
+   [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 6.000e+00 7.000e+00 ]
+   &gt;&gt; v.mean
+   =&gt; 4.0
+   &gt;&gt; Stats::mean(v)
+   =&gt; 4.0
+</pre>
+</li>
+</ul>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#tss
+
+<p>
+Returns the total sum of squares about <tt>self.mean</tt>. (Requires GSL
+1.11)
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#tss_m(mean)
+
+<p>
+Returns the total sum of squares about <tt>mean</tt>. (Requires GSL 1.11)
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::variance_m(v[, mean])
+
+</li>
+<li>GSL::Vector#variance_m([mean])
+
+<p>
+Variance of <tt>v</tt> relative to the given value of <tt>mean</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::sd(v[, mean])
+
+</li>
+<li>GSL::Vector#sd([mean])
+
+<p>
+Standard deviation.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::tss(v[, mean])
+
+</li>
+<li>GSL::Vector#tss([mean])
+
+<p>
+(GSL-1.11 or later) These methods return the total sum of squares (TSS) of
+data about the mean.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::variance_with_fixed_mean(v, mean)
+
+</li>
+<li>GSL::Vector#variance_with_fixed_mean(mean)
+
+<p>
+Unbiased estimate of the variance of <tt>v</tt> when the population mean
+<tt>mean</tt> of the underlying distribution is known <tt>a priori</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::variance_with_fixed_mean(v, mean)
+
+</li>
+<li>GSL::Vector#variance_with_fixed_mean(mean)
+
+</li>
+<li>GSL::Stats::sd_with_fixed_mean(v, mean)
+
+</li>
+<li>GSL::Vector#sd_with_fixed_mean(mean)
+
+<p>
+Unbiased estimate of the variance of <tt>v</tt> when the population mean
+<tt>mean</tt> of the underlying distribution is known <tt>a priori</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Absolute deviation</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::absdev(v[, mean])
+
+</li>
+<li>GSL::Vector#absdev([mean])
+
+<p>
+Compute the absolute deviation (from the mean <tt>mean</tt> if given).
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Higher moments (skewness and kurtosis)</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::skew(v[, mean, sd])
+
+</li>
+<li>GSL::Vector#skew([mean, sd])
+
+<p>
+Skewness
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::kurtosis(v[, mean, sd])
+
+</li>
+<li>GSL::Vector#kurtosis([mean, sd])
+
+<p>
+Kurtosis
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="4"></a> Autocorrelation</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::lag1_autocorrelation(v[, mean])
+
+</li>
+<li>GSL::Vector#lag1_autocorrelation([mean])
+
+<p>
+The lag-1 autocorrelation
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="5"></a> Covariance</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::covariance(v1, v2)
+
+</li>
+<li>GSL::Stats::covariance_m(v1, v2, mean1, mean2)
+
+<p>
+Covariance of vectors <tt>v1, v2</tt>.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="6"></a> Correlation</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::correlation(v1, v2)
+
+<p>
+This efficiently computes the Pearson correlation coefficient between the
+vectors <tt>v1, v2</tt>. (&gt;= GSL-1.10)
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="7"></a> Weighted samples</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#wmean(w)
+
+</li>
+<li>GSL::Vector#wvariance(w)
+
+</li>
+<li>GSL::Vector#wsd(w)
+
+</li>
+<li>GSL::Vector#wabsdev(w)
+
+</li>
+<li>GSL::Vector#wskew(w)
+
+</li>
+<li>GSL::Vector#wkurtosis(w)
+
+</li>
+</ul>
+<h2><a href="../.././index.html"name="8"></a> Maximum and Minimum values</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::max(data)
+
+</li>
+<li>GSL::Vector#max
+
+<p>
+Return the maximum value in data.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::min(data)
+
+</li>
+<li>GSL::Vector#min
+
+<p>
+Return the minimum value in data.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::minmax(data)
+
+</li>
+<li>GSL::Vectorminmax
+
+<p>
+Find both the minimum and maximum values in <tt>data</tt> and returns them.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::max_index(data)
+
+</li>
+<li>GSL::Vector#max_index
+
+<p>
+Return the index of the maximum value in <tt>data</tt>. The maximum value
+is defined as the value of the element x_i which satisfies x_i &gt;= x_j
+for all j. When there are several equal maximum elements then the first one
+is chosen.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::min_index(data)
+
+</li>
+<li>GSL::Vector#min_index
+
+<p>
+Returns the index of the minimum value in <tt>data</tt>. The minimum value
+is defined as the value of the element x_i which satisfies x_i &gt;= x_j
+for all j. When there are several equal minimum elements then the first one
+is chosen.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::minmax_index(data)
+
+</li>
+<li>GSL::Vector#minmax_index
+
+<p>
+Return the indexes of the minimum and maximum values in <tt>data</tt> in a
+single pass.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="9"></a> Median and Percentiles</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::median_from_sorted_data(v)
+
+</li>
+<li>GSL::Vector#median_from_sorted_data
+
+<p>
+Return the median value. The elements of the data must be in ascending
+numerical order. There are no checks to see whether the data are sorted, so
+the method <tt>GSL::Vector#sort</tt> should always be used first.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Stats::quantile_from_sorted_data(v)
+
+</li>
+<li>GSL::Vector#quantile_from_sorted_data
+
+<p>
+Return the quantile value. The elements of the data must be in ascending
+numerical order. There are no checks to see whether the data are sorted, so
+the method <tt>GSL::Vector#sort</tt> should always be used first.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="10"></a> Example</h2>
+<pre>
+     #!/usr/bin/env ruby
+     require 'gsl'
+
+     ary =  [17.2, 18.1, 16.5, 18.3, 12.6]
+     data = Vector.alloc(ary)
+     mean     = data.mean()
+     variance = data.stats_variance()
+     largest  = data.stats_max()
+     smallest = data.stats_min()
+
+     printf(&quot;The dataset is %g, %g, %g, %g, %g\n&quot;,
+            data[0], data[1], data[2], data[3], data[4]);
+
+     printf(&quot;The sample mean is %g\n&quot;, mean);
+     printf(&quot;The estimated variance is %g\n&quot;, variance);
+     printf(&quot;The largest value is %g\n&quot;, largest);
+     printf(&quot;The smallest value is %g\n&quot;, smallest);
+</pre>
+<p>
+<a href="randist_rdoc.html">prev</a> <a href="hist_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

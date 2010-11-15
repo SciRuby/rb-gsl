@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: sort.rdoc</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>sort.rdoc</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>rdoc/sort.rdoc
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>Sorting</h1>
+<p>
+Contents:
+</p>
+<ol>
+<li><a href="sort_rdoc.html#1">Heapsort of vectors</a>
+
+</li>
+<li><a href="sort_rdoc.html#2">Sorting vectors</a>
+
+</li>
+<li><a href="sort_rdoc.html#3">Selecting the k smallest or largest elements</a>
+
+</li>
+</ol>
+<h2><a href="../.././index.html"name="1"></a> Heapsort</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#heapsort
+
+</li>
+<li>GSL::Vector::Complex#heapsort
+
+</li>
+<li>GSL.heapsort(v)
+
+<p>
+These method sort the elements of the vector <tt>self</tt> using the
+comparison function given by a block, and return the result as a new vector
+object. The vector <tt>self</tt> is not changed.
+</p>
+<p>
+Example: Sorting a complex vector in ascending order by magnitudes.
+</p>
+<pre>
+    p v.heapsort { |a, b|
+      a.abs &lt;=&gt; b.abs
+    }
+</pre>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#heapsort!
+
+</li>
+<li>GSL::Vector::Complex#heapsort!
+
+</li>
+<li>GSL.heapsort!(v)
+
+<p>
+These method sort the elements of the vector <tt>self</tt> in-place.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#heapsort_index
+
+</li>
+<li>GSL::Vector::Complex#heapsort_index
+
+</li>
+<li>GSL.heapsort_index(v)
+
+<p>
+These method indirectly sort the elements of the vector <tt>self</tt> using
+the comparison function given by a block, and return the result as a
+permutation object. The vector itself is not changed.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="2"></a> Sorting vectors</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sort!
+
+<p>
+This method sorts the elements of the vector <tt>self</tt> into ascending
+numerical order. The vector itself is changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sort
+
+<p>
+This returns a new vector whose elements are sorted into ascending
+numerical order. The vector <tt>self</tt> is not changed.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sort_index
+
+<p>
+This method indirectly sorts the elements of the vector <tt>self</tt> into
+ascending order, and returns the result as a <tt>GSL::Permutation</tt>
+object. The elements of the returned permutation give the index of the
+vector element which would have been stored in that position if the vector
+had been sorted in place. The first element of the permutation gives the
+index of the least element in <tt>self</tt>, and the last element of the
+permutation gives the index of the greatest element in <tt>self</tt>. The
+vector <tt>self</tt> is not changed.
+</p>
+</li>
+</ul>
+<h2><a href="../.././index.html"name="3"></a> Selecting the k smallest or largest elements</h2>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sort_smallest(k)
+
+</li>
+<li>GSL::Vector#sort_largest(k)
+
+<p>
+These functions return a new vector of the <tt>k</tt> smallest or largest
+elements of the vector <tt>self</tt>. The argument <tt>k</tt> must be less
+than or equal to the length of the vector <tt>self</tt>.
+</p>
+</li>
+</ul>
+<hr size="1"></hr><ul>
+<li>GSL::Vector#sort_smallest_index(k)
+
+</li>
+<li>GSL::Vector#sort_largest_index(k)
+
+<p>
+These functions return a new <tt>GSL::Permutation</tt> object of the
+indices of the <tt>k</tt> smallest or largest elements of the vector
+<tt>self</tt>. <tt>k</tt> must be less than or equal to the length of the
+vector.
+</p>
+</li>
+</ul>
+<p>
+<a href="multiset_rdoc.html">prev</a> <a href="blas_rdoc.html">next</a>
+</p>
+<p>
+<a href="ref_rdoc.html">Reference index</a> <a
+href="index_rdoc.html">top</a>
+</p>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>
