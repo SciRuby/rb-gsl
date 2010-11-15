@@ -121,7 +121,7 @@
 # simplicity) The example program models psi by default. 
 #
 #  #!/usr/bin/env ruby
-#  require("rbgsl")
+#  require("gsl")
 #
 #  N_DIM = 3
 #  N_SUM_R = 10

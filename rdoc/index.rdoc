@@ -4,23 +4,19 @@
 # Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License.
 #
 # == {}[link:files/index_rdoc.html"name="1] Description
-# {RubyGSL}[http://rubyforge.org/projects/rb-gsl/"target="_top] is a ruby interface to the {GSL}[http://www.gnu.org/software/gsl/"target="_top] (GNU Scientific Library), for numerical computing with {Ruby}[http://www.ruby-lang.org/en/"target="_top]. 
-#
-# #Ruby/GSL is developed with Ruby 1.8.3 and GSL 1.7 on 
-# #{MacOS X}[http://www.apple.com/macosx/overview/"target="_top] 10.3.7 (Darwin 7.7.0).
-# #This also runs under Linux, and {Cygwin}[http://cygwin.com/"target="_top].
-#
-# == {}[link:files/index_rdoc.html"name="2] Download
-#   * {RubyForge}[http://rubyforge.org/frs/?group_id=285"target="_top]
+# {Ruby/GSL}[http://rubyforge.org/projects/rb-gsl/"target="_top] is a ruby interface to the {GNU Scientific Library}[http://www.gnu.org/software/gsl/"target="_top] (GSL), for numerical computing with {Ruby}[http://www.ruby-lang.org/en/"target="_top]. 
 #
 # == {}[link:files/index_rdoc.html"name="3] Installation
 # === {}[link:files/index_rdoc.html"name="3.1] Using the gem command
-# RubyGSL may now be installed as a Ruby Gem by simply running <tt>gem install
-# gsl</tt>.  Note that the GSL libraries must already be installed before RubyGSL
+# Ruby/GSL may now be installed as a Ruby Gem by simply running
+#
+#   gem install gsl
+#
+# Note that the GSL libraries must already be installed before Ruby/GSL
 # can be installed.
 #
 # === {}[link:files/index_rdoc.html"name="3.2] Using the setup.rb command
-# If you prefer, RubyGSL may still be installed using setup.rb.
+# If you prefer, Ruby/GSL may still be installed using setup.rb.
 # 1. Get and install {GSL}[http://www.gnu.org/software/gsl/#downloading"target="_top]. Make sure the command "gsl-config" is in command search path.
 # 1. {Download}[http://rubyforge.org/frs/?group_id=285"target="_top] Ruby/GSL, ungzip and untar the archive <tt>rb-gsl-xxx.tar.gz</tt>. 
 # 1. <tt> % cd rb-gsl-xxx/</tt>
@@ -28,18 +24,21 @@
 # 1. <tt> % ruby setup.rb setup</tt>
 # 1. <tt> % ruby setup.rb install</tt> (as root)
 #
-#   * It is recommended to install the
-#     {<tt>GNU plotutils</tt>}[http://www.gnu.org/software/plotutils/plotutils.html"target="_top]
-#     package.
-#     Some of the example scripts in the 'examples/' directory use the <tt>graph</tt> 
-#     utility included in the package to plot the results. 
-#     Windows-cygwin binaries of <tt>GNU plotutils</tt> and 
-#     related packages are available from 
-#     {here}[http://rustam.uwp.edu/support"target="_top].
+# * It is recommended to install the
+#   {GNU plotutils}[http://www.gnu.org/software/plotutils/plotutils.html"target="_top]
+#   package.  Some of the example scripts in the 'examples/' directory use the
+#   <tt>graph</tt> utility included in the package to plot the results.
+#   Windows-cygwin binaries of <tt>GNU plotutils</tt> and related packages are
+#   available from {here}[http://rustam.uwp.edu/support"target="_top].
 #
-# == {}[link:files/index_rdoc.html"name="4] {Screenshot}[link:files/screenshot_rdoc.html]
+# == {}[link:files/index_rdoc.html"name="4] Screenshot
 #
-# == {}[link:files/index_rdoc.html"name="5] {Reference}[link:files/ref_rdoc.html]
+# Ruby/GSL can be seen in action in these {screenshots}[link:files/screenshot_rdoc.html].
+#
+# == {}[link:files/index_rdoc.html"name="5] Reference
+#
+# The {Ruby/GSL reference manual}[link:files/ref_rdoc.html] follows and borrows
+# large parts of the GSL reference manual.
 #
 # == {}[link:files/index_rdoc.html"name="6] Examples
 # See scripts in <tt>examples/</tt> and <tt>tests/</tt> directories.
@@ -59,11 +58,5 @@
 # submit reports from {RubyForge page}[http://rubyforge.org/projects/rb-gsl/"target="_top].
 #
 # == {}[link:files/index_rdoc.html"name="10] Author
-# Yoshiki Tsunesada
-#
-# Jul/2004
-#
-# This document is generated with ((<RDTool|RAA:RDTool>)).
-#
-#
-#
+# Yoshiki Tsunesada:: July, 2004
+# David MacMahon:: November, 2010

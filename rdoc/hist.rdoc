@@ -8,9 +8,9 @@
 # 1. {Histogram Operations}[link:files/hist_rdoc.html#6]
 # 1. {Reading and writing histograms}[link:files/hist_rdoc.html#7]
 # 1. {Extensions}[link:files/hist_rdoc.html#8]
-# 1. {Histogram Operations}[link:files/hist_rdoc.html#8.1]
-# 1. {Graph interface}[link:files/hist_rdoc.html#8.2]
-# 1. {Histogram Fittings}[link:files/hist_rdoc.html#8.3]
+#    1. {Histogram Operations}[link:files/hist_rdoc.html#8.1]
+#    1. {Graph interface}[link:files/hist_rdoc.html#8.2]
+#    1. {Histogram Fittings}[link:files/hist_rdoc.html#8.3]
 # 1. {The histogram probability distribution}[link:files/hist_rdoc.html#9]
 #
 # == {}[link:files/index_rdoc.html"name="1] Histogram allocation
@@ -26,7 +26,7 @@
 #
 #   Examples:
 #
-# 1. With an integer:
+#   1. With an integer:
 #        h = Histogram.alloc(4)  <--- Histogram of 4 bins.
 #                                     The range is not defined yet.
 #
@@ -34,12 +34,12 @@
 #                  |---------|---------|---------|---------|
 #               range[0]  range[1]  range[2]  range[3]  range[4]
 #   
-# 1. With an array or a vector:
+#   1. With an array or a vector:
 #        h = Histogram.alloc([1, 3, 7, 9, 20])  <--- Histogram of 4 bins.
 #                                                  The range is initialized as
 #                                                  range[0] = 1, range[1] = 3, ..., range[4] = 20.
 #    
-# 1. With size and the range [min, max]:
+#   1. With size and the range [min, max]:
 #
 #         >> h = Histogram.alloc(5, [0, 5])
 #         >> h.range

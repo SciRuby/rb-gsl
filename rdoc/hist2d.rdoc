@@ -10,7 +10,7 @@
 #
 #   Constructors.
 #
-# 1. With sizes
+#   1. With sizes
 #         >> h2 = GSL::Histogram2d.alloc(2, 3)  # size 6
 #         >> h2.xrange
 #         => GSL::Histogram::Range: 
@@ -26,7 +26,7 @@
 #         >> h2.bin.class.superclass
 #         => GSL::Vector::View::ReadOnly
 #
-# 1. With ranges
+#   1. With ranges
 #          >> h2 = Histogram2d.alloc([3, 6, 7], [2, 3, 8])
 #          >> h2.xrange
 #          => GSL::Histogram::Range: 
@@ -38,7 +38,7 @@
 #          => GSL::Histogram::Bin: 
 #          [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
 #
-# 1. With sizes and ranges
+#   1. With sizes and ranges
 #          >> h2 = Histogram2d.alloc(4, [0, 4], 3, [1, 5])
 #          >> h2.xrange
 #          => GSL::Histogram::Range: 

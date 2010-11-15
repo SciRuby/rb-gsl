@@ -4,8 +4,8 @@
 # 1. {Introduction}[link:files/integration_rdoc.html#1]
 # 1. {QNG non-adaptive Gauss-Kronrod integration}[link:files/integration_rdoc.html#2]
 # 1. {QAG adaptive integration}[link:files/integration_rdoc.html#3]
-# 1. {GSL::Integration::Workspace class}[link:files/integration_rdoc.html#3.1]
-# 1. {Methods}[link:files/integration_rdoc.html#3.2]
+#    1. {GSL::Integration::Workspace class}[link:files/integration_rdoc.html#3.1]
+#    1. {Methods}[link:files/integration_rdoc.html#3.2]
 # 1. {QAGS adaptive integration with singularities}[link:files/integration_rdoc.html#4]
 # 1. {QAGP adaptive integration with known singular points}[link:files/integration_rdoc.html#5]
 # 1. {QAGI adaptive integration on infinite intervals}[link:files/integration_rdoc.html#6]
@@ -23,8 +23,8 @@
 #   f = GSL::Function.alloc { |x| sin(x) }
 # To compute numerical integration of <tt>sin(x)</tt> over the range <tt>(a, b)</tt>, 
 # one can use the methods <tt>integrate_xxx</tt> or simply <tt>xxx</tt>, as
-#   * <tt>f.integrate_xxx([a, b])</tt>, or <tt>f.xxx([a, b])</tt>
-#   * <tt>f.integrate_xxx(a, b)</tt>, or <tt>f.xxx(a, b)</tt>
+# * <tt>f.integrate_xxx([a, b])</tt>, or <tt>f.xxx([a, b])</tt>
+# * <tt>f.integrate_xxx(a, b)</tt>, or <tt>f.xxx(a, b)</tt>
 #
 # == {}[link:files/index_rdoc.html"name="2] QNG non-adaptive Gauss-Kronrod integration
 # ---
@@ -377,12 +377,17 @@
 # (GSL-1.14)
 # The fixed-order Gauss-Legendre integration routines are provided for fast integration of smooth functions with known polynomial order. The n-point Gauss-Legendre rule is exact for polynomials of order 2*n-1 or less. For example, these rules are useful when integrating basis functions to form mass matrices for the Galerkin method. Unlike other numerical integration routines within the library, these routines do not accept absolute or relative error bounds.
 #
-# ---GSL::Integration::Glfixed_table.alloc(n)
-# Determines the Gauss-Legendre abscissae and weights necessary for an <tt>n</tt>-point fixed order 
-# integration scheme. If possible, high precision precomputed coefficients are used. 
-# If precomputed weights are not available, lower precision coefficients are computed on the fly.
-# ---GSL::Function#glfixed(a, b, t)
-# Applies the Gauss-Legendre integration rule contained in table <tt>t</tt> and returns the result.
+# ---
+# * GSL::Integration::Glfixed_table.alloc(n)
+#
+#   Determines the Gauss-Legendre abscissae and weights necessary for an <tt>n</tt>-point fixed order 
+#   integration scheme. If possible, high precision precomputed coefficients are used. 
+#   If precomputed weights are not available, lower precision coefficients are computed on the fly.
+#
+# ---
+# * GSL::Function#glfixed(a, b, t)
+#
+#   Applies the Gauss-Legendre integration rule contained in table <tt>t</tt> and returns the result.
 #
 # {prev}[link:files/wavelet_rdoc.html]
 # {next}[link:files/rng_rdoc.html]

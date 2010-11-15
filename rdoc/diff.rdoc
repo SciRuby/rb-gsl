@@ -92,7 +92,7 @@
 # == {}[link:files/index_rdoc.html"name="3] Example
 #
 #      #!/usr/bin/env ruby
-#      require "rbgsl"
+#      require "gsl"
 #
 #      f = GSL::Function.alloc { |x|
 #        pow(x, 1.5)

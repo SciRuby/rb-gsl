@@ -81,16 +81,20 @@
 # <tt>GSL::Sf::Result</tt> objects which contain the function values as well as
 # error information.
 #
-# * Instance methods
-# *   GSL::Sf::Result#val
-#       Returns the value.
-# *   GSL::Sf::Result#err
-#       Returns the error.
-# *   GSL::Sf::Result_e10#val
-#       Returns the value.
-# *   GSL::Sf::Result_e10#err
-#       Returns the error.
-#
+# === <tt>GSL::Sf::Result</tt> instance methods
+# 
+# ---
+# * GSL::Sf::Result#val
+#   Returns the value.
+# ---
+# * GSL::Sf::Result#err
+#   Returns the error.
+# ---
+# * GSL::Sf::Result_e10#val
+#   Returns the value.
+# ---
+# * GSL::Sf::Result_e10#err
+#   Returns the error.
 #
 # == {}[link:files/index_rdoc.html"name="3] Modes
 # The goal of the library is to achieve double precision accuracy wherever possible. 

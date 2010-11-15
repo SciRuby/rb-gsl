@@ -8,7 +8,7 @@
 # written for very  high level languages. The source code is distributed 
 # under the GNU General Public License.
 #
-# The {RubyGSL}[http://rubyforge.org/projects/rb-gsl/"target="_top] is Ruby 
+# The {Ruby/GSL}[http://rubyforge.org/projects/rb-gsl/"target="_top] is Ruby 
 # bidings for GSL. This provides higher-level interfaces to the GSL functions.
 # See {here}[link:files/use_rdoc.html] for installation. To use the library , just put at the head of your scripts <tt>require("gsl")</tt>, or type it from the command line of <tt>irb</tt>.
 #

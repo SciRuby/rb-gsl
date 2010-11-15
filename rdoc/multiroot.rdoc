@@ -17,8 +17,8 @@
 # 1. {Search Stopping Parameters}[link:files/multiroot_rdoc.html#5]
 # 1. {Higher Level Interface}[link:files/multiroot_rdoc.html#6]
 # 1. {Examples}[link:files/multiroot_rdoc.html#7]
-# 1. {FSolver}[link:files/multiroot_rdoc.html#7.1]
-# 1. {FdfSolver}[link:files/multiroot_rdoc.html#7.2]
+#    1. {FSolver}[link:files/multiroot_rdoc.html#7.1]
+#    1. {FdfSolver}[link:files/multiroot_rdoc.html#7.2]
 #
 #
 # == {}[link:files/index_rdoc.html"name="1] Overview
@@ -67,20 +67,20 @@
 #
 #   This creates an instance of the <tt>FSolver</tt> class of type <tt>T</tt> 
 #   for a system of <tt>n</tt> dimensions. The type is given by a constant or a string,
-#     * GSL::MultiRoot:FSolver::HYBRIDS, or "hybrids"
-#     * GSL::MultiRoot:FSolver::HYBRID, or "hybrid"
-#     * GSL::MultiRoot:FSolver::DNEWTON, or "dnewton"
-#     * GSL::MultiRoot:FSolver::BROYDEN, or "broyden"
+#   * GSL::MultiRoot:FSolver::HYBRIDS, or "hybrids"
+#   * GSL::MultiRoot:FSolver::HYBRID, or "hybrid"
+#   * GSL::MultiRoot:FSolver::DNEWTON, or "dnewton"
+#   * GSL::MultiRoot:FSolver::BROYDEN, or "broyden"
 #
 # ---
 # * GSL::MultiRoot::FdfSolver.alloc(T, n)
 #
 #   This creates an instance of the <tt>FdfSolver</tt> class of type <tt>T</tt> 
 #   for a system of <tt>n</tt> dimensions. The type is given by a constant,
-#     * GSL::MultiRoot:FdfSolver::HYBRIDSJ, or "hybridsj"
-#     * GSL::MultiRoot:FdfSolver::HYBRIDJ, or "hybridj",
-#     * GSL::MultiRoot:FdfSolver::NEWTON, or "newton",
-#     * GSL::MultiRoot:FdfSolver::GNEWTON, or "gnewton
+#   * GSL::MultiRoot:FdfSolver::HYBRIDSJ, or "hybridsj"
+#   * GSL::MultiRoot:FdfSolver::HYBRIDJ, or "hybridj",
+#   * GSL::MultiRoot:FdfSolver::NEWTON, or "newton",
+#   * GSL::MultiRoot:FdfSolver::GNEWTON, or "gnewton
 #
 # ---
 # * GSL::MultiRoot::FSolver#set(func, x)

@@ -35,9 +35,9 @@
 # The user provides a high-level driver for the algorithm, and the library 
 # provides the individual functions necessary for each of the steps. There 
 # are three main phases of the iteration. The steps are,
-#   * initialize minimizer (or <tt>solver</tt>) state, <tt>s</tt>, for algorithm <tt>T</tt>
-#   * update <tt>s</tt> using the iteration <tt>T</tt>
-#   * test <tt>s</tt> for convergence, and repeat iteration if necessary
+# * initialize minimizer (or <tt>solver</tt>) state, <tt>s</tt>, for algorithm <tt>T</tt>
+# * update <tt>s</tt> using the iteration <tt>T</tt>
+# * test <tt>s</tt> for convergence, and repeat iteration if necessary
 #
 # The state of the minimizers is held in a <tt>GSL::Min::FMinimizer</tt> object. 
 # The updating procedure use only function evaluations (not derivatives).
@@ -50,13 +50,13 @@
 #
 #   These method create an instance of the <tt>GSL::Min::FMinimizer</tt> class of 
 #   type <tt>t</tt>. The type <tt>t</tt> is given by a String,
-#     * "goldensection"
-#     * "brent"
-#     * "quad_golden"
+#   * "goldensection"
+#   * "brent"
+#   * "quad_golden"
 #   or by a Ruby constant,
-#     * GSL::Min::FMinimizer::GOLDENSECTION
-#     * GSL::Min::FMinimizer::BRENT
-#     * GSL::Min::FMinimizer::QUAD_GOLDEN (GSL-1.13)
+#   * GSL::Min::FMinimizer::GOLDENSECTION
+#   * GSL::Min::FMinimizer::BRENT
+#   * GSL::Min::FMinimizer::QUAD_GOLDEN (GSL-1.13)
 #
 #   ex)
 #       include GSL::Min

@@ -1,13 +1,13 @@
 #
 # = ALF: a collection of routines for computing associated Legendre polynomials (ALFs)
-# ALF is an extension library for GSL to compute associated Legendre polynomialsdeveloped by Patrick Alken.
-# Ruby/GSL includes interfaces to it if ALF is installed found by extconf.
+# ALF is an extension library for GSL to compute associated Legendre polynomials developed by Patrick Alken.
+# Ruby/GSL includes interfaces to it if ALF is found during installlation.
 #
 # The class and method descriptions below are based on references from the document of ALF (alf-1.0/doc/alf.texi) by P.Alken.
 #
 # == {}[link:files/index_rdoc.html"name="1] Module structure
-#   GSL::ALF (module)
-#        GSL::ALF::Workspace (Class)
+# * GSL::ALF (module)
+#   * GSL::ALF::Workspace (Class)
 #
 # == {}[link:files/index_rdoc.html"name="2] Creating ALF workspace
 # ---
@@ -20,7 +20,14 @@
 # ---
 # * GSL::ALF::Workspace#params(csphase, cnorm, norm)
 #
-#   Sets various parameters for the subsequent computation of ALFs. If <tt>csphase</tt> is set to a non-zero value, the Condon-Shortley phase of (-1)^m will be applied to the associated Legendre functions. The Condon-Shortley phase is included by default. If <tt>cnorm</tt> is set to zero, the real normalization of the associated Legendre functions will be used. The default is to use complex normalization. The norm parameter defines the type of normalization which will be used. The possible values are as follows.
+#   Sets various parameters for the subsequent computation of ALFs. If
+#   <tt>csphase</tt> is set to a non-zero value, the Condon-Shortley phase of
+#   (-1)^m will be applied to the associated Legendre functions. The
+#   Condon-Shortley phase is included by default. If <tt>cnorm</tt> is set to
+#   zero, the real normalization of the associated Legendre functions will be
+#   used. The default is to use complex normalization. The norm parameter
+#   defines the type of normalization which will be used. The possible values
+#   are as follows.
 #   * ALF::NORM_SCHMIDT: Schmidt semi-normalized associated Legendre polynomials S_l^m(x). (default)
 #   * ALF::NORM_SPHARM: Associated Legendre polynomials Y_l^m(x) suitable for the calculation of spherical harmonics.
 #   * ALF::NORM_ORTHO: Fully orthonormalized associated Legendre polynomials N_l^m(x).
@@ -33,15 +40,28 @@
 # * GSL::ALF::Workspace#Plm_array(x, result, deriv)
 # * GSL::ALF::Workspace#Plm_array(lmax, x, result, deriv)
 #
-#   Compute all associated Legendre polynomials P_l^m(x) and optionally their first derivatives dP_l^m(x)/dx for 0 <= l <= lmax, 0 <= m <= l. The value of <tt>lmax</tt> cannot exceed the previously specified lmax parameter to <tt>ALF.alloc</tt>, but may be less. If <tt>lmax</tt> is not given, the parameter to <tt>ALF.alloc()</tt> is used. The results are stored in <tt>result</tt>, an instance of <tt>GSL::Vector</tt>. Note that this vector must have enough length to store all the values for the polynomial P_l^m(x), and the length required can be known using <tt>ALF::array_size(lmax)</tt>. If a vector is not given, a new vector is created and returned. 
-#    The indices of <tt>result</tt> (and <tt>deriv</tt> corresponding to the associated Legendre function of degree <tt>l</tt> and order <tt>m</tt> can be obtained by calling <tt>ALF::array_index(l, m)</tt>.
+#   Compute all associated Legendre polynomials P_l^m(x) and optionally their
+#   first derivatives dP_l^m(x)/dx for 0 <= l <= lmax, 0 <= m <= l. The value
+#   of <tt>lmax</tt> cannot exceed the previously specified lmax parameter to
+#   <tt>ALF.alloc</tt>, but may be less. If <tt>lmax</tt> is not given, the
+#   parameter to <tt>ALF.alloc()</tt> is used. The results are stored in
+#   <tt>result</tt>, an instance of <tt>GSL::Vector</tt>. Note that this vector
+#   must have enough length to store all the values for the polynomial
+#   P_l^m(x), and the length required can be known using
+#   <tt>ALF::array_size(lmax)</tt>. If a vector is not given, a new vector is
+#   created and returned. 
+#
+#   The indices of <tt>result</tt> (and <tt>deriv</tt> corresponding to the
+#   associated Legendre function of degree <tt>l</tt> and order <tt>m</tt> can
+#   be obtained by calling <tt>ALF::array_index(l, m)</tt>.
 # ---
 # * GSL::ALF::Workspace#Plm_deriv_array(x)
 # * GSL::ALF::Workspace#Plm_deriv_array(lmax, x)
 # * GSL::ALF::Workspace#Plm_deriv_array(x, result, deriv)
 # * GSL::ALF::Workspace#Plm_deriv_array(lmax, x, result, deriv)
 #
-#   Compute all associated Legendre polynomials P_l^m(x) and their first derivatives dP_l^m(x)/dx for 0 <= l <= lmax, 0 <= m <= l. 
+#   Compute all associated Legendre polynomials P_l^m(x) and their first
+#   derivatives dP_l^m(x)/dx for 0 <= l <= lmax, 0 <= m <= l. 
 #
 # ---
 # * GSL::ALF::array_size(lmax)
@@ -50,6 +70,8 @@
 # ---
 # * GSL::ALF::array_index(l, m)
 #
-#   Returns the array index of results of <tt>Plm_array()</tt> and <tt>Plm_deriv_array()</tt> corresponding to P_l^m(x) and dP_l^m(x)/dx respectively. The index is given by l(l + 1)/2 + m.
+#   Returns the array index of results of <tt>Plm_array()</tt> and
+#   <tt>Plm_deriv_array()</tt> corresponding to P_l^m(x) and dP_l^m(x)/dx
+#   respectively. The index is given by l(l + 1)/2 + m.
 #
 #

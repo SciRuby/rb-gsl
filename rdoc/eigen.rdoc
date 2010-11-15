@@ -331,15 +331,17 @@
 #   <tt>eval</tt> and the corresponding real eigenvectors stored in the 
 #   columns of the matrix <tt>evec</tt> into ascending or descending order 
 #   according to the value of the parameter <tt>type</tt>,
-#     * <tt>GSL::Eigen::SORT_VAL_ASC</tt>
-#       ascending order in numerical value
-#     * <tt>GSL::Eigen::SORT_VAL_DESC</tt>
-#       escending order in numerical value
-#     * <tt>GSL::Eigen::SORT_ABS_ASC</tt>
-#       scending order in magnitude
-#     * <tt>GSL::Eigen::SORT_ABS_DESC</tt>
-#       descending order in magnitude
-#   The sorting is carried out <tt>in-place</tt>.
+#
+#   * <tt>GSL::Eigen::SORT_VAL_ASC</tt>
+#     ascending order in numerical value
+#   * <tt>GSL::Eigen::SORT_VAL_DESC</tt>
+#     escending order in numerical value
+#   * <tt>GSL::Eigen::SORT_ABS_ASC</tt>
+#     scending order in magnitude
+#   * <tt>GSL::Eigen::SORT_ABS_DESC</tt>
+#     descending order in magnitude
+#
+#   The sorting is carried out in-place!
 #
 # ---
 # * GSL::Eigen::hermv_sort(eval, evec, type = GSL::Eigen::SORT_VAL_ASC)

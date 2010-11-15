@@ -3,22 +3,22 @@
 # Contents:
 # 1. {Mathematical Definitions}[link:files/fft_rdoc.html#1]
 # 1. {Complex data FFTs}[link:files/fft_rdoc.html#2]
-# 1. {Overview of complex data FFTs}[link:files/fft_rdoc.html#2.1]
-# 1. {Radix-2 FFT routines for complex data}[link:files/fft_rdoc.html#2.2]
-# 1. {Example of the complex Radix-2 FFT}[link:files/fft_rdoc.html#2.2.1]
-# 1. {Mixed-radix FFT routines for complex data}[link:files/fft_rdoc.html#2.3]
-# 1. {GSL::FFT::ComplexWavetable class}[link:files/fft_rdoc.html#2.3.1]
-# 1. {GSL::FFT::ComplexWorkspace class}[link:files/fft_rdoc.html#2.3.2]
-# 1. {Methods to compute the transform}[link:files/fft_rdoc.html#2.3.3]
-# 1. {Example of the mixed-radix FFT}[link:files/fft_rdoc.html#2.3.4]
+#    1. {Overview of complex data FFTs}[link:files/fft_rdoc.html#2.1]
+#    1. {Radix-2 FFT routines for complex data}[link:files/fft_rdoc.html#2.2]
+#       1. {Example of the complex Radix-2 FFT}[link:files/fft_rdoc.html#2.2.1]
+#    1. {Mixed-radix FFT routines for complex data}[link:files/fft_rdoc.html#2.3]
+#       1. {GSL::FFT::ComplexWavetable class}[link:files/fft_rdoc.html#2.3.1]
+#       1. {GSL::FFT::ComplexWorkspace class}[link:files/fft_rdoc.html#2.3.2]
+#       1. {Methods to compute the transform}[link:files/fft_rdoc.html#2.3.3]
+#       1. {Example of the mixed-radix FFT}[link:files/fft_rdoc.html#2.3.4]
 # 1. {Real data FFTs}[link:files/fft_rdoc.html#3]
-# 1. {Overview of real data FFTs}[link:files/fft_rdoc.html#3.1]
-# 1. {Radix-2 FFT routines for real data}[link:files/fft_rdoc.html#3.2]
-# 1. {Mixed-radix FFT routines for real data}[link:files/fft_rdoc.html#3.3]
-# 1. {Data storage scheme}[link:files/fft_rdoc.html#3.3.1]
-# 1. {Wavetable and Workspace classes}[link:files/fft_rdoc.html#3.3.2]
-# 1. {Methods for real FFTs}[link:files/fft_rdoc.html#3.3.3]
-# 1. {Examples}[link:files/fft_rdoc.html#3.3.4]
+#    1. {Overview of real data FFTs}[link:files/fft_rdoc.html#3.1]
+#    1. {Radix-2 FFT routines for real data}[link:files/fft_rdoc.html#3.2]
+#    1. {Mixed-radix FFT routines for real data}[link:files/fft_rdoc.html#3.3]
+#       1. {Data storage scheme}[link:files/fft_rdoc.html#3.3.1]
+#       1. {Wavetable and Workspace classes}[link:files/fft_rdoc.html#3.3.2]
+#       1. {Methods for real FFTs}[link:files/fft_rdoc.html#3.3.3]
+#       1. {Examples}[link:files/fft_rdoc.html#3.3.4]
 #
 # == {}[link:files/index_rdoc.html"name="1] Mathematical Definitions 
 # Fast Fourier Transforms are efficient algorithms for calculating the discrete 
@@ -234,11 +234,6 @@
 #   <tt>GSL::FFT::FORWARD</tt> or <tt>GSL::FFT::BACKWARD</tt>.
 #
 #   These methods return the FFTed data, and the input data is not changed.
-#
-# #    These methods return a value.
-# #    * <tt>GSL::SUCCESS</tt>: if no errors were detected.
-# #    * <tt>GSL::EDOM</tt>: the length of the data <tt>n</tt> is not a positive integer (i.e. <tt>n</tt> is zero),
-# #    * <tt>GSL::EINVAL</tt>: the length of the data <tt>n</tt> and the length used to compute the given wavetable do not match.
 #
 # ==== {}[link:files/index_rdoc.html"name="2.3.4] Example to use the mixed-radix FFT algorithm
 #       require 'gsl'

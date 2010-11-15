@@ -10,9 +10,9 @@
 # Contents:
 # 1. {Solver classes}[link:files/roots_rdoc.html#1]
 # 1. {Methods}[link:files/roots_rdoc.html#2]
-# 1. {Methods to solve equations}[link:files/roots_rdoc.html#2.1]
-# 1. {GSL::Function_fdf class: Providing the function to solve}[link:files/roots_rdoc.html#2.2]
-# 1. {Search Stopping Parameters}[link:files/roots_rdoc.html#2.3]
+#    1. {Methods to solve equations}[link:files/roots_rdoc.html#2.1]
+#    1. {GSL::Function_fdf class: Providing the function to solve}[link:files/roots_rdoc.html#2.2]
+#    1. {Search Stopping Parameters}[link:files/roots_rdoc.html#2.3]
 # 1. {Higher-level interface}[link:files/roots_rdoc.html#3]
 # 1. {Example}[link:files/roots_rdoc.html#4]
 #
@@ -23,9 +23,9 @@
 #
 #   This creates a equation solver with a root bracketing algorithm of type <tt>T</tt>. 
 #   The type <tt>T</tt> is given by a String or a constant,
-#     * <tt>"bisection"</tt> or <tt>GSL::Root::FSolver::BISECION</tt>
-#     * <tt>"falsepos"</tt> or <tt>GSL::Root::FSolver::FALSEPOS</tt>
-#     * <tt>"brent"</tt> or <tt>GSL::Root::FSolver::BRENT</tt>.
+#   * <tt>"bisection"</tt> or <tt>GSL::Root::FSolver::BISECION</tt>
+#   * <tt>"falsepos"</tt> or <tt>GSL::Root::FSolver::FALSEPOS</tt>
+#   * <tt>"brent"</tt> or <tt>GSL::Root::FSolver::BRENT</tt>.
 #
 #   * Ex:
 #        include GSL::Root
@@ -39,9 +39,9 @@
 #
 #   This creates a derivative-based solver of type <tt>T</tt>. 
 #   The type <tt>T</tt> is given by a String or a constant,
-#     * <tt>"newton"</tt> or <tt>GSL::Root::FdfSolver::NEWTON</tt>
-#     * <tt>"secant"</tt> or <tt>GSL::Root::FdfSolver::SECANT</tt>
-#     * <tt>"steffenson"</tt> or <tt>GSL::Root::FdfSolver::STEFFENSON</tt>.
+#   * <tt>"newton"</tt> or <tt>GSL::Root::FdfSolver::NEWTON</tt>
+#   * <tt>"secant"</tt> or <tt>GSL::Root::FdfSolver::SECANT</tt>
+#   * <tt>"steffenson"</tt> or <tt>GSL::Root::FdfSolver::STEFFENSON</tt>.
 #
 # == {}[link:files/index_rdoc.html"name="2] Methods
 #

@@ -4,9 +4,9 @@
 # Contents:
 # 1. {LU Decomposition}[link:files/linalg_rdoc.html#1]
 # 1. {QR Decomposition}[link:files/linalg_rdoc.html#2]
-# 1. {QR Decomposition with Column Pivoting}[link:files/linalg_rdoc.html#4]
-# 1. {Singular Value Decomposition}[link:files/linalg_rdoc.html#5]
-# 1. {Cholesky Decomposition}[link:files/linalg_rdoc.html#6]
+# 1. {QR Decomposition with Column Pivoting}[link:files/linalg_rdoc.html#3]
+# 1. {Singular Value Decomposition}[link:files/linalg_rdoc.html#4]
+# 1. {Cholesky Decomposition}[link:files/linalg_rdoc.html#5]
 # 1. {Tridiagonal Decomposition of Real Symmetric Matrices}[link:files/linalg_rdoc.html#6]
 # 1. {Tridiagonal Decomposition of Hermitian Matrices}[link:files/linalg_rdoc.html#7]
 # 1. {Hessenberg Decomposition of Real Matrices}[link:files/linalg_rdoc.html#8]
@@ -322,7 +322,7 @@
 #   * Ex3:
 #       x = m.SV_solve(b)
 #
-# == {}[link:files/index_rdoc.html"name="5] Cholesky Decomposition
+# == {}[link:files/index_rdoc.html"name="6] Cholesky Decomposition
 # A symmetric, positive definite square matrix <tt>A</tt> has a Cholesky decomposition 
 # into a product of a lower triangular matrix L and its transpose L^T, 
 # as <tt>A = L L^T</tt>. This is sometimes referred to as taking the square-root of a 
@@ -365,6 +365,8 @@
 #
 #   These methods solve the system <tt>A x = b</tt> using the Cholesky decomposition 
 #   of <tt>A</tt> into the matrix <tt>cholesky</tt> given by <tt>GSL::Linalg::Cholesky.decomp</tt>.
+#
+# === {}[link:files/index_rdoc.html"name="5.1] {Complex Cholesky decomposition}[link:files/cholesky_complex_rdoc.html]
 #
 # == {}[link:files/index_rdoc.html"name="6] Tridiagonal Decomposition of Real Symmetric Matrices 
 # ---

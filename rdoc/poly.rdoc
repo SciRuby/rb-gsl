@@ -4,17 +4,17 @@
 # Contents:
 # 1. {Polynomial Evaluation}[link:files/poly_rdoc.html#1]
 # 1. {Solving polynomial equations}[link:files/poly_rdoc.html#2]
-# 1. {Quadratic Equations}[link:files/poly_rdoc.html#2.1]
-# 1. {Cubic Equations}[link:files/poly_rdoc.html#2.2]
-# 1. {General Polynomial Equations}[link:files/poly_rdoc.html#2.3]
+#    1. {Quadratic Equations}[link:files/poly_rdoc.html#2.1]
+#    1. {Cubic Equations}[link:files/poly_rdoc.html#2.2]
+#    1. {General Polynomial Equations}[link:files/poly_rdoc.html#2.3]
 # 1. {GSL::Poly Class}[link:files/poly_rdoc.html#3]
-# 1. {Constructors}[link:files/poly_rdoc.html#3.1]
-# 1. {Methods}[link:files/poly_rdoc.html#3.2]
+#    1. {Constructors}[link:files/poly_rdoc.html#3.1]
+#    1. {Methods}[link:files/poly_rdoc.html#3.2]
 # 1. {Polynomial Fitting}[link:files/poly_rdoc.html#4]
 # 1. {Divided-difference representations}[link:files/poly_rdoc.html#5]
 # 1. {Extensions}[link:files/poly_rdoc.html#6]
-# 1. {Special Polynomials}[link:files/poly_rdoc.html#6.1]
-# 1. {Polynomial Operations}[link:files/poly_rdoc.html#6.2]
+#    1. {Special Polynomials}[link:files/poly_rdoc.html#6.1]
+#    1. {Polynomial Operations}[link:files/poly_rdoc.html#6.2]
 #
 # == {}[link:files/index_rdoc.html"name="1] Polynomial Evaluation
 # ---
@@ -27,7 +27,7 @@
 #   From GSL 1.11, <tt>x</tt> can be a complex number, and <tt>c</tt> can be a complex polynomial given by a <tt>GSL::Vector::Complex</tt> or an <tt>Array</tt>.
 #
 #   Ex)
-#      >> require("rbgsl")
+#      >> require("gsl")
 #      => true
 #      >> GSL::Poly.eval([1, 2, 3], 2)
 #      => 17.0
@@ -215,7 +215,7 @@
 #
 #   Example:
 #     #!/usr/bin/env ruby
-#     require("rbgsl")
+#     require("gsl")
 #
 #     x = GSL::Vector[1, 2, 3, 4, 5]
 #     y = GSL::Vector[5.5, 43.1, 128, 290.7, 498.4]
@@ -298,7 +298,7 @@
 #   multiplied by n!.
 #
 #   Ex:
-#        rb(main):001:0> require("rbgsl")
+#        rb(main):001:0> require("gsl")
 #        => true
 #        >> GSL::Poly.laguerre(0)
 #        => GSL::Poly::Int: 

@@ -6,8 +6,8 @@
 # * GSL::Vector::Complex.alloc(size)
 # * GSL::Vector::Complex.alloc(re, im)
 # * GSL::Vector::Complex.alloc(z0, z1, z2, ...)
-# * GSL::Vector::Complex.alloc()
-# * GSL::Vector::Complex[...]
+# * GSL::Vector::Complex.alloc( ... )
+# * GSL::Vector::Complex[ ... ]
 #
 #   Constructors.
 #

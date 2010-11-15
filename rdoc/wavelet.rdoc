@@ -8,8 +8,8 @@
 # 1. {Definitions}[link:files/wavelet_rdoc.html#1]
 # 1. {Initialization}[link:files/wavelet_rdoc.html#2]
 # 1. {Transform methods}[link:files/wavelet_rdoc.html#3]
-# 1. {Wavelet transforms in one dimension}[link:files/wavelet_rdoc.html#3.1]
-# 1. {Wavelet transforms in two dimension}[link:files/wavelet_rdoc.html#3.2]
+#    1. {Wavelet transforms in one dimension}[link:files/wavelet_rdoc.html#3.1]
+#    1. {Wavelet transforms in two dimension}[link:files/wavelet_rdoc.html#3.2]
 # 1. {Examples}[link:files/wavelet_rdoc.html#4]
 #
 # == {}[link:files/index_rdoc.html"name="1] Definitions
@@ -106,9 +106,6 @@
 #   levels is J = log_2(n). 
 #
 #   These methods return a transformed data, and the input vector is not changed.
-# #    These methods return a status of GSL::SUCCESS upon successful completion. 
-# #    GSL::EINVAL is returned if the length is not an integer power of 2 
-# #    or if insufficient workspace is provided.
 #
 # === {}[link:files/index_rdoc.html"name="3.2] Wavelet transforms in two dimension
 # ---

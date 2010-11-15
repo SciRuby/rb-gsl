@@ -72,10 +72,10 @@
 #   The GSL library provides a number of random number generator types, 
 #   and one can choose with a constant <tt>GSL::RNG_xxx</tt> or a String, as
 #
-#     * <tt>GSL::Rng::MT19937</tt> or <tt>"gsl_rng_mt19937"</tt> or <tt>"mt19937"</tt>
-#     * <tt>GSL::Rng::RANLXS0</tt>  or <tt>"gsl_rng_ranlsx0"</tt>  or <tt>"ranlxs0"</tt> 
-#     * <tt>GSL::Rng::ZUF</tt>  or <tt>"gsl_rng_zuf"</tt>  or <tt>"zuf"</tt> 
-#     * ...
+#   * <tt>GSL::Rng::MT19937</tt> or <tt>"gsl_rng_mt19937"</tt> or <tt>"mt19937"</tt>
+#   * <tt>GSL::Rng::RANLXS0</tt>  or <tt>"gsl_rng_ranlsx0"</tt>  or <tt>"ranlxs0"</tt> 
+#   * <tt>GSL::Rng::ZUF</tt>  or <tt>"gsl_rng_zuf"</tt>  or <tt>"zuf"</tt> 
+#   * ...
 #
 #   See the {GSL reference manual}[http://www.gnu.org/software/gsl/manual/html_node/Random-number-generator-algorithms.html#Random-number-generator-algorithms"target="_top] for the complete list. 
 #   The following demonstrates how to use this class,
@@ -96,8 +96,8 @@
 #
 #   If the package {rngextra}[http://www.network-theory.co.uk/download/rngextra/"target="_top] is installed, additional
 #   two generators are available, 
-#     * <tt>GSL::Rng::RNGEXTRA_RNG1</tt>, <tt>"rngextra_rng1"</tt>
-#     * <tt>GSL::Rng::RNGEXTRA_RNG2</tt>, <tt>"rngextra_rng2"</tt>
+#   * <tt>GSL::Rng::RNGEXTRA_RNG1</tt>, <tt>"rngextra_rng1"</tt>
+#   * <tt>GSL::Rng::RNGEXTRA_RNG2</tt>, <tt>"rngextra_rng2"</tt>
 #
 #   They are created as
 #

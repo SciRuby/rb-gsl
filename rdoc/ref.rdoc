@@ -33,7 +33,7 @@
 # == {}[link:files/index_rdoc.html"name="2] Ruby/GSL Reference
 #
 # 1. {Introduction}[link:files/intro_rdoc.html]
-# 1. {Using RubyGSL}[link:files/use_rdoc.html]
+# 1. {Using Ruby/GSL}[link:files/use_rdoc.html]
 # 1. {Error Handling}[link:files/ehandling_rdoc.html]
 # 1. {Mathematical Functions}[link:files/math_rdoc.html]
 # 1. {Complex Numbers}[link:files/complex_rdoc.html]
@@ -42,7 +42,9 @@
 # 1. {Vectors}[link:files/vector_rdoc.html] and {Matrices}[link:files/matrix_rdoc.html]
 # 1. {Permutations}[link:files/perm_rdoc.html]
 # 1. {Combinations}[link:files/combi_rdoc.html]
+--
 # 1. {Multiset}[link:files/sort_rdoc.html] (GSL-1.14)
+++
 # 1. {Sorting}[link:files/sort_rdoc.html]
 # 1. {BLAS Support}[link:files/blas_rdoc.html]
 # 1. {Linear Algebra}[link:files/linalg_rdoc.html]
@@ -74,16 +76,16 @@
 # 1. {Physical Constants}[link:files/const_rdoc.html]
 # 1. {Graphics}[link:files/graph_rdoc.html]
 # 1. Supported GSL add-on packages
-# 1. {rngextra}[link:files/rngextra_rdoc.html]
-# 1. {Tensor manipulations}[link:files/tensor_rdoc.html]
-# 1. OOL: Open Optimization library (see examples/ool/*.rb)
-# 1. CQP and Bundle (see examples/multimin/cqp.rb, bundle.rb)
-# 1. quartic
-# 1. jacobi (see examples/jacobi/*.rb)
-# 1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:files/ndlinear_rdoc.html]
-# 1. {ALF: associated Legendre polynomials}[link:files/alf_rdoc.html]
+#    1. {rngextra}[link:files/rngextra_rdoc.html]
+#    1. {Tensor manipulations}[link:files/tensor_rdoc.html]
+#    1. OOL: Open Optimization library (see examples/ool/*.rb)
+#    1. CQP and Bundle (see examples/multimin/cqp.rb, bundle.rb)
+#    1. quartic
+#    1. jacobi (see examples/jacobi/*.rb)
+#    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:files/ndlinear_rdoc.html]
+#    1. {ALF: associated Legendre polynomials}[link:files/alf_rdoc.html]
 # 1. {NArray compatibilities}[link:files/narray_rdoc.html]
-# 1. {Changes since RubyGSL 1.10.3}[link:files/changes_rdoc.html]
+# 1. {Changes since Ruby/GSL 1.10.3}[link:files/changes_rdoc.html]
 # 1. {GNU Free Documentation Licence}[http://www.gnu.org/software/gsl/manual/html_node/GNU-Free-Documentation-License.html"target="_top]
 #
 # {next}[link:files/intro_rdoc.html]

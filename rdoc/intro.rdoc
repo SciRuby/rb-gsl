@@ -1,20 +1,20 @@
 #
 # = Introduction
 #
-# The GNU Scientific Library ({GSL}[http://sources.redhat.com/gsl/"target="_top]) 
-# is a collection of routines for numerical computing. 
-# The routines have been written from scratch in C, and present a modern Applications 
-# Programming Interface (API) for C programmers, allowing wrappers to be 
-# written for very  high level languages. The source code is distributed 
+# The GNU Scientific Library ({GSL}[http://sources.redhat.com/gsl/"target="_top])
+# is a collection of routines for numerical computing.
+# The routines have been written from scratch in C, and present a modern Applications
+# Programming Interface (API) for C programmers, allowing wrappers to be
+# written for very  high level languages. The source code is distributed
 # under the GNU General Public License.
 #
-# {RubyGSL}[http://rubyforge.org/projects/rb-gsl/"target="_top] is a Ruby 
+# {Ruby/GSL}[http://rubyforge.org/projects/rb-gsl/"target="_top] is a Ruby
 # extension for GSL. This provides higher-level interfaces to the GSL functions.
 #
 # == {}[link:files/index_rdoc.html"name="1] Requirements
-#   * GSL (1.4 or later recommended)
-#   * ANSI C compiler
-#   * Ruby (1.8 or later recommended)
+# * GSL (1.4 or later recommended)
+# * ANSI C compiler
+# * Ruby (1.8 or later recommended)
 #
 # == {}[link:files/index_rdoc.html"name="2] Installation
 # See {here}[link:files/index_rdoc.html].

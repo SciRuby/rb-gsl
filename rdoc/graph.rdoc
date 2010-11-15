@@ -96,7 +96,7 @@
 #
 # It is also possible to use the Ruby Gnuplot library.
 #      require("gnuplot")
-#      require("rbgsl")
+#      require("gsl")
 #      require("gsl/gnuplot");
 #
 #      Gnuplot.open do |gp|

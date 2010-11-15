@@ -13,9 +13,9 @@
 # 1. {Index Look-up and Acceleration}[link:files/interp_rdoc.html#3]
 # 1. {Evaluation of Interpolating Functions}[link:files/interp_rdoc.html#4]
 # 1. {Higher level interface: GSL::Spline class}[link:files/interp_rdoc.html#5]
-# 1. {Class initialization}[link:files/interp_rdoc.html#5.1]
-# 1. {Evaluation}[link:files/interp_rdoc.html#5.2]
-# 1. {Finding and acceleration}[link:files/interp_rdoc.html#5.3]
+#    1. {Class initialization}[link:files/interp_rdoc.html#5.1]
+#    1. {Evaluation}[link:files/interp_rdoc.html#5.2]
+#    1. {Finding and acceleration}[link:files/interp_rdoc.html#5.3]
 #
 # == {}[link:files/index_rdoc.html"name="1] Interpolation Classes
 # * GSL

@@ -84,7 +84,8 @@
 #
 #
 # === {}[link:files/index_rdoc.html"name="2.2] <tt>GSL::Sf</tt> module
-# {Any}[link:files/sf_rdoc.html]
+# ---
+# * {Any}[link:files/sf_rdoc.html]
 #
 # === {}[link:files/index_rdoc.html"name="2.3] <tt>GSL::Linalg</tt> module
 # ---
@@ -114,7 +115,8 @@
 #
 #
 # === {}[link:files/index_rdoc.html"name="2.5] <tt>GSL::FFT</tt> module
-# {Many}[link:files/FFT_rdoc.html]
+# ---
+# * {Many}[link:files/FFT_rdoc.html]
 #
 # === {}[link:files/index_rdoc.html"name="2.6] <tt>GSL::Function</tt> class
 # ---
@@ -128,10 +130,12 @@
 #
 #
 # === {}[link:files/index_rdoc.html"name="2.7] <tt>GSL::Ran</tt> and <tt>GSL::Cdf</tt> module
-# {Many}[link:files/randist_rdoc.html]
+# ---
+# * {Many}[link:files/randist_rdoc.html]
 #
 # === {}[link:files/index_rdoc.html"name="2.8] <tt>GSL::Stats</tt> module
-# {Any}[link:files/stats_rdoc.html]
+# ---
+# * {Any}[link:files/stats_rdoc.html]
 #
 # === {}[link:files/index_rdoc.html"name="2.9] <tt>GSL::Interp</tt> and <tt>GSL::Spline</tt> class
 # ---
@@ -158,7 +162,8 @@
 #
 #
 # === {}[link:files/index_rdoc.html"name="2.12] <tt>GSL::Wavelet</tt> class
-# {Many}[link:files/wavelet_rdoc.html]
+# ---
+# * {Many}[link:files/wavelet_rdoc.html]
 #
 # {prev}[link:files/tensor_rdoc.html]
 #

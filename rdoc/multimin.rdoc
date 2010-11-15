@@ -18,8 +18,8 @@
 # 1. {Iteration}[link:files/multimin_rdoc.html#5]
 # 1. {Stopping Criteria}[link:files/multimin_rdoc.html#6]
 # 1. {Examples}[link:files/multimin_rdoc.html#7]
-# 1. {FdfMinimizer}[link:files/multimin_rdoc.html#7.1]
-# 1. {FMinimizer}[link:files/multimin_rdoc.html#7.2]
+#    1. {FdfMinimizer}[link:files/multimin_rdoc.html#7.1]
+#    1. {FMinimizer}[link:files/multimin_rdoc.html#7.2]
 #
 # == {}[link:files/index_rdoc.html"name="1] Overview
 # The problem of multidimensional minimization requires finding a point x such 
@@ -83,7 +83,7 @@
 #   * <tt>GSL::MultiMin::FMinimizer::NMSIMPLEX</tt> or <tt>"nmsimplex"</tt>
 #   * <tt>GSL::MultiMin::FMinimizer::NMSIMPLEX2RAND</tt> or <tt>"nmsimplex2rand"</tt> (GSL-1.13)
 #
-#   * ex:
+#   ex:
 #       include GSL::MultiMin
 #       m1 = FdfMinimizer.alloc(FdfMinimizer::CONJUGATE_FR, 2)
 #       m2 = FdfMinimizer.alloc("steepest_descent", 4)
@@ -196,9 +196,9 @@
 #
 # == {}[link:files/index_rdoc.html"name="6] Stopping Criteria
 # A minimization procedure should stop when one of the following conditions is true:
-#   * A minimum has been found to within the user-specified precision.
-#   * A user-specified maximum number of iterations has been reached.
-#   * An error has occurred.
+# * A minimum has been found to within the user-specified precision.
+# * A user-specified maximum number of iterations has been reached.
+# * An error has occurred.
 # The handling of these conditions is under user control. The methods below allow the 
 # user to test the precision of the current result.
 #

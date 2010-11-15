@@ -3,10 +3,10 @@
 # Contents:
 # 1. {Combination allocation}[link:files/combi_rdoc.html#1]
 # 1. {Methods}[link:files/combi_rdoc.html#2]
-# 1. {Accessing combination elements}[link:files/combi_rdoc.html#2.1]
-# 1. {Combination properties}[link:files/combi_rdoc.html#2.2]
-# 1. {Combination functions}[link:files/combi_rdoc.html#2.3]
-# 1. {Reading and writing combinations}[link:files/combi_rdoc.html#2.4]
+#    1. {Accessing combination elements}[link:files/combi_rdoc.html#2.1]
+#    1. {Combination properties}[link:files/combi_rdoc.html#2.2]
+#    1. {Combination functions}[link:files/combi_rdoc.html#2.3]
+#    1. {Reading and writing combinations}[link:files/combi_rdoc.html#2.4]
 #
 # == {}[link:files/index_rdoc.html"name="1] Combination allocation
 # ---
@@ -104,7 +104,7 @@
 #
 # == {}[link:files/index_rdoc.html"name="3] Example
 #      #!/usr/bin/env ruby
-#      require("rbgsl")
+#      require("gsl")
 #
 #      printf("All subsets of {0,1,2,3} by size:\n") ;
 #      for i in 0...4 do

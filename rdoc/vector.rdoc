@@ -5,21 +5,21 @@
 # 1. {Class methods}[link:files/vector_rdoc.html#1]
 # 1. {Notes}[link:files/vector_rdoc.html#2]
 # 1. {Methods}[link:files/vector_rdoc.html#3]
-# 1. {Accessing vector elements}[link:files/vector_rdoc.html#3.1]
-# 1. {Initializing vector elements}[link:files/vector_rdoc.html#3.2]
-# 1. {Iterators}[link:files/vector_rdoc.html#3.3]
-# 1. {IO}[link:files/vector_rdoc.html#3.4]
-# 1. {Copying vectors}[link:files/vector_rdoc.html#3.5]
-# 1. {Vector views}[link:files/vector_rdoc.html#3.6]
-# 1. {Vector operations}[link:files/vector_rdoc.html#3.7]
-# 1. {Vector operations with size changes}[link:files/vector_rdoc.html#3.8]
-# 1. {Finding maximum and minimum elements of vectors}[link:files/vector_rdoc.html#3.9]
-# 1. {Vector properties}[link:files/vector_rdoc.html#3.10]
-# 1. {Element-wise vector comparison}[link:files/vector_rdoc.html#3.11]
-# 1. {Histogram}[link:files/vector_rdoc.html#3.12]
-# 1. {Sorting}[link:files/vector_rdoc.html#3.13]
-# 1. {BLAS methods}[link:files/vector_rdoc.html#3.14]
-# 1. {Data type conversions}[link:files/vector_rdoc.html#3.15]
+#    1. {Accessing vector elements}[link:files/vector_rdoc.html#3.1]
+#    1. {Initializing vector elements}[link:files/vector_rdoc.html#3.2]
+#    1. {Iterators}[link:files/vector_rdoc.html#3.3]
+#    1. {IO}[link:files/vector_rdoc.html#3.4]
+#    1. {Copying vectors}[link:files/vector_rdoc.html#3.5]
+#    1. {Vector views}[link:files/vector_rdoc.html#3.6]
+#    1. {Vector operations}[link:files/vector_rdoc.html#3.7]
+#    1. {Vector operations with size changes}[link:files/vector_rdoc.html#3.8]
+#    1. {Finding maximum and minimum elements of vectors}[link:files/vector_rdoc.html#3.9]
+#    1. {Vector properties}[link:files/vector_rdoc.html#3.10]
+#    1. {Element-wise vector comparison}[link:files/vector_rdoc.html#3.11]
+#    1. {Histogram}[link:files/vector_rdoc.html#3.12]
+#    1. {Sorting}[link:files/vector_rdoc.html#3.13]
+#    1. {BLAS methods}[link:files/vector_rdoc.html#3.14]
+#    1. {Data type conversions}[link:files/vector_rdoc.html#3.15]
 # 1. {NArray}[link:files/vector_rdoc.html#3.16]
 # 1. {GNU graph interface}[link:files/vector_rdoc.html#3.17]
 #
@@ -173,7 +173,7 @@
 #   Vector from another part of itself (see example below).
 #
 #   Ex:
-#       >> require 'rbgsl'
+#       >> require 'gsl'
 #       => true
 #       >> v = GSL::Vector[0..5]
 #       => GSL::Vector
@@ -344,7 +344,7 @@
 #
 #   * Example:
 #      #!/usr/bin/env ruby
-#      require("rbgsl")
+#      require("gsl")
 #
 #      v = GSL::Vector[1, 2, 3, 4, 5, 6]
 #      view = v.subvector(1, 4)
@@ -536,7 +536,7 @@
 #   Element-wise calculation of power p.
 #
 #   Ex)
-#      >> require("rbgsl")
+#      >> require("gsl")
 #      >> v = GSL::Vector[1, 2, 3]
 #      => GSL::Vector
 #      [ 1.000e+00 2.000e+00 3.000e+00 ]
@@ -652,7 +652,7 @@
 #
 #   Ex:
 #     tcsh> irb
-#     >> require("rbgsl")
+#     >> require("gsl")
 #     => true
 #     >> a = GSL::Vector[-1, -2, -3, -4]
 #     => GSL::Vector: 
@@ -698,7 +698,7 @@
 #   with corresponding elements from each arguments.
 #
 #   Ex:
-#     >> require("rbgsl")
+#     >> require("gsl")
 #     >> a = GSL::Vector[4, 5, 6]
 #     >> b = GSL::Vector[7, 8, 9]
 #     >> GSL::Vector[1, 2, 3].zip(a, b)
@@ -1124,7 +1124,7 @@
 # * GSL::Vector#to_tensor(rank, dimension)
 #
 #
-# === {}[link:files/index_rdoc.html"name="3.16] <tt>GSL::Vector <---> NArray</tt>
+# === {}[link:files/index_rdoc.html"name="3.16] GSL::Vector <---> NArray
 #
 # ---
 # * GSL::Vector#to_na
@@ -1179,7 +1179,7 @@
 #
 #   Ex:
 #      tcsh> irb
-#      >> require("rbgsl")
+#      >> require("gsl")
 #      => true
 #      >> na = NArray[1.0, 2, 3, 4, 5]    
 #      => NArray.float(5): 

@@ -3,9 +3,9 @@
 #
 # The GSL physical constants are defined as Ruby constants under the
 # modules 
-#   * <tt>GSL::CONST::MKSA</tt> (MKSA unit)
-#   * <tt>GSL::CONST:CGSM</tt>  (CGSM unit)
-#   * <tt>GSL::CONST:NUM</tt>   (Dimension-less constants)
+# * <tt>GSL::CONST::MKSA</tt> (MKSA unit)
+# * <tt>GSL::CONST:CGSM</tt>  (CGSM unit)
+# * <tt>GSL::CONST:NUM</tt>   (Dimension-less constants)
 # For example, the GSL C constant 
 # <tt>GSL_CONST_MKSA_SPEED_OF_LIGHT</tt> is represented by a Ruby constant,
 #       GSL_CONST_MKSA_SPEED_OF_LIGHT  ---> GSL::CONST::MKSA::SPEED_OF_LIGHT
@@ -82,14 +82,6 @@
 # * GSL::CONST::MKSA::GAUSS
 #
 #   The magnetic field of 1 Gauss.
-# #--- GSL::CONST::MKSA::MICRON
-# #    The length of 1 micron.
-# #--- GSL::CONST::MKSA::HECTARE
-# #    The area of 1 hectare.
-# #--- GSL::CONST::MKSA::MILES_PER_HOUR
-# #    The speed of 1 mile per hour.
-# #--- GSL::CONST::MKSA::KILOMETERS_PER_HOUR
-# #    The speed of 1 kilometer per hour.
 #
 # == {}[link:files/index_rdoc.html"name="2] Astronomy and Astrophysics
 # ---

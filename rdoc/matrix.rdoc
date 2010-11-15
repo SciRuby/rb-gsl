@@ -3,18 +3,18 @@
 # Contents:
 # 1. {Class methods}[link:files/matrix_rdoc.html#1]
 # 1. {Instance methods}[link:files/matrix_rdoc.html#2]
-# 1. {Accessing matrix elements}[link:files/matrix_rdoc.html#2.1]
-# 1. {Initializing matrix elements}[link:files/matrix_rdoc.html#2.2]
-# 1. {IO}[link:files/matrix_rdoc.html#2.3]
-# 1. {Matrix views}[link:files/matrix_rdoc.html#2.4]
-# 1. {Creating row and column views}[link:files/matrix_rdoc.html#2.5]
-# 1. {Iterators}[link:files/matrix_rdoc.html#2.6]
-# 1. {Copying matrices}[link:files/matrix_rdoc.html#2.7]
-# 1. {Copying rows and columns}[link:files/matrix_rdoc.html#2.8]
-# 1. {Exchanging rows and columns}[link:files/matrix_rdoc.html#2.9]
-# 1. {Matrix operations}[link:files/matrix_rdoc.html#2.10]
-# 1. {Finding maximum and minimum elements of matrices}[link:files/matrix_rdoc.html#2.11]
-# 1. {Matrix properties}[link:files/matrix_rdoc.html#2.12]
+#    1. {Accessing matrix elements}[link:files/matrix_rdoc.html#2.1]
+#    1. {Initializing matrix elements}[link:files/matrix_rdoc.html#2.2]
+#    1. {IO}[link:files/matrix_rdoc.html#2.3]
+#    1. {Matrix views}[link:files/matrix_rdoc.html#2.4]
+#    1. {Creating row and column views}[link:files/matrix_rdoc.html#2.5]
+#    1. {Iterators}[link:files/matrix_rdoc.html#2.6]
+#    1. {Copying matrices}[link:files/matrix_rdoc.html#2.7]
+#    1. {Copying rows and columns}[link:files/matrix_rdoc.html#2.8]
+#    1. {Exchanging rows and columns}[link:files/matrix_rdoc.html#2.9]
+#    1. {Matrix operations}[link:files/matrix_rdoc.html#2.10]
+#    1. {Finding maximum and minimum elements of matrices}[link:files/matrix_rdoc.html#2.11]
+#    1. {Matrix properties}[link:files/matrix_rdoc.html#2.12]
 # 1. {NArray}[link:files/matrix_rdoc.html#3]
 # 1. {Special matrices}[link:files/matrix_rdoc.html#4]
 #
@@ -25,14 +25,12 @@
 # * GSL::Matrix.alloc(size1, size2)
 # * GSL::Matrix.alloc(array) 
 # * GSL::Matrix.alloc(arrays)
-# * GSL::Matrix.alloc(...)
-# * GSL::Matrix[...]
+# * GSL::Matrix.alloc( ... )
+# * GSL::Matrix[ ... ]
 #
 #   These methods create a <tt>GSL::Matrix</tt> object.
 #
 # 1. From arrays
-#        >> require("rbgsl")
-#        => true
 #        >> m = GSL::Matrix[[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 #        => GSL::Matrix 
 #        [ 1.000e+00 2.000e+00 3.000e+00 
@@ -697,7 +695,7 @@
 #   Returns the horizontal concatenation of <tt>self</tt> and <tt>other</tt>.
 #
 #   Ex:
-#     >> require("rbgsl")
+#     >> require("gsl")
 #     => true
 #     >> a = GSL::Matrix::Int[1..4, 2, 2]
 #     => GSL::Matrix::Int

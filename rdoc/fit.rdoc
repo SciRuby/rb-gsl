@@ -13,17 +13,17 @@
 # Contents:
 # 1. {Overview}[link:files/fit_rdoc.html#1]
 # 1. {Linear regression}[link:files/fit_rdoc.html#2]
-# 1. {Module functions for linear regression}[link:files/fit_rdoc.html#2.1]
+#    1. {Module functions for linear regression}[link:files/fit_rdoc.html#2.1]
 # 1. {Linear fitting without a constant term}[link:files/fit_rdoc.html#3]
 # 1. {Multi-parameter fitting}[link:files/fit_rdoc.html#4]
-# 1. {GSL::MultiFit::Workspace class}[link:files/fit_rdoc.html#4.1]
-# 1. {Module functions}[link:files/fit_rdoc.html#4.2]
-# 1. {Higer level interface}[link:files/fit_rdoc.html#4.3]
-# 1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:files/ndlinear_rdoc.html] (GSL extension)
+#    1. {GSL::MultiFit::Workspace class}[link:files/fit_rdoc.html#4.1]
+#    1. {Module functions}[link:files/fit_rdoc.html#4.2]
+#    1. {Higer level interface}[link:files/fit_rdoc.html#4.3]
+#    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:files/ndlinear_rdoc.html] (GSL extension)
 # 1. {Examples}[link:files/fit_rdoc.html#5]
-# 1. {Linear regression}[link:files/fit_rdoc.html#5.1]
-# 1. {Exponential fitting}[link:files/fit_rdoc.html#5.2]
-# 1. {Multi-parameter fitting}[link:files/fit_rdoc.html#5.3]
+#    1. {Linear regression}[link:files/fit_rdoc.html#5.1]
+#    1. {Exponential fitting}[link:files/fit_rdoc.html#5.2]
+#    1. {Multi-parameter fitting}[link:files/fit_rdoc.html#5.3]
 #
 # == {}[link:files/index_rdoc.html"name="1] Overview
 # Least-squares fits are found by minimizing \chi^2 (chi-squared), the weighted 

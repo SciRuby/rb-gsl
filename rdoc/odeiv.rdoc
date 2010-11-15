@@ -11,11 +11,11 @@
 # Contents:
 # 1. {Classes for ODE solver}[link:files/odeiv_rdoc.html#1]
 # 1. {Class Descriptions}[link:files/odeiv_rdoc.html#2]
-# 1. {GSL::Odeiv::System : Defining the ODE System}[link:files/odeiv_rdoc.html#2.1]
-# 1. {GSL::Odeiv::Step : Stepping Algorithms}[link:files/odeiv_rdoc.html#2.2]
-# 1. {GSL::Odeiv::Control : Adaptive Step-size Control}[link:files/odeiv_rdoc.html#2.3]
-# 1. {GSL::Odeiv::Evolve : Evolution}[link:files/odeiv_rdoc.html#2.4]
-# 1. {GSL::Odeiv::Solver : Higher level interface}[link:files/odeiv_rdoc.html#2.5]
+#    1. {GSL::Odeiv::System : Defining the ODE System}[link:files/odeiv_rdoc.html#2.1]
+#    1. {GSL::Odeiv::Step : Stepping Algorithms}[link:files/odeiv_rdoc.html#2.2]
+#    1. {GSL::Odeiv::Control : Adaptive Step-size Control}[link:files/odeiv_rdoc.html#2.3]
+#    1. {GSL::Odeiv::Evolve : Evolution}[link:files/odeiv_rdoc.html#2.4]
+#    1. {GSL::Odeiv::Solver : Higher level interface}[link:files/odeiv_rdoc.html#2.5]
 # 1. {Examples}[link:files/odeiv_rdoc.html#3]
 #
 # == {}[link:files/index_rdoc.html"name="1] Classes for ODE solver
@@ -109,34 +109,34 @@
 #   dimension <tt>dim</tt>. The algorithms are specified by one of the constants under the 
 #   <tt>GSL::Odeiv::Step</tt> class, as
 #
-# 1. <tt>GSL::Odeiv::Step::RK2</tt>, Embedded 2nd order Runge-Kutta with 3rd order error estimate.
-# 1. <tt>GSL::Odeiv::Step::RK4</tt>, 4th order (classical) Runge-Kutta.
-# 1. <tt>GSL::Odeiv::Step::RKF45</tt>, Embedded 4th order Runge-Kutta-Fehlberg method with 5th order error estimate. This method is a good general-purpose integrator.
-# 1. <tt>GSL::Odeiv::Step::RKCK</tt>, Embedded 4th order Runge-Kutta Cash-Karp method with 5th order error estimate.
-# 1. <tt>GSL::Odeiv::Step::RK8PD</tt>, Embedded 8th order Runge-Kutta Prince-Dormand method with 9th order error estimate.
-# 1. <tt>GSL::Odeiv::Step::RK2IMP</tt>, Implicit 2nd order Runge-Kutta at Gaussian points
-# 1. <tt>GSL::Odeiv::Step::RK4IMP</tt>, Implicit 4th order Runge-Kutta at Gaussian points
-# 1. <tt>GSL::Odeiv::Step::BSIMP</tt>, Implicit Bulirsch-Stoer method of Bader and Deuflhard. This algorithm requires the Jacobian.
-# 1. <tt>GSL::Odeiv::Step::GEAR1</tt>, M=1 implicit Gear method
-# 1. <tt>GSL::Odeiv::Step::GEAR2</tt>, M=2 implicit Gear method
-# 1. <tt>GSL::Odeiv::Step::RK2SIMP</tt> (GSL-1.6)
+#   1. <tt>GSL::Odeiv::Step::RK2</tt>, Embedded 2nd order Runge-Kutta with 3rd order error estimate.
+#   1. <tt>GSL::Odeiv::Step::RK4</tt>, 4th order (classical) Runge-Kutta.
+#   1. <tt>GSL::Odeiv::Step::RKF45</tt>, Embedded 4th order Runge-Kutta-Fehlberg method with 5th order error estimate. This method is a good general-purpose integrator.
+#   1. <tt>GSL::Odeiv::Step::RKCK</tt>, Embedded 4th order Runge-Kutta Cash-Karp method with 5th order error estimate.
+#   1. <tt>GSL::Odeiv::Step::RK8PD</tt>, Embedded 8th order Runge-Kutta Prince-Dormand method with 9th order error estimate.
+#   1. <tt>GSL::Odeiv::Step::RK2IMP</tt>, Implicit 2nd order Runge-Kutta at Gaussian points
+#   1. <tt>GSL::Odeiv::Step::RK4IMP</tt>, Implicit 4th order Runge-Kutta at Gaussian points
+#   1. <tt>GSL::Odeiv::Step::BSIMP</tt>, Implicit Bulirsch-Stoer method of Bader and Deuflhard. This algorithm requires the Jacobian.
+#   1. <tt>GSL::Odeiv::Step::GEAR1</tt>, M=1 implicit Gear method
+#   1. <tt>GSL::Odeiv::Step::GEAR2</tt>, M=2 implicit Gear method
+#   1. <tt>GSL::Odeiv::Step::RK2SIMP</tt> (GSL-1.6)
 #
 #   * Ex: 
 #       step = Odeiv::Step.alloc(Odeiv::Step::RKF45, 2)
 #
 #   The algorithm types can also be given by a String, same as the C struct name,
 #
-# 1. "<tt>rk2</tt>" or "<tt>gsl_odeiv_step_rk2</tt>"
-# 1. "<tt>rk4</tt>" or "<tt>gsl_odeiv_step_rk4</tt>"
-# 1. "<tt>rkf45</tt>" or "<tt>gsl_odeiv_step_rkf45</tt>"
-# 1. "<tt>rkck</tt>" or "<tt>gsl_odeiv_step_rkck</tt>"
-# 1. "<tt>rk8pd</tt>" or "<tt>gsl_odeiv_step_rk8pd</tt>"
-# 1. "<tt>rk2imp</tt>" or "<tt>gsl_odeiv_step_rk2imp</tt>"
-# 1. "<tt>rk4imp</tt>" or "<tt>gsl_odeiv_step_rk4imp</tt>"
-# 1. "<tt>bsimp</tt>" or "<tt>gsl_odeiv_step_bsimp</tt>"
-# 1. "<tt>gear1</tt>" or "<tt>gsl_odeiv_step_gear1</tt>"
-# 1. "<tt>gear2</tt>" or "<tt>gsl_odeiv_step_gear2</tt>"
-# 1. "<tt>rk2simp</tt>" or "<tt>gsl_odeiv_step_rk2simp</tt>" (GSL-1.6)
+#   1. "<tt>rk2</tt>" or "<tt>gsl_odeiv_step_rk2</tt>"
+#   1. "<tt>rk4</tt>" or "<tt>gsl_odeiv_step_rk4</tt>"
+#   1. "<tt>rkf45</tt>" or "<tt>gsl_odeiv_step_rkf45</tt>"
+#   1. "<tt>rkck</tt>" or "<tt>gsl_odeiv_step_rkck</tt>"
+#   1. "<tt>rk8pd</tt>" or "<tt>gsl_odeiv_step_rk8pd</tt>"
+#   1. "<tt>rk2imp</tt>" or "<tt>gsl_odeiv_step_rk2imp</tt>"
+#   1. "<tt>rk4imp</tt>" or "<tt>gsl_odeiv_step_rk4imp</tt>"
+#   1. "<tt>bsimp</tt>" or "<tt>gsl_odeiv_step_bsimp</tt>"
+#   1. "<tt>gear1</tt>" or "<tt>gsl_odeiv_step_gear1</tt>"
+#   1. "<tt>gear2</tt>" or "<tt>gsl_odeiv_step_gear2</tt>"
+#   1. "<tt>rk2simp</tt>" or "<tt>gsl_odeiv_step_rk2simp</tt>" (GSL-1.6)
 #
 #   * Ex: 
 #       step = Odeiv::Step.alloc("bsimp", 4)
@@ -336,8 +336,8 @@
 #
 # This can be converted into a first order system suitable for use with the routines described in this chapter by introducing a separate variable for the velocity, y = x'(t),
 #
-#   * x' = y
-#   * y' = -x + \mu y (1-x^2)
+# * x' = y
+# * y' = -x + \mu y (1-x^2)
 #
 #       require("gsl")
 #       include Odeiv

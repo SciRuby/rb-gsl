@@ -3,13 +3,13 @@
 # === {}[link:files/index_rdoc.html"name="0.1] Library
 #
 # == {}[link:files/index_rdoc.html"name="1] Module and classes
-#   * GSL::
-#     * Siman::  (Module)
-#       * Params (Class)
-#       * Efunc (Class)
-#       * Step (Class)
-#       * Metric (Class)
-#       * Print (Class)
+# * GSL::
+#   * Siman::  (Module)
+#     * Params (Class)
+#     * Efunc (Class)
+#     * Step (Class)
+#     * Metric (Class)
+#     * Print (Class)
 #
 # == {}[link:files/index_rdoc.html"name="2] <tt>Siman</tt> Module
 # === {}[link:files/index_rdoc.html"name="2.1] Singleton method

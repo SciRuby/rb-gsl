@@ -6,7 +6,8 @@
 # == {}[link:files/index_rdoc.html"name="2] Load the library
 # Put at the head of your scripts,
 #     
-#     require("gsl")
+#     require 'rubygems' # if installed via RubyGems
+#     require 'gsl'
 #
 # == {}[link:files/index_rdoc.html"name="3] Naming conventions, C Structs and Ruby Classes
 #
@@ -16,20 +17,20 @@
 # and the Ruby classes are defined for each of the GSL C structs under the <tt>GSL</tt> module.
 # According to the Ruby manner, the name of each class begins with a capital. For example,
 #
-#   * Struct <tt>gsl_vector</tt> ---> Ruby class <tt>GSL::Vector</tt>
-#     * Function call as <tt>v = gsl_vector_alloc(5);</tt> ---> Class method <tt>v = GSL::Vector.alloc(5)</tt>
-#     * Function call as <tt>gsl_vector_set(v, i, 1.5);</tt> ---> Method <tt>v.set(i, 1.5)</tt> or <tt>v[i] = 1.5</tt>
-#   * Constant <tt>GSL_SUCCESS</tt> ---> Ruby module constant <tt>GSL::SUCCESS</tt>
-#   * Function <tt>gsl_sf_bessel_J0(x)</tt> --->
-#     * Submodule <tt>GSL::Sf</tt>
-#     * Module function <tt>GSL::Sf::bessel_J0(x)</tt>
-#       * <tt>GSL::Sf::Bessel::J0(x)</tt> is also OK, where <tt>J0(x)</tt> is a module function of the sub-sub-module <tt>GSL::Sf::Bessel</tt>.
-#   * Function <tt>gsl_linalg_LU_decomp</tt> --->
-#     * Module <tt>GSL::Linalg::LU</tt>
-#       * Singleton method <tt>GSL::Linalg::LU_decomp</tt>
-#       * Submodule <tt>GSL::Linalg::LU</tt>
-#         * Singleton method <tt>GSL::Linalg::LU.decomp</tt>
-#     * Method <tt>GSL::Matrix#LU_decomp</tt>
+# * Struct <tt>gsl_vector</tt> ---> Ruby class <tt>GSL::Vector</tt>
+#   * Function call as <tt>v = gsl_vector_alloc(5);</tt> ---> Class method <tt>v = GSL::Vector.alloc(5)</tt>
+#   * Function call as <tt>gsl_vector_set(v, i, 1.5);</tt> ---> Method <tt>v.set(i, 1.5)</tt> or <tt>v[i] = 1.5</tt>
+# * Constant <tt>GSL_SUCCESS</tt> ---> Ruby module constant <tt>GSL::SUCCESS</tt>
+# * Function <tt>gsl_sf_bessel_J0(x)</tt> --->
+#   * Submodule <tt>GSL::Sf</tt>
+#   * Module function <tt>GSL::Sf::bessel_J0(x)</tt>
+#     * <tt>GSL::Sf::Bessel::J0(x)</tt> is also OK, where <tt>J0(x)</tt> is a module function of the sub-sub-module <tt>GSL::Sf::Bessel</tt>.
+# * Function <tt>gsl_linalg_LU_decomp</tt> --->
+#   * Module <tt>GSL::Linalg::LU</tt>
+#     * Singleton method <tt>GSL::Linalg::LU_decomp</tt>
+#     * Submodule <tt>GSL::Linalg::LU</tt>
+#       * Singleton method <tt>GSL::Linalg::LU.decomp</tt>
+#   * Method <tt>GSL::Matrix#LU_decomp</tt>
 #
 # == {}[link:files/index_rdoc.html"name="4] Examples
 # See the directories "examples/" and "tests/".
@@ -96,7 +97,7 @@
 #     * RealWavetable (Class)
 #     * RealWorkspace (Class)      
 #   * Wavelet (Class)
-#       * Wavelet2d < Wavelet
+#     * Wavelet2d < Wavelet
 #   * Function (Class)
 #   * Function_fdf (Class)
 #   * Integration (Module)

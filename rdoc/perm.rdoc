@@ -3,10 +3,10 @@
 # Contents:
 # 1. {Permuation allocations}[link:files/perm_rdoc.html#1]
 # 1. {Methods}[link:files/perm_rdoc.html#2]
-# 1. {Accessing permutation elements}[link:files/perm_rdoc.html#2.1]
-# 1. {Permuation properties}[link:files/perm_rdoc.html#2.2]
-# 1. {Permuation functions}[link:files/perm_rdoc.html#2.3]
-# 1. {Reading and writing permutations}[link:files/perm_rdoc.html#2.4]
+#    1. {Accessing permutation elements}[link:files/perm_rdoc.html#2.1]
+#    1. {Permuation properties}[link:files/perm_rdoc.html#2.2]
+#    1. {Permuation functions}[link:files/perm_rdoc.html#2.3]
+#    1. {Reading and writing permutations}[link:files/perm_rdoc.html#2.4]
 # 1. {Permutations in cyclic form}[link:files/perm_rdoc.html#2.5]
 # 1. {Applying Permutations}[link:files/perm_rdoc.html#3]
 #
