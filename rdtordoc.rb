@@ -19,8 +19,8 @@ class RdToRdoc
     [/^(\s*)\((\d+)\)/, '1.'],
     # labelled list
     [/^(\s*):(\s*)(\S+)/, '\1[\2]'],
-    # line contains a method. indent
-    [/^(\s*)\-{3}\s/, '\1 '],
+    # line contains a method. bulletize
+    [/^(\s*)\-{3}\s/, '* \1'],
     # Emphasis
     [/\(\(\*/, '<b>'], [/\*\)\)/, '</b>'], # em?
     # Code
@@ -48,8 +48,8 @@ class RdToRdoc
     [/\(\(\-/, '(Note: '], [/\-\)\)/, ')'],
     # Verbatim text.
     [/\(\(\'/, '<tt>'], [/\'\)\)/, '</tt>'],
-    # IRB reformatting
-    [/irb\(.*?\):\d+:\d+>/, '>>']
+    # IRB prompt simplifiation
+    [/irb\(.*?\):\d+:\d+[>*]/, '>>'],
   ]
 
   # The constructor takes an input object that responds to readline,
@@ -70,6 +70,7 @@ class RdToRdoc
     strip_mode = false
     method_block = false
     while line = @input.gets
+      line.chomp!
       case @state
       when INSIDE_COMMENT
         if line =~ /^=end/
@@ -86,16 +87,20 @@ class RdToRdoc
           # If method line, turn on "strip mode", which strips off 4 leading
           # spaces.
           if line =~ /^---\s/
-            # Put blank line before blocks of methods
-            @output.puts if !method_block
+            # Put rule line before blocks of methods
+            @output.puts '# ---' if !method_block
             strip_mode = true
             method_block = true
           elsif line =~ /^=/
+            # Put blank line after blocks of methods
+            @output.puts '#' if method_block
             strip_mode = false
             method_block = false
           elsif strip_mode
             # Strip leading whitespace before mapping
-            line.gsub!(/^\s{4}/,'')
+            line.gsub!(/^\s{4}/,'  ')
+            # Put blank line after blocks of methods
+            @output.puts '#' if method_block
             method_block = false
           end
           @@mapping.each do |pattern,replacement|
@@ -111,6 +116,8 @@ class RdToRdoc
       else
         raise RdToRdocError.new("Unknown state #{@state}")
       end
+      @output.print '#'
+      @output.print ' ' unless line.empty?
       @output.puts line
     end
     @input.close
