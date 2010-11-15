@@ -1,6 +1,5 @@
 #
-#
-# = Ruby/GSL Reference
+# = {Ruby/GSL Reference}[link:files/rdoc/ref_rdoc.html"target="_parent]
 # (See also {Gnu Scientific Library -- Reference Manual}[http://www.gnu.org/software/gsl/manual/html_node/"target="_top])
 #
 # == {}[link:index.html"name="1] Front Matter

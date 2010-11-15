@@ -1,5 +1,5 @@
 #
-# = Ruby/GSL
+# = {Ruby/GSL}[link:files/rdoc/index_rdoc.html"target="_parent]
 #
 # Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License.
 #
