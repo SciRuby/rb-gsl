@@ -120,7 +120,7 @@ Ex:
         p v                 <----- [ 1 2 3 4 5 ]
 
 
-See also ((<here|URL:vector.html#3.13>)).
+See also ((<here|URL:vector.html#3.16>)).
 
 == NOTE:
 In Ruby/GSL, vector length is limited within the range of Fixnum.

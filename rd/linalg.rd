@@ -402,26 +402,26 @@ which can be solved by forward and back-substitution.
     (({GSL::Linalg::Hessenberg::decomp})).
 
 == Hessenberg-Triangular Decomposition of Real Matrices 
--- GSL::Linalg::hesstri_decomp(A, B)
--- GSL::Linalg::hesstri_decomp(A, B, work)
--- GSL::Linalg::hesstri_decomp(A, B, U, V)
--- GSL::Linalg::hesstri_decomp(A, B, U, V, work)
-   Compute the Hessenberg-Triangular decomposition of the matrix pair 
-   ((|(A, B)|)), and return ((|(H, R|)).
-   If U and V are provided (they may be null), the similarity 
-   transformations are stored in them. ((|work|)) is an additional workspace
-   of length ((|N|)).
+--- GSL::Linalg::hesstri_decomp(A, B)
+--- GSL::Linalg::hesstri_decomp(A, B, work)
+--- GSL::Linalg::hesstri_decomp(A, B, U, V)
+--- GSL::Linalg::hesstri_decomp(A, B, U, V, work)
+    Compute the Hessenberg-Triangular decomposition of the matrix pair 
+    ((|(A, B)|)), and return ((|(H, R|)).
+    If U and V are provided (they may be null), the similarity 
+    transformations are stored in them. ((|work|)) is an additional workspace
+    of length ((|N|)).
 
--- GSL::Linalg::hesstri_decomp!(A, B)
--- GSL::Linalg::hesstri_decomp!(A, B, work)
--- GSL::Linalg::hesstri_decomp!(A, B, U, V)
--- GSL::Linalg::hesstri_decomp!(A, B, U, V, work)
-   Compute the Hessenberg-Triangular decomposition of the matrix pair 
-   ((|(A, B)|)). On output, ((|H|)) is stored in ((|A|)), 
-   and ((|R|)) is stored in ((|B|)).
-   If U and V are provided (they may be null), the similarity 
-   transformations are stored in them. ((|work|)) is an additional workspace
-   of length ((|N|)).
+--- GSL::Linalg::hesstri_decomp!(A, B)
+--- GSL::Linalg::hesstri_decomp!(A, B, work)
+--- GSL::Linalg::hesstri_decomp!(A, B, U, V)
+--- GSL::Linalg::hesstri_decomp!(A, B, U, V, work)
+    Compute the Hessenberg-Triangular decomposition of the matrix pair 
+    ((|(A, B)|)). On output, ((|H|)) is stored in ((|A|)), 
+    and ((|R|)) is stored in ((|B|)).
+    If U and V are provided (they may be null), the similarity 
+    transformations are stored in them. ((|work|)) is an additional workspace
+    of length ((|N|)).
 
 == Bidiagonalization
 --- GSL::Linalg::Bidiag::decomp!(A)

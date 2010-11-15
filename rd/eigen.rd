@@ -219,25 +219,25 @@ real.
 
 --- GSL::Eigen::Gen::params(compute_s, compute_t, balance, w)
 --- GSL::Eigen::gen_params(compute_s, compute_t, balance, w)
-   Set some parameters which determine how the eigenvalue problem is solved 
-   in subsequent calls to (({GSL::Eigen::gen})).
+    Set some parameters which determine how the eigenvalue problem is solved 
+    in subsequent calls to (({GSL::Eigen::gen})).
 
-   If ((|compute_s|)) is set to 1, the full Schur form ((|S|)) will be 
-   computed by (({GSL::Eigen::gen}). If it is set to 0, ((|S|)) will 
-   not be computed (this is the default setting). ((|S|)) is a quasi upper 
-   triangular matrix with 1-by-1 and 2-by-2 blocks on its diagonal. 
-   1-by-1 blocks correspond to real eigenvalues, and 2-by-2 blocks 
-   correspond to complex eigenvalues. 
+    If ((|compute_s|)) is set to 1, the full Schur form ((|S|)) will be 
+    computed by (({GSL::Eigen::gen})). If it is set to 0, ((|S|)) will 
+    not be computed (this is the default setting). ((|S|)) is a quasi upper 
+    triangular matrix with 1-by-1 and 2-by-2 blocks on its diagonal. 
+    1-by-1 blocks correspond to real eigenvalues, and 2-by-2 blocks 
+    correspond to complex eigenvalues. 
 
-   If ((|compute_t|)) is set to 1, the full Schur form ((|T|)) will 
-   be computed by (({GSL::Eigen::gen}). If it is set to 0, ((|T|)) 
-   will not be computed (this is the default setting). ((|T|)) 
-   is an upper triangular matrix with non-negative elements on its diagonal. 
-   Any 2-by-2 blocks in ((|S|)) will correspond to a 2-by-2 diagonal block 
-   in ((|T|)). 
+    If ((|compute_t|)) is set to 1, the full Schur form ((|T|)) will 
+    be computed by (({GSL::Eigen::gen})). If it is set to 0, ((|T|)) 
+    will not be computed (this is the default setting). ((|T|)) 
+    is an upper triangular matrix with non-negative elements on its diagonal. 
+    Any 2-by-2 blocks in ((|S|)) will correspond to a 2-by-2 diagonal block 
+    in ((|T|)). 
 
-   The ((|balance|)) parameter is currently ignored, since generalized 
-   balancing is not yet implemented. 
+    The ((|balance|)) parameter is currently ignored, since generalized 
+    balancing is not yet implemented. 
 
 --- GSL::Eigen::gen(A, B, w)
     Computes the eigenvalues of the real generalized nonsymmetric matrix pair

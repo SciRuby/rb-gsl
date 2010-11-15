@@ -1,3 +1,4 @@
+=begin
 = Permutations
 Contents:
 (1) ((<Permuation allocations|URL:perm.html#1>))
