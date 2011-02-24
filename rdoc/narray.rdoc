@@ -10,16 +10,19 @@
 # ---
 # * GSL::Vector#to_na
 # * GSL::Vector#to_nvector
+# * GSL::Vector::Complex#to_na
+# * GSL::Vector::Complex#to_nvector
 # * GSL::Matrix#to_na
 # * GSL::Matrix#to_nmatrix
 #
 #   Convert GSL objects to NArray. The data contained by the GSL objects
 #   are copied to a newly allocated memory block of the NArray objects created.
 #
-#
 # ---
 # * GSL::Vector#to_na_ref
 # * GSL::Vector#to_nvector_ref
+# * GSL::Vector::Complex#to_na_ref
+# * GSL::Vector::Complex#to_nvector_ref
 # * GSL::Matrix#to_na_ref
 # * GSL::Matrix#to_nmatrix_ref
 #
@@ -44,8 +47,9 @@
 # * NArray#to_gv
 # * NArray#to_gm
 #
-#   Convert NArray objects to <tt>GSL::Vector</tt> or <tt>GSL::Matrix</tt>. 
-#   The data contained by the NArray objects
+#   <tt>NArray#to_gv</tt> converts NArray objects to <tt>GSL::Vector</tt> or
+#   <tt>GSL::Vector::Complex</tt>.  <tt>NArray#to_gm</tt> converts NArray
+#   objects to <tt>GSL::Matrix</tt>.  The data contained by the NArray objects
 #   are copied to a newly allocated memory block of the GSL objects created.
 #
 # ---
