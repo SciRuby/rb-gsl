@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Sun Nov 14 14:53:48 -0800 2010</td>
+      <td>Thu Feb 24 09:55:00 -0800 2011</td>
     </tr>
     </table>
   </div>
@@ -88,6 +88,12 @@
 <li>GSL::Vector#to_nvector
 
 </li>
+<li>GSL::Vector::Complex#to_na
+
+</li>
+<li>GSL::Vector::Complex#to_nvector
+
+</li>
 <li>GSL::Matrix#to_na
 
 </li>
@@ -104,6 +110,12 @@ copied to a newly allocated memory block of the NArray objects created.
 
 </li>
 <li>GSL::Vector#to_nvector_ref
+
+</li>
+<li>GSL::Vector::Complex#to_na_ref
+
+</li>
+<li>GSL::Vector::Complex#to_nvector_ref
 
 </li>
 <li>GSL::Matrix#to_na_ref
@@ -141,9 +153,10 @@ Example:
 <li>NArray#to_gm
 
 <p>
-Convert NArray objects to <tt>GSL::Vector</tt> or <tt>GSL::Matrix</tt>. The
-data contained by the NArray objects are copied to a newly allocated memory
-block of the GSL objects created.
+<tt>NArray#to_gv</tt> converts NArray objects to <tt>GSL::Vector</tt> or
+<tt>GSL::Vector::Complex</tt>. <tt>NArray#to_gm</tt> converts NArray
+objects to <tt>GSL::Matrix</tt>. The data contained by the NArray objects
+are copied to a newly allocated memory block of the GSL objects created.
 </p>
 </li>
 </ul>
