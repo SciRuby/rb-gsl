@@ -197,37 +197,37 @@ static VALUE rb_gsl_vector_int_to_nvector(VALUE obj)
 static VALUE rb_gsl_na_to_gsl_vector(VALUE obj, VALUE na)
 {
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free,
-			  na_to_gv(na));
+                          na_to_gv(na));
 }
 
 static VALUE rb_gsl_na_to_gsl_vector_view(VALUE obj, VALUE na)
 {
   return Data_Wrap_Struct(cgsl_vector_view, 0, gsl_vector_view_free,
-			  na_to_gv_view(na));
+                          na_to_gv_view(na));
 }
 
 static VALUE rb_gsl_na_to_gsl_vector_complex(VALUE obj, VALUE na)
 {
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free,
-			  na_to_gv_complex(na));
+                          na_to_gv_complex(na));
 }
 
 static VALUE rb_gsl_na_to_gsl_vector_complex_view(VALUE obj, VALUE na)
 {
   return Data_Wrap_Struct(cgsl_vector_complex_view, 0, gsl_vector_complex_view_free,
-			  na_to_gv_complex_view(na));
+                          na_to_gv_complex_view(na));
 }
 
 static VALUE rb_gsl_na_to_gsl_vector_int(VALUE obj, VALUE na)
 {
   return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free,
-			  na_to_gv_int(na));
+                          na_to_gv_int(na));
 }
 
 static VALUE rb_gsl_na_to_gsl_vector_int_view(VALUE obj, VALUE na)
 {
   return Data_Wrap_Struct(cgsl_vector_int_view, 0, rb_gsl_vector_int_view_free,
-			  na_to_gv_int_view(na));
+                          na_to_gv_int_view(na));
 }
 
 static VALUE rb_gsl_na_to_gsl_vector_method(VALUE na)
@@ -261,13 +261,13 @@ static VALUE rb_gsl_na_to_gsl_vector_view_method(VALUE na)
 static VALUE rb_gsl_na_to_gsl_vector_int_method(VALUE na)
 {
   return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free,
-			  na_to_gv_int(na));
+                          na_to_gv_int(na));
 }
 
 static VALUE rb_gsl_na_to_gsl_vector_int_view_method(VALUE na)
 {
   return Data_Wrap_Struct(cgsl_vector_int_view, 0, rb_gsl_vector_int_view_free,
-			  na_to_gv_int_view(na));
+                          na_to_gv_int_view(na));
 }
 
 gsl_vector* na_to_gv(VALUE na)
@@ -365,7 +365,7 @@ static VALUE rb_gsl_matrix_to_narray(VALUE obj, VALUE klass)
   nary = na_make_object(NA_DFLOAT, 2, shape, klass);
   for (i = 0; i < shape[1]; i++) {
     memcpy(NA_PTR_TYPE(nary,double*)+(i*shape[0]), m->data+(i*m->tda), 
-	   shape[0]*sizeof(double));
+           shape[0]*sizeof(double));
   }
   return nary;
 }
@@ -392,7 +392,7 @@ static VALUE rb_gsl_matrix_int_to_narray(VALUE obj, VALUE klass)
   nary = na_make_object(NA_LINT, 2, shape, klass);
   for (i = 0; i < shape[1]; i++) {
     memcpy(NA_PTR_TYPE(nary,int*)+(i*shape[0]), m->data+(i*m->tda), 
-	   shape[0]*sizeof(int));
+           shape[0]*sizeof(int));
   }
   return nary;
 }
@@ -618,14 +618,14 @@ static VALUE rb_gsl_narray_histogram(int argc, VALUE *argv, VALUE obj)
       break;
     default:
       if (VECTOR_P(argv[0])) {
-	Data_Get_Struct(argv[0], gsl_vector, ranges);
-	n = ranges->size - 1;
-	h = gsl_histogram_alloc(n);
-	gsl_histogram_set_ranges(h, ranges->data, ranges->size);
+        Data_Get_Struct(argv[0], gsl_vector, ranges);
+        n = ranges->size - 1;
+        h = gsl_histogram_alloc(n);
+        gsl_histogram_set_ranges(h, ranges->data, ranges->size);
       } else if (NA_IsNArray(argv[0])) {
-	ptr_range = get_vector_ptr(argv[0], &stride, &n);
-	h = gsl_histogram_alloc(n);
-	gsl_histogram_set_ranges(h, ptr_range, n);
+        ptr_range = get_vector_ptr(argv[0], &stride, &n);
+        h = gsl_histogram_alloc(n);
+        gsl_histogram_set_ranges(h, ptr_range, n);
       }
       break;
     }
@@ -639,7 +639,7 @@ static VALUE rb_gsl_narray_histogram(int argc, VALUE *argv, VALUE obj)
       break;
     default:
       rb_raise(rb_eTypeError, "wrong argument type %s (Array expected)",
-	       rb_class2name(CLASS_OF(argv[1])));
+               rb_class2name(CLASS_OF(argv[1])));
       break;
     }
     h = gsl_histogram_alloc(n);
