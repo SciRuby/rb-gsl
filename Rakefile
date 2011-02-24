@@ -8,8 +8,8 @@ spec = Gem::Specification.new do |s|
   # Basics
   s.name = 'gsl'
   s.version = RB_GSL_VERSION
-  s.summary = 'Ruby interface to GSL'
-  s.description = 'RubyGSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby'
+  s.summary = 'Ruby interface to GNU Scientific Library'
+  s.description = 'Ruby/GSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby'
   #s.platform = Gem::Platform::Ruby
   s.required_ruby_version = '>= 1.8.1'
   s.requirements << 'GSL (http://www.gnu.org/software/gsl/)'
