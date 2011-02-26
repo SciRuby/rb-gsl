@@ -278,7 +278,7 @@ gsl_vector* na_to_gv(VALUE na)
   if(NA_TYPE(na) != NA_DFLOAT) {
     nary = na_change_type(na, NA_DFLOAT);
   }
-  memcpy(v->data, NA_PTR_TYPE(na,double*), v->size*sizeof(double));
+  memcpy(v->data, NA_PTR_TYPE(nary,double*), v->size*sizeof(double));
   return v;
 }
 
@@ -306,7 +306,7 @@ gsl_vector_complex* na_to_gv_complex(VALUE na)
   if(NA_TYPE(na) != NA_DCOMPLEX) {
     nary = na_change_type(na, NA_DCOMPLEX);
   }
-  memcpy(v->data, NA_PTR_TYPE(na,gsl_complex*), v->size*sizeof(gsl_complex));
+  memcpy(v->data, NA_PTR_TYPE(nary,gsl_complex*), v->size*sizeof(gsl_complex));
   return v;
 }
 
