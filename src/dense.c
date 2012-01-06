@@ -1,6 +1,9 @@
 #ifndef DENSE_C
 #define DENSE_C
-#include "dense.h"
+
+#include <ruby.h>
+
+#include "nmatrix.h"
 
 
 /* Calculate the number of elements in the dense storage structure, based on shape and rank */
@@ -37,7 +40,7 @@ void dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val, size_t elem_
 }
 
 
-DENSE_STORAGE* create_dense_storage(size_t elem_size, size_t rank, size_t* shape, void* init_val) {
+DENSE_STORAGE* create_dense_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val) {
   DENSE_STORAGE* s;
   size_t count, p;
 
@@ -67,7 +70,7 @@ void delete_dense_storage(DENSE_STORAGE* s) {
 }
 
 
-int main() {
+/* int main() {
     size_t shape[] = {3,4,2};
     size_t c0[] = {1,0,0};
     size_t c1[] = {0,0,0};
@@ -89,6 +92,6 @@ int main() {
 
     return 0;
 }
-
+*/
 
 #endif

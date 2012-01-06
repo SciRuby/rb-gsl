@@ -5,4 +5,10 @@ README.txt
 Rakefile
 bin/nmatrix
 lib/nmatrix.rb
+src/list.h
+src/list.c
+src/dense.h
+src/dense.c
+src/nmatrix.h
+src/nmatrix.c
 test/test_nmatrix.rb

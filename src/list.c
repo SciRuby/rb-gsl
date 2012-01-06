@@ -1,16 +1,16 @@
 #ifndef LIST_C
 # define LIST_C
 
-#include "list.h"
+#include <ruby.h>
+
+#include "nmatrix.h"
 
 
 /* Get the contents of some set of coordinates. Note: Does not make a copy! Don't free! */
 void* list_storage_get(LIST_STORAGE* s, size_t* coords) {
   size_t r;
   NODE*  n;
-  LIST*  nl;
   LIST*  l = s->rows;
-  void*  res;
 
   for (r = s->rank; r > 1; --r) {
     n = list_find(l, coords[s->rank - r]);
@@ -30,7 +30,6 @@ void* list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val) {
   // So we need to find out if some key already exists
   size_t r;
   NODE*  n;
-  LIST*  nl; // new list, result
   LIST*  l = s->rows;
 
   // drill down into the structure
@@ -44,17 +43,18 @@ void* list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val) {
 }
 
 /* Creates a LIL matrix of n dimensions */
-LIST_STORAGE* create_list_storage(size_t elem_size, size_t rank, void* init_val) {
+LIST_STORAGE* create_list_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val) {
   LIST_STORAGE* s;
   if (!(s = malloc(sizeof(LIST_STORAGE)))) return NULL;
-  s->rows = create_list();
-  s->rank = rank;
+  s->rows  = create_list();
+  s->shape = shape;
+  s->rank  = rank;
   if (!(s->default_val = malloc(sizeof(elem_size)))) {
     delete_list( s->rows, s->rank - 1 );
     free(s);
     return NULL;
   }
-  *(s->default_val) = *init_val;
+  memcpy(s->default_val, init_val, elem_size);
 
   return s;
 }
@@ -259,8 +259,7 @@ NODE* list_insert(LIST* list, bool replace, size_t key, void* val) {
 
 }
 
-
-int main() {
+/* int main() {
     int *v1, *v2, *v3, *v4, *v5;
     LIST_STORAGE* s;
     size_t c0[] = {1,3};
@@ -329,6 +328,6 @@ int main() {
 
     return 0;
 }
-
+*/
 
 #endif

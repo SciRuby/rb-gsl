@@ -73,11 +73,13 @@ if /cygwin|mingw/ =~ RUBY_PLATFORM
   end
 end
 
-#$DEBUG = true
-#$CFLAGS = ["-Wall",$CFLAGS].join(" ")
+$DEBUG = true
+$CFLAGS = ["-Wall -g",$CFLAGS].join(" ")
 
 srcs = %w(
 nmatrix
+list
+dense
 )
 
 header = "stdint.h"
