@@ -138,8 +138,9 @@ int8_t nm_guess_dtype(VALUE v) {
 }
 
 
-VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE klass) {
-  return Data_Wrap_Struct(klass, NULL, NULL, nm_create(dtype, S_DENSE, create_dense_storage(nm_sizeof[dtype], shape, rank, init_val)));
+VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
+  NMATRIX* matrix = nm_create(dtype, S_DENSE, create_dense_storage(nm_sizeof[dtype], shape, rank, init_val));
+  return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
 }
 
 /* static VALUE nm_list_new(int argc, VALUE* argv, int8_t dtype, VALUE klass) {
@@ -150,24 +151,27 @@ VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VAL
 // Read the shape argument to NMatrix.new, which may be either an array or a single number.
 // Second argument is where the shape is stored at the end of the function; returns the rank.
 // You are responsible for freeing shape!
-size_t nm_interpret_shape_arg(VALUE arg, size_t* shape) {
-  size_t i, rank = 2;
+size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank) {
+  size_t i;
+  size_t* shape;
+
   if (TYPE(arg) == T_ARRAY) {
-    rank  = RARRAY_LEN(arg);
-    shape = malloc( sizeof(size_t) * rank );
-    for (i = 0; i < rank; ++i)
+    *rank = RARRAY_LEN(arg);
+    shape = malloc( sizeof(size_t) * (*rank) );
+    for (i = 0; i < *rank; ++i)
       shape[i]  = (size_t)(FIX2UINT(RARRAY_PTR(arg)[i]));
   } else if (FIXNUM_P(arg)) {
-    shape = malloc( sizeof(size_t) * rank );
-    for (i = 0; i < rank; ++i)
+    *rank = 2;
+    shape = malloc( sizeof(size_t) * (*rank) );
+    for (i = 0; i < *rank; ++i)
       shape[i]  = (size_t)(FIX2UINT(arg));
   } else {
-    rank  = 0;
+    *rank  = 0;
     shape = NULL;
     rb_raise(rb_eArgError, "Expected an array of numbers or a single fixnum for matrix shape");
   }
 
-  return rank;
+  return shape;
 }
 
 
@@ -176,11 +180,11 @@ size_t nm_interpret_shape_arg(VALUE arg, size_t* shape) {
 int8_t nm_interpret_dtype(int argc, VALUE* argv) {
   if (argc == 2) {
     if (SYMBOL_P(argv[1])) return nm_dtypesymbol_to_dtype(argv[1]);
-    else if (STRING_P(argv[1])) return nm_dtypestring_to_dtype(argv[1]);
+    else if (IS_STRING(argv[1])) return nm_dtypestring_to_dtype(StringValue(argv[1]));
     else return nm_guess_dtype(argv[0]);
   } else if (argc == 1) {
     if (SYMBOL_P(argv[0])) return nm_dtypesymbol_to_dtype(argv[0]);
-    else if (STRING_P(argv[0])) return nm_dtypestring_to_dtype(argv[0]);
+    else if (IS_STRING(argv[0])) return nm_dtypestring_to_dtype(StringValue(argv[0]));
     else return nm_guess_dtype(argv[0]);
   } else rb_raise(rb_eArgError, "Need an initial value or a dtype");
 
@@ -189,7 +193,7 @@ int8_t nm_interpret_dtype(int argc, VALUE* argv) {
 
 int8_t nm_interpret_stype(VALUE arg) {
   if (SYMBOL_P(arg)) return nm_stypesymbol_to_stype(arg);
-  else if (STRING_P(arg)) return nm_stypestring_to_stype(arg);
+  else if (IS_STRING(arg)) return nm_stypestring_to_stype(StringValue(arg));
   else rb_raise(rb_eArgError, "Expected storage type");
   return S_DENSE;
 }
@@ -230,7 +234,7 @@ void* nm_interpret_initial_value(VALUE arg, int8_t dtype) {
 }
 
 
-VALUE nm_new(int argc, VALUE* argv, VALUE klass) {
+VALUE nm_new(int argc, VALUE* argv, VALUE self) {
   int8_t  dtype, stype, argp = 0;
   size_t  i, rank, elem_size = 1;
   size_t* shape;
@@ -238,17 +242,17 @@ VALUE nm_new(int argc, VALUE* argv, VALUE klass) {
   void*   init_val = NULL;
 
   // READ ARGUMENTS
-  if (!SYMBOL_P(argv[0]) && !STRING_P(argv[0])) {
+  if (!SYMBOL_P(argv[0]) && !IS_STRING(argv[0])) {
     stype    = S_DENSE;                                       // Dense by default.
     argp--;
   } else
     stype    = nm_interpret_stype(argv[0]);                   // 1: String or Symbol
 
-  rank       = nm_interpret_shape_arg(argv[argp+1], shape);   // 2: Either Fixnum or Array
+  shape      = nm_interpret_shape_arg(argv[argp+1], &rank);   // 2: Either Fixnum or Array
 
   dtype      = nm_interpret_dtype(argc-2-argp, argv+2+argp);  // 3-4: dtype
 
-  if (argc == 4 || (argc == 3 && NUMERIC_P(argv[argp+2])))
+  if (argc == 4 || (argc == 3 && IS_NUMERIC(argv[argp+2])))
     init_val = nm_interpret_initial_value(argv[argp+2], dtype);// 3: initial value / dtype
   else
     init_val = malloc(nm_sizeof[dtype]);
@@ -267,9 +271,9 @@ VALUE nm_new(int argc, VALUE* argv, VALUE klass) {
 
 
   if (stype == S_DENSE) // nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE klass)
-    return nm_dense_new(shape, rank, dtype, init_val, klass);
+    return nm_dense_new(shape, rank, dtype, init_val, self);
   //else if (stype == S_LIST)
-  //  nm_list_new(argc-1, argv+1, dtype, klass);
+  //  nm_list_new(argc-1, argv+1, dtype, self);
   else
     rb_raise(rb_eNotImpError, "Only dense and list currently implemented");
 
@@ -289,15 +293,16 @@ NMATRIX* nm_create(int8_t dtype, int8_t stype, void* storage) {
   return mat;
 }
 
-void nm_delete(NMATRIX* mat) {
-  free(mat->storage);
+static void nm_delete(NMATRIX* mat) {
+  if (mat->stype == S_DENSE) delete_dense_storage(mat->storage);
+  else if (mat->stype == S_LIST) delete_list_storage(mat->storage);
+  else
+    rb_raise(rb_eNotImpError, "Only dense and list deletion are implemented");
 }
 
 
 
 void Init_nmatrix() {
-    int8_t i;
-
     /* Require Complex class */
     //rb_require("complex");
     //cComplex = rb_const_get( rb_cObject, rb_intern("Complex") );

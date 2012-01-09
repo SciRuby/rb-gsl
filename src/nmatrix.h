@@ -232,8 +232,8 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define NUM2REAL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) )
 #define NUM2IMAG(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) )
 
-#define NUMERIC_P(v)    (FIXNUM_P(v) || FLOAT_P(v) || COMPLEX_P(v) || RATIONAL_P(v))
-
+#define IS_NUMERIC(v)   (FIXNUM_P(v) || FLOAT_P(v) || COMPLEX_P(v) || RATIONAL_P(v))
+#define IS_STRING(v)    (TYPE(v) == T_STRING)
 
 /* Local */
 
@@ -308,10 +308,11 @@ int8_t nm_dtypesymbol_to_dtype(VALUE sym);
 int8_t nm_stypestring_to_stype(VALUE str);
 int8_t nm_stypesymbol_to_stype(VALUE sym);
 int8_t nm_guess_dtype(VALUE v);
+size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank);
 VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE klass);
-VALUE nm_new(int argc, VALUE* argv, VALUE klass);
+VALUE nm_new(int argc, VALUE* argv, VALUE self);
 NMATRIX* nm_create(int8_t dtype, int8_t stype, void* storage);
-void nm_delete();
+static void nm_delete();
 void Init_nmatrix();
 
 #endif
