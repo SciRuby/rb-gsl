@@ -232,8 +232,7 @@ void* nm_interpret_initial_value(VALUE arg, int8_t dtype) {
 
 VALUE nm_new(int argc, VALUE* argv, VALUE self) {
   char    ZERO = 0;
-  int8_t  dtype, stype;
-  int8_t  offset = 0;
+  int8_t  dtype, stype, offset = 0;
   size_t  rank;
   size_t* shape;
   void*   init_val = NULL;
