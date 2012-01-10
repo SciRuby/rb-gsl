@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'hoe'
+require 'rspec/core/rake_task'
 
 Hoe.plugin :compiler
 Hoe.plugin :bundler
@@ -17,5 +18,9 @@ Hoe.spec 'nmatrix' do
 
   # self.rubyforge_name = 'nmatrixx' # if different than 'nmatrix'
 end
+
+RSpec::Core::RakeTask.new(:spec)
+
+task :default => :spec
 
 # vim: syntax=ruby

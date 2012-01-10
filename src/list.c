@@ -7,9 +7,8 @@
 
 
 /* Get the contents of some set of coordinates. Note: Does not make a copy! Don't free! */
-// elem_size is not used for list, but we need it in order to use the NMATRIX->mref function
-// pointer.
-void* list_storage_get(LIST_STORAGE* s, size_t* coords, size_t elem_size) {
+void* list_storage_get(LIST_STORAGE* s, size_t* coords) {
+  //LIST_STORAGE* s = (LIST_STORAGE*)(t);
   size_t r;
   NODE*  n;
   LIST*  l = s->rows;

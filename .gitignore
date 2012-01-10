@@ -1,3 +1,12 @@
 .idea
 a.out
 a.out.dSYM
+src/dtypes.h
+src/dtypes.c
+src/dfuncs.c
+src/*.o
+src/*.so
+src/Makefile
+src/nmatrix_config.h
+src/test.rb
+Gemfile.lock

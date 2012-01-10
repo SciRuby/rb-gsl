@@ -142,6 +142,8 @@ enum NMatrix_STypes {
   S_TYPES
 };
 
+
+
 typedef struct numeric_matrix {
   int8_t   dtype;     /* data type */
   int8_t   stype;     /* method of storage (csc, dense, etc) */
@@ -167,19 +169,27 @@ typedef struct l_list {
 } LIST;
 
 
-typedef struct list_s {
-  LIST*     rows;
-  size_t*   shape;
+typedef struct common_s { // Common elements found in all _s types.
   size_t    rank;
+  size_t*   shape;
+} STORAGE;
+
+
+typedef struct list_s {
+  size_t    rank;
+  size_t*   shape;
   void*     default_val;
+  LIST*     rows;
 } LIST_STORAGE;
 
 
 typedef struct dense_s {
-  size_t*   shape;
   size_t    rank;
+  size_t*   shape;
   void*     elements;
 } DENSE_STORAGE;
+
+
 
 
 #ifndef NMATRIX_C
@@ -191,17 +201,20 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define NM_MAX_RANK 15
 
 #define GetNMatrix(obj,var)     Data_Get_Struct(obj, struct numeric_matrix, var)
-#define IsNMatrix(obj)  (rb_obj_is_kind_of(obj, CNMatrix)==Qtrue)
+#define IsNMatrix(obj)          (rb_obj_is_kind_of(obj, CNMatrix)==Qtrue)
 
-#define NM_PTR(a, p)            ((a)->ptr+(p)*nm_sizeof[(a)->type])
+#define NM_STORAGE(val)         (((struct numeric_matrix*)DATA_PTR(val))->storage)
+//#define NM_PTR(a, p)            ((a)->ptr+(p)*nm_sizeof[(a)->type])
 #define NM_STRUCT(val)          ((struct numeric_matrix*)DATA_PTR(val))
-#define NM_PTR_TYPE(val,type)   (type)(((struct numeric_matrix*)DATA_PTR(val))->ptr)
-#define NM_RANK(val)            (((struct numeric_matrix*)DATA_PTR(val))->rank)
+//#define NM_PTR_TYPE(val,type)   (type)(((struct numeric_matrix*)DATA_PTR(val))->ptr)
+#define NM_RANK(val)            (((STORAGE*)(NM_STORAGE(val)))->rank)
 #define NM_DTYPE(val)           (((struct numeric_matrix*)DATA_PTR(val))->dtype)
 #define NM_STYPE(val)           (((struct numeric_matrix*)DATA_PTR(val))->stype)
-#define NM_TOTAL(val)           (((struct numeric_matrix*)DATA_PTR(val))->storage->size)
+#define NM_SHAPE(val,i)         (((STORAGE*)(NM_STORAGE(val)))->shape[(i)])
 #define NM_SHAPE0(val)          (((struct numeric_matrix*)DATA_PTR(val))->shape[0])
 #define NM_SHAPE1(val)          (((struct numeric_matrix*)DATA_PTR(val))->shape[1])
+#define NM_SIZEOF_DTYPE(val)    (nm_sizeof[(((struct numeric_matrix*)DATA_PTR(val))->dtype)])
+#define NM_REF(val,coords)      (RefFuncs[NM_STYPE(val)]( NM_STORAGE(val), coords, NM_SIZEOF_DTYPE(val) ))
 
 #define NM_IsNMatrix(obj) (rb_obj_is_kind_of(obj, cNMatrix)==Qtrue)
 #define NM_IsArray(obj)   (TYPE(obj)==T_ARRAY || rb_obj_is_kind_of(obj,cNMatrix)==Qtrue)
@@ -216,7 +229,10 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define NUM2REAL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) )
 #define NUM2IMAG(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) )
 
-#define IS_NUMERIC(v)   (FIXNUM_P(v) || FLOAT_P(v) || COMPLEX_P(v) || RATIONAL_P(v))
+#define NUM2NUMER(v) NUM2INT( rb_funcall((v), nm_id_numer,0) )
+#define NUM2DENOM(v) NUM2INT( rb_funcall((v), nm_id_denom,0) )
+
+#define IS_NUMERIC(v)   (FIXNUM_P(v) || TYPE(v) == T_FLOAT || TYPE(v) == T_COMPLEX || TYPE(v) == T_RATIONAL)
 #define IS_STRING(v)    (TYPE(v) == T_STRING)
 
 /* Local */
@@ -258,10 +274,14 @@ typedef union {
 #endif
 
 
-typedef void (*nm_setfunc_t[NM_TYPES][NM_TYPES])();
+typedef void  (*nm_setfunc_t[NM_TYPES][NM_TYPES])();
+typedef VALUE (*nm_stype_ref_t[S_TYPES])();
 //typedef void (*nm_setsf_t[S_TYPES][S_TYPES])();
 //typedef void (*nm_setdf_t[NM_DTYPES][NM_DTYPES])();
 
+extern nm_setfunc_t SetFuncs;
+extern ID nm_id_real, nm_id_imag;
+extern ID nm_id_denom, nm_id_numer;
 
 
 /* dense.c */
@@ -278,7 +298,7 @@ void            dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val, s
 LIST_STORAGE*   create_list_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val);
 void            delete_list_storage(LIST_STORAGE* s);
 
-void*           list_storage_get(LIST_STORAGE* s, size_t* coords, size_t elem_size);
+void*           list_storage_get(LIST_STORAGE* s, size_t* coords);
 void*           list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val);
 
 LIST*           create_list();

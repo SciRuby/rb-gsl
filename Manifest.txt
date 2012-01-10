@@ -3,6 +3,7 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
+Gemspec
 bin/nmatrix
 lib/nmatrix.rb
 src/list.h
@@ -11,4 +12,5 @@ src/dense.h
 src/dense.c
 src/nmatrix.h
 src/nmatrix.c
-test/test_nmatrix.rb
+spec/nmatrix_spec.rb
+

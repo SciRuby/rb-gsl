@@ -30,13 +30,13 @@ size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords) {
 
 
 void* dense_storage_get(DENSE_STORAGE* s, size_t* coords, size_t elem_size) {
-  return s->elements + dense_storage_pos(s, coords) * elem_size;
+  return (char*)(s->elements) + dense_storage_pos(s, coords) * elem_size;
 }
 
 
 /* Does not free passed-in value! Different from list_storage_insert. */
 void dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val, size_t elem_size) {
-  memcpy(s->elements + dense_storage_pos(s, coords) * elem_size, val, elem_size);
+  memcpy((char*)(s->elements) + dense_storage_pos(s, coords) * elem_size, val, elem_size);
 }
 
 
@@ -57,7 +57,7 @@ DENSE_STORAGE* create_dense_storage(size_t elem_size, size_t* shape, size_t rank
 
   // Initialize contents of matrix
   for (p = 0; p < count; ++p)
-    memcpy(s->elements + p * elem_size, init_val, elem_size);
+    memcpy((char*)(s->elements) + p * elem_size, init_val, elem_size);
 
   return s;
 }

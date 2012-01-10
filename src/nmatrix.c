@@ -10,6 +10,9 @@ static void nm_delete(NMATRIX* mat);
 
 VALUE cNMatrix;
 
+ID nm_id_real, nm_id_imag;
+ID nm_id_numer, nm_id_denom;
+
 
 #include "dtypes.c"
 
@@ -20,6 +23,59 @@ const char *nm_stypestring[] = {
   "compressed",
   "stypes"
 };
+
+
+VALUE nm_dense_get(STORAGE* s, size_t* coords, int8_t dtype) {
+  VALUE v;
+  SetFuncs[NM_ROBJ][dtype](1, &v, sizeof(VALUE), dense_storage_get((DENSE_STORAGE*)s, coords, nm_sizeof[dtype]), nm_sizeof[dtype]);
+  return v;
+}
+
+VALUE nm_list_get(STORAGE* s, size_t* coords, int8_t dtype) {
+  VALUE v;
+  SetFuncs[NM_ROBJ][dtype](1, &v, sizeof(VALUE), list_storage_get((LIST_STORAGE*)s, coords), nm_sizeof[dtype]);
+  return v;
+}
+
+
+nm_stype_ref_t RefFuncs = {
+  nm_dense_get,
+  nm_list_get,
+  NULL,
+  NULL
+};
+
+
+VALUE nm_dense_set(STORAGE* s, size_t* coords, VALUE val, int8_t dtype) {
+  void* v = malloc(nm_sizeof[dtype]);
+
+  SetFuncs[dtype][NM_ROBJ](1, v, nm_sizeof[dtype], &val, sizeof(VALUE));
+
+  dense_storage_set( (DENSE_STORAGE*)s, coords, v, nm_sizeof[dtype] );
+  free(v); // dense makes a copy, so free it
+
+  return val;
+}
+
+
+VALUE nm_list_set(STORAGE* s, size_t* coords, VALUE val, int8_t dtype) {
+  void* v = malloc(nm_sizeof[dtype]);
+
+  SetFuncs[dtype][NM_ROBJ](1, v, nm_sizeof[dtype], &val, sizeof(VALUE));
+
+  if (list_storage_insert( (LIST_STORAGE*)s, coords, v ))    return val;
+  else                                                       return Qnil;
+  // No need to free; the list keeps v.
+}
+
+
+nm_stype_ref_t InsFuncs = {
+  nm_dense_set,
+  nm_list_set,
+  NULL,
+  NULL
+};
+
 
 
 // Converts a typestring to a typecode for storage. Only looks at the first three characters.
@@ -169,67 +225,39 @@ int8_t nm_interpret_stype(VALUE arg) {
 
 void* nm_interpret_initial_value(VALUE arg, int8_t dtype) {
   void* init_val = malloc(nm_sizeof[dtype]);
-  switch(dtype) {
-  case NM_BYTE:
-  case NM_INT8:
-    *((int8_t*)(init_val)) = NUM2CHR(arg);
-    return init_val;
-  case NM_INT16:
-    *((int16_t*)(init_val)) = NUM2INT(arg);
-    return init_val;
-  case NM_INT32:
-    *((int32_t*)(init_val)) = NUM2INT(arg);
-    return init_val;
-  case NM_INT64:
-    *((int64_t*)(init_val)) = NUM2INT(arg);
-    return init_val;
-  case NM_FLOAT32:
-    *((float*)(init_val)) = NUM2FLT(arg);
-    return init_val;
-  case NM_FLOAT64:
-    *((double*)(init_val)) = NUM2DBL(arg);
-    return init_val;
-  case NM_COMPLEX64:
-  case NM_COMPLEX128:
-  case NM_RATIONAL32:
-  case NM_RATIONAL64:
-  case NM_RATIONAL128:
-  case NM_ROBJ:
-  case NM_TYPES:
-  case NM_NONE:
-    rb_raise(rb_eNotImpError, "Type not implemented");
-  }
+  SetFuncs[dtype][NM_ROBJ](1, init_val, nm_sizeof[dtype], &arg, sizeof(VALUE));
   return init_val;
 }
 
 
 VALUE nm_new(int argc, VALUE* argv, VALUE self) {
-  int8_t  dtype, stype, argp = 0;
-  size_t  i, rank, elem_size = 1;
+  char    ZERO = 0;
+  int8_t  dtype, stype;
+  int8_t  offset = 0;
+  size_t  rank;
   size_t* shape;
-  VALUE*  init_val_arg = NULL;
   void*   init_val = NULL;
 
   // READ ARGUMENTS
+
+  if (argc < 2 || argc > 4) { rb_raise(rb_eArgError, "Expected 2, 3, or 4 arguments"); return Qnil; }
+
   if (!SYMBOL_P(argv[0]) && !IS_STRING(argv[0])) {
-    stype    = S_DENSE;                                       // Dense by default.
-    argp--;
-  } else
-    stype    = nm_interpret_stype(argv[0]);                   // 1: String or Symbol
-
-  shape      = nm_interpret_shape_arg(argv[argp+1], &rank);   // 2: Either Fixnum or Array
-
-  dtype      = nm_interpret_dtype(argc-2-argp, argv+2+argp);  // 3-4: dtype
-
-  if (argc == 4 || (argc == 3 && IS_NUMERIC(argv[argp+2])))
-    init_val = nm_interpret_initial_value(argv[argp+2], dtype);// 3: initial value / dtype
-  else
-    init_val = malloc(nm_sizeof[dtype]);
-
-  if (argc > 4) {
-    rb_raise(rb_eArgError, "Too many arguments");
-    return Qnil;
+    stype  = S_DENSE;
+  } else {
+    stype  = nm_interpret_stype(argv[0]);                        // 0: String or Symbol
+    offset = 1;
   }
+  shape    = nm_interpret_shape_arg(argv[offset], &rank);        // 1: String or Symbol
+  dtype    = nm_interpret_dtype(argc-1-offset, argv+offset+1);   // 2-3: dtype
+
+  if (IS_NUMERIC(argv[1+offset])) { // initial provided
+    init_val = nm_interpret_initial_value(argv[1+offset], dtype);// 4: initial value / dtype
+  } else { // dtype was provided, use 0
+    init_val = malloc(nm_sizeof[dtype]);
+    SetFuncs[dtype][NM_BYTE](1, init_val, nm_sizeof[dtype], &ZERO, sizeof(char));
+  }
+
 
   // TODO: Update to allow an array as the initial value.
 
@@ -270,8 +298,52 @@ NMATRIX* nm_create(int8_t dtype, int8_t stype, void* storage) {
 }
 
 
-VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
+size_t* convert_coords(size_t rank, VALUE* c, VALUE self) {
+  size_t r;
+  size_t* coords = ALLOC_N(size_t,rank);
 
+  for (r = 0; r < rank; ++r) {
+    coords[r] = FIX2UINT(c[r]);
+    if (coords[r] >= NM_SHAPE(self,r)) rb_raise(rb_eArgError, "out of range");
+  }
+
+  return coords;
+}
+
+
+VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
+  if (NM_RANK(self) == (size_t)(argc)) {
+    return (*(RefFuncs[NM_STYPE(self)]))( NM_STORAGE(self),
+                                         convert_coords((size_t)(argc), argv, self),
+                                         NM_DTYPE(self) );
+
+  } else if (NM_RANK(self) < (size_t)(argc)) {
+    rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");
+  } else {
+    rb_raise(rb_eNotImpError, "Slicing not supported yet");
+  }
+  return Qnil;
+}
+
+
+VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
+  size_t rank = argc - 1; // last arg is the value
+
+  if (argc <= 1) {
+    rb_raise(rb_eArgError, "Expected coordinates and r-value");
+
+  } else if (NM_RANK(self) == rank) {
+    return (*(InsFuncs[NM_STYPE(self)]))( NM_STORAGE(self),
+                                         convert_coords(rank, argv, self),
+                                         argv[rank], // value to set it to
+                                         NM_DTYPE(self) );
+
+  } else if (NM_RANK(self) < rank) {
+    rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");
+  } else {
+    rb_raise(rb_eNotImpError, "Slicing not supported yet");
+  }
+  return Qnil;
 }
 
 
@@ -288,8 +360,14 @@ void Init_nmatrix() {
     rb_define_singleton_method(cNMatrix, "new", nm_new, -1);
 
     /* methods */
-    //rb_define_method(cNMatrix, "[]", nm_mref, -1);
-    //rb_define_method(cNMatrix, "[]=", nm_mset, -1);
+    rb_define_method(cNMatrix, "[]", nm_mref, -1);
+    rb_define_method(cNMatrix, "[]=", nm_mset, -1);
+
+    nm_id_real  = rb_intern("real");
+    nm_id_imag  = rb_intern("imag");
+    nm_id_numer = rb_intern("numerator");
+    nm_id_denom = rb_intern("denominator");
+
 }
 
 #endif

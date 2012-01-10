@@ -16,7 +16,7 @@ module Generator
       [:NM_RATIONAL32,  :rational32,  :rational32,  :r32,   :rational],
       [:NM_RATIONAL64,  :rational64,  :rational64,  :r64,   :rational],
       [:NM_RATIONAL128, :rational128, :rational128, :r128,  :rational],
-      [:NM_ROBJ,        :VALUE,       :object,      :o,     :value],
+      [:NM_ROBJ,        :VALUE,       :object,      :v,     :value],
       [:NM_TYPES,       0,            :dtypes,      0,      :none]
   ].map { |d| DTypeInfo.new(*d) }
 
@@ -25,14 +25,14 @@ module Generator
           :complex  => lambda {|l,r| "((#{l}*)p1)->r = ((#{r}*)p2)->r; ((#{l}*)p1)->i = ((#{r}*)p2)->i;" },
           :float    => lambda {|l,r| "*(#{l}*)p1 = ((#{r}*)p2)->r;" },
           :int      => lambda {|l,r| "*(#{l}*)p1 = ((#{r}*)p2)->r;" },
-          :rational => lambda {|l,r| raise(NotImplementedError, "Not sure how to assign complex to a rational") },
+          :rational => lambda {|l,r| "rb_raise(rb_eNotImpError, \"I don't know how to assign a complex to a rational\");"  },
           :value    => lambda {|l,r| "*(VALUE*)p1 = rb_complex_new(((#{r}*)p2)->r, ((#{r}*)p2)->i);" },
        },
       :float => {
           :complex  => lambda {|l,r| "((#{l}*)p1)->i = 0; ((#{l}*)p1)->r = *(#{r}*)p2;" },
           :float    => lambda {|l,r| "*(#{l}*)p1 = *(#{r}*)p2;" },
           :int      => lambda {|l,r| "*(#{l}*)p1 = *(#{r}*)p2;" },
-          :rational => lambda {|l,r| raise(NotImplementedError, "Not sure how to assign float to a rational") },
+          :rational => lambda {|l,r| "rb_raise(rb_eNotImpError, \"I don't know how to assign a float to a rational\");" },
           :value    => lambda {|l,r| "*(VALUE*)p1 = rb_float_new(*(#{r}*)p2);" },
       },
       :int => {
@@ -51,8 +51,8 @@ module Generator
       },
       :value => {
           :complex  => lambda {|l,r| "((#{l}*)p1)->r = NUM2REAL(*(VALUE*)p2); ((#{l}*)p1)->i = NUM2IMAG(*(VALUE*)p2);" },
-          :float    => lambda {|l,r| "*(#{l}*)p1) = NUM2DBL(*(VALUE*)p2);"},
-          :int      => lambda {|l,r| "*(#{l}*)p1) = NUM2DBL(*(VALUE*)p2);"},
+          :float    => lambda {|l,r| "*(#{l}*)p1 = NUM2DBL(*(VALUE*)p2);"},
+          :int      => lambda {|l,r| "*(#{l}*)p1 = NUM2DBL(*(VALUE*)p2);"},
           :rational => lambda {|l,r| "((#{l}*)p1)->n = NUM2NUMER(*(VALUE*)p2); ((#{l}*)p1)->d = NUM2DENOM(*(VALUE*)p2);" },
           :value    => lambda {|l,r| "*(VALUE*)p1 = *(VALUE*)p2;"}
       }
@@ -96,7 +96,7 @@ SETFN
       str = <<SETFN
 static void #{dtypes_set_function_ident(dtype_i, dtype_j)}(size_t n, char* p1, size_t i1, char* p2, size_t i2) {
   for (; n > 0; --n) {
-    #{dtypes_assign(dtype_i, dtype_j)};
+    #{dtypes_assign(dtype_i, dtype_j)}
     p1 += i1; p2 += i2;
   }
 }
@@ -108,8 +108,10 @@ SETFN
     def dtypes_set_functions_matrix
       ary = []
       DTYPES.each do |i|
+        next if i[:enum] == :NM_TYPES
         bry = []
         DTYPES.each do |j|
+          next if j[:enum] == :NM_TYPES
           bry << dtypes_set_function_ident(i,j)
         end
         ary << "{ " + bry.join(", ") + " }"
@@ -186,6 +188,7 @@ SETFN
 
     def make_dfuncs_c
       make_file "dfuncs.c" do |f|
+        f.puts '#include <ruby.h>'
         f.puts '#include "nmatrix.h"' + "\n\n"
         f.puts dtypes_set_functions
       end
