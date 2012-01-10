@@ -2,6 +2,7 @@
 
 require "mkmf"
 
+
 def have_type(type, header=nil)
   printf "checking for %s... ", type
   STDOUT.flush
@@ -80,6 +81,7 @@ srcs = %w(
 nmatrix
 list
 dense
+dfuncs
 )
 
 header = "stdint.h"
@@ -104,3 +106,4 @@ $objs = srcs.collect{|i| i+".o"}
 
 create_conf_h("nmatrix_config.h")
 create_makefile("nmatrix")
+

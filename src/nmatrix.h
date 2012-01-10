@@ -123,23 +123,7 @@ typedef struct { int16_t n,d; } rational32;
 typedef struct { int32_t n,d; } rational64;
 typedef struct { int64_t n,d; } rational128;
 
-enum NMatrix_DTypes {
-  NM_NONE,
-  NM_BYTE,
-  NM_INT8,
-  NM_INT16,
-  NM_INT32,
-  NM_INT64,
-  NM_FLOAT32,
-  NM_FLOAT64,
-  NM_COMPLEX64,
-  NM_COMPLEX128,
-  NM_RATIONAL32,
-  NM_RATIONAL64,
-  NM_RATIONAL128,
-  NM_ROBJ,
-  NM_TYPES
-};
+#include "dtypes.h"
 
 #if SIZEOF_INT == 8
 # define DEFAULT_DTYPE  NM_INT64
@@ -209,15 +193,15 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define GetNMatrix(obj,var)     Data_Get_Struct(obj, struct numeric_matrix, var)
 #define IsNMatrix(obj)  (rb_obj_is_kind_of(obj, CNMatrix)==Qtrue)
 
-#define NM_PTR(a, p)    ((a)->ptr+(p)*nm_sizeof[(a)->type])
-#define NM_STRUCT(val)  ((struct numeric_matrix*)DATA_PTR(val))
+#define NM_PTR(a, p)            ((a)->ptr+(p)*nm_sizeof[(a)->type])
+#define NM_STRUCT(val)          ((struct numeric_matrix*)DATA_PTR(val))
 #define NM_PTR_TYPE(val,type)   (type)(((struct numeric_matrix*)DATA_PTR(val))->ptr)
-#define NM_RANK(val)    (((struct numeric_matrix*)DATA_PTR(val))->rank)
-#define NM_DTYPE(val)    (((struct numeric_matrix*)DATA_PTR(val))->dtype)
-#define NM_STYPE(val) (((struct numeric_matrix*)DATA_PTR(val))->stype)
-#define NM_TOTAL(val)    (((struct numeric_matrix*)DATA_PTR(val))->storage->size)
-#define NM_SHAPE0(val)    (((struct numeric_matrix*)DATA_PTR(val))->shape[0])
-#define NM_SHAPE1(val)    (((struct numeric_matrix*)DATA_PTR(val))->shape[1])
+#define NM_RANK(val)            (((struct numeric_matrix*)DATA_PTR(val))->rank)
+#define NM_DTYPE(val)           (((struct numeric_matrix*)DATA_PTR(val))->dtype)
+#define NM_STYPE(val)           (((struct numeric_matrix*)DATA_PTR(val))->stype)
+#define NM_TOTAL(val)           (((struct numeric_matrix*)DATA_PTR(val))->storage->size)
+#define NM_SHAPE0(val)          (((struct numeric_matrix*)DATA_PTR(val))->shape[0])
+#define NM_SHAPE1(val)          (((struct numeric_matrix*)DATA_PTR(val))->shape[1])
 
 #define NM_IsNMatrix(obj) (rb_obj_is_kind_of(obj, cNMatrix)==Qtrue)
 #define NM_IsArray(obj)   (TYPE(obj)==T_ARRAY || rb_obj_is_kind_of(obj,cNMatrix)==Qtrue)
@@ -274,21 +258,27 @@ typedef union {
 #endif
 
 
+typedef void (*nm_setfunc_t[NM_TYPES][NM_TYPES])();
+//typedef void (*nm_setsf_t[S_TYPES][S_TYPES])();
+//typedef void (*nm_setdf_t[NM_DTYPES][NM_DTYPES])();
+
+
+
 /* dense.c */
-DENSE_STORAGE* create_dense_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val);
-void delete_dense_storage(DENSE_STORAGE* s);
+DENSE_STORAGE*  create_dense_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val);
+void            delete_dense_storage(DENSE_STORAGE* s);
 
-size_t count_dense_storage_elements(DENSE_STORAGE* s);
+size_t          count_dense_storage_elements(DENSE_STORAGE* s);
 
-size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
-void* dense_storage_get(DENSE_STORAGE* s, size_t* coords, size_t elem_size);
-void dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val, size_t elem_size);
+size_t          dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
+void*           dense_storage_get(DENSE_STORAGE* s, size_t* coords, size_t elem_size);
+void            dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val, size_t elem_size);
 
 /* list.c */
 LIST_STORAGE*   create_list_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val);
 void            delete_list_storage(LIST_STORAGE* s);
 
-void*           list_storage_get(LIST_STORAGE* s, size_t* coords);
+void*           list_storage_get(LIST_STORAGE* s, size_t* coords, size_t elem_size);
 void*           list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val);
 
 LIST*           create_list();
@@ -309,10 +299,10 @@ int8_t nm_stypestring_to_stype(VALUE str);
 int8_t nm_stypesymbol_to_stype(VALUE sym);
 int8_t nm_guess_dtype(VALUE v);
 size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank);
-VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE klass);
+VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self);
+VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self);
 VALUE nm_new(int argc, VALUE* argv, VALUE self);
 NMATRIX* nm_create(int8_t dtype, int8_t stype, void* storage);
-static void nm_delete();
 void Init_nmatrix();
 
 #endif

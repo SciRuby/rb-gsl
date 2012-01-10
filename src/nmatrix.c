@@ -6,44 +6,12 @@
 
 #include "nmatrix.h"
 
+static void nm_delete(NMATRIX* mat);
+
 VALUE cNMatrix;
 
 
-const int nm_sizeof[NM_TYPES+1] = {
-  0, /* NM_NONE */
-  sizeof(u_int8_t), /* NM_BYTE */
-  sizeof(int8_t),   /* NM_INT8 */
-  sizeof(int16_t),  /* NM_INT16 */
-  sizeof(int32_t),  /* NM_INT32 */
-  sizeof(int64_t),  /* NM_INT64 */
-  sizeof(float),    /* NM_FLOAT32 */
-  sizeof(double),   /* NM_FLOAT64 */
-  sizeof(complex64), /* NM_COMPLEX64 */
-  sizeof(complex128),
-  sizeof(rational32),
-  sizeof(rational64),
-  sizeof(rational128),
-  sizeof(VALUE),     /* NM_ROBJ */
-  0                  /* NM_TYPES */
-};
-
-const char *nm_dtypestring[] = {
-  "none",
-  "byte",	/* 1 */
-  "int8",   /* 2 */
-  "int16",	/* 3 */
-  "int32",	/* 4 */
-  "int64",  /* 5 */
-  "float32",	/* 6 */
-  "float64",	/* 7 */
-  "complex64",	/* 8 */
-  "complex128",	/* 9 */
-  "rational32", /* 11 */
-  "rational64", /* 12 */
-  "rational128",  /* 13 */
-  "object",	/* 14 */
-  "ntypes"	/* 15 */
-};
+#include "dtypes.c"
 
 
 const char *nm_stypestring[] = {
@@ -143,9 +111,10 @@ VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VAL
   return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
 }
 
-/* static VALUE nm_list_new(int argc, VALUE* argv, int8_t dtype, VALUE klass) {
-
-} */
+VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
+  NMATRIX* matrix = nm_create(dtype, S_LIST, create_list_storage(nm_sizeof[dtype], shape, rank, init_val));
+  return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
+}
 
 
 // Read the shape argument to NMatrix.new, which may be either an array or a single number.
@@ -272,13 +241,20 @@ VALUE nm_new(int argc, VALUE* argv, VALUE self) {
 
   if (stype == S_DENSE) // nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE klass)
     return nm_dense_new(shape, rank, dtype, init_val, self);
-  //else if (stype == S_LIST)
-  //  nm_list_new(argc-1, argv+1, dtype, self);
+  else if (stype == S_LIST)
+    return nm_list_new(shape, rank, dtype, init_val, self);
   else
     rb_raise(rb_eNotImpError, "Only dense and list currently implemented");
 
   return Qnil;
 
+}
+
+
+static void nm_delete(NMATRIX* mat) {
+  if (mat->stype == S_DENSE)     delete_dense_storage(mat->storage);
+  else if (mat->stype == S_LIST) delete_list_storage(mat->storage);
+  else                           rb_raise(rb_eNotImpError, "Only dense and list deletion are implemented");
 }
 
 
@@ -293,11 +269,9 @@ NMATRIX* nm_create(int8_t dtype, int8_t stype, void* storage) {
   return mat;
 }
 
-static void nm_delete(NMATRIX* mat) {
-  if (mat->stype == S_DENSE) delete_dense_storage(mat->storage);
-  else if (mat->stype == S_LIST) delete_list_storage(mat->storage);
-  else
-    rb_raise(rb_eNotImpError, "Only dense and list deletion are implemented");
+
+VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
+
 }
 
 
