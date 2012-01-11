@@ -36,8 +36,25 @@ static void nm_delete(NMATRIX* mat) {
 }
 
 
+
 VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
-  NMATRIX* matrix = nm_create(dtype, S_DENSE, create_dense_storage(nm_sizeof[dtype], shape, rank, init_val));
+  DENSE_STORAGE* s = create_dense_storage(nm_sizeof[dtype], shape, rank);
+  NMATRIX* matrix  = nm_create(dtype, S_DENSE, s);
+  size_t i, n;
+
+  // User provides single initialization value sometimes. This accommodates List, which
+  // really doesn't make sense without a user-specified default (initialization) value
+  // (but can be done).
+  //
+  // If the user instead wants to provide an array or something, that's done through a
+  // different mechanism. He or she should then NOT provide a default value for dense, only
+  // because that requires an unnecessary pass through the array of elements.
+  if (init_val) {
+    n = count_dense_storage_elements(s);
+    for (i = 0; i < n; ++i)
+      memcpy((char*)(s->elements) + i*nm_sizeof[dtype], init_val, nm_sizeof[dtype]);
+    free(init_val);
+  }
   return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
 }
 
@@ -55,9 +72,17 @@ nm_create_t CreateFuncs = {
 };
 
 
+nm_copy_s_t CopyFuncs = {
+  copy_dense_storage,
+  copy_list_storage,
+  NULL,
+  NULL
+};
+
+
 VALUE nm_dense_get(STORAGE* s, size_t* coords, int8_t dtype) {
   VALUE v;
-  SetFuncs[NM_ROBJ][dtype](1, &v, sizeof(VALUE), dense_storage_get((DENSE_STORAGE*)s, coords, nm_sizeof[dtype]), nm_sizeof[dtype]);
+  SetFuncs[NM_ROBJ][dtype](1, &v, 0, dense_storage_get((DENSE_STORAGE*)s, coords, nm_sizeof[dtype]), 0);
   return v;
 }
 
@@ -79,7 +104,7 @@ nm_stype_ref_t RefFuncs = {
 VALUE nm_dense_set(STORAGE* s, size_t* coords, VALUE val, int8_t dtype) {
   void* v = malloc(nm_sizeof[dtype]);
 
-  SetFuncs[dtype][NM_ROBJ](1, v, nm_sizeof[dtype], &val, sizeof(VALUE));
+  SetFuncs[dtype][NM_ROBJ](1, v, 0, &val, 0);
 
   dense_storage_set( (DENSE_STORAGE*)s, coords, v, nm_sizeof[dtype] );
   free(v); // dense makes a copy, so free it
@@ -91,7 +116,7 @@ VALUE nm_dense_set(STORAGE* s, size_t* coords, VALUE val, int8_t dtype) {
 VALUE nm_list_set(STORAGE* s, size_t* coords, VALUE val, int8_t dtype) {
   void* v = malloc(nm_sizeof[dtype]);
 
-  SetFuncs[dtype][NM_ROBJ](1, v, nm_sizeof[dtype], &val, sizeof(VALUE));
+  SetFuncs[dtype][NM_ROBJ](1, v, 0, &val, 0);
 
   if (list_storage_insert( (LIST_STORAGE*)s, coords, v ))    return val;
   else                                                       return Qnil;
@@ -244,7 +269,7 @@ int8_t nm_interpret_stype(VALUE arg) {
 
 void* nm_interpret_initial_value(VALUE arg, int8_t dtype) {
   void* init_val = malloc(nm_sizeof[dtype]);
-  SetFuncs[dtype][NM_ROBJ](1, init_val, nm_sizeof[dtype], &arg, sizeof(VALUE));
+  SetFuncs[dtype][NM_ROBJ](1, init_val, 0, &arg, 0);
   return init_val;
 }
 
@@ -257,6 +282,8 @@ VALUE nm_new(int argc, VALUE* argv, VALUE self) {
   void*   init_val = NULL;
 
   // READ ARGUMENTS
+
+  fprintf(stderr, "Called nmatrix new with %d arguments\n", argc);
 
   if (argc < 2 || argc > 4) { rb_raise(rb_eArgError, "Expected 2, 3, or 4 arguments"); return Qnil; }
 
@@ -271,9 +298,11 @@ VALUE nm_new(int argc, VALUE* argv, VALUE self) {
 
   if (IS_NUMERIC(argv[1+offset])) { // initial provided
     init_val = nm_interpret_initial_value(argv[1+offset], dtype);// 4: initial value / dtype
-  } else { // dtype was provided, use 0
+  } else if (stype == S_DENSE) {
+    init_val = NULL; // no need to initialize dense with any kind of default value.
+  } else { // if it's a list or compressed, we want to assume default of 0 even if none provided
     init_val = malloc(nm_sizeof[dtype]);
-    SetFuncs[dtype][NM_BYTE](1, init_val, nm_sizeof[dtype], &ZERO, sizeof(char));
+    SetFuncs[dtype][NM_BYTE](1, init_val, 0, &ZERO, 0);
   }
 
 
@@ -281,20 +310,29 @@ VALUE nm_new(int argc, VALUE* argv, VALUE self) {
 
   if (dtype == NM_NONE) {
     rb_raise(rb_eArgError, "Could not recognize dtype");
+    free(init_val);
+    free(shape);
     return Qnil;
   }
 
   if (stype < S_TYPES)
     return CreateFuncs[stype](shape, rank, dtype, init_val, self);
-  //if (stype == S_DENSE) // nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE klass)
-  //  return nm_dense_new(shape, rank, dtype, init_val, self);
-  //else if (stype == S_LIST)
-  //  return nm_list_new(shape, rank, dtype, init_val, self);
   else
     rb_raise(rb_eNotImpError, "Unrecognized storage type");
 
+  free(shape);
+  free(init_val);
   return Qnil;
 
+}
+
+
+VALUE nm_dup(VALUE original) {
+  NMATRIX *lhs = ALLOC(NMATRIX), *orig;
+  UnwrapNMatrix(original, orig);
+  CopyFuncs[orig->stype](orig->storage, nm_sizeof[orig->dtype]);
+
+  return Data_Wrap_Struct(original, NULL, nm_delete, lhs);
 }
 
 
@@ -359,6 +397,24 @@ VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
 }
 
 
+VALUE nm_rank(VALUE self) {
+  VALUE ret;
+  SetFuncs[NM_ROBJ][NM_INT64]( 1, &ret, 0, &(NM_STORAGE(self)->rank), 0 );
+  return ret;
+}
+
+
+VALUE nm_shape(VALUE self) {
+  STORAGE* s   = NM_STORAGE(self);
+
+  // Copy elements into a VALUE array and then use those to create a Ruby array with rb_ary_new4.
+  VALUE* shape = ALLOCA_N(VALUE, s->rank);
+  SetFuncs[NM_ROBJ][NM_INT64]( s->rank, shape, sizeof(VALUE), s->shape, sizeof(size_t));
+
+  return rb_ary_new4(s->rank, shape);
+}
+
+
 
 void Init_nmatrix() {
     /* Require Complex class */
@@ -374,6 +430,10 @@ void Init_nmatrix() {
     /* methods */
     rb_define_method(cNMatrix, "[]", nm_mref, -1);
     rb_define_method(cNMatrix, "[]=", nm_mset, -1);
+    rb_define_method(cNMatrix, "rank", nm_rank, 0);
+    rb_define_alias(cNMatrix, "dim", "rank");
+    rb_define_method(cNMatrix, "shape", nm_shape, 0);
+    rb_define_method(cNMatrix, "dup", nm_dup, 0);
 
     nm_id_real  = rb_intern("real");
     nm_id_imag  = rb_intern("imag");

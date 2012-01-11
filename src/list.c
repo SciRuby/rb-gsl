@@ -61,8 +61,27 @@ LIST_STORAGE* create_list_storage(size_t elem_size, size_t* shape, size_t rank, 
 }
 
 
+LIST_STORAGE* copy_list_storage(LIST_STORAGE* rhs, size_t elem_size) {
+  LIST_STORAGE* lhs;
+
+  // allocate and copy shape
+  size_t* shape = malloc( sizeof(size_t) * rhs->rank );
+  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
+
+  lhs = create_list_storage(elem_size, shape, rhs->rank, rhs->default_val);
+
+  if (lhs) {
+    lhs->rows = create_list();
+    copy_list_contents(lhs->rows, rhs->rows, elem_size, rhs->rank - 1);
+  } else free(shape);
+
+  return lhs;
+}
+
+
 void delete_list_storage(LIST_STORAGE* s) {
   delete_list( s->rows, s->rank - 1 );
+  free(s->shape);
   free(s->default_val);
   free(s);
 }
@@ -74,6 +93,31 @@ LIST* create_list() {
   if (!(list = malloc(sizeof(LIST)))) return NULL;
   list->first = NULL;
   return list;
+}
+
+
+void copy_list_contents(LIST* lhs, LIST* rhs, size_t elem_size, size_t recursions) {
+  NODE *rcurr = rhs->first, *lcurr = malloc(sizeof(NODE));
+
+  // copy head node
+  lhs->first = lcurr;
+
+  while (rcurr != NULL) {
+    lcurr->key = rcurr->key;
+
+    if (recursions == 0) { // contents is some kind of value
+      lcurr->val = malloc(elem_size);
+      memcpy(lcurr->val, rcurr->val, elem_size);
+
+    } else { // contents is a list
+      lcurr->val = malloc(sizeof(LIST));
+      copy_list_contents(lcurr->val, rcurr->val, elem_size, recursions-1);
+    }
+    if (rcurr->next) lcurr->next = malloc(sizeof(NODE));
+
+    lcurr = lcurr->next;
+    rcurr = rcurr->next;
+  }
 }
 
 

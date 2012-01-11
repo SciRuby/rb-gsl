@@ -144,14 +144,6 @@ enum NMatrix_STypes {
 
 
 
-typedef struct numeric_matrix {
-  int8_t   dtype;     /* data type */
-  int8_t   stype;     /* method of storage (csc, dense, etc) */
-  void*    storage;   /* pointer to storage struct */
-  // VALUE    ref;       /* NMatrix object wrapping this structure */
-} NMATRIX;
-
-
 /* Singly-linked ordered list
  * - holds keys and values
  * - no duplicate keys
@@ -190,6 +182,14 @@ typedef struct dense_s {
 } DENSE_STORAGE;
 
 
+typedef struct numeric_matrix {
+  int8_t   dtype;             /* data type (int8, int32, rational128, etc) */
+  int8_t   stype;             /* method of storage (csc, dense, etc) */
+  STORAGE* storage;           /* pointer to storage struct */
+  // VALUE    ref;            /* NMatrix object wrapping this structure */
+} NMATRIX;
+
+
 
 
 #ifndef NMATRIX_C
@@ -198,9 +198,10 @@ extern VALUE cNMatrix;
 extern const int nm_sizeof[NM_TYPES+1];
 #endif
 
+
 #define NM_MAX_RANK 15
 
-#define GetNMatrix(obj,var)     Data_Get_Struct(obj, struct numeric_matrix, var)
+#define UnwrapNMatrix(obj,var)  Data_Get_Struct(obj, struct numeric_matrix, var)
 #define IsNMatrix(obj)          (rb_obj_is_kind_of(obj, CNMatrix)==Qtrue)
 
 #define NM_STORAGE(val)         (((struct numeric_matrix*)DATA_PTR(val))->storage)
@@ -278,6 +279,7 @@ typedef void  (*nm_setfunc_t[NM_TYPES][NM_TYPES])();
 typedef VALUE (*nm_stype_ref_t[S_TYPES])();
 typedef VALUE (*nm_create_t[S_TYPES])();
 typedef void  (*nm_delete_t[S_TYPES])();
+typedef STORAGE* (*nm_copy_s_t[S_TYPES])();
 //typedef void (*nm_setsf_t[S_TYPES][S_TYPES])();
 //typedef void (*nm_setdf_t[NM_DTYPES][NM_DTYPES])();
 
@@ -287,8 +289,9 @@ extern ID nm_id_denom, nm_id_numer;
 
 
 /* dense.c */
-DENSE_STORAGE*  create_dense_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val);
+DENSE_STORAGE*  create_dense_storage(size_t elem_size, size_t* shape, size_t rank);
 void            delete_dense_storage(DENSE_STORAGE* s);
+DENSE_STORAGE*  copy_dense_storage(DENSE_STORAGE* rhs, size_t elem_size);
 
 size_t          count_dense_storage_elements(DENSE_STORAGE* s);
 
@@ -299,12 +302,14 @@ void            dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val, s
 /* list.c */
 LIST_STORAGE*   create_list_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val);
 void            delete_list_storage(LIST_STORAGE* s);
+LIST_STORAGE*   copy_list_storage(LIST_STORAGE* rhs, size_t elem_size);
 
 void*           list_storage_get(LIST_STORAGE* s, size_t* coords);
 void*           list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val);
 
 LIST*           create_list();
 void            delete_list(LIST* list, size_t recursions);
+void            copy_list_contents(LIST* lhs, LIST* rhs, size_t elem_size, size_t recursions);
 NODE*           list_find(LIST* list, size_t key);
 NODE*           list_find_preceding_from(NODE* prev, size_t key);
 NODE*           list_find_nearest_from(NODE* prev, size_t key);

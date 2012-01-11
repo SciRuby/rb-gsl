@@ -40,24 +40,29 @@ void dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val, size_t elem_
 }
 
 
-DENSE_STORAGE* create_dense_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val) {
+DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs, size_t elem_size) {
+  DENSE_STORAGE* lhs = create_dense_storage(elem_size, rhs->shape, rhs->rank);
+
+  if (lhs) // ensure that allocation worked before copying
+    memcpy(lhs->elements, rhs->elements, elem_size * count_dense_storage_elements(rhs));
+
+  return lhs;
+}
+
+
+DENSE_STORAGE* create_dense_storage(size_t elem_size, size_t* shape, size_t rank) {
   DENSE_STORAGE* s;
   size_t count, p;
 
   if (!(s = malloc(sizeof(DENSE_STORAGE)))) return NULL;
   s->rank       = rank;
-  s->shape      = malloc(sizeof(size_t) * rank);
+  s->shape      = shape;
   memcpy(s->shape, shape, sizeof(size_t) * rank);
   count         = count_dense_storage_elements(s);
   if (!(s->elements   = malloc(elem_size * count))) {
     free(s->shape);
     free(s);
   }
-
-
-  // Initialize contents of matrix
-  for (p = 0; p < count; ++p)
-    memcpy((char*)(s->elements) + p * elem_size, init_val, elem_size);
 
   return s;
 }

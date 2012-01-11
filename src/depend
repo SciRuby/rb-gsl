@@ -5,5 +5,6 @@ dtypes.c: generator.rb
 	$(RUBY) -I$(srcdir) $(srcdir)/generator.rb
 
 $(DLLIB): $(OBJS) Makefile dtypes.h dtypes.c
+	$(ECHO) linking shared-object $(DLLIB)
 	@-$(RM) $(@)
-	$(LDSHARED) -o $@ $(OBJS) $(LIBPATH) $(DLDFLAGS) $(LOCAL_LIBS) $(LIBS)
+	$(Q) $(LDSHARED) -o $@ $(OBJS) $(LIBPATH) $(DLDFLAGS) $(LOCAL_LIBS) $(LIBS)

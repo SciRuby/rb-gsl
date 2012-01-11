@@ -43,17 +43,8 @@ def create_conf_h(file)
   hfile.close
 end
 
-if RUBY_VERSION < '1.8'
-  alias __install_rb :install_rb
-  def install_rb(mfile, dest, srcdir = nil)
-    __install_rb(mfile, dest, srcdir)
-    archdir = dest.sub(/sitelibdir/,"sitearchdir").sub(/rubylibdir/,"archdir")
-    path = ['$(srcdir)/nmatrix.h','nmatrix_config.h']
-    path << ['libnmatrix.a'] if /cygwin|mingw/ =~ RUBY_PLATFORM
-    for f in path
-      mfile.printf "\t@$(RUBY) -r ftools -e 'File::install(ARGV[0], ARGV[1], 0644, true)' %s %s\n", f, archdir
-    end
-  end
+if RUBY_VERSION < '1.9'
+  raise(NotImplementedError, "Sorry, you need Ruby 1.9!")
 else
   $INSTALLFILES = [['nmatrix.h', '$(archdir)'], ['nmatrix_config.h', '$(archdir)']]
   if /cygwin|mingw/ =~ RUBY_PLATFORM
@@ -62,16 +53,7 @@ else
 end
 
 if /cygwin|mingw/ =~ RUBY_PLATFORM
-  if RUBY_VERSION >= '1.9.0'
-    $DLDFLAGS << " -Wl,--export-all,--out-implib=libnmatrix.a"
-  elsif RUBY_VERSION > '1.8.0'
-    $DLDFLAGS << ",--out-implib=libnmatrix.a"
-  elsif RUBY_VERSION > '1.8'
-    CONFIG["DLDFLAGS"] << ",--out-implib=libnmatrix.a"
-    system("touch libnmatrix.a")
-  else
-    CONFIG["DLDFLAGS"] << " --output-lib libnmatrix.a"
-  end
+  CONFIG["DLDFLAGS"] << " --output-lib libnmatrix.a"
 end
 
 $DEBUG = true
