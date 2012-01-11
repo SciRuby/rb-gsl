@@ -276,6 +276,8 @@ typedef union {
 
 typedef void  (*nm_setfunc_t[NM_TYPES][NM_TYPES])();
 typedef VALUE (*nm_stype_ref_t[S_TYPES])();
+typedef VALUE (*nm_create_t[S_TYPES])();
+typedef void  (*nm_delete_t[S_TYPES])();
 //typedef void (*nm_setsf_t[S_TYPES][S_TYPES])();
 //typedef void (*nm_setdf_t[NM_DTYPES][NM_DTYPES])();
 

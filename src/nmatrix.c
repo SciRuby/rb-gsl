@@ -6,8 +6,6 @@
 
 #include "nmatrix.h"
 
-static void nm_delete(NMATRIX* mat);
-
 VALUE cNMatrix;
 
 ID nm_id_real, nm_id_imag;
@@ -22,6 +20,38 @@ const char *nm_stypestring[] = {
   "list",
   "compressed",
   "stypes"
+};
+
+
+nm_delete_t DeleteFuncs = {
+  delete_dense_storage,
+  delete_list_storage,
+  NULL,
+  NULL
+};
+
+
+static void nm_delete(NMATRIX* mat) {
+  DeleteFuncs[mat->stype](mat->storage);
+}
+
+
+VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
+  NMATRIX* matrix = nm_create(dtype, S_DENSE, create_dense_storage(nm_sizeof[dtype], shape, rank, init_val));
+  return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
+}
+
+VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
+  NMATRIX* matrix = nm_create(dtype, S_LIST, create_list_storage(nm_sizeof[dtype], shape, rank, init_val));
+  return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
+}
+
+
+nm_create_t CreateFuncs = {
+  nm_dense_new,
+  nm_list_new,
+  NULL,
+  NULL
 };
 
 
@@ -162,17 +192,6 @@ int8_t nm_guess_dtype(VALUE v) {
 }
 
 
-VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
-  NMATRIX* matrix = nm_create(dtype, S_DENSE, create_dense_storage(nm_sizeof[dtype], shape, rank, init_val));
-  return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
-}
-
-VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
-  NMATRIX* matrix = nm_create(dtype, S_LIST, create_list_storage(nm_sizeof[dtype], shape, rank, init_val));
-  return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
-}
-
-
 // Read the shape argument to NMatrix.new, which may be either an array or a single number.
 // Second argument is where the shape is stored at the end of the function; returns the rank.
 // You are responsible for freeing shape!
@@ -265,23 +284,17 @@ VALUE nm_new(int argc, VALUE* argv, VALUE self) {
     return Qnil;
   }
 
-
-  if (stype == S_DENSE) // nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE klass)
-    return nm_dense_new(shape, rank, dtype, init_val, self);
-  else if (stype == S_LIST)
-    return nm_list_new(shape, rank, dtype, init_val, self);
+  if (stype < S_TYPES)
+    return CreateFuncs[stype](shape, rank, dtype, init_val, self);
+  //if (stype == S_DENSE) // nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE klass)
+  //  return nm_dense_new(shape, rank, dtype, init_val, self);
+  //else if (stype == S_LIST)
+  //  return nm_list_new(shape, rank, dtype, init_val, self);
   else
-    rb_raise(rb_eNotImpError, "Only dense and list currently implemented");
+    rb_raise(rb_eNotImpError, "Unrecognized storage type");
 
   return Qnil;
 
-}
-
-
-static void nm_delete(NMATRIX* mat) {
-  if (mat->stype == S_DENSE)     delete_dense_storage(mat->storage);
-  else if (mat->stype == S_LIST) delete_list_storage(mat->storage);
-  else                           rb_raise(rb_eNotImpError, "Only dense and list deletion are implemented");
 }
 
 
