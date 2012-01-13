@@ -41,7 +41,11 @@ void dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val, size_t elem_
 
 
 DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs, size_t elem_size) {
-  DENSE_STORAGE* lhs = create_dense_storage(elem_size, rhs->shape, rhs->rank);
+  DENSE_STORAGE* lhs;
+  size_t* shape = malloc(elem_size*rhs->rank);
+  if (!shape) return NULL;
+
+  lhs = create_dense_storage(elem_size, shape, rhs->rank);
 
   if (lhs) // ensure that allocation worked before copying
     memcpy(lhs->elements, rhs->elements, elem_size * count_dense_storage_elements(rhs));
@@ -57,7 +61,7 @@ DENSE_STORAGE* create_dense_storage(size_t elem_size, size_t* shape, size_t rank
   if (!(s = malloc(sizeof(DENSE_STORAGE)))) return NULL;
   s->rank       = rank;
   s->shape      = shape;
-  memcpy(s->shape, shape, sizeof(size_t) * rank);
+
   count         = count_dense_storage_elements(s);
   if (!(s->elements   = malloc(elem_size * count))) {
     free(s->shape);
@@ -69,9 +73,11 @@ DENSE_STORAGE* create_dense_storage(size_t elem_size, size_t* shape, size_t rank
 
 
 void delete_dense_storage(DENSE_STORAGE* s) {
-  free(s->shape);
-  free(s->elements);
-  free(s);
+  if (s) { // sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure)
+    free(s->shape);
+    free(s->elements);
+    free(s);
+  }
 }
 
 

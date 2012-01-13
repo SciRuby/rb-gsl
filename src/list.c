@@ -43,19 +43,23 @@ void* list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val) {
   return n->val;
 }
 
-/* Creates a LIL matrix of n dimensions */
+// Creates a list-of-lists(-of-lists-of-lists-etc) storage framework for a matrix.
+//
+// Note: The pointers you pass in for shape and init_val become property of our new
+// storage. You don't need to free them, and you shouldn't re-use them.
 LIST_STORAGE* create_list_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val) {
   LIST_STORAGE* s;
+
   if (!(s = malloc(sizeof(LIST_STORAGE)))) return NULL;
-  s->rows  = create_list();
-  s->shape = shape;
-  s->rank  = rank;
-  if (!(s->default_val = malloc(sizeof(elem_size)))) {
-    delete_list( s->rows, s->rank - 1 );
+
+  if (!(s->rows  = create_list())) {
     free(s);
     return NULL;
   }
-  memcpy(s->default_val, init_val, elem_size);
+
+  s->shape = shape;
+  s->rank  = rank;
+  s->default_val = init_val;
 
   return s;
 }
@@ -80,10 +84,12 @@ LIST_STORAGE* copy_list_storage(LIST_STORAGE* rhs, size_t elem_size) {
 
 
 void delete_list_storage(LIST_STORAGE* s) {
-  delete_list( s->rows, s->rank - 1 );
-  free(s->shape);
-  free(s->default_val);
-  free(s);
+  if (s) {
+    delete_list( s->rows, s->rank - 1 );
+    free(s->shape);
+    free(s->default_val);
+    free(s);
+  }
 }
 
 
@@ -133,7 +139,7 @@ void delete_list(LIST* list, size_t recursions) {
     next = curr->next;
 
     if (recursions == 0)
-      free(curr->val); // TODO: Check that this doesn't create a memory leak, since val is a void*.
+      free(curr->val);
     else
       delete_list(curr->val, recursions-1);
 

@@ -17,15 +17,15 @@ describe NMatrix do
 
   [:dense, :list].each do |storage_type|
     context "(storage: #{storage_type})" do
-      it "duplicates properly" do
+      it "can be duplicated" do
         n = NMatrix.new(storage_type, [2,3], 1.1)
         m = n.dup
-        m.shape should == n.shape
-        m.rank should == n.rank
-        m.object_id should != n.object_id
+        m.shape.should == n.shape
+        m.rank.should == n.rank
+        m.object_id.should_not == n.object_id
         m[0,0].should == n[0,0]
         m[0,0] = 3.0
-        m[0,0].should != n[0,0]
+        m[0,0].should_not == n[0,0]
       end
 
       it "enforces shape boundaries" do
@@ -58,7 +58,7 @@ describe NMatrix do
 
   it "correctly handles dense construction" do
     NMatrix.new(3,0)[1,1].should == 0
-    NMatrix.new(3,:int8)[1,1].should == 0
+    lambda { NMatrix.new(3,:int8)[1,1] }.should_not raise_error
   end
 
 end

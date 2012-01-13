@@ -328,7 +328,8 @@ int8_t nm_guess_dtype(VALUE v);
 size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank);
 VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self);
 VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self);
-VALUE nm_new(int argc, VALUE* argv, VALUE self);
+VALUE nm_init(int argc, VALUE* argv, VALUE self);
+// VALUE nm_init_copy(VALUE copy, VALUE original);
 NMATRIX* nm_create(int8_t dtype, int8_t stype, void* storage);
 void Init_nmatrix();
 

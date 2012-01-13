@@ -274,7 +274,7 @@ void* nm_interpret_initial_value(VALUE arg, int8_t dtype) {
 }
 
 
-VALUE nm_new(int argc, VALUE* argv, VALUE self) {
+VALUE nm_init(int argc, VALUE* argv, VALUE self) {
   char    ZERO = 0;
   int8_t  dtype, stype, offset = 0;
   size_t  rank;
@@ -327,12 +327,48 @@ VALUE nm_new(int argc, VALUE* argv, VALUE self) {
 }
 
 
-VALUE nm_dup(VALUE original) {
-  NMATRIX *lhs = ALLOC(NMATRIX), *orig;
-  UnwrapNMatrix(original, orig);
-  CopyFuncs[orig->stype](orig->storage, nm_sizeof[orig->dtype]);
+static VALUE nm_alloc(VALUE klass) {
+  NMATRIX* mat = ALLOC(NMATRIX);
+  mat->storage = NULL;
+  return Data_Wrap_Struct(klass, 0, nm_delete, mat);
+}
 
-  return Data_Wrap_Struct(original, NULL, nm_delete, lhs);
+
+// This is the "back-door initializer," for when Ruby needs to create the object in an atypical way.
+//
+// Note that objects created this way will have NULL storage.
+static VALUE nm_initialize(VALUE self, VALUE stype, VALUE dtype) {
+  NMATRIX* matrix;
+  UnwrapNMatrix(self, matrix);
+
+  matrix->stype   = nm_interpret_stype(stype);
+  matrix->dtype   = nm_interpret_dtype(1, &dtype);
+  matrix->storage = NULL;
+
+  return self;
+}
+
+
+static VALUE nm_init_copy(VALUE copy, VALUE original) {
+  NMATRIX *lhs, *rhs;
+
+  fprintf(stderr,"In copy constructor\n");
+
+  if (copy == original) return copy;
+
+  if (TYPE(original) != T_DATA || RDATA(original)->dfree != (RUBY_DATA_FUNC)nm_delete)
+    rb_raise(rb_eTypeError, "wrong argument type");
+
+  UnwrapNMatrix( original, rhs );
+  UnwrapNMatrix( copy,     lhs );
+
+  lhs->stype = rhs->stype;
+  lhs->dtype = rhs->dtype;
+
+  // Copy the storage
+  lhs->storage = CopyFuncs[rhs->stype](rhs->storage, nm_sizeof[rhs->dtype]);
+
+  return copy;
 }
 
 
@@ -423,9 +459,14 @@ void Init_nmatrix() {
 
     /* Define NMatrix class */
     cNMatrix = rb_define_class("NMatrix", rb_cObject);
+    rb_define_alloc_func(cNMatrix, nm_alloc);
 
     /* class methods */
-    rb_define_singleton_method(cNMatrix, "new", nm_new, -1);
+    rb_define_method(cNMatrix, "initialize", nm_init, 2);
+    rb_define_singleton_method(cNMatrix, "new", nm_init, -1);
+
+
+    rb_define_method(cNMatrix, "initialize_copy", nm_init_copy, 1);
 
     /* methods */
     rb_define_method(cNMatrix, "[]", nm_mref, -1);
@@ -433,7 +474,7 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, "rank", nm_rank, 0);
     rb_define_alias(cNMatrix, "dim", "rank");
     rb_define_method(cNMatrix, "shape", nm_shape, 0);
-    rb_define_method(cNMatrix, "dup", nm_dup, 0);
+    // rb_define_method(cNMatrix, "dup", nm_dup, 0);
 
     nm_id_real  = rb_intern("real");
     nm_id_imag  = rb_intern("imag");
