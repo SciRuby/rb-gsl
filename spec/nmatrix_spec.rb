@@ -1,11 +1,32 @@
 # nmatrix_spec.rb
-require "./src/nmatrix.so"
+require "./lib/nmatrix"
 
 describe NMatrix do
 
   it "list correctly handles missing initialization value" do
     NMatrix.new(:list, 3, :int8)[0,0].should    == 0
     NMatrix.new(:list, 4, :float64)[0,0].should == 0.0
+  end
+
+
+  ##TODO: Make this test better. It's not nearly exhaustive enough as is.
+  it "list correctly handles recursive removal" do
+    n = NMatrix.new(:list, [3,3,3], 0)
+    n[0,0,0] = 2
+    n[1,1,1] = 1
+    n[1,0,0] = 3
+    n[0,0,1] = 4
+
+    n[0,0,0].should == 2
+    n[1,1,1].should == 1
+    n[1,0,0].should == 3
+    n[0,0,1].should == 4
+
+    n[1,1,1] = 0
+    n[0,0,0].should == 2
+    n[1,1,1].should == 0
+    n[1,0,0].should == 3
+    n[0,0,1].should == 4
   end
 
 
@@ -19,6 +40,11 @@ describe NMatrix do
     context "(storage: #{storage_type})" do
       it "can be duplicated" do
         n = NMatrix.new(storage_type, [2,3], 1.1)
+
+        n[0,0] = 0.0
+        n[0,1] = 0.1
+        n[1,0] = 1.0
+
         m = n.dup
         m.shape.should == n.shape
         m.rank.should == n.rank

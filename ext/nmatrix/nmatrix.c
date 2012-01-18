@@ -114,12 +114,20 @@ VALUE nm_dense_set(STORAGE* s, size_t* coords, VALUE val, int8_t dtype) {
 
 
 VALUE nm_list_set(STORAGE* s, size_t* coords, VALUE val, int8_t dtype) {
-  void* v = malloc(nm_sizeof[dtype]);
-
+  void *v = malloc(nm_sizeof[dtype]), *rm;
+  LIST_STORAGE* ls = (LIST_STORAGE*)s;
   SetFuncs[dtype][NM_ROBJ](1, v, 0, &val, 0);
 
-  if (list_storage_insert( (LIST_STORAGE*)s, coords, v ))    return val;
-  else                                                       return Qnil;
+  if (!memcmp(ls->default_val, v, nm_sizeof[dtype])) {
+    // User asked to insert default_value, which is actually node *removal*.
+    // So let's do that instead.
+
+    rm = list_storage_remove( ls, coords );
+    if (rm) free(rm);
+    return val;
+
+  } else if (list_storage_insert( ls, coords, v ))    return val;
+  return Qnil;
   // No need to free; the list keeps v.
 }
 
@@ -283,7 +291,7 @@ VALUE nm_init(int argc, VALUE* argv, VALUE self) {
 
   // READ ARGUMENTS
 
-  fprintf(stderr, "Called nmatrix new with %d arguments\n", argc);
+  //fprintf(stderr, "Called nmatrix new with %d arguments\n", argc);
 
   if (argc < 2 || argc > 4) { rb_raise(rb_eArgError, "Expected 2, 3, or 4 arguments"); return Qnil; }
 
@@ -352,7 +360,7 @@ static VALUE nm_initialize(VALUE self, VALUE stype, VALUE dtype) {
 static VALUE nm_init_copy(VALUE copy, VALUE original) {
   NMATRIX *lhs, *rhs;
 
-  fprintf(stderr,"In copy constructor\n");
+  //fprintf(stderr,"In copy constructor\n");
 
   if (copy == original) return copy;
 

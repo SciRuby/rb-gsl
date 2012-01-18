@@ -306,6 +306,7 @@ LIST_STORAGE*   copy_list_storage(LIST_STORAGE* rhs, size_t elem_size);
 
 void*           list_storage_get(LIST_STORAGE* s, size_t* coords);
 void*           list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val);
+void*           list_storage_remove(LIST_STORAGE* s, size_t* coords);
 
 LIST*           create_list();
 void            delete_list(LIST* list, size_t recursions);

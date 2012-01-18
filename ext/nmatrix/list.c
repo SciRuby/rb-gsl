@@ -24,6 +24,44 @@ void* list_storage_get(LIST_STORAGE* s, size_t* coords) {
   else   return s->default_val;
 }
 
+/// TODO: Speed up removal.
+void* list_storage_remove(LIST_STORAGE* s, size_t* coords) {
+  int r;
+  NODE  *n = NULL;
+  LIST*  l = s->rows;
+  void*  rm = NULL;
+
+  // keep track of where we are in the traversals
+  NODE** stack = malloc((s->rank - 1) * sizeof(NODE*));
+
+  for (r = (int)(s->rank); r > 1; --r) {
+    n = list_find(l, coords[s->rank - r]); // does this row exist in the matrix?
+
+    if (!n) { // not found
+      free(stack);
+      return NULL;
+    } else { // found
+      stack[s->rank - r]    = n;
+      l                     = n->val;
+    }
+  }
+
+  rm = list_remove(l, coords[s->rank - r]);
+
+  // if we removed something, we may now need to remove parent lists
+  if (rm) {
+    for (r = (int)(s->rank) - 2; r >= 0; --r) { // walk back down the stack
+      if (((LIST*)(stack[r]->val))->first == NULL)
+        free(list_remove(stack[r]->val, coords[r]));
+      else
+        break; // no need to continue unless we just deleted one.
+    }
+  }
+
+  free(stack);
+  return rm;
+}
+
 
 void* list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val) {
   // Pretend ranks = 2
@@ -51,6 +89,7 @@ LIST_STORAGE* create_list_storage(size_t elem_size, size_t* shape, size_t rank, 
   LIST_STORAGE* s;
 
   if (!(s = malloc(sizeof(LIST_STORAGE)))) return NULL;
+  //fprintf(stderr, "create_list_storage: %p\n", s);
 
   if (!(s->rows  = create_list())) {
     free(s);
@@ -67,12 +106,17 @@ LIST_STORAGE* create_list_storage(size_t elem_size, size_t* shape, size_t rank, 
 
 LIST_STORAGE* copy_list_storage(LIST_STORAGE* rhs, size_t elem_size) {
   LIST_STORAGE* lhs;
+  size_t* shape;
+  void* default_val = malloc(elem_size);
+
+  //fprintf(stderr, "copy_list_storage\n");
 
   // allocate and copy shape
-  size_t* shape = malloc( sizeof(size_t) * rhs->rank );
+  shape = malloc( sizeof(size_t) * rhs->rank );
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
+  memcpy(default_val, rhs->default_val, elem_size);
 
-  lhs = create_list_storage(elem_size, shape, rhs->rank, rhs->default_val);
+  lhs = create_list_storage(elem_size, shape, rhs->rank, default_val);
 
   if (lhs) {
     lhs->rows = create_list();
@@ -97,32 +141,41 @@ void delete_list_storage(LIST_STORAGE* s) {
 LIST* create_list() {
   LIST* list;
   if (!(list = malloc(sizeof(LIST)))) return NULL;
+  //fprintf(stderr, "create_list LIST: %p\n", list);
   list->first = NULL;
   return list;
 }
 
 
 void copy_list_contents(LIST* lhs, LIST* rhs, size_t elem_size, size_t recursions) {
-  NODE *rcurr = rhs->first, *lcurr = malloc(sizeof(NODE));
+  NODE *lcurr = NULL, *rcurr = rhs->first;
 
-  // copy head node
-  lhs->first = lcurr;
+  if (rhs->first) {
+    // copy head node
+    rcurr = rhs->first;
+    lcurr = lhs->first = malloc(sizeof(NODE));
 
-  while (rcurr != NULL) {
-    lcurr->key = rcurr->key;
+    while (rcurr != NULL) {
+      lcurr->key = rcurr->key;
 
-    if (recursions == 0) { // contents is some kind of value
-      lcurr->val = malloc(elem_size);
-      memcpy(lcurr->val, rcurr->val, elem_size);
+      if (recursions == 0) { // contents is some kind of value
+        lcurr->val = malloc(elem_size);
+        //fprintf(stderr, "elem_size: %p\n", lcurr->val);
+        memcpy(lcurr->val, rcurr->val, elem_size);
 
-    } else { // contents is a list
-      lcurr->val = malloc(sizeof(LIST));
-      copy_list_contents(lcurr->val, rcurr->val, elem_size, recursions-1);
+      } else { // contents is a list
+        lcurr->val = malloc(sizeof(LIST));
+        //fprintf(stderr, "LIST: %p\n", lcurr->val);
+        copy_list_contents(lcurr->val, rcurr->val, elem_size, recursions-1);
+      }
+      if (rcurr->next) lcurr->next = malloc(sizeof(NODE));
+      //fprintf(stderr, "NODE: %p\n", lcurr->next);
+
+      lcurr = lcurr->next;
+      rcurr = rcurr->next;
     }
-    if (rcurr->next) lcurr->next = malloc(sizeof(NODE));
-
-    lcurr = lcurr->next;
-    rcurr = rcurr->next;
+  } else {
+    lhs->first = NULL;
   }
 }
 
@@ -138,14 +191,18 @@ void delete_list(LIST* list, size_t recursions) {
   while (curr != NULL) {
     next = curr->next;
 
-    if (recursions == 0)
+    if (recursions == 0) {
+      //fprintf(stderr, "free_val: %p\n", curr->val);
       free(curr->val);
-    else
+    } else {
+      //fprintf(stderr, "free_list: %p\n", list);
       delete_list(curr->val, recursions-1);
+    }
 
     free(curr);
     curr = next;
   }
+  //fprintf(stderr, "free_list: %p\n", list);
   free(list);
 }
 
@@ -309,76 +366,5 @@ NODE* list_insert(LIST* list, bool replace, size_t key, void* val) {
   } else return list_insert_after(ins, key, val);
 
 }
-
-/* int main() {
-    int *v1, *v2, *v3, *v4, *v5;
-    LIST_STORAGE* s;
-    size_t c0[] = {1,3};
-    size_t c1[] = {1,2};
-    size_t c2[] = {1,4};
-    size_t c3[] = {0,3};
-    LIST* l = create_list();
-
-    printf("Test\n");
-
-    v1 = malloc(sizeof(int));
-    *v1 = 5;
-
-    v2 = malloc(sizeof(int));
-    *v2 = 4;
-
-    v3 = malloc(sizeof(int));
-    *v3 = -2;
-
-    v4 = malloc(sizeof(int));
-    *v4 = -50;
-
-    v5 = malloc(sizeof(int));
-    *v5 = 10;
-
-    if (list_insert(l, true, 2, v1))
-        printf("First insertion successful\n");
-    list_print_int(l);
-
-    list_insert(l, true, 2, v2);
-    list_print_int(l);
-    list_insert(l, true, 0, v3);
-    list_print_int(l);
-    list_insert(l, true, 1, v4);
-    list_print_int(l);
-    list_insert(l, true, 3, v5);
-    list_print_int(l);
-
-    NODE* n = list_find_preceding_from(l->first, 2);
-    if (n) printf("Found key %d, value=%d\n", (int)(n->key), *((int*)(n->val)));
-
-
-    v1 = list_remove(l, 2);
-    if (v1) printf("Successfully removed value: %d\n", *v1);
-
-    v2 = list_remove(l, 0);
-    if (v2) printf("Successfully removed value: %d\n", *v2);
-
-    v3 = list_remove(l, 3);
-    if (v3) printf("Successfully removed value: %d\n", *v3);
-
-    v4 = list_remove(l, 1);
-    if (v4) printf("Successfully removed value: %d\n", *v4);
-
-    delete_list(l, 0);
-
-    s = create_list_storage(2);
-    list_storage_insert(s, c0, v4);
-    list_print_list(s->rows); printf("\n");
-    list_storage_insert(s, c1, v3);
-    list_print_list(s->rows); printf("\n");
-    list_storage_insert(s, c2, v2);
-    list_print_list(s->rows); printf("\n");
-    list_storage_insert(s, c3, v1);
-    list_print_list(s->rows); printf("\n");
-
-    return 0;
-}
-*/
 
 #endif

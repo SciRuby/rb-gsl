@@ -10,3 +10,4 @@ src/Makefile
 src/nmatrix_config.h
 src/test.rb
 Gemfile.lock
+tmp/
