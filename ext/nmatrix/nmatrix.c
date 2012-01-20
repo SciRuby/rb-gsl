@@ -4,6 +4,9 @@
 
 #include <ruby.h>
 
+// Matrix multiplication
+#include <cblas.h>
+
 #include "nmatrix.h"
 
 VALUE cNMatrix;
@@ -345,7 +348,7 @@ static VALUE nm_alloc(VALUE klass) {
 // This is the "back-door initializer," for when Ruby needs to create the object in an atypical way.
 //
 // Note that objects created this way will have NULL storage.
-static VALUE nm_initialize(VALUE self, VALUE stype, VALUE dtype) {
+/*static VALUE nm_initialize(VALUE self, VALUE stype, VALUE dtype) {
   NMATRIX* matrix;
   UnwrapNMatrix(self, matrix);
 
@@ -354,7 +357,7 @@ static VALUE nm_initialize(VALUE self, VALUE stype, VALUE dtype) {
   matrix->storage = NULL;
 
   return self;
-}
+}*/
 
 
 static VALUE nm_init_copy(VALUE copy, VALUE original) {
@@ -377,6 +380,67 @@ static VALUE nm_init_copy(VALUE copy, VALUE original) {
   lhs->storage = CopyFuncs[rhs->stype](rhs->storage, nm_sizeof[rhs->dtype]);
 
   return copy;
+}
+
+
+static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
+  ///TODO: figure out which type to return -- not always dense, not always float64
+  size_t* shape   = malloc(sizeof(size_t)*2);
+  NMATRIX* result;
+
+  shape[0] = left->storage->shape[0];
+  shape[1] = right->storage->shape[1];
+
+  result   = nm_create(NM_FLOAT64, S_DENSE, create_dense_storage(nm_sizeof[NM_FLOAT64], shape, 2));
+
+  fprintf(stderr, "M=%d, N=%d, K=%d, ldb=%d\n", left->storage->shape[0], left->storage->shape[1], right->storage->shape[0], right->storage->shape[1]);
+
+  // call CBLAS dgemm (double general matrix multiplication)
+  // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
+  cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+        left->storage->shape[0], // M
+        left->storage->shape[1], // N
+        right->storage->shape[1], // K
+        1.0,
+        ((DENSE_STORAGE*)(left->storage))->elements, left->storage->shape[1],
+        ((DENSE_STORAGE*)(right->storage))->elements, right->storage->shape[0],
+        0.0,
+        ((DENSE_STORAGE*)(result->storage))->elements, result->storage->shape[0]
+        );
+
+  return Data_Wrap_Struct(cNMatrix, 0, nm_delete, result);
+}
+
+
+static VALUE nm_multiply_scalar(NMATRIX* left, VALUE scalar) {
+  return Qnil;
+}
+
+
+
+static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
+  NMATRIX *left, *right;
+
+  // left has to be of type NMatrix.
+  if (TYPE(left_v) != T_DATA || RDATA(left_v)->dfree != (RUBY_DATA_FUNC)nm_delete)
+    rb_raise(rb_eTypeError, "wrong argument type");
+
+  UnwrapNMatrix( left_v, left );
+
+  //if (RDATA(right_v)->dfree != (RUBY_DATA_FUNC)nm_delete) {
+    UnwrapNMatrix( right_v, right );
+
+    if (left->storage->shape[1] != right->storage->shape[0])
+      rb_raise(rb_eArgError, "incompatible dimensions");
+
+    if (left->stype != S_DENSE && right->stype != S_DENSE)
+      rb_raise(rb_eNotImpError, "dense matrices expected");
+
+    return nm_multiply_matrix(left, right);
+  //} else {
+  //  rb_raise(rb_eNotImpError, "scalar multiplication not supported yet");
+  //  return Qnil;
+ // }
 }
 
 
@@ -482,6 +546,8 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, "rank", nm_rank, 0);
     rb_define_alias(cNMatrix, "dim", "rank");
     rb_define_method(cNMatrix, "shape", nm_shape, 0);
+
+    rb_define_method(cNMatrix, "multiply", nm_multiply, 1);
     // rb_define_method(cNMatrix, "dup", nm_dup, 0);
 
     nm_id_real  = rb_intern("real");

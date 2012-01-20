@@ -84,6 +84,15 @@ have_type("int64_t", header)
 have_type("u_int64_t", header)
 have_type("uint64_t", header)
 
+dir_config("cblas")
+dir_config("atlas")
+
+# These weren't working:
+#have_library("cblas", "cblas_dgemm", "cblas.h") and find_library("/usr/local/atlas/lib")
+#have_library("atlas", "ATL_dgemmNN") and find_library("/usr/local/atlas/lib")
+
+$libs += " -L/usr/local/atlas/lib -lcblas -latlas "
+
 $objs = srcs.collect{|i| i+".o"}
 
 create_conf_h("nmatrix_config.h")
