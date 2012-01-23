@@ -33,6 +33,24 @@ nm_delete_t DeleteFuncs = {
   NULL
 };
 
+nm_gemm_t GemmFuncs = { // by NM_TYPES
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  cblas_sgemm,
+  cblas_dgemm,
+  cblas_cgemm,
+  cblas_zgemm,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL
+};
+
 
 static void nm_delete(NMATRIX* mat) {
   DeleteFuncs[mat->stype](mat->storage);
@@ -391,21 +409,24 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
   shape[0] = left->storage->shape[0];
   shape[1] = right->storage->shape[1];
 
-  result   = nm_create(NM_FLOAT64, S_DENSE, create_dense_storage(nm_sizeof[NM_FLOAT64], shape, 2));
+  result   = nm_create(left->dtype, S_DENSE, create_dense_storage(nm_sizeof[NM_FLOAT64], shape, 2));
 
-  fprintf(stderr, "M=%d, N=%d, K=%d, ldb=%d\n", left->storage->shape[0], left->storage->shape[1], right->storage->shape[0], right->storage->shape[1]);
+  //fprintf(stderr, "M=%d, N=%d, K=%d, ldb=%d\n", left->storage->shape[0], left->storage->shape[1], right->storage->shape[0], right->storage->shape[1]);
 
   // call CBLAS dgemm (double general matrix multiplication)
   // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
-  cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-        left->storage->shape[0], // M
-        left->storage->shape[1], // N
-        right->storage->shape[1], // K
+  GemmFuncs[left->dtype](CblasRowMajor, CblasNoTrans, CblasNoTrans,
+        shape[0],                // M = number of rows in left
+        shape[1],                // N = number of columns in right and result
+        left->storage->shape[1], // K = number of columns in left
         1.0,
-        ((DENSE_STORAGE*)(left->storage))->elements, left->storage->shape[1],
-        ((DENSE_STORAGE*)(right->storage))->elements, right->storage->shape[0],
+        ((DENSE_STORAGE*)(left->storage))->elements,
+            left->storage->shape[1], // * nm_sizeof[left->dtype],
+        ((DENSE_STORAGE*)(right->storage))->elements,
+            right->storage->shape[1], // * nm_sizeof[right->dtype],
         0.0,
-        ((DENSE_STORAGE*)(result->storage))->elements, result->storage->shape[0]
+        ((DENSE_STORAGE*)(result->storage))->elements,
+            shape[1] // * nm_sizeof[result->dtype]
         );
 
   return Data_Wrap_Struct(cNMatrix, 0, nm_delete, result);
@@ -435,6 +456,9 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 
     if (left->stype != S_DENSE && right->stype != S_DENSE)
       rb_raise(rb_eNotImpError, "dense matrices expected");
+
+    if (left->dtype != right->dtype)
+      rb_raise(rb_eNotImpError, "dtype mismatch");
 
     return nm_multiply_matrix(left, right);
   //} else {
