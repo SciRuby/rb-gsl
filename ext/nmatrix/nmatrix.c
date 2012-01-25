@@ -564,16 +564,20 @@ static VALUE nm_dtype(VALUE self) {
 }
 
 
+// Interprets cblas argument which could be any of false/:no_transform, :transform, or :complex_conjugate,
+// into an enum recognized by cblas.
+//
+// Called by nm_cblas_gemm -- basically inline.
 static char gemm_op_sym(VALUE op) {
-  if (op == nm_id_no_transform) return 111;
-  else if (op == nm_id_transform) return 112;
-  else if (op == nm_id_complex_conjugate) return 113;
-  else rb_raise(rb_eArgError, "Expected :no_transform, :transform, or :complex_conjugate");
-  return 111;
+  if (op == false || rb_to_id(op) == nm_id_no_transform) return CblasNoTrans;
+  else if (rb_to_id(op) == nm_id_transform) return CblasTrans;
+  else if (rb_to_id(op) == nm_id_complex_conjugate) return CblasConjTrans;
+  else rb_raise(rb_eArgError, "Expected false, :transform, or :complex_conjugate");
+  return CblasNoTrans;
 }
 
 
-// Directly call cblas_xgemm with some matrices.
+// Directly call cblas_xgemm as quickly as possible.
 //
 //     C: = alpha*op(A)*op(B) + beta*C
 //
@@ -582,77 +586,46 @@ static char gemm_op_sym(VALUE op) {
 //     op(X) = X   or   op(X) = X**T
 //
 // == Arguments
-// * a, b: matrices A and B
-// * c: matrix C (or where the result is put)
-// * alpha: 1.0 by default
-// * beta: 0.0 by default
-// * trans_a: op(A), can be :transform, or :no_transform, or :complex_conjugate
-// * trans_B: op(B), much like op(A)
-// * m, n: dimensions of op(C), optional -- use only when you want to deal with a submatrix
-// * k: number of columns in op(A), optional -- use only for submatrices
-// * lda, ldb, ldc: major stride of each matrix (optional, only for submatrices)
+// See: http://www.netlib.org/blas/dgemm.f
 //
-// Returns c for convenience (not a copy of c!). You have to pass in at least three arguments, and the result will go in
-// the third!
-static VALUE nm_cblas_gemm(int argc, VALUE* argv) {
-  int m, n, k, lda, ldb, ldc;
-  char trans_a = CblasNoTrans, trans_b = CblasNoTrans;
-  NMATRIX *a, *b, *c;
-  double alpha = 1.0, beta = 0.0;
-  int8_t dtype;
+// You probably don't want to call this function. Instead of __cblas_gemm__, why don't you try cblas_gemm, which
+// is more flexible with its arguments?
+//
+// This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
+// handling!
+static VALUE nm_cblas_gemm(VALUE self,
+                           VALUE trans_a, VALUE trans_b,
+                           VALUE m, VALUE n, VALUE k,
+                           VALUE alpha,
+                           VALUE a, VALUE lda,
+                           VALUE b, VALUE ldb,
+                           VALUE beta,
+                           VALUE c, VALUE ldc) {
 
-  if (argc < 3) rb_raise(rb_eArgError, "expected at least three arguments");
-  if (argc > 13) rb_raise(rb_eArgError, "expected no more than thirteen arguments");
+  int m_, n_, k_, lda_, ldb_, ldc_;
+  char trans_a_ = gemm_op_sym(trans_a), trans_b_ = gemm_op_sym(trans_b);
+  double alpha_ = 1.0, beta_ = 0.0;
 
-  UnwrapNMatrix(argv[0], a);
-  UnwrapNMatrix(argv[1], b);
-  UnwrapNMatrix(argv[2], c);
+  m_ = FIX2INT(m);
+  n_ = FIX2INT(n);
+  k_ = FIX2INT(k);
 
-  // Can't check this without knowing trans_a, trans_b
-  //if (c->storage->shape[0] != a->storage->shape[0] || c->storage->shape[1] != b->storage->shape[1])
-  //  rb_raise(rb_eArgError, "matrix c has incorrect shape given shapes of a and b");
+  lda_ = FIX2INT(lda);
+  ldb_ = FIX2INT(ldb);
+  ldc_ = FIX2INT(ldc);
 
-  // set defaults, possibly to be overridden by method arguments
-  lda = k = (int)(a->storage->shape[1]);
-  ldb     = (int)(b->storage->shape[1]);
-  m       = (int)(c->storage->shape[0]);
-  ldc = n = (int)(c->storage->shape[1]);
+  alpha_ = NUM2DBL(alpha);
+  beta_  = NUM2DBL(beta);
 
-  // Read optional arguments
-  if (argc >= 4) {  alpha   = argv[3];
-    if (argc >= 5) {  beta    = argv[4];
-      if (argc >= 6) {  trans_a = gemm_op_sym(argv[5]);
-        if (argc >= 7) {  trans_b = gemm_op_sym(argv[6]);
-          if (argc >= 8) {  m       = FIX2INT(argv[7]);
-            if (argc >= 9) {  n       = FIX2INT(argv[8]);
-              if (argc >= 10) {  k      = FIX2INT(argv[9]);
-                if (argc >= 11) {  lda    = FIX2INT(argv[10]);
-                  if (argc >= 12) {  ldb    = FIX2INT(argv[11]);
-                    if (argc>= 13)     ldc    = FIX2INT(argv[12]);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  /* fprintf(stderr, "cblas_gemm: %d %d %d %d %d %f %d %d %f %d\n", trans_a_, trans_b_,
+         m_, n_, k_, alpha_, lda_, ldb_, beta_, ldc_); */
 
-  dtype = c->dtype;
+  GemmFuncs[NM_DTYPE(c)](CblasRowMajor, trans_a_, trans_b_, m_, n_, k_,
+        alpha_,  ((DENSE_STORAGE*)(NM_STORAGE(a)))->elements, lda_,
+                 ((DENSE_STORAGE*)(NM_STORAGE(b)))->elements, ldb_,
+        beta_,   ((DENSE_STORAGE*)(NM_STORAGE(c)))->elements, ldc_);
 
-  if (a->dtype != b->dtype || a->dtype != c->dtype)
-    rb_raise(rb_eArgError, "expected same dtype for all matrices");
-  if (dtype < NM_FLOAT32)
-    rb_raise(rb_eArgError, "no gemm function for integer dtype");
-  if (a->stype != S_DENSE || b->stype != S_DENSE || c->stype != S_DENSE)
-    rb_raise(rb_eArgError, "requires dense matrices");
-
-  GemmFuncs[dtype](CblasRowMajor, trans_a, trans_b, m, n, k,
-        alpha,  ((DENSE_STORAGE*)(a->storage))->elements, lda, ((DENSE_STORAGE*)(b->storage))->elements, ldb,
-        beta,   ((DENSE_STORAGE*)(c->storage))->elements, ldc);
-
-  return argv[2];
+  return Qtrue;
 }
 
 
@@ -667,7 +640,7 @@ void Init_nmatrix() {
     rb_define_alloc_func(cNMatrix, nm_alloc);
 
     /* class methods */
-    rb_define_singleton_method(cNMatrix, "cblas_gemm", nm_cblas_gemm, -1);
+    rb_define_singleton_method(cNMatrix, "__cblas_gemm__", nm_cblas_gemm, 13);
     rb_define_method(cNMatrix, "initialize", nm_init, 2);
     rb_define_singleton_method(cNMatrix, "new", nm_init, -1);
 
@@ -683,8 +656,8 @@ void Init_nmatrix() {
     rb_define_alias(cNMatrix, "dim", "rank");
     rb_define_method(cNMatrix, "shape", nm_shape, 0);
 
-    rb_define_method(cNMatrix, "multiply", nm_multiply, 1);
-    // rb_define_method(cNMatrix, "dup", nm_dup, 0);
+    rb_define_method(cNMatrix, "*", nm_multiply, 1);
+    rb_define_alias(cNMatrix, "multiply", "*");
 
     nm_id_real  = rb_intern("real");
     nm_id_imag  = rb_intern("imag");

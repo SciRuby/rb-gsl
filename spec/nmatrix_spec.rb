@@ -29,9 +29,9 @@ describe NMatrix do
       m[2,0] = 8.0
       m[2,1] = 5.0
 
-      c = NMatrix.new([4,2], dtype)
-      r = NMatrix.cblas_gemm(n, m, c)
-      c.should equal(r) # check that both are same memory address
+      #c = NMatrix.new([4,2], dtype)
+      r = NMatrix.cblas_gemm(n, m) #, c)
+      #c.should equal(r) # check that both are same memory address
 
       r[0,0].should == 273.0
       r[0,1].should == 455.0
