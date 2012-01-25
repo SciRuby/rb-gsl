@@ -602,20 +602,9 @@ static VALUE nm_cblas_gemm(VALUE self,
                            VALUE beta,
                            VALUE c, VALUE ldc) {
 
-  int m_, n_, k_, lda_, ldb_, ldc_;
+  int m_ = FIX2INT(m), n_ = FIX2INT(n), k_ = FIX2INT(k), lda_ = FIX2INT(lda), ldb_ = FIX2INT(ldb), ldc_ = FIX2INT(ldc);
   char trans_a_ = gemm_op_sym(trans_a), trans_b_ = gemm_op_sym(trans_b);
-  double alpha_ = 1.0, beta_ = 0.0;
-
-  m_ = FIX2INT(m);
-  n_ = FIX2INT(n);
-  k_ = FIX2INT(k);
-
-  lda_ = FIX2INT(lda);
-  ldb_ = FIX2INT(ldb);
-  ldc_ = FIX2INT(ldc);
-
-  alpha_ = NUM2DBL(alpha);
-  beta_  = NUM2DBL(beta);
+  double alpha_ = NUM2DBL(alpha), beta_ = NUM2DBL(beta);
 
   /* fprintf(stderr, "cblas_gemm: %d %d %d %d %d %f %d %d %f %d\n", trans_a_, trans_b_,
          m_, n_, k_, alpha_, lda_, ldb_, beta_, ldc_); */
