@@ -13,7 +13,7 @@ VALUE cNMatrix;
 
 ID nm_id_real, nm_id_imag;
 ID nm_id_numer, nm_id_denom;
-ID nm_id_transform, nm_id_no_transform, nm_id_complex_conjugate; // cblas
+ID nm_id_transpose, nm_id_no_transpose, nm_id_complex_conjugate; // cblas
 ID nm_id_list, nm_id_dense;
 
 #include "dtypes.c"
@@ -564,15 +564,15 @@ static VALUE nm_dtype(VALUE self) {
 }
 
 
-// Interprets cblas argument which could be any of false/:no_transform, :transform, or :complex_conjugate,
+// Interprets cblas argument which could be any of false/:no_transpose, :transpose, or :complex_conjugate,
 // into an enum recognized by cblas.
 //
 // Called by nm_cblas_gemm -- basically inline.
 static char gemm_op_sym(VALUE op) {
-  if (op == false || rb_to_id(op) == nm_id_no_transform) return CblasNoTrans;
-  else if (rb_to_id(op) == nm_id_transform) return CblasTrans;
+  if (op == false || rb_to_id(op) == nm_id_no_transpose) return CblasNoTrans;
+  else if (rb_to_id(op) == nm_id_transpose) return CblasTrans;
   else if (rb_to_id(op) == nm_id_complex_conjugate) return CblasConjTrans;
-  else rb_raise(rb_eArgError, "Expected false, :transform, or :complex_conjugate");
+  else rb_raise(rb_eArgError, "Expected false, :transpose, or :complex_conjugate");
   return CblasNoTrans;
 }
 
@@ -664,8 +664,8 @@ void Init_nmatrix() {
     nm_id_numer = rb_intern("numerator");
     nm_id_denom = rb_intern("denominator");
 
-    nm_id_transform = rb_intern("transform");
-    nm_id_no_transform = rb_intern("no_transform");
+    nm_id_transpose = rb_intern("transpose");
+    nm_id_no_transpose = rb_intern("no_transpose");
     nm_id_complex_conjugate = rb_intern("complex_conjugate");
 
     nm_id_dense = rb_intern("dense");
