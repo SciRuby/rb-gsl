@@ -1,23 +1,23 @@
-class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type); end
+class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type,  :gemm); end
 
 module Generator
   DTYPES = [
       # dtype enum      sizeof        label/symbol/string   num-class
-      [:NM_NONE,        0,            :none,        0,      :none],
-      [:NM_BYTE,        :u_int8_t,    :byte,        :b,     :int],
-      [:NM_INT8,        :int8_t,      :int8,        :i8,    :int],
-      [:NM_INT16,       :int16_t,     :int16,       :i16,   :int],
-      [:NM_INT32,       :int32_t,     :int32,       :i32,   :int],
-      [:NM_INT64,       :int64_t,     :int64,       :i64,   :int],
-      [:NM_FLOAT32,     :float,       :float32,     :f32,   :float],
-      [:NM_FLOAT64,     :double,      :float64,     :f64,   :float],
-      [:NM_COMPLEX64,   :complex64,   :complex64,   :c64,   :complex],
-      [:NM_COMPLEX128,  :complex128,  :complex128,  :c128,  :complex],
-      [:NM_RATIONAL32,  :rational32,  :rational32,  :r32,   :rational],
-      [:NM_RATIONAL64,  :rational64,  :rational64,  :r64,   :rational],
-      [:NM_RATIONAL128, :rational128, :rational128, :r128,  :rational],
-      [:NM_ROBJ,        :VALUE,       :object,      :v,     :value],
-      [:NM_TYPES,       0,            :dtypes,      0,      :none]
+      [:NM_NONE,        0,            :none,        0,      :none,        :igemm],
+      [:NM_BYTE,        :u_int8_t,    :byte,        :b,     :int,         :igemm],
+      [:NM_INT8,        :int8_t,      :int8,        :i8,    :int,         :igemm],
+      [:NM_INT16,       :int16_t,     :int16,       :i16,   :int,         :igemm],
+      [:NM_INT32,       :int32_t,     :int32,       :i32,   :int,         :igemm],
+      [:NM_INT64,       :int64_t,     :int64,       :i64,   :int,         :igemm],
+      [:NM_FLOAT32,     :float,       :float32,     :f32,   :float,       :cblas_sgemm],
+      [:NM_FLOAT64,     :double,      :float64,     :f64,   :float,       :cblas_dgemm],
+      [:NM_COMPLEX64,   :complex64,   :complex64,   :c64,   :complex,     :cblas_cgemm],
+      [:NM_COMPLEX128,  :complex128,  :complex128,  :c128,  :complex,     :cblas_zgemm],
+      [:NM_RATIONAL32,  :rational32,  :rational32,  :r32,   :rational,    :rgemm],
+      [:NM_RATIONAL64,  :rational64,  :rational64,  :r64,   :rational,    :rgemm],
+      [:NM_RATIONAL128, :rational128, :rational128, :r128,  :rational,    :rgemm],
+      [:NM_ROBJ,        :VALUE,       :object,      :v,     :value,       :vgemm],
+      [:NM_TYPES,       0,            :dtypes,      0,      :none,         nil]
   ].map { |d| DTypeInfo.new(*d) }
 
   DTYPES_ASSIGN = {

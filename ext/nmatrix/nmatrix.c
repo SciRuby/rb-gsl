@@ -4,9 +4,6 @@
 
 #include <ruby.h>
 
-// Matrix multiplication
-#include <cblas.h>
-
 #include "nmatrix.h"
 
 VALUE cNMatrix;

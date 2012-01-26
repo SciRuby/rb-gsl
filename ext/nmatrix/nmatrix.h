@@ -5,6 +5,9 @@
 
 #include "nmatrix_config.h"
 
+// Matrix multiplication
+#include <cblas.h>
+
 #include <math.h>
 
 #ifdef HAVE_STDBOOL_H
@@ -132,6 +135,7 @@ typedef struct { int64_t n,d; } rational128;
 #  define DEFAULT_DTYPE NM_INT16
 # endif
 #endif
+
 
 enum NMatrix_STypes {
   S_DENSE,
