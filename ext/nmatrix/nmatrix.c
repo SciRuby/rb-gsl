@@ -27,7 +27,6 @@ const char *nm_stypestring[] = {
 nm_delete_t DeleteFuncs = {
   delete_dense_storage,
   delete_list_storage,
-  NULL,
   NULL
 };
 
@@ -45,7 +44,6 @@ nm_gemm_t GemmFuncs = { // by NM_TYPES
   NULL,
   NULL,
   NULL,
-  NULL,
   NULL
 };
 
@@ -57,8 +55,8 @@ static void nm_delete(NMATRIX* mat) {
 
 
 VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
-  DENSE_STORAGE* s = create_dense_storage(nm_sizeof[dtype], shape, rank);
-  NMATRIX* matrix  = nm_create(dtype, S_DENSE, s);
+  DENSE_STORAGE* s = create_dense_storage(dtype, shape, rank);
+  NMATRIX* matrix  = nm_create(S_DENSE, s);
   size_t i, n;
 
   // User provides single initialization value sometimes. This accommodates List, which
@@ -78,7 +76,7 @@ VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VAL
 }
 
 VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
-  NMATRIX* matrix = nm_create(dtype, S_LIST, create_list_storage(nm_sizeof[dtype], shape, rank, init_val));
+  NMATRIX* matrix = nm_create(S_LIST, create_list_storage(dtype, shape, rank, init_val));
   return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
 }
 
@@ -86,7 +84,6 @@ VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALU
 nm_create_t CreateFuncs = {
   nm_dense_new,
   nm_list_new,
-  NULL,
   NULL
 };
 
@@ -94,20 +91,19 @@ nm_create_t CreateFuncs = {
 nm_copy_s_t CopyFuncs = {
   copy_dense_storage,
   copy_list_storage,
-  NULL,
   NULL
 };
 
 
-VALUE nm_dense_get(STORAGE* s, size_t* coords, int8_t dtype) {
+VALUE nm_dense_get(STORAGE* s, size_t* coords) {
   VALUE v;
-  SetFuncs[NM_ROBJ][dtype](1, &v, 0, dense_storage_get((DENSE_STORAGE*)s, coords, nm_sizeof[dtype]), 0);
+  SetFuncs[NM_ROBJ][s->dtype](1, &v, 0, dense_storage_get((DENSE_STORAGE*)s, coords), 0);
   return v;
 }
 
-VALUE nm_list_get(STORAGE* s, size_t* coords, int8_t dtype) {
+VALUE nm_list_get(STORAGE* s, size_t* coords) {
   VALUE v;
-  SetFuncs[NM_ROBJ][dtype](1, &v, sizeof(VALUE), list_storage_get((LIST_STORAGE*)s, coords), nm_sizeof[dtype]);
+  SetFuncs[NM_ROBJ][s->dtype](1, &v, sizeof(VALUE), list_storage_get((LIST_STORAGE*)s, coords), 0);
   return v;
 }
 
@@ -115,33 +111,38 @@ VALUE nm_list_get(STORAGE* s, size_t* coords, int8_t dtype) {
 nm_stype_ref_t RefFuncs = {
   nm_dense_get,
   nm_list_get,
-  NULL,
   NULL
 };
 
 
-VALUE nm_dense_set(STORAGE* s, size_t* coords, VALUE val, int8_t dtype) {
-  void* v = malloc(nm_sizeof[dtype]);
+VALUE nm_dense_set(STORAGE* s, size_t* coords, VALUE val) {
+  void* v = malloc(nm_sizeof[s->dtype]);
 
-  SetFuncs[dtype][NM_ROBJ](1, v, 0, &val, 0);
+  SetFuncs[s->dtype][NM_ROBJ](1, v, 0, &val, 0);
 
-  dense_storage_set( (DENSE_STORAGE*)s, coords, v, nm_sizeof[dtype] );
+  dense_storage_set( (DENSE_STORAGE*)s, coords, v );
   free(v); // dense makes a copy, so free it
 
   return val;
 }
 
 
-VALUE nm_list_set(STORAGE* s, size_t* coords, VALUE val, int8_t dtype) {
-  void *v = malloc(nm_sizeof[dtype]), *rm;
+VALUE nm_list_set(STORAGE* s, size_t* coords, VALUE val) {
+  void *v = malloc(nm_sizeof[s->dtype]), *rm;
   LIST_STORAGE* ls = (LIST_STORAGE*)s;
-  SetFuncs[dtype][NM_ROBJ](1, v, 0, &val, 0);
 
-  if (!memcmp(ls->default_val, v, nm_sizeof[dtype])) {
+  //fprintf(stderr, "    create_val: %p\n", v);
+
+  SetFuncs[s->dtype][NM_ROBJ](1, v, 0, &val, 0);
+
+  if (!memcmp(ls->default_val, v, nm_sizeof[s->dtype])) {
     // User asked to insert default_value, which is actually node *removal*.
     // So let's do that instead.
 
     rm = list_storage_remove( ls, coords );
+
+    //if (rm) fprintf(stderr, "    remove_val: %p\n", rm);
+
     if (rm) free(rm);
     return val;
 
@@ -154,7 +155,6 @@ VALUE nm_list_set(STORAGE* s, size_t* coords, VALUE val, int8_t dtype) {
 nm_stype_ref_t InsFuncs = {
   nm_dense_set,
   nm_list_set,
-  NULL,
   NULL
 };
 
@@ -390,10 +390,10 @@ static VALUE nm_init_copy(VALUE copy, VALUE original) {
   UnwrapNMatrix( copy,     lhs );
 
   lhs->stype = rhs->stype;
-  lhs->dtype = rhs->dtype;
+  //lhs->dtype = rhs->dtype;
 
   // Copy the storage
-  lhs->storage = CopyFuncs[rhs->stype](rhs->storage, nm_sizeof[rhs->dtype]);
+  lhs->storage = CopyFuncs[rhs->stype](rhs->storage, nm_sizeof[rhs->storage->dtype]);
 
   return copy;
 }
@@ -407,13 +407,13 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
   shape[0] = left->storage->shape[0];
   shape[1] = right->storage->shape[1];
 
-  result   = nm_create(left->dtype, S_DENSE, create_dense_storage(nm_sizeof[left->dtype], shape, 2));
+  result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2));
 
   //fprintf(stderr, "M=%d, N=%d, K=%d\n", shape[0], shape[1], left->storage->shape[1]);
 
   // call CBLAS xgemm (type-specific general matrix multiplication)
   // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
-  GemmFuncs[left->dtype](
+  GemmFuncs[left->storage->dtype](
   //cblas_sgemm(
         CblasRowMajor,
         CblasNoTrans,
@@ -451,18 +451,18 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
   UnwrapNMatrix( left_v, left );
 
   //if (RDATA(right_v)->dfree != (RUBY_DATA_FUNC)nm_delete) {
-    UnwrapNMatrix( right_v, right );
+  UnwrapNMatrix( right_v, right );
 
-    if (left->storage->shape[1] != right->storage->shape[0])
-      rb_raise(rb_eArgError, "incompatible dimensions");
+  if (left->storage->shape[1] != right->storage->shape[0])
+    rb_raise(rb_eArgError, "incompatible dimensions");
 
-    if (left->stype != S_DENSE && right->stype != S_DENSE)
-      rb_raise(rb_eNotImpError, "dense matrices expected");
+  if (left->stype != S_DENSE && right->stype != S_DENSE)
+    rb_raise(rb_eNotImpError, "dense matrices expected");
 
-    if (left->dtype != right->dtype)
-      rb_raise(rb_eNotImpError, "dtype mismatch");
+  if (left->storage->dtype != right->storage->dtype)
+    rb_raise(rb_eNotImpError, "dtype mismatch");
 
-    return nm_multiply_matrix(left, right);
+  return nm_multiply_matrix(left, right);
   //} else {
   //  rb_raise(rb_eNotImpError, "scalar multiplication not supported yet");
   //  return Qnil;
@@ -471,10 +471,9 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 
 
 // Does not create storage, but does destroy it.
-NMATRIX* nm_create(int8_t dtype, int8_t stype, void* storage) {
+NMATRIX* nm_create(int8_t stype, void* storage) {
   NMATRIX* mat = ALLOC(NMATRIX);
 
-  mat->dtype   = dtype;
   mat->stype   = stype;
   mat->storage = storage;
 
@@ -498,8 +497,7 @@ size_t* convert_coords(size_t rank, VALUE* c, VALUE self) {
 VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
   if (NM_RANK(self) == (size_t)(argc)) {
     return (*(RefFuncs[NM_STYPE(self)]))( NM_STORAGE(self),
-                                         convert_coords((size_t)(argc), argv, self),
-                                         NM_DTYPE(self) );
+                                          convert_coords((size_t)(argc), argv, self) );
 
   } else if (NM_RANK(self) < (size_t)(argc)) {
     rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");
@@ -519,8 +517,7 @@ VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
   } else if (NM_RANK(self) == rank) {
     return (*(InsFuncs[NM_STYPE(self)]))( NM_STORAGE(self),
                                          convert_coords(rank, argv, self),
-                                         argv[rank], // value to set it to
-                                         NM_DTYPE(self) );
+                                         argv[rank] );
 
   } else if (NM_RANK(self) < rank) {
     rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");

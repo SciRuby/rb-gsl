@@ -2,7 +2,23 @@
 require "./lib/nmatrix"
 
 describe NMatrix do
-  [:float32, :float64].each do |dtype|
+  it "correctly fills dense" do
+    n = NMatrix.new([4,3], :float64)
+    n[0,0] = 14.0
+    n[0,1] = 9.0
+    n[0,2] = 3.0
+    n[1,0] = 2.0
+    n[1,1] = 11.0
+    n[1,2] = 15.0
+    n[2,0] = 0.0
+    n[2,1] = 12.0
+    n[2,2] = 17.0
+    n[3,0] = 5.0
+    n[3,1] = 2.0
+    n[3,2] = 3.0
+  end
+
+  [:float64].each do |dtype|
     it "correctly exposes cblas_xgemm" do
       #STDERR.puts "dtype=#{dtype.to_s}"
       #STDERR.puts "1"
@@ -81,7 +97,7 @@ describe NMatrix do
     m.dtype.should == :float64
   end
 
-  [:float32, :float64].each do |dtype|
+  [:float64].each do |dtype|
     it "dense correctly handles #{dtype.to_s} multiplication" do
       #STDERR.puts "dtype=#{dtype.to_s}"
       #STDERR.puts "2"

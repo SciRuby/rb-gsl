@@ -85,42 +85,45 @@ void* list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val) {
 //
 // Note: The pointers you pass in for shape and init_val become property of our new
 // storage. You don't need to free them, and you shouldn't re-use them.
-LIST_STORAGE* create_list_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val) {
+LIST_STORAGE* create_list_storage(int8_t dtype, size_t* shape, size_t rank, void* init_val) {
   LIST_STORAGE* s;
 
   if (!(s = malloc(sizeof(LIST_STORAGE)))) return NULL;
-  //fprintf(stderr, "create_list_storage: %p\n", s);
+
+  //fprintf(stderr, "Creating list storage at %p\n", s);
+
+  s->rank  = rank;
+  s->shape = shape;
+  s->dtype = dtype;
 
   if (!(s->rows  = create_list())) {
     free(s);
     return NULL;
   }
 
-  s->shape = shape;
-  s->rank  = rank;
   s->default_val = init_val;
 
   return s;
 }
 
 
-LIST_STORAGE* copy_list_storage(LIST_STORAGE* rhs, size_t elem_size) {
+LIST_STORAGE* copy_list_storage(LIST_STORAGE* rhs) {
   LIST_STORAGE* lhs;
   size_t* shape;
-  void* default_val = malloc(elem_size);
+  void* default_val = malloc(nm_sizeof[rhs->dtype]);
 
   //fprintf(stderr, "copy_list_storage\n");
 
   // allocate and copy shape
   shape = malloc( sizeof(size_t) * rhs->rank );
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
-  memcpy(default_val, rhs->default_val, elem_size);
+  memcpy(default_val, rhs->default_val, nm_sizeof[rhs->dtype]);
 
-  lhs = create_list_storage(elem_size, shape, rhs->rank, default_val);
+  lhs = create_list_storage(rhs->dtype, shape, rhs->rank, default_val);
 
   if (lhs) {
     lhs->rows = create_list();
-    copy_list_contents(lhs->rows, rhs->rows, elem_size, rhs->rank - 1);
+    copy_list_contents(lhs->rows, rhs->rows, rhs->dtype, rhs->rank - 1);
   } else free(shape);
 
   return lhs;
@@ -129,9 +132,14 @@ LIST_STORAGE* copy_list_storage(LIST_STORAGE* rhs, size_t elem_size) {
 
 void delete_list_storage(LIST_STORAGE* s) {
   if (s) {
+    //fprintf(stderr, "* Deleting list storage rows at %p\n", s->rows);
     delete_list( s->rows, s->rank - 1 );
+
+    //fprintf(stderr, "  Deleting list storage shape at %p\n", s->shape);
     free(s->shape);
+    //fprintf(stderr, "  Deleting list storage default_val at %p\n", s->default_val);
     free(s->default_val);
+    //fprintf(stderr, "  Deleting list storage at %p\n", s);
     free(s);
   }
 }
@@ -141,13 +149,15 @@ void delete_list_storage(LIST_STORAGE* s) {
 LIST* create_list() {
   LIST* list;
   if (!(list = malloc(sizeof(LIST)))) return NULL;
-  //fprintf(stderr, "create_list LIST: %p\n", list);
+
+  //fprintf(stderr, "    create_list LIST: %p\n", list);
+
   list->first = NULL;
   return list;
 }
 
 
-void copy_list_contents(LIST* lhs, LIST* rhs, size_t elem_size, size_t recursions) {
+void copy_list_contents(LIST* lhs, LIST* rhs, int8_t dtype, size_t recursions) {
   NODE *lcurr = NULL, *rcurr = rhs->first;
 
   if (rhs->first) {
@@ -159,17 +169,19 @@ void copy_list_contents(LIST* lhs, LIST* rhs, size_t elem_size, size_t recursion
       lcurr->key = rcurr->key;
 
       if (recursions == 0) { // contents is some kind of value
-        lcurr->val = malloc(elem_size);
-        //fprintf(stderr, "elem_size: %p\n", lcurr->val);
-        memcpy(lcurr->val, rcurr->val, elem_size);
+        lcurr->val = malloc(nm_sizeof[dtype]);
+        //fprintf(stderr, "    create_val: %p\n", lcurr->val);
+
+        memcpy(lcurr->val, rcurr->val, nm_sizeof[dtype]);
 
       } else { // contents is a list
         lcurr->val = malloc(sizeof(LIST));
-        //fprintf(stderr, "LIST: %p\n", lcurr->val);
-        copy_list_contents(lcurr->val, rcurr->val, elem_size, recursions-1);
+        //fprintf(stderr, "    create_list: %p\n", lcurr->val);
+
+        copy_list_contents(lcurr->val, rcurr->val, nm_sizeof[dtype], recursions-1);
       }
       if (rcurr->next) lcurr->next = malloc(sizeof(NODE));
-      //fprintf(stderr, "NODE: %p\n", lcurr->next);
+      else             lcurr->next = NULL;
 
       lcurr = lcurr->next;
       rcurr = rcurr->next;
@@ -192,45 +204,18 @@ void delete_list(LIST* list, size_t recursions) {
     next = curr->next;
 
     if (recursions == 0) {
-      //fprintf(stderr, "free_val: %p\n", curr->val);
+      //fprintf(stderr, "    free_val: %p\n", curr->val);
       free(curr->val);
     } else {
-      //fprintf(stderr, "free_list: %p\n", list);
+      //fprintf(stderr, "    free_list: %p\n", list);
       delete_list(curr->val, recursions-1);
     }
 
     free(curr);
     curr = next;
   }
-  //fprintf(stderr, "free_list: %p\n", list);
+  //fprintf(stderr, "    free_list: %p\n", list);
   free(list);
-}
-
-
-void list_print_list(LIST* list) {
-  NODE* curr = list->first;
-
-  printf("[ ");
-  while (curr != NULL) {
-    printf("%d->", (int)(curr->key));
-    list_print_int(curr->val);
-    printf(" ");
-    curr = curr->next;
-  }
-
-  printf(" ]");
-}
-
-
-void list_print_int(LIST* list) {
-  NODE* curr = list->first;
-
-  printf("[ ");
-  while (curr != NULL) {
-    printf("%d->%d ", (int)(curr->key), *((int *)(curr->val)));
-    curr = curr->next;
-  }
-  printf(" ]");
 }
 
 

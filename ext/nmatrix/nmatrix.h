@@ -164,12 +164,14 @@ typedef struct l_list {
 
 
 typedef struct common_s { // Common elements found in all _s types.
+  int8_t    dtype;
   size_t    rank;
   size_t*   shape;
 } STORAGE;
 
 
 typedef struct list_s {
+  int8_t    dtype;
   size_t    rank;
   size_t*   shape;
   void*     default_val;
@@ -178,14 +180,35 @@ typedef struct list_s {
 
 
 typedef struct dense_s {
+  int8_t    dtype;
   size_t    rank;
   size_t*   shape;
   void*     elements;
 } DENSE_STORAGE;
 
 
+//#define YALE_JA_START(sptr)             (((YALE_STORAGE*)(sptr))->shape[0]+1)
+#define YALE_IA(sptr,elem_size,i)           ( (((YALE_STORAGE*)(sptr))->ija) + i * elem_size )
+//#define YALE_JA(sptr,dtype,j)           ((((dtype)*)((YALE_STORAGE*)(sptr))->ija)[(YALE_JA_START(sptr))+j])
+#define YALE_ROW_LENGTH(sptr,elem_size,i)   (YALE_IA((sptr),(elem_size),(i)+1) - YALE_IA((sptr),(elem_size),(i)))
+#define YALE_A(sptr,elem_size,i)            (((YALE_STORAGE*)(sptr))->a + elem_size * i)
+#define YALE_DIAG(sptr, elem_size, i)       ( YALE_A((sptr),(elem_size),(i)) )
+#define YALE_LU(sptr,dtype,i,j)             (((dtype)*)(((YALE_STORAGE*)(sptr))->a)[ YALE_JA_START(sptr) +  ])
+#define YALE_CAPACITY(sptr)                 ((YALE_STORAGE*)(sptr)->shape[0] + 1 + (YALE_STORAGE*)(sptr)->ndnz)
+//#define YALE_FIRST_NZ_ROW_ENTRY(sptr,elem_size,i)
+
+typedef struct yale_s {
+  int8_t    dtype;
+  size_t    rank;
+  size_t*   shape;
+  size_t    ndnz; // strictly non-diagonal non-zero count!
+  void*     ija;
+  void*     a;
+} YALE_STORAGE;
+
+
 typedef struct numeric_matrix {
-  int8_t   dtype;             /* data type (int8, int32, rational128, etc) */
+  //int8_t   dtype;             /* data type (int8, int32, rational128, etc) */
   int8_t   stype;             /* method of storage (csc, dense, etc) */
   STORAGE* storage;           /* pointer to storage struct */
   // VALUE    ref;            /* NMatrix object wrapping this structure */
@@ -211,21 +234,21 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define NM_STRUCT(val)          ((struct numeric_matrix*)DATA_PTR(val))
 //#define NM_PTR_TYPE(val,type)   (type)(((struct numeric_matrix*)DATA_PTR(val))->ptr)
 #define NM_RANK(val)            (((STORAGE*)(NM_STORAGE(val)))->rank)
-#define NM_DTYPE(val)           (((struct numeric_matrix*)DATA_PTR(val))->dtype)
+#define NM_DTYPE(val)           (((STORAGE*)(NM_STORAGE(val)))->dtype)
 #define NM_STYPE(val)           (((struct numeric_matrix*)DATA_PTR(val))->stype)
 #define NM_SHAPE(val,i)         (((STORAGE*)(NM_STORAGE(val)))->shape[(i)])
 #define NM_SHAPE0(val)          (((struct numeric_matrix*)DATA_PTR(val))->shape[0])
 #define NM_SHAPE1(val)          (((struct numeric_matrix*)DATA_PTR(val))->shape[1])
-#define NM_SIZEOF_DTYPE(val)    (nm_sizeof[(((struct numeric_matrix*)DATA_PTR(val))->dtype)])
+#define NM_SIZEOF_DTYPE(val)    (nm_sizeof[NM_DTYPE(val)])
 #define NM_REF(val,coords)      (RefFuncs[NM_STYPE(val)]( NM_STORAGE(val), coords, NM_SIZEOF_DTYPE(val) ))
 
 #define NM_IsNMatrix(obj) (rb_obj_is_kind_of(obj, cNMatrix)==Qtrue)
 #define NM_IsArray(obj)   (TYPE(obj)==T_ARRAY || rb_obj_is_kind_of(obj,cNMatrix)==Qtrue)
 #define NM_IsROBJ(d) ((d)->dtype==NM_ROBJ)
 #define NM_IsINTEGER(a) \
-    ((a)->dtype==NM_BYTE || (a)->dtype==NM_INT8 || (a)->dtype==NM_INT16 || (a)->dtype==NM_INT32 || (a)->dtype==NM_INT64)
+    (NM_DTYPE(a)==NM_BYTE || NM_DTYPE(a)==NM_INT8 || NM_DTYPE(a)==NM_INT16 || NM_DTYPE(a)==NM_INT32 || NM_DTYPE(a)==NM_INT64)
 #define NM_IsCOMPLEX(a) \
-    ((a->dtype==NM_COMPLEX32 || (a)->dtype==NM_COMPLEX64)
+    (NM_DTYPE(a)==NM_COMPLEX32 || NM_DTYPE(a)==NM_COMPLEX64)
 #define NM_MAX(a,b) (((a)>(b))?(a):(b))
 #define NM_SWAP(a,b,tmp) {(tmp)=(a);(a)=(b);(b)=(tmp);}
 
@@ -292,20 +315,20 @@ extern ID nm_id_denom, nm_id_numer;
 
 
 /* dense.c */
-DENSE_STORAGE*  create_dense_storage(size_t elem_size, size_t* shape, size_t rank);
+DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank);
 void            delete_dense_storage(DENSE_STORAGE* s);
-DENSE_STORAGE*  copy_dense_storage(DENSE_STORAGE* rhs, size_t elem_size);
+DENSE_STORAGE*  copy_dense_storage(DENSE_STORAGE* rhs);
 
 size_t          count_dense_storage_elements(DENSE_STORAGE* s);
 
 size_t          dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
-void*           dense_storage_get(DENSE_STORAGE* s, size_t* coords, size_t elem_size);
-void            dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val, size_t elem_size);
+void*           dense_storage_get(DENSE_STORAGE* s, size_t* coords);
+void            dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val);
 
 /* list.c */
-LIST_STORAGE*   create_list_storage(size_t elem_size, size_t* shape, size_t rank, void* init_val);
+LIST_STORAGE*   create_list_storage(int8_t dtype, size_t* shape, size_t rank, void* init_val);
 void            delete_list_storage(LIST_STORAGE* s);
-LIST_STORAGE*   copy_list_storage(LIST_STORAGE* rhs, size_t elem_size);
+LIST_STORAGE*   copy_list_storage(LIST_STORAGE* rhs);
 
 void*           list_storage_get(LIST_STORAGE* s, size_t* coords);
 void*           list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val);
@@ -313,7 +336,7 @@ void*           list_storage_remove(LIST_STORAGE* s, size_t* coords);
 
 LIST*           create_list();
 void            delete_list(LIST* list, size_t recursions);
-void            copy_list_contents(LIST* lhs, LIST* rhs, size_t elem_size, size_t recursions);
+void            copy_list_contents(LIST* lhs, LIST* rhs, int8_t dtype, size_t recursions);
 NODE*           list_find(LIST* list, size_t key);
 NODE*           list_find_preceding_from(NODE* prev, size_t key);
 NODE*           list_find_nearest_from(NODE* prev, size_t key);
@@ -334,7 +357,7 @@ VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VAL
 VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self);
 VALUE nm_init(int argc, VALUE* argv, VALUE self);
 // VALUE nm_init_copy(VALUE copy, VALUE original);
-NMATRIX* nm_create(int8_t dtype, int8_t stype, void* storage);
+NMATRIX* nm_create(int8_t stype, void* storage);
 void Init_nmatrix();
 
 #endif

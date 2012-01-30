@@ -29,21 +29,21 @@ size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords) {
 }
 
 
-void* dense_storage_get(DENSE_STORAGE* s, size_t* coords, size_t elem_size) {
-  return (char*)(s->elements) + dense_storage_pos(s, coords) * elem_size;
+void* dense_storage_get(DENSE_STORAGE* s, size_t* coords) {
+  return (char*)(s->elements) + dense_storage_pos(s, coords) * nm_sizeof[s->dtype];
 }
 
 
 /* Does not free passed-in value! Different from list_storage_insert. */
-void dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val, size_t elem_size) {
-  memcpy((char*)(s->elements) + dense_storage_pos(s, coords) * elem_size, val, elem_size);
+void dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val) {
+  memcpy((char*)(s->elements) + dense_storage_pos(s, coords) * nm_sizeof[s->dtype], val, nm_sizeof[s->dtype]);
 }
 
 
-DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs, size_t elem_size) {
+DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs) {
   DENSE_STORAGE* lhs;
   size_t count = count_dense_storage_elements(rhs), p;
-  size_t* shape = malloc(elem_size*rhs->rank);
+  size_t* shape = malloc(nm_sizeof[rhs->dtype] * rhs->rank);
   if (!shape) return NULL;
 
   // copy shape array
@@ -52,29 +52,30 @@ DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs, size_t elem_size) {
 
   //fprintf(stderr, "copy_dense_storage\n");
 
-  lhs = create_dense_storage(elem_size, shape, rhs->rank);
+  lhs = create_dense_storage(rhs->dtype, shape, rhs->rank);
 
   if (lhs && count) // ensure that allocation worked before copying
-    memcpy(lhs->elements, rhs->elements, elem_size * count);
+    memcpy(lhs->elements, rhs->elements, nm_sizeof[rhs->dtype] * count);
 
   return lhs;
 }
 
 
-DENSE_STORAGE* create_dense_storage(size_t elem_size, size_t* shape, size_t rank) {
+DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank) {
   DENSE_STORAGE* s;
   size_t count;
 
   if (!(s = malloc(sizeof(DENSE_STORAGE)))) return NULL;
   s->rank       = rank;
   s->shape      = shape;
+  s->dtype      = dtype;
 
   //fprintf(stderr, "create_dense_storage: %p\n", s);
 
   count         = count_dense_storage_elements(s);
   //fprintf(stderr, "count_dense_storage_elements: %d\n", count);
 
-  if (!(s->elements   = malloc(elem_size * count))) {
+  if (!(s->elements   = malloc(nm_sizeof[dtype] * count))) {
     free(s->shape);
     free(s);
     s = NULL;
