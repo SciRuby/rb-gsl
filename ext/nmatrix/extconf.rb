@@ -63,6 +63,7 @@ srcs = %w(
 nmatrix
 list
 dense
+yale
 dfuncs
 )
 

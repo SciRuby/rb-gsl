@@ -137,10 +137,16 @@ typedef struct { int64_t n,d; } rational128;
 #endif
 
 
+// for when we need to return array indices.
+// TODO: Make it so this is never larger than size_t
+typedef uint32_t    y_size_t;
+#define Y_SIZE_T    NM_INT32
+
+
 enum NMatrix_STypes {
   S_DENSE,
   S_LIST,
-  S_COMPRESSED,
+  S_YALE,
   S_TYPES
 };
 
@@ -344,6 +350,15 @@ void*           list_remove(LIST* list, size_t key);
 NODE*           list_insert(LIST* list, bool replace, size_t key, void* val);
 NODE*           list_insert_after(NODE* node, size_t key, void* val);
 void            list_print_int(LIST* list);
+
+/* yale.c */
+YALE_STORAGE*   create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size_t init_capacity);
+void            init_yale_storage(YALE_STORAGE* s);
+void            delete_yale_storage(YALE_STORAGE* s);
+YALE_STORAGE*   copy_yale_storage(YALE_STORAGE* rhs);
+
+void*           yale_storage_ref(YALE_STORAGE* s, size_t* coords);
+void            yale_storage_set(YALE_STORAGE* s, y_size_t* coords, void* v);
 
 
 /* nmatrix.c */

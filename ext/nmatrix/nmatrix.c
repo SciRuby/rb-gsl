@@ -19,7 +19,7 @@ ID nm_id_list, nm_id_dense;
 const char *nm_stypestring[] = {
   "dense",
   "list",
-  "compressed",
+  "yale",
   "stypes"
 };
 
@@ -27,7 +27,7 @@ const char *nm_stypestring[] = {
 nm_delete_t DeleteFuncs = {
   delete_dense_storage,
   delete_list_storage,
-  NULL
+  delete_yale_storage
 };
 
 nm_gemm_t GemmFuncs = { // by NM_TYPES
@@ -81,17 +81,28 @@ VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALU
 }
 
 
+VALUE nm_yale_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
+  YALE_STORAGE* s = create_yale_storage(dtype, shape, rank, *(size_t*)init_val);
+                    init_yale_storage(s);
+
+  NMATRIX* matrix = nm_create(S_YALE, s);
+
+  free(init_val);
+  return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
+}
+
+
 nm_create_t CreateFuncs = {
   nm_dense_new,
   nm_list_new,
-  NULL
+  nm_yale_new
 };
 
 
 nm_copy_s_t CopyFuncs = {
   copy_dense_storage,
   copy_list_storage,
-  NULL
+  copy_yale_storage
 };
 
 
@@ -103,7 +114,14 @@ VALUE nm_dense_get(STORAGE* s, size_t* coords) {
 
 VALUE nm_list_get(STORAGE* s, size_t* coords) {
   VALUE v;
-  SetFuncs[NM_ROBJ][s->dtype](1, &v, sizeof(VALUE), list_storage_get((LIST_STORAGE*)s, coords), 0);
+  SetFuncs[NM_ROBJ][s->dtype](1, &v, 0, list_storage_get((LIST_STORAGE*)s, coords), 0);
+  return v;
+}
+
+
+VALUE nm_yale_get(STORAGE* s, size_t* coords) {
+  VALUE v;
+  SetFuncs[NM_ROBJ][s->dtype](1, &v, 0, yale_storage_ref((YALE_STORAGE*)s, coords), 0);
   return v;
 }
 
@@ -111,18 +129,23 @@ VALUE nm_list_get(STORAGE* s, size_t* coords) {
 nm_stype_ref_t RefFuncs = {
   nm_dense_get,
   nm_list_get,
-  NULL
+  nm_yale_get
 };
 
 
 VALUE nm_dense_set(STORAGE* s, size_t* coords, VALUE val) {
-  void* v = malloc(nm_sizeof[s->dtype]);
-
+  void* v = ALLOCA_N(char, nm_sizeof[s->dtype]);
   SetFuncs[s->dtype][NM_ROBJ](1, v, 0, &val, 0);
-
   dense_storage_set( (DENSE_STORAGE*)s, coords, v );
-  free(v); // dense makes a copy, so free it
+  return val;
+}
 
+
+// Should work exactly the same as nm_dense_set.
+VALUE nm_yale_set(STORAGE* s, size_t* coords, VALUE val) {
+  void* v = ALLOCA_N(char, nm_sizeof[s->dtype]);
+  SetFuncs[s->dtype][NM_ROBJ](1, v, 0, &val, 0);
+  yale_storage_set( (YALE_STORAGE*)s, coords, v );
   return val;
 }
 
@@ -152,10 +175,11 @@ VALUE nm_list_set(STORAGE* s, size_t* coords, VALUE val) {
 }
 
 
+
 nm_stype_ref_t InsFuncs = {
   nm_dense_set,
   nm_list_set,
-  NULL
+  nm_yale_set,
 };
 
 
@@ -273,14 +297,16 @@ size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank) {
 
 // argv will be either 1 or 2 elements. If 1, could be either initial or dtype. If 2, is initial and dtype.
 // This function returns the dtype.
-int8_t nm_interpret_dtype(int argc, VALUE* argv) {
+int8_t nm_interpret_dtype(int argc, VALUE* argv, int8_t stype) {
   if (argc == 2) {
     if (SYMBOL_P(argv[1])) return nm_dtypesymbol_to_dtype(argv[1]);
     else if (IS_STRING(argv[1])) return nm_dtypestring_to_dtype(StringValue(argv[1]));
+    else if (stype == S_YALE) rb_raise(rb_eArgError, "yale requires dtype");
     else return nm_guess_dtype(argv[0]);
   } else if (argc == 1) {
     if (SYMBOL_P(argv[0])) return nm_dtypesymbol_to_dtype(argv[0]);
     else if (IS_STRING(argv[0])) return nm_dtypestring_to_dtype(StringValue(argv[0]));
+    else if (stype == S_YALE) rb_raise(rb_eArgError, "yale requires dtype");
     else return nm_guess_dtype(argv[0]);
   } else rb_raise(rb_eArgError, "Need an initial value or a dtype");
 
@@ -298,6 +324,13 @@ void* nm_interpret_initial_value(VALUE arg, int8_t dtype) {
   void* init_val = malloc(nm_sizeof[dtype]);
   SetFuncs[dtype][NM_ROBJ](1, init_val, 0, &arg, 0);
   return init_val;
+}
+
+
+size_t* nm_interpret_initial_capacity(VALUE arg) {
+  size_t* init_cap = malloc(sizeof(size_t));
+  *init_cap = FIX2UINT(arg);
+  return init_cap;
 }
 
 
@@ -321,15 +354,21 @@ VALUE nm_init(int argc, VALUE* argv, VALUE self) {
     offset = 1;
   }
   shape    = nm_interpret_shape_arg(argv[offset], &rank);        // 1: String or Symbol
-  dtype    = nm_interpret_dtype(argc-1-offset, argv+offset+1);   // 2-3: dtype
+  dtype    = nm_interpret_dtype(argc-1-offset, argv+offset+1, stype); // 2-3: dtype
 
-  if (IS_NUMERIC(argv[1+offset])) { // initial provided
-    init_val = nm_interpret_initial_value(argv[1+offset], dtype);// 4: initial value / dtype
+  if (IS_NUMERIC(argv[1+offset])) { // initial value provided (could also be initial capacity, if yale)
+    if (stype == S_YALE)      init_val = nm_interpret_initial_capacity(argv[1+offset]);
+    else                      init_val = nm_interpret_initial_value(argv[1+offset], dtype);// 4: initial value / dtype
   } else if (stype == S_DENSE) {
     init_val = NULL; // no need to initialize dense with any kind of default value.
   } else { // if it's a list or compressed, we want to assume default of 0 even if none provided
-    init_val = malloc(nm_sizeof[dtype]);
-    SetFuncs[dtype][NM_BYTE](1, init_val, 0, &ZERO, 0);
+    if (stype == S_YALE) {
+      init_val = malloc(sizeof(size_t));
+      *(size_t*)init_val = 0;
+    } else {
+      init_val = malloc(nm_sizeof[dtype]);
+      SetFuncs[dtype][NM_BYTE](1, init_val, 0, &ZERO, 0);
+    }
   }
 
 
@@ -369,7 +408,7 @@ static VALUE nm_alloc(VALUE klass) {
   UnwrapNMatrix(self, matrix);
 
   matrix->stype   = nm_interpret_stype(stype);
-  matrix->dtype   = nm_interpret_dtype(1, &dtype);
+  matrix->dtype   = nm_interpret_dtype(1, &dtype, stype);
   matrix->storage = NULL;
 
   return self;
