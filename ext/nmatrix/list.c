@@ -63,6 +63,7 @@ void* list_storage_remove(LIST_STORAGE* s, size_t* coords) {
 }
 
 
+// TODO: Allow this function to accept an entire row and not just one value -- for slicing
 void* list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val) {
   // Pretend ranks = 2
   // Then coords is going to be size 2

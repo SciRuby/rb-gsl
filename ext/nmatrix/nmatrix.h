@@ -163,6 +163,14 @@ typedef struct l_list {
 } LIST;
 
 
+// two vectors and a capacity
+typedef struct y_vector {
+  void*  ija;
+  void*  a;
+  size_t capacity;
+} VECTOR;
+
+
 typedef struct common_s { // Common elements found in all _s types.
   int8_t    dtype;
   size_t    rank;
@@ -187,21 +195,13 @@ typedef struct dense_s {
 } DENSE_STORAGE;
 
 
-//#define YALE_JA_START(sptr)             (((YALE_STORAGE*)(sptr))->shape[0]+1)
-#define YALE_IA(sptr,elem_size,i)           ( (((YALE_STORAGE*)(sptr))->ija) + i * elem_size )
-//#define YALE_JA(sptr,dtype,j)           ((((dtype)*)((YALE_STORAGE*)(sptr))->ija)[(YALE_JA_START(sptr))+j])
-#define YALE_ROW_LENGTH(sptr,elem_size,i)   (YALE_IA((sptr),(elem_size),(i)+1) - YALE_IA((sptr),(elem_size),(i)))
-#define YALE_A(sptr,elem_size,i)            (((YALE_STORAGE*)(sptr))->a + elem_size * i)
-#define YALE_DIAG(sptr, elem_size, i)       ( YALE_A((sptr),(elem_size),(i)) )
-#define YALE_LU(sptr,dtype,i,j)             (((dtype)*)(((YALE_STORAGE*)(sptr))->a)[ YALE_JA_START(sptr) +  ])
-#define YALE_CAPACITY(sptr)                 ((YALE_STORAGE*)(sptr)->shape[0] + 1 + (YALE_STORAGE*)(sptr)->ndnz)
-//#define YALE_FIRST_NZ_ROW_ENTRY(sptr,elem_size,i)
-
 typedef struct yale_s {
   int8_t    dtype;
   size_t    rank;
   size_t*   shape;
   size_t    ndnz; // strictly non-diagonal non-zero count!
+  size_t    capacity;
+  int8_t    index_dtype;
   void*     ija;
   void*     a;
 } YALE_STORAGE;
