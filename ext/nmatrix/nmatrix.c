@@ -85,6 +85,8 @@ VALUE nm_yale_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALU
   YALE_STORAGE* s = create_yale_storage(dtype, shape, rank, *(size_t*)init_val);
                     init_yale_storage(s);
 
+  if (!s) rb_raise(rb_eNoMemError, "Yale allocation failed");
+  
   NMATRIX* matrix = nm_create(S_YALE, s);
 
   free(init_val);
@@ -146,6 +148,7 @@ VALUE nm_yale_set(STORAGE* s, size_t* coords, VALUE val) {
   void* v = ALLOCA_N(char, nm_sizeof[s->dtype]);
   SetFuncs[s->dtype][NM_ROBJ](1, v, 0, &val, 0);
   yale_storage_set( (YALE_STORAGE*)s, coords, v );
+  print_vectors(s);
   return val;
 }
 

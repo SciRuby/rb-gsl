@@ -69,7 +69,7 @@ void print_vectors(YALE_STORAGE* s) {
 }
 
 
-// Determine the index dtype (which will be used for the ija vector)
+// Determine the index dtype (which will be used for the ija vector). This is determined by matrix shape, not IJA/A vector capacity.
 int8_t yale_index_dtype(YALE_STORAGE* s) {
   if (YALE_MAX_SIZE(s) < UINT8_MAX) return NM_INT8;
   else if (YALE_MAX_SIZE(s) < UINT16_MAX) return NM_INT16;
@@ -130,65 +130,85 @@ char yale_vector_replace(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void* val, 
 }
 
 
+char yale_vector_insert_resize(YALE_STORAGE* s, y_size_t current_size, y_size_t pos, y_size_t* j, void* val, y_size_t n) {
+  void *new_ija, *new_a;
+  // Determine the new capacity for the IJA and A vectors.
+  size_t new_capacity = s->capacity * YALE_GROWTH_CONSTANT;
+  if (new_capacity > YALE_MAX_SIZE(s)) {
+    new_capacity = YALE_MAX_SIZE(s);
+    if (current_size + n > YALE_MAX_SIZE(s)) rb_raise(rb_eNoMemError, "insertion size exceeded maximum yale matrix size");
+  }
+  if (new_capacity < current_size + n) new_capacity = current_size + n;
+
+  fprintf(stderr, "yale_vector_insert_resize: resizing to %u\n", new_capacity);
+  fprintf(stderr, "\tpos=%u,j=%u,n=%u\n", pos, j[0], n);
+
+
+  // Allocate the new vectors.
+  new_ija     = malloc( nm_sizeof[s->index_dtype] * new_capacity );
+  new_a       = malloc( nm_sizeof[s->dtype]       * new_capacity );
+
+  // Check that allocation succeeded.
+  if (!new_ija || !new_a) {
+    fprintf(stderr, "Allocation error!\n");
+    free(new_a); free(new_ija);
+    rb_raise(rb_eNoMemError, "yale sparse vectors are full and there is insufficient memory for growing them");
+    return (char)false;
+  }
+
+  // Copy all values prior to the insertion site to the new IJA and new A
+  SetFuncs[s->index_dtype][s->index_dtype](pos, new_ija, nm_sizeof[s->index_dtype], s->ija, nm_sizeof[s->index_dtype]);
+  SetFuncs[s->dtype      ][s->dtype      ](pos, new_a,   nm_sizeof[s->dtype],       s->a,   nm_sizeof[s->dtype]      );
+
+  // insert
+  //SetFuncs[s->index_dtype][Y_SIZE_T](n, (char*)new_ija + nm_sizeof[s->index_dtype]*pos, nm_sizeof[s->index_dtype], j,   sizeof(y_size_t));
+  //SetFuncs[s->dtype      ][s->dtype](n, (char*)new_a   + nm_sizeof[s->dtype]*pos,       nm_sizeof[s->dtype      ], val, nm_sizeof[s->dtype]);
+
+  // Copy all values subsequent to the insertion site to the new IJA and new A, leaving room (size n) for insertion.
+  SetFuncs[s->index_dtype][s->index_dtype](s->capacity-pos+1, (char*)new_ija + nm_sizeof[s->index_dtype]*(pos+n), nm_sizeof[s->index_dtype], (char*)(s->ija) + nm_sizeof[s->index_dtype]*pos, nm_sizeof[s->index_dtype]);
+  SetFuncs[s->dtype      ][s->dtype      ](s->capacity-pos+1, (char*)new_a   + nm_sizeof[s->dtype]*(pos+n),       nm_sizeof[s->dtype],       (char*)(s->a)   + nm_sizeof[s->dtype      ]*pos, nm_sizeof[s->dtype      ]);
+
+  s->capacity = new_capacity;
+
+  free(s->ija);
+  free(s->a);
+
+  s->ija = new_ija;
+  s->a   = new_a;
+
+  return 'i';
+}
+
+
 // Insert a value or contiguous values in the ija and a vectors (after ja and diag). Does not free anything; you are responsible!
 //
 // TODO: Improve this so it can handle non-contiguous element insertions efficiently.
 // (For now, we can just sort the elements in the row in question.)
 char yale_vector_insert(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void* val, y_size_t n) {
-  void* new_ija, *new_a;
-  y_size_t sz, new_capacity, i;
+  y_size_t sz, i;
 
   if (pos < s->shape[0])
     rb_raise(rb_eArgError, "vector insert pos is before beginning of ja; this should not happen");
 
   YaleGetSize(sz, s);
 
-  if (sz + n > s->capacity) {
+  if (sz + n > s->capacity)
+    yale_vector_insert_resize(s, sz, pos, j, val, n);
+  else {
 
-    // figure out how big to grow the vector
-    new_capacity = s->capacity * YALE_GROWTH_CONSTANT;
-    if (new_capacity > YALE_MAX_SIZE(s)) new_capacity = YALE_MAX_SIZE(s);
-
-    fprintf(stderr, "yale_vector_insert: resizing to %u\n", new_capacity);
+    fprintf(stderr, "yale_vector_insert: no resize needed\n");
     fprintf(stderr, "\tpos=%u,j=%u,n=%u\n", pos, j[0], n);
 
-    // allocate the new vectors
-    new_ija     = malloc( nm_sizeof[s->index_dtype] * new_capacity );
-    new_a       = malloc( nm_sizeof[s->dtype]       * new_capacity );
-
-    if (!new_ija || !new_a) {
-      free(new_a); free(new_ija);
-      rb_raise(rb_eNoMemError, "yale sparse vectors are full and there is insufficient memory for growing them");
-      return (char)false;
+    // No resize required:
+    // easy (but somewhat slow), just copy elements to the tail, starting at the end, one element at a time.
+    // TODO: This can be made slightly more efficient, but only after the tests are written.
+    for (i = 0; i < sz - pos; ++i) {
+      SetFuncs[s->index_dtype][s->index_dtype](n, (char*)(s->ija) + (sz+n-i)*nm_sizeof[s->index_dtype], 0, (char*)(s->ija) + (sz-1-i)*nm_sizeof[s->index_dtype], 0);
+      SetFuncs[s->dtype      ][s->dtype      ](n, (char*)(s->a)   + (sz+n-i)*nm_sizeof[s->dtype      ], 0, (char*)(s->a)   + (sz-1-i)*nm_sizeof[s->dtype      ], 0);
     }
-
-    // copy before insertion site
-    SetFuncs[s->index_dtype][s->index_dtype](pos, new_ija, nm_sizeof[s->index_dtype], s->ija, nm_sizeof[s->index_dtype]);
-    SetFuncs[s->dtype      ][s->dtype      ](pos, new_a,   nm_sizeof[s->dtype],       s->a,   nm_sizeof[s->dtype]      );
-
-    // insert
-    SetFuncs[s->index_dtype][Y_SIZE_T](n, (char*)new_ija + nm_sizeof[s->index_dtype]*pos, nm_sizeof[s->index_dtype], j,   sizeof(y_size_t));
-    SetFuncs[s->dtype      ][s->dtype](n, (char*)new_a   + nm_sizeof[s->dtype]*pos,       nm_sizeof[s->dtype      ], val, nm_sizeof[s->dtype]);
-
-    // copy after insertion site
-    SetFuncs[s->index_dtype][s->index_dtype](s->capacity - pos, (char*)new_ija + nm_sizeof[s->index_dtype]*(pos+n), nm_sizeof[s->index_dtype], (char*)(s->ija) + nm_sizeof[s->index_dtype]*pos, nm_sizeof[s->index_dtype]);
-    SetFuncs[s->dtype      ][s->dtype      ](s->capacity - pos, (char*)new_a   + nm_sizeof[s->dtype]*(pos+n),       nm_sizeof[s->dtype],       (char*)(s->a)   + nm_sizeof[s->dtype      ]*pos, nm_sizeof[s->dtype      ]);
-
-    return 'i';
   }
 
-  fprintf(stderr, "yale_vector_insert: no resize needed\n");
-  fprintf(stderr, "\tpos=%u,j=%u,n=%u\n", pos, j[0], n);
-
-  // No resize required:
-  // easy (but somewhat slow), just copy elements to the tail, starting at the end, one element at a time.
-  // TODO: This can be made slightly more efficient, but only after the tests are written.
-  for (i = 0; i < sz - pos; ++i) {
-    SetFuncs[s->index_dtype][s->index_dtype](1, (char*)(s->ija) + (sz+n-i)*nm_sizeof[s->index_dtype], 0, (char*)(s->ija) + (sz-1-i)*nm_sizeof[s->index_dtype], 0);
-    SetFuncs[s->dtype      ][s->dtype      ](1, (char*)(s->a)   + (sz+n-i)*nm_sizeof[s->dtype      ], 0, (char*)(s->a)   + (sz-1-i)*nm_sizeof[s->dtype      ], 0);
-  }
-
-  // Now insert the new values
+  // Now insert the new values.
   yale_vector_replace(s, pos, j, val, n);
 
   return 'i';
@@ -283,18 +303,19 @@ void init_yale_storage(YALE_STORAGE* s) {
 }
 
 
-void yale_storage_set_diagonal(YALE_STORAGE* s, y_size_t i, void* v) {
-  memcpy(YALE_DIAG(s, nm_sizeof[s->dtype], i), v, nm_sizeof[s->dtype]);
+char yale_storage_set_diagonal(YALE_STORAGE* s, y_size_t i, void* v) {
+  memcpy(YALE_DIAG(s, nm_sizeof[s->dtype], i), v, nm_sizeof[s->dtype]); return 'r';
 }
 
 
 
 // Places value v in column j between indices l and r in ija/a.
 // Returns 'i' for insert, 'r' for replace, or NULL for failure.
-char yale_storage_place_between(YALE_STORAGE* s, y_size_t l, y_size_t r, y_size_t j, void* v) {
+/*char yale_storage_place_between(YALE_STORAGE* s, y_size_t l, y_size_t r, y_size_t j, void* v) {
   y_size_t m = (l + r) / 2, mj;
+
   fprintf(stderr, "l=%d,r=%d\n",l,r);
-  if (l == 39) rb_raise(rb_eArgError, "oops");
+
   YaleGetIJA(mj, s, m);
 
   if (j == mj) {
@@ -306,13 +327,79 @@ char yale_storage_place_between(YALE_STORAGE* s, y_size_t l, y_size_t r, y_size_
     if (r == m) return yale_vector_insert(s, m, &j, v, 1);
     else return yale_storage_place_between(s, m, r, j, v);
   }
+}*/
+
+// Search between left and right, inclusive
+y_size_t yale_storage_ja_position(YALE_STORAGE* s, y_size_t left, y_size_t right, y_size_t j) {
+  y_size_t left_j, right_j, mid = (left + right)/2, mid_j;
+
+  if (left == right) return left;
+
+  YaleGetIJA(left_j,  s, left);
+  if (j <= left_j) return left;
+  YaleGetIJA(right_j, s, right);
+  if (j >= right_j) return right;
+
+  YaleGetIJA(mid_j,   s, mid);
+  if (j >= mid_j) return yale_storage_ja_position(s, mid, right, j);
+  return yale_storage_ja_position(s, left, mid, j);
 }
 
 
+// If we add n items to row i, we need to increment ija[i+1] and onward
+// TODO: Add function pointer array for AddFuncs, the same way we have SetFuncs
+void yale_storage_increment_ia_after(YALE_STORAGE* s, y_size_t ija_size, y_size_t i, y_size_t n) {
+  y_size_t val;
+
+  ++i;
+  for (; i <= ija_size; ++i) {
+    YaleGetIJA(val, s, i);
+    val += n;
+    YaleSetIJA(i, s, val);
+  }
+}
+
+
+char yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v) {
+  y_size_t i_next = coords[0] + 1;
+  y_size_t ija, ija_next, ija_size;
+  y_size_t pos, pos_j;
+
+  if (coords[0] == coords[1]) return yale_storage_set_diagonal(s, coords[0], v);
+
+  // Get IJA positions of the beginning and end of the row
+  YaleGetIJA(ija,      s, coords[0]);
+  YaleGetIJA(ija_next, s, i_next);
+
+  if (ija == ija_next) { // empty row
+    yale_storage_increment_ia_after(s, YALE_IA_SIZE(s), coords[0], 1);
+    return yale_vector_insert(s, ija, &(coords[1]), v, 1);
+  }
+
+  // non-empty row. search for coords[1] in the IJA array, between ija and ija_next
+  // (including ija, not including ija_next)
+  YaleGetSize(ija_size, s);
+  --ija_next;
+
+  // Do a binary search for the column
+  pos = yale_storage_ja_position(s, ija, ija_next, coords[1]);
+  YaleGetIJA(pos_j, s, pos);
+
+  if (pos_j == coords[1]) return yale_vector_replace(s, pos, &(coords[1]), v, 1);
+  else {
+    yale_storage_increment_ia_after(s, YALE_IA_SIZE(s), coords[0], 1); // mark that the row is one element longer
+    return yale_vector_insert(s, pos, &(coords[1]), v, 1);
+  }
+}
+
+
+
 // Insertion of one element.
-void yale_storage_set(YALE_STORAGE* s, y_size_t* coords, void* v) {
-  y_size_t l, r, ja_l, ja_r, i_plus_one = coords[0]+1;
+/*void yale_storage_set(YALE_STORAGE* s, y_size_t* coords, void* v) {
+  y_size_t l, r, ja_l, ja_r, i_plus_one = coords[0]+1, row_size, sz;
   char ins_type;
+
+  YaleGetSize(sz, s);
 
   if (coords[0] == coords[1]) yale_storage_set_diagonal(s, coords[0], v);
   else {
@@ -320,13 +407,16 @@ void yale_storage_set(YALE_STORAGE* s, y_size_t* coords, void* v) {
     // l and r are the location in IJA and A of the beginning and end of the row for i=coords[0]
     YaleGetIJA(l, s, coords[0]);
     YaleGetIJA(r, s, i_plus_one);
+    row_size = r - l;
 
     fprintf(stderr, "looking for i=%u (j=%u)\tfound l=%u, r=%u", coords[0], coords[1], l, r);
 
-    if (l != r) { // binary search insertion
+    if (row_size > 0) { // binary search insertion
       YaleGetIJA(ja_l, s, l);
-      YaleGetIJA(ja_r, s, r);
+      YaleGetIJA(ja_r, s, l+row_size);
       fprintf(stderr, ", ja_l=%u, ja_r=%u\n", ja_l, ja_r);
+
+      if (ja_r >= sz) ja_r = sz-1;
 
       ins_type = yale_storage_place_between(s, ja_l, ja_r, coords[1], v);
     } else { // create row
@@ -353,7 +443,7 @@ void yale_storage_set(YALE_STORAGE* s, y_size_t* coords, void* v) {
   }
 
   print_vectors(s);
-}
+}*/
 
 
 void* yale_storage_ref_between(YALE_STORAGE* s, y_size_t l, y_size_t r, y_size_t j) {
@@ -363,7 +453,7 @@ void* yale_storage_ref_between(YALE_STORAGE* s, y_size_t l, y_size_t r, y_size_t
   if (l == m || r == m) return NULL;
 
   if (j == mj) {
-    return s->a + m*nm_sizeof[s->dtype];
+    return (char*)(s->a) + m*nm_sizeof[s->dtype];
   } else if (j < mj) {
     return yale_storage_ref_between(s, l, m, j);
   } else { // j > mj
@@ -373,7 +463,7 @@ void* yale_storage_ref_between(YALE_STORAGE* s, y_size_t l, y_size_t r, y_size_t
 
 
 void* yale_storage_ref(YALE_STORAGE* s, size_t* coords) {
-  y_size_t l, r, ja_l, ja_r, i_plus_one = coords[0] + 1;
+  y_size_t l, r, ja_l, ja_r, i_plus_one = coords[0] + 1, sz;
   void* ref;
 
   print_vectors(s);
@@ -388,6 +478,9 @@ void* yale_storage_ref(YALE_STORAGE* s, size_t* coords) {
 
   YaleGetIJA(ja_l, s, l);
   YaleGetIJA(ja_r, s, r);
+
+  YaleGetSize(sz, s);
+  if (ja_r >= sz) ja_r = sz-1;
 
   ref = yale_storage_ref_between(s, ja_l, ja_r, coords[1]);
   if (ref) return ref;

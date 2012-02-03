@@ -358,7 +358,7 @@ void            delete_yale_storage(YALE_STORAGE* s);
 YALE_STORAGE*   copy_yale_storage(YALE_STORAGE* rhs);
 
 void*           yale_storage_ref(YALE_STORAGE* s, size_t* coords);
-void            yale_storage_set(YALE_STORAGE* s, y_size_t* coords, void* v);
+char            yale_storage_set(YALE_STORAGE* s, y_size_t* coords, void* v);
 
 
 /* nmatrix.c */
