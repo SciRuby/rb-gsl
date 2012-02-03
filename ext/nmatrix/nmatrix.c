@@ -82,12 +82,13 @@ VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALU
 
 
 VALUE nm_yale_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
+  NMATRIX* matrix;
   YALE_STORAGE* s = create_yale_storage(dtype, shape, rank, *(size_t*)init_val);
                     init_yale_storage(s);
 
   if (!s) rb_raise(rb_eNoMemError, "Yale allocation failed");
-  
-  NMATRIX* matrix = nm_create(S_YALE, s);
+
+  matrix = nm_create(S_YALE, s);
 
   free(init_val);
   return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
@@ -148,7 +149,7 @@ VALUE nm_yale_set(STORAGE* s, size_t* coords, VALUE val) {
   void* v = ALLOCA_N(char, nm_sizeof[s->dtype]);
   SetFuncs[s->dtype][NM_ROBJ](1, v, 0, &val, 0);
   yale_storage_set( (YALE_STORAGE*)s, coords, v );
-  print_vectors(s);
+  print_vectors((YALE_STORAGE*)s);
   return val;
 }
 
@@ -653,6 +654,50 @@ static VALUE nm_cblas_gemm(VALUE self,
   return Qtrue;
 }
 
+static VALUE nm_yale_size(VALUE self) {
+  VALUE sz;
+  YALE_STORAGE* s = NM_STORAGE(self);
+  SetFuncs[NM_ROBJ][s->index_dtype](1, &sz, 0, (YALE_SIZE_PTR((s), nm_sizeof[s->index_dtype])), 0);
+  return sz;
+}
+
+
+static VALUE nm_yale_a(VALUE self) {
+  y_size_t sz, i;
+  void* vals;
+  VALUE ary;
+  YALE_STORAGE* s = NM_STORAGE(self);
+
+  YaleGetSize(sz, s);
+  vals = ALLOC_N(char, nm_sizeof[s->dtype]*sz);
+
+  SetFuncs[NM_ROBJ][s->dtype](sz, vals, nm_sizeof[NM_ROBJ], s->a, nm_sizeof[s->dtype]);
+  ary = rb_ary_new4(sz, vals);
+
+  for (i = sz; i < s->capacity; ++i)
+    rb_ary_push(ary, Qnil);
+
+  return ary;
+}
+
+
+static VALUE nm_yale_ija(VALUE self) {
+  y_size_t sz, i;
+  void* vals;
+  VALUE ary;
+  YALE_STORAGE* s = NM_STORAGE(self);
+
+  YaleGetSize(sz, s);
+  vals = ALLOC_N(char, nm_sizeof[s->index_dtype]*s->capacity);
+
+  SetFuncs[NM_ROBJ][s->index_dtype](sz, vals, nm_sizeof[NM_ROBJ], s->ija, nm_sizeof[s->index_dtype]);
+  ary = rb_ary_new4(sz, vals);
+
+  for (i = sz; i < s->capacity; ++i)
+    rb_ary_push(ary, Qnil);
+
+  return ary;
+}
 
 
 void Init_nmatrix() {
@@ -683,6 +728,12 @@ void Init_nmatrix() {
 
     rb_define_method(cNMatrix, "*", nm_multiply, 1);
     rb_define_alias(cNMatrix, "multiply", "*");
+
+
+    rb_define_method(cNMatrix, "__yale_ija__", nm_yale_ija, 0);
+    rb_define_method(cNMatrix, "__yale_a__", nm_yale_a, 0);
+    rb_define_method(cNMatrix, "__yale_size__", nm_yale_size, 0);
+    rb_define_const(cNMatrix, "YALE_GROWTH_CONSTANT", rb_float_new(YALE_GROWTH_CONSTANT));
 
     nm_id_real  = rb_intern("real");
     nm_id_imag  = rb_intern("imag");

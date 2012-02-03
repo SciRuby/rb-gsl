@@ -1,11 +1,18 @@
 require "./lib/nmatrix.rb"
 
 puts n = NMatrix.new(:yale, [2,3], :float64)
+
+puts n[0,0] = 0.01
 puts n[1,1] = 0.1
 puts n[0,1] = 0.2
 puts n[1,0] = 0.3
 puts n[1,2] = 0.4
-#n.pretty_print
+
+puts n[0,0] == 0.01
+puts n[1,1] == 0.1
+puts n[0,1] == 0.2
+puts n[1,0] == 0.3
+puts n[1,2] == 0.4
 
 #puts m = n.dup
 #m.pretty_print
