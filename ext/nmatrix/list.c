@@ -169,6 +169,7 @@ void copy_list_contents(LIST* lhs, LIST* rhs, size_t elem_size, size_t recursion
         copy_list_contents(lcurr->val, rcurr->val, elem_size, recursions-1);
       }
       if (rcurr->next) lcurr->next = malloc(sizeof(NODE));
+      else             lcurr->next = NULL;
       //fprintf(stderr, "NODE: %p\n", lcurr->next);
 
       lcurr = lcurr->next;
