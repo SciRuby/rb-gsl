@@ -25,10 +25,21 @@ class NMatrix
     original_inspect = super
     original_inspect = original_inspect[0...original_inspect.size-1]
     ary = [original_inspect]
-    ary << "shape:#{shape}" << dtype << stype
+    ary << "shape:[#{shape.join(',')}]" << "dtype:#{dtype}" << "stype:#{stype}"
+
+    if stype == :yale
+      ary << "capacity:#{capacity}" << "ija:#{__yale_ary__to_s(:ija)}" << "ia:#{__yale_ary__to_s(:ia)}" <<
+             "ja:#{__yale_ary__to_s(:ja)}" << "a:#{__yale_ary__to_s(:a)}" << "d:#{__yale_ary__to_s(:d)}" <<
+             "lu:#{__yale_ary__to_s(:lu)}" << "yale_size:#{__yale_size__}"
+    end
+
     ary.join(" ") + ">"
   end
 
+  def __yale_ary__to_s(sym)
+    ary = self.send("__yale_#{sym.to_s}__".to_sym)
+    "[" + ary.collect { |a| a.nil? ? "nil" : a }.join(',') + "]"
+  end
 
   class << self
 

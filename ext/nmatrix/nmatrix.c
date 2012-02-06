@@ -149,7 +149,6 @@ VALUE nm_yale_set(STORAGE* s, size_t* coords, VALUE val) {
   void* v = ALLOCA_N(char, nm_sizeof[s->dtype]);
   SetFuncs[s->dtype][NM_ROBJ](1, v, 0, &val, 0);
   yale_storage_set( (YALE_STORAGE*)s, coords, v );
-  print_vectors((YALE_STORAGE*)s);
   return val;
 }
 
@@ -654,6 +653,35 @@ static VALUE nm_cblas_gemm(VALUE self,
   return Qtrue;
 }
 
+
+static VALUE nm_capacity(VALUE self) {
+  VALUE cap;
+  size_t r, tmp=1;
+
+  switch(NM_STYPE(self)) {
+  case S_YALE:
+
+    cap = UINT2NUM(((YALE_STORAGE*)(NM_STORAGE(self)))->capacity);
+    break;
+
+  case S_DENSE:
+
+    for (r = 0; r < NM_STORAGE(self)->rank; ++r)
+      tmp *= NM_STORAGE(self)->shape[r];
+
+    SetFuncs[NM_ROBJ][NM_INT64](1, &cap, 0, tmp, 0);
+    break;
+
+  case S_LIST:
+  default:
+    rb_raise(rb_eNotImpError, "TODO: implement capacity/size on other storage types");
+  }
+
+  return cap;
+}
+
+
+
 static VALUE nm_yale_size(VALUE self) {
   VALUE sz;
   YALE_STORAGE* s = NM_STORAGE(self);
@@ -725,6 +753,15 @@ static VALUE nm_yale_lu(VALUE self) {
 }
 
 
+static VALUE nm_yale_print_vectors(VALUE self) {
+  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "must be yale matrix");
+
+  print_vectors(NM_STORAGE(self));
+
+  return Qnil;
+}
+
+
 static VALUE nm_yale_ia(VALUE self) {
   y_size_t sz;
   void* vals;
@@ -734,10 +771,10 @@ static VALUE nm_yale_ia(VALUE self) {
   if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
 
   YaleGetSize(sz, s);
-  vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*s->shape[0]);
+  vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*(s->shape[0]+1));
 
-  SetFuncs[NM_ROBJ][s->index_dtype](s->shape[0], vals, nm_sizeof[NM_ROBJ], s->ija, nm_sizeof[s->index_dtype]);
-  ary = rb_ary_new4(s->shape[0], vals);
+  SetFuncs[NM_ROBJ][s->index_dtype](s->shape[0]+1, vals, nm_sizeof[NM_ROBJ], s->ija, nm_sizeof[s->index_dtype]);
+  ary = rb_ary_new4(s->shape[0]+1, vals);
 
   return ary;
 }
@@ -815,6 +852,9 @@ void Init_nmatrix() {
     rb_define_alias(cNMatrix, "multiply", "*");
 
 
+    rb_define_method(cNMatrix, "capacity", nm_capacity, 0);
+
+    rb_define_method(cNMatrix, "__yale_print__", nm_yale_print_vectors, 0);
     rb_define_method(cNMatrix, "__yale_ija__", nm_yale_ija, 0);
     rb_define_method(cNMatrix, "__yale_a__", nm_yale_a, 0);
     rb_define_method(cNMatrix, "__yale_size__", nm_yale_size, 0);
