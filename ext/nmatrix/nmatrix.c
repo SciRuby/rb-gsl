@@ -657,6 +657,9 @@ static VALUE nm_cblas_gemm(VALUE self,
 static VALUE nm_yale_size(VALUE self) {
   VALUE sz;
   YALE_STORAGE* s = NM_STORAGE(self);
+
+  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+
   SetFuncs[NM_ROBJ][s->index_dtype](1, &sz, 0, (YALE_SIZE_PTR((s), nm_sizeof[s->index_dtype])), 0);
   return sz;
 }
@@ -668,11 +671,91 @@ static VALUE nm_yale_a(VALUE self) {
   VALUE ary;
   YALE_STORAGE* s = NM_STORAGE(self);
 
+  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+
   YaleGetSize(sz, s);
-  vals = ALLOC_N(char, nm_sizeof[s->dtype]*sz);
+  vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*sz);
 
   SetFuncs[NM_ROBJ][s->dtype](sz, vals, nm_sizeof[NM_ROBJ], s->a, nm_sizeof[s->dtype]);
   ary = rb_ary_new4(sz, vals);
+
+  for (i = sz; i < s->capacity; ++i)
+    rb_ary_push(ary, Qnil);
+
+  return ary;
+}
+
+
+static VALUE nm_yale_d(VALUE self) {
+  y_size_t sz;
+  void* vals;
+  VALUE ary;
+  YALE_STORAGE* s = NM_STORAGE(self);
+
+  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+
+  YaleGetSize(sz, s);
+  vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*s->shape[0]);
+
+  SetFuncs[NM_ROBJ][s->dtype](s->shape[0], vals, nm_sizeof[NM_ROBJ], s->a, nm_sizeof[s->dtype]);
+  ary = rb_ary_new4(s->shape[0], vals);
+
+  return ary;
+}
+
+
+static VALUE nm_yale_lu(VALUE self) {
+  y_size_t sz, i;
+  void* vals;
+  VALUE ary;
+  YALE_STORAGE* s = NM_STORAGE(self);
+
+  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+
+  YaleGetSize(sz, s);
+  vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*(s->capacity - s->shape[0]));
+
+  SetFuncs[NM_ROBJ][s->dtype](sz - s->shape[0] - 1, vals, nm_sizeof[NM_ROBJ], (char*)(s->a) + (s->shape[0] + 1)*nm_sizeof[s->dtype], nm_sizeof[s->dtype]);
+  ary = rb_ary_new4(sz - s->shape[0] - 1, vals);
+
+  for (i = sz; i < s->capacity; ++i)
+    rb_ary_push(ary, Qnil);
+
+  return ary;
+}
+
+
+static VALUE nm_yale_ia(VALUE self) {
+  y_size_t sz;
+  void* vals;
+  VALUE ary;
+  YALE_STORAGE* s = NM_STORAGE(self);
+
+  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+
+  YaleGetSize(sz, s);
+  vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*s->shape[0]);
+
+  SetFuncs[NM_ROBJ][s->index_dtype](s->shape[0], vals, nm_sizeof[NM_ROBJ], s->ija, nm_sizeof[s->index_dtype]);
+  ary = rb_ary_new4(s->shape[0], vals);
+
+  return ary;
+}
+
+
+static VALUE nm_yale_ja(VALUE self) {
+  y_size_t sz, i;
+  void* vals;
+  VALUE ary;
+  YALE_STORAGE* s = NM_STORAGE(self);
+
+  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+
+  YaleGetSize(sz, s);
+  vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*(s->capacity - s->shape[0]));
+
+  SetFuncs[NM_ROBJ][s->index_dtype](sz - s->shape[0] - 1, vals, nm_sizeof[NM_ROBJ], (char*)(s->ija) + (s->shape[0] + 1)*nm_sizeof[s->index_dtype], nm_sizeof[s->index_dtype]);
+  ary = rb_ary_new4(sz - s->shape[0] - 1, vals);
 
   for (i = sz; i < s->capacity; ++i)
     rb_ary_push(ary, Qnil);
@@ -687,8 +770,10 @@ static VALUE nm_yale_ija(VALUE self) {
   VALUE ary;
   YALE_STORAGE* s = NM_STORAGE(self);
 
+  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+
   YaleGetSize(sz, s);
-  vals = ALLOC_N(char, nm_sizeof[s->index_dtype]*s->capacity);
+  vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*s->capacity);
 
   SetFuncs[NM_ROBJ][s->index_dtype](sz, vals, nm_sizeof[NM_ROBJ], s->ija, nm_sizeof[s->index_dtype]);
   ary = rb_ary_new4(sz, vals);
@@ -733,6 +818,10 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, "__yale_ija__", nm_yale_ija, 0);
     rb_define_method(cNMatrix, "__yale_a__", nm_yale_a, 0);
     rb_define_method(cNMatrix, "__yale_size__", nm_yale_size, 0);
+    rb_define_method(cNMatrix, "__yale_ia__", nm_yale_ia, 0);
+    rb_define_method(cNMatrix, "__yale_ja__", nm_yale_ja, 0);
+    rb_define_method(cNMatrix, "__yale_d__", nm_yale_d, 0);
+    rb_define_method(cNMatrix, "__yale_lu__", nm_yale_lu, 0);
     rb_define_const(cNMatrix, "YALE_GROWTH_CONSTANT", rb_float_new(YALE_GROWTH_CONSTANT));
 
     nm_id_real  = rb_intern("real");

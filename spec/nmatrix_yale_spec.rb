@@ -5,6 +5,9 @@ describe NMatrix do
     n = NMatrix.new(:yale, [2,3], :float64)
     n[1,1] = 0.1
     n[0,0] = 0.2
+    d = n.__yale_d__
+    d[0].should == 0.2
+    d[1].should == 0.1
     n[1,1].should == 0.1
     n[0,0].should == 0.2
   end
