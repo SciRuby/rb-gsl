@@ -89,10 +89,10 @@ dir_config("cblas")
 dir_config("atlas")
 
 # These weren't working:
-#have_library("cblas", "cblas_dgemm", "cblas.h") and find_library("/usr/local/atlas/lib")
-#have_library("atlas", "ATL_dgemmNN") and find_library("/usr/local/atlas/lib")
-
-$libs += " -L/usr/local/atlas/lib -lcblas -latlas "
+find_library("cblas", "cblas_dgemm", "/usr/local/lib", "/usr/local/atlas/lib")
+find_library("atlas", "ATL_dgemmNN", "/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib")
+find_header("cblas.h", "/usr/local/include", "/usr/local/atlas/include")
+$libs += " -lcblas -latlas "
 
 $objs = srcs.collect{|i| i+".o"}
 
