@@ -42,14 +42,46 @@ describe NMatrix do
     n.__yale_lu__.should == [0.2, 0.3, 0.4, nil]
   end
 
+  it "correctly sets values within rows" do
+    n = NMatrix.new(:yale, [3,20], :float64)
+    n[2,1]   = 1.0
+    n[2,0]   = 1.5
+    n[2,15]  = 2.0
+    n.__yale_lu__.should == [1.5, 1.0, 2.0]
+    n.__yale_ja__.should == [0, 1, 15]
+  end
+
+  it "correctly gets values within rows" do
+    n = NMatrix.new(:yale, [3,20], :float64)
+    n[2,1]   = 1.0
+    n[2,0]   = 1.5
+    n[2,15]  = 2.0
+    n[2,1].should == 1.0
+    n[2,0].should == 1.5
+    n[2,15].should == 2.0
+  end
+
   it "correctly sets values within large rows" do
     n = NMatrix.new(:yale, [10,300], :float64)
     n[5,1]   = 1.0
-    n[5,1].should == 1.0
     n[5,0]   = 1.5
-    n[5,0].should == 1.5
-    n[5,15] = 2.0
-    n[5,15].should == 2.0
+    n[5,15]  = 2.0
+    n[5,291] = 3.0
+    n[5,292] = 4.0
+    n[5,289] = 5.0
+    n[5,290] = 6.0
+    n[5,293] = 2.0
+    n[5,299] = 7.0
+    n[5,100] = 8.0
+    n.__yale_lu__.should == [1.5, 1.0, 2.0, 8.0, 5.0, 6.0, 3.0, 4.0, 2.0, 7.0]
+    n.__yale_ja__.should == [0,   1,   15,  100, 289, 290, 291, 292, 293, 299]
+  end
+
+  it "correctly gets values within large rows" do
+    n = NMatrix.new(:yale, [10,300], :float64)
+    n[5,1]   = 1.0
+    n[5,0]   = 1.5
+    n[5,15]  = 2.0
     n[5,291] = 3.0
     n[5,292] = 4.0
     n[5,289] = 5.0
@@ -58,16 +90,10 @@ describe NMatrix do
     n[5,299] = 7.0
     n[5,100] = 8.0
 
-    n[5,290].should == 2.0
-    n[5,291].should == 3.0
-    n[5,292].should == 4.0
-    n[5,289].should == 5.0
-    n[5,290].should == 6.0
-    n[5,293].should == 2.0
-    n[5,299].should == 7.0
-    n[5,100].should == 8.0
-    n[5,0].should == 1.5
-    n[5,1].should == 1.0
+    n.__yale_ja__.each_index do |idx|
+      j = n.__yale_ja__[idx]
+      n[5,j].should == n.__yale_lu__[idx]
+    end
   end
 
 end
