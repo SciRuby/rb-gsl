@@ -63,7 +63,6 @@ int8_t yale_index_dtype(YALE_STORAGE* s) {
 
 
 char yale_vector_replace(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void* val, y_size_t n) {
-  fprintf(stderr, "yale_vector_replace at pos=%u, n=%u, sizeof_dtype=%u, val=%f\n", pos, n, nm_sizeof[s->dtype], *(double*)val);
 
   // Now insert the new values
   SetFuncs[s->index_dtype][Y_SIZE_T](n,
@@ -92,17 +91,12 @@ char yale_vector_insert_resize(YALE_STORAGE* s, y_size_t current_size, y_size_t 
   }
   if (new_capacity < current_size + n) new_capacity = current_size + n;
 
-  fprintf(stderr, "yale_vector_insert_resize: resizing to %u\n", new_capacity);
-  fprintf(stderr, "\tpos=%u,j=%u,n=%u\n", pos, j[0], n);
-
-
   // Allocate the new vectors.
   new_ija     = malloc( nm_sizeof[s->index_dtype] * new_capacity );
   new_a       = malloc( nm_sizeof[s->dtype]       * new_capacity );
 
   // Check that allocation succeeded.
   if (!new_ija || !new_a) {
-    fprintf(stderr, "Allocation error!\n");
     free(new_a); free(new_ija);
     rb_raise(rb_eNoMemError, "yale sparse vectors are full and there is insufficient memory for growing them");
     return (char)false;
@@ -113,7 +107,6 @@ char yale_vector_insert_resize(YALE_STORAGE* s, y_size_t current_size, y_size_t 
   SetFuncs[s->dtype      ][s->dtype      ](pos, new_a,   nm_sizeof[s->dtype],       s->a,   nm_sizeof[s->dtype]      );
 
   // Copy all values subsequent to the insertion site to the new IJA and new A, leaving room (size n) for insertion.
-  fprintf(stderr, "Inserting at %d, copying %d values to offset %d from offset %d\n", pos, current_size-pos+n-1, pos+n, pos);
   SetFuncs[s->index_dtype][s->index_dtype](current_size-pos+n-1, (char*)new_ija + nm_sizeof[s->index_dtype]*(pos+n), nm_sizeof[s->index_dtype], (char*)(s->ija) + nm_sizeof[s->index_dtype]*pos, nm_sizeof[s->index_dtype]);
   SetFuncs[s->dtype      ][s->dtype      ](current_size-pos+n-1, (char*)new_a   + nm_sizeof[s->dtype]*(pos+n),       nm_sizeof[s->dtype],       (char*)(s->a)   + nm_sizeof[s->dtype      ]*pos, nm_sizeof[s->dtype      ]);
 
@@ -141,13 +134,9 @@ char yale_vector_insert(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void* val, y
 
   YaleGetSize(sz, s);
 
-  if (sz + n > s->capacity) {
-    fprintf(stderr, "yvi: %d, %d, %d\n", sz, n, s->capacity);
+  if (sz + n > s->capacity)
     yale_vector_insert_resize(s, sz, pos, j, val, n);
-  } else {
-
-    fprintf(stderr, "yale_vector_insert: no resize needed\n");
-    fprintf(stderr, "\tpos=%u,j=%u,n=%u\n", pos, j[0], n);
+  else {
 
     // No resize required:
     // easy (but somewhat slow), just copy elements to the tail, starting at the end, one element at a time.
@@ -258,24 +247,12 @@ char yale_storage_set_diagonal(YALE_STORAGE* s, y_size_t i, void* v) {
 int yale_storage_binary_search(YALE_STORAGE* s, y_size_t left, y_size_t right, y_size_t key) {
   y_size_t mid = (left + right)/2, mid_j;
 
-  if (left > right) {
-    fprintf(stderr, "ysbs: left>right | left=%d, right=%d, key=%d\n", left, right, key);
-    return -1;
-  }
+  if (left > right) return -1;
 
   YaleGetIJA(mid_j, s, mid);
-  if (mid_j == key) {
-    fprintf(stderr, "ysbs: mid_j == key | left=%d, right=%d, mid=%d, mid_j=key=%d\n", left, right, mid, key);
-    return mid;
-  }
-  else if (mid_j > key) {
-    fprintf(stderr, "ysbs: mid_j>key | left=%d, right=%d, mid=%d, mid_j=%d, key=%d\n", left, right, mid, mid_j, key);
-    return yale_storage_binary_search(s, left, mid-1, key);
-  }
-  else {
-    fprintf(stderr, "ysbs: else | left=%d, right=%d, mid=%d, key=%d\n", left, right, mid, key);
-    return yale_storage_binary_search(s, mid+1, right, key);
-  }
+  if (mid_j == key) return mid;
+  else if (mid_j > key) return yale_storage_binary_search(s, left, mid-1, key);
+  else return yale_storage_binary_search(s, mid+1, right, key);
 }
 
 
@@ -285,24 +262,16 @@ y_size_t yale_storage_insert_search(YALE_STORAGE* s, y_size_t left, y_size_t rig
 
   if (left > right) {
     *found = false;
-    fprintf(stderr, "ysis: a. left=%d,right=%d\n", left, right);
     return left;
   }
 
   YaleGetIJA(mid_j, s, mid);
   if (mid_j == key) {
     *found = true;
-    fprintf(stderr, "ysis: b\n");
     return mid;
   }
-  else if (mid_j > key) {
-    fprintf(stderr, "ysis: c. left=%d,mid=%d\n", left, mid);
-    return yale_storage_insert_search(s, left, mid-1, key, found);
-  }
-  else {
-    fprintf(stderr, "ysis: d. left=%d,mid=%d\n", left, mid);
-    return yale_storage_insert_search(s, mid+1, right, key, found);
-  }
+  else if (mid_j > key) return yale_storage_insert_search(s, left, mid-1, key, found);
+  else return yale_storage_insert_search(s, mid+1, right, key, found);
 }
 
 
@@ -323,7 +292,7 @@ void yale_storage_increment_ia_after(YALE_STORAGE* s, y_size_t ija_size, y_size_
 char yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v) {
   y_size_t i_next = coords[0] + 1;
   y_size_t ija, ija_next, ija_size;
-  y_size_t pos, before_pos, before_pos_j;
+  y_size_t pos;
   bool found = false;
   char ins_type;
 
@@ -334,7 +303,6 @@ char yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v) {
   YaleGetIJA(ija_next, s, i_next);
 
   if (ija == ija_next) { // empty row
-    fprintf(stderr, "--- ija == ija_next (empty row)\n");
     ins_type = yale_vector_insert(s, ija, &(coords[1]), v, 1);
     yale_storage_increment_ia_after(s, YALE_IA_SIZE(s), coords[0], 1);
     s->ndnz++;
@@ -347,15 +315,10 @@ char yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v) {
   //--ija_next;
 
   // Do a binary search for the column
-  fprintf(stderr, "yss: ija=%d, ija_next=%d\n", ija, ija_next);
   pos = yale_storage_insert_search(s, ija, ija_next-1, coords[1], &found);
 
-  if (found) {
-    fprintf(stderr, "--- found replace\n");
-    return yale_vector_replace(s, pos, &(coords[1]), v, 1);
-  }
+  if (found) return yale_vector_replace(s, pos, &(coords[1]), v, 1);
 
-  fprintf(stderr, "--- not found insert: %d\n", pos);
   ins_type = yale_vector_insert(s, pos, &(coords[1]), v, 1);
   yale_storage_increment_ia_after(s, YALE_IA_SIZE(s), coords[0], 1);
   s->ndnz++;
@@ -378,7 +341,6 @@ void* yale_storage_ref(YALE_STORAGE* s, size_t* coords) {
   pos = yale_storage_binary_search(s, l, r-1, coords[1]); // binary search for the column's location
   if (pos != -1) {
     YaleGetIJA(test_j, s, pos);
-    fprintf(stderr, "ysr: pos=%d, test_j=%d, l=%d, r=%d, coords=[%d,%d]\n", pos, test_j, l, r, coords[0], coords[1]);
     if (test_j == coords[1])
       return YALE_A(s, nm_sizeof[s->dtype], pos); // Found exact value.
   }
