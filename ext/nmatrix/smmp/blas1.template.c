@@ -1,5 +1,5 @@
 
-int %%INT_ABBREV%%_symbmm(%%INT%% n,   // # rows in A / C
+void %%INT_ABBREV%%_symbmm(%%INT%% n,   // # rows in A / C
        %%INT%% m,   // # columns in A / rows in B
        %%INT%% l,   // # columns in B / C
        %%INT%%* ia, // the IA array for A
@@ -15,7 +15,6 @@ int %%INT_ABBREV%%_symbmm(%%INT%% n,   // # rows in A / C
        )
 {
   bool alloc_index;
-  int result;
 
   // Do we need to allocate a scratch vector? Make it so it automatically frees when we finish.
   if (!index) {
@@ -24,9 +23,7 @@ int %%INT_ABBREV%%_symbmm(%%INT%% n,   // # rows in A / C
     alloc_index = true;
   } else alloc_index = false;
 
-  result = %%INT_ABBREV%%_symbmm_(&n, &m, &l, ia, ja, &diaga, ib, jb, &diagb, ic, jc, &diagc, index);
+  %%INT_ABBREV%%_symbmm_(&n, &m, &l, ia, ja, &diaga, ib, jb, &diagb, ic, jc, &diagc, index);
 
   if (alloc_index) free(index);
-
-  return result;
 }

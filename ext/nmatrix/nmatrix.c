@@ -479,26 +479,29 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
     result = nm_create(S_YALE,
                        create_yale_storage(left->storage->dtype, shape, 2,
                                           ((YALE_STORAGE*)(left->storage))->capacity + ((YALE_STORAGE*)(right->storage))->capacity));
-    init_yale_storage(result->storage);
-    print_vectors(left->storage);
-    print_vectors(right->storage);
-    print_vectors(result->storage);
+    init_yale_storage((YALE_STORAGE*)(result->storage));
+    print_vectors((YALE_STORAGE*)(left->storage));
+    print_vectors((YALE_STORAGE*)(right->storage));
+    print_vectors((YALE_STORAGE*)(result->storage));
 
-    cblas_symbmm(
+    i8_f64_smmp(
           shape[0],
           shape[1],
           left->storage->shape[1],
           ((YALE_STORAGE*)(left->storage))->ija,
-          ((YALE_STORAGE*)(left->storage))->ija + (shape[0]+1)*nm_sizeof[left->storage->dtype],
+          (char*)((YALE_STORAGE*)(left->storage))->ija + (shape[0]+1)*nm_sizeof[left->storage->dtype],
           true,
+          ((YALE_STORAGE*)(left->storage))->a,
           ((YALE_STORAGE*)(right->storage))->ija,
-          ((YALE_STORAGE*)(right->storage))->ija + (right->storage->shape[0]+1)*nm_sizeof[right->storage->dtype],
+          (char*)((YALE_STORAGE*)(right->storage))->ija + (right->storage->shape[0]+1)*nm_sizeof[right->storage->dtype],
           true,
+          ((YALE_STORAGE*)(right->storage))->a,
           ((YALE_STORAGE*)(result->storage))->ija,
-          ((YALE_STORAGE*)(result->storage))->ija + (shape[0]+1)*nm_sizeof[result->storage->dtype],
+          (char*)((YALE_STORAGE*)(result->storage))->ija + (shape[0]+1)*nm_sizeof[result->storage->dtype],
           true,
-          NULL
+          ((YALE_STORAGE*)(result->storage))->a
           );
+
     break;
   default:
     rb_raise(rb_eNotImpError, "matrix must be dense or yale for multiplication");
@@ -715,7 +718,7 @@ static VALUE nm_capacity(VALUE self) {
 
 static VALUE nm_yale_size(VALUE self) {
   VALUE sz;
-  YALE_STORAGE* s = NM_STORAGE(self);
+  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
   if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
 
@@ -728,7 +731,7 @@ static VALUE nm_yale_a(VALUE self) {
   y_size_t sz, i;
   void* vals;
   VALUE ary;
-  YALE_STORAGE* s = NM_STORAGE(self);
+  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
   if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
 
@@ -749,7 +752,7 @@ static VALUE nm_yale_d(VALUE self) {
   y_size_t sz;
   void* vals;
   VALUE ary;
-  YALE_STORAGE* s = NM_STORAGE(self);
+  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
   if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
 
@@ -767,7 +770,7 @@ static VALUE nm_yale_lu(VALUE self) {
   y_size_t sz, i;
   void* vals;
   VALUE ary;
-  YALE_STORAGE* s = NM_STORAGE(self);
+  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
   if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
 
@@ -797,7 +800,7 @@ static VALUE nm_yale_ia(VALUE self) {
   y_size_t sz;
   void* vals;
   VALUE ary;
-  YALE_STORAGE* s = NM_STORAGE(self);
+  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
   if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
 
@@ -815,7 +818,7 @@ static VALUE nm_yale_ja(VALUE self) {
   y_size_t sz, i;
   void* vals;
   VALUE ary;
-  YALE_STORAGE* s = NM_STORAGE(self);
+  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
   if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
 
@@ -836,7 +839,7 @@ static VALUE nm_yale_ija(VALUE self) {
   y_size_t sz, i;
   void* vals;
   VALUE ary;
-  YALE_STORAGE* s = NM_STORAGE(self);
+  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
   if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
 

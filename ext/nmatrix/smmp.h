@@ -3,95 +3,242 @@
 #include "types.h"
 
 #define SMMP_MAX_THREE(a,b,c) ((a)>(b) ? ( (a)>(c) ? (a) : (c) ) : ( (b)>(c) ? (b) : (c) ))
+#define SMMP_MIN(a,b) ((a)>(b) ? (b) : (a))
+#define SMMP_MAX(a,b) ((a)>(b) ? (a) : (b))
 
-int i8_symbmm_(int8_t *n, int8_t *m, int8_t *l, int8_t *ia,
+void i8_symbmm_(int8_t *n, int8_t *m, int8_t *l, int8_t *ia,
 	int8_t *ja, int8_t *diaga, int8_t *ib, int8_t *jb, int8_t *diagb,
 	 int8_t *ic, int8_t *jc, int8_t *diagc, int8_t *index);
 
-int i16_symbmm_(int16_t *n, int16_t *m, int16_t *l, int16_t *ia,
+void i16_symbmm_(int16_t *n, int16_t *m, int16_t *l, int16_t *ia,
 	int16_t *ja, int16_t *diaga, int16_t *ib, int16_t *jb, int16_t *diagb,
 	 int16_t *ic, int16_t *jc, int16_t *diagc, int16_t *index);
 
-int i32_symbmm_(int32_t *n, int32_t *m, int32_t *l, int32_t *ia,
+void i32_symbmm_(int32_t *n, int32_t *m, int32_t *l, int32_t *ia,
 	int32_t *ja, int32_t *diaga, int32_t *ib, int32_t *jb, int32_t *diagb,
 	 int32_t *ic, int32_t *jc, int32_t *diagc, int32_t *index);
 
-int i64_symbmm_(int64_t *n, int64_t *m, int64_t *l, int64_t *ia,
+void i64_symbmm_(int64_t *n, int64_t *m, int64_t *l, int64_t *ia,
 	int64_t *ja, int64_t *diaga, int64_t *ib, int64_t *jb, int64_t *diagb,
 	 int64_t *ic, int64_t *jc, int64_t *diagc, int64_t *index);
 
 
 
-int i8_f32_numbmm_(int8_t *n, int8_t *m, int8_t *l, int8_t *ia,
+void i8_f32_numbmm_(int8_t *n, int8_t *m, int8_t *l, int8_t *ia,
 	int8_t *ja, int8_t *diaga, float *a, int8_t *ib, int8_t *jb,
 	int8_t *diagb, float *b, int8_t *ic, int8_t *jc, int8_t *diagc,
 	float *c__, float *temp);
 
-int i8_f64_numbmm_(int8_t *n, int8_t *m, int8_t *l, int8_t *ia,
+void i8_f64_numbmm_(int8_t *n, int8_t *m, int8_t *l, int8_t *ia,
 	int8_t *ja, int8_t *diaga, double *a, int8_t *ib, int8_t *jb,
 	int8_t *diagb, double *b, int8_t *ic, int8_t *jc, int8_t *diagc,
 	double *c__, double *temp);
 
-int i16_f32_numbmm_(int16_t *n, int16_t *m, int16_t *l, int16_t *ia,
+void i16_f32_numbmm_(int16_t *n, int16_t *m, int16_t *l, int16_t *ia,
 	int16_t *ja, int16_t *diaga, float *a, int16_t *ib, int16_t *jb,
 	int16_t *diagb, float *b, int16_t *ic, int16_t *jc, int16_t *diagc,
 	float *c__, float *temp);
 
-int i16_f64_numbmm_(int16_t *n, int16_t *m, int16_t *l, int16_t *ia,
+void i16_f64_numbmm_(int16_t *n, int16_t *m, int16_t *l, int16_t *ia,
 	int16_t *ja, int16_t *diaga, double *a, int16_t *ib, int16_t *jb,
 	int16_t *diagb, double *b, int16_t *ic, int16_t *jc, int16_t *diagc,
 	double *c__, double *temp);
 
-int i32_f32_numbmm_(int32_t *n, int32_t *m, int32_t *l, int32_t *ia,
+void i32_f32_numbmm_(int32_t *n, int32_t *m, int32_t *l, int32_t *ia,
 	int32_t *ja, int32_t *diaga, float *a, int32_t *ib, int32_t *jb,
 	int32_t *diagb, float *b, int32_t *ic, int32_t *jc, int32_t *diagc,
 	float *c__, float *temp);
 
-int i32_f64_numbmm_(int32_t *n, int32_t *m, int32_t *l, int32_t *ia,
+void i32_f64_numbmm_(int32_t *n, int32_t *m, int32_t *l, int32_t *ia,
 	int32_t *ja, int32_t *diaga, double *a, int32_t *ib, int32_t *jb,
 	int32_t *diagb, double *b, int32_t *ic, int32_t *jc, int32_t *diagc,
 	double *c__, double *temp);
 
-int i64_f32_numbmm_(int64_t *n, int64_t *m, int64_t *l, int64_t *ia,
+void i64_f32_numbmm_(int64_t *n, int64_t *m, int64_t *l, int64_t *ia,
 	int64_t *ja, int64_t *diaga, float *a, int64_t *ib, int64_t *jb,
 	int64_t *diagb, float *b, int64_t *ic, int64_t *jc, int64_t *diagc,
 	float *c__, float *temp);
 
-int i64_f64_numbmm_(int64_t *n, int64_t *m, int64_t *l, int64_t *ia,
+void i64_f64_numbmm_(int64_t *n, int64_t *m, int64_t *l, int64_t *ia,
 	int64_t *ja, int64_t *diaga, double *a, int64_t *ib, int64_t *jb,
 	int64_t *diagb, double *b, int64_t *ic, int64_t *jc, int64_t *diagc,
 	double *c__, double *temp);
 
 
 
-int i8_f32_transp_(int8_t *n, int8_t *m, int8_t *ia, int8_t *ja,
+void i8_f32_transp_(int8_t *n, int8_t *m, int8_t *ia, int8_t *ja,
 	 int8_t *diaga, float *a, int8_t *ib, int8_t *jb, float *b, int8_t *
 	move);
 
-int i8_f64_transp_(int8_t *n, int8_t *m, int8_t *ia, int8_t *ja,
+void i8_f64_transp_(int8_t *n, int8_t *m, int8_t *ia, int8_t *ja,
 	 int8_t *diaga, double *a, int8_t *ib, int8_t *jb, double *b, int8_t *
 	move);
 
-int i16_f32_transp_(int16_t *n, int16_t *m, int16_t *ia, int16_t *ja,
+void i16_f32_transp_(int16_t *n, int16_t *m, int16_t *ia, int16_t *ja,
 	 int16_t *diaga, float *a, int16_t *ib, int16_t *jb, float *b, int16_t *
 	move);
 
-int i16_f64_transp_(int16_t *n, int16_t *m, int16_t *ia, int16_t *ja,
+void i16_f64_transp_(int16_t *n, int16_t *m, int16_t *ia, int16_t *ja,
 	 int16_t *diaga, double *a, int16_t *ib, int16_t *jb, double *b, int16_t *
 	move);
 
-int i32_f32_transp_(int32_t *n, int32_t *m, int32_t *ia, int32_t *ja,
+void i32_f32_transp_(int32_t *n, int32_t *m, int32_t *ia, int32_t *ja,
 	 int32_t *diaga, float *a, int32_t *ib, int32_t *jb, float *b, int32_t *
 	move);
 
-int i32_f64_transp_(int32_t *n, int32_t *m, int32_t *ia, int32_t *ja,
+void i32_f64_transp_(int32_t *n, int32_t *m, int32_t *ia, int32_t *ja,
    int32_t *diaga, double *a, int32_t *ib, int32_t *jb, double *b, int32_t *
   move);
 
-int i64_f32_transp_(int64_t *n, int64_t *m, int64_t *ia, int64_t *ja,
+void i64_f32_transp_(int64_t *n, int64_t *m, int64_t *ia, int64_t *ja,
 	 int64_t *diaga, float *a, int64_t *ib, int64_t *jb, float *b, int64_t *
 	move);
 
-int i64_f64_transp_(int64_t *n, int64_t *m, int64_t *ia, int64_t *ja,
+void i64_f64_transp_(int64_t *n, int64_t *m, int64_t *ia, int64_t *ja,
 	 int64_t *diaga, double *a, int64_t *ib, int64_t *jb, double *b, int64_t *
 	move);
+
+
+void i8_f32_smmp(
+  int8_t  n,    // # rows in A / C
+  int8_t m,    // # columns in A / rows in B
+  int8_t l,    // # columns in B / C
+  int8_t *ia,  // the IA array for A
+  int8_t *ja,  // the JA array for A
+  int8_t diaga,// 1 for new yale, 0 for old yale
+  float *a,  // the A array for matrix A
+  int8_t *ib,  // the IA array for B
+  int8_t *jb,  // the JA array for B
+  int8_t diagb,// 1 for new yale, 0 for old yale
+  float *b,  // the A array for matrix B
+  int8_t *ic,  // the IA array for result
+  int8_t *jc,  // the JA array for result
+  int8_t diagc,// 1 for new yale, 0 for old yale
+  float *c   // the A array for matrix C
+);
+
+void i8_f64_smmp(
+  int8_t  n,    // # rows in A / C
+  int8_t m,    // # columns in A / rows in B
+  int8_t l,    // # columns in B / C
+  int8_t *ia,  // the IA array for A
+  int8_t *ja,  // the JA array for A
+  int8_t diaga,// 1 for new yale, 0 for old yale
+  double *a,  // the A array for matrix A
+  int8_t *ib,  // the IA array for B
+  int8_t *jb,  // the JA array for B
+  int8_t diagb,// 1 for new yale, 0 for old yale
+  double *b,  // the A array for matrix B
+  int8_t *ic,  // the IA array for result
+  int8_t *jc,  // the JA array for result
+  int8_t diagc,// 1 for new yale, 0 for old yale
+  double *c   // the A array for matrix C
+);
+
+void i16_f32_smmp(
+  int16_t  n,    // # rows in A / C
+  int16_t m,    // # columns in A / rows in B
+  int16_t l,    // # columns in B / C
+  int16_t *ia,  // the IA array for A
+  int16_t *ja,  // the JA array for A
+  int16_t diaga,// 1 for new yale, 0 for old yale
+  float *a,  // the A array for matrix A
+  int16_t *ib,  // the IA array for B
+  int16_t *jb,  // the JA array for B
+  int16_t diagb,// 1 for new yale, 0 for old yale
+  float *b,  // the A array for matrix B
+  int16_t *ic,  // the IA array for result
+  int16_t *jc,  // the JA array for result
+  int16_t diagc,// 1 for new yale, 0 for old yale
+  float *c   // the A array for matrix C
+);
+
+void i16_f64_smmp(
+  int16_t  n,    // # rows in A / C
+  int16_t m,    // # columns in A / rows in B
+  int16_t l,    // # columns in B / C
+  int16_t *ia,  // the IA array for A
+  int16_t *ja,  // the JA array for A
+  int16_t diaga,// 1 for new yale, 0 for old yale
+  double *a,  // the A array for matrix A
+  int16_t *ib,  // the IA array for B
+  int16_t *jb,  // the JA array for B
+  int16_t diagb,// 1 for new yale, 0 for old yale
+  double *b,  // the A array for matrix B
+  int16_t *ic,  // the IA array for result
+  int16_t *jc,  // the JA array for result
+  int16_t diagc,// 1 for new yale, 0 for old yale
+  double *c   // the A array for matrix C
+);
+
+void i32_f32_smmp(
+  int32_t  n,    // # rows in A / C
+  int32_t m,    // # columns in A / rows in B
+  int32_t l,    // # columns in B / C
+  int32_t *ia,  // the IA array for A
+  int32_t *ja,  // the JA array for A
+  int32_t diaga,// 1 for new yale, 0 for old yale
+  float *a,  // the A array for matrix A
+  int32_t *ib,  // the IA array for B
+  int32_t *jb,  // the JA array for B
+  int32_t diagb,// 1 for new yale, 0 for old yale
+  float *b,  // the A array for matrix B
+  int32_t *ic,  // the IA array for result
+  int32_t *jc,  // the JA array for result
+  int32_t diagc,// 1 for new yale, 0 for old yale
+  float *c   // the A array for matrix C
+);
+
+void i32_f64_smmp(
+  int32_t  n,    // # rows in A / C
+  int32_t m,    // # columns in A / rows in B
+  int32_t l,    // # columns in B / C
+  int32_t *ia,  // the IA array for A
+  int32_t *ja,  // the JA array for A
+  int32_t diaga,// 1 for new yale, 0 for old yale
+  double *a,  // the A array for matrix A
+  int32_t *ib,  // the IA array for B
+  int32_t *jb,  // the JA array for B
+  int32_t diagb,// 1 for new yale, 0 for old yale
+  double *b,  // the A array for matrix B
+  int32_t *ic,  // the IA array for result
+  int32_t *jc,  // the JA array for result
+  int32_t diagc,// 1 for new yale, 0 for old yale
+  double *c   // the A array for matrix C
+);
+
+void i64_f32_smmp(
+  int64_t  n,    // # rows in A / C
+  int64_t m,    // # columns in A / rows in B
+  int64_t l,    // # columns in B / C
+  int64_t *ia,  // the IA array for A
+  int64_t *ja,  // the JA array for A
+  int64_t diaga,// 1 for new yale, 0 for old yale
+  float *a,  // the A array for matrix A
+  int64_t *ib,  // the IA array for B
+  int64_t *jb,  // the JA array for B
+  int64_t diagb,// 1 for new yale, 0 for old yale
+  float *b,  // the A array for matrix B
+  int64_t *ic,  // the IA array for result
+  int64_t *jc,  // the JA array for result
+  int64_t diagc,// 1 for new yale, 0 for old yale
+  float *c   // the A array for matrix C
+);
+
+void i64_f64_smmp(
+  int64_t  n,    // # rows in A / C
+  int64_t m,    // # columns in A / rows in B
+  int64_t l,    // # columns in B / C
+  int64_t *ia,  // the IA array for A
+  int64_t *ja,  // the JA array for A
+  int64_t diaga,// 1 for new yale, 0 for old yale
+  double *a,  // the A array for matrix A
+  int64_t *ib,  // the IA array for B
+  int64_t *jb,  // the JA array for B
+  int64_t diagb,// 1 for new yale, 0 for old yale
+  double *b,  // the A array for matrix B
+  int64_t *ic,  // the IA array for result
+  int64_t *jc,  // the JA array for result
+  int64_t diagc,// 1 for new yale, 0 for old yale
+  double *c   // the A array for matrix C
+);

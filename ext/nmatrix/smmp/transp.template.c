@@ -1,5 +1,5 @@
 
-/* Subroutine */ int %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(%%INT%% *n, %%INT%% *m, %%INT%% *ia, %%INT%% *ja,
+/* Subroutine */ void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(%%INT%% *n, %%INT%% *m, %%INT%% *ia, %%INT%% *ja,
 	 %%INT%% *diaga, %%REAL%% *a, %%INT%% *ib, %%INT%% *jb, %%REAL%% *b, %%INT%% *
 	move)
 {
@@ -85,7 +85,7 @@
     }
     if (*diaga == 1) {
 	if (*move == 1) {
-	    j = min(*n,*m);
+	    j = SMMP_MIN(*n,*m);
 	    i__1 = j;
 	    for (i__ = 1; i__ <= i__1; ++i__) {
 /* L80: */
@@ -96,5 +96,4 @@
     } else {
 	ib[1] = 1;
     }
-    return 0;
 } /* transp_ */
