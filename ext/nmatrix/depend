@@ -1,8 +1,13 @@
-dtypes.h: generator.rb
+dtypes.h dtypes.c smmp1.c smmp2.c: generator.rb
 	$(RUBY) -I$(srcdir) $(srcdir)/generator.rb
 
-dtypes.c: generator.rb
-	$(RUBY) -I$(srcdir) $(srcdir)/generator.rb
+smmp1.o: smmp1.c smmp.h
+
+smmp2.o: smmp2.c smmp.h
+
+blas1.o: blas1.c nmatrix_config.h smmp.h
+
+blas2.o: blas2.c nmatrix_config.h smmp.h
 
 dfuncs.o: dfuncs.c $(hdrdir)/ruby.h
 

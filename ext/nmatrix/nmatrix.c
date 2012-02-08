@@ -449,29 +449,60 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
   shape[0] = left->storage->shape[0];
   shape[1] = right->storage->shape[1];
 
-  result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2));
-
   //fprintf(stderr, "M=%d, N=%d, K=%d\n", shape[0], shape[1], left->storage->shape[1]);
 
-  // call CBLAS xgemm (type-specific general matrix multiplication)
-  // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
-  GemmFuncs[left->storage->dtype](
-  //cblas_sgemm(
-        CblasRowMajor,
-        CblasNoTrans,
-        CblasNoTrans,
-        shape[0],                // M = number of rows in left
-        shape[1],                // N = number of columns in right and result
-        left->storage->shape[1], // K = number of columns in left
-        1.0,
-        ((DENSE_STORAGE*)(left->storage))->elements,
-            left->storage->shape[1], // * nm_sizeof[left->dtype],
-        ((DENSE_STORAGE*)(right->storage))->elements,
-            right->storage->shape[1], // * nm_sizeof[right->dtype],
-        0.0,
-        ((DENSE_STORAGE*)(result->storage))->elements,
-            shape[1] // * nm_sizeof[result->dtype]
-        );
+  switch(left->stype) {
+  case S_DENSE:
+    result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2));
+
+    // call CBLAS xgemm (type-specific general matrix multiplication)
+    // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
+    GemmFuncs[left->storage->dtype](
+    //cblas_sgemm(
+          CblasRowMajor,
+          CblasNoTrans,
+          CblasNoTrans,
+          shape[0],                // M = number of rows in left
+          shape[1],                // N = number of columns in right and result
+          left->storage->shape[1], // K = number of columns in left
+          1.0,
+          ((DENSE_STORAGE*)(left->storage))->elements,
+              left->storage->shape[1], // * nm_sizeof[left->dtype],
+          ((DENSE_STORAGE*)(right->storage))->elements,
+              right->storage->shape[1], // * nm_sizeof[right->dtype],
+          0.0,
+          ((DENSE_STORAGE*)(result->storage))->elements,
+              shape[1] // * nm_sizeof[result->dtype]
+          );
+    break;
+  case S_YALE:
+    result = nm_create(S_YALE,
+                       create_yale_storage(left->storage->dtype, shape, 2,
+                                          ((YALE_STORAGE*)(left->storage))->capacity + ((YALE_STORAGE*)(right->storage))->capacity));
+    init_yale_storage(result->storage);
+    print_vectors(left->storage);
+    print_vectors(right->storage);
+    print_vectors(result->storage);
+
+    cblas_symbmm(
+          shape[0],
+          shape[1],
+          left->storage->shape[1],
+          ((YALE_STORAGE*)(left->storage))->ija,
+          ((YALE_STORAGE*)(left->storage))->ija + (shape[0]+1)*nm_sizeof[left->storage->dtype],
+          true,
+          ((YALE_STORAGE*)(right->storage))->ija,
+          ((YALE_STORAGE*)(right->storage))->ija + (right->storage->shape[0]+1)*nm_sizeof[right->storage->dtype],
+          true,
+          ((YALE_STORAGE*)(result->storage))->ija,
+          ((YALE_STORAGE*)(result->storage))->ija + (shape[0]+1)*nm_sizeof[result->storage->dtype],
+          true,
+          NULL
+          );
+    break;
+  default:
+    rb_raise(rb_eNotImpError, "matrix must be dense or yale for multiplication");
+  }
 
   return Data_Wrap_Struct(cNMatrix, 0, nm_delete, result);
 }
@@ -498,8 +529,8 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
   if (left->storage->shape[1] != right->storage->shape[0])
     rb_raise(rb_eArgError, "incompatible dimensions");
 
-  if (left->stype != S_DENSE && right->stype != S_DENSE)
-    rb_raise(rb_eNotImpError, "dense matrices expected");
+  if (left->stype != right->stype)
+    rb_raise(rb_eNotImpError, "matrices must have same stype");
 
   if (left->storage->dtype != right->storage->dtype)
     rb_raise(rb_eNotImpError, "dtype mismatch");
@@ -754,7 +785,7 @@ static VALUE nm_yale_lu(VALUE self) {
 
 
 static VALUE nm_yale_print_vectors(VALUE self) {
-  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "must be yale matrix");
+  if (NM_STYPE(self) != S_YALE || NM_DTYPE(self) != NM_FLOAT64) rb_raise(rb_eTypeError, "must be yale float64 matrix");
 
   print_vectors(NM_STORAGE(self));
 

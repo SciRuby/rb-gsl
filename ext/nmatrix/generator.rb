@@ -1,6 +1,7 @@
 class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type,  :gemm); end
 
 module Generator
+  SRC_DIR = File.join("ext", "nmatrix")
   DTYPES = [
       # dtype enum      sizeof        label/symbol/string   num-class
       [:NM_NONE,        0,            :none,        0,      :none,        :igemm],
@@ -60,6 +61,7 @@ module Generator
 
 
   class << self
+
 
     def decl spec_name, ary
       a = []
@@ -194,9 +196,77 @@ SETFN
       end
     end
 
+
+    # Read templates given by +names+ from <tt>SRC_DIR/relative_path</tt>, and output them to a filename described by
+    # +output_name+.
+    #
+    # == Example
+    #
+    #    make_templated_c './smmp', 'header', %w{numbmm transp bstoy ytobs}, "smmp1.c"
+    #
+    # TODO: index dtype is unsigned!
+    # That means instead of int8_t, we should be doing uint8_t. But can't always do that because the Fortran code
+    # occasionally starts at index -1. Stupid Fortran! Someone needs to go through and fix the code by hand.
+    #
+    # TODO: Write tests to confirm that the signedness isn't screwing up stuff.
+    #
+    # TODO: Make templates work with complex and rational types too.
+    #
+    def make_templated_c relative_path, header_name, names, output_name, subs=1
+
+      # First print the header once
+      `cat #{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{header_name}.template.c > ./#{output_name}` unless header_name.nil?
+
+      DTYPES.each do |index_dtype|
+        next unless [:NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64].include?(index_dtype.enum)
+
+        if subs == 1
+          names.each do |name|
+            sub_int relative_path, name, output_name, index_dtype
+          end
+        else
+          DTYPES.each do |dtype|
+            next unless [:NM_FLOAT32, :NM_FLOAT64].include?(dtype.enum)
+            names.each do |name|
+              sub_int_real relative_path, name, output_name, index_dtype, dtype
+            end
+          end
+        end
+
+      end
+    end
+
+    def sub_int_real relative_path, name, output_name, int_dtype, real_dtype
+      cmd = ["#{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{name}.template.c",
+             "sed s/%%INT_ABBREV%%/#{int_dtype.id}/g",
+             "sed s/%%INT%%/#{int_dtype.sizeof}/g",
+             "sed s/%%REAL_ABBREV%%/#{real_dtype.id}/g",
+             "sed s/%%REAL%%/#{real_dtype.sizeof}/g" ]
+
+      raise(ArgumentError, "no such template '#{name}'; looked at #{cmd[0]}") unless File.exist?(cmd[0])
+
+      `cat #{cmd.join(' | ')} >> ./#{output_name}`
+    end
+
+
+    def sub_int relative_path, name, output_name, dtype
+      cmd = ["#{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{name}.template.c",
+             "sed s/%%INT_ABBREV%%/#{dtype.id}/g",
+             "sed s/%%INT%%/#{dtype.sizeof}/g"]
+
+      raise(ArgumentError, "no such template '#{name}'; looked at #{cmd[0]}") unless File.exist?(cmd[0])
+
+      `cat #{cmd.join(' | ')} >> ./#{output_name}`
+    end
+
+
   end
 end
 
 Generator.make_dtypes_h
 Generator.make_dtypes_c
 Generator.make_dfuncs_c
+Generator.make_templated_c './smmp', 'blas_header', ['blas1'], 'blas1.c', 1 # 1-type interface functions for SMMP
+Generator.make_templated_c './smmp', 'blas_header', ['blas2'], 'blas2.c', 2 # 2-type interface functions for SMMP
+Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp1.c', 1 # 1-type SMMP functions from Fortran
+Generator.make_templated_c './smmp', 'smmp_header', ['numbmm', 'transp'], 'smmp2.c', 2 # 2-type SMMP functions from Fortran

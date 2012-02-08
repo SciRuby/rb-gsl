@@ -148,10 +148,10 @@ describe NMatrix do
   end
 
 
-  [:dense, :list].each do |storage_type|
+  [:dense, :list, :yale].each do |storage_type|
     context "(storage: #{storage_type})" do
       it "can be duplicated" do
-        n = NMatrix.new(storage_type, [2,3], 1.1)
+        n = NMatrix.new(storage_type, [2,3], storage_type == :yale ? :float64 : 1.1)
         n.stype.should equal(storage_type)
 
         n[0,0] = 0.0
@@ -169,32 +169,36 @@ describe NMatrix do
       end
 
       it "enforces shape boundaries" do
-        lambda { NMatrix.new(storage_type, [1,10], 0)[-1,0] }.should raise_error
-        lambda { NMatrix.new(storage_type, [1,10], 0)[1,0]  }.should raise_error(ArgumentError, "out of range")
-        lambda { NMatrix.new(storage_type, [1,10], 0)[0,10] }.should raise_error(ArgumentError, "out of range")
-      end
-
-      it "correctly gets default value" do
-        NMatrix.new(storage_type, 3, 0)[1,1].should   == 0
-        NMatrix.new(storage_type, 3, 0.1)[1,1].should == 0.1
-        NMatrix.new(storage_type, 3, 1)[1,1].should   == 1
+        lambda { NMatrix.new(storage_type, [1,10], storage_type == :yale ? :int8 : 0)[-1,0] }.should raise_error
+        lambda { NMatrix.new(storage_type, [1,10], storage_type == :yale ? :int8 : 0)[1,0]  }.should raise_error(ArgumentError, "out of range")
+        lambda { NMatrix.new(storage_type, [1,10], storage_type == :yale ? :int8 : 0)[0,10] }.should raise_error(ArgumentError, "out of range")
       end
 
       it "correctly sets and gets" do
-        n = NMatrix.new(storage_type, 2, 0)
+        n = NMatrix.new(storage_type, 2, storage_type == :yale ? :int8 : 0)
         (n[0,1] = 1).should == 1
         n[0,0].should == 0
         n[1,0].should == 0
         n[0,1].should == 1
         n[1,1].should == 0
       end
+    end
+
+    # dense and list, not yale
+    context "(storage: #{storage_type})" do
+      it "correctly gets default value" do
+        NMatrix.new(storage_type, 3, 0)[1,1].should   == 0
+        NMatrix.new(storage_type, 3, 0.1)[1,1].should == 0.1
+        NMatrix.new(storage_type, 3, 1)[1,1].should   == 1
+      end
 
       it "returns correct shape and rank" do
         NMatrix.new(storage_type, [3,2,8], 0).shape.should == [3,2,8]
         NMatrix.new(storage_type, [3,2,8], 0).rank.should  == 3
       end
-    end
+    end unless storage_type == :yale
   end
+
 
   it "correctly handles dense construction" do
     NMatrix.new(3,0)[1,1].should == 0

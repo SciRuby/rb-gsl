@@ -166,6 +166,7 @@ void delete_yale_storage(YALE_STORAGE* s) {
 
 // copy constructor
 YALE_STORAGE* copy_yale_storage(YALE_STORAGE* rhs) {
+  y_size_t size;
   YALE_STORAGE* lhs = malloc(sizeof(YALE_STORAGE));
   lhs->dtype        = rhs->dtype;
   lhs->rank         = rhs->rank;
@@ -186,6 +187,12 @@ YALE_STORAGE* copy_yale_storage(YALE_STORAGE* rhs) {
       free(lhs);
       return NULL;
     }
+
+    // Now copy the contents -- but only within the boundaries set by the size. Leave
+    // the rest uninitialized.
+    YaleGetSize(size, rhs);
+    memcpy(lhs->ija, rhs->ija, size * nm_sizeof[lhs->index_dtype]);
+    memcpy(lhs->a,   rhs->a,   size * nm_sizeof[lhs->dtype]);
   }
 
   return lhs;

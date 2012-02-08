@@ -65,6 +65,10 @@ list
 dense
 yale
 dfuncs
+smmp1
+smmp2
+blas1
+blas2
 )
 
 header = "stdint.h"
@@ -85,16 +89,20 @@ have_type("int64_t", header)
 have_type("u_int64_t", header)
 have_type("uint64_t", header)
 
-dir_config("cblas")
-dir_config("atlas")
+# dir_config("cblas")
+# dir_config("atlas")
 
-# These weren't working:
 find_library("cblas", "cblas_dgemm", "/usr/local/lib", "/usr/local/atlas/lib")
 find_library("atlas", "ATL_dgemmNN", "/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib")
 find_header("cblas.h", "/usr/local/include", "/usr/local/atlas/include")
+
+have_library("f2c")
+have_header("f2c.h")
+
+
 $libs += " -lcblas -latlas "
 
-$objs = srcs.collect{|i| i+".o"}
+$objs = srcs.collect{|i| i+".o" }
 
 create_conf_h("nmatrix_config.h")
 create_makefile("nmatrix")

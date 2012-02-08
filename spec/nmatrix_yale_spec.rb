@@ -96,4 +96,32 @@ describe NMatrix do
     end
   end
 
+  it "correctly multiplies two yale matrices" do
+    a = NMatrix.new(:yale, 4, :float64)
+    a[0,1] = 4.0
+    a[1,2] = 1.0
+    a[1,3] = 1.0
+    a[3,1] = 2.0
+
+    b = a.dup
+    c = a.multiply(b)
+
+    c[0,0].should == 0.0
+    c[0,1].should == 0.0
+    c[0,2].should == 4.0
+    c[0,3].should == 4.0
+    c[1,0].should == 0.0
+    c[1,1].should == 2.0
+    c[1,2].should == 0.0
+    c[1,3].should == 0.0
+    c[2,0].should == 0.0
+    c[2,1].should == 0.0
+    c[2,2].should == 0.0
+    c[2,3].should == 0.0
+    c[3,0].should == 0.0
+    c[3,1].should == 0.0
+    c[3,2].should == 2.0
+    c[3,3].should == 2.0
+  end
+
 end

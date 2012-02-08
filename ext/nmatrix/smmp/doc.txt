@@ -1,0 +1,522 @@
+Sparse Matrix Multiply Package (SMMP)
+
+
+Randolph E. Bank
+University of California at San Diego
+Department of Mathematics C012
+P.O. Box 109
+LaJolla, CA 92093
+
+Craig C. Douglas
+IBM Research Division
+IBM T. J. Watson Research Center
+P.O. Box 218
+Yorktown Heights, NY 10598
+
+
+Abstract:  Routines callable from FORTRAN and C are described
+which implement matrix-matrix multiplication and transposition
+for a variety of sparse matrix formats.  Conversion routines
+between the various formats are provided.
+
+
+
+1.  Introduction
+
+     These routines will perform matrix-matrix multiplies,
+transposes, and format conversions for sparse matrices.  There
+are three formats supported.  These include the old and new Yale
+sparse matrix package formats and the more efficient one for
+square matrices advocated by Bank and Smith.  In each case, only
+the nonzeros are stored, not the zeros (or as few as possible).
+
+     These routines were written while both authors were visitors
+to the Applied Mathematics Center in the Department of
+Mathematics, Purdue University.  While they were developed using
+the UNIX(tm) f77 compiler on SUN workstations, they should be
+portable to any compiler with a real FORTRAN-77 compiler.
+
+     In section 2, we describe the sparse matrix formats this
+package supports.  In section 3, we describe the structure of the
+package and the calling sequences of each routine.   In section
+4, we describe the algorithms implemented by the package.
+
+
+
+2.  Sparse Matrix Formats
+
+     Assume that a matrix M = D + L + U, where D is the main
+diagonal part of M, L is the strictly lower triangular part of M,
+and U is the strictly upper triangular part of M.  We define the
+number of nonzeros of M as NZ(M).
+
+     The old Yale sparse matrix format requires three vectors:
+         _______________
+        |               |
+    IA: | IA            | length N + 1
+        |_______________|
+
+         ___________________________________
+        |                                   |
+    JA: | JA                                | length NZ(M) or
+        |___________________________________|        NZ(D+U)
+
+         ___________________________________
+        |                                   |
+     A: | M                                 | length NZ(M) or
+        |___________________________________|        NZ(D+U)
+
+M is stored in row form.  If M is symmetric, the elements of L do
+not have to be stored in A.  The first element of row I is
+A(IA(I)).  The length of row I is determined by IA(I+1) - IA(I),
+which is why IA requires N+1 elements instead of the obvious N
+elements.  The column indices of M are stored in the JA vector.
+For element A(J), its column index is JA(J).  The elements in a
+row may be stored in any order.
+
+     The new Yale sparse matrix format requires two vectors:
+         ___________________________________
+        |               |                   |
+   IJA: | IA            | JA                | length N + 1 + NZ(M) or
+        |_______________|___________________|        N + 1 + NZ(D+U)
+
+         ___________________________________
+        |             | |                   |
+     A: | D           |0| L and U           | length N + 1 + NZ(A) or
+        |_____________|_|___________________|        N + 1 + NZ(D+U)
+
+M is still stored in row form.  The IA-JA vectors of the old
+format are combined into a single vector, sometimes referred as
+an IJA vector.  As before, the first element of row I is
+A(IJA(I)).  In this case, the main diagonal of M is separated out
+from the nonzeros of L and U.  The diagonal for row I is in A(I).
+There is a zero after D so that the JA and L/U parts of the IJA
+and A vectors are aligned properly.  Technically, the rows of A
+should be stored in ascending column order.  However, this is not
+enforced.
+
+     The Bank-Smith sparse matrix format requires M to be a
+square matrix with a symmetric (or nearly so) zero structure.  It
+requires two vectors:
+         _________________________          
+        |               |         |          
+   IJA: | IA            | JA      |           length N + 1 + NZ(U)
+        |_______________|_________|          
+
+         ___________________________________
+        |             | |  t      |         |
+     A: | D           |0| U       | L       | length N + 1 + NZ(A) or
+        |_____________|_|_________|_________|        N + 1 + NZ(D+U)
+
+While M is stored strictly in row form, in a real sense it is
+stored in both column and row form.  Since we assume that M has a
+symmetric zero structure (or L and U are padded by a small number
+of zeros), we need only store the row indices for U (when U is
+stored in column form).  These are also the column indices for L
+(when L is stored in row form).  However, we store the transpose
+of U in row form instead of U. If M is symmetric, the elements of
+L do not have to be stored in A. The first element of column I of
+U is A(IA(I)).  The length of column I is determined by IA(I+1) -
+IA(I), which is why IA requires N+1 elements instead of the
+obvious N elements.  The row indices of U are stored in the JA
+vector.  For element A(J), its row index is JA(J).  The elements
+in a column must be stored in ascending row order.  We define
+LSHIFT to be 0 if M is symmetric and IA(N+1)-IA(1) if M is
+nonsymmetric.  The first element of L is A(IA(1)+LSHIFT).  L is
+stored in row format.  The column index of an element
+A(IA(I)+J+LSHIFT) is JA(IA(I)+J).
+
+     For all three sparse matrix formats, we can assume there are
+three vectors IA, JA, and A which describe M.  Except for the old
+Yale sparse matrix format, the vectors IA and JA are really the
+same vector IJA.  We also need a variable DIAGA which is one if
+the diagonal is separated from the rest of the nonzeros and zero
+otherwise.  Last, we need a variable SYMA which is one if M is
+stored in a symmetric manner and zero otherwise.
+
+
+
+3.  Calling Sequences
+
+     In this section, we describe the five routines which
+comprise the package.  These include two routines to multiply
+matrices, a routine for the transpose of a matrix, and two
+routines to convert between various sparse matrix formats.
+
+     For each routine in this section, the calling sequence
+assumes distinct IA and JA vectors for each matrix.  Suppose a
+matrix is actually stored using an IJA vector.  Then the routine
+should be called with IJA as an argument twice, once for each IA
+and JA.  The IJA vector should not be subscripted to point to
+either of the IA or JA parts; the routines will do this
+automatically.
+
+     We multiply two sparse matrices, resulting in a third:
+
+        C = AB.
+
+Matrix-matrix multiplication is performed in two steps.  These
+routines only support the Yale sparse matrix formats.  First, the
+nonzero structure of the resulting matrix is determined
+symbolically in SYMBMM:
+
+        subroutine SYMBMM (N,M,L, IA,JA,DIAGA, IB,JB,DIAGB,
+                           IC,JC,DIAGC, INDEX)
+
+            integer  N,M,L, IA(*),JA(*),DIAGA,
+                     IB(*),JB(*),DIAGB, IC(*),JC(*),DIAGC,
+                     INDEX(*)
+
+The number of rows and columns of the matrices are
+
+                rows     columns
+             -------------------
+            |         |         |
+          A |    N    |    M    |
+            |         |         |
+          B |    M    |    L    |
+            |         |         |
+          C |    N    |    L    |
+            |         |         |
+             -------------------
+
+INDEX is a scratch vector of length MAX(L,M,N).  It is used to
+store linked lists.  The output of SYMBMM is IC and JC.  They are
+dependent on the value of DIAGC.
+
+     Once the nonzero structure for C is known, the numerical
+matrix-matrix multiply is computed in NUMBMM:
+
+        subroutine NUMBMM (N,M,L, IA,JA,DIAGA,A, IB,JB,DIAGB,B,
+                           IC,JC,DIAGC,C, TEMP)
+
+            integer  N,M,L, IA(*),JA(*),DIAGA,
+                     IB(*),JB(*),DIAGB, IC(*),JC(*),DIAGC
+            real     A(*), B(*), C(*)
+
+TEMP is a scratch vector of length MAX(L,M,N).  It is used to
+store partial sums.
+
+     We may also compute the transpose of a matrix, resulting in
+a second:
+
+             t
+        B = A .
+
+We do this operation in TRANSP:
+
+        TRANSP (N,M, IA,JA,DIAGA,A, IB,JB,B, MOVE)
+
+            integer  N,M, IA(*),JA(*),DIAGA,
+                     IB(*),JB(*), MOVE
+            real     A(*), B(*)
+
+The number of rows and columns of the matrices are
+
+                rows     columns
+             -------------------
+            |         |         |
+          A |    N    |    M    |
+            |         |         |
+          B |    M    |    N    |
+            |         |         |
+             -------------------
+
+We assume that B will use the same diagonal storage method that
+is used for A.  We do not actually move the elements of A into B
+unless MOVE is one.
+
+     Finally, we have two routines for converting between one of
+the Yale formats and the Bank-Smith format.  This only makes
+sense when the matrices are square.  The routine YTOBS will
+convert a Yale format sparse matrix into the Bank-Smith format:
+
+        YTOBS (N, IA,JA,DIAGA,SYMA,A, IB,JB,B, MOVE)
+
+            integer  N, IA(*),JA(*),DIAGA,SYMA,
+                     IB(*),JB(*), MOVE
+            real     A(*), B(*)
+
+By definition, DIAGB must be one.  Hence, we do not need it as an
+argument.  We determine whether or not B should be stored in a
+symmetric or nonsymmetric manner from SYMA.  We do not actually
+move the elements of A into B unless MOVE is one.
+
+     The routine BSTOY will convert a Bank-Smith format sparse
+matrix into one of the Yale formats:
+
+        BSTOY (N, IA,JA,SYMA,A, IB,JB,DIAGB,B, MOVE)
+
+            integer  N, IA(*),JA(*),SYMA,
+                     IB(*),JB(*),DIAGB, MOVE
+            real     A(*), B(*)
+
+We determine which of the two formats by the value of DIAGB.  We
+determine whether or not B should be stored in a symmetric or
+nonsymmetric manner from SYMA.  We do not actually move the
+elements of A into B unless MOVE is one.
+
+
+
+4. Algorithms
+
+     In this section, we describe the algorithms actually
+implemented.  We do not show the complete details, but show in a
+metalanguage how to do the operations when the matrices are
+provided in the old Yale sparse matrix format.
+
+
+4.1  SYMBMM
+
+     Initialization consists of setting up the first row pointer
+and clearing all of the links:
+
+        ic(1) = 1
+        do i=1,n {
+            index(i) = 0
+            }
+ 
+The main loop consists of three components:  reseting the start
+column and assuming a zero number of column entries, merging the
+row lists, and copying the links into the JC vector:
+
+        do i = 1,n {
+            istart = -1                 <--- initialization
+            length = 0
+            do jj = ia(i),ia(i+1)-1 {   <--- merge row lists
+                j = ja(jj)
+                do k = ib(j),ib(j+1)-1 {
+                    if (index(jb(k)) == 0) {
+                        index(jb(k)) = istart
+                        istart = jb(k)
+                        length = length + 1
+                        }
+                    }
+                }
+            ic(i+1) = ic(i) + length
+            do j = ic(i),ic(i+1)-1 {    <--- row i of jc
+                jc(j) = istart
+                istart = index(istart)
+                index(jc(j)) = 0
+                }
+            }
+
+Note that in the last loop, only the nonzero entries are cleared.
+Due to the small number of entries (with respect to N), it would
+be extremely inefficient to clear the entire vector.  The
+resulting vectors IC and JC contain the nonzero structure of
+C = AB.
+
+
+4.2  NUMBMM
+
+     Initialization consists of setting up the first row pointer
+and clearing all of the partial sums:
+
+        ic(1) = 1
+        do i=1,n {
+            temp(i) = 0.
+            }
+ 
+The main loop forms the partial sums and then copies the completed
+sums into the correct locations in the sparse matrix structure:
+ 
+        do i = 1,n {
+             do jj = ia(i),ia(i+1)-1 {
+                j = ja(jj)
+                ajj = a(jj)
+                do 20 k = ib(j),ib(j+1)-1 {
+                    temp(jb(k)) = temp(jb(k)) + ajj * b(k)
+                    }
+                }
+            do j = ic(i),ic(i+1)-1 {
+                c(j) = temp(jc(j))
+                temp(jc(j)) = 0.
+                }
+            }
+The resulting vector C contains the numerical product AB.
+
+
+4.3  TRANSP
+
+     This routine consists of three parts.  We begin by counting
+indices for each column in order to construct IB:
+
+        do i=2,m+1 {
+            ib(i) = 0
+            }
+        ib(1)=1
+        do i = 1,n { 
+            do j = ia(i),ia(i+1)-1
+                ib(ja(j)+1) = ib(ja(j)+1)+1
+                }
+            }
+        do i = 1,m {
+           ib(i+1) = ib(i)+ib(i+1)
+           }
+ 
+Next, we construct JB:
+ 
+        do i = 1,n { 
+            do j = ia(i),ia(i+1)-1 {
+                index = ja(j)
+                jb(ib(index)) = i
+                if (move == 1) b(ib(index)) = a(j)
+                ib(index) = ib(index)+1
+                }
+            }
+ 
+Finally, we fix up IB:
+ 
+        do i=m,2,-1 {
+            ib(i)=ib(i-1)
+            }
+        ib(1)=1
+
+The resulting vectors IB and JB contain the nonzero structure of
+B = A-transpose.
+
+
+4.4  YTOBS
+
+     This routine consists of six parts.  We begin by
+estimating how many elements are in each column of the upper
+triangular part of the matrix:
+
+        do i = 1,n {
+            ib(i+1) = ia(i+1)-ia(i)
+            }
+ 
+Next, we look for upper triangular entries and duplicate entries.
+We modify JA in order not to search twice for items.
+ 
+        do i = 1,n {
+            do 4jj = ia(i),ia(i+1)-1{
+                j = ja(jj)
+                if (j > i) {
+                    ib(i+1) = ib(i+1)-1
+                    ib(j+1) = ib(j+1)+1
+                    do k = ia(j),ia(j+1)-1 {    <--- check for
+                        if (ja(k) == i) {       <--- duplicates
+                            ib(j+1) = ib(j+1)-1
+                            ja(jj) = -j
+                            k = ia(j+1)         <--- break
+                            }    
+                        }    
+                    }    
+                }
+            }
+
+ 
+Next, we compute IB:
+ 
+        ib(1) = 1
+        do i = 1,n {
+            ib(i+1) = ib(i+1) + ib(i)
+            }
+ 
+We now initialize B:
+ 
+        if (move == 1) {
+            do ii = 1,ib(n+1)+lshift-1 {
+                b(ii) = 0.
+                }
+            }
+
+We now compute JB and restore JA:
+ 
+        do i = 1,n {
+            do jj = ia(i),ia(i+1)-1 {
+                j = ja(jj)
+                if (j > i) {
+                    jb(ib(j)) = i
+                    if (move == 1) {
+                        b(ib(j)) = a(jj)
+                        }
+                    ib(j) = ib(j) + 1
+                    }
+                else {
+                    if (j <= 0) {
+                        ja(jj) = -j
+                        if (move == 1 & i == -j) {
+                            b(ib(i)) = a(jj)
+                            }
+                        }
+                    else {
+                        jb(ib(i)) = j
+                        if (move == 1) {
+                            b(ib(i)) = a(jj)
+                            }
+                        ib(i) = ib(i) + 1
+                        }
+                    }
+                }
+            }
+ 
+Finally, we fix up IB:
+ 
+        do i=n,2,-1 {
+            ib(i) = ib(i-1)
+            }
+        ib(1)=1
+
+The resulting vectors IB and JB contain the nonzero structure of
+A in the Bank-Smith sparse format.  In addition, the nonzeros of
+B are copied if so requested.
+
+
+4.5  BSTOY
+
+     This routine consists of four parts.  We begin by
+estimating how many elements are in each column of the matrix:
+
+        ib(1) = 1
+        do i = 1,n {
+            ib(i+1) = ia(i+1) - ia(i) + 1
+            }
+        do i = 1,n {
+            do j = ia(i),ia(i+1)-1 {
+                ib(ja(j)+1) = ib(ja(j)+1) + 1
+                }
+            }
+        do i = 1,n {
+            ib(i+1) = ib(i+1) + ib(i)
+            }
+
+Now deal with the diagonal elements:
+
+        do i = 1,n {
+            jb(ib(i)) = i
+            if (move == 1) {
+                b(ib(i)) = a(i)
+                }
+            ib(i) = ib(i) + 1
+            }
+ 
+Now compute JB:
+ 
+        do i = 1,n {
+            do jj = ia(i),ia(i+1)-1{
+                j = ja(jj)
+                jb(ib(j)) = i
+                jb(ib(i)) = j
+                if (move == 1) {
+                    b(ib(j)) = a(jj)
+                    b(ib(i)) = a(jj)
+                    }
+                ib(i) = ib(i) + 1
+                ib(j) = ib(j) + 1
+                }
+            }
+ 
+Finally, we fix up IB:
+ 
+        do i=n,2,-1 {
+            ib(i) = ib(i-1)
+            }
+        ib(1) = 1
+
+The resulting vectors IB and JB contain the nonzero structure of
+A in the old Yale sparse matrix package format.  In addition, the
+nonzeros of B are copied if so requested.
+
