@@ -487,7 +487,6 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
     i8_f64_smmp(
           shape[0],
           shape[1],
-          left->storage->shape[1],
           ((YALE_STORAGE*)(left->storage))->ija,
           ((YALE_STORAGE*)(left->storage))->ija,
           true,

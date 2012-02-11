@@ -53,11 +53,15 @@ void print_vectors(YALE_STORAGE* s) {
 
 
 // Determine the index dtype (which will be used for the ija vector). This is determined by matrix shape, not IJA/A vector capacity.
+// Note that it's MAX-2 because UINTX_MAX and UINTX_MAX-1 are both reserved for sparse matrix multiplication.
 int8_t yale_index_dtype(YALE_STORAGE* s) {
-  if (YALE_MAX_SIZE(s) < UINT8_MAX) return NM_INT8;
-  else if (YALE_MAX_SIZE(s) < UINT16_MAX) return NM_INT16;
-  else if (YALE_MAX_SIZE(s) < UINT32_MAX) return NM_INT32;
-  else return NM_INT64;
+  if (YALE_MAX_SIZE(s) < UINT8_MAX-2) return NM_INT8;
+  else if (YALE_MAX_SIZE(s) < UINT16_MAX-2) return NM_INT16;
+  else if (YALE_MAX_SIZE(s) < UINT32_MAX-2) return NM_INT32;
+  else if (YALE_MAX_SIZE(s) >= UINT64_MAX-2)
+    fprintf(stderr, "WARNING: Matrix can contain no more than %u non-diagonal non-zero entries, or results may be unpredictable\n", UINT64_MAX - SMMP_MIN(s->shape[0],s->shape[1]) - 2);
+    // TODO: Turn this into an exception somewhere else. It's pretty unlikely, but who knows.
+  return NM_INT64;
 }
 
 

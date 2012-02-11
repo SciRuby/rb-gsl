@@ -3,21 +3,16 @@
  * Randolph E. Bank and Craig C. Douglas                                   *
  * na.bank@na-net.ornl.gov and na.cdouglas@na-net.ornl.gov                 *
  * ======================================================================= */
-
-/* Translated by f2c (version 20090411) and modified by John Woods.
- * You must link the resulting object file with libf2c:
- *  - on Microsoft Windows system, link with libf2c.lib;
- *  - on Linux or Unix systems, link with .../path/to/libf2c.a -lm
- *  - or, if you install libf2c.a in a standard place, with -lf2c -lm
- *    -- in that order, at the end of the command line, as in
- *
- *		cc *.o -lf2c -lm
- *
- *	The source for libf2c is in /netlib/f2c/libf2c.zip, e.g.,
- *
- *		http://www.netlib.org/f2c/libf2c.zip
- */
+// This was originally derived from the above paper, but the algorithm they
+// give, in Fortran, uses 1-based indexing, and I simply could not make it
+// work. So I went back to where I found the link to that paper -- SciPy's
+// CSR type -- and looked at what they had done:
+//
+// https://github.com/scipy/scipy/blob/master/scipy/sparse/sparsetools/csr.h
+//
+// However, the SciPy version does not use the "new Yale" format, but rather
+// "old Yale." Thus, some modification was necessary -- reincorporating some
+// stuff from the original Bank & Douglas paper.
 
 #include <stdio.h>
-// #include "f2c.h"
 #include "smmp.h"

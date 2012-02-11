@@ -8,7 +8,7 @@
 // Shouldn't be necessary, as they're defined in types.h:
 // (Oddly, though, these fix the error.)
 typedef uint8_t   u_int8_t;
-typedef uint16_t   u_int16_t;
+typedef uint16_t  u_int16_t;
 typedef uint32_t  u_int32_t;
 typedef uint64_t  u_int64_t;
 
@@ -17,60 +17,60 @@ typedef uint64_t  u_int64_t;
 #define SMMP_MIN(a,b) ((a)>(b) ? (b) : (a))
 #define SMMP_MAX(a,b) ((a)>(b) ? (a) : (b))
 
-void i8_symbmm_(u_int8_t n, u_int8_t m, u_int8_t l, u_int8_t *ia,
+void i8_symbmm_(u_int8_t n, u_int8_t m, u_int8_t *ia,
 	u_int8_t *ja, bool diaga, u_int8_t *ib, u_int8_t *jb, bool diagb,
 	 u_int8_t *ic, u_int8_t *jc, bool diagc);
 
-void i16_symbmm_(u_int16_t n, u_int16_t m, u_int16_t l, u_int16_t *ia,
+void i16_symbmm_(u_int16_t n, u_int16_t m, u_int16_t *ia,
 	u_int16_t *ja, bool diaga, u_int16_t *ib, u_int16_t *jb, bool diagb,
 	 u_int16_t *ic, u_int16_t *jc, bool diagc);
 
-void i32_symbmm_(u_int32_t n, u_int32_t m, u_int32_t l, u_int32_t *ia,
+void i32_symbmm_(u_int32_t n, u_int32_t m, u_int32_t *ia,
 	u_int32_t *ja, bool diaga, u_int32_t *ib, u_int32_t *jb, bool diagb,
 	 u_int32_t *ic, u_int32_t *jc, bool diagc);
 
-void i64_symbmm_(u_int64_t n, u_int64_t m, u_int64_t l, u_int64_t *ia,
+void i64_symbmm_(u_int64_t n, u_int64_t m, u_int64_t *ia,
 	u_int64_t *ja, bool diaga, u_int64_t *ib, u_int64_t *jb, bool diagb,
 	 u_int64_t *ic, u_int64_t *jc, bool diagc);
 
 
 
-void i8_f32_numbmm_(u_int8_t n, u_int8_t m, u_int8_t l, u_int8_t *ia,
+void i8_f32_numbmm_(u_int8_t n, u_int8_t m, u_int8_t *ia,
 	u_int8_t *ja, bool diaga, float *a, u_int8_t *ib, u_int8_t *jb,
 	bool diagb, float *b, u_int8_t *ic, u_int8_t *jc, bool diagc,
 	float *c__);
 
-void i8_f64_numbmm_(u_int8_t n, u_int8_t m, u_int8_t l, u_int8_t *ia,
+void i8_f64_numbmm_(u_int8_t n, u_int8_t m, u_int8_t *ia,
 	u_int8_t *ja, bool diaga, double *a, u_int8_t *ib, u_int8_t *jb,
 	bool diagb, double *b, u_int8_t *ic, u_int8_t *jc, bool diagc,
 	double *c__);
 
-void i16_f32_numbmm_(u_int16_t n, u_int16_t m, u_int16_t l, u_int16_t *ia,
+void i16_f32_numbmm_(u_int16_t n, u_int16_t m, u_int16_t *ia,
 	u_int16_t *ja, bool diaga, float *a, u_int16_t *ib, u_int16_t *jb,
 	bool diagb, float *b, u_int16_t *ic, u_int16_t *jc, bool diagc,
 	float *c__);
 
-void i16_f64_numbmm_(u_int16_t n, u_int16_t m, u_int16_t l, u_int16_t *ia,
+void i16_f64_numbmm_(u_int16_t n, u_int16_t m, u_int16_t *ia,
 	u_int16_t *ja, bool diaga, double *a, u_int16_t *ib, u_int16_t *jb,
 	bool diagb, double *b, u_int16_t *ic, u_int16_t *jc, bool diagc,
 	double *c__);
 
-void i32_f32_numbmm_(u_int32_t n, u_int32_t m, u_int32_t l, u_int32_t *ia,
+void i32_f32_numbmm_(u_int32_t n, u_int32_t m, u_int32_t *ia,
 	u_int32_t *ja, bool diaga, float *a, u_int32_t *ib, u_int32_t *jb,
 	bool diagb, float *b, u_int32_t *ic, u_int32_t *jc, bool diagc,
 	float *c__);
 
-void i32_f64_numbmm_(u_int32_t n, u_int32_t m, u_int32_t l, u_int32_t *ia,
+void i32_f64_numbmm_(u_int32_t n, u_int32_t m, u_int32_t *ia,
 	u_int32_t *ja, bool diaga, double *a, u_int32_t *ib, u_int32_t *jb,
 	bool diagb, double *b, u_int32_t *ic, u_int32_t *jc, bool diagc,
 	double *c__);
 
-void i64_f32_numbmm_(u_int64_t n, u_int64_t m, u_int64_t l, u_int64_t *ia,
+void i64_f32_numbmm_(u_int64_t n, u_int64_t m, u_int64_t *ia,
 	u_int64_t *ja, bool diaga, float *a, u_int64_t *ib, u_int64_t *jb,
 	bool diagb, float *b, u_int64_t *ic, u_int64_t *jc, bool diagc,
 	float *c__);
 
-void i64_f64_numbmm_(u_int64_t n, u_int64_t m, u_int64_t l, u_int64_t *ia,
+void i64_f64_numbmm_(u_int64_t n, u_int64_t m, u_int64_t *ia,
 	u_int64_t *ja, bool diaga, double *a, u_int64_t *ib, u_int64_t *jb,
 	bool diagb, double *b, u_int64_t *ic, u_int64_t *jc, bool diagc,
 	double *c__);
@@ -105,7 +105,6 @@ void i64_f64_transp_(int64_t n, int64_t m, int64_t *ia, int64_t *ja,
 void i8_f32_smmp(
   u_int8_t  n,    // # rows in A / C
   u_int8_t m,    // # columns in A / rows in B
-  u_int8_t l,    // # columns in B / C
   u_int8_t *ia,  // the IA array for A
   u_int8_t *ja,  // the JA array for A
   bool diaga,// 1 for new yale, 0 for old yale
@@ -123,7 +122,6 @@ void i8_f32_smmp(
 void i8_f64_smmp(
   u_int8_t  n,    // # rows in A / C
   u_int8_t m,    // # columns in A / rows in B
-  u_int8_t l,    // # columns in B / C
   u_int8_t *ia,  // the IA array for A
   u_int8_t *ja,  // the JA array for A
   bool diaga,// 1 for new yale, 0 for old yale
@@ -141,7 +139,6 @@ void i8_f64_smmp(
 void i16_f32_smmp(
   u_int16_t  n,    // # rows in A / C
   u_int16_t m,    // # columns in A / rows in B
-  u_int16_t l,    // # columns in B / C
   u_int16_t *ia,  // the IA array for A
   u_int16_t *ja,  // the JA array for A
   bool diaga,// 1 for new yale, 0 for old yale
@@ -159,7 +156,6 @@ void i16_f32_smmp(
 void i16_f64_smmp(
   u_int16_t  n,    // # rows in A / C
   u_int16_t m,    // # columns in A / rows in B
-  u_int16_t l,    // # columns in B / C
   u_int16_t *ia,  // the IA array for A
   u_int16_t *ja,  // the JA array for A
   bool diaga,// 1 for new yale, 0 for old yale
@@ -177,7 +173,6 @@ void i16_f64_smmp(
 void i32_f32_smmp(
   u_int32_t  n,    // # rows in A / C
   u_int32_t m,    // # columns in A / rows in B
-  u_int32_t l,    // # columns in B / C
   u_int32_t *ia,  // the IA array for A
   u_int32_t *ja,  // the JA array for A
   bool diaga,// 1 for new yale, 0 for old yale
@@ -195,7 +190,6 @@ void i32_f32_smmp(
 void i32_f64_smmp(
   u_int32_t  n,    // # rows in A / C
   u_int32_t m,    // # columns in A / rows in B
-  u_int32_t l,    // # columns in B / C
   u_int32_t *ia,  // the IA array for A
   u_int32_t *ja,  // the JA array for A
   bool diaga,// 1 for new yale, 0 for old yale
@@ -213,7 +207,6 @@ void i32_f64_smmp(
 void i64_f32_smmp(
   u_int64_t  n,    // # rows in A / C
   u_int64_t m,    // # columns in A / rows in B
-  u_int64_t l,    // # columns in B / C
   u_int64_t *ia,  // the IA array for A
   u_int64_t *ja,  // the JA array for A
   bool diaga,// 1 for new yale, 0 for old yale
@@ -231,7 +224,6 @@ void i64_f32_smmp(
 void i64_f64_smmp(
   u_int64_t  n,    // # rows in A / C
   u_int64_t m,    // # columns in A / rows in B
-  u_int64_t l,    // # columns in B / C
   u_int64_t *ia,  // the IA array for A
   u_int64_t *ja,  // the JA array for A
   bool diaga,// 1 for new yale, 0 for old yale

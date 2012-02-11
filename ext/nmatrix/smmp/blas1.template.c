@@ -28,5 +28,5 @@ void %%INT_ABBREV%%_symbmm(u_%%INT%% n,   // # rows in A / C
   }
 
 
-  %%INT_ABBREV%%_symbmm_(n, m, l, ia, ja, diaga, ib, jb, diagb, ic, jc, diagc);
+  %%INT_ABBREV%%_symbmm_(n, m, ia, ja, diaga, ib, jb, diagb, ic, jc, diagc);
 }

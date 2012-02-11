@@ -2,7 +2,6 @@
 void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(
   u_%%INT%% n,    // # rows in A / C
   u_%%INT%% m,    // # columns in A / rows in B
-  u_%%INT%% l,    // # columns in B / C
   u_%%INT%% *ia,  // the IA array for A
   u_%%INT%% *ja,  // the JA array for A
   bool diaga,// 1 for new yale, 0 for old yale
@@ -31,14 +30,13 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(
     return;
   }
 
-  %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, l, ia, ja, diaga, a, ib, jb, diagb, b, ic, jc, diagc, c);
+  %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, ia, ja, diaga, a, ib, jb, diagb, b, ic, jc, diagc, c);
 }
 
 // Perform both the symbolic and numeric steps together.
 void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(
   u_%%INT%%  n,    // # rows in A / C
   u_%%INT%% m,    // # columns in A / rows in B
-  u_%%INT%% l,    // # columns in B / C
   u_%%INT%% *ia,  // the IA array for A
   u_%%INT%% *ja,  // the JA array for A
   bool diaga,// 1 for new yale, 0 for old yale
@@ -67,6 +65,6 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(
     return;
   }
 
-  %%INT_ABBREV%%_symbmm_(n, m, l, ia, ja, diaga, ib, jb, diagb, ic, jc, diagc);
-  %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, l, ia, ja, diaga, a, ib, jb, diagb, b, ic, jc, diagc, c);
+  %%INT_ABBREV%%_symbmm_(n, m, ia, ja, diaga, ib, jb, diagb, ic, jc, diagc);
+  %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, ia, ja, diaga, a, ib, jb, diagb, b, ic, jc, diagc, c);
 }
