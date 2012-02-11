@@ -3,13 +3,13 @@
 #ifndef NMATRIX_H
 #define NMATRIX_H
 
-#include "types.h"
+#include "smmp.h"
 
 // Matrix multiplication
 #include <cblas.h>
 
 #include <math.h>
-#include <stddef.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -25,8 +25,6 @@
 #  define DEFAULT_DTYPE NM_INT16
 # endif
 #endif
-
-
 
 
 #define YALE_GROWTH_CONSTANT    1.5

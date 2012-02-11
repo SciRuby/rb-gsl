@@ -1,4 +1,22 @@
-class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type,  :gemm); end
+class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type,  :gemm)
+  def max_macro
+    typename = self.sizeof.to_s
+    if typename.include?('_')
+      ary = typename.split('_')
+      typename = ary[0...ary.size-1].join('')
+    end
+    typename.upcase + "_MAX"
+  end
+
+  def min_macro
+    typename = self.sizeof.to_s
+    if typename.include?('_')
+      ary = typename.split('_')
+      typename = ary[0...ary.size-1].join('')
+    end
+    typename.upcase + "_MIN"
+  end
+end
 
 module Generator
   SRC_DIR = File.join("ext", "nmatrix")
@@ -240,6 +258,7 @@ SETFN
       cmd = ["#{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{name}.template.c",
              "sed s/%%INT_ABBREV%%/#{int_dtype.id}/g",
              "sed s/%%INT%%/#{int_dtype.sizeof}/g",
+             "sed s/%%INT_MAX%%/#{int_dtype.max_macro}/g",
              "sed s/%%REAL_ABBREV%%/#{real_dtype.id}/g",
              "sed s/%%REAL%%/#{real_dtype.sizeof}/g" ]
 
@@ -252,7 +271,8 @@ SETFN
     def sub_int relative_path, name, output_name, dtype
       cmd = ["#{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{name}.template.c",
              "sed s/%%INT_ABBREV%%/#{dtype.id}/g",
-             "sed s/%%INT%%/#{dtype.sizeof}/g"]
+             "sed s/%%INT%%/#{dtype.sizeof}/g",
+             "sed s/%%INT_MAX%%/#{dtype.max_macro}/g"]
 
       raise(ArgumentError, "no such template '#{name}'; looked at #{cmd[0]}") unless File.exist?(cmd[0])
 

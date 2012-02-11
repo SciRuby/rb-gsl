@@ -489,18 +489,20 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
           shape[1],
           left->storage->shape[1],
           ((YALE_STORAGE*)(left->storage))->ija,
-          (char*)((YALE_STORAGE*)(left->storage))->ija + (shape[0]+1)*nm_sizeof[left->storage->dtype],
+          ((YALE_STORAGE*)(left->storage))->ija,
           true,
           ((YALE_STORAGE*)(left->storage))->a,
           ((YALE_STORAGE*)(right->storage))->ija,
-          (char*)((YALE_STORAGE*)(right->storage))->ija + (right->storage->shape[0]+1)*nm_sizeof[right->storage->dtype],
+          ((YALE_STORAGE*)(right->storage))->ija,
           true,
           ((YALE_STORAGE*)(right->storage))->a,
           ((YALE_STORAGE*)(result->storage))->ija,
-          (char*)((YALE_STORAGE*)(result->storage))->ija + (shape[0]+1)*nm_sizeof[result->storage->dtype],
+          ((YALE_STORAGE*)(result->storage))->ija,
           true,
           ((YALE_STORAGE*)(result->storage))->a
           );
+
+    print_vectors((YALE_STORAGE*)(result->storage));
 
     break;
   default:

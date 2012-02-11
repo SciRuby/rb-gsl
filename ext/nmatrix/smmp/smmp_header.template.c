@@ -19,6 +19,5 @@
  */
 
 #include <stdio.h>
-#include "f2c.h"
-
+// #include "f2c.h"
 #include "smmp.h"

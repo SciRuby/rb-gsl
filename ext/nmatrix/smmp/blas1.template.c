@@ -1,29 +1,32 @@
 
-void %%INT_ABBREV%%_symbmm(%%INT%% n,   // # rows in A / C
-       %%INT%% m,   // # columns in A / rows in B
-       %%INT%% l,   // # columns in B / C
-       %%INT%%* ia, // the IA array for A
-       %%INT%%* ja, // the JA array for A
-       %%INT%% diaga, // 1 for new yale, 0 for old yale
-       %%INT%%* ib, // the IA array for B
-       %%INT%%* jb, // the JA array for B
-       %%INT%% diagb, // 1 for new yale, 0 for old yale
-       %%INT%%* ic, // the IA array for result
-       %%INT%%* jc, // the JA array for result
-       %%INT%% diagc, // 1 for new yale, 0 for old yale
-       %%INT%%* index // scratch vector -- set to NULL if you want automatic allocation
-       )
+void %%INT_ABBREV%%_symbmm(u_%%INT%% n,   // # rows in A / C
+       u_%%INT%% m,   // # columns in A / rows in B
+       u_%%INT%% l,   // # columns in B / C
+       u_%%INT%%* ia, // the IA array for A
+       u_%%INT%%* ja, // the JA array for A
+       bool diaga, // 1 for new yale, 0 for old yale
+       u_%%INT%%* ib, // the IA array for B
+       u_%%INT%%* jb, // the JA array for B
+       bool diagb, // 1 for new yale, 0 for old yale
+       u_%%INT%%* ic, // the IA array for result
+       u_%%INT%%* jc, // the JA array for result
+       bool diagc) // 1 for new yale, 0 for old yale
 {
-  bool alloc_index;
+  if (diaga && ia != ja) {
+    fprintf(stderr, "diaga=1, but ia!=ja. For new yale, ia must equal ja.");
+    return;
+  }
 
-  // Do we need to allocate a scratch vector? Make it so it automatically frees when we finish.
-  if (!index) {
-    fprintf(stderr, "allocating index to size %d * %d\n", SMMP_MAX_THREE(l,m,m), sizeof(%%INT%%));
-    index = malloc( SMMP_MAX_THREE(l,m,n) * sizeof(%%INT%%) );
-    alloc_index = true;
-  } else alloc_index = false;
+  if (diagb && ib != jb) {
+    fprintf(stderr, "diagb=1, but ib!=jb. For new yale, ib must equal jb.");
+    return;
+  }
 
-  %%INT_ABBREV%%_symbmm_(&n, &m, &l, ia, ja, &diaga, ib, jb, &diagb, ic, jc, &diagc, index);
+  if (diagc && ic != jc) {
+    fprintf(stderr, "diagc=1, but ic!=jc. For new yale, ic must equal jc.");
+    return;
+  }
 
-  if (alloc_index) free(index);
+
+  %%INT_ABBREV%%_symbmm_(n, m, l, ia, ja, diaga, ib, jb, diagb, ic, jc, diagc);
 }

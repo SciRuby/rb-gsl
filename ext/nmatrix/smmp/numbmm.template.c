@@ -1,74 +1,54 @@
 // numeric matrix multiply c=a*b
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(%%INT%% *n, %%INT%% *m, %%INT%% *l, %%INT%% *ia,
-	%%INT%% *ja, %%INT%% *diaga, %%REAL%% *a, %%INT%% *ib, %%INT%% *jb,
-	%%INT%% *diagb, %%REAL%% *b, %%INT%% *ic, %%INT%% *jc, %%INT%% *diagc,
-	%%REAL%% *c, %%REAL%% *temp)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(u_%%INT%% n, u_%%INT%% m, u_%%INT%% l,
+    u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a,
+    u_%%INT%% *ib, u_%%INT%% *jb,	bool diagb, %%REAL%% *b,
+    u_%%INT%% *ic, u_%%INT%% *jc, bool diagc,	%%REAL%% *c)
 {
+  %%REAL%% temp[SMMP_MAX_THREE(l,m,n) * sizeof(%%REAL%%)];
 
   /* Local variables */
-  static %%INT%% i, j, k, jj;
-  static %%REAL%% ajj;
-  static %%INT%% minlm, minln, minmn, maxlmn;
+  u_%%INT%% i, j, k, jj;
+  %%REAL%% ajj;
+  u_%%INT%% minlm, minln, minmn, maxlmn;
 
-  /* Parameter adjustments (F2C) */
-  --temp;
-  --c;
-  --jc;
-  --ic;
-  --b;
-  --jb;
-  --ib;
-  --a;
-  --ja;
-  --ia;
+  maxlmn = SMMP_MAX_THREE(l,m,n);
 
-  /* Function Body */
-  /* Computing MAX */
-  maxlmn = SMMP_MAX_THREE(*l,*m,*n);
+  for (i = 0; i < maxlmn; ++i) // initialize scratch array to 0
+    temp[i] = 0;
 
-  for (i = 1; i <= maxlmn; ++i) // initialize scratch array to 0
-    temp[i] = (%%REAL%%)(0); /* L10: */
+  minlm = SMMP_MIN(l,m);
+  minln = SMMP_MIN(l,n);
+  minmn = SMMP_MIN(m,n);
 
-  minlm = SMMP_MIN(*l,*m);
-  minln = SMMP_MIN(*l,*n);
-  minmn = SMMP_MIN(*m,*n);
 
-/*   c = a*b */
+  for (i = 0; i < n; ++i) { // walk down the rows
 
-  for (i = 1; i <= *n; ++i) {
+    for (jj = ia[i]; jj <= ia[i+1]; ++jj) { // walk through columns in each row
 
-    for (jj = ia[i]; jj <= ia[i+1]; ++jj) {
-      /*    a = d + ... */
-      if (jj == ia[i + 1]) {
-        if (*diaga == 0 || i > minmn) goto L30;
-        j = i;
+      if (jj == ia[i+1]) { // if we're in the last entry for this row:
+        if (!diaga || i >= minmn) continue;
+        j   = i;      // if it's a new Yale matrix, and last entry, get the diagonal position (j) and entry (ajj)
         ajj = a[i];
       } else {
-        j = ja[jj];
+        j   = ja[jj]; // if it's not the last entry for this row, get the column (j) and entry (ajj)
         ajj = a[jj];
       }
 
-      /*    b = d + ... */
-      if (*diagb == 1 && j <= minlm) temp[j] += ajj * b[j];
+      if (diagb && j < minlm) temp[j] += ajj * b[j];
 
-      for (k = ib[j]; k <= ib[j+1]-1; ++k)
-        temp[jb[k]] += ajj * b[k]; /* L20: */
-
-L30:
-      ;
+      for (k = ib[j]; k <= ib[j+1]-1; ++k) // walk through columns in row j of B
+        temp[jb[k]] += ajj * b[k];
     }
-    /*    c = d + ... */
-    if (*diagc == 1 && i <= minln) {
-      c[i] = temp[i];
-      temp[i] = (%%REAL%%)(0);
+
+    if (diagc && i < minln) {
+      c[i]    = temp[i];
+      temp[i] = 0;
     }
 
     for (j = ic[i]; j <= ic[i+1]-1; ++j) {
-      c[j] = temp[jc[j]];
-      /* L40: */
-      temp[jc[j]] = (%%REAL%%)(0);
+      c[j]        = temp[jc[j]];
+      temp[jc[j]] = 0;
     }
-    /* L50: */
   }
 } /* numbmm_ */
 
