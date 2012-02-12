@@ -96,7 +96,7 @@ describe NMatrix do
     end
   end
 
-  it "correctly multiplies two yale matrices" do
+  it "correctly multiplies two identical yale matrices" do
     a = NMatrix.new(:yale, 4, :float64)
     a[0,1] = 4.0
     a[1,2] = 1.0
@@ -122,6 +122,40 @@ describe NMatrix do
     c[3,1].should == 0.0
     c[3,2].should == 2.0
     c[3,3].should == 2.0
+  end
+
+  it "correctly multiplies two identical yale matrices where a positive and negative partial sum cancel on the diagonal" do
+    a = NMatrix.new(:yale, 4, :float64)
+    a[0,0] = 1.0
+    a[0,1] = 4.0
+    a[1,2] = 2.0
+    a[1,3] = -4.0
+    a[3,1] = 4.0
+    a[3,3] = 4.0
+
+    b = a.dup
+    c = a.multiply(b)
+
+    #c[0,0].should == 1.0
+    #c[0,1].should == 4.0
+    #c[0,2].should == 8.0
+    #c[0,3].should == -16.0
+    #c[1,0].should == 0.0
+    #c[1,1].should == -16.0
+    #c[1,2].should == 0.0
+    #c[1,3].should == -16.0
+    #c[2,0].should == 0.0
+    #c[2,1].should == 0.0
+    #c[2,2].should == 0.0
+    #c[2,3].should == 0.0
+    #c[3,0].should == 0.0
+    #c[3,1].should == 0.0
+    #c[3,2].should == 8.0
+    #c[3,3].should == 0.0 # this is the positive and negative partial sum cancel
+
+    c.__yale_ija__.reject { |i| i.nil? }.should == [5,8,9,9,11,1,2,3,3,1,2]
+    c.__yale_a__.reject { |i| i.nil? }.should == [1.0, -16.0, 0.0, 0.0, 0.0, 4.0, 8.0, -16.0, -16.0, 16.0, 8.0]
+
   end
 
 end

@@ -479,10 +479,9 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
     result = nm_create(S_YALE,
                        create_yale_storage(left->storage->dtype, shape, 2,
                                           ((YALE_STORAGE*)(left->storage))->capacity + ((YALE_STORAGE*)(right->storage))->capacity));
+
+    // TODO: Do we really need to initialize the whole thing? Or just the A portion?
     init_yale_storage((YALE_STORAGE*)(result->storage));
-    print_vectors((YALE_STORAGE*)(left->storage));
-    print_vectors((YALE_STORAGE*)(right->storage));
-    print_vectors((YALE_STORAGE*)(result->storage));
 
     i8_f64_smmp(
           shape[0],
@@ -500,8 +499,6 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
           true,
           ((YALE_STORAGE*)(result->storage))->a
           );
-
-    print_vectors((YALE_STORAGE*)(result->storage));
 
     break;
   default:

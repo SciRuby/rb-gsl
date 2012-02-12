@@ -67,4 +67,5 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(
 
   %%INT_ABBREV%%_symbmm_(n, m, ia, ja, diaga, ib, jb, diagb, ic, jc, diagc);
   %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, ia, ja, diaga, a, ib, jb, diagb, b, ic, jc, diagc, c);
+  %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp_sort_columns_(n, ic, jc, c);
 }

@@ -289,4 +289,4 @@ Generator.make_dfuncs_c
 Generator.make_templated_c './smmp', 'blas_header', ['blas1'], 'blas1.c', 1 # 1-type interface functions for SMMP
 Generator.make_templated_c './smmp', 'blas_header', ['blas2'], 'blas2.c', 2 # 2-type interface functions for SMMP
 Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp1.c', 1 # 1-type SMMP functions from Fortran
-Generator.make_templated_c './smmp', 'smmp_header', ['numbmm', 'transp'], 'smmp2.c', 2 # 2-type SMMP functions from Fortran
+Generator.make_templated_c './smmp', 'smmp_header', ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', 2 # 2-type SMMP functions from Fortran and selection sort

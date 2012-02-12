@@ -101,6 +101,15 @@ void i64_f32_transp_(int64_t n, int64_t m, int64_t *ia, int64_t *ja,
 void i64_f64_transp_(int64_t n, int64_t m, int64_t *ia, int64_t *ja,
 	 bool diaga, double *a, int64_t *ib, int64_t *jb, double *b, bool	move);
 
+void i8_f32_smmp_sort_columns_(u_int8_t n, u_int8_t *ia, u_int8_t *ja, float *a);
+void i8_f64_smmp_sort_columns_(u_int8_t n, u_int8_t *ia, u_int8_t *ja, double *a);
+void i16_f32_smmp_sort_columns_(u_int16_t n, u_int16_t *ia, u_int16_t *ja, float *a);
+void i16_f64_smmp_sort_columns_(u_int16_t n, u_int16_t *ia, u_int16_t *ja, double *a);
+void i32_f32_smmp_sort_columns_(u_int32_t n, u_int32_t *ia, u_int32_t *ja, float *a);
+void i32_f64_smmp_sort_columns_(u_int32_t n, u_int32_t *ia, u_int32_t *ja, double *a);
+void i64_f32_smmp_sort_columns_(u_int64_t n, u_int64_t *ia, u_int64_t *ja, float *a);
+void i64_f64_smmp_sort_columns_(u_int64_t n, u_int64_t *ia, u_int64_t *ja, double *a);
+
 
 void i8_f32_smmp(
   u_int8_t  n,    // # rows in A / C

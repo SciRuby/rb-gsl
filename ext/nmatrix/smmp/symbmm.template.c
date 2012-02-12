@@ -42,19 +42,6 @@ void %%INT_ABBREV%%_symbmm_(u_%%INT%% n, u_%%INT%% m,
     if (diagc && !mask[i]) --ndnz;
 
     ic[i+1] = ndnz;
-//    fprintf(stderr, "set row length for row i=%u to %u\n", i, length);
-//
-//    for (j = ic[i]; j < ic[i+1]; ++j) {
-//      if (diagc && istart == i) {
-//        istart                 = index[istart+1];
-//        index[istart+1] = 0;
-//      }
-//      jc[j]                 = istart;
-//
-//      istart                = index[istart+1];
-//      index[jc[j]+1] = 0;
-//    }
-//    index[i+1] = 0;
   }
 } /* symbmm_ */
 

@@ -26,7 +26,6 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(u_%%INT%% n, u_%%INT%% m,
     jj_start = ia[i];
     jj_end   = ia[i+1];
 
-    fprintf(stderr, "*** part A\n");
     for (jj = jj_start; jj <= jj_end; ++jj) { // walk through entries in each row
 
       if (jj == jj_end) { // if we're in the last entry for this row:
@@ -45,11 +44,9 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(u_%%INT%% n, u_%%INT%% m,
         if (kk == kk_end) { // Get the column id for that entry
           if (!diagb || j >= minmn) continue;
           k  = j;
-          fprintf(stderr, "i=%u, jj=%u, j=%u, DIAG, k=%u, v=%f: assigning partial sum v*b[k]+=%f\n", i, jj, j, k, v, v*b[k]);
           sums[k] += v*b[k];
         } else {
           k  = jb[kk];
-          fprintf(stderr, "i=%u, jj=%u, j=%u, kk=%u, k=%u, v=%f: assigning partial sum v*b[kk]+=%f\n", i, jj, j, kk, k, v, v*b[kk]);
           sums[k] += v*b[kk];
         }
 
@@ -57,28 +54,15 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(u_%%INT%% n, u_%%INT%% m,
           next[k] = head;
           head    = k;
           ++length;
-          fprintf(stderr, "\tk=%u, next[k]=head=%u, new head=%u, length=%u\n", k, next[k], head, length);
         }
       }
     }
 
-/*    if (diagc && i < minln) {
-      c[i]    = temp[i];
-      temp[i] = 0;
-    }
-
-    for (j = ic[i]; j <= ic[i+1]-1; ++j) {
-      c[j]        = temp[jc[j]];
-      temp[jc[j]] = 0;
-    }*/
-    fprintf(stderr, "*** part B\n");
     for (jj = 0; jj < length; ++jj) {
       if (sums[head]) {
         if (diagc && head == i) {
-          fprintf(stderr, "diag: assigning c[head=%u] <- %f\n", head, sums[head]);
           c[head]    = sums[head];
         } else {
-          fprintf(stderr, "nd: assigning c[n+ndnz=%u+%u], head=%u <- %f\n", n,ndnz, head, sums[head]);
           jc[n+1+ndnz] = head;
           c[ n+1+ndnz] = sums[head];
           ++ndnz;
@@ -92,7 +76,6 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(u_%%INT%% n, u_%%INT%% m,
       sums[temp] = 0;
     }
 
-    fprintf(stderr, "ic[i+1] at i=%u being assigned %u+%u\n", i, n, ndnz);
     ic[i+1] = n+1+ndnz;
   }
 } /* numbmm_ */
