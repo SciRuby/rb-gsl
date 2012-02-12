@@ -244,7 +244,7 @@ SETFN
           end
         else
           DTYPES.each do |dtype|
-            next unless [:NM_FLOAT32, :NM_FLOAT64].include?(dtype.enum)
+            next unless [:NM_BYTE, :NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64, :NM_FLOAT32, :NM_FLOAT64].include?(dtype.enum)
             names.each do |name|
               sub_int_real relative_path, name, output_name, index_dtype, dtype
             end

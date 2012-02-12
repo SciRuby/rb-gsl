@@ -1,19 +1,5 @@
 
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(
-  u_%%INT%% n,    // # rows in A / C
-  u_%%INT%% m,    // # columns in A / rows in B
-  u_%%INT%% *ia,  // the IA array for A
-  u_%%INT%% *ja,  // the JA array for A
-  bool diaga,// 1 for new yale, 0 for old yale
-  %%REAL%% *a,  // the A array for matrix A
-  u_%%INT%% *ib,  // the IA array for B
-  u_%%INT%% *jb,  // the JA array for B
-  bool diagb,// 1 for new yale, 0 for old yale
-  %%REAL%% *b,  // the A array for matrix B
-  u_%%INT%% *ic,  // the IA array for result
-  u_%%INT%% *jc,  // the JA array for result
-  bool diagc,// 1 for new yale, 0 for old yale
-  %%REAL%% *c)  // the A array for matrix C
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(u_%%INT%% n, u_%%INT%% m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, bool diagb, %%REAL%% *b, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc, %%REAL%% *c)
 {
   if (diaga && ia != ja) {
     fprintf(stderr, "diaga=1, but ia!=ja. For new yale, ia must equal ja.");
@@ -34,22 +20,8 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(
 }
 
 // Perform both the symbolic and numeric steps together.
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(
-  u_%%INT%%  n,    // # rows in A / C
-  u_%%INT%% m,    // # columns in A / rows in B
-  u_%%INT%% *ia,  // the IA array for A
-  u_%%INT%% *ja,  // the JA array for A
-  bool diaga,// 1 for new yale, 0 for old yale
-  %%REAL%% *a,  // the A array for matrix A
-  u_%%INT%% *ib,  // the IA array for B
-  u_%%INT%% *jb,  // the JA array for B
-  bool diagb,// 1 for new yale, 0 for old yale
-  %%REAL%% *b,  // the A array for matrix B
-  u_%%INT%% *ic,  // the IA array for result
-  u_%%INT%% *jc,  // the JA array for result
-  bool diagc,// 1 for new yale, 0 for old yale
-  %%REAL%% *c   // the A array for matrix C
-) {
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(u_%%INT%%  n, u_%%INT%% m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, bool diagb, %%REAL%% *b, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc, %%REAL%% *c)
+{
   if (diaga && ia != ja) {
     fprintf(stderr, "diaga=1, but ia!=ja. For new yale, ia must equal ja.");
     return;

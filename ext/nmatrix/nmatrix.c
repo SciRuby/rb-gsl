@@ -48,6 +48,25 @@ nm_gemm_t GemmFuncs = { // by NM_TYPES
 };
 
 
+// First dimension is dtype, second dimension is index dtype (so lots of nulls)
+nm_smmp_t SmmpFuncs = {
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_NONE
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_BYTE
+  {NULL, NULL, i8_i8_smmp, i16_i8_smmp, i32_i8_smmp, i64_i8_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT8
+  {NULL, NULL, i8_i16_smmp, i16_i16_smmp, i32_i16_smmp, i64_i16_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT16
+  {NULL, NULL, i8_i32_smmp, i16_i32_smmp, i32_i32_smmp, i64_i32_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT32
+  {NULL, NULL, i8_i64_smmp, i16_i64_smmp, i32_i64_smmp, i64_i64_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT64
+  {NULL, NULL, i8_f32_smmp, i16_f32_smmp, i32_f32_smmp, i64_f32_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_FLOAT32
+  {NULL, NULL, i8_f64_smmp, i16_f64_smmp, i32_f64_smmp, i64_f64_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_FLOAT64
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_COMPLEX64
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_COMPLEX128
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL32
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL64
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL128
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}  // NM_ROBJ
+};
+
+
 static void nm_delete(NMATRIX* mat) {
   DeleteFuncs[mat->stype](mat->storage);
 }
@@ -483,7 +502,8 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
     // TODO: Do we really need to initialize the whole thing? Or just the A portion?
     init_yale_storage((YALE_STORAGE*)(result->storage));
 
-    i8_f64_smmp(
+    // call the appropriate function pointer
+    SmmpFuncs[ left->storage->dtype ][ ((YALE_STORAGE*)(left->storage))->index_dtype ](
           shape[0],
           shape[1],
           ((YALE_STORAGE*)(left->storage))->ija,
@@ -785,6 +805,7 @@ static VALUE nm_yale_lu(VALUE self) {
 }
 
 
+// Only works for i8/f64
 static VALUE nm_yale_print_vectors(VALUE self) {
   if (NM_STYPE(self) != S_YALE || NM_DTYPE(self) != NM_FLOAT64) rb_raise(rb_eTypeError, "must be yale float64 matrix");
 
