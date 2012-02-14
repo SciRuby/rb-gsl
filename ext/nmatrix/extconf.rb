@@ -65,10 +65,8 @@ list
 dense
 yale
 dfuncs
-smmp1
-smmp2
-blas1
-blas2
+smmp
+blas
 )
 
 header = "stdint.h"

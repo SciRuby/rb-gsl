@@ -1,13 +1,9 @@
 dtypes.h dtypes.c smmp1.c smmp2.c blas1.c blas2.c: generator.rb
 	$(RUBY) -I$(srcdir) $(srcdir)/generator.rb
 
-smmp1.o: smmp1.c smmp.h smmp/smmp_header.template.c smmp/symbmm.template.c
+smmp.o: smmp.c smmp.h smmp/smmp_header.template.c smmp/symbmm.template.c smmp/transp.template.c smmp/numbmm.template.c
 
-smmp2.o: smmp2.c smmp.h smmp/transp.template.c smmp/numbmm.template.c
-
-blas1.o: blas1.c nmatrix_config.h smmp.h
-
-blas2.o: blas2.c nmatrix_config.h smmp.h
+blas.o: blas.c nmatrix_config.h smmp.h
 
 dfuncs.o: dfuncs.c $(hdrdir)/ruby.h
 
