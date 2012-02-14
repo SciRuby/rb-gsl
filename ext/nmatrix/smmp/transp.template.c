@@ -1,98 +1,60 @@
 
-/* Subroutine */ void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(%%INT%% n, %%INT%% m, %%INT%% *ia, %%INT%% *ja,
-	 bool diaga, %%REAL%% *a, %%INT%% *ib, %%INT%% *jb, %%REAL%% *b, bool move)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(u_%%INT%% n, u_%%INT%% m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, %%REAL%% *b, bool move)
 {
-    /* System generated locals */
-    %%INT%% i__1, i__2;
+  u_%%INT%% i, j, index;
 
-    /* Local variables */
-    static %%INT%% i__, j, index;
+  // Clear B
+  for (i = 0; i < m+1; ++i)
+    ib[i] = 0;
+  if (move) {
+    for (i = 0; i < m+1; ++i)
+      b[i] = 0;
+  }
 
-
-
-
-/*       compute b = a(transpose) */
-
-/*       first make ib */
-
-    /* Parameter adjustments */
-    --b;
-    --jb;
-    --ib;
-    --a;
-    --ja;
-    --ia;
-
-    /* Function Body */
-    i__1 = m + 1;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-/* L10: */
-	ib[i__] = 0;
-    }
-    if (move) {
-	i__1 = m + 1;
-	for (i__ = 1; i__ <= i__1; ++i__) {
-/* L15: */
-	    b[i__] = 0.f;
-	}
-    }
-    if (diaga) {
-	ib[1] = m + 2;
-    } else {
-	ib[1] = 1;
-    }
+  if (diaga) ib[0] = m + 1;
+  else       ib[0] = 0;
 
 /*       count indices for each column */
 
-    i__1 = n;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-	i__2 = ia[i__ + 1] - 1;
-	for (j = ia[i__]; j <= i__2; ++j) {
-	    ++ib[ja[j] + 1];
-/* L20: */
-	}
-/* L30: */
-    }
-    i__1 = m;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-/* L40: */
-	ib[i__ + 1] = ib[i__] + ib[i__ + 1];
-    }
+  for (i = 0; i < n; ++i) {
+    for (j = ia[i]; j < ia[i+1]; ++j)
+        ++(ib[ja[j]+1]);
+  }
+
+  for (i = 0; i < m; ++i)
+    ib[i+1] = ib[i] + ib[i+1];
 
 /*       now make jb */
 
-    i__1 = n;
-    for (i__ = 1; i__ <= i__1; ++i__) {
-	i__2 = ia[i__ + 1] - 1;
-	for (j = ia[i__]; j <= i__2; ++j) {
-	    index = ja[j];
-	    jb[ib[index]] = i__;
-	    if (move) {
-		b[ib[index]] = a[j];
-	    }
-	    ++ib[index];
-/* L50: */
-	}
-/* L60: */
+  for (i = 0; i < n; ++i) {
+
+    for (j = ia[i]; j < ia[i+1]; ++j) {
+      index = ja[j];
+      jb[ib[index]] = i;
+
+      if (move)
+        b[ib[index]] = a[j];
+
+      ++(ib[index]);
     }
+  }
 
 /*       now fixup ib */
 
-    for (i__ = m; i__ >= 2; --i__) {
-/* L70: */
-	ib[i__] = ib[i__ - 1];
+  for (i = m; i >= 1; --i)
+    ib[i] = ib[i-1];
+
+
+  if (diaga) {
+    if (move) {
+      j = SMMP_MIN(n,m);
+
+      for (i = 0; i < j; ++i)
+        b[i] = a[i];
     }
-    if (diaga) {
-	if (move == 1) {
-	    j = SMMP_MIN(n,m);
-	    i__1 = j;
-	    for (i__ = 1; i__ <= i__1; ++i__) {
-/* L80: */
-		b[i__] = a[i__];
-	    }
-	}
-	ib[1] = m + 2;
-    } else {
-	ib[1] = 1;
-    }
-} /* transp_ */
+    ib[0] = m + 1;
+
+  } else {
+    ib[0] = 0;
+  }
+}

@@ -30,6 +30,7 @@ nm_delete_t DeleteFuncs = {
   delete_yale_storage
 };
 
+
 nm_gemm_t GemmFuncs = { // by NM_TYPES
   NULL,
   NULL,
@@ -875,6 +876,77 @@ static VALUE nm_yale_ija(VALUE self) {
 }
 
 
+static VALUE nm_transpose_new(VALUE self) {
+  NMATRIX *self_m, *result;
+  size_t sz;
+  size_t* shape   = malloc(sizeof(size_t)*2);
+
+  UnwrapNMatrix( self, self_m );
+
+  // switch the dimensions
+  shape[1] = self_m->storage->shape[0];
+  shape[0] = self_m->storage->shape[1];
+
+  switch(self_m->stype) {
+  case S_DENSE:
+    //result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2));
+
+    // call CBLAS xgemm (type-specific general matrix multiplication)
+    // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
+    /*GemmFuncs[left->storage->dtype](
+    //cblas_sgemm(
+          CblasRowMajor,
+          CblasNoTrans,
+          CblasNoTrans,
+          shape[0],                // M = number of rows in left
+          shape[1],                // N = number of columns in right and result
+          left->storage->shape[1], // K = number of columns in left
+          1.0,
+          ((DENSE_STORAGE*)(left->storage))->elements,
+              left->storage->shape[1], // * nm_sizeof[left->dtype],
+          ((DENSE_STORAGE*)(right->storage))->elements,
+              right->storage->shape[1], // * nm_sizeof[right->dtype],
+          0.0,
+          ((DENSE_STORAGE*)(result->storage))->elements,
+              shape[1] // * nm_sizeof[result->dtype]
+          ); */
+    rb_raise(rb_eNotImpError, "need dense transpose function");
+    break;
+  case S_YALE:
+    YaleGetSize(sz, (YALE_STORAGE*)(self_m->storage)); // size of new matrix is going to be size of old matrix
+    result = nm_create(S_YALE, create_yale_storage(self_m->storage->dtype, shape, 2, sz));
+
+    // TODO: Do we really need to initialize the whole thing? Or just the A portion?
+    init_yale_storage((YALE_STORAGE*)(result->storage));
+
+    // call the appropriate function pointer
+    //SmmpFuncs[ left->storage->dtype ][ ((YALE_STORAGE*)(left->storage))->index_dtype ](
+    i8_f64_transp_(
+          shape[0],
+          shape[1],
+          ((YALE_STORAGE*)(self_m->storage))->ija,
+          ((YALE_STORAGE*)(self_m->storage))->ija,
+          true,
+          ((YALE_STORAGE*)(self_m->storage))->a,
+          ((YALE_STORAGE*)(result->storage))->ija,
+          ((YALE_STORAGE*)(result->storage))->ija,
+          ((YALE_STORAGE*)(result->storage))->a,
+          true // move
+          );
+
+    break;
+  default:
+    rb_raise(rb_eNotImpError, "transpose for this type not implemented yet");
+  }
+
+  return Data_Wrap_Struct(cNMatrix, 0, nm_delete, result);
+}
+
+//static VALUE nm_transpose_auto(VALUE self) {
+//
+//}
+
+
 void Init_nmatrix() {
     /* Require Complex class */
     //rb_require("complex");
@@ -900,6 +972,8 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, "rank", nm_rank, 0);
     rb_define_alias(cNMatrix, "dim", "rank");
     rb_define_method(cNMatrix, "shape", nm_shape, 0);
+    rb_define_method(cNMatrix, "transpose", nm_transpose_new, 0);
+    //rb_define_method(cNMatrix, "transpose!", nm_transpose_auto, 0);
 
     rb_define_method(cNMatrix, "*", nm_multiply, 1);
     rb_define_alias(cNMatrix, "multiply", "*");

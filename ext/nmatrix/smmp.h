@@ -17,6 +17,35 @@ typedef uint64_t  u_int64_t;
 #define SMMP_MIN(a,b) ((a)>(b) ? (b) : (a))
 #define SMMP_MAX(a,b) ((a)>(b) ? (a) : (b))
 
+void i8_b_transp_(u_int8_t n, u_int8_t m, u_int8_t *ia, u_int8_t *ja, bool diaga, u_int8_t *a, u_int8_t *ib, u_int8_t *jb, u_int8_t *b, bool move);
+void i8_i8_transp_(u_int8_t n, u_int8_t m, u_int8_t *ia, u_int8_t *ja, bool diaga, int8_t *a, u_int8_t *ib, u_int8_t *jb, int8_t *b, bool move);
+void i8_i16_transp_(u_int8_t n, u_int8_t m, u_int8_t *ia, u_int8_t *ja, bool diaga, int16_t *a, u_int8_t *ib, u_int8_t *jb, int16_t *b, bool move);
+void i8_i32_transp_(u_int8_t n, u_int8_t m, u_int8_t *ia, u_int8_t *ja, bool diaga, int32_t *a, u_int8_t *ib, u_int8_t *jb, int32_t *b, bool move);
+void i8_i64_transp_(u_int8_t n, u_int8_t m, u_int8_t *ia, u_int8_t *ja, bool diaga, int64_t *a, u_int8_t *ib, u_int8_t *jb, int64_t *b, bool move);
+void i8_f32_transp_(u_int8_t n, u_int8_t m, u_int8_t *ia, u_int8_t *ja, bool diaga, float *a, u_int8_t *ib, u_int8_t *jb, float *b, bool move);
+void i8_f64_transp_(u_int8_t n, u_int8_t m, u_int8_t *ia, u_int8_t *ja, bool diaga, double *a, u_int8_t *ib, u_int8_t *jb, double *b, bool move);
+void i16_b_transp_(u_int16_t n, u_int16_t m, u_int16_t *ia, u_int16_t *ja, bool diaga, u_int8_t *a, u_int16_t *ib, u_int16_t *jb, u_int8_t *b, bool move);
+void i16_i8_transp_(u_int16_t n, u_int16_t m, u_int16_t *ia, u_int16_t *ja, bool diaga, int8_t *a, u_int16_t *ib, u_int16_t *jb, int8_t *b, bool move);
+void i16_i16_transp_(u_int16_t n, u_int16_t m, u_int16_t *ia, u_int16_t *ja, bool diaga, int16_t *a, u_int16_t *ib, u_int16_t *jb, int16_t *b, bool move);
+void i16_i32_transp_(u_int16_t n, u_int16_t m, u_int16_t *ia, u_int16_t *ja, bool diaga, int32_t *a, u_int16_t *ib, u_int16_t *jb, int32_t *b, bool move);
+void i16_i64_transp_(u_int16_t n, u_int16_t m, u_int16_t *ia, u_int16_t *ja, bool diaga, int64_t *a, u_int16_t *ib, u_int16_t *jb, int64_t *b, bool move);
+void i16_f32_transp_(u_int16_t n, u_int16_t m, u_int16_t *ia, u_int16_t *ja, bool diaga, float *a, u_int16_t *ib, u_int16_t *jb, float *b, bool move);
+void i16_f64_transp_(u_int16_t n, u_int16_t m, u_int16_t *ia, u_int16_t *ja, bool diaga, double *a, u_int16_t *ib, u_int16_t *jb, double *b, bool move);
+void i32_b_transp_(u_int32_t n, u_int32_t m, u_int32_t *ia, u_int32_t *ja, bool diaga, u_int8_t *a, u_int32_t *ib, u_int32_t *jb, u_int8_t *b, bool move);
+void i32_i8_transp_(u_int32_t n, u_int32_t m, u_int32_t *ia, u_int32_t *ja, bool diaga, int8_t *a, u_int32_t *ib, u_int32_t *jb, int8_t *b, bool move);
+void i32_i16_transp_(u_int32_t n, u_int32_t m, u_int32_t *ia, u_int32_t *ja, bool diaga, int16_t *a, u_int32_t *ib, u_int32_t *jb, int16_t *b, bool move);
+void i32_i32_transp_(u_int32_t n, u_int32_t m, u_int32_t *ia, u_int32_t *ja, bool diaga, int32_t *a, u_int32_t *ib, u_int32_t *jb, int32_t *b, bool move);
+void i32_i64_transp_(u_int32_t n, u_int32_t m, u_int32_t *ia, u_int32_t *ja, bool diaga, int64_t *a, u_int32_t *ib, u_int32_t *jb, int64_t *b, bool move);
+void i32_f32_transp_(u_int32_t n, u_int32_t m, u_int32_t *ia, u_int32_t *ja, bool diaga, float *a, u_int32_t *ib, u_int32_t *jb, float *b, bool move);
+void i32_f64_transp_(u_int32_t n, u_int32_t m, u_int32_t *ia, u_int32_t *ja, bool diaga, double *a, u_int32_t *ib, u_int32_t *jb, double *b, bool move);
+void i64_b_transp_(u_int64_t n, u_int64_t m, u_int64_t *ia, u_int64_t *ja, bool diaga, u_int8_t *a, u_int64_t *ib, u_int64_t *jb, u_int8_t *b, bool move);
+void i64_i8_transp_(u_int64_t n, u_int64_t m, u_int64_t *ia, u_int64_t *ja, bool diaga, int8_t *a, u_int64_t *ib, u_int64_t *jb, int8_t *b, bool move);
+void i64_i16_transp_(u_int64_t n, u_int64_t m, u_int64_t *ia, u_int64_t *ja, bool diaga, int16_t *a, u_int64_t *ib, u_int64_t *jb, int16_t *b, bool move);
+void i64_i32_transp_(u_int64_t n, u_int64_t m, u_int64_t *ia, u_int64_t *ja, bool diaga, int32_t *a, u_int64_t *ib, u_int64_t *jb, int32_t *b, bool move);
+void i64_i64_transp_(u_int64_t n, u_int64_t m, u_int64_t *ia, u_int64_t *ja, bool diaga, int64_t *a, u_int64_t *ib, u_int64_t *jb, int64_t *b, bool move);
+void i64_f32_transp_(u_int64_t n, u_int64_t m, u_int64_t *ia, u_int64_t *ja, bool diaga, float *a, u_int64_t *ib, u_int64_t *jb, float *b, bool move);
+void i64_f64_transp_(u_int64_t n, u_int64_t m, u_int64_t *ia, u_int64_t *ja, bool diaga, double *a, u_int64_t *ib, u_int64_t *jb, double *b, bool move);
+
 void i8_symbmm_(u_int8_t n, u_int8_t m, u_int8_t *ia, u_int8_t *ja, bool diaga, u_int8_t *ib, u_int8_t *jb, bool diagb, u_int8_t *ic, u_int8_t *jc, bool diagc);
 void i16_symbmm_(u_int16_t n, u_int16_t m, u_int16_t *ia, u_int16_t *ja, bool diaga, u_int16_t *ib, u_int16_t *jb, bool diagb, u_int16_t *ic, u_int16_t *jc, bool diagc);
 void i32_symbmm_(u_int32_t n, u_int32_t m, u_int32_t *ia, u_int32_t *ja, bool diaga, u_int32_t *ib, u_int32_t *jb, bool diagb, u_int32_t *ic, u_int32_t *jc, bool diagc);
