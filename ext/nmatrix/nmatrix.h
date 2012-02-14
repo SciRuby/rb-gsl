@@ -219,6 +219,7 @@ typedef void     (*nm_delete_t[S_TYPES])();
 typedef STORAGE* (*nm_copy_s_t[S_TYPES])();
 typedef void     (*nm_gemm_t[NM_TYPES])();           // general multiply
 typedef void     (*nm_smmp_t[NM_TYPES][NM_TYPES])(); // sparse (yale) multiply
+typedef void     (*nm_smmp_transpose_t[NM_TYPES][NM_TYPES])(); // sparse (yale) transpose
 //typedef void (*nm_setsf_t[S_TYPES][S_TYPES])();
 //typedef void (*nm_setdf_t[NM_DTYPES][NM_DTYPES])();
 

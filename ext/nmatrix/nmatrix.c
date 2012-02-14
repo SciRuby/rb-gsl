@@ -50,6 +50,26 @@ nm_gemm_t GemmFuncs = { // by NM_TYPES
 
 
 // First dimension is dtype, second dimension is index dtype (so lots of nulls)
+nm_smmp_transpose_t SparseTransposeFuncs = {
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_NONE
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_BYTE
+  {NULL, NULL, i8_i8_transp_, i16_i8_transp_, i32_i8_transp_, i64_i8_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT8
+  {NULL, NULL, i8_i16_transp_, i16_i16_transp_, i32_i16_transp_, i64_i16_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT16
+  {NULL, NULL, i8_i32_transp_, i16_i32_transp_, i32_i32_transp_, i64_i32_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT32
+  {NULL, NULL, i8_i64_transp_, i16_i64_transp_, i32_i64_transp_, i64_i64_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT64
+  {NULL, NULL, i8_f32_transp_, i16_f32_transp_, i32_f32_transp_, i64_f32_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_FLOAT32
+  {NULL, NULL, i8_f64_transp_, i16_f64_transp_, i32_f64_transp_, i64_f64_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_FLOAT64
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_COMPLEX64
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_COMPLEX128
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL32
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL64
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL128
+  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}  // NM_ROBJ
+};
+
+
+
+// First dimension is dtype, second dimension is index dtype (so lots of nulls)
 nm_smmp_t SmmpFuncs = {
   {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_NONE
   {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_BYTE
@@ -920,8 +940,7 @@ static VALUE nm_transpose_new(VALUE self) {
     init_yale_storage((YALE_STORAGE*)(result->storage));
 
     // call the appropriate function pointer
-    //SmmpFuncs[ left->storage->dtype ][ ((YALE_STORAGE*)(left->storage))->index_dtype ](
-    i8_f64_transp_(
+    SparseTransposeFuncs[ self_m->storage->dtype ][ ((YALE_STORAGE*)(self_m->storage))->index_dtype ](
           shape[0],
           shape[1],
           ((YALE_STORAGE*)(self_m->storage))->ija,
