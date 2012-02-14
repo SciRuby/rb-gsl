@@ -1,9 +1,6 @@
 
 // Symbolic matrix multiply c=a*b
-void %%INT_ABBREV%%_symbmm_(u_%%INT%% n, u_%%INT%% m,
-    u_%%INT%% *ia, u_%%INT%% *ja, bool diaga,
-    u_%%INT%% *ib, u_%%INT%% *jb, bool diagb,
-	  u_%%INT%% *ic, u_%%INT%% *jc, bool diagc)
+void %%INT_ABBREV%%_symbmm_(u_%%INT%% n, u_%%INT%% m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, u_%%INT%% *ib, u_%%INT%% *jb, bool diagb, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc)
 {
   u_%%INT%% mask[m];
   u_%%INT%% i, j, k, kk, jj, minmn, ndnz = n; /* Local variables */
