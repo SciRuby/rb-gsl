@@ -19,7 +19,7 @@
 # design matrix X_{ij = F_j(x_i) in the special case that the basis functions 
 # separate: Here the superscript value j indicates the basis function 
 # corresponding to the independent variable x_j. The subscripts (i_1, i_2, i_3, 
-# Åc) refer to which basis function to use from the complete set. These 
+# ...) refer to which basis function to use from the complete set. These
 # subscripts are related to the index i in a complex way, which is the main 
 # problem this extension addresses. The model then becomes where n is the 
 # dimension of the fit and N_i is the number of basis functions for the variable 
@@ -111,7 +111,10 @@
 # * GSL::MultiFit::Ndlinear.calc(x, c, w)
 # * GSL::MultiFit::Ndlinear::Workspace#calc(x, c)
 #
-#   This method is similar to <tt>GSL::MultiFit::Ndlinear.est</tt>, but does not compute the model error. It computes the model value at the data point <tt>x</tt>  using the coefficient vector <tt>c</tt> and returns the model value.
+#   This method is similar to <tt>GSL::MultiFit::Ndlinear.est</tt>, but does
+#   not compute the model error. It computes the model value at the data point
+#   <tt>x</tt>  using the coefficient vector <tt>c</tt> and returns the model
+#   value.
 #
 # == {}[link:index.html"name="3] Examples
 # This example program generates data from the 3D isotropic harmonic oscillator 

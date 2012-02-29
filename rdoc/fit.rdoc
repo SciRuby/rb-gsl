@@ -28,11 +28,11 @@
 # == {}[link:index.html"name="1] Overview
 # Least-squares fits are found by minimizing \chi^2 (chi-squared), the weighted 
 # sum of squared residuals over n experimental datapoints (x_i, y_i) for the 
-# model Y(c,x), The p parameters of the model are c = {c_0, c_1, Åc}. The weight 
-# factors w_i are given by w_i = 1/\sigma_i^2, where \sigma_i is the 
-# experimental error on the data-point y_i. The errors are assumed to be 
-# gaussian and uncorrelated. For unweighted data the chi-squared sum is computed 
-# without any weight factors. 
+# model Y(c,x), The p parameters of the model are c = {c_0, c_1, ...}. The
+# weight factors w_i are given by w_i = 1/\sigma_i^2, where \sigma_i is the
+# experimental error on the data-point y_i. The errors are assumed to be
+# gaussian and uncorrelated. For unweighted data the chi-squared sum is
+# computed without any weight factors.
 #
 # The fitting routines return the best-fit parameters c and their p \times p 
 # covariance matrix. The covariance matrix measures the statistical errors on 
