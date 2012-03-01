@@ -57,7 +57,7 @@ if /cygwin|mingw/ =~ RUBY_PLATFORM
 end
 
 $DEBUG = true
-$CFLAGS = ["-Wall -O2 -DBENCHMARK",$CFLAGS].join(" ")
+$CFLAGS = ["-Wall ",$CFLAGS].join(" ") #-BENCHMARK for comparing transp
 
 srcs = %w(
 nmatrix
@@ -65,10 +65,10 @@ list
 dense
 yale
 dfuncs
-smmp
 smmp2
 blas
 )
+# add smmp in to get generic transp; remove smmp2 to eliminate funcptr transp
 
 header = "stdint.h"
 unless have_header(header)

@@ -914,7 +914,9 @@ static VALUE nm_transpose_new(VALUE self) {
   NMATRIX *self_m, *result, *result2;
   size_t sz;
   size_t* shape   = malloc(sizeof(size_t)*2);
+#ifdef BENCHMARK
   double t1, t2;
+#endif
 
   UnwrapNMatrix( self, self_m );
 
@@ -957,7 +959,10 @@ static VALUE nm_transpose_new(VALUE self) {
     result2 = nm_create(S_YALE, create_yale_storage(self_m->storage->dtype, shape, 2, sz));
     init_yale_storage((YALE_STORAGE*)(result2->storage));
 
+#ifdef BENCHMARK
     t1 = get_time();
+#endif
+
     // call the appropriate function pointer
     SparseTransposeFuncs[ self_m->storage->dtype ][ ((YALE_STORAGE*)(self_m->storage))->index_dtype ](
           shape[0],
@@ -970,8 +975,9 @@ static VALUE nm_transpose_new(VALUE self) {
           ((YALE_STORAGE*)(result->storage))->ija,
           ((YALE_STORAGE*)(result->storage))->a,
           true); // move
+#ifdef BENCHMARK
     t1 = get_time() - t1;
-
+/*
     t2 = get_time();
     transp(
           shape[0],
@@ -987,9 +993,11 @@ static VALUE nm_transpose_new(VALUE self) {
           ((YALE_STORAGE*)(self_m->storage))->index_dtype,
           self_m->storage->dtype
           );
-    t2 = get_time() - t2;
 
+    t2 = get_time() - t2;
     fprintf(stderr, "t1: %f\nt2: %f\n", t1, t2);
+*/
+#endif
 
     break;
   default:

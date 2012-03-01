@@ -1,3 +1,11 @@
+// Note that this version of transp isn't currently used, as it's about 3x slower than the
+// function pointer version (smmp/transp.template.c).
+// See also: https://github.com/mohawkjohn/nmatrix/issues/1
+//
+// This source file is kept in hopes that one day someone can write an optimized generic
+// version which beats out the function pointer version.
+//
+
 #ifndef SMMP_C
 # define SMMP_C
 
