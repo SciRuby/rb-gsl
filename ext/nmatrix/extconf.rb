@@ -57,7 +57,7 @@ if /cygwin|mingw/ =~ RUBY_PLATFORM
 end
 
 $DEBUG = true
-$CFLAGS = ["-Wall -g",$CFLAGS].join(" ")
+$CFLAGS = ["-Wall -O2 -DBENCHMARK",$CFLAGS].join(" ")
 
 srcs = %w(
 nmatrix
@@ -66,6 +66,7 @@ dense
 yale
 dfuncs
 smmp
+smmp2
 blas
 )
 

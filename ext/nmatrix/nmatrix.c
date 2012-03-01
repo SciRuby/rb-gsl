@@ -15,6 +15,15 @@ ID nm_id_list, nm_id_dense;
 
 #include "dtypes.c"
 
+#ifdef BENCHMARK
+double get_time() {
+  struct timeval t;
+  struct timezone tzp;
+  gettimeofday(&t, &tzp);
+  return t.tv_sec + t.tv_usec*1e-6;
+}
+#endif
+
 
 const char *nm_stypestring[] = {
   "dense",
@@ -94,37 +103,24 @@ static void nm_delete(NMATRIX* mat) {
 
 
 
-VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
-  DENSE_STORAGE* s = create_dense_storage(dtype, shape, rank);
-  NMATRIX* matrix  = nm_create(S_DENSE, s);
-  size_t i, n;
-
-  // User provides single initialization value sometimes. This accommodates List, which
-  // really doesn't make sense without a user-specified default (initialization) value
-  // (but can be done).
-  //
-  // If the user instead wants to provide an array or something, that's done through a
-  // different mechanism. He or she should then NOT provide a default value for dense, only
-  // because that requires an unnecessary pass through the array of elements.
-  if (init_val) {
-    n = count_dense_storage_elements(s);
-    for (i = 0; i < n; ++i)
-      memcpy((char*)(s->elements) + i*nm_sizeof[dtype], init_val, nm_sizeof[dtype]);
-    free(init_val);
-  }
+VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
+  NMATRIX* matrix  = nm_create(S_DENSE, create_dense_storage(dtype, shape, rank, init_val, init_val_len));
   return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
 }
 
-VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
+VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
   NMATRIX* matrix = nm_create(S_LIST, create_list_storage(dtype, shape, rank, init_val));
+  if (init_val_len > 1) rb_raise(rb_eArgError, "list storage needs initial size, not initial value\n");
   return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
 }
 
 
-VALUE nm_yale_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self) {
+VALUE nm_yale_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
   NMATRIX* matrix;
   YALE_STORAGE* s = create_yale_storage(dtype, shape, rank, *(size_t*)init_val);
-                    init_yale_storage(s);
+  init_yale_storage(s);
+
+  if (init_val_len > 1) rb_raise(rb_eArgError, "list storage needs initial size, not initial value\n");
 
   if (!s) rb_raise(rb_eNoMemError, "Yale allocation failed");
 
@@ -304,6 +300,10 @@ int8_t nm_guess_dtype(VALUE v) {
 # endif
 #endif
 
+  case T_ARRAY: // may be passed for dense -- for now, just look at the first element.
+    return nm_guess_dtype(RARRAY_PTR(v)[0]);
+    // TODO: Look at entire array for most specific type.
+
   case T_NIL:
   default:
     return NM_NONE;
@@ -341,17 +341,14 @@ size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank) {
 // argv will be either 1 or 2 elements. If 1, could be either initial or dtype. If 2, is initial and dtype.
 // This function returns the dtype.
 int8_t nm_interpret_dtype(int argc, VALUE* argv, int8_t stype) {
-  if (argc == 2) {
-    if (SYMBOL_P(argv[1])) return nm_dtypesymbol_to_dtype(argv[1]);
-    else if (IS_STRING(argv[1])) return nm_dtypestring_to_dtype(StringValue(argv[1]));
-    else if (stype == S_YALE) rb_raise(rb_eArgError, "yale requires dtype");
-    else return nm_guess_dtype(argv[0]);
-  } else if (argc == 1) {
-    if (SYMBOL_P(argv[0])) return nm_dtypesymbol_to_dtype(argv[0]);
-    else if (IS_STRING(argv[0])) return nm_dtypestring_to_dtype(StringValue(argv[0]));
-    else if (stype == S_YALE) rb_raise(rb_eArgError, "yale requires dtype");
-    else return nm_guess_dtype(argv[0]);
-  } else rb_raise(rb_eArgError, "Need an initial value or a dtype");
+  int offset = 0; // if argc == 1
+  if (argc == 2) offset = 1;
+  else if (argc != 1) rb_raise(rb_eArgError, "Need an initial value or a dtype");
+
+  if (SYMBOL_P(argv[offset])) return nm_dtypesymbol_to_dtype(argv[offset]);
+  else if (IS_STRING(argv[offset])) return nm_dtypestring_to_dtype(StringValue(argv[offset]));
+  else if (stype == S_YALE) rb_raise(rb_eArgError, "yale requires dtype");
+  else return nm_guess_dtype(argv[0]);
 
   return NM_NONE;
 }
@@ -363,9 +360,18 @@ int8_t nm_interpret_stype(VALUE arg) {
   return S_DENSE;
 }
 
+
 void* nm_interpret_initial_value(VALUE arg, int8_t dtype) {
-  void* init_val = malloc(nm_sizeof[dtype]);
-  SetFuncs[dtype][NM_ROBJ](1, init_val, 0, &arg, 0);
+  void* init_val;
+
+  if (TYPE(arg) == T_ARRAY) { // array
+    init_val = malloc(nm_sizeof[dtype] * RARRAY_LEN(arg));
+    SetFuncs[dtype][NM_ROBJ](RARRAY_LEN(arg), init_val, nm_sizeof[dtype], RARRAY_PTR(arg), nm_sizeof[NM_ROBJ]);
+  } else { // single value
+    init_val = malloc(nm_sizeof[dtype]);
+    SetFuncs[dtype][NM_ROBJ](1, init_val, 0, &arg, 0);
+  }
+
   return init_val;
 }
 
@@ -382,6 +388,7 @@ VALUE nm_init(int argc, VALUE* argv, VALUE self) {
   int8_t  dtype, stype, offset = 0;
   size_t  rank;
   size_t* shape;
+  size_t  init_val_len = 0;
   void*   init_val = NULL;
 
   // READ ARGUMENTS
@@ -399,9 +406,15 @@ VALUE nm_init(int argc, VALUE* argv, VALUE self) {
   shape    = nm_interpret_shape_arg(argv[offset], &rank);        // 1: String or Symbol
   dtype    = nm_interpret_dtype(argc-1-offset, argv+offset+1, stype); // 2-3: dtype
 
-  if (IS_NUMERIC(argv[1+offset])) { // initial value provided (could also be initial capacity, if yale)
-    if (stype == S_YALE)      init_val = nm_interpret_initial_capacity(argv[1+offset]);
-    else                      init_val = nm_interpret_initial_value(argv[1+offset], dtype);// 4: initial value / dtype
+  if (IS_NUMERIC(argv[1+offset]) || TYPE(argv[1+offset]) == T_ARRAY) { // initial value provided (could also be initial capacity, if yale)
+    if (stype == S_YALE) {
+      init_val     = nm_interpret_initial_capacity(argv[1+offset]);
+      init_val_len = 1;
+    } else {
+      init_val = nm_interpret_initial_value(argv[1+offset], dtype);// 4: initial value / dtype
+      if (TYPE(argv[1+offset]) == T_ARRAY) init_val_len = RARRAY_LEN(argv[1+offset]);
+      else                                 init_val_len = 1;
+    }
   } else if (stype == S_DENSE) {
     init_val = NULL; // no need to initialize dense with any kind of default value.
   } else { // if it's a list or compressed, we want to assume default of 0 even if none provided
@@ -410,6 +423,7 @@ VALUE nm_init(int argc, VALUE* argv, VALUE self) {
       *(size_t*)init_val = 0;
     } else {
       init_val = malloc(nm_sizeof[dtype]);
+      //memset(init_val, 0, nm_sizeof[dtype]); // TODO: See if this works instead of the next line (with NM_ROBJ matrix). Cleaner.
       SetFuncs[dtype][NM_BYTE](1, init_val, 0, &ZERO, 0);
     }
   }
@@ -425,7 +439,7 @@ VALUE nm_init(int argc, VALUE* argv, VALUE self) {
   }
 
   if (stype < S_TYPES)
-    return CreateFuncs[stype](shape, rank, dtype, init_val, self);
+    return CreateFuncs[stype](shape, rank, dtype, init_val, init_val_len, self);
   else
     rb_raise(rb_eNotImpError, "Unrecognized storage type");
 
@@ -493,7 +507,7 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
 
   switch(left->stype) {
   case S_DENSE:
-    result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2));
+    result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2, NULL, 0));
 
     // call CBLAS xgemm (type-specific general matrix multiplication)
     // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
@@ -830,7 +844,7 @@ static VALUE nm_yale_lu(VALUE self) {
 static VALUE nm_yale_print_vectors(VALUE self) {
   if (NM_STYPE(self) != S_YALE || NM_DTYPE(self) != NM_FLOAT64) rb_raise(rb_eTypeError, "must be yale float64 matrix");
 
-  print_vectors(NM_STORAGE(self));
+  print_vectors((YALE_STORAGE*)(NM_STORAGE(self)));
 
   return Qnil;
 }
@@ -897,9 +911,10 @@ static VALUE nm_yale_ija(VALUE self) {
 
 
 static VALUE nm_transpose_new(VALUE self) {
-  NMATRIX *self_m, *result;
+  NMATRIX *self_m, *result, *result2;
   size_t sz;
   size_t* shape   = malloc(sizeof(size_t)*2);
+  double t1, t2;
 
   UnwrapNMatrix( self, self_m );
 
@@ -939,6 +954,10 @@ static VALUE nm_transpose_new(VALUE self) {
     // TODO: Do we really need to initialize the whole thing? Or just the A portion?
     init_yale_storage((YALE_STORAGE*)(result->storage));
 
+    result2 = nm_create(S_YALE, create_yale_storage(self_m->storage->dtype, shape, 2, sz));
+    init_yale_storage((YALE_STORAGE*)(result2->storage));
+
+    t1 = get_time();
     // call the appropriate function pointer
     SparseTransposeFuncs[ self_m->storage->dtype ][ ((YALE_STORAGE*)(self_m->storage))->index_dtype ](
           shape[0],
@@ -950,8 +969,27 @@ static VALUE nm_transpose_new(VALUE self) {
           ((YALE_STORAGE*)(result->storage))->ija,
           ((YALE_STORAGE*)(result->storage))->ija,
           ((YALE_STORAGE*)(result->storage))->a,
-          true // move
+          true); // move
+    t1 = get_time() - t1;
+
+    t2 = get_time();
+    transp(
+          shape[0],
+          shape[1],
+          ((YALE_STORAGE*)(self_m->storage))->ija,
+          ((YALE_STORAGE*)(self_m->storage))->ija,
+          true,
+          ((YALE_STORAGE*)(self_m->storage))->a,
+          ((YALE_STORAGE*)(result2->storage))->ija,
+          ((YALE_STORAGE*)(result2->storage))->ija,
+          ((YALE_STORAGE*)(result2->storage))->a,
+          true, // move
+          ((YALE_STORAGE*)(self_m->storage))->index_dtype,
+          self_m->storage->dtype
           );
+    t2 = get_time() - t2;
+
+    fprintf(stderr, "t1: %f\nt2: %f\n", t1, t2);
 
     break;
   default:

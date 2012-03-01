@@ -2,7 +2,7 @@
 require "./lib/nmatrix"
 
 describe NMatrix do
-  it "correctly fills dense" do
+  it "correctly fills dense with individual assignments" do
     n = NMatrix.new([4,3], :float64)
     n[0,0] = 14.0
     n[0,1] = 9.0
@@ -16,6 +16,52 @@ describe NMatrix do
     n[3,0] = 5.0
     n[3,1] = 2.0
     n[3,2] = 3.0
+
+    n[0,0].should == 14.0
+    n[0,1].should == 9.0
+    n[0,2].should == 3.0
+    n[1,0].should == 2.0
+    n[1,1].should == 11.0
+    n[1,2].should == 15.0
+    n[2,0].should == 0.0
+    n[2,1].should == 12.0
+    n[2,2].should == 17.0
+    n[3,0].should == 5.0
+    n[3,1].should == 2.0
+    n[3,2].should == 3.0
+  end
+
+  it "correctly fills dense with a single mass assignment" do
+    n = NMatrix.new([4,3], [14.0, 9.0, 3.0, 2.0, 11.0, 15.0, 0.0, 12.0, 17.0, 5.0, 2.0, 3.0])
+
+    n[0,0].should == 14.0
+    n[0,1].should == 9.0
+    n[0,2].should == 3.0
+    n[1,0].should == 2.0
+    n[1,1].should == 11.0
+    n[1,2].should == 15.0
+    n[2,0].should == 0.0
+    n[2,1].should == 12.0
+    n[2,2].should == 17.0
+    n[3,0].should == 5.0
+    n[3,1].should == 2.0
+    n[3,2].should == 3.0
+  end
+
+  it "correctly fills dense with a single mass assignment, with dtype specified" do
+    m = NMatrix.new([4,3], [14.0, 9.0, 3.0, 2.0, 11.0, 15.0, 0.0, 12.0, 17.0, 5.0, 2.0, 3.0], :float32)
+    m[0,0].should == 14.0
+    m[0,1].should == 9.0
+    m[0,2].should == 3.0
+    m[1,0].should == 2.0
+    m[1,1].should == 11.0
+    m[1,2].should == 15.0
+    m[2,0].should == 0.0
+    m[2,1].should == 12.0
+    m[2,2].should == 17.0
+    m[3,0].should == 5.0
+    m[3,1].should == 2.0
+    m[3,2].should == 3.0
   end
 
   [:float64].each do |dtype|

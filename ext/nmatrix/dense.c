@@ -52,7 +52,7 @@ DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs) {
 
   //fprintf(stderr, "copy_dense_storage\n");
 
-  lhs = create_dense_storage(rhs->dtype, shape, rhs->rank);
+  lhs = create_dense_storage(rhs->dtype, shape, rhs->rank, NULL, 0);
 
   if (lhs && count) // ensure that allocation worked before copying
     memcpy(lhs->elements, rhs->elements, nm_sizeof[rhs->dtype] * count);
@@ -61,9 +61,12 @@ DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs) {
 }
 
 
-DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank) {
+// Note that elements and elements_length are for initial value(s) passed in. If they are the correct length, they will
+// be used directly. If not, they will be concatenated over and over again into a new elements array. If elements is NULL,
+// the new elements array will not be initialized.
+DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length) {
   DENSE_STORAGE* s;
-  size_t count;
+  size_t count, i, copy_length = elements_length;
 
   if (!(s = malloc(sizeof(DENSE_STORAGE)))) return NULL;
   s->rank       = rank;
@@ -75,10 +78,25 @@ DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank) {
   count         = count_dense_storage_elements(s);
   //fprintf(stderr, "count_dense_storage_elements: %d\n", count);
 
-  if (!(s->elements   = malloc(nm_sizeof[dtype] * count))) {
+  if (elements_length == count) s->elements = elements;
+  else if (!(s->elements   = malloc(nm_sizeof[dtype] * count))) {
+    // allocation failed
     free(s->shape);
     free(s);
     s = NULL;
+  } else {
+    // allocation succeeded
+
+    if (elements_length > 0) {
+      // repeat elements over and over again until the end of the matrix
+      for (i = 0; i < count; i += elements_length) {
+        if (i + elements_length > count) copy_length = count - i;
+        memcpy((char*)(s->elements)+i*nm_sizeof[dtype], (char*)(elements)+(i % elements_length)*nm_sizeof[dtype], copy_length*nm_sizeof[dtype]);
+      }
+
+      // get rid of the init_val
+      free(elements);
+    }
   }
 
   return s;

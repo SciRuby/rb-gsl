@@ -13,6 +13,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ruby.h>
+
+#ifdef BENCHMARK // SOURCE: http://stackoverflow.com/questions/2349776/how-can-i-benchmark-a-c-program-easily
+# include <sys/time.h>
+# include <sys/resource.h>
+#endif
+
 
 #include "dtypes.h"
 
@@ -212,7 +219,8 @@ typedef union {
 #endif
 
 
-typedef void     (*nm_setfunc_t[NM_TYPES][NM_TYPES])();
+typedef void     (*nm_setfunc_t[NM_TYPES][NM_TYPES])(); // copy functions
+typedef void     (*nm_incfunc_t[NM_TYPES])();           // increment functions
 typedef VALUE    (*nm_stype_ref_t[S_TYPES])();
 typedef VALUE    (*nm_create_t[S_TYPES])();
 typedef void     (*nm_delete_t[S_TYPES])();
@@ -224,12 +232,13 @@ typedef void     (*nm_smmp_transpose_t[NM_TYPES][NM_TYPES])(); // sparse (yale) 
 //typedef void (*nm_setdf_t[NM_DTYPES][NM_DTYPES])();
 
 extern nm_setfunc_t SetFuncs;
+extern nm_incfunc_t Increment;
 extern ID nm_id_real, nm_id_imag;
 extern ID nm_id_denom, nm_id_numer;
 
 
 /* dense.c */
-DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank);
+DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
 void            delete_dense_storage(DENSE_STORAGE* s);
 DENSE_STORAGE*  copy_dense_storage(DENSE_STORAGE* rhs);
 
@@ -277,8 +286,9 @@ int8_t nm_stypestring_to_stype(VALUE str);
 int8_t nm_stypesymbol_to_stype(VALUE sym);
 int8_t nm_guess_dtype(VALUE v);
 size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank);
-VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self);
-VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, VALUE self);
+VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self);
+VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self);
+VALUE nm_yale_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self);
 VALUE nm_init(int argc, VALUE* argv, VALUE self);
 // VALUE nm_init_copy(VALUE copy, VALUE original);
 NMATRIX* nm_create(int8_t stype, void* storage);

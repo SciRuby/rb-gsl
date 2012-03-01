@@ -1,3 +1,5 @@
+require "../../../../lib/string.rb"
+
 class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type,  :gemm)
   def max_macro
     typename = self.sizeof.to_s
@@ -38,6 +40,7 @@ module Generator
       [:NM_ROBJ,        :VALUE,       :object,      :v,     :value,       :vgemm],
       [:NM_TYPES,       0,            :dtypes,      0,      :none,         nil]
   ].map { |d| DTypeInfo.new(*d) }
+
 
   DTYPES_ASSIGN = {
       :complex => { # Assign a complex to:
@@ -101,9 +104,15 @@ static void TypeErr(void) {
 SETFN
     end
 
-
-    def dtypes_set_function_ident dtype_i, dtype_j
-      dtype_i[:enum] == :NM_NONE || dtype_j[:enum] == :NM_NONE ? "TypeErr" : "Set_#{dtype_i[:id]}_#{dtype_j[:id]}"
+    def dtypes_function_name func, dtype_i, dtype_j = nil
+      if dtype_i[:enum] == :NM_NONE || (!dtype_j.nil? && dtype_j[:enum] == :NM_NONE)
+        str = "TypeErr"
+      else
+        str = func.to_s.camelize
+        str += "_#{dtype_i[:id]}"
+        str += "_#{dtype_j[:id]}" unless dtype_j.nil?
+      end
+      str
     end
 
     def dtypes_assign lhs, rhs
@@ -111,10 +120,11 @@ SETFN
     end
 
 
+
     # Declare a set function for a pair of dtypes
     def dtypes_set_function dtype_i, dtype_j
       str = <<SETFN
-static void #{dtypes_set_function_ident(dtype_i, dtype_j)}(size_t n, char* p1, size_t i1, char* p2, size_t i2) {
+static void #{dtypes_function_name(:set, dtype_i, dtype_j)}(size_t n, char* p1, size_t i1, char* p2, size_t i2) {
   for (; n > 0; --n) {
     #{dtypes_assign(dtype_i, dtype_j)}
     p1 += i1; p2 += i2;
@@ -124,17 +134,37 @@ static void #{dtypes_set_function_ident(dtype_i, dtype_j)}(size_t n, char* p1, s
 SETFN
     end
 
+    def dtypes_increment_function dtype_i
+      str = <<INCFN
+static void #{dtypes_function_name(:increment, dtype_i)}(void* p) { ++(*(#{dtype_i[:sizeof]}*)p); }
+INCFN
+    end
 
-    def dtypes_set_functions_matrix
+    # binary-style functions, like Set (copy)
+    def dtypes_binary_functions_matrix func
       ary = []
       DTYPES.each do |i|
         next if i[:enum] == :NM_TYPES
         bry = []
         DTYPES.each do |j|
           next if j[:enum] == :NM_TYPES
-          bry << dtypes_set_function_ident(i,j)
+          bry << dtypes_function_name(func, i,j)
         end
         ary << "{ " + bry.join(", ") + " }"
+      end
+      ary
+    end
+
+
+    def dtypes_increment_functions_array
+      ary = []
+      DTYPES.each do |i|
+        next if i[:enum] == :NM_TYPES
+        if [:NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64].include?(i.enum)
+          ary << dtypes_function_name(:increment, i)
+        else
+          ary << dtypes_function_name(:increment, DTYPES[0]) # TypeErr
+        end
       end
       ary
     end
@@ -158,7 +188,22 @@ SETFN
         end
       end
       ary << ""
-      ary << decl("nm_setfunc_t SetFuncs =", dtypes_set_functions_matrix)
+      ary << decl("nm_setfunc_t SetFuncs =", dtypes_binary_functions_matrix(:set))
+
+      ary.join("\n")
+    end
+
+    def dtypes_increment_functions
+      ary = []
+
+      DTYPES.each do |dtype_i|
+        next unless [:NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64].include?(dtype_i.enum)
+        incfn = dtypes_increment_function(dtype_i)
+        ary << incfn unless incfn =~ /TypeErr/
+      end
+
+      ary << ""
+      ary << decl("nm_incfunc_t Increment =", dtypes_increment_functions_array)
 
       ary.join("\n")
     end
@@ -211,6 +256,7 @@ SETFN
         f.puts '#include <ruby.h>'
         f.puts '#include "nmatrix.h"' + "\n\n"
         f.puts dtypes_set_functions
+        f.puts dtypes_increment_functions
       end
     end
 
@@ -288,5 +334,5 @@ Generator.make_dtypes_c
 Generator.make_dfuncs_c
 Generator.make_templated_c './smmp', 'blas_header', ['blas1'], 'blas.c', 1 # 1-type interface functions for SMMP
 Generator.make_templated_c './smmp', nil,           ['blas2'], 'blas.c', 2 # 2-type interface functions for SMMP
-Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp.c', 1 # 1-type SMMP functions from Fortran
-Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp.c', 2 # 2-type SMMP functions from Fortran and selection sort
+Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp2.c', 1 # 1-type SMMP functions from Fortran
+Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', 2 # 2-type SMMP functions from Fortran and selection sort
