@@ -5,7 +5,6 @@
 
 #include "smmp.h"
 
-// Matrix multiplication
 #include <cblas.h>
 
 #include <math.h>
@@ -236,6 +235,23 @@ extern nm_incfunc_t Increment;
 extern ID nm_id_real, nm_id_imag;
 extern ID nm_id_denom, nm_id_numer;
 
+
+/* cblas.c */
+void cblas_sgemm_( const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA,
+                         const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
+                         const int K, const double alpha, const void* A,
+                         const int lda, const void* B, const int ldb,
+                         const double beta, void* C, const int ldc);
+void cblas_cgemm_( const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA,
+                   const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
+                   const int K, const complex128 alpha, const void* A,
+                   const int lda, const void* B, const int ldb,
+                   const complex128 beta, void* C, const int ldc);
+void cblas_zgemm_( const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA,
+                   const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
+                   const int K, const complex128 alpha, const void* A,
+                   const int lda, const void* B, const int ldb,
+                   const complex128 beta, void* C, const int ldc);
 
 /* dense.c */
 DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);

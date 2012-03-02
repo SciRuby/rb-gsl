@@ -65,8 +65,9 @@ list
 dense
 yale
 dfuncs
+smmp1
 smmp2
-blas
+cblas
 )
 # add smmp in to get generic transp; remove smmp2 to eliminate funcptr transp
 

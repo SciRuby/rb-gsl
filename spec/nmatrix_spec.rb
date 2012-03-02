@@ -64,7 +64,7 @@ describe NMatrix do
     m[3,2].should == 3.0
   end
 
-  [:float64].each do |dtype|
+  [:float32, :float64].each do |dtype|
     it "correctly exposes cblas_xgemm" do
       #STDERR.puts "dtype=#{dtype.to_s}"
       #STDERR.puts "1"
