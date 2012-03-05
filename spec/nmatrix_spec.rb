@@ -143,7 +143,7 @@ describe NMatrix do
     m.dtype.should == :float64
   end
 
-  [:float64].each do |dtype|
+  [:float32,:float64].each do |dtype|
     it "dense correctly handles #{dtype.to_s} multiplication" do
       #STDERR.puts "dtype=#{dtype.to_s}"
       #STDERR.puts "2"

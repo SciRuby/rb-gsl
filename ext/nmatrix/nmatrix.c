@@ -5,6 +5,7 @@
 #include <ruby.h>
 
 #include "nmatrix.h"
+#include "types.h"
 
 VALUE cNMatrix;
 
@@ -40,6 +41,24 @@ nm_delete_t DeleteFuncs = {
 };
 
 
+/*nm_gemv_t GemvFuncs = {
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  cblas_sgemv_,
+  cblas_dgemv,  // can use the native version since it takes doubles for alpha and beta.
+  cblas_cgemv_,
+  cblas_zgemv_,
+  NULL,
+  NULL,
+  NULL,
+  NULL
+};*/
+
+
 nm_gemm_t GemmFuncs = { // by NM_TYPES
   NULL,
   NULL,
@@ -48,7 +67,7 @@ nm_gemm_t GemmFuncs = { // by NM_TYPES
   NULL,
   NULL,
   cblas_sgemm_,
-  cblas_dgemm,  // can use the native version since it takes doubles for alpha and beta.
+  cblas_dgemm_,  // can use the native version since it takes doubles for alpha and beta.
   cblas_cgemm_,
   cblas_zgemm_,
   NULL,
@@ -499,6 +518,7 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
   ///TODO: multiplication for non-dense and/or non-decimal matrices
   size_t* shape   = malloc(sizeof(size_t)*2);
   NMATRIX* result;
+  struct cblas_param_t cblas_param = init_cblas_params_for_nm_multiply_matrix(left->stype);
 
   shape[0] = left->storage->shape[0];
   shape[1] = right->storage->shape[1];
@@ -509,6 +529,22 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
   case S_DENSE:
     result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2, NULL, 0));
 
+    cblas_param   = init_cblas_params_for_nm_multiply_matrix(left->storage->dtype);
+
+    cblas_param.M = left->storage->shape[0];
+    cblas_param.N = right->storage->shape[1];
+    cblas_param.K = left->storage->shape[1];
+
+    cblas_param.A = ((DENSE_STORAGE*)(left->storage))->elements;
+    cblas_param.lda = left->storage->shape[1];
+
+    cblas_param.B = ((DENSE_STORAGE*)(right->storage))->elements;
+    cblas_param.ldb = right->storage->shape[1];
+
+    cblas_param.C = ((DENSE_STORAGE*)(result->storage))->elements;
+    cblas_param.ldc = shape[1];
+
+
     // call CBLAS xgemm (type-specific general matrix multiplication)
     // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
     GemmFuncs[left->storage->dtype](
@@ -516,17 +552,7 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
           CblasRowMajor,
           CblasNoTrans,
           CblasNoTrans,
-          shape[0],                // M = number of rows in left
-          shape[1],                // N = number of columns in right and result
-          left->storage->shape[1], // K = number of columns in left
-          1.0,
-          ((DENSE_STORAGE*)(left->storage))->elements,
-              left->storage->shape[1], // * nm_sizeof[left->dtype],
-          ((DENSE_STORAGE*)(right->storage))->elements,
-              right->storage->shape[1], // * nm_sizeof[right->dtype],
-          0.0,
-          ((DENSE_STORAGE*)(result->storage))->elements,
-              shape[1] // * nm_sizeof[result->dtype]
+          cblas_param
           );
     break;
   case S_YALE:
@@ -725,17 +751,41 @@ static VALUE nm_cblas_gemm(VALUE self,
                            VALUE beta,
                            VALUE c, VALUE ldc) {
 
-  int m_ = FIX2INT(m), n_ = FIX2INT(n), k_ = FIX2INT(k), lda_ = FIX2INT(lda), ldb_ = FIX2INT(ldb), ldc_ = FIX2INT(ldc);
-  char trans_a_ = gemm_op_sym(trans_a), trans_b_ = gemm_op_sym(trans_b);
-  double alpha_ = NUM2DBL(alpha), beta_ = NUM2DBL(beta);
+  struct cblas_param_t p;
+  p.M = FIX2INT(m);
+  p.N = FIX2INT(n);
+  p.K = FIX2INT(k);
+  p.A = ((DENSE_STORAGE*)(NM_STORAGE(a)))->elements;
+  p.B = ((DENSE_STORAGE*)(NM_STORAGE(b)))->elements;
+  p.C = ((DENSE_STORAGE*)(NM_STORAGE(c)))->elements;
+  p.lda = FIX2INT(lda);
+  p.ldb = FIX2INT(ldb);
+  p.ldc = FIX2INT(ldc);
+
+  switch(NM_DTYPE(c)) {
+  case NM_FLOAT32:
+  case NM_FLOAT64:
+    p.alpha.d[0] = REAL2DBL(alpha);
+    p.beta.d[0]  = REAL2DBL(beta);
+    break;
+  case NM_COMPLEX64:
+    p.alpha.c[0].r = REAL2DBL(alpha);
+    p.alpha.c[0].i = IMAG2DBL(alpha);
+    p.beta.c[0].r = REAL2DBL(beta);
+    p.beta.c[0].i = IMAG2DBL(beta);
+    break;
+  case NM_COMPLEX128:
+    p.alpha.z.r = REAL2DBL(alpha);
+    p.alpha.z.i = IMAG2DBL(alpha);
+    p.beta.z.r = REAL2DBL(beta);
+    p.beta.z.i = IMAG2DBL(beta);
+    break;
+  }
 
   /* fprintf(stderr, "cblas_gemm: %d %d %d %d %d %f %d %d %f %d\n", trans_a_, trans_b_,
          m_, n_, k_, alpha_, lda_, ldb_, beta_, ldc_); */
 
-  GemmFuncs[NM_DTYPE(c)](CblasRowMajor, trans_a_, trans_b_, m_, n_, k_,
-        alpha_,  ((DENSE_STORAGE*)(NM_STORAGE(a)))->elements, lda_,
-                 ((DENSE_STORAGE*)(NM_STORAGE(b)))->elements, ldb_,
-        beta_,   ((DENSE_STORAGE*)(NM_STORAGE(c)))->elements, ldc_);
+  GemmFuncs[NM_DTYPE(c)](CblasRowMajor, gemm_op_sym(trans_a), gemm_op_sym(trans_b), p);
 
   return Qtrue;
 }

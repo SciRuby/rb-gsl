@@ -19,7 +19,6 @@
 # include <sys/resource.h>
 #endif
 
-
 #include "dtypes.h"
 
 #if SIZEOF_INT == 8
@@ -114,6 +113,42 @@ typedef struct numeric_matrix {
 } NMATRIX;
 
 
+/* Local */
+
+typedef union {
+  u_int8_t b[2];
+  int16_t s;
+} nm_size16_t;
+
+typedef union {
+  u_int8_t b[4];
+  int32_t  i;
+  float    f;
+} nm_size32_t;
+
+typedef union {
+  u_int8_t  b[8];
+  int64_t   q;
+  float     f[2];
+  double    d;
+  complex64 c;
+} nm_size64_t;
+
+typedef union {
+  u_int8_t   b[16];
+  double     d[2];
+  float      f[4];
+  complex64  c[2];
+  complex128 z;
+} nm_size128_t;
+
+
+// For calling cblas_gemm functions (see cblas.c)
+typedef struct cblas_param_t {
+  int M, N, K, lda, ldb, ldc;
+  void *A, *B, *C;
+  nm_size128_t alpha, beta;
+} CBLAS_PARAM;
 
 
 #ifndef NMATRIX_C
@@ -152,7 +187,9 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define NM_SWAP(a,b,tmp) {(tmp)=(a);(a)=(b);(b)=(tmp);}
 
 #define NUM2REAL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) )
+#define REAL2DBL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) )
 #define NUM2IMAG(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) )
+#define IMAG2DBL(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) )
 
 #define NUM2NUMER(v) NUM2INT( rb_funcall((v), nm_id_numer,0) )
 #define NUM2DENOM(v) NUM2INT( rb_funcall((v), nm_id_denom,0) )
@@ -179,30 +216,6 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define YaleGetSize(sz,s)                   (SetFuncs[Y_SIZE_T][(s)->index_dtype](1, &sz, 0, (YALE_SIZE_PTR((s), nm_sizeof[(s)->index_dtype])), 0))
 //#define YALE_FIRST_NZ_ROW_ENTRY(sptr,elem_size,i)
 
-/* Local */
-
-typedef union {
-  u_int8_t b[2];
-  int16_t s;
-} nm_size16_t;
-
-typedef union {
-  u_int8_t b[4];
-  int32_t  i;
-  float    f;
-} nm_size32_t;
-
-typedef union {
-  u_int8_t b[8];
-  int64_t  q;
-  float    f[2];
-  double   d;
-} nm_size64_t;
-
-typedef union {
-  u_int8_t b[16];
-  double   d[2];
-} nm_size128_t;
 
 #if !defined RSTRING_LEN
 #define RSTRING_LEN(a) RSTRING(a)->len
@@ -237,21 +250,11 @@ extern ID nm_id_denom, nm_id_numer;
 
 
 /* cblas.c */
-void cblas_sgemm_( const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA,
-                         const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
-                         const int K, const double alpha, const void* A,
-                         const int lda, const void* B, const int ldb,
-                         const double beta, void* C, const int ldc);
-void cblas_cgemm_( const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA,
-                   const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
-                   const int K, const complex128 alpha, const void* A,
-                   const int lda, const void* B, const int ldb,
-                   const complex128 beta, void* C, const int ldc);
-void cblas_zgemm_( const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA,
-                   const enum CBLAS_TRANSPOSE TransB, const int M, const int N,
-                   const int K, const complex128 alpha, const void* A,
-                   const int lda, const void* B, const int ldb,
-                   const complex128 beta, void* C, const int ldc);
+CBLAS_PARAM init_cblas_params_for_nm_multiply_matrix(int8_t dtype);
+void cblas_sgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, CBLAS_PARAM p);
+void cblas_dgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, CBLAS_PARAM p);
+void cblas_cgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, CBLAS_PARAM p);
+void cblas_zgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, CBLAS_PARAM p);
 
 /* dense.c */
 DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
