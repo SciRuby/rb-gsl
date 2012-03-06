@@ -25,16 +25,7 @@ class NMatrix
   def inspect
     original_inspect = super
     original_inspect = original_inspect[0...original_inspect.size-1]
-    ary = [original_inspect]
-    ary << "shape:[#{shape.join(',')}]" << "dtype:#{dtype}" << "stype:#{stype}"
-
-    if stype == :yale
-      ary << "capacity:#{capacity}" << "ija:#{__yale_ary__to_s(:ija)}" << "ia:#{__yale_ary__to_s(:ia)}" <<
-             "ja:#{__yale_ary__to_s(:ja)}" << "a:#{__yale_ary__to_s(:a)}" << "d:#{__yale_ary__to_s(:d)}" <<
-             "lu:#{__yale_ary__to_s(:lu)}" << "yale_size:#{__yale_size__}"
-    end
-
-    ary.join(" ") + ">"
+    original_inspect + inspect_helper.join(" ") + ">"
   end
 
   def __yale_ary__to_s(sym)
@@ -151,24 +142,87 @@ class NMatrix
     end
   end
 
+protected
+  def inspect_helper
+    ary = []
+    ary << "shape:[#{shape.join(',')}]" << "dtype:#{dtype}" << "stype:#{stype}"
+
+    if stype == :yale
+      ary << "capacity:#{capacity}" << "ija:#{__yale_ary__to_s(:ija)}" << "ia:#{__yale_ary__to_s(:ia)}" <<
+             "ja:#{__yale_ary__to_s(:ja)}" << "a:#{__yale_ary__to_s(:a)}" << "d:#{__yale_ary__to_s(:d)}" <<
+             "lu:#{__yale_ary__to_s(:lu)}" << "yale_size:#{__yale_size__}"
+    end
+
+    ary
+  end
 
 end
 
 
 
+# This is a specific type of NMatrix in which only one dimension is not 1. Although it is stored as a rank-2, n x 1,
+# matrix, it acts as a rank-1 vector of size n. If the @orientation flag is set to :row, it is stored as 1 x n instead
+# of n x 1.
 class NVector < NMatrix
   def initialize length, *args
     super :dense, [length,1], *args
   end
 
+  # Orientation defaults to column (e.g., [3,1] is a column of length 3). It may also be row, e.g., for [1,5].
+  def orientation
+    defined?(@orientation) && !@orientation.nil? ? @orientation : :column
+  end
+
+  def transpose
+    t = super
+    t.send :eval, "@orientation = @orientation == :row ? :column : :row"
+    t
+  end
+
+  def transpose!
+    super
+    @orientation = @orientation == :row ? :column : :row
+    self
+  end
+
+  def multiply m
+    v = super(m)
+    v.send :eval, "@orientation = @orientation == :row ? :column : :row"
+    v
+  end
+
+  def multiply! m
+    super
+    @orientation = @orientation == :row ? :column : :row
+    self
+  end
+
   def [] i
-    super(i,0)
+    @orientation == :row ? super(0,i) : super(i,0)
   end
 
   def []= i,val
-    super(i,0,val)
+    @orientation == :row ? super(0,i,val) : super(i,0,val)
   end
 
   def rank; 1; end
+
+  # TODO: Make this actually pretty.
+  def pretty_print
+    dim = @orientation == :row ? 1 : 0
+    arr = []
+    (0...shape[dim]).each do |i|
+      arr << self[i]
+    end
+    puts arr.join("  ")
+    nil
+  end
+
+protected
+  def inspect_helper
+    ary = super
+    ary << "orientation:#{(@orientation || 'column').to_s}"
+    ary
+  end
 
 end
