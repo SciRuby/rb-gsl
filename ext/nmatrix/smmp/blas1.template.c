@@ -1,5 +1,5 @@
 
-void %%INT_ABBREV%%_symbmm(u_%%INT%% n, u_%%INT%% m, u_%%INT%% l, u_%%INT%%* ia, u_%%INT%%* ja, bool diaga, u_%%INT%%* ib, u_%%INT%%* jb, bool diagb, u_%%INT%%* ic, u_%%INT%%* jc, bool diagc)
+void %%INT_ABBREV%%_symbmm(y_size_t n, y_size_t m, u_%%INT%%* ia, u_%%INT%%* ja, bool diaga, u_%%INT%%* ib, u_%%INT%%* jb, bool diagb, u_%%INT%%* ic, u_%%INT%%* jc, bool diagc)
 {
   if (diaga && ia != ja) {
     fprintf(stderr, "diaga=1, but ia!=ja. For new yale, ia must equal ja.");

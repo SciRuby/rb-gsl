@@ -1,5 +1,5 @@
 
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(u_%%INT%% n, u_%%INT%% m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, bool diagb, %%REAL%% *b, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc, %%REAL%% *c)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(y_size_t n, y_size_t m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, bool diagb, %%REAL%% *b, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc, %%REAL%% *c)
 {
   if (diaga && ia != ja) {
     fprintf(stderr, "diaga=1, but ia!=ja. For new yale, ia must equal ja.");
@@ -20,7 +20,7 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(u_%%INT%% n, u_%%INT%% m, u_%%INT%% *
 }
 
 // Perform both the symbolic and numeric steps together.
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(u_%%INT%%  n, u_%%INT%% m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, bool diagb, %%REAL%% *b, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc, %%REAL%% *c)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(y_size_t n, y_size_t m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, bool diagb, %%REAL%% *b, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc, %%REAL%% *c)
 {
   if (diaga && ia != ja) {
     fprintf(stderr, "diaga=1, but ia!=ja. For new yale, ia must equal ja.");

@@ -150,7 +150,7 @@ typedef struct cblas_param_t {
 
 
 typedef struct smmp_param_t {
-  void *i, *j, *v;
+  void *ia, *ja, *a;
   bool diag;
 } YALE_PARAM;
 

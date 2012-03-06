@@ -2,7 +2,7 @@
 // Remember, we're dealing with unique keys, which simplifies things.
 // Doesn't have to be in-place, since we probably just multiplied and that wasn't in-place.
 
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp_sort_columns_(u_%%INT%% n, u_%%INT%% *ia, u_%%INT%% *ja, %%REAL%% *a)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp_sort_columns_(y_size_t n, u_%%INT%% *ia, u_%%INT%% *ja, %%REAL%% *a)
 {
   u_%%INT%% i, jj, jj_start, jj_end, min, min_jj;
   %%REAL%% temp_val;

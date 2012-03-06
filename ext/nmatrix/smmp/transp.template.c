@@ -1,5 +1,5 @@
 
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(u_%%INT%% n, u_%%INT%% m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, %%REAL%% *b, bool move)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(y_size_t n, y_size_t m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, %%REAL%% *b, bool move)
 {
   u_%%INT%% i, j, index;
 
