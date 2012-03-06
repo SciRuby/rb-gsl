@@ -7,7 +7,7 @@
 #include "nmatrix.h"
 #include "types.h"
 
-VALUE cNMatrix;
+VALUE cNMatrix, cNVector;
 
 ID nm_id_real, nm_id_imag;
 ID nm_id_numer, nm_id_denom;
@@ -41,7 +41,7 @@ nm_delete_t DeleteFuncs = {
 };
 
 
-/*nm_gemv_t GemvFuncs = {
+nm_gemv_t GemvFuncs = {
   NULL,
   NULL,
   NULL,
@@ -49,14 +49,14 @@ nm_delete_t DeleteFuncs = {
   NULL,
   NULL,
   cblas_sgemv_,
-  cblas_dgemv,  // can use the native version since it takes doubles for alpha and beta.
+  cblas_dgemv_,
   cblas_cgemv_,
   cblas_zgemv_,
   NULL,
   NULL,
   NULL,
   NULL
-};*/
+};
 
 
 nm_gemm_t GemmFuncs = { // by NM_TYPES
@@ -122,42 +122,48 @@ static void nm_delete(NMATRIX* mat) {
 
 
 
-VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
-  NMATRIX* matrix  = nm_create(S_DENSE, create_dense_storage(dtype, shape, rank, init_val, init_val_len));
-  return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
+static STORAGE* nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
+  return (STORAGE*)(create_dense_storage(dtype, shape, rank, init_val, init_val_len));
+  //return nm_create(S_DENSE, create_dense_storage(dtype, shape, rank, init_val, init_val_len));
+  //return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
 }
 
-VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
-  NMATRIX* matrix = nm_create(S_LIST, create_list_storage(dtype, shape, rank, init_val));
-  if (init_val_len > 1) rb_raise(rb_eArgError, "list storage needs initial size, not initial value\n");
-  return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
+static STORAGE* nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
+  if (init_val_len > 1) {
+    rb_raise(rb_eArgError, "list storage needs initial size, not initial value\n");
+    return NULL;
+  }
+  return (STORAGE*)(create_list_storage(dtype, shape, rank, init_val));
 }
 
 
-VALUE nm_yale_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
-  NMATRIX* matrix;
-  YALE_STORAGE* s = create_yale_storage(dtype, shape, rank, *(size_t*)init_val);
+static STORAGE* nm_yale_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
+  YALE_STORAGE* s;
+
+  if (init_val_len > 1) {
+    rb_raise(rb_eArgError, "list storage needs initial size, not initial value\n");
+    return NULL;
+  }
+
+  s = create_yale_storage(dtype, shape, rank, *(size_t*)init_val);
   init_yale_storage(s);
-
-  if (init_val_len > 1) rb_raise(rb_eArgError, "list storage needs initial size, not initial value\n");
+  free(init_val);
 
   if (!s) rb_raise(rb_eNoMemError, "Yale allocation failed");
 
-  matrix = nm_create(S_YALE, s);
-
-  free(init_val);
-  return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
+  return (STORAGE*)(s);
+  //return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
 }
 
 
-nm_create_t CreateFuncs = {
+nm_create_storage_t CreateFuncs = {
   nm_dense_new,
   nm_list_new,
   nm_yale_new
 };
 
 
-nm_copy_s_t CopyFuncs = {
+nm_create_storage_t CopyFuncs = {
   copy_dense_storage,
   copy_list_storage,
   copy_yale_storage
@@ -402,13 +408,14 @@ size_t* nm_interpret_initial_capacity(VALUE arg) {
 }
 
 
-VALUE nm_init(int argc, VALUE* argv, VALUE self) {
+static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   char    ZERO = 0;
   int8_t  dtype, stype, offset = 0;
   size_t  rank;
   size_t* shape;
   size_t  init_val_len = 0;
   void*   init_val = NULL;
+  NMATRIX* nmatrix;
 
   // READ ARGUMENTS
 
@@ -454,24 +461,29 @@ VALUE nm_init(int argc, VALUE* argv, VALUE self) {
     rb_raise(rb_eArgError, "Could not recognize dtype");
     free(init_val);
     free(shape);
-    return Qnil;
+    return nm;
   }
 
-  if (stype < S_TYPES)
-    return CreateFuncs[stype](shape, rank, dtype, init_val, init_val_len, self);
-  else
+  if (stype < S_TYPES) {
+    UnwrapNMatrix( nm, nmatrix );
+
+    nmatrix->stype   = stype;
+    nmatrix->storage = CreateFuncs[stype](shape, rank, dtype, init_val, init_val_len, nm);
+
+    return nm;
+  } else
     rb_raise(rb_eNotImpError, "Unrecognized storage type");
 
   free(shape);
   free(init_val);
-  return Qnil;
-
+  return nm;
 }
 
 
 static VALUE nm_alloc(VALUE klass) {
   NMATRIX* mat = ALLOC(NMATRIX);
   mat->storage = NULL;
+  mat->stype   = S_TYPES;
   return Data_Wrap_Struct(klass, 0, nm_delete, mat);
 }
 
@@ -514,11 +526,48 @@ static VALUE nm_init_copy(VALUE copy, VALUE original) {
 }
 
 
+static VALUE nm_multiply_vector_or_slice(NMATRIX* left, void* right, int inc_right) {
+  NMATRIX* result;
+  DENSE_PARAM cp;
+  size_t* shape   = malloc(sizeof(size_t)*2);
+
+  shape[0] = left->storage->shape[0];
+  shape[1] = 1;
+
+
+  switch(left->stype) {
+  case S_DENSE:
+    result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2, NULL, 0));
+
+    cp     = init_cblas_params_for_nm_multiply_matrix(left->storage->dtype);
+    cp.M   = left->storage->shape[0];
+    cp.N   = left->storage->shape[1];
+
+    cp.A   = ((DENSE_STORAGE*)(left->storage))->elements;
+    cp.lda = left->storage->shape[1];
+
+    cp.B   = right;
+    cp.ldb = inc_right;
+
+    cp.C   = ((DENSE_STORAGE*)(result->storage))->elements;
+    cp.ldc = 1;
+
+    GemvFuncs[left->storage->dtype](CblasRowMajor, CblasNoTrans, cp);
+    break;
+  default:
+    fprintf(stderr, "DEBUG: left-hand stype was %d\n", left->stype);
+    rb_raise(rb_eNotImpError, "only dense M*v implemented so far");
+  }
+
+  return Data_Wrap_Struct(cNVector, 0, nm_delete, result);
+}
+
+
 static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
   ///TODO: multiplication for non-dense and/or non-decimal matrices
   size_t* shape   = malloc(sizeof(size_t)*2);
   NMATRIX* result;
-  struct cblas_param_t cblas_param = init_cblas_params_for_nm_multiply_matrix(left->stype);
+  DENSE_PARAM cblas_param;
 
   shape[0] = left->storage->shape[0];
   shape[1] = right->storage->shape[1];
@@ -591,6 +640,7 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
 
 
 static VALUE nm_multiply_scalar(NMATRIX* left, VALUE scalar) {
+  rb_raise(rb_eNotImpError, "matrix-scalar multiplication not implemented yet");
   return Qnil;
 }
 
@@ -601,23 +651,36 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 
   // left has to be of type NMatrix.
   if (TYPE(left_v) != T_DATA || RDATA(left_v)->dfree != (RUBY_DATA_FUNC)nm_delete)
-    rb_raise(rb_eTypeError, "wrong argument type");
+    rb_raise(rb_eTypeError, "wrong left argument type");
 
   UnwrapNMatrix( left_v, left );
 
   //if (RDATA(right_v)->dfree != (RUBY_DATA_FUNC)nm_delete) {
-  UnwrapNMatrix( right_v, right );
+  if (TYPE(right_v) == T_DATA && RDATA(right_v)->dfree == (RUBY_DATA_FUNC)nm_delete) { // both are matrices
+    UnwrapNMatrix( right_v, right );
 
-  if (left->storage->shape[1] != right->storage->shape[0])
-    rb_raise(rb_eArgError, "incompatible dimensions");
+    if (left->storage->shape[1] != right->storage->shape[0])
+      rb_raise(rb_eArgError, "incompatible dimensions");
 
-  if (left->stype != right->stype)
-    rb_raise(rb_eNotImpError, "matrices must have same stype");
+    if (left->stype != right->stype)
+      rb_raise(rb_eNotImpError, "matrices must have same stype");
 
-  if (left->storage->dtype != right->storage->dtype)
-    rb_raise(rb_eNotImpError, "dtype mismatch");
+    if (left->storage->dtype != right->storage->dtype)
+      rb_raise(rb_eNotImpError, "dtype mismatch");
 
-  return nm_multiply_matrix(left, right);
+    if (right->storage->shape[1] == 1)
+      return nm_multiply_vector_or_slice(left, ((DENSE_STORAGE*)(right->storage))->elements, 1);
+    else
+      return nm_multiply_matrix(left, right);
+  } else if (TYPE(right_v) == T_ARRAY) {
+    rb_raise(rb_eNotImpError, "please initialize array to an NMatrix of size n x 1 before multiplying");
+  } else if (IS_NUMERIC(right_v)) {
+    return nm_multiply_scalar(left, right_v);
+  } else {
+    rb_raise(rb_eTypeError, "wrong right argument type");
+  }
+  return Qnil;
+
   //} else {
   //  rb_raise(rb_eNotImpError, "scalar multiplication not supported yet");
   //  return Qnil;
@@ -786,6 +849,54 @@ static VALUE nm_cblas_gemm(VALUE self,
          m_, n_, k_, alpha_, lda_, ldb_, beta_, ldc_); */
 
   GemmFuncs[NM_DTYPE(c)](CblasRowMajor, gemm_op_sym(trans_a), gemm_op_sym(trans_b), p);
+
+  return Qtrue;
+}
+
+
+static VALUE nm_cblas_gemv(VALUE self,
+                           VALUE trans_a,
+                           VALUE m, VALUE n,
+                           VALUE alpha,
+                           VALUE a, VALUE lda,
+                           VALUE x, VALUE incx,
+                           VALUE beta,
+                           VALUE y, VALUE incy) {
+
+  struct cblas_param_t p;
+  p.M = FIX2INT(m);
+  p.N = FIX2INT(n);
+  p.A = ((DENSE_STORAGE*)(NM_STORAGE(a)))->elements;
+  p.B = ((DENSE_STORAGE*)(NM_STORAGE(x)))->elements;
+  p.C = ((DENSE_STORAGE*)(NM_STORAGE(y)))->elements;
+  p.lda = FIX2INT(lda);
+  p.ldb = FIX2INT(incx);
+  p.ldc = FIX2INT(incy);
+
+  switch(NM_DTYPE(y)) {
+  case NM_FLOAT32:
+  case NM_FLOAT64:
+    p.alpha.d[0] = REAL2DBL(alpha);
+    p.beta.d[0]  = REAL2DBL(beta);
+    break;
+  case NM_COMPLEX64:
+    p.alpha.c[0].r = REAL2DBL(alpha);
+    p.alpha.c[0].i = IMAG2DBL(alpha);
+    p.beta.c[0].r = REAL2DBL(beta);
+    p.beta.c[0].i = IMAG2DBL(beta);
+    break;
+  case NM_COMPLEX128:
+    p.alpha.z.r = REAL2DBL(alpha);
+    p.alpha.z.i = IMAG2DBL(alpha);
+    p.beta.z.r = REAL2DBL(beta);
+    p.beta.z.i = IMAG2DBL(beta);
+    break;
+  }
+
+  /* fprintf(stderr, "cblas_gemm: %d %d %d %d %d %f %d %d %f %d\n", trans_a_, trans_b_,
+         m_, n_, k_, alpha_, lda_, ldb_, beta_, ldc_); */
+
+  GemvFuncs[NM_DTYPE(y)](CblasRowMajor, gemm_op_sym(trans_a), p);
 
   return Qtrue;
 }
@@ -1069,12 +1180,14 @@ void Init_nmatrix() {
 
     /* Define NMatrix class */
     cNMatrix = rb_define_class("NMatrix", rb_cObject);
-    rb_define_alloc_func(cNMatrix, nm_alloc);
 
     /* class methods */
     rb_define_singleton_method(cNMatrix, "__cblas_gemm__", nm_cblas_gemm, 13);
-    rb_define_method(cNMatrix, "initialize", nm_init, 2);
-    rb_define_singleton_method(cNMatrix, "new", nm_init, -1);
+    rb_define_singleton_method(cNMatrix, "__cblas_gemv__", nm_cblas_gemv, 11);
+
+    rb_define_alloc_func(cNMatrix, nm_alloc);
+    rb_define_method(cNMatrix, "initialize", nm_init, -1);
+    // rb_define_singleton_method(cNMatrix, "new", nm_init, -1);
 
 
     rb_define_method(cNMatrix, "initialize_copy", nm_init_copy, 1);
@@ -1105,6 +1218,10 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, "__yale_d__", nm_yale_d, 0);
     rb_define_method(cNMatrix, "__yale_lu__", nm_yale_lu, 0);
     rb_define_const(cNMatrix, "YALE_GROWTH_CONSTANT", rb_float_new(YALE_GROWTH_CONSTANT));
+
+
+    cNVector = rb_define_class("NVector", cNMatrix);
+
 
     nm_id_real  = rb_intern("real");
     nm_id_imag  = rb_intern("imag");

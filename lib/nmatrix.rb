@@ -1,5 +1,6 @@
 require File.join(File.dirname(__FILE__), "nmatrix/nmatrix.so")
 
+
 class NMatrix
   VERSION = '0.0.1'
 
@@ -119,12 +120,55 @@ class NMatrix
       ldb ||= b.shape[1]
       ldc ||= c.shape[1]
 
+      if a.dtype == :complex64 || a.dtype == :complex128 # NM_COMPLEX64 and NM_COMPLEX128 both require complex alpha and beta
+        alpha = Complex.new(1.0, 0.0) if alpha == 1.0
+        beta  = Complex.new(0.0, 0.0) if beta == 0.0
+      end
+
       # For argument descriptions, see: http://www.netlib.org/blas/dgemm.f
       NMatrix.__cblas_gemm__(transpose_a, transpose_b, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
 
       return c
     end
+
+
+    def cblas_gemv a, x, y=nil, alpha=1.0, beta=0.0, transpose_a=false, m=nil, n=nil, lda=nil, incx=nil, incy=nil
+      m ||= transpose_a ? a.shape[1] : a.shape[0]
+      n ||= transpose_a ? a.shape[0] : a.shape[1]
+
+      lda ||= a.shape[1]
+      incx ||= 1
+      incy ||= 1
+
+      if a.dtype == :complex64 || a.dtype == :complex128 # NM_COMPLEX64 and NM_COMPLEX128 both require complex alpha and beta
+        alpha = Complex.new(1.0, 0.0) if alpha == 1.0
+        beta  = Complex.new(0.0, 0.0) if beta == 0.0
+      end
+
+      NMatrix.__cblas_gemv__(transpose_a, m, n, alpha, a, lda, x, incx, beta, y, incy)
+
+      return y
+    end
   end
 
+
+end
+
+
+
+class NVector < NMatrix
+  def initialize length, *args
+    super :dense, [length,1], *args
+  end
+
+  def [] i
+    super(i,0)
+  end
+
+  def []= i,val
+    super(i,0,val)
+  end
+
+  def rank; 1; end
 
 end

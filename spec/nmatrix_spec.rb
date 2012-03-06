@@ -193,6 +193,49 @@ describe NMatrix do
     end
   end
 
+  [:float32,:float64].each do |dtype|
+    it "dense correctly handles #{dtype.to_s} vector multiplication" do
+      #STDERR.puts "dtype=#{dtype.to_s}"
+      #STDERR.puts "2"
+      n = NMatrix.new([4,3], dtype)
+      n[0,0] = 14.0
+      n[0,1] = 9.0
+      n[0,2] = 3.0
+      n[1,0] = 2.0
+      n[1,1] = 11.0
+      n[1,2] = 15.0
+      n[2,0] = 0.0
+      n[2,1] = 12.0
+      n[2,2] = 17.0
+      n[3,0] = 5.0
+      n[3,1] = 2.0
+      n[3,2] = 3.0
+
+      m = NVector.new(3, dtype)
+
+      m.shape[0].should == 3
+      m.shape[1].should == 1
+
+      n.shape[0].should == 4
+      n.shape[1].should == 3
+      n.rank.should == 2
+
+      m[0] = 12.0
+      m[1] = 9.0
+      m[2] = 8.0
+
+      n.shape[1].should == m.shape[0]
+
+      r = n.multiply(m)
+      r.class.should == NVector
+
+      r[0].should == 273.0
+      r[1].should == 243.0
+      r[2].should == 244.0
+      r[3].should == 102.0
+    end
+  end
+
 
   [:dense, :list, :yale].each do |storage_type|
     context "(storage: #{storage_type})" do

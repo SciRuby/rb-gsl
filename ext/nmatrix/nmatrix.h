@@ -106,10 +106,8 @@ typedef struct yale_s {
 
 
 typedef struct numeric_matrix {
-  //int8_t   dtype;             /* data type (int8, int32, rational128, etc) */
   int8_t   stype;             /* method of storage (csc, dense, etc) */
   STORAGE* storage;           /* pointer to storage struct */
-  // VALUE    ref;            /* NMatrix object wrapping this structure */
 } NMATRIX;
 
 
@@ -148,7 +146,13 @@ typedef struct cblas_param_t {
   int M, N, K, lda, ldb, ldc;
   void *A, *B, *C;
   nm_size128_t alpha, beta;
-} CBLAS_PARAM;
+} DENSE_PARAM;
+
+
+typedef struct smmp_param_t {
+  void *i, *j, *v;
+  bool diag;
+} YALE_PARAM;
 
 
 #ifndef NMATRIX_C
@@ -234,10 +238,10 @@ extern const int nm_sizeof[NM_TYPES+1];
 typedef void     (*nm_setfunc_t[NM_TYPES][NM_TYPES])(); // copy functions
 typedef void     (*nm_incfunc_t[NM_TYPES])();           // increment functions
 typedef VALUE    (*nm_stype_ref_t[S_TYPES])();
-typedef VALUE    (*nm_create_t[S_TYPES])();
+typedef STORAGE* (*nm_create_storage_t[S_TYPES])();
 typedef void     (*nm_delete_t[S_TYPES])();
-typedef STORAGE* (*nm_copy_s_t[S_TYPES])();
-typedef void     (*nm_gemm_t[NM_TYPES])();           // general multiply
+typedef void     (*nm_gemm_t[NM_TYPES])();           // general matrix/matrix multiply
+typedef void     (*nm_gemv_t[NM_TYPES])();           // general matrix/vector multiply
 typedef void     (*nm_smmp_t[NM_TYPES][NM_TYPES])(); // sparse (yale) multiply
 typedef void     (*nm_smmp_transpose_t[NM_TYPES][NM_TYPES])(); // sparse (yale) transpose
 //typedef void (*nm_setsf_t[S_TYPES][S_TYPES])();
@@ -250,11 +254,15 @@ extern ID nm_id_denom, nm_id_numer;
 
 
 /* cblas.c */
-CBLAS_PARAM init_cblas_params_for_nm_multiply_matrix(int8_t dtype);
-void cblas_sgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, CBLAS_PARAM p);
-void cblas_dgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, CBLAS_PARAM p);
-void cblas_cgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, CBLAS_PARAM p);
-void cblas_zgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, CBLAS_PARAM p);
+DENSE_PARAM init_cblas_params_for_nm_multiply_matrix(int8_t dtype);
+void cblas_sgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_sgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
+void cblas_dgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_dgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
+void cblas_cgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_cgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
+void cblas_zgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_zgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
 
 /* dense.c */
 DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
@@ -305,11 +313,6 @@ int8_t nm_stypestring_to_stype(VALUE str);
 int8_t nm_stypesymbol_to_stype(VALUE sym);
 int8_t nm_guess_dtype(VALUE v);
 size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank);
-VALUE nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self);
-VALUE nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self);
-VALUE nm_yale_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self);
-VALUE nm_init(int argc, VALUE* argv, VALUE self);
-// VALUE nm_init_copy(VALUE copy, VALUE original);
 NMATRIX* nm_create(int8_t stype, void* storage);
 void Init_nmatrix();
 
