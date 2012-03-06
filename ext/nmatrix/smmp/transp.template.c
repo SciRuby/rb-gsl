@@ -1,7 +1,14 @@
 
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(y_size_t n, y_size_t m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, %%REAL%% *b, bool move)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move)
 {
   u_%%INT%% i, j, index;
+
+  u_%%INT%% *ia = (u_%%INT%%*)(A.ia),
+            *ja = (u_%%INT%%*)(A.ja),
+            *ib = (u_%%INT%%*)(B.ia),
+            *jb = (u_%%INT%%*)(B.ja);
+  %%REAL%% *a = A.a,
+           *b = B.a;
 
   // Clear B
   for (i = 0; i < m+1; ++i)
@@ -11,7 +18,7 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(y_size_t n, y_size_t m, u_%%INT%% *i
       b[i] = 0;
   }
 
-  if (diaga) ib[0] = m + 1;
+  if (A.diag) ib[0] = m + 1;
   else       ib[0] = 0;
 
 /*       count indices for each column */
@@ -45,7 +52,7 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(y_size_t n, y_size_t m, u_%%INT%% *i
     ib[i] = ib[i-1];
 
 
-  if (diaga) {
+  if (A.diag) {
     if (move) {
       j = SMMP_MIN(n,m);
 

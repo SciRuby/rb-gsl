@@ -111,11 +111,4 @@ typedef struct { int32_t n,d; } rational64;
 typedef struct { int64_t n,d; } rational128;
 
 
-// for when we need to return array indices.
-// TODO: Make it so this is never larger than size_t
-typedef uint32_t    y_size_t;
-#define Y_SIZE_T    NM_INT32
-
-
-
 #endif

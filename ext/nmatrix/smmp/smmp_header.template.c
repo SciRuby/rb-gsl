@@ -16,4 +16,3 @@
 
 #include <stdio.h>
 #include "smmp.h"
-

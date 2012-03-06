@@ -149,10 +149,7 @@ typedef struct cblas_param_t {
 } DENSE_PARAM;
 
 
-typedef struct smmp_param_t {
-  void *ia, *ja, *a;
-  bool diag;
-} YALE_PARAM;
+// YALE_PARAM is declared in smmp.h
 
 
 #ifndef NMATRIX_C
@@ -243,7 +240,7 @@ typedef void     (*nm_delete_t[S_TYPES])();
 typedef void     (*nm_gemm_t[NM_TYPES])();           // general matrix/matrix multiply
 typedef void     (*nm_gemv_t[NM_TYPES])();           // general matrix/vector multiply
 typedef void     (*nm_smmp_t[NM_TYPES][NM_TYPES])(); // sparse (yale) multiply
-typedef void     (*nm_smmp_transpose_t[NM_TYPES][NM_TYPES])(); // sparse (yale) transpose
+typedef void     (*nm_smmp_transpose_t[NM_TYPES][NM_TYPES])(y_size_t, y_size_t, YALE_PARAM, YALE_PARAM, bool); // sparse (yale) transpose
 //typedef void (*nm_setsf_t[S_TYPES][S_TYPES])();
 //typedef void (*nm_setdf_t[NM_DTYPES][NM_DTYPES])();
 

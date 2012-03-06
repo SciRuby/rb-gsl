@@ -2,10 +2,14 @@
 // Remember, we're dealing with unique keys, which simplifies things.
 // Doesn't have to be in-place, since we probably just multiplied and that wasn't in-place.
 
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp_sort_columns_(y_size_t n, u_%%INT%% *ia, u_%%INT%% *ja, %%REAL%% *a)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp_sort_columns_(y_size_t n, YALE_PARAM A)
 {
   u_%%INT%% i, jj, jj_start, jj_end, min, min_jj;
   %%REAL%% temp_val;
+
+  u_%%INT%% *ia = (u_%%INT%%*)(A.ia),
+            *ja = (u_%%INT%%*)(A.ja);
+  %%REAL%% *a = (%%REAL%%*)(A.a);
 
   for (i = 0; i < n; ++i) {
     // No need to sort if there are 0 or 1 entries in the row

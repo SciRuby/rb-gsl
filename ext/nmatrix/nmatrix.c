@@ -76,43 +76,49 @@ nm_gemm_t GemmFuncs = { // by NM_TYPES
   NULL
 };
 
+static void TransposeTypeErr(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move) {
+  rb_raise(rb_eTypeError, "illegal operation with this matrix type");
+}
+
 
 // First dimension is dtype, second dimension is index dtype (so lots of nulls)
 nm_smmp_transpose_t SparseTransposeFuncs = {
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_NONE
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_BYTE
-  {NULL, NULL, i8_i8_transp_, i16_i8_transp_, i32_i8_transp_, i64_i8_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT8
-  {NULL, NULL, i8_i16_transp_, i16_i16_transp_, i32_i16_transp_, i64_i16_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT16
-  {NULL, NULL, i8_i32_transp_, i16_i32_transp_, i32_i32_transp_, i64_i32_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT32
-  {NULL, NULL, i8_i64_transp_, i16_i64_transp_, i32_i64_transp_, i64_i64_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT64
-  {NULL, NULL, i8_f32_transp_, i16_f32_transp_, i32_f32_transp_, i64_f32_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_FLOAT32
-  {NULL, NULL, i8_f64_transp_, i16_f64_transp_, i32_f64_transp_, i64_f64_transp_, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_FLOAT64
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_COMPLEX64
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_COMPLEX128
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL32
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL64
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL128
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}  // NM_ROBJ
+  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_NONE
+  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_BYTE
+  {TransposeTypeErr, TransposeTypeErr, i8_i8_transp_, i16_i8_transp_, i32_i8_transp_, i64_i8_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_INT8
+  {TransposeTypeErr, TransposeTypeErr, i8_i16_transp_, i16_i16_transp_, i32_i16_transp_, i64_i16_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_INT16
+  {TransposeTypeErr, TransposeTypeErr, i8_i32_transp_, i16_i32_transp_, i32_i32_transp_, i64_i32_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_INT32
+  {TransposeTypeErr, TransposeTypeErr, i8_i64_transp_, i16_i64_transp_, i32_i64_transp_, i64_i64_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_INT64
+  {TransposeTypeErr, TransposeTypeErr, i8_f32_transp_, i16_f32_transp_, i32_f32_transp_, i64_f32_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_FLOAT32
+  {TransposeTypeErr, TransposeTypeErr, i8_f64_transp_, i16_f64_transp_, i32_f64_transp_, i64_f64_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_FLOAT64
+  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_COMPLEX64
+  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_COMPLEX128
+  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_RATIONAL32
+  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_RATIONAL64
+  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_RATIONAL128
+  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}  // NM_ROBJ
 };
 
-
+static void SmmpTypeErr(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C) {
+  rb_raise(rb_eTypeError, "illegal operation with this matrix type");
+}
 
 // First dimension is dtype, second dimension is index dtype (so lots of nulls)
 nm_smmp_t SmmpFuncs = {
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_NONE
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_BYTE
-  {NULL, NULL, i8_i8_smmp, i16_i8_smmp, i32_i8_smmp, i64_i8_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT8
-  {NULL, NULL, i8_i16_smmp, i16_i16_smmp, i32_i16_smmp, i64_i16_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT16
-  {NULL, NULL, i8_i32_smmp, i16_i32_smmp, i32_i32_smmp, i64_i32_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT32
-  {NULL, NULL, i8_i64_smmp, i16_i64_smmp, i32_i64_smmp, i64_i64_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_INT64
-  {NULL, NULL, i8_f32_smmp, i16_f32_smmp, i32_f32_smmp, i64_f32_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_FLOAT32
-  {NULL, NULL, i8_f64_smmp, i16_f64_smmp, i32_f64_smmp, i64_f64_smmp, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_FLOAT64
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_COMPLEX64
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_COMPLEX128
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL32
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL64
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}, // NM_RATIONAL128
-  {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}  // NM_ROBJ
+  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_NONE
+  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_BYTE
+  {SmmpTypeErr, SmmpTypeErr, i8_i8_smmp, i16_i8_smmp, i32_i8_smmp, i64_i8_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_INT8
+  {SmmpTypeErr, SmmpTypeErr, i8_i16_smmp, i16_i16_smmp, i32_i16_smmp, i64_i16_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_INT16
+  {SmmpTypeErr, SmmpTypeErr, i8_i32_smmp, i16_i32_smmp, i32_i32_smmp, i64_i32_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_INT32
+  {SmmpTypeErr, SmmpTypeErr, i8_i64_smmp, i16_i64_smmp, i32_i64_smmp, i64_i64_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_INT64
+  {SmmpTypeErr, SmmpTypeErr, i8_f32_smmp, i16_f32_smmp, i32_f32_smmp, i64_f32_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_FLOAT32
+  {SmmpTypeErr, SmmpTypeErr, i8_f64_smmp, i16_f64_smmp, i32_f64_smmp, i64_f64_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_FLOAT64
+  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_COMPLEX64
+  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_COMPLEX128
+  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_RATIONAL32
+  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_RATIONAL64
+  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_RATIONAL128
+  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}  // NM_ROBJ
 };
 
 
@@ -568,6 +574,7 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
   size_t* shape   = malloc(sizeof(size_t)*2);
   NMATRIX* result;
   DENSE_PARAM cblas_param;
+  YALE_PARAM A, B, C;
 
   shape[0] = left->storage->shape[0];
   shape[1] = right->storage->shape[1];
@@ -596,13 +603,7 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
 
     // call CBLAS xgemm (type-specific general matrix multiplication)
     // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
-    GemmFuncs[left->storage->dtype](
-    //cblas_sgemm(
-          CblasRowMajor,
-          CblasNoTrans,
-          CblasNoTrans,
-          cblas_param
-          );
+    GemmFuncs[left->storage->dtype](CblasRowMajor, CblasNoTrans, CblasNoTrans, cblas_param);
     break;
   case S_YALE:
     result = nm_create(S_YALE,
@@ -612,23 +613,16 @@ static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
     // TODO: Do we really need to initialize the whole thing? Or just the A portion?
     init_yale_storage((YALE_STORAGE*)(result->storage));
 
+    A.ia = A.ja = ((YALE_STORAGE*)(left->storage))->ija;
+    A.a = ((YALE_STORAGE*)(left->storage))->a;
+    B.ia = B.ja = ((YALE_STORAGE*)(right->storage))->ija;
+    B.a = ((YALE_STORAGE*)(right->storage))->a;
+    C.ia = C.ja = ((YALE_STORAGE*)(result->storage))->ija;
+    C.a = ((YALE_STORAGE*)(result->storage))->a;
+    A.diag = B.diag = C.diag = true;
+
     // call the appropriate function pointer
-    SmmpFuncs[ left->storage->dtype ][ ((YALE_STORAGE*)(left->storage))->index_dtype ](
-          shape[0],
-          shape[1],
-          ((YALE_STORAGE*)(left->storage))->ija,
-          ((YALE_STORAGE*)(left->storage))->ija,
-          true,
-          ((YALE_STORAGE*)(left->storage))->a,
-          ((YALE_STORAGE*)(right->storage))->ija,
-          ((YALE_STORAGE*)(right->storage))->ija,
-          true,
-          ((YALE_STORAGE*)(right->storage))->a,
-          ((YALE_STORAGE*)(result->storage))->ija,
-          ((YALE_STORAGE*)(result->storage))->ija,
-          true,
-          ((YALE_STORAGE*)(result->storage))->a
-          );
+    SmmpFuncs[ left->storage->dtype ][ ((YALE_STORAGE*)(left->storage))->index_dtype ](shape[0], shape[1], A, B, C);
 
     break;
   default:
@@ -1075,6 +1069,7 @@ static VALUE nm_transpose_new(VALUE self) {
   NMATRIX *self_m, *result, *result2;
   size_t sz;
   size_t* shape   = malloc(sizeof(size_t)*2);
+  YALE_PARAM A, B;
 #ifdef BENCHMARK
   double t1, t2;
 #endif
@@ -1120,22 +1115,18 @@ static VALUE nm_transpose_new(VALUE self) {
     result2 = nm_create(S_YALE, create_yale_storage(self_m->storage->dtype, shape, 2, sz));
     init_yale_storage((YALE_STORAGE*)(result2->storage));
 
+    A.ia = A.ja = ((YALE_STORAGE*)(self_m->storage))->ija;
+    B.ia = B.ja = ((YALE_STORAGE*)(result->storage))->ija;
+    A.a  = ((YALE_STORAGE*)(self_m->storage))->a;
+    B.a  = ((YALE_STORAGE*)(result->storage))->a;
+    A.diag = true;
+
 #ifdef BENCHMARK
     t1 = get_time();
 #endif
 
     // call the appropriate function pointer
-    SparseTransposeFuncs[ self_m->storage->dtype ][ ((YALE_STORAGE*)(self_m->storage))->index_dtype ](
-          shape[0],
-          shape[1],
-          ((YALE_STORAGE*)(self_m->storage))->ija,
-          ((YALE_STORAGE*)(self_m->storage))->ija,
-          true,
-          ((YALE_STORAGE*)(self_m->storage))->a,
-          ((YALE_STORAGE*)(result->storage))->ija,
-          ((YALE_STORAGE*)(result->storage))->ija,
-          ((YALE_STORAGE*)(result->storage))->a,
-          true); // move
+    SparseTransposeFuncs[ self_m->storage->dtype ][ ((YALE_STORAGE*)(self_m->storage))->index_dtype ](shape[0], shape[1], A, B, true);
 #ifdef BENCHMARK
     t1 = get_time() - t1;
 /*
@@ -1171,6 +1162,7 @@ static VALUE nm_transpose_new(VALUE self) {
 //static VALUE nm_transpose_auto(VALUE self) {
 //
 //}
+
 
 
 void Init_nmatrix() {

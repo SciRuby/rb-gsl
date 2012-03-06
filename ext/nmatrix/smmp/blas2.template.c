@@ -1,43 +1,43 @@
 
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(y_size_t n, y_size_t m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, bool diagb, %%REAL%% *b, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc, %%REAL%% *c)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
 {
-  if (diaga && ia != ja) {
-    fprintf(stderr, "diaga=1, but ia!=ja. For new yale, ia must equal ja.");
+  if (A.diag && A.ia != A.ja) {
+    fprintf(stderr, "A.diag=true, but ia!=ja. For new yale, ia must equal ja.");
     return;
   }
 
-  if (diagb && ib != jb) {
-    fprintf(stderr, "diagb=1, but ib!=jb. For new yale, ib must equal jb.");
+  if (B.diag && B.ia != B.ja) {
+    fprintf(stderr, "B.diag=true, but ia!=ja. For new yale, ia must equal ja.");
     return;
   }
 
-  if (diagc && ic != jc) {
-    fprintf(stderr, "diagc=1, but ic!=jc. For new yale, ic must equal jc.");
+  if (C.diag && C.ia != C.ja) {
+    fprintf(stderr, "C.diag=true, but ia!=ja. For new yale, ia must equal ja.");
     return;
   }
 
-  %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, ia, ja, diaga, a, ib, jb, diagb, b, ic, jc, diagc, c);
+  %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, A, B, C);
 }
 
 // Perform both the symbolic and numeric steps together.
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(y_size_t n, y_size_t m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb, bool diagb, %%REAL%% *b, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc, %%REAL%% *c)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
 {
-  if (diaga && ia != ja) {
-    fprintf(stderr, "diaga=1, but ia!=ja. For new yale, ia must equal ja.");
+  if (A.diag && A.ia != A.ja) {
+    fprintf(stderr, "A.diag=true, but ia!=ja. For new yale, ia must equal ja.");
     return;
   }
 
-  if (diagb && ib != jb) {
-    fprintf(stderr, "diagb=1, but ib!=jb. For new yale, ib must equal jb.");
+  if (B.diag && B.ia != B.ja) {
+    fprintf(stderr, "B.diag=true, but ia!=ja. For new yale, ia must equal ja.");
     return;
   }
 
-  if (diagc && ic != jc) {
-    fprintf(stderr, "diagc=1, but ic!=jc. For new yale, ic must equal jc.");
+  if (C.diag && C.ia != C.ja) {
+    fprintf(stderr, "C.diag=true, but ia!=ja. For new yale, ia must equal ja.");
     return;
   }
 
-  %%INT_ABBREV%%_symbmm_(n, m, ia, ja, diaga, ib, jb, diagb, ic, jc, diagc);
-  %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, ia, ja, diaga, a, ib, jb, diagb, b, ic, jc, diagc, c);
-  %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp_sort_columns_(n, ic, jc, c);
+  %%INT_ABBREV%%_symbmm_(n, m, A, B, C);
+  %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, A, B, C);
+  %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp_sort_columns_(n, C);
 }

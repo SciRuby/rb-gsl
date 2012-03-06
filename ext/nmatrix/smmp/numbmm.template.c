@@ -1,5 +1,5 @@
 // numeric matrix multiply c=a*b
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, %%REAL%% *a, u_%%INT%% *ib, u_%%INT%% *jb,	bool diagb, %%REAL%% *b, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc, %%REAL%% *c)
+void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
 {
   u_%%INT%% next[m];
   %%REAL%% sums[m];
@@ -10,6 +10,16 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, u_%%INT%% *i
   u_%%INT%% jj_start, jj_end, kk_start, kk_end;
   u_%%INT%% i, j, k, kk, jj;
   u_%%INT%% minmn = SMMP_MIN(m,n);
+
+  u_%%INT%% *ia = (u_%%INT%%*)(A.ia),
+            *ja = (u_%%INT%%*)(A.ja),
+            *ib = (u_%%INT%%*)(B.ia),
+            *jb = (u_%%INT%%*)(B.ja),
+            *ic = (u_%%INT%%*)(C.ia),
+            *jc = (u_%%INT%%*)(C.ja);
+  %%REAL%% *a = A.a,
+           *b = B.a,
+           *c = C.a;
 
   for (i = 0; i < m; ++i) { // initialize scratch arrays
     next[i] = U%%INT_MAX%%;
@@ -26,7 +36,7 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, u_%%INT%% *i
     for (jj = jj_start; jj <= jj_end; ++jj) { // walk through entries in each row
 
       if (jj == jj_end) { // if we're in the last entry for this row:
-        if (!diaga || i >= minmn) continue;
+        if (!A.diag || i >= minmn) continue;
         j   = i;      // if it's a new Yale matrix, and last entry, get the diagonal position (j) and entry (ajj)
         v   = a[i];
       } else {
@@ -39,7 +49,7 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, u_%%INT%% *i
       for (kk = kk_start; kk <= kk_end; ++kk) {
 
         if (kk == kk_end) { // Get the column id for that entry
-          if (!diagb || j >= minmn) continue;
+          if (!B.diag || j >= minmn) continue;
           k  = j;
           sums[k] += v*b[k];
         } else {
@@ -57,7 +67,7 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, u_%%INT%% *i
 
     for (jj = 0; jj < length; ++jj) {
       if (sums[head]) {
-        if (diagc && head == i) {
+        if (C.diag && head == i) {
           c[head]    = sums[head];
         } else {
           jc[n+1+ndnz] = head;

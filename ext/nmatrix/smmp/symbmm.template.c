@@ -1,14 +1,20 @@
 
 // Symbolic matrix multiply c=a*b
-void %%INT_ABBREV%%_symbmm_(y_size_t n, y_size_t m, u_%%INT%% *ia, u_%%INT%% *ja, bool diaga, u_%%INT%% *ib, u_%%INT%% *jb, bool diagb, u_%%INT%% *ic, u_%%INT%% *jc, bool diagc)
+void %%INT_ABBREV%%_symbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
 {
   u_%%INT%% mask[m];
   u_%%INT%% i, j, k, kk, jj, minmn, ndnz = n; /* Local variables */
 
+  u_%%INT%% *ia = (u_%%INT%%*)(A.ia),
+            *ja = (u_%%INT%%*)(A.ja),
+            *ib = (u_%%INT%%*)(B.ia),
+            *jb = (u_%%INT%%*)(B.ja),
+            *ic = (u_%%INT%%*)(C.ia);
+
   for (j = 0; j < m; ++j)
     mask[j] = U%%INT_MAX%%;
 
-  if (diagc)  ic[0] = n+1;
+  if (C.diag)  ic[0] = n+1;
   else        ic[0] = 0;
 
   minmn = SMMP_MIN(m,n);
@@ -19,13 +25,13 @@ void %%INT_ABBREV%%_symbmm_(y_size_t n, y_size_t m, u_%%INT%% *ia, u_%%INT%% *ja
 
       // j <- column index given by JA[jj], or handle diagonal.
       if (jj == ia[i+1]) { // Don't really do it the last time -- just handle diagonals in a new yale matrix.
-        if (!diaga || i >= minmn) continue;
+        if (!A.diag || i >= minmn) continue;
         j = i;
       } else j = ja[jj];
 
       for (kk = ib[j]; kk <= ib[j+1]; ++kk) { // Now walk through columns of row J in matrix B.
         if (kk == ib[j+1]) {
-          if (!diagb || j >= minmn) continue;
+          if (!B.diag || j >= minmn) continue;
           k = j;
         } else k = jb[kk];
 
@@ -36,7 +42,7 @@ void %%INT_ABBREV%%_symbmm_(y_size_t n, y_size_t m, u_%%INT%% *ia, u_%%INT%% *ja
       }
     }
 
-    if (diagc && !mask[i]) --ndnz;
+    if (C.diag && !mask[i]) --ndnz;
 
     ic[i+1] = ndnz;
   }
