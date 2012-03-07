@@ -1,9 +1,36 @@
-// Note that this version of transp isn't currently used, as it's about 3x slower than the
-// function pointer version (smmp/transp.template.c).
-// See also: https://github.com/mohawkjohn/nmatrix/issues/1
+/////////////////////////////////////////////////////////////////////
+// = NMatrix
 //
-// This source file is kept in hopes that one day someone can write an optimized generic
-// version which beats out the function pointer version.
+// A linear algebra library for scientific computation in Ruby.
+// NMatrix is part of SciRuby.
+//
+// NMatrix was originally inspired by and derived from NArray, by
+// Masahiro Tanaka: http://narray.rubyforge.org
+//
+// == Copyright Information
+//
+// SciRuby is Copyright (c) 2010 - 2012, Ruby Science Foundation
+// NMatrix is Copyright (c) 2012, Ruby Science Foundation
+//
+// Please see LICENSE.txt for additional copyright notices.
+//
+// == Contributing
+//
+// By contributing source code to SciRuby, you agree to be bound by
+// our Contributor Agreement:
+//
+// * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
+//
+// == smmp.c
+//
+// Note that this version of transp isn't currently used, as it's
+// about 3x slower than the  function pointer version
+// (smmp/transp.template.c). See also:
+// https://github.com/mohawkjohn/nmatrix/issues/1
+//
+// This source file is kept in hopes that one day someone can write
+// an optimized generic version which beats out the function pointer
+// version.
 //
 
 #ifndef SMMP_C
