@@ -45,6 +45,26 @@ class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type,  :gemm)
   end
 end
 
+
+class Array
+  def max
+    found_max   = nil
+    self.each_index do |i|
+      found_max = self[i] if found_max.nil? || self[i] > found_max
+    end
+    found_max
+  end
+
+  def min
+    found_min   = nil
+    self.each_index do |i|
+      found_min = self[i] if found_min.nil? || self[i] < found_min
+    end
+    found_min
+  end
+end
+
+
 module Generator
   SRC_DIR = File.join("ext", "nmatrix")
   DTYPES = [
@@ -165,6 +185,68 @@ static void #{dtypes_function_name(:increment, dtype_i)}(void* p) { ++(*(#{dtype
 INCFN
     end
 
+    def dtypes_upcast
+      ary = Array.new(15) { Array.new(15, nil) }
+      DTYPES.each_index do |a|
+        ad = DTYPES[a]
+        (a...DTYPES.size).each do |b|
+          bd = DTYPES[b]
+
+          entry = nil
+
+          if ad.type == :none || bd.type == :none
+            entry ||= 'NULL'
+          elsif bd.type == ad.type
+            entry ||= DTYPES[[a,b].max].enum.to_s
+          elsif ad.type == :int # to float, complex, rational, or value
+            entry ||= DTYPES[[a,b].max].enum.to_s
+          elsif ad.enum == :NM_FLOAT32 # to complex or value
+            if [:NM_FLOAT64, :NM_COMPLEX64, :NM_COMPLEX128, :NM_ROBJ].include?(bd.enum)
+              entry ||= DTYPES[b].enum.to_s
+            elsif [:NM_RATIONAL32, :NM_RATIONAL64, :NM_RATIONAL128].include?(bd.enum)
+              entry ||= 'NM_FLOAT64'
+            else
+              entry ||= DTYPES[a].enum.to_s
+            end
+          elsif ad.enum == :NM_FLOAT64 # to complex or value
+            if [:NM_COMPLEX128, :NM_ROBJ].include?(bd.enum)
+              entry ||= DTYPES[b].enum.to_s
+            elsif bd.enum == :NM_COMPLEX64
+              entry ||= 'NM_COMPLEX128'
+            else
+              entry ||= DTYPES[a].enum.to_s
+            end
+          elsif ad.type == :rational # to float, complex, or value
+            if [:NM_FLOAT64, :NM_COMPLEX128, :NM_ROBJ].include?(bd.enum)
+              entry ||= DTYPES[b].enum.to_s
+            elsif bd.enum == :NM_FLOAT32
+              entry ||= 'NM_FLOAT64'
+            elsif bd.enum == :NM_COMPLEX64
+              entry ||= 'NM_COMPLEX128'
+            else
+              entry ||= DTYPES[a].enum.to_s
+            end
+          elsif ad.type == :complex
+            if bd.enum == :NM_ROBJ
+              entry ||= DTYPES[b].enum.to_s
+            else
+              entry ||= DTYPES[a].enum.to_s
+            end
+          elsif ad.type == :value # always value
+            entry ||= DTYPES[a].enum.to_s
+          end
+
+          ary[a][b] = ary[b][a] = entry
+        end
+      end
+
+      res = []
+      ary.each_index do |i|
+        res << "{ " + ary[i].join(", ") + " }"
+      end
+      decl("const int8_t Upcast =", res) + "\n"
+    end
+
     # binary-style functions, like Set (copy)
     def dtypes_binary_functions_matrix func
       ary = []
@@ -265,6 +347,7 @@ INCFN
       make_file "dtypes.c" do |f|
         f.puts dtypes_sizeof
         f.puts dtypes_typestring
+        f.puts dtypes_upcast
       end
     end
 
