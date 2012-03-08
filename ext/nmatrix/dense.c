@@ -70,19 +70,39 @@ void dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val) {
 DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs) {
   DENSE_STORAGE* lhs;
   size_t count = count_dense_storage_elements(rhs), p;
-  size_t* shape = malloc(nm_sizeof[rhs->dtype] * rhs->rank);
+  size_t* shape = malloc(sizeof(size_t) * rhs->rank);
   if (!shape) return NULL;
 
   // copy shape array
   for (p = 0; p < rhs->rank; ++p)
     shape[p] = rhs->shape[p];
 
-  //fprintf(stderr, "copy_dense_storage\n");
-
   lhs = create_dense_storage(rhs->dtype, shape, rhs->rank, NULL, 0);
 
   if (lhs && count) // ensure that allocation worked before copying
     memcpy(lhs->elements, rhs->elements, nm_sizeof[rhs->dtype] * count);
+
+  return lhs;
+}
+
+
+DENSE_STORAGE* cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype) {
+  DENSE_STORAGE* lhs;
+  size_t count = count_dense_storage_elements(rhs), p;
+  size_t* shape = malloc(sizeof(size_t) * rhs->rank);
+  if (!shape) return NULL;
+
+  // copy shape array
+  for (p = 0; p < rhs->rank; ++p)
+    shape[p] = rhs->shape[p];
+
+  lhs = create_dense_storage(new_dtype, shape, rhs->rank, NULL, 0);
+
+  if (lhs && count) // ensure that allocation worked before copying
+    if (lhs->dtype == rhs->dtype)
+      memcpy(lhs->elements, rhs->elements, nm_sizeof[rhs->dtype] * count);
+    else
+      SetFuncs[new_dtype][rhs->dtype](count, lhs->elements, nm_sizeof[new_dtype], rhs->elements, nm_sizeof[rhs->dtype]);
 
   return lhs;
 }

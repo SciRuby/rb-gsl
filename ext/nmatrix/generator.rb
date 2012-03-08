@@ -195,7 +195,7 @@ INCFN
           entry = nil
 
           if ad.type == :none || bd.type == :none
-            entry ||= 'NULL'
+            entry ||= 'NM_NONE'
           elsif bd.type == ad.type
             entry ||= DTYPES[[a,b].max].enum.to_s
           elsif ad.type == :int # to float, complex, rational, or value
@@ -244,7 +244,7 @@ INCFN
       ary.each_index do |i|
         res << "{ " + ary[i].join(", ") + " }"
       end
-      decl("const int8_t Upcast =", res) + "\n"
+      decl("const int8_t Upcast[#{DTYPES.size}][#{DTYPES.size}] =", res) + "\n"
     end
 
     # binary-style functions, like Set (copy)

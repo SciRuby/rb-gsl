@@ -146,6 +146,88 @@ nm_smmp_t SmmpFuncs = {
 };
 
 
+static NMATRIX* multiply_matrix_dense_casted(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
+  DENSE_STORAGE *left  = (DENSE_STORAGE*)(casted_storage.left),
+                *right = (DENSE_STORAGE*)(casted_storage.right),
+                *result;
+  DENSE_PARAM cblas_param;
+
+  // We can safely get dtype from the casted matrices; post-condition of binary_storage_cast_alloc is that dtype is the
+  // same for left and right.
+  int8_t dtype = left->dtype;
+
+  // Create result storage.
+  result = create_dense_storage(dtype, resulting_shape, 2, NULL, 0);
+
+  // Set multiplication parameters (alpha and beta), which are not simple types.
+  cblas_param   = init_cblas_params_for_nm_multiply_matrix(dtype);
+
+  cblas_param.M = left->shape[0];
+  cblas_param.N = right->shape[1];
+  cblas_param.K = left->shape[1];
+
+  cblas_param.A = left->elements;
+  cblas_param.lda = left->shape[1];
+
+  cblas_param.B = right->elements;
+  cblas_param.ldb = right->shape[1]; // inc for gemv
+
+  cblas_param.C = result->elements;
+  cblas_param.ldc = result->shape[1]; // inc for gemv
+
+  // Do the multiplication
+  if (vector) GemvFuncs[dtype](CblasRowMajor, CblasNoTrans, cblas_param);
+  else        GemmFuncs[dtype](CblasRowMajor, CblasNoTrans, CblasNoTrans, cblas_param);
+
+  return nm_create(S_DENSE, result);
+}
+
+
+static NMATRIX* multiply_matrix_yale_casted(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
+  YALE_STORAGE *left  = (YALE_STORAGE*)(casted_storage.left),
+               *right = (YALE_STORAGE*)(casted_storage.right),
+               *result;
+  YALE_PARAM A, B, C;
+
+  // We can safely get dtype from the casted matrices; post-condition of binary_storage_cast_alloc is that dtype is the
+  // same for left and right.
+  int8_t dtype = left->dtype;
+
+  // Create result storage.
+  result = create_yale_storage(dtype, resulting_shape, 2, left->capacity + right->capacity);
+  init_yale_storage(result);
+
+  // Set multiplication parameters
+  A.ia = A.ja = left->ija;
+  A.a  = left->a;
+  B.ia = B.ja = right->ija;
+  B.a  = right->a;
+  C.ia = C.ja = result->ija;
+  C.a  = result->a;
+
+  A.diag = B.diag = C.diag = true;
+
+  // Do the multiplication
+  SmmpFuncs[dtype][left->index_dtype](result->shape[0], result->shape[1], A, B, C);
+
+  return nm_create(S_YALE, result);
+}
+
+
+static NMATRIX* multiply_matrix_list_casted(STORAGE_PAIR casted_storage, size_t* resulting_shape) {
+  rb_raise(rb_eNotImpError, "multiplication not implemented for list-of-list matrices");
+  free(resulting_shape);
+  return NULL;
+}
+
+
+nm_binary_op_t CastedMultiplyFuncs = {
+  multiply_matrix_dense_casted,
+  multiply_matrix_list_casted,
+  multiply_matrix_yale_casted
+};
+
+
 static void nm_delete(NMATRIX* mat) {
   DeleteFuncs[mat->stype](mat->storage);
 }
@@ -154,8 +236,6 @@ static void nm_delete(NMATRIX* mat) {
 
 static STORAGE* nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
   return (STORAGE*)(create_dense_storage(dtype, shape, rank, init_val, init_val_len));
-  //return nm_create(S_DENSE, create_dense_storage(dtype, shape, rank, init_val, init_val_len));
-  //return Data_Wrap_Struct(self, NULL, nm_delete, matrix);
 }
 
 static STORAGE* nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
@@ -193,10 +273,10 @@ nm_create_storage_t CreateFuncs = {
 };
 
 
-nm_create_storage_t CopyFuncs = {
-  copy_dense_storage,
-  copy_list_storage,
-  copy_yale_storage
+nm_cast_copy_storage_t CastCopyFuncs = {
+  cast_copy_dense_storage,
+  cast_copy_list_storage,
+  cast_copy_yale_storage
 };
 
 
@@ -547,121 +627,92 @@ static VALUE nm_init_copy(VALUE copy, VALUE original) {
   UnwrapNMatrix( copy,     lhs );
 
   lhs->stype = rhs->stype;
-  //lhs->dtype = rhs->dtype;
 
   // Copy the storage
-  lhs->storage = CopyFuncs[rhs->stype](rhs->storage, nm_sizeof[rhs->storage->dtype]);
+  lhs->storage = CastCopyFuncs[rhs->stype](rhs->storage, rhs->storage->dtype);
 
   return copy;
 }
 
 
-static VALUE nm_multiply_vector_or_slice(NMATRIX* left, void* right, int inc_right) {
-  NMATRIX* result;
-  DENSE_PARAM cp;
-  size_t* shape   = malloc(sizeof(size_t)*2);
+static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_dtype_symbol) {
+  NMATRIX *lhs, *rhs;
+  int8_t new_dtype = nm_dtypesymbol_to_dtype(new_dtype_symbol);
+  //fprintf(stderr,"In copy constructor\n");
 
-  shape[0] = left->storage->shape[0];
-  shape[1] = 1;
+  if (copy == original) return copy;
 
+  if (TYPE(original) != T_DATA || RDATA(original)->dfree != (RUBY_DATA_FUNC)nm_delete)
+    rb_raise(rb_eTypeError, "wrong argument type");
 
-  switch(left->stype) {
-  case S_DENSE:
-    result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2, NULL, 0));
+  UnwrapNMatrix( original, rhs );
+  UnwrapNMatrix( copy,     lhs );
 
-    cp     = init_cblas_params_for_nm_multiply_matrix(left->storage->dtype);
-    cp.M   = left->storage->shape[0];
-    cp.N   = left->storage->shape[1];
+  lhs->stype = rhs->stype;
 
-    cp.A   = ((DENSE_STORAGE*)(left->storage))->elements;
-    cp.lda = left->storage->shape[1];
+  // Copy the storage
+  lhs->storage = CastCopyFuncs[rhs->stype](rhs->storage, new_dtype);
 
-    cp.B   = right;
-    cp.ldb = inc_right;
-
-    cp.C   = ((DENSE_STORAGE*)(result->storage))->elements;
-    cp.ldc = 1;
-
-    GemvFuncs[left->storage->dtype](CblasRowMajor, CblasNoTrans, cp);
-    break;
-  default:
-    fprintf(stderr, "DEBUG: left-hand stype was %d\n", left->stype);
-    rb_raise(rb_eNotImpError, "only dense M*v implemented so far");
-  }
-
-  return Data_Wrap_Struct(cNVector, 0, nm_delete, result);
+  return copy;
 }
 
 
-static VALUE nm_multiply_matrix(NMATRIX* left, NMATRIX* right) {
+// Cast a single matrix to a new dtype (unless it's already casted, then just return it). Helper for binary_storage_cast_alloc.
+static inline STORAGE* storage_cast_alloc(NMATRIX* matrix, int8_t new_dtype) {
+  if (matrix->storage->dtype == new_dtype) return matrix->storage;
+  else                                     return CastCopyFuncs[matrix->stype](matrix->storage, new_dtype);
+}
+
+
+// Cast a pair of matrices for a binary operation to a new dtype (which this function determines). Technically, only
+// does an actual cast on matrices that are the wrong dtype; otherwise returns a reference to the original. Bear this in
+// mind when freeing memory!
+static inline STORAGE_PAIR binary_storage_cast_alloc(NMATRIX* left_matrix, NMATRIX* right_matrix) {
+  STORAGE_PAIR casted;
+  int8_t new_dtype = Upcast[left_matrix->storage->dtype][right_matrix->storage->dtype];
+
+  casted.left  = storage_cast_alloc(left_matrix, new_dtype);
+  casted.right = storage_cast_alloc(right_matrix, new_dtype);
+
+  return casted;
+}
+
+
+// Preconditions: NMatrices with SAME stype but possibly different dtype. This function does NOT verify stype.
+// Returns: result NMatrix with upcasted dtype and same stype as left and right.
+static VALUE multiply_matrix(NMATRIX* left, NMATRIX* right) {
   ///TODO: multiplication for non-dense and/or non-decimal matrices
-  size_t* shape   = malloc(sizeof(size_t)*2);
+  size_t*  resulting_shape   = malloc(sizeof(size_t)*2);
   NMATRIX* result;
-  DENSE_PARAM cblas_param;
-  YALE_PARAM A, B, C;
+  bool     vector = false;
 
-  shape[0] = left->storage->shape[0];
-  shape[1] = right->storage->shape[1];
+  // Make sure both of our matrices are of the correct type.
+  STORAGE_PAIR casted = binary_storage_cast_alloc(left, right);
 
-  //fprintf(stderr, "M=%d, N=%d, K=%d\n", shape[0], shape[1], left->storage->shape[1]);
+  resulting_shape[0] = left->storage->shape[0];
+  resulting_shape[1] = right->storage->shape[1];
 
-  switch(left->stype) {
-  case S_DENSE:
-    result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2, NULL, 0));
+  // Sometimes we only need to use matrix-vector multiplication (e.g., GEMM versus GEMV). Find out.
+  if (resulting_shape[1] == 1) vector = true;
 
-    cblas_param   = init_cblas_params_for_nm_multiply_matrix(left->storage->dtype);
+  result = CastedMultiplyFuncs[left->stype](casted, resulting_shape, vector);
 
-    cblas_param.M = left->storage->shape[0];
-    cblas_param.N = right->storage->shape[1];
-    cblas_param.K = left->storage->shape[1];
+  // Free any casted-storage we created for the multiplication.
+  // TODO: This is probably an indication that we should use the Ruby garbage collector instead.
+  // If we did that, we night not have to re-create these every time, right? Or wrong? Need to do
+  // more research.
+  if (left->storage != casted.left)   DeleteFuncs[left->stype](casted.left);
+  if (right->storage != casted.right) DeleteFuncs[left->stype](casted.right);
 
-    cblas_param.A = ((DENSE_STORAGE*)(left->storage))->elements;
-    cblas_param.lda = left->storage->shape[1];
-
-    cblas_param.B = ((DENSE_STORAGE*)(right->storage))->elements;
-    cblas_param.ldb = right->storage->shape[1];
-
-    cblas_param.C = ((DENSE_STORAGE*)(result->storage))->elements;
-    cblas_param.ldc = shape[1];
-
-
-    // call CBLAS xgemm (type-specific general matrix multiplication)
-    // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
-    GemmFuncs[left->storage->dtype](CblasRowMajor, CblasNoTrans, CblasNoTrans, cblas_param);
-    break;
-  case S_YALE:
-    result = nm_create(S_YALE,
-                       create_yale_storage(left->storage->dtype, shape, 2,
-                                          ((YALE_STORAGE*)(left->storage))->capacity + ((YALE_STORAGE*)(right->storage))->capacity));
-
-    // TODO: Do we really need to initialize the whole thing? Or just the A portion?
-    init_yale_storage((YALE_STORAGE*)(result->storage));
-
-    A.ia = A.ja = ((YALE_STORAGE*)(left->storage))->ija;
-    A.a = ((YALE_STORAGE*)(left->storage))->a;
-    B.ia = B.ja = ((YALE_STORAGE*)(right->storage))->ija;
-    B.a = ((YALE_STORAGE*)(right->storage))->a;
-    C.ia = C.ja = ((YALE_STORAGE*)(result->storage))->ija;
-    C.a = ((YALE_STORAGE*)(result->storage))->a;
-    A.diag = B.diag = C.diag = true;
-
-    // call the appropriate function pointer
-    SmmpFuncs[ left->storage->dtype ][ ((YALE_STORAGE*)(left->storage))->index_dtype ](shape[0], shape[1], A, B, C);
-
-    break;
-  default:
-    rb_raise(rb_eNotImpError, "matrix must be dense or yale for multiplication");
-  }
-
-  return Data_Wrap_Struct(cNMatrix, 0, nm_delete, result);
+  if (result) return Data_Wrap_Struct(cNMatrix, 0, nm_delete, result);
+  return Qnil; // Only if we try to multiply list matrices should we return Qnil.
 }
 
 
-static VALUE nm_multiply_scalar(NMATRIX* left, VALUE scalar) {
+static VALUE multiply_scalar(NMATRIX* left, VALUE scalar) {
   rb_raise(rb_eNotImpError, "matrix-scalar multiplication not implemented yet");
   return Qnil;
 }
-
 
 
 static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
@@ -673,8 +724,14 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 
   UnwrapNMatrix( left_v, left );
 
+  if (IS_NUMERIC(right_v))
+    return multiply_scalar(left, right_v);
+
+  else if (TYPE(right_v) == T_ARRAY)
+    rb_raise(rb_eNotImpError, "for matrix-vector multiplication, please use an NVector instead of an Array for now");
+
   //if (RDATA(right_v)->dfree != (RUBY_DATA_FUNC)nm_delete) {
-  if (TYPE(right_v) == T_DATA && RDATA(right_v)->dfree == (RUBY_DATA_FUNC)nm_delete) { // both are matrices
+  else if (TYPE(right_v) == T_DATA && RDATA(right_v)->dfree == (RUBY_DATA_FUNC)nm_delete) { // both are matrices
     UnwrapNMatrix( right_v, right );
 
     if (left->storage->shape[1] != right->storage->shape[0])
@@ -683,26 +740,11 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
     if (left->stype != right->stype)
       rb_raise(rb_eNotImpError, "matrices must have same stype");
 
-    if (left->storage->dtype != right->storage->dtype)
-      rb_raise(rb_eNotImpError, "dtype mismatch");
+    return multiply_matrix(left, right);
 
-    if (right->storage->shape[1] == 1)
-      return nm_multiply_vector_or_slice(left, ((DENSE_STORAGE*)(right->storage))->elements, 1);
-    else
-      return nm_multiply_matrix(left, right);
-  } else if (TYPE(right_v) == T_ARRAY) {
-    rb_raise(rb_eNotImpError, "please initialize array to an NMatrix of size n x 1 before multiplying");
-  } else if (IS_NUMERIC(right_v)) {
-    return nm_multiply_scalar(left, right_v);
-  } else {
-    rb_raise(rb_eTypeError, "wrong right argument type");
-  }
+  } else rb_raise(rb_eTypeError, "expected right operand to be NMatrix, NVector, or single numeric value");
+
   return Qnil;
-
-  //} else {
-  //  rb_raise(rb_eNotImpError, "scalar multiplication not supported yet");
-  //  return Qnil;
- // }
 }
 
 
@@ -1207,6 +1249,7 @@ void Init_nmatrix() {
 
 
     rb_define_method(cNMatrix, "initialize_copy", nm_init_copy, 1);
+    rb_define_method(cNMatrix, "initialize_cast_copy", nm_init_cast_copy, 2);
 
     /* methods */
     rb_define_method(cNMatrix, "dtype", nm_dtype, 0);

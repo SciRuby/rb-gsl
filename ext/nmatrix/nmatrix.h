@@ -173,6 +173,13 @@ typedef struct cblas_param_t {
 } DENSE_PARAM;
 
 
+// For binary operations involving matrices that need to be casted.
+typedef struct storage_pair_t {
+  STORAGE* left;
+  STORAGE* right;
+} STORAGE_PAIR;
+
+
 // YALE_PARAM is declared in smmp.h
 
 
@@ -260,6 +267,8 @@ typedef void     (*nm_setfunc_t[NM_TYPES][NM_TYPES])(); // copy functions
 typedef void     (*nm_incfunc_t[NM_TYPES])();           // increment functions
 typedef VALUE    (*nm_stype_ref_t[S_TYPES])();
 typedef STORAGE* (*nm_create_storage_t[S_TYPES])();
+typedef STORAGE* (*nm_cast_copy_storage_t[S_TYPES])();
+typedef NMATRIX* (*nm_binary_op_t[S_TYPES])();
 typedef void     (*nm_delete_t[S_TYPES])();
 typedef void     (*nm_gemm_t[NM_TYPES])();           // general matrix/matrix multiply
 typedef void     (*nm_gemv_t[NM_TYPES])();           // general matrix/vector multiply
@@ -288,7 +297,7 @@ void cblas_zgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans
 /* dense.c */
 DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
 void            delete_dense_storage(DENSE_STORAGE* s);
-DENSE_STORAGE*  copy_dense_storage(DENSE_STORAGE* rhs);
+DENSE_STORAGE*  cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype);
 
 size_t          count_dense_storage_elements(DENSE_STORAGE* s);
 
@@ -299,7 +308,7 @@ void            dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val);
 /* list.c */
 LIST_STORAGE*   create_list_storage(int8_t dtype, size_t* shape, size_t rank, void* init_val);
 void            delete_list_storage(LIST_STORAGE* s);
-LIST_STORAGE*   copy_list_storage(LIST_STORAGE* rhs);
+LIST_STORAGE*   cast_copy_list_storage(LIST_STORAGE* rhs, int8_t new_dtype);
 
 void*           list_storage_get(LIST_STORAGE* s, size_t* coords);
 void*           list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val);
@@ -307,7 +316,6 @@ void*           list_storage_remove(LIST_STORAGE* s, size_t* coords);
 
 LIST*           create_list();
 void            delete_list(LIST* list, size_t recursions);
-void            copy_list_contents(LIST* lhs, LIST* rhs, int8_t dtype, size_t recursions);
 NODE*           list_find(LIST* list, size_t key);
 NODE*           list_find_preceding_from(NODE* prev, size_t key);
 NODE*           list_find_nearest_from(NODE* prev, size_t key);
@@ -321,7 +329,7 @@ void print_vectors(YALE_STORAGE* s);
 YALE_STORAGE*   create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size_t init_capacity);
 void            init_yale_storage(YALE_STORAGE* s);
 void            delete_yale_storage(YALE_STORAGE* s);
-YALE_STORAGE*   copy_yale_storage(YALE_STORAGE* rhs);
+YALE_STORAGE*   cast_copy_yale_storage(YALE_STORAGE* rhs, int8_t new_dtype);
 
 void*           yale_storage_ref(YALE_STORAGE* s, size_t* coords);
 char            yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v);

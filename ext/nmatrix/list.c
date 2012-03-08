@@ -136,6 +136,42 @@ LIST_STORAGE* create_list_storage(int8_t dtype, size_t* shape, size_t rank, void
 }
 
 
+static void cast_copy_list_contents(LIST* lhs, LIST* rhs, int8_t lhs_dtype, int8_t rhs_dtype, size_t recursions) {
+  NODE *lcurr = NULL, *rcurr = rhs->first;
+
+  if (rhs->first) {
+    // copy head node
+    rcurr = rhs->first;
+    lcurr = lhs->first = malloc(sizeof(NODE));
+
+    while (rcurr != NULL) {
+      lcurr->key = rcurr->key;
+
+      if (recursions == 0) { // contents is some kind of value
+        lcurr->val = malloc(nm_sizeof[lhs_dtype]);
+        //fprintf(stderr, "    create_val: %p\n", lcurr->val);
+
+        if (lhs_dtype == rhs_dtype) memcpy(lcurr->val, rcurr->val, nm_sizeof[lhs_dtype]);
+        else                        SetFuncs[lhs_dtype][rhs_dtype](1, lcurr->val, 0, rcurr->val, 0);
+
+      } else { // contents is a list
+        lcurr->val = malloc(sizeof(LIST));
+        //fprintf(stderr, "    create_list: %p\n", lcurr->val);
+
+        cast_copy_list_contents(lcurr->val, rcurr->val, lhs_dtype, rhs_dtype, recursions-1);
+      }
+      if (rcurr->next) lcurr->next = malloc(sizeof(NODE));
+      else             lcurr->next = NULL;
+
+      lcurr = lcurr->next;
+      rcurr = rcurr->next;
+    }
+  } else {
+    lhs->first = NULL;
+  }
+}
+
+
 LIST_STORAGE* copy_list_storage(LIST_STORAGE* rhs) {
   LIST_STORAGE* lhs;
   size_t* shape;
@@ -152,7 +188,33 @@ LIST_STORAGE* copy_list_storage(LIST_STORAGE* rhs) {
 
   if (lhs) {
     lhs->rows = create_list();
-    copy_list_contents(lhs->rows, rhs->rows, rhs->dtype, rhs->rank - 1);
+    cast_copy_list_contents(lhs->rows, rhs->rows, rhs->dtype, rhs->dtype, rhs->rank - 1);
+  } else free(shape);
+
+  return lhs;
+}
+
+
+LIST_STORAGE* cast_copy_list_storage(LIST_STORAGE* rhs, int8_t new_dtype) {
+  LIST_STORAGE* lhs;
+  size_t* shape;
+  void* default_val = malloc(nm_sizeof[rhs->dtype]);
+
+  //fprintf(stderr, "copy_list_storage\n");
+
+  // allocate and copy shape
+  shape = malloc( sizeof(size_t) * rhs->rank );
+  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
+
+  // copy default value
+  if (new_dtype == rhs->dtype)    memcpy(default_val, rhs->default_val, nm_sizeof[rhs->dtype]);
+  else                            SetFuncs[new_dtype][rhs->dtype](1, default_val, 0, rhs->default_val, 0);
+
+  lhs = create_list_storage(new_dtype, shape, rhs->rank, default_val);
+
+  if (lhs) {
+    lhs->rows = create_list();
+    cast_copy_list_contents(lhs->rows, rhs->rows, new_dtype, rhs->dtype, rhs->rank - 1);
   } else free(shape);
 
   return lhs;
@@ -185,40 +247,6 @@ LIST* create_list() {
   return list;
 }
 
-
-void copy_list_contents(LIST* lhs, LIST* rhs, int8_t dtype, size_t recursions) {
-  NODE *lcurr = NULL, *rcurr = rhs->first;
-
-  if (rhs->first) {
-    // copy head node
-    rcurr = rhs->first;
-    lcurr = lhs->first = malloc(sizeof(NODE));
-
-    while (rcurr != NULL) {
-      lcurr->key = rcurr->key;
-
-      if (recursions == 0) { // contents is some kind of value
-        lcurr->val = malloc(nm_sizeof[dtype]);
-        //fprintf(stderr, "    create_val: %p\n", lcurr->val);
-
-        memcpy(lcurr->val, rcurr->val, nm_sizeof[dtype]);
-
-      } else { // contents is a list
-        lcurr->val = malloc(sizeof(LIST));
-        //fprintf(stderr, "    create_list: %p\n", lcurr->val);
-
-        copy_list_contents(lcurr->val, rcurr->val, nm_sizeof[dtype], recursions-1);
-      }
-      if (rcurr->next) lcurr->next = malloc(sizeof(NODE));
-      else             lcurr->next = NULL;
-
-      lcurr = lcurr->next;
-      rcurr = rcurr->next;
-    }
-  } else {
-    lhs->first = NULL;
-  }
-}
 
 
 /* Deletes the linked list and all of its contents. If you want to delete a list inside of a list,

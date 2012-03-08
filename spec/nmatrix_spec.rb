@@ -168,96 +168,95 @@ describe NMatrix do
     m.dtype.should == :float64
   end
 
-  [:float32,:float64].each do |dtype|
-    it "dense correctly handles #{dtype.to_s} multiplication" do
-      #STDERR.puts "dtype=#{dtype.to_s}"
-      #STDERR.puts "2"
-      n = NMatrix.new([4,3], dtype)
-      n[0,0] = 14.0
-      n[0,1] = 9.0
-      n[0,2] = 3.0
-      n[1,0] = 2.0
-      n[1,1] = 11.0
-      n[1,2] = 15.0
-      n[2,0] = 0.0
-      n[2,1] = 12.0
-      n[2,2] = 17.0
-      n[3,0] = 5.0
-      n[3,1] = 2.0
-      n[3,2] = 3.0
+  [:int8,:int16,:int32,:int64,:float32,:float64].each do |left_dtype|
+    [:int8,:int16,:int32,:int64,:float32,:float64].each do |right_dtype|
 
-      m = NMatrix.new([3,2], dtype)
+      # For now, don't bother testing int-int mult.
+      next if [:int8,:int16,:int32,:int64].include?(left_dtype) && [:int8,:int16,:int32,:int64].include?(right_dtype)
+      it "dense correctly handles #{left_dtype.to_s}*#{right_dtype.to_s} matrix multiplication" do
+        #STDERR.puts "dtype=#{dtype.to_s}"
+        #STDERR.puts "2"
+        n = NMatrix.new([4,3], left_dtype)
+        n[0,0] = 14.0
+        n[0,1] = 9.0
+        n[0,2] = 3.0
+        n[1,0] = 2.0
+        n[1,1] = 11.0
+        n[1,2] = 15.0
+        n[2,0] = 0.0
+        n[2,1] = 12.0
+        n[2,2] = 17.0
+        n[3,0] = 5.0
+        n[3,1] = 2.0
+        n[3,2] = 3.0
 
-      m.shape[0].should == 3
-      m.shape[1].should == 2
-      m.rank.should == 2
+        m = NMatrix.new([3,2], right_dtype)
 
-      n.shape[0].should == 4
-      n.shape[1].should == 3
-      n.rank.should == 2
+        m.shape[0].should == 3
+        m.shape[1].should == 2
+        m.rank.should == 2
 
-      m[0,0] = 12.0
-      m[0,1] = 25.0
-      m[1,0] = 9.0
-      m[1,1] = 10.0
-      m[2,0] = 8.0
-      m[2,1] = 5.0
+        n.shape[0].should == 4
+        n.shape[1].should == 3
+        n.rank.should == 2
 
-      n.shape[1].should == m.shape[0]
+        m[0,0] = 12.0
+        m[0,1] = 25.0
+        m[1,0] = 9.0
+        m[1,1] = 10.0
+        m[2,0] = 8.0
+        m[2,1] = 5.0
 
-      r = n.multiply(m)
+        n.shape[1].should == m.shape[0]
 
-      r[0,0].should == 273.0
-      r[0,1].should == 455.0
-      r[1,0].should == 243.0
-      r[1,1].should == 235.0
-      r[2,0].should == 244.0
-      r[2,1].should == 205.0
-      r[3,0].should == 102.0
-      r[3,1].should == 160.0
+        r = n.multiply(m)
+
+        r[0,0].should == 273.0
+        r[0,1].should == 455.0
+        r[1,0].should == 243.0
+        r[1,1].should == 235.0
+        r[2,0].should == 244.0
+        r[2,1].should == 205.0
+        r[3,0].should == 102.0
+        r[3,1].should == 160.0
+
+        #r.dtype.should == :float64 unless left_dtype == :float32 && right_dtype == :float32
+      end
     end
   end
 
-  [:float32,:float64].each do |dtype|
-    it "dense correctly handles #{dtype.to_s} vector multiplication" do
-      #STDERR.puts "dtype=#{dtype.to_s}"
-      #STDERR.puts "2"
-      n = NMatrix.new([4,3], dtype)
-      n[0,0] = 14.0
-      n[0,1] = 9.0
-      n[0,2] = 3.0
-      n[1,0] = 2.0
-      n[1,1] = 11.0
-      n[1,2] = 15.0
-      n[2,0] = 0.0
-      n[2,1] = 12.0
-      n[2,2] = 17.0
-      n[3,0] = 5.0
-      n[3,1] = 2.0
-      n[3,2] = 3.0
+  [:int8,:int16,:int32,:int64,:float32,:float64].each do |left_dtype|
+    [:int8,:int16,:int32,:int64,:float32,:float64].each do |right_dtype|
 
-      m = NVector.new(3, dtype)
+      # For now, don't bother testing int-int mult.
+      next if [:int8,:int16,:int32,:int64].include?(left_dtype) && [:int8,:int16,:int32,:int64].include?(right_dtype)
 
-      m.shape[0].should == 3
-      m.shape[1].should == 1
+      it "dense correctly handles #{left_dtype.to_s}*#{right_dtype.to_s} vector multiplication" do
+        #STDERR.puts "dtype=#{dtype.to_s}"
+        #STDERR.puts "2"
+        n = NMatrix.new([4,3], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0], left_dtype)
 
-      n.shape[0].should == 4
-      n.shape[1].should == 3
-      n.rank.should == 2
+        m = NVector.new(3, [-2.0, 1.0, 0.0], right_dtype)
 
-      m[0] = 12.0
-      m[1] = 9.0
-      m[2] = 8.0
+        m.shape[0].should == 3
+        m.shape[1].should == 1
 
-      n.shape[1].should == m.shape[0]
+        n.shape[0].should == 4
+        n.shape[1].should == 3
+        n.rank.should == 2
 
-      r = n.multiply(m)
-      r.class.should == NVector
+        n.shape[1].should == m.shape[0]
 
-      r[0].should == 273.0
-      r[1].should == 243.0
-      r[2].should == 244.0
-      r[3].should == 102.0
+        r = n.multiply(m)
+        # r.class.should == NVector
+
+        r[0,0].should == 0
+        r[1,0].should == -3
+        r[2,0].should == -6
+        r[3,0].should == -9
+
+        #r.dtype.should == :float64 unless left_dtype == :float32 && right_dtype == :float32
+      end
     end
   end
 
