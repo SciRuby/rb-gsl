@@ -29,7 +29,7 @@
 #include <ruby.h>
 
 #include "nmatrix.h"
-#include "types.h"
+//#include "types.h"
 
 VALUE cNMatrix, cNVector;
 VALUE nm_eDataTypeError, nm_eStorageTypeError;
@@ -151,19 +151,22 @@ static inline DENSE_PARAM cblas_params_for_multiply(const DENSE_STORAGE* left, c
   DENSE_PARAM p;
 
   p.M = left->shape[0];
-  p.N = right->shape[1];
-
-  if (!vector) p.K = left->shape[1];
+  if (vector) p.N = left->shape[1];
+  else {
+    p.N = right->shape[1];
+    p.K = left->shape[1];
+  }
 
   p.A = left->elements;
   p.lda = left->shape[1];
 
-  p.B = right->elements;
-  p.ldb = right->shape[1];
+  p.B = right->elements;    // for vector, this is actually x
+  if (vector) p.ldb = 1;    // for vector, this is actually incX
+  else        p.ldb = right->shape[1];
 
-  p.C = result->elements;
-  p.ldc = result->shape[1];
-  // memset(&(p.beta), 0, sizeof(nm_size128_t)); // set beta to 0
+  p.C = result->elements;   // vector Y
+  if (vector) p.ldc = 1;    // vector incY
+  else        p.ldc = result->shape[1];
 
   switch(left->dtype) {
   case NM_FLOAT32:
@@ -850,7 +853,7 @@ VALUE nm_shape(VALUE self) {
 
   // Copy elements into a VALUE array and then use those to create a Ruby array with rb_ary_new4.
   VALUE* shape = ALLOCA_N(VALUE, s->rank);
-  SetFuncs[NM_ROBJ][NM_INT64]( s->rank, shape, sizeof(VALUE), s->shape, sizeof(size_t));
+  SetFuncs[NM_ROBJ][NM_SIZE_T]( s->rank, shape, sizeof(VALUE), s->shape, sizeof(size_t));
 
   return rb_ary_new4(s->rank, shape);
 }

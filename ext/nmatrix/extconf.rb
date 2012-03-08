@@ -115,6 +115,10 @@ have_type("int64_t", header)
 have_type("u_int64_t", header)
 have_type("uint64_t", header)
 
+unless have_type("size_t", header)
+  have_type("size_t", "stddef.h")
+end
+
 # dir_config("cblas")
 # dir_config("atlas")
 

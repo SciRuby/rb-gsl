@@ -29,8 +29,7 @@
 // This file ensures that all SMMP functions have the same signature,
 // so we can call them using arrays of function pointers.
 
-#include "nmatrix_config.h"
-#include "smmp.h"
+#include "nmatrix.h"
 
 #include <stdlib.h>
 #include <stdio.h>

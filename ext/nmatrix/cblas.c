@@ -38,6 +38,8 @@
 
 
 inline void cblas_sgemv_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
+  fprintf(stderr, "called sgemv: M=%d, N=%d, alpha=%f, A=%p, lda=%d, x=%p, incx=%d, beta=%f, y=%p, incy=%d\n",
+                                 p.M, p.N, p.alpha.d[0], p.A, p.lda, p.B, p.ldb, p.beta.d[0], p.C, p.ldc);
   cblas_sgemv(Order, TransA, p.M, p.N, p.alpha.d[0], p.A, p.lda, p.B, p.ldb, p.beta.d[0], p.C, p.ldc);
 }
 

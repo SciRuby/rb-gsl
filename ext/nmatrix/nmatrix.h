@@ -27,7 +27,7 @@
 #ifndef NMATRIX_H
 #define NMATRIX_H
 
-#include "smmp.h"
+#include "nmatrix_config.h"
 
 #include <cblas.h>
 
@@ -44,6 +44,134 @@
 #endif
 
 #include "dtypes.h"
+
+#include <stddef.h>
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#endif
+
+/*
+  Data types used in NArray / NMatrix :
+  Please modify these types if your system has any different type.
+*/
+
+
+/* NM_BYTE : unsigned 8-bit integer */
+#ifndef HAVE_U_INT8_T
+# ifdef HAVE_UINT8_T
+typedef uint8_t			u_int8_t;
+# else
+typedef unsigned char		u_int8_t;
+# endif
+#endif
+
+//#ifndef HAVE_INT8_T
+//typedef char                   int8_t;
+//#endif
+
+#ifndef HAVE_INT16_T
+# if SIZEOF_SHORT == 2
+typedef short                  int16_t;
+# else
+---->> Please define int16_t manually because sizeof(short) != 2. <<----
+# endif
+#endif /* HAVE_INT16_T */
+
+#ifndef HAVE_INT32_T
+# if SIZEOF_LONG == 4
+typedef long                   int32_t;
+# else
+#  if SIZEOF_INT == 4
+typedef int                    int32_t;
+#  else
+---->> Please define int32_t manually because sizeof(long) != 4. <<----
+#  endif
+# endif
+#endif /* HAVE_INT32_T */
+
+/* unsigned 32-bit integer */
+#ifndef HAVE_U_INT32_T
+# ifdef HAVE_UINT32_T
+typedef uint32_t			u_int32_t;
+# else
+#  if SIZEOF_LONG == 4
+typedef unsigned long                   u_int32_t;
+#  else
+#   if SIZEOF_INT == 4
+typedef unsigned int                    u_int32_t;
+#   else
+---->> Please define u_int32_t manually because sizeof(long) != 4. <<----
+#   endif
+#  endif
+# endif
+#endif /* HAVE_U_INT32_T */
+
+#ifndef HAVE_INT64_T
+# if SIZEOF_QUAD == 8
+typedef quad                   int64_t;
+# else
+#  if SIZEOF_LONG == 8
+typedef long                   int64_t;
+#  else
+---->> Please define int64_t manually because sizeof(quad) != 8. <<----
+#  endif
+# endif
+#endif /* HAVE_INT64_T */
+
+/* unsigned 64-bit integer */
+#ifndef HAVE_U_INT64_T
+# ifdef HAVE_UINT64_T
+typedef uint64_t            u_int64_t;
+# else
+#  if SIZEOF_QUAD == 8
+typedef unsigned quad       u_int64_t;
+#  else
+#   if SIZEOF_LONG == 8
+typedef unsigned long       u_int64_t;
+#   else
+---->> Please define u_int64_t manually because sizeof(quad) != 8. <<----
+#   endif
+#  endif
+# endif
+#endif /* HAVE_U_INT64_T */
+
+
+#ifndef HAVE_SIZE_T /// If you modify this, make sure to modify the definition of y_size_t and Y_SIZE_T!
+typedef u_int64_t    size_t;
+# define NM_SIZE_T   NM_INT64
+#else
+# if SIZEOF_SIZE_T == 8
+#  define NM_SIZE_T  NM_INT64
+# else
+#  if SIZEOF_SIZE_T == 4
+#   define NM_SIZE_T NM_INT32
+#  else
+---->> Please define size_t and y_size_t manually because sizeof(size_t) is neither 8 nor 4. <<----
+#  endif
+# endif
+#endif
+
+// for when we need to return array indices.
+// This must never be larger than size_t
+typedef uint32_t    y_size_t;
+#define Y_SIZE_T    NM_INT32
+
+
+#ifdef HAVE_STDBOOL_H
+# include <stdbool.h>
+#else
+typedef char    bool;
+# define true    1;
+# define false   0;
+#endif
+
+
+typedef struct { float r,i; } complex64;
+typedef struct { double r,i; } complex128;
+typedef struct { int16_t n,d; } rational32;
+typedef struct { int32_t n,d; } rational64;
+typedef struct { int64_t n,d; } rational128;
+
 
 #if SIZEOF_INT == 8
 # define DEFAULT_DTYPE  NM_INT64
@@ -173,14 +301,182 @@ typedef struct cblas_param_t {
 } DENSE_PARAM;
 
 
+// Formerly in smmp.h:
+typedef struct smmp_param_t {
+  void *ia, *ja, *a;
+  bool diag;
+} YALE_PARAM;
+
+// Shouldn't be necessary, as they're defined in nmatrix.h:
+// (Oddly, though, these fix the error.)
+/*typedef uint8_t   u_int8_t;
+typedef uint16_t  u_int16_t;
+typedef uint32_t  u_int32_t;
+typedef uint64_t  u_int64_t; */
+
+
+#define SMMP_MAX_THREE(a,b,c) ((a)>(b) ? ( (a)>(c) ? (a) : (c) ) : ( (b)>(c) ? (b) : (c) ))
+#define SMMP_MIN(a,b) ((a)>(b) ? (b) : (a))
+#define SMMP_MAX(a,b) ((a)>(b) ? (a) : (b))
+
+void transp(y_size_t n, y_size_t m, void* ia, void* ja, bool diaga, void* a, void* ib, void* jb, void* b, bool move, int8_t itype, int8_t dtype);
+
+void i8_symbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_symbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_symbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_symbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_b_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_b_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i8_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i8_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i16_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i16_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i32_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i32_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i64_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i64_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_f32_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_f32_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_f64_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_f64_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_b_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_b_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i8_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i8_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i16_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i16_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i32_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i32_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i64_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i64_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_f32_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_f32_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_f64_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_f64_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_b_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_b_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i8_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i8_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i16_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i16_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i32_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i32_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i64_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i64_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_f32_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_f32_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_f64_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_f64_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_b_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_b_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i8_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i8_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i16_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i16_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i32_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i32_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i64_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i64_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_f32_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_f32_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_f64_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_f64_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_symbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_symbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_symbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_symbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_b_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_b_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i8_b_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i8_i8_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i8_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i8_i8_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i8_i16_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i16_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i8_i16_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i8_i32_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i32_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i8_i32_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i8_i64_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_i64_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i8_i64_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i8_f32_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_f32_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i8_f32_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i8_f64_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i8_f64_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i8_f64_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i16_b_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_b_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i16_b_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i16_i8_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i8_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i16_i8_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i16_i16_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i16_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i16_i16_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i16_i32_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i32_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i16_i32_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i16_i64_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_i64_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i16_i64_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i16_f32_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_f32_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i16_f32_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i16_f64_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i16_f64_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i16_f64_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i32_b_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_b_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i32_b_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i32_i8_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i8_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i32_i8_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i32_i16_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i16_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i32_i16_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i32_i32_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i32_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i32_i32_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i32_i64_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_i64_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i32_i64_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i32_f32_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_f32_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i32_f32_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i32_f64_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i32_f64_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i32_f64_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i64_b_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_b_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i64_b_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i64_i8_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i8_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i64_i8_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i64_i16_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i16_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i64_i16_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i64_i32_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i32_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i64_i32_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i64_i64_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_i64_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i64_i64_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i64_f32_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_f32_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i64_f32_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+void i64_f64_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
+void i64_f64_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
+void i64_f64_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+// End Formerly in smmp.h
+
+
 // For binary operations involving matrices that need to be casted.
 typedef struct storage_pair_t {
   STORAGE* left;
   STORAGE* right;
 } STORAGE_PAIR;
-
-
-// YALE_PARAM is declared in smmp.h
 
 
 #ifndef NMATRIX_C
