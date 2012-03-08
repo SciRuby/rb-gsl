@@ -32,6 +32,7 @@
 #include "types.h"
 
 VALUE cNMatrix, cNVector;
+VALUE nm_eDataTypeError, nm_eStorageTypeError;
 
 ID nm_id_real, nm_id_imag;
 ID nm_id_numer, nm_id_denom;
@@ -101,7 +102,7 @@ nm_gemm_t GemmFuncs = { // by NM_TYPES
 };
 
 static void TransposeTypeErr(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move) {
-  rb_raise(rb_eTypeError, "illegal operation with this matrix type");
+  rb_raise(nm_eDataTypeError, "illegal operation with this matrix type");
 }
 
 
@@ -124,7 +125,7 @@ nm_smmp_transpose_t SparseTransposeFuncs = {
 };
 
 static void SmmpTypeErr(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C) {
-  rb_raise(rb_eTypeError, "illegal operation with this matrix type");
+  rb_raise(nm_eDataTypeError, "illegal operation with this matrix type");
 }
 
 // First dimension is dtype, second dimension is index dtype (so lots of nulls)
@@ -146,12 +147,13 @@ nm_smmp_t SmmpFuncs = {
 };
 
 
-static inline DENSE_PARAM cblas_params_for_multiply(DENSE_STORAGE* left, DENSE_STORAGE* right, DENSE_STORAGE* result) {
+static inline DENSE_PARAM cblas_params_for_multiply(const DENSE_STORAGE* left, const DENSE_STORAGE* right, const DENSE_STORAGE* result, bool vector) {
   DENSE_PARAM p;
 
   p.M = left->shape[0];
   p.N = right->shape[1];
-  p.K = left->shape[1];
+
+  if (!vector) p.K = left->shape[1];
 
   p.A = left->elements;
   p.lda = left->shape[1];
@@ -183,6 +185,10 @@ static inline DENSE_PARAM cblas_params_for_multiply(DENSE_STORAGE* left, DENSE_S
     p.beta.z.r = 0.0;
     p.beta.z.i = 0.0;
     break;
+
+  default:
+    rb_raise(nm_eDataTypeError, "expected float or complex dtype");
+
   }
 
   return p;
@@ -202,8 +208,8 @@ static NMATRIX* multiply_matrix_dense_casted(STORAGE_PAIR casted_storage, size_t
   result = create_dense_storage(dtype, resulting_shape, 2, NULL, 0);
 
   // Do the multiplication
-  if (vector) GemvFuncs[dtype](CblasRowMajor, CblasNoTrans, cblas_params_for_multiply(left, right, result));
-  else        GemmFuncs[dtype](CblasRowMajor, CblasNoTrans, CblasNoTrans, cblas_params_for_multiply(left, right, result));
+  if (vector) GemvFuncs[dtype](CblasRowMajor, CblasNoTrans, cblas_params_for_multiply(left, right, result, true));
+  else        GemmFuncs[dtype](CblasRowMajor, CblasNoTrans, CblasNoTrans, cblas_params_for_multiply(left, right, result, false));
 
   return nm_create(S_DENSE, result);
 }
@@ -1307,6 +1313,9 @@ void Init_nmatrix() {
 
     cNVector = rb_define_class("NVector", cNMatrix);
 
+    // Special exceptions
+    nm_eDataTypeError    = rb_define_class("DataTypeError", rb_eStandardError);
+    nm_eStorageTypeError = rb_define_class("StorageTypeError", rb_eStandardError);
 
     nm_id_real  = rb_intern("real");
     nm_id_imag  = rb_intern("imag");
