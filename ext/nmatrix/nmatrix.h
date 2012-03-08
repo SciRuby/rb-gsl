@@ -514,13 +514,15 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define NM_MAX(a,b) (((a)>(b))?(a):(b))
 #define NM_SWAP(a,b,tmp) {(tmp)=(a);(a)=(b);(b)=(tmp);}
 
-#define NUM2REAL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) )
+#define NUM2REAL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) ) // deprecated
 #define REAL2DBL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) )
-#define NUM2IMAG(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) )
+#define NUM2IMAG(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) ) // deprecated
 #define IMAG2DBL(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) )
 
-#define NUM2NUMER(v) NUM2INT( rb_funcall((v), nm_id_numer,0) )
-#define NUM2DENOM(v) NUM2INT( rb_funcall((v), nm_id_denom,0) )
+#define NUM2NUMER(v) NUM2INT( rb_funcall((v), nm_id_numer,0) ) // deprecated
+#define NUMER2INT(v) NUM2INT( rb_funcall((v), nm_id_numer,0) )
+#define NUM2DENOM(v) NUM2INT( rb_funcall((v), nm_id_denom,0) ) // deprecated
+#define DENOM2INT(v) NUM2INT( rb_funcall((v), nm_id_denom,0) )
 
 #define IS_NUMERIC(v)   (FIXNUM_P(v) || TYPE(v) == T_FLOAT || TYPE(v) == T_COMPLEX || TYPE(v) == T_RATIONAL)
 #define IS_STRING(v)    (TYPE(v) == T_STRING)

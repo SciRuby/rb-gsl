@@ -27,6 +27,12 @@
 require "./lib/nmatrix"
 
 describe NMatrix do
+  MATRIX43A_ARRAY = [14.0, 9.0, 3.0, 2.0, 11.0, 15.0, 0.0, 12.0, 17.0, 5.0, 2.0, 3.0]
+  MATRIX32A_ARRAY = [12.0, 25.0, 9.0, 10.0, 8.0, 5.0]
+
+  COMPLEX_MATRIX43A_ARRAY = MATRIX43A_ARRAY.zip(MATRIX43A_ARRAY.reverse).collect { |ary| Complex(ary[0], ary[1]) }
+  COMPLEX_MATRIX32A_ARRAY = MATRIX32A_ARRAY.zip(MATRIX32A_ARRAY.reverse).collect { |ary| Complex(ary[0], -ary[1]) }
+
   it "correctly fills dense with individual assignments" do
     n = NMatrix.new([4,3], :float64)
     n[0,0] = 14.0
@@ -168,29 +174,21 @@ describe NMatrix do
     m.dtype.should == :float64
   end
 
-  [:int8,:int16,:int32,:int64,:float32,:float64].each do |left_dtype|
-    [:int8,:int16,:int32,:int64,:float32,:float64].each do |right_dtype|
+  it "dense correctly pretty_prints complex values" do
+    n = NMatrix.new([4,3], left_dtype.to_s =~ /complex/ ? COMPLEX_MATRIX43A_ARRAY : MATRIX43A_ARRAY, left_dtype)
+    n.pretty_print
+  end
+
+  [:int8,:int16,:int32,:int64,:float32,:float64,:complex64,:complex128].each do |left_dtype|
+    [:int8,:int16,:int32,:int64,:float32,:float64,:complex64,:complex128].each do |right_dtype|
 
       # For now, don't bother testing int-int mult.
       next if [:int8,:int16,:int32,:int64].include?(left_dtype) && [:int8,:int16,:int32,:int64].include?(right_dtype)
       it "dense correctly handles #{left_dtype.to_s}*#{right_dtype.to_s} matrix multiplication" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "2"
-        n = NMatrix.new([4,3], left_dtype)
-        n[0,0] = 14.0
-        n[0,1] = 9.0
-        n[0,2] = 3.0
-        n[1,0] = 2.0
-        n[1,1] = 11.0
-        n[1,2] = 15.0
-        n[2,0] = 0.0
-        n[2,1] = 12.0
-        n[2,2] = 17.0
-        n[3,0] = 5.0
-        n[3,1] = 2.0
-        n[3,2] = 3.0
-
-        m = NMatrix.new([3,2], right_dtype)
+        n = NMatrix.new([4,3], left_dtype.to_s =~ /complex/ ? COMPLEX_MATRIX43A_ARRAY : MATRIX43A_ARRAY, left_dtype)
+        m = NMatrix.new([3,2], right_dtype.to_s =~ /complex/ ? COMPLEX_MATRIX32A_ARRAY : MATRIX32A_ARRAY, right_dtype)
 
         m.shape[0].should == 3
         m.shape[1].should == 2
@@ -200,17 +198,9 @@ describe NMatrix do
         n.shape[1].should == 3
         n.rank.should == 2
 
-        m[0,0] = 12.0
-        m[0,1] = 25.0
-        m[1,0] = 9.0
-        m[1,1] = 10.0
-        m[2,0] = 8.0
-        m[2,1] = 5.0
-
         n.shape[1].should == m.shape[0]
 
-        r = n.multiply(m)
-
+        r = n*m
         r[0,0].should == 273.0
         r[0,1].should == 455.0
         r[1,0].should == 243.0
@@ -247,7 +237,7 @@ describe NMatrix do
 
         n.shape[1].should == m.shape[0]
 
-        r = n.multiply(m)
+        r = n*m
         # r.class.should == NVector
 
         r[0,0].should == 0

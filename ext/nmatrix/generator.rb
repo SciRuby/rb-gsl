@@ -117,10 +117,10 @@ module Generator
           :value    => lambda {|l,r| "*(VALUE*)p1 = rb_rational_new(((#{r}*)p2)->n, ((#{r}*)p2)->d);" }
       },
       :value => {
-          :complex  => lambda {|l,r| "((#{l}*)p1)->r = NUM2REAL(*(VALUE*)p2); ((#{l}*)p1)->i = NUM2IMAG(*(VALUE*)p2);" },
+          :complex  => lambda {|l,r| "((#{l}*)p1)->r = REAL2DBL(*(VALUE*)p2); ((#{l}*)p1)->i = IMAG2DBL(*(VALUE*)p2);" },
           :float    => lambda {|l,r| "*(#{l}*)p1 = NUM2DBL(*(VALUE*)p2);"},
           :int      => lambda {|l,r| "*(#{l}*)p1 = NUM2DBL(*(VALUE*)p2);"},
-          :rational => lambda {|l,r| "((#{l}*)p1)->n = NUM2NUMER(*(VALUE*)p2); ((#{l}*)p1)->d = NUM2DENOM(*(VALUE*)p2);" },
+          :rational => lambda {|l,r| "((#{l}*)p1)->n = NUMER2INT(*(VALUE*)p2); ((#{l}*)p1)->d = DENOM2INT(*(VALUE*)p2);" },
           :value    => lambda {|l,r| "*(VALUE*)p1 = *(VALUE*)p2;"}
       }
   }

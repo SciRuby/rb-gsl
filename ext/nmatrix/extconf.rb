@@ -134,6 +134,8 @@ $libs += " -lcblas -latlas "
 
 $objs = srcs.collect{|i| i+".o" }
 
+$CFLAGS += " -O0"
+
 create_conf_h("nmatrix_config.h")
 create_makefile("nmatrix")
 
