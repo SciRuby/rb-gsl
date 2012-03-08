@@ -36,36 +36,6 @@
 //extern enum CBLAS_ORDER;
 //extern enum CBLAS_TRANSPOSE;
 
-inline DENSE_PARAM init_cblas_params_for_nm_multiply_matrix(int8_t dtype) {
-  DENSE_PARAM p;
-
-  // memset(&(p.beta), 0, sizeof(nm_size128_t)); // set beta to 0
-
-  switch(dtype) {
-  case NM_FLOAT32:
-  case NM_FLOAT64:
-    p.alpha.d[0] = 1.0;
-    p.beta.d[0] = 0.0;
-    break;
-
-  case NM_COMPLEX64:
-    p.alpha.c[0].r = 1.0;
-    p.alpha.c[0].i = 0.0;
-    p.beta.c[0].r = 0.0;
-    p.beta.c[0].i = 0.0;
-    break;
-
-  case NM_COMPLEX128:
-    p.alpha.z.r = 1.0;
-    p.alpha.z.i = 0.0;
-    p.beta.z.r = 0.0;
-    p.beta.z.i = 0.0;
-    break;
-  }
-
-  return p;
-}
-
 
 inline void cblas_sgemv_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
   cblas_sgemv(Order, TransA, p.M, p.N, p.alpha.d[0], p.A, p.lda, p.B, p.ldb, p.beta.d[0], p.C, p.ldc);

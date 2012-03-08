@@ -146,11 +146,53 @@ nm_smmp_t SmmpFuncs = {
 };
 
 
+static inline DENSE_PARAM cblas_params_for_multiply(DENSE_STORAGE* left, DENSE_STORAGE* right, DENSE_STORAGE* result) {
+  DENSE_PARAM p;
+
+  p.M = left->shape[0];
+  p.N = right->shape[1];
+  p.K = left->shape[1];
+
+  p.A = left->elements;
+  p.lda = left->shape[1];
+
+  p.B = right->elements;
+  p.ldb = right->shape[1];
+
+  p.C = result->elements;
+  p.ldc = result->shape[1];
+  // memset(&(p.beta), 0, sizeof(nm_size128_t)); // set beta to 0
+
+  switch(left->dtype) {
+  case NM_FLOAT32:
+  case NM_FLOAT64:
+    p.alpha.d[0] = 1.0;
+    p.beta.d[0] = 0.0;
+    break;
+
+  case NM_COMPLEX64:
+    p.alpha.c[0].r = 1.0;
+    p.alpha.c[0].i = 0.0;
+    p.beta.c[0].r = 0.0;
+    p.beta.c[0].i = 0.0;
+    break;
+
+  case NM_COMPLEX128:
+    p.alpha.z.r = 1.0;
+    p.alpha.z.i = 0.0;
+    p.beta.z.r = 0.0;
+    p.beta.z.i = 0.0;
+    break;
+  }
+
+  return p;
+}
+
+
 static NMATRIX* multiply_matrix_dense_casted(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
   DENSE_STORAGE *left  = (DENSE_STORAGE*)(casted_storage.left),
                 *right = (DENSE_STORAGE*)(casted_storage.right),
                 *result;
-  DENSE_PARAM cblas_param;
 
   // We can safely get dtype from the casted matrices; post-condition of binary_storage_cast_alloc is that dtype is the
   // same for left and right.
@@ -159,25 +201,9 @@ static NMATRIX* multiply_matrix_dense_casted(STORAGE_PAIR casted_storage, size_t
   // Create result storage.
   result = create_dense_storage(dtype, resulting_shape, 2, NULL, 0);
 
-  // Set multiplication parameters (alpha and beta), which are not simple types.
-  cblas_param   = init_cblas_params_for_nm_multiply_matrix(dtype);
-
-  cblas_param.M = left->shape[0];
-  cblas_param.N = right->shape[1];
-  cblas_param.K = left->shape[1];
-
-  cblas_param.A = left->elements;
-  cblas_param.lda = left->shape[1];
-
-  cblas_param.B = right->elements;
-  cblas_param.ldb = right->shape[1]; // inc for gemv
-
-  cblas_param.C = result->elements;
-  cblas_param.ldc = result->shape[1]; // inc for gemv
-
   // Do the multiplication
-  if (vector) GemvFuncs[dtype](CblasRowMajor, CblasNoTrans, cblas_param);
-  else        GemmFuncs[dtype](CblasRowMajor, CblasNoTrans, CblasNoTrans, cblas_param);
+  if (vector) GemvFuncs[dtype](CblasRowMajor, CblasNoTrans, cblas_params_for_multiply(left, right, result));
+  else        GemmFuncs[dtype](CblasRowMajor, CblasNoTrans, CblasNoTrans, cblas_params_for_multiply(left, right, result));
 
   return nm_create(S_DENSE, result);
 }
