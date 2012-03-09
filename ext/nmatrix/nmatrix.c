@@ -315,30 +315,10 @@ nm_cast_copy_storage_t CastCopyFuncs = {
 };
 
 
-VALUE nm_dense_get(STORAGE* s, size_t* coords) {
-  VALUE v;
-  SetFuncs[NM_ROBJ][s->dtype](1, &v, 0, dense_storage_get((DENSE_STORAGE*)s, coords), 0);
-  return v;
-}
-
-VALUE nm_list_get(STORAGE* s, size_t* coords) {
-  VALUE v;
-  SetFuncs[NM_ROBJ][s->dtype](1, &v, 0, list_storage_get((LIST_STORAGE*)s, coords), 0);
-  return v;
-}
-
-
-VALUE nm_yale_get(STORAGE* s, size_t* coords) {
-  VALUE v;
-  SetFuncs[NM_ROBJ][s->dtype](1, &v, 0, yale_storage_ref((YALE_STORAGE*)s, coords), 0);
-  return v;
-}
-
-
 nm_stype_ref_t RefFuncs = {
-  nm_dense_get,
-  nm_list_get,
-  nm_yale_get
+  dense_storage_get,
+  list_storage_get,
+  yale_storage_ref
 };
 
 
@@ -359,6 +339,7 @@ VALUE nm_yale_set(STORAGE* s, size_t* coords, VALUE val) {
 }
 
 
+// TODO: Why can't you be more like your brothers, nm_dense_set and nm_yale_set?
 VALUE nm_list_set(STORAGE* s, size_t* coords, VALUE val) {
   void *v = malloc(nm_sizeof[s->dtype]), *rm;
   LIST_STORAGE* ls = (LIST_STORAGE*)s;
@@ -385,7 +366,7 @@ VALUE nm_list_set(STORAGE* s, size_t* coords, VALUE val) {
 
 
 
-nm_stype_ref_t InsFuncs = {
+nm_stype_ins_t InsFuncs = {
   nm_dense_set,
   nm_list_set,
   nm_yale_set,
@@ -808,9 +789,15 @@ size_t* convert_coords(size_t rank, VALUE* c, VALUE self) {
 
 
 VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
+  VALUE v;
+
   if (NM_RANK(self) == (size_t)(argc)) {
-    return (*(RefFuncs[NM_STYPE(self)]))( NM_STORAGE(self),
-                                          convert_coords((size_t)(argc), argv, self) );
+
+    SetFuncs[NM_ROBJ][NM_DTYPE(self)](1, &v, 0,
+      RefFuncs[NM_STYPE(self)](NM_STORAGE(self),
+                               convert_coords((size_t)(argc), argv, self)
+                              ), 0);
+    return v;
 
   } else if (NM_RANK(self) < (size_t)(argc)) {
     rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");

@@ -514,9 +514,9 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define NM_MAX(a,b) (((a)>(b))?(a):(b))
 #define NM_SWAP(a,b,tmp) {(tmp)=(a);(a)=(b);(b)=(tmp);}
 
-#define NUM2REAL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) ) // deprecated
+//#define NUM2REAL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) ) // deprecated
 #define REAL2DBL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) )
-#define NUM2IMAG(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) ) // deprecated
+//#define NUM2IMAG(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) ) // deprecated
 #define IMAG2DBL(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) )
 
 #define NUM2NUMER(v) NUM2INT( rb_funcall((v), nm_id_numer,0) ) // deprecated
@@ -563,7 +563,8 @@ extern const int nm_sizeof[NM_TYPES+1];
 
 typedef void     (*nm_setfunc_t[NM_TYPES][NM_TYPES])(); // copy functions
 typedef void     (*nm_incfunc_t[NM_TYPES])();           // increment functions
-typedef VALUE    (*nm_stype_ref_t[S_TYPES])();
+typedef void*    (*nm_stype_ref_t[S_TYPES])(STORAGE*, size_t*);        // get/ref
+typedef VALUE    (*nm_stype_ins_t[S_TYPES])(STORAGE*, size_t*, VALUE); // insert
 typedef STORAGE* (*nm_create_storage_t[S_TYPES])();
 typedef STORAGE* (*nm_cast_copy_storage_t[S_TYPES])();
 typedef NMATRIX* (*nm_binary_op_t[S_TYPES])();
