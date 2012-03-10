@@ -88,6 +88,7 @@ module Generator
 
   INDEX_DTYPES = DTYPES.select { |dtype| [:NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64].include?(dtype.enum) }
   INTEGER_DTYPES = DTYPES.select { |dtype| [:NM_BYTE, :NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64].include?(dtype.enum) }
+  RATIONAL_DTYPES = DTYPES.select { |dtype| dtype.type == :rational }
 
 
   DTYPES_ASSIGN = {
@@ -447,3 +448,6 @@ Generator.make_templated_c './smmp', nil,           ['blas2'], 'smmp1.c', 2, Gen
 Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp2.c', 1, Generator::INDEX_DTYPES # 1-type SMMP functions from Fortran
 Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', 2, Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
 Generator.make_templated_c './blas', 'blas_header', ['igemm'], 'blas.c', 1, Generator::INTEGER_DTYPES
+Generator.make_templated_c './blas', nil,           ['rationalmath', 'rgemm'], 'blas.partial.c', 1, Generator::RATIONAL_DTYPES
+`cat blas.partial.c >> blas.c`
+`rm blas.partial.c`

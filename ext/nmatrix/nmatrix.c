@@ -92,12 +92,12 @@ nm_gemm_t GemmFuncs = { // by NM_TYPES
   cblas_i32gemm_,
   cblas_i64gemm_,
   cblas_sgemm_,
-  cblas_dgemm_,  // can use the native version since it takes doubles for alpha and beta.
+  cblas_dgemm_,
   cblas_cgemm_,
   cblas_zgemm_,
-  NULL,
-  NULL,
-  NULL,
+  cblas_r32gemm_,
+  cblas_r64gemm_,
+  cblas_r128gemm_,
   NULL
 };
 
@@ -200,6 +200,27 @@ static inline DENSE_PARAM cblas_params_for_multiply(const DENSE_STORAGE* left, c
   case NM_INT64:
     p.alpha.i[0] = 1;
     p.beta.i[0]  = 0;
+    break;
+
+  case NM_RATIONAL32:
+    p.alpha.r[0].n = 1;
+    p.alpha.r[0].d = 1;
+    p.beta.r[0].n = 0;
+    p.beta.r[0].d = 1;
+    break;
+
+  case NM_RATIONAL64:
+    p.alpha.ra[0].n = 1;
+    p.alpha.ra[0].d = 1;
+    p.beta.ra[0].n = 0;
+    p.beta.ra[0].d = 1;
+    break;
+
+  case NM_RATIONAL128:
+    p.alpha.rat.n = 1;
+    p.alpha.rat.d = 1;
+    p.beta.rat.n = 0;
+    p.beta.rat.d = 1;
     break;
 
   default:

@@ -57,7 +57,7 @@ int %%INT_ABBREV%%gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
         for (i = 0; i < M; ++i) C[i+j*ldc] = 0;
     } else {
       for (j = 0; j < N; ++j)
-        for (i = 0; i < M; ++i) C[i+j*ldc] = beta * C[i+j*ldc];
+        for (i = 0; i < M; ++i) C[i+j*ldc] *= beta;
     }
     return 0;
   }
@@ -70,7 +70,7 @@ int %%INT_ABBREV%%gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
         if (beta == 0) {
           for (i = 0; i < M; ++i) C[i+j*ldc] = 0;
         } else if (beta != 1) {
-          for (i = 0; i < M; ++i) C[i+j*ldc] = beta*C[i+j*ldc];
+          for (i = 0; i < M; ++i) C[i+j*ldc] *= beta;
         }
 
         for (l = 0; l < K; ++l) {

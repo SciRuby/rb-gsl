@@ -35,8 +35,15 @@
 //
 // Note that this is in no way comparable to ATLAS. Why?
 // * We didn't test any options other than CblasNoTrans (for A and B)
-// * It doesn't use any of that cool cross-over crap (e.g., Strassen's algorithm)
-// * It really hasn't been tested exhaustively in any way, shape, or form
+// * It doesn't use any of that cool cross-over crap (e.g.,
+//   Strassen's algorithm)
+// * It really hasn't been tested exhaustively in any way, shape, or
+//   form.
+//
+// This file also contains rational math helper functions so that the
+// aforementioned port will work with rationals too. These are in
+// ext/nmatrix/blas/rationalmath.template.c. They are derived from
+// rational.c in Ruby 1.9.3.
 
 #include "nmatrix.h"
 
@@ -46,3 +53,41 @@
 //enum CBLAS_UPLO {CblasUpper=121, CblasLower=122};
 //enum CBLAS_DIAG {CblasNonUnit=131, CblasUnit=132};
 //enum CBLAS_SIDE {CblasLeft=141, CblasRight=142};
+
+inline static int64_t i_gcd(int64_t x, int64_t y) {
+  int64_t t;
+
+  if (x < 0) x = -x;
+  if (y < 0) y = -y;
+
+  if (x == 0) return y;
+  if (y == 0) return x;
+
+  while (x > 0) {
+    t = x;
+    x = y % x;
+    y = t;
+  }
+
+  return y;
+}
+
+/*
+static double f_gcd(double x, double y) {
+  double z;
+
+  if (x < 0.0) x = -x;
+  if (y < 0.0) y = -y;
+  if (x == 0.0) return y;
+  if (y == 0.0) return x;
+
+  for (;;) {
+    z = x;
+    x = y % x;
+    y = z;
+  }
+  // NOTREACHED
+}*/
+
+
+

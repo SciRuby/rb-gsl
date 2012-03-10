@@ -33,6 +33,9 @@ describe NMatrix do
   COMPLEX_MATRIX43A_ARRAY = MATRIX43A_ARRAY.zip(MATRIX43A_ARRAY.reverse).collect { |ary| Complex(ary[0], ary[1]) }
   COMPLEX_MATRIX32A_ARRAY = MATRIX32A_ARRAY.zip(MATRIX32A_ARRAY.reverse).collect { |ary| Complex(ary[0], -ary[1]) }
 
+  RATIONAL_MATRIX43A_ARRAY = MATRIX43A_ARRAY.collect { |x| x.to_r }
+  RATIONAL_MATRIX32A_ARRAY = MATRIX32A_ARRAY.collect { |x| x.to_r }
+
   it "correctly fills dense with individual assignments" do
     n = NMatrix.new([4,3], :float64)
     n[0,0] = 14.0
@@ -180,8 +183,8 @@ describe NMatrix do
   #end
 
   # TODO: Add complex back in here when it doesn't cause a segfault anymore.
-  [:byte,:int8,:int16,:int32,:int64,:float32,:float64].each do |left_dtype|
-    [:byte,:int8,:int16,:int32,:int64,:float32,:float64].each do |right_dtype|
+  [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational128].each do |left_dtype|
+    [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational128].each do |right_dtype|
 
       # Won't work if they're both 1-byte, due to overflow.
       next if [:byte,:int8].include?(left_dtype) && [:byte,:int8].include?(right_dtype)
@@ -191,8 +194,25 @@ describe NMatrix do
       it "dense correctly handles #{left_dtype.to_s}*#{right_dtype.to_s} matrix multiplication" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "2"
-        n = NMatrix.new([4,3], left_dtype.to_s =~ /complex/ ? COMPLEX_MATRIX43A_ARRAY : MATRIX43A_ARRAY, left_dtype)
-        m = NMatrix.new([3,2], right_dtype.to_s =~ /complex/ ? COMPLEX_MATRIX32A_ARRAY : MATRIX32A_ARRAY, right_dtype)
+
+        nary = if left_dtype.to_s =~ /complex/
+                 COMPLEX_MATRIX43A_ARRAY
+               elsif left_dtype.to_s =~ /rational/
+                 RATIONAL_MATRIX43A_ARRAY
+               else
+                 MATRIX43A_ARRAY
+               end
+
+        mary = if right_dtype.to_s =~ /complex/
+                 COMPLEX_MATRIX43A_ARRAY
+               elsif right_dtype.to_s =~ /rational/
+                 RATIONAL_MATRIX43A_ARRAY
+               else
+                 MATRIX43A_ARRAY
+               end
+
+        n = NMatrix.new([4,3], nary, left_dtype)
+        m = NMatrix.new([3,2], mary, right_dtype)
 
         m.shape[0].should == 3
         m.shape[1].should == 2

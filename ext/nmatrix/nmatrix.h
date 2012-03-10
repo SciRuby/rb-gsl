@@ -291,6 +291,9 @@ typedef union {
   float      f[4];
   complex64  c[2];
   complex128 z;
+  rational32 r[4];
+  rational64 ra[2];
+  rational128 rat;
 } nm_size128_t;
 
 
@@ -583,6 +586,9 @@ extern ID nm_id_real, nm_id_imag;
 extern ID nm_id_denom, nm_id_numer;
 
 /* blas.c */
+int r32gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const rational32 alpha, const rational32* A, const int lda, const rational32* B, const int ldb, const rational32 beta, rational32* C, const int ldc);
+int r64gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const rational64 alpha, const rational64* A, const int lda, const rational64* B, const int ldb, const rational64 beta, rational64* C, const int ldc);
+int r128gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const rational128 alpha, const rational128* A, const int lda, const rational128* B, const int ldb, const rational128 beta, rational128* C, const int ldc);
 int bgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const u_int8_t alpha, const u_int8_t* A, const int lda, const u_int8_t* B, const int ldb, const u_int8_t beta, u_int8_t* C, const int ldc);
 int i8gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int8_t alpha, const int8_t* A, const int lda, const int8_t* B, const int ldb, const int8_t beta, int8_t* C, const int ldc);
 int i16gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int16_t alpha, const int16_t* A, const int lda, const int16_t* B, const int ldb, const int16_t beta, int16_t* C, const int ldc);
@@ -604,6 +610,9 @@ void cblas_cgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans
 void cblas_cgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
 void cblas_zgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
 void cblas_zgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
+void cblas_r32gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_r64gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_r128gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
 
 /* dense.c */
 DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
