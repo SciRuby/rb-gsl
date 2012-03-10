@@ -48,7 +48,7 @@ int %%INT_ABBREV%%gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
   }
 
   // Quick return if possible
-  if (!M || !N || (!alpha.n || !K) && (beta.n == 1 && beta.d == 1)) return 0;
+  if (!M || !N || (!alpha.n || !K) && (beta.n == beta.d)) return 0;
 
   // For alpha = 0
   if (alpha.n == 0) {
@@ -76,7 +76,7 @@ int %%INT_ABBREV%%gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
             C[i+j*ldc].n = 0;
             C[i+j*ldc].d = 1;
           }
-        } else if (!(beta.n == 1 && beta.d == 1)) {
+        } else if (beta.n != beta.d) { // != 1
           for (i = 0; i < M; ++i)
             C[i+j*ldc] = %%INT_ABBREV%%_muldiv(beta.n, beta.d, C[i+j*ldc].n, C[i+j*ldc].d, '*');
         }
@@ -84,8 +84,10 @@ int %%INT_ABBREV%%gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
         for (l = 0; l < K; ++l) {
           if (B[l+j*ldb].n != 0) {
             temp = r128_muldiv(alpha.n, alpha.d, B[l+j*ldb].n, B[l+j*ldb].d, '*');
-            for (i = 0; i < M; ++i)
-              C[i+j*ldc] = %%INT_ABBREV%%_muldiv(temp.n, temp.d, A[i+l*lda].n, A[i+l*lda].d, '*');
+            for (i = 0; i < M; ++i) {
+              temp2 = r128_muldiv(temp.n, temp.d, A[i+l*lda].n, A[i+l*lda].d, '*');
+              C[i+j*ldc] = %%INT_ABBREV%%_addsub(temp2.n, temp2.d, C[i+j*ldc].n, C[i+j*ldc].d, '+');
+            }
           }
         }
       }

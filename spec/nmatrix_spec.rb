@@ -183,8 +183,8 @@ describe NMatrix do
   #end
 
   # TODO: Add complex back in here when it doesn't cause a segfault anymore.
-  [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational128].each do |left_dtype|
-    [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational128].each do |right_dtype|
+  [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |left_dtype|
+    [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |right_dtype|
 
       # Won't work if they're both 1-byte, due to overflow.
       next if [:byte,:int8].include?(left_dtype) && [:byte,:int8].include?(right_dtype)

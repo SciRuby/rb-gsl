@@ -26,6 +26,7 @@ static %%INT%% %%INT_ABBREV%%_muldiv(int64_t anum, int64_t aden, int64_t bnum, i
 
 static %%INT%% %%INT_ABBREV%%_addsub(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k) {
   %%INT%% result;
+
   int64_t ig = nmrb_gcd(aden, bden);
   int64_t a  = anum * (bden / ig);
   int64_t b  = bnum * (aden / ig);
