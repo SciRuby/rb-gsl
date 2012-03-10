@@ -204,11 +204,11 @@ describe NMatrix do
                end
 
         mary = if right_dtype.to_s =~ /complex/
-                 COMPLEX_MATRIX43A_ARRAY
+                 COMPLEX_MATRIX32A_ARRAY
                elsif right_dtype.to_s =~ /rational/
-                 RATIONAL_MATRIX43A_ARRAY
+                 RATIONAL_MATRIX32A_ARRAY
                else
-                 MATRIX43A_ARRAY
+                 MATRIX32A_ARRAY
                end
 
         n = NMatrix.new([4,3], nary, left_dtype)
