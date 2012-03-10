@@ -92,6 +92,7 @@ dfuncs
 smmp1
 smmp2
 cblas
+blas
 )
 # add smmp in to get generic transp; remove smmp2 to eliminate funcptr transp
 

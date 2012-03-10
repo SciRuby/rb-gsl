@@ -86,11 +86,11 @@ nm_gemv_t GemvFuncs = {
 
 nm_gemm_t GemmFuncs = { // by NM_TYPES
   NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
+  cblas_bgemm_,
+  cblas_i8gemm_,
+  cblas_i16gemm_,
+  cblas_i32gemm_,
+  cblas_i64gemm_,
   cblas_sgemm_,
   cblas_dgemm_,  // can use the native version since it takes doubles for alpha and beta.
   cblas_cgemm_,
@@ -187,6 +187,19 @@ static inline DENSE_PARAM cblas_params_for_multiply(const DENSE_STORAGE* left, c
     p.alpha.z.i = 0.0;
     p.beta.z.r = 0.0;
     p.beta.z.i = 0.0;
+    break;
+
+  case NM_BYTE:
+    p.alpha.b[0] = 1;
+    p.beta.b[0] = 0;
+    break;
+
+  case NM_INT8:
+  case NM_INT16:
+  case NM_INT32:
+  case NM_INT64:
+    p.alpha.i[0] = 1;
+    p.beta.i[0]  = 0;
     break;
 
   default:

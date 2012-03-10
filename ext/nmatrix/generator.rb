@@ -86,6 +86,9 @@ module Generator
       [:NM_TYPES,       0,            :dtypes,      0,      :none,         nil]
   ].map { |d| DTypeInfo.new(*d) }
 
+  INDEX_DTYPES = DTYPES.select { |dtype| [:NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64].include?(dtype.enum) }
+  INTEGER_DTYPES = DTYPES.select { |dtype| [:NM_BYTE, :NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64].include?(dtype.enum) }
+
 
   DTYPES_ASSIGN = {
       :complex => { # Assign a complex to:
@@ -384,13 +387,12 @@ INCFN
     #
     # TODO: Make templates work with complex and rational types too.
     #
-    def make_templated_c relative_path, header_name, names, output_name, subs=1
+    def make_templated_c relative_path, header_name, names, output_name, subs=1, first_sub=INDEX_DTYPES
 
       # First print the header once
       `cat #{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{header_name}.template.c > ./#{output_name}` unless header_name.nil?
 
-      DTYPES.each do |index_dtype|
-        next unless [:NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64].include?(index_dtype.enum)
+      first_sub.each do |index_dtype|
 
         if subs == 1
           names.each do |name|
@@ -440,7 +442,8 @@ end
 Generator.make_dtypes_h
 Generator.make_dtypes_c
 Generator.make_dfuncs_c
-Generator.make_templated_c './smmp', 'blas_header', ['blas1'], 'smmp1.c', 1 # 1-type interface functions for SMMP
-Generator.make_templated_c './smmp', nil,           ['blas2'], 'smmp1.c', 2 # 2-type interface functions for SMMP
-Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp2.c', 1 # 1-type SMMP functions from Fortran
-Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', 2 # 2-type SMMP functions from Fortran and selection sort
+Generator.make_templated_c './smmp', 'blas_header', ['blas1'], 'smmp1.c', 1, Generator::INDEX_DTYPES # 1-type interface functions for SMMP
+Generator.make_templated_c './smmp', nil,           ['blas2'], 'smmp1.c', 2, Generator::INDEX_DTYPES # 2-type interface functions for SMMP
+Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp2.c', 1, Generator::INDEX_DTYPES # 1-type SMMP functions from Fortran
+Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', 2, Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
+Generator.make_templated_c './blas', 'blas_header', ['igemm'], 'blas.c', 1, Generator::INTEGER_DTYPES
