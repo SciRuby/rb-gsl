@@ -54,40 +54,7 @@
 //enum CBLAS_DIAG {CblasNonUnit=131, CblasUnit=132};
 //enum CBLAS_SIDE {CblasLeft=141, CblasRight=142};
 
-inline static int64_t i_gcd(int64_t x, int64_t y) {
-  int64_t t;
 
-  if (x < 0) x = -x;
-  if (y < 0) y = -y;
-
-  if (x == 0) return y;
-  if (y == 0) return x;
-
-  while (x > 0) {
-    t = x;
-    x = y % x;
-    y = t;
-  }
-
-  return y;
-}
-
-/*
-static double f_gcd(double x, double y) {
-  double z;
-
-  if (x < 0.0) x = -x;
-  if (y < 0.0) y = -y;
-  if (x == 0.0) return y;
-  if (y == 0.0) return x;
-
-  for (;;) {
-    z = x;
-    x = y % x;
-    y = z;
-  }
-  // NOTREACHED
-}*/
 
 
 

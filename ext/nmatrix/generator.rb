@@ -118,7 +118,7 @@ module Generator
           :float    => lambda {|l,r| "*(#{l}*)p1 = ((#{r}*)p2)->n / (double)((#{r}*)p2)->d;" },
           :int      => lambda {|l,r| "*(#{l}*)p1 = ((#{r}*)p2)->n / ((#{r}*)p2)->d;" },
           :rational => lambda {|l,r| "((#{l}*)p1)->d = ((#{r}*)p2)->d; ((#{l}*)p1)->n = ((#{r}*)p2)->n;" },
-          :value    => lambda {|l,r| "*(VALUE*)p1 = rb_rational_new(((#{r}*)p2)->n, ((#{r}*)p2)->d);" }
+          :value    => lambda {|l,r| "*(VALUE*)p1 = rb_rational_new(INT2FIX(((#{r}*)p2)->n), INT2FIX(((#{r}*)p2)->d));" }
       },
       :value => {
           :complex  => lambda {|l,r| "((#{l}*)p1)->r = REAL2DBL(*(VALUE*)p2); ((#{l}*)p1)->i = IMAG2DBL(*(VALUE*)p2);" },
@@ -448,6 +448,6 @@ Generator.make_templated_c './smmp', nil,           ['blas2'], 'smmp1.c', 2, Gen
 Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp2.c', 1, Generator::INDEX_DTYPES # 1-type SMMP functions from Fortran
 Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', 2, Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
 Generator.make_templated_c './blas', 'blas_header', ['igemm'], 'blas.c', 1, Generator::INTEGER_DTYPES
-Generator.make_templated_c './blas', nil,           ['rationalmath', 'rgemm'], 'blas.partial.c', 1, Generator::RATIONAL_DTYPES
+Generator.make_templated_c './blas', nil,           ['rationalmath', 'rgemm'], 'blas.partial.c', 1, Generator::RATIONAL_DTYPES.reverse
 `cat blas.partial.c >> blas.c`
 `rm blas.partial.c`

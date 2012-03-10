@@ -319,6 +319,10 @@ typedef uint32_t  u_int32_t;
 typedef uint64_t  u_int64_t; */
 
 
+// rational.c
+int64_t nmrb_gcd(int64_t x, int64_t y);
+
+// BLAS functions
 #define SMMP_MAX_THREE(a,b,c) ((a)>(b) ? ( (a)>(c) ? (a) : (c) ) : ( (b)>(c) ? (b) : (c) ))
 #define SMMP_MIN(a,b) ((a)>(b) ? (b) : (a))
 #define SMMP_MAX(a,b) ((a)>(b) ? (a) : (b))

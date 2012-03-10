@@ -147,7 +147,9 @@ int %%INT_ABBREV%%gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
     // C = alpha*A**T*B**T + beta*C
     for (j = 0; j < N; ++j) {
       for (i = 0; i < M; ++i) {
-        temp = 0;
+
+        temp.n = 0; temp.d = 1;
+
         for (l = 0; l < K; ++l) {
           temp2 = r128_muldiv(A[l+i*lda].n, A[l+i*lda].d, B[j+l*ldb].n, B[j+l*ldb].d, '*');
           temp  = r128_addsub(temp.n, temp.d, temp2.n, temp2.d, '+');
