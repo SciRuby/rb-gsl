@@ -77,6 +77,11 @@ inline void cblas_i64gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSP
   else                        i64gemm(TransB, TransA, p.N, p.M, p.K, p.alpha.i[0], p.B, p.ldb, p.A, p.lda, p.beta.i[0], p.C, p.ldc);
 }
 
+inline void cblas_vgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p) {
+  if (Order == CblasColMajor) vgemm(TransA, TransB, p.M, p.N, p.K, p.alpha.v[0], p.A, p.lda, p.B, p.ldb, p.beta.v[0], p.C, p.ldc);
+  else                        vgemm(TransB, TransA, p.N, p.M, p.K, p.alpha.v[0], p.B, p.ldb, p.A, p.lda, p.beta.v[0], p.C, p.ldc);
+}
+
 inline void cblas_sgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
   cblas_sgemv(Order, TransA, p.M, p.N, p.alpha.d[0], p.A, p.lda, p.B, p.ldb, p.beta.d[0], p.C, p.ldc);
 }

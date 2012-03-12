@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ruby.h>
+#define RUBY_ZERO INT2FIX(0)
 
 #ifdef BENCHMARK // SOURCE: http://stackoverflow.com/questions/2349776/how-can-i-benchmark-a-c-program-easily
 # include <sys/time.h>
@@ -294,6 +295,7 @@ typedef union {
   rational32 r[4];
   rational64 ra[2];
   rational128 rat;
+  VALUE      v[2];
 } nm_size128_t;
 
 
@@ -598,6 +600,7 @@ int i8gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M
 int i16gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int16_t alpha, const int16_t* A, const int lda, const int16_t* B, const int ldb, const int16_t beta, int16_t* C, const int ldc);
 int i32gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int32_t alpha, const int32_t* A, const int lda, const int32_t* B, const int ldb, const int32_t beta, int32_t* C, const int ldc);
 int i64gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int64_t alpha, const int64_t* A, const int lda, const int64_t* B, const int ldb, const int64_t beta, int64_t* C, const int ldc);
+int vgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const VALUE alpha, const VALUE* A, const int lda, const VALUE* B, const int ldb, const VALUE beta, VALUE* C, const int ldc);
 
 /* cblas.c */
 DENSE_PARAM init_cblas_params_for_nm_multiply_matrix(int8_t dtype);
@@ -617,6 +620,7 @@ void cblas_zgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans
 void cblas_r32gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
 void cblas_r64gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
 void cblas_r128gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_vgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
 
 /* dense.c */
 DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);

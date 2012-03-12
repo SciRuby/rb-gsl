@@ -153,7 +153,7 @@ DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank, vo
 void delete_dense_storage(DENSE_STORAGE* s) {
   if (s) { // sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure)
     free(s->shape);
-    free(s->elements);
+    free(s->elements); // VALUEs are automatically registered with the GC
     free(s);
   }
 }

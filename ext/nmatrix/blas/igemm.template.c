@@ -22,28 +22,28 @@ int %%INT_ABBREV%%gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
 
   // Test the input parameters
   if (TransA < 111 || TransA > 113) {
-    fprintf(stderr, "IGEMM: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans\n");
+    fprintf(stderr, "RGEMM: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans\n");
     return 0;
   } else if (TransB < 111 || TransB > 113) {
-    fprintf(stderr, "IGEMM: TransB must be CblasNoTrans, CblasTrans, or CblasConjTrans\n");
+    fprintf(stderr, "RGEMM: TransB must be CblasNoTrans, CblasTrans, or CblasConjTrans\n");
     return 0;
   } else if (M < 0) {
-    fprintf(stderr, "IGEMM: Expected M >= 0\n");
+    fprintf(stderr, "RGEMM: Expected M >= 0\n");
     return 0;
   } else if (N < 0) {
-    fprintf(stderr, "IGEMM: Expected N >= 0\n");
+    fprintf(stderr, "RGEMM: Expected N >= 0\n");
     return 0;
   } else if (K < 0) {
-    fprintf(stderr, "IGEMM: Expected K >= 0\n");
+    fprintf(stderr, "RGEMM: Expected K >= 0\n");
     return 0;
   } else if (lda < NM_MAX(1, num_rows_a)) {
-    fprintf(stderr, "IGEMM: Expected lda >= max(1, num_rows_a), with num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
+    fprintf(stderr, "RGEMM: Expected lda >= max(1, num_rows_a), with num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
     return 0;
   } else if (ldb < NM_MAX(1, num_rows_b)) {
-    fprintf(stderr, "IGEMM: Expected ldb >= max(1, num_rows_b), with num_rows_b = %d; got ldb=%d\n", num_rows_b, ldb);
+    fprintf(stderr, "RGEMM: Expected ldb >= max(1, num_rows_b), with num_rows_b = %d; got ldb=%d\n", num_rows_b, ldb);
     return 0;
   } else if (ldc < NM_MAX(1,M)) {
-    fprintf(stderr, "IGEMM: Expected ldc >= max(1,M) with M=%d; got ldc=%d\n", M, ldc);
+    fprintf(stderr, "RGEMM: Expected ldc >= max(1,M) with M=%d; got ldc=%d\n", M, ldc);
     return 0;
   }
 

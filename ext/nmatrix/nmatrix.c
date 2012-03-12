@@ -223,8 +223,13 @@ static inline DENSE_PARAM cblas_params_for_multiply(const DENSE_STORAGE* left, c
     p.beta.rat.d = 1;
     break;
 
+  case NM_ROBJ:
+    p.alpha.v[0] = RUBY_ZERO;
+    p.beta.v[0]  = INT2FIX(1);
+    break;
+
   default:
-    rb_raise(nm_eDataTypeError, "expected float or complex dtype");
+    rb_raise(nm_eDataTypeError, "unexpected dtype");
 
   }
 
@@ -928,15 +933,13 @@ static VALUE nm_cblas_gemm(VALUE self,
                            VALUE a, VALUE lda,
                            VALUE b, VALUE ldb,
                            VALUE beta,
-                           VALUE c, VALUE ldc) {
-
-  struct cblas_param_t p;
+                           VALUE c, VALUE ldc)
+{
+  struct cblas_param_t p = cblas_params_for_multiply(((DENSE_STORAGE*)(NM_STORAGE(a))), ((DENSE_STORAGE*)(NM_STORAGE(b))), ((DENSE_STORAGE*)(NM_STORAGE(c))), false);
   p.M = FIX2INT(m);
   p.N = FIX2INT(n);
   p.K = FIX2INT(k);
-  p.A = ((DENSE_STORAGE*)(NM_STORAGE(a)))->elements;
-  p.B = ((DENSE_STORAGE*)(NM_STORAGE(b)))->elements;
-  p.C = ((DENSE_STORAGE*)(NM_STORAGE(c)))->elements;
+
   p.lda = FIX2INT(lda);
   p.ldb = FIX2INT(ldb);
   p.ldc = FIX2INT(ldc);
@@ -944,21 +947,66 @@ static VALUE nm_cblas_gemm(VALUE self,
   switch(NM_DTYPE(c)) {
   case NM_FLOAT32:
   case NM_FLOAT64:
-    p.alpha.d[0] = REAL2DBL(alpha);
-    p.beta.d[0]  = REAL2DBL(beta);
+    p.alpha.d[0] = NUM2DBL(alpha);
+    p.beta.d[0] = NUM2DBL(beta);
     break;
+
   case NM_COMPLEX64:
     p.alpha.c[0].r = REAL2DBL(alpha);
     p.alpha.c[0].i = IMAG2DBL(alpha);
     p.beta.c[0].r = REAL2DBL(beta);
     p.beta.c[0].i = IMAG2DBL(beta);
     break;
+
   case NM_COMPLEX128:
     p.alpha.z.r = REAL2DBL(alpha);
     p.alpha.z.i = IMAG2DBL(alpha);
     p.beta.z.r = REAL2DBL(beta);
     p.beta.z.i = IMAG2DBL(beta);
     break;
+
+  case NM_BYTE:
+    p.alpha.b[0] = FIX2INT(alpha);
+    p.beta.b[0] = FIX2INT(beta);
+    break;
+
+  case NM_INT8:
+  case NM_INT16:
+  case NM_INT32:
+  case NM_INT64:
+    p.alpha.i[0] = FIX2INT(alpha);
+    p.beta.i[0]  = FIX2INT(beta);
+    break;
+
+  case NM_RATIONAL32:
+    p.alpha.r[0].n = NUMER2INT(alpha);
+    p.alpha.r[0].d = DENOM2INT(alpha);
+    p.beta.r[0].n = NUMER2INT(beta);
+    p.beta.r[0].d = DENOM2INT(beta);
+    break;
+
+  case NM_RATIONAL64:
+    p.alpha.ra[0].n = NUMER2INT(alpha);
+    p.alpha.ra[0].d = DENOM2INT(alpha);
+    p.beta.ra[0].n = NUMER2INT(beta);
+    p.beta.ra[0].d = DENOM2INT(beta);
+    break;
+
+  case NM_RATIONAL128:
+    p.alpha.rat.n = NUMER2INT(alpha);
+    p.alpha.rat.d = DENOM2INT(alpha);
+    p.beta.rat.n = NUMER2INT(beta);
+    p.beta.rat.d = DENOM2INT(beta);
+    break;
+
+  case NM_ROBJ:
+    p.alpha.v[0] = alpha;
+    p.beta.v[0]  = beta;
+    break;
+
+  default:
+    rb_raise(nm_eDataTypeError, "unexpected dtype");
+
   }
 
   /* fprintf(stderr, "cblas_gemm: %d %d %d %d %d %f %d %d %f %d\n", trans_a_, trans_b_,
