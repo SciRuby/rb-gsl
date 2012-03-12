@@ -124,8 +124,8 @@ char yale_vector_insert_resize(YALE_STORAGE* s, y_size_t current_size, y_size_t 
   if (new_capacity < current_size + n) new_capacity = current_size + n;
 
   // Allocate the new vectors.
-  new_ija     = malloc( nm_sizeof[s->index_dtype] * new_capacity );
-  new_a       = malloc( nm_sizeof[s->dtype]       * new_capacity );
+  new_ija     = ALLOC_N( char, nm_sizeof[s->index_dtype] * new_capacity );
+  new_a       = ALLOC_N( char, nm_sizeof[s->dtype]       * new_capacity );
 
   // Check that allocation succeeded.
   if (!new_ija || !new_a) {
@@ -199,33 +199,25 @@ void delete_yale_storage(YALE_STORAGE* s) {
 // copy constructor
 YALE_STORAGE* copy_yale_storage(YALE_STORAGE* rhs) {
   y_size_t size;
-  YALE_STORAGE* lhs = malloc(sizeof(YALE_STORAGE));
+  YALE_STORAGE* lhs = ALLOC( YALE_STORAGE );
   lhs->dtype        = rhs->dtype;
   lhs->rank         = rhs->rank;
-  lhs->shape        = malloc( sizeof(size_t) * lhs->rank );
-                      memcpy(lhs->shape, rhs->shape, lhs->rank * sizeof(size_t));
+
+  lhs->shape        = ALLOC_N( size_t, lhs->rank );
+  memcpy(lhs->shape, rhs->shape, lhs->rank * sizeof(size_t));
+
   lhs->ndnz         = rhs->ndnz;
   lhs->capacity     = rhs->capacity;
   lhs->index_dtype  = rhs->index_dtype;
 
-  if (!(lhs->ija = malloc(nm_sizeof[lhs->index_dtype] * lhs->capacity))) {
-    free(lhs->shape);
-    free(lhs);
-    return NULL;
-  } else {
-    if (!(lhs->a = malloc(nm_sizeof[lhs->dtype] * lhs->capacity))) {
-      free(lhs->shape);
-      free(lhs->ija);
-      free(lhs);
-      return NULL;
-    }
+  lhs->ija = ALLOC_N( char, nm_sizeof[lhs->index_dtype] * lhs->capacity );
+  lhs->a   = ALLOC_N( char, nm_sizeof[lhs->dtype] * lhs->capacity );
 
-    // Now copy the contents -- but only within the boundaries set by the size. Leave
-    // the rest uninitialized.
-    YaleGetSize(size, rhs);
-    memcpy(lhs->ija, rhs->ija, size * nm_sizeof[lhs->index_dtype]);
-    memcpy(lhs->a,   rhs->a,   size * nm_sizeof[lhs->dtype]);
-  }
+  // Now copy the contents -- but only within the boundaries set by the size. Leave
+  // the rest uninitialized.
+  YaleGetSize(size, rhs);
+  memcpy(lhs->ija, rhs->ija, size * nm_sizeof[lhs->index_dtype]);
+  memcpy(lhs->a,   rhs->a,   size * nm_sizeof[lhs->dtype]);
 
   return lhs;
 }
@@ -234,36 +226,28 @@ YALE_STORAGE* copy_yale_storage(YALE_STORAGE* rhs) {
 // copy constructor
 YALE_STORAGE* cast_copy_yale_storage(YALE_STORAGE* rhs, int8_t new_dtype) {
   y_size_t size;
-  YALE_STORAGE* lhs = malloc(sizeof(YALE_STORAGE));
+  YALE_STORAGE* lhs = ALLOC( YALE_STORAGE );
   lhs->dtype        = new_dtype;
   lhs->rank         = rhs->rank;
-  lhs->shape        = malloc( sizeof(size_t) * lhs->rank );
-                      memcpy(lhs->shape, rhs->shape, lhs->rank * sizeof(size_t));
+
+  lhs->shape        = ALLOC_N( size_t, lhs->rank );
+  memcpy(lhs->shape, rhs->shape, lhs->rank * sizeof(size_t));
+
   lhs->ndnz         = rhs->ndnz;
   lhs->capacity     = rhs->capacity;
   lhs->index_dtype  = rhs->index_dtype;
 
-  if (!(lhs->ija = malloc(nm_sizeof[lhs->index_dtype] * lhs->capacity))) {
-    free(lhs->shape);
-    free(lhs);
-    return NULL;
-  } else {
-    if (!(lhs->a = malloc(nm_sizeof[lhs->dtype] * lhs->capacity))) {
-      free(lhs->shape);
-      free(lhs->ija);
-      free(lhs);
-      return NULL;
-    }
+  lhs->ija = ALLOC_N( char, nm_sizeof[lhs->index_dtype] * lhs->capacity );
+  lhs->a   = ALLOC_N( char, nm_sizeof[lhs->dtype] * lhs->capacity );
 
-    // Now copy the contents -- but only within the boundaries set by the size. Leave
-    // the rest uninitialized.
-    YaleGetSize(size, rhs);
-    memcpy(lhs->ija, rhs->ija, size * nm_sizeof[lhs->index_dtype]); // indices
+  // Now copy the contents -- but only within the boundaries set by the size. Leave
+  // the rest uninitialized.
+  YaleGetSize(size, rhs);
+  memcpy(lhs->ija, rhs->ija, size * nm_sizeof[lhs->index_dtype]); // indices
 
-    // actual contents
-    if (lhs->dtype == rhs->dtype) memcpy(lhs->a, rhs->a, size * nm_sizeof[lhs->dtype]);
-    else                          SetFuncs[new_dtype][rhs->dtype](size, lhs->a, nm_sizeof[lhs->dtype], rhs->a, nm_sizeof[rhs->dtype]);
-  }
+  // actual contents
+  if (lhs->dtype == rhs->dtype) memcpy(lhs->a, rhs->a, size * nm_sizeof[lhs->dtype]);
+  else                          SetFuncs[new_dtype][rhs->dtype](size, lhs->a, nm_sizeof[lhs->dtype], rhs->a, nm_sizeof[rhs->dtype]);
 
   return lhs;
 }
@@ -275,7 +259,8 @@ YALE_STORAGE* create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size
 
   if (rank > 2) rb_raise(rb_eNotImpError, "Can only support 2D matrices");
 
-  if (!(s = malloc(sizeof(YALE_STORAGE)))) return NULL;
+  s = ALLOC( YALE_STORAGE );
+
   s->ndnz        = 0;
   s->dtype       = dtype;
   s->shape       = shape;
@@ -285,18 +270,9 @@ YALE_STORAGE* create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size
   if (init_capacity < YALE_MINIMUM(s)) init_capacity = YALE_MINIMUM(s);
   s->capacity    = init_capacity;
 
-  if (!(s->ija = malloc(nm_sizeof[s->index_dtype] * init_capacity))) {
-    free(s->shape);
-    free(s);
-    return NULL;
-  } else {
-    if (!(s->a = malloc(nm_sizeof[s->dtype] * init_capacity))) {
-      free(s->shape);
-      free(s->ija);
-      free(s);
-      return NULL;
-    }
-  }
+
+  s->ija = ALLOC_N( char, nm_sizeof[s->index_dtype] * init_capacity );
+  s->a   = ALLOC_N( char, nm_sizeof[s->dtype] * init_capacity );
 
   return s;
 }

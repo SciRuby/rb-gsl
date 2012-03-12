@@ -380,7 +380,7 @@ VALUE nm_yale_set(STORAGE* s, size_t* coords, VALUE val) {
 
 // TODO: Why can't you be more like your brothers, nm_dense_set and nm_yale_set?
 VALUE nm_list_set(STORAGE* s, size_t* coords, VALUE val) {
-  void *v = malloc(nm_sizeof[s->dtype]), *rm;
+  void *v = ALLOC_N(char, nm_sizeof[s->dtype]), *rm;
   LIST_STORAGE* ls = (LIST_STORAGE*)s;
 
   //fprintf(stderr, "    create_val: %p\n", v);
@@ -510,12 +510,12 @@ size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank) {
 
   if (TYPE(arg) == T_ARRAY) {
     *rank = RARRAY_LEN(arg);
-    shape = malloc( sizeof(size_t) * (*rank) );
+    shape = ALLOC_N(size_t, *rank);
     for (i = 0; i < *rank; ++i)
       shape[i]  = (size_t)(FIX2UINT(RARRAY_PTR(arg)[i]));
   } else if (FIXNUM_P(arg)) {
     *rank = 2;
-    shape = malloc( sizeof(size_t) * (*rank) );
+    shape = ALLOC_N(size_t, *rank);
     for (i = 0; i < *rank; ++i)
       shape[i]  = (size_t)(FIX2UINT(arg));
   } else {
@@ -555,10 +555,10 @@ void* nm_interpret_initial_value(VALUE arg, int8_t dtype) {
   void* init_val;
 
   if (TYPE(arg) == T_ARRAY) { // array
-    init_val = malloc(nm_sizeof[dtype] * RARRAY_LEN(arg));
+    init_val = ALLOC_N(char, nm_sizeof[dtype] * RARRAY_LEN(arg));
     SetFuncs[dtype][NM_ROBJ](RARRAY_LEN(arg), init_val, nm_sizeof[dtype], RARRAY_PTR(arg), nm_sizeof[NM_ROBJ]);
   } else { // single value
-    init_val = malloc(nm_sizeof[dtype]);
+    init_val = ALLOC_N(char, nm_sizeof[dtype]);
     SetFuncs[dtype][NM_ROBJ](1, init_val, 0, &arg, 0);
   }
 
@@ -567,7 +567,7 @@ void* nm_interpret_initial_value(VALUE arg, int8_t dtype) {
 
 
 size_t* nm_interpret_initial_capacity(VALUE arg) {
-  size_t* init_cap = malloc(sizeof(size_t));
+  size_t* init_cap = ALLOC(size_t);
   *init_cap = FIX2UINT(arg);
   return init_cap;
 }
@@ -610,10 +610,10 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
     init_val = NULL; // no need to initialize dense with any kind of default value.
   } else { // if it's a list or compressed, we want to assume default of 0 even if none provided
     if (stype == S_YALE) {
-      init_val = malloc(sizeof(size_t));
+      init_val = ALLOC(size_t);
       *(size_t*)init_val = 0;
     } else {
-      init_val = malloc(nm_sizeof[dtype]);
+      init_val = ALLOC_N(char, nm_sizeof[dtype]);
       //memset(init_val, 0, nm_sizeof[dtype]); // TODO: See if this works instead of the next line (with NM_ROBJ matrix). Cleaner.
       SetFuncs[dtype][NM_BYTE](1, init_val, 0, &ZERO, 0);
     }
@@ -737,7 +737,7 @@ static inline STORAGE_PAIR binary_storage_cast_alloc(NMATRIX* left_matrix, NMATR
 // Returns: result NMatrix with upcasted dtype and same stype as left and right.
 static VALUE multiply_matrix(NMATRIX* left, NMATRIX* right) {
   ///TODO: multiplication for non-dense and/or non-decimal matrices
-  size_t*  resulting_shape   = malloc(sizeof(size_t)*2);
+  size_t*  resulting_shape   = ALLOC_N(size_t, 2);
   NMATRIX* result;
   bool     vector = false;
 
@@ -1238,7 +1238,7 @@ static VALUE nm_yale_ija(VALUE self) {
 static VALUE nm_transpose_new(VALUE self) {
   NMATRIX *self_m, *result, *result2;
   size_t sz;
-  size_t* shape   = malloc(sizeof(size_t)*2);
+  size_t* shape   = ALLOC_N(size_t, 2);
   YALE_PARAM A, B;
 #ifdef BENCHMARK
   double t1, t2;

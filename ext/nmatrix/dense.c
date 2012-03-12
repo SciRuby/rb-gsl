@@ -70,7 +70,7 @@ void dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val) {
 DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs) {
   DENSE_STORAGE* lhs;
   size_t count = count_dense_storage_elements(rhs), p;
-  size_t* shape = malloc(sizeof(size_t) * rhs->rank);
+  size_t* shape = ALLOC_N(size_t, rhs->rank);
   if (!shape) return NULL;
 
   // copy shape array
@@ -89,7 +89,7 @@ DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs) {
 DENSE_STORAGE* cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype) {
   DENSE_STORAGE* lhs;
   size_t count = count_dense_storage_elements(rhs), p;
-  size_t* shape = malloc(sizeof(size_t) * rhs->rank);
+  size_t* shape = ALLOC_N(size_t, rhs->rank);
   if (!shape) return NULL;
 
   // copy shape array
@@ -115,7 +115,9 @@ DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank, vo
   DENSE_STORAGE* s;
   size_t count, i, copy_length = elements_length;
 
-  if (!(s = malloc(sizeof(DENSE_STORAGE)))) return NULL;
+  s = ALLOC( DENSE_STORAGE );
+  //if (!(s = malloc(sizeof(DENSE_STORAGE)))) return NULL;
+
   s->rank       = rank;
   s->shape      = shape;
   s->dtype      = dtype;
@@ -126,12 +128,8 @@ DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank, vo
   //fprintf(stderr, "count_dense_storage_elements: %d\n", count);
 
   if (elements_length == count) s->elements = elements;
-  else if (!(s->elements   = malloc(nm_sizeof[dtype] * count))) {
-    // allocation failed
-    free(s->shape);
-    free(s);
-    s = NULL;
-  } else {
+  else {
+    s->elements = ALLOC_N(char, nm_sizeof[dtype]*count);
     // allocation succeeded
 
     if (elements_length > 0) {
