@@ -97,7 +97,7 @@ module Generator
           :float    => lambda {|l,r| "*(#{l}*)p1 = ((#{r}*)p2)->r;" },
           :int      => lambda {|l,r| "*(#{l}*)p1 = ((#{r}*)p2)->r;" },
           :rational => lambda {|l,r| "rb_raise(rb_eNotImpError, \"I don't know how to assign a complex to a rational\");"  },
-          :value    => lambda {|l,r| "*(VALUE*)p1 = rb_complex_new(((#{r}*)p2)->r, ((#{r}*)p2)->i);" },
+          :value    => lambda {|l,r| "*(VALUE*)p1 = rb_complex_new(rb_float_new(((#{r}*)p2)->r), rb_float_new(((#{r}*)p2)->i));" },
        },
       :float => {
           :complex  => lambda {|l,r| "((#{l}*)p1)->i = 0; ((#{l}*)p1)->r = *(#{r}*)p2;" },
