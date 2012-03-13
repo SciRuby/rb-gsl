@@ -858,12 +858,8 @@ static VALUE nm_dense_each(VALUE nmatrix) {
     copy = SetFuncs[NM_ROBJ][NM_DTYPE(nmatrix)];
 
     for (i = 0; i < count_dense_storage_elements(s); ++i) {
-      // Copy from VALUE:
       (*copy)(1, &v, 0, (char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)], 0);
       rb_yield(v); // yield to the copy we made
-
-      // Copy back to VALUE:
-      (*copy)(1, (char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)], 0, &v, 0);
     }
   }
 

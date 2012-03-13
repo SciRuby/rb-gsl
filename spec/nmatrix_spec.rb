@@ -339,4 +339,11 @@ describe NMatrix do
     end
   end
 
+  it "correctly allows iteration of non-Ruby object matrices" do
+    n = NMatrix.new(:dense, [3,3], [1,2,3,4,5,6,7,8,9], :int64)
+    n.each do |x|
+      puts x
+    end
+  end
+
 end
