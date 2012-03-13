@@ -332,4 +332,11 @@ describe NMatrix do
     lambda { NMatrix.new(3,:int8)[1,1] }.should_not raise_error
   end
 
+  it "correctly allows iteration of Ruby object matrices" do
+    n = NMatrix.new(:dense, [3,3], [1,2,3,4,5,6,7,8,9], :object)
+    n.each do |x|
+      puts x
+    end
+  end
+
 end

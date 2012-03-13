@@ -537,6 +537,7 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define IS_NUMERIC(v)   (FIXNUM_P(v) || TYPE(v) == T_FLOAT || TYPE(v) == T_COMPLEX || TYPE(v) == T_RATIONAL)
 #define IS_STRING(v)    (TYPE(v) == T_STRING)
 
+#define CheckNMatrixType(v)   if (TYPE(v) != T_DATA || RDATA(v)->dfree != (RUBY_DATA_FUNC)nm_delete) rb_raise(rb_eTypeError, "expected NMatrix on left-hand side of operation");
 
 //#define YALE_JA_START(sptr)             (((YALE_STORAGE*)(sptr))->shape[0]+1)
 #define YALE_IJA(sptr,elem_size,i)          (void*)( (char*)(((YALE_STORAGE*)(sptr))->ija) + i * elem_size )

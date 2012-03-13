@@ -130,7 +130,7 @@ describe NMatrix do
     a[3,1] = 2.0
 
     b = a.dup
-    c = a.multiply(b)
+    c = a*b
 
     c[0,0].should == 0.0
     c[0,1].should == 0.0
@@ -160,7 +160,7 @@ describe NMatrix do
     a[3,3] = 4.0
 
     b = a.dup
-    c = a.multiply(b)
+    c = a*b
 
     #c[0,0].should == 1.0
     #c[0,1].should == 4.0

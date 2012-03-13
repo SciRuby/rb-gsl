@@ -681,12 +681,9 @@ static VALUE nm_alloc(VALUE klass) {
 static VALUE nm_init_copy(VALUE copy, VALUE original) {
   NMATRIX *lhs, *rhs;
 
-  //fprintf(stderr,"In copy constructor\n");
+  CheckNMatrixType(original);
 
   if (copy == original) return copy;
-
-  if (TYPE(original) != T_DATA || RDATA(original)->dfree != (RUBY_DATA_FUNC)nm_delete)
-    rb_raise(rb_eTypeError, "wrong argument type");
 
   UnwrapNMatrix( original, rhs );
   UnwrapNMatrix( copy,     lhs );
@@ -705,10 +702,9 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_dtype_symbo
   int8_t new_dtype = nm_dtypesymbol_to_dtype(new_dtype_symbol);
   //fprintf(stderr,"In copy constructor\n");
 
-  if (copy == original) return copy;
+  CheckNMatrixType(original);
 
-  if (TYPE(original) != T_DATA || RDATA(original)->dfree != (RUBY_DATA_FUNC)nm_delete)
-    rb_raise(rb_eTypeError, "wrong argument type");
+  if (copy == original) return copy;
 
   UnwrapNMatrix( original, rhs );
   UnwrapNMatrix( copy,     lhs );
@@ -726,8 +722,7 @@ static VALUE nm_cast_copy(VALUE self, VALUE new_dtype_symbol) {
   NMATRIX *original, *copy;
   int8_t new_dtype = nm_dtypesymbol_to_dtype(new_dtype_symbol);
 
-  if (TYPE(self) != T_DATA || RDATA(self)->dfree != (RUBY_DATA_FUNC)nm_delete)
-    rb_raise(rb_eTypeError, "wrong argument type");
+  CheckNMatrixType(self);
 
   UnwrapNMatrix(self, original);
 
@@ -801,8 +796,7 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
   NMATRIX *left, *right;
 
   // left has to be of type NMatrix.
-  if (TYPE(left_v) != T_DATA || RDATA(left_v)->dfree != (RUBY_DATA_FUNC)nm_delete)
-    rb_raise(rb_eTypeError, "wrong left argument type");
+  CheckNMatrixType(left_v);
 
   UnwrapNMatrix( left_v, left );
 
@@ -827,6 +821,66 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
   } else rb_raise(rb_eTypeError, "expected right operand to be NMatrix, NVector, or single numeric value");
 
   return Qnil;
+}
+
+
+static VALUE nm_add(VALUE leftv, VALUE rightv) {
+  NMATRIX *left, *right;
+
+  // left has to be of type NMatrix.
+  CheckNMatrixType(leftv);
+
+  rb_raise(rb_eNotImpError, "in progress");
+
+  return Qnil;
+}
+
+
+// Borrowed this function from NArray. Handles 'each' iteration on a dense matrix.
+//
+// Additionally, handles separately matrices containing VALUEs and matrices containing
+// other types of data.
+static VALUE nm_dense_each(VALUE nmatrix) {
+  DENSE_STORAGE* s = NM_STORAGE(nmatrix);
+  VALUE v;
+  size_t i;
+
+  void (*copy)();
+
+  if (NM_DTYPE(nmatrix) == NM_ROBJ) {
+
+    // matrix of Ruby objects -- yield directly
+    for (i = 0; i < count_dense_storage_elements(s); ++i)
+      rb_yield( *((VALUE*)((char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)])) );
+
+  } else {
+    // We're going to copy the matrix element into a Ruby VALUE and then operate on it.
+    copy = SetFuncs[NM_ROBJ][NM_DTYPE(nmatrix)];
+
+    for (i = 0; i < count_dense_storage_elements(s); ++i) {
+      // Copy from VALUE:
+      (*copy)(1, &v, 0, (char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)], 0);
+      rb_yield(v); // yield to the copy we made
+
+      // Copy back to VALUE:
+      (*copy)(1, (char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)], 0, &v, 0);
+    }
+  }
+
+  return nmatrix;
+}
+
+
+// iterate through contents of an NMatrix using `each`
+static VALUE nm_each(VALUE nmatrix) {
+  volatile VALUE nm = nmatrix; // not sure why we do this, but it gets done in ruby's array.c.
+
+  switch(NM_STYPE(nm)) {
+  case S_DENSE:
+    return nm_dense_each(nm);
+  default:
+    rb_raise(rb_eNotImpError, "only dense each works right now");
+  }
 }
 
 
@@ -1361,7 +1415,6 @@ static VALUE nm_transpose_new(VALUE self) {
 //}
 
 
-
 void Init_nmatrix() {
     /* Require Complex class */
     //rb_require("complex");
@@ -1395,8 +1448,11 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, "transpose", nm_transpose_new, 0);
     //rb_define_method(cNMatrix, "transpose!", nm_transpose_auto, 0);
 
+    rb_define_method(cNMatrix, "each", nm_each, 0);
+
     rb_define_method(cNMatrix, "*", nm_multiply, 1);
-    rb_define_alias(cNMatrix, "multiply", "*");
+    //rb_define_method(cNMatrix, "+", nm_add, 1);
+    rb_define_alias(cNMatrix, "dot", "*");
 
 
     rb_define_method(cNMatrix, "capacity", nm_capacity, 0);
