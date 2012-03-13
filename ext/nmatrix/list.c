@@ -34,6 +34,49 @@
 #include "nmatrix.h"
 
 
+/* Finds the node that should go before whatever key we request, whether or not that key is present */
+static NODE* list_find_preceding_from(NODE* prev, size_t key) {
+  NODE* curr = prev->next;
+
+  if (!curr || key <= curr->key) return prev;
+  return list_find_preceding_from(curr, key);
+}
+
+
+/* Finds a node or the one immediately preceding it if it doesn't exist */
+static NODE* list_find_nearest_from(NODE* prev, size_t key) {
+  NODE* f;
+
+  if (prev && prev->key == key) return prev;
+
+  f = list_find_preceding_from(prev, key);
+
+  if (!f->next) return f;
+  else if (key == f->next->key) return f->next;
+  else return prev;
+}
+
+
+/* Finds the node or, if not present, the node that it should follow.
+ * NULL indicates no preceding node. */
+//static NODE* list_find_nearest(LIST* list, size_t key) {
+//  return list_find_nearest_from(list->first, key);
+//}
+
+
+/* Find some element in the list and return the node ptr for that key. */
+static NODE* list_find(LIST* list, size_t key) {
+  NODE* f;
+  if (!list->first) return NULL; // empty list -- does not exist
+
+  // see if we can find it.
+  f = list_find_nearest_from(list->first, key);
+  if (!f || f->key == key) return f;
+  return NULL;
+}
+
+
+
 /* Get the contents of some set of coordinates. Note: Does not make a copy! Don't free! */
 void* list_storage_get(LIST_STORAGE* s, size_t* coords) {
   //LIST_STORAGE* s = (LIST_STORAGE*)(t);
@@ -51,6 +94,42 @@ void* list_storage_get(LIST_STORAGE* s, size_t* coords) {
   if (n) return n->val;
   else   return s->default_val;
 }
+
+
+/* Returns the value pointer (not the node) for some key. Note that it doesn't free the memory
+ * for the value stored in the node -- that pointer gets returned! Only the node is destroyed.
+ */
+static void* list_remove(LIST* list, size_t key) {
+  NODE *f, *rm;
+  void* val;
+
+  if (!list->first || list->first->key > key) return NULL; // empty list or def. not present
+
+  if (list->first->key == key) {
+    val = list->first->val;
+    rm  = list->first;
+    list->first = rm->next;
+    free(rm);
+    return val;
+  }
+
+  f = list_find_preceding_from(list->first, key);
+  if (!f || !f->next) return NULL; // not found, end of list
+
+  if (f->next->key == key) {
+    // remove the node
+    rm      = f->next;
+    f->next = rm->next;
+
+    // get the value and free the memory for the node
+    val = rm->val;
+    free(rm);
+    return val;
+  }
+
+  return NULL; // not found, middle of list
+}
+
 
 /// TODO: Speed up removal.
 void* list_storage_remove(LIST_STORAGE* s, size_t* coords) {
@@ -88,6 +167,82 @@ void* list_storage_remove(LIST_STORAGE* s, size_t* coords) {
 
   return rm;
 }
+
+
+/* Creates an empty linked list */
+static LIST* create_list() {
+  LIST* list;
+  //if (!(list = malloc(sizeof(LIST)))) return NULL;
+  list = ALLOC( LIST );
+
+  //fprintf(stderr, "    create_list LIST: %p\n", list);
+
+  list->first = NULL;
+  return list;
+}
+
+
+static NODE* list_insert_after(NODE* node, size_t key, void* val) {
+  NODE* ins;
+
+  //if (!(ins = malloc(sizeof(NODE)))) return NULL;
+  ins = ALLOC(NODE);
+
+  // insert 'ins' between 'node' and 'node->next'
+  ins->next  = node->next;
+  node->next = ins;
+
+  // initialize our new node
+  ins->key  = key;
+  ins->val  = val;
+
+  return ins;
+}
+
+
+
+/* Given a list and a key/value-ptr pair, create a node (and return that node).
+ * If NULL is returned, it means insertion failed.
+ * If the key already exists in the list, replace tells it to delete the old value
+ * and put in your new one. !replace means delete the new value.
+ */
+static NODE* list_insert(LIST* list, bool replace, size_t key, void* val) {
+  NODE *ins;
+
+  if (list->first == NULL) {                        // List is empty
+    //if (!(ins = malloc(sizeof(NODE)))) return NULL;
+    ins = ALLOC(NODE);
+    ins->next             = NULL;
+    ins->val              = val;
+    ins->key              = key;
+    list->first           = ins;
+    return ins;
+
+  } else if (key < list->first->key) {              // Goes at the beginning of the list
+    //if (!(ins = malloc(sizeof(NODE)))) return NULL;
+    ins = ALLOC(NODE);
+    ins->next             = list->first;
+    ins->val              = val;
+    ins->key              = key;
+    list->first           = ins;
+    return ins;
+  }
+
+  // Goes somewhere else in the list.
+  ins = list_find_nearest_from(list->first, key);
+
+  if (ins->key == key) {
+    // key already exists
+    if (replace) {
+      free(ins->val);
+      ins->val = val;
+    } else free(val);
+    return ins;
+
+  } else return list_insert_after(ins, key, val);
+
+}
+
 
 
 // TODO: Allow this function to accept an entire row and not just one value -- for slicing
@@ -221,40 +376,11 @@ LIST_STORAGE* cast_copy_list_storage(LIST_STORAGE* rhs, int8_t new_dtype) {
 }
 
 
-void delete_list_storage(LIST_STORAGE* s) {
-  if (s) {
-    //fprintf(stderr, "* Deleting list storage rows at %p\n", s->rows);
-    delete_list( s->rows, s->rank - 1 );
-
-    //fprintf(stderr, "  Deleting list storage shape at %p\n", s->shape);
-    free(s->shape);
-    //fprintf(stderr, "  Deleting list storage default_val at %p\n", s->default_val);
-    free(s->default_val);
-    //fprintf(stderr, "  Deleting list storage at %p\n", s);
-    free(s);
-  }
-}
-
-
-/* Creates an empty linked list */
-LIST* create_list() {
-  LIST* list;
-  //if (!(list = malloc(sizeof(LIST)))) return NULL;
-  list = ALLOC( LIST );
-
-  //fprintf(stderr, "    create_list LIST: %p\n", list);
-
-  list->first = NULL;
-  return list;
-}
-
-
-
 /* Deletes the linked list and all of its contents. If you want to delete a list inside of a list,
  * set recursions to 1. For lists inside of lists inside of the list, set it to 2; and so on.
  * Setting it to 0 is for no recursions.
  */
-void delete_list(LIST* list, size_t recursions) {
+static void delete_list(LIST* list, size_t recursions) {
   NODE* next;
   NODE* curr = list->first;
 
@@ -277,140 +403,45 @@ void delete_list(LIST* list, size_t recursions) {
 }
 
 
-/* Find some element in the list and return the node ptr for that key. */
-NODE* list_find(LIST* list, size_t key) {
-  NODE* f;
-  if (!list->first) return NULL; // empty list -- does not exist
+void delete_list_storage(LIST_STORAGE* s) {
+  if (s) {
+    //fprintf(stderr, "* Deleting list storage rows at %p\n", s->rows);
+    delete_list( s->rows, s->rank - 1 );
 
-  // see if we can find it.
-  f = list_find_nearest_from(list->first, key);
-  if (!f || f->key == key) return f;
-  return NULL;
-}
-
-/* Finds a node or the one immediately preceding it if it doesn't exist */
-NODE* list_find_nearest_from(NODE* prev, size_t key) {
-  NODE* f;
-
-  if (prev && prev->key == key) return prev;
-
-  f = list_find_preceding_from(prev, key);
-
-  if (!f->next) return f;
-  else if (key == f->next->key) return f->next;
-  else return prev;
-}
-
-/* Finds the node that should go before whatever key we request, whether or not that key is present */
-NODE* list_find_preceding_from(NODE* prev, size_t key) {
-  NODE* curr = prev->next;
-
-  if (!curr || key <= curr->key) return prev;
-  return list_find_preceding_from(curr, key);
-}
-
-
-/* Finds the node or, if not present, the node that it should follow.
- * NULL indicates no preceding node. */
-NODE* list_find_nearest(LIST* list, size_t key) {
-  return list_find_nearest_from(list->first, key);
-}
-
-
-/* Returns the value pointer (not the node) for some key. Note that it doesn't free the memory
- * for the value stored in the node -- that pointer gets returned! Only the node is destroyed.
- */
-void* list_remove(LIST* list, size_t key) {
-  NODE *f, *rm;
-  void* val;
-
-  if (!list->first || list->first->key > key) return NULL; // empty list or def. not present
-
-  if (list->first->key == key) {
-    val = list->first->val;
-    rm  = list->first;
-    list->first = rm->next;
-    free(rm);
-    return val;
+    //fprintf(stderr, "  Deleting list storage shape at %p\n", s->shape);
+    free(s->shape);
+    //fprintf(stderr, "  Deleting list storage default_val at %p\n", s->default_val);
+    free(s->default_val);
+    //fprintf(stderr, "  Deleting list storage at %p\n", s);
+    free(s);
   }
+}
 
-  f = list_find_preceding_from(list->first, key);
-  if (!f || !f->next) return NULL; // not found, end of list
 
-  if (f->next->key == key) {
-    // remove the node
-    rm      = f->next;
-    f->next = rm->next;
+static void mark_list(LIST* list, size_t recursions) {
+  NODE* next;
+  NODE* curr = list->first;
 
-    // get the value and free the memory for the node
-    val = rm->val;
-    free(rm);
-    return val;
+  while (curr != NULL) {
+    next = curr->next;
+    if (recursions == 0)  rb_gc_mark(*((VALUE*)(curr->val)));
+    else                  mark_list(curr->val, recursions-1);
+    curr = next;
   }
-
-  return NULL; // not found, middle of list
 }
 
 
-NODE* list_insert_after(NODE* node, size_t key, void* val) {
-  NODE* ins;
+void mark_list_storage(void* m) {
+  LIST_STORAGE* storage;
 
-  //if (!(ins = malloc(sizeof(NODE)))) return NULL;
-  ins = ALLOC(NODE);
-
-  // insert 'ins' between 'node' and 'node->next'
-  ins->next  = node->next;
-  node->next = ins;
-
-  // initialize our new node
-  ins->key  = key;
-  ins->val  = val;
-
-  return ins;
-}
-
-
-
-/* Given a list and a key/value-ptr pair, create a node (and return that node).
- * If NULL is returned, it means insertion failed.
- * If the key already exists in the list, replace tells it to delete the old value
- * and put in your new one. !replace means delete the new value.
- */
-NODE* list_insert(LIST* list, bool replace, size_t key, void* val) {
-  NODE *ins;
-
-  if (list->first == NULL) {                        // List is empty
-    //if (!(ins = malloc(sizeof(NODE)))) return NULL;
-    ins = ALLOC(NODE);
-    ins->next             = NULL;
-    ins->val              = val;
-    ins->key              = key;
-    list->first           = ins;
-    return ins;
-
-  } else if (key < list->first->key) {              // Goes at the beginning of the list
-    //if (!(ins = malloc(sizeof(NODE)))) return NULL;
-    ins = ALLOC(NODE);
-    ins->next             = list->first;
-    ins->val              = val;
-    ins->key              = key;
-    list->first           = ins;
-    return ins;
+  if (m) {
+    storage = (LIST_STORAGE*)(((NMATRIX*)m)->storage);
+    if (storage && storage->dtype == NM_ROBJ) {
+      rb_gc_mark(*((VALUE*)(storage->default_val)));
+      mark_list(storage->rows, storage->rank - 1);
+    }
   }
-
-  // Goes somewhere else in the list.
-  ins = list_find_nearest_from(list->first, key);
-
-  if (ins->key == key) {
-    // key already exists
-    if (replace) {
-      free(ins->val);
-      ins->val = val;
-    } else free(val);
-    return ins;
-
-  } else return list_insert_after(ins, key, val);
-
 }
+
 
 #endif

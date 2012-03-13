@@ -52,9 +52,17 @@ inline void cblas_r128gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANS
   else                        r128gemm(TransB, TransA, p.N, p.M, p.K, p.alpha.rat, p.B, p.ldb, p.A, p.lda, p.beta.rat, p.C, p.ldc);
 }
 
+inline void cblas_bgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
+  bgemv(TransA, p.M, p.N, p.alpha.b[0], p.A, p.lda, p.B, p.ldb, p.beta.b[0], p.C, p.ldc);
+}
+
 inline void cblas_bgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p) {
   if (Order == CblasColMajor) bgemm(TransA, TransB, p.M, p.N, p.K, p.alpha.b[0], p.A, p.lda, p.B, p.ldb, p.beta.b[0], p.C, p.ldc);
   else                        bgemm(TransB, TransA, p.N, p.M, p.K, p.alpha.b[0], p.B, p.ldb, p.A, p.lda, p.beta.b[0], p.C, p.ldc);
+}
+
+inline void cblas_i8gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
+  i8gemv(TransA, p.M, p.N, p.alpha.i[0], p.A, p.lda, p.B, p.ldb, p.beta.i[0], p.C, p.ldc);
 }
 
 inline void cblas_i8gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p) {
@@ -62,14 +70,26 @@ inline void cblas_i8gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPO
   else                        i8gemm(TransB, TransA, p.N, p.M, p.K, p.alpha.i[0], p.B, p.ldb, p.A, p.lda, p.beta.i[0], p.C, p.ldc);
 }
 
+inline void cblas_i16gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
+  i16gemv(TransA, p.M, p.N, p.alpha.i[0], p.A, p.lda, p.B, p.ldb, p.beta.i[0], p.C, p.ldc);
+}
+
 inline void cblas_i16gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p) {
   if (Order == CblasColMajor) i16gemm(TransA, TransB, p.M, p.N, p.K, p.alpha.i[0], p.A, p.lda, p.B, p.ldb, p.beta.i[0], p.C, p.ldc);
   else                        i16gemm(TransB, TransA, p.N, p.M, p.K, p.alpha.i[0], p.B, p.ldb, p.A, p.lda, p.beta.i[0], p.C, p.ldc);
 }
 
+inline void cblas_i32gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
+  i32gemv(TransA, p.M, p.N, p.alpha.i[0], p.A, p.lda, p.B, p.ldb, p.beta.i[0], p.C, p.ldc);
+}
+
 inline void cblas_i32gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p) {
   if (Order == CblasColMajor) i32gemm(TransA, TransB, p.M, p.N, p.K, p.alpha.i[0], p.A, p.lda, p.B, p.ldb, p.beta.i[0], p.C, p.ldc);
   else                        i32gemm(TransB, TransA, p.N, p.M, p.K, p.alpha.i[0], p.B, p.ldb, p.A, p.lda, p.beta.i[0], p.C, p.ldc);
+}
+
+inline void cblas_i64gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
+  i64gemv(TransA, p.M, p.N, p.alpha.i[0], p.A, p.lda, p.B, p.ldb, p.beta.i[0], p.C, p.ldc);
 }
 
 inline void cblas_i64gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p) {

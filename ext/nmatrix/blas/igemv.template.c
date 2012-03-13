@@ -1,0 +1,120 @@
+
+int %%INT_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const %%INT%% alpha,
+  const %%INT%%* A, const size_t lda, const %%INT%%* X, const int incX, const %%INT%% beta, %%INT%%* Y, const int incY)
+{
+  size_t lenX, lenY, i, j;
+  int kx, ky, iy, jx, jy, ix;
+  int64_t temp;
+
+  // Test the input parameters
+  if (Trans < 111 || Trans > 113) {
+    fprintf(stderr, "IGEMV: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans\n");
+    return 0;
+  //} else if (lda < NM_MAX(1, M)) {
+  //  fprintf(stderr, "IGEMV: Expected lda >= max(1, M), with M = %d; got lda=%d\n", N, lda);
+  //  return 0;
+  } else if (incX == 0) {
+    fprintf(stderr, "IGEMV: Expected incX != 0\n");
+    return 0;
+  } else if (incY == 0) {
+    fprintf(stderr, "IGEMV: Expected incY != 0\n");
+    return 0;
+  }
+
+  // Quick return if possible
+  if (!M || !N || !alpha && beta == 1) return 0;
+
+  if (Trans == CblasNoTrans) {
+    lenX = N;
+    lenY = M;
+  } else {
+    lenX = M;
+    lenY = N;
+  }
+
+  if (incX > 0) kx = 0;
+  else          kx = (lenX - 1) * -incX;
+
+  if (incY > 0) ky = 0;
+  else          ky =  (lenY - 1) * -incY;
+
+  // Start the operations. In this version, the elements of A are accessed sequentially with one pass through A.
+  if (beta != 1) {
+    if (incY == 1) {
+      if (!beta) for (i = 0; i < lenY; ++i) Y[i] = 0;
+      else       for (i = 0; i < lenY; ++i) Y[i] *= beta;
+    } else {
+      iy = ky;
+      if (!beta) {
+        for (i = 0; i < lenY; ++i) {
+          Y[iy] = 0;
+          iy += incY;
+        }
+      } else {
+        for (i = 0; i < lenY; ++i) {
+          Y[iy] *= beta;
+          iy += incY;
+        }
+      }
+    }
+  }
+
+  if (!alpha) return 0;
+
+  if (Trans == CblasNoTrans) {
+
+    // Form  y := alpha*A*x + y.
+    jx = kx;
+    if (incY == 1) {
+      for (j = 0; j < N; ++j) {
+        if (X[jx] != 0) {
+          temp = alpha * X[jx];
+          for (i = 0; i < M; ++i) Y[i] += A[j+i*lda] * temp;
+        }
+        jx += incX;
+      }
+    } else {
+      for (j = 0; j < N; ++j) {
+        if (X[jx] != 0) {
+          temp = alpha * X[jx];
+          iy = ky;
+          for (i = 0; i < M; ++i) {
+            Y[iy] += A[j+i*lda] * temp;
+            iy += incY;
+          }
+        }
+        jx += incX;
+      }
+    }
+
+  } else { // TODO: Check that indices are correct! They're switched for C.
+
+    // Form  y := alpha*A**T*x + y.
+
+    jy = ky;
+
+    if (incX == 1) {
+      for (j = 0; j < N; ++j) {
+        temp = 0;
+        for (i = 0; i < M; ++i) temp += A[j+i*lda]*X[j];
+        Y[jy] += alpha * temp;
+        jy += incY;
+      }
+    } else {
+      for (j = 0; j < N; ++j) {
+        temp = 0;
+        ix = kx;
+        for (i = 0; i < M; ++i) {
+          temp += A[j+i*lda] * X[ix];
+          ix += incX;
+        }
+
+        Y[jy] += alpha * temp;
+        jy += incY;
+      }
+    }
+  }
+
+  return 0;
+  // end of GEMV
+}

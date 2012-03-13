@@ -447,7 +447,7 @@ Generator.make_templated_c './smmp', 'blas_header', ['blas1'], 'smmp1.c', 1, Gen
 Generator.make_templated_c './smmp', nil,           ['blas2'], 'smmp1.c', 2, Generator::INDEX_DTYPES # 2-type interface functions for SMMP
 Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp2.c', 1, Generator::INDEX_DTYPES # 1-type SMMP functions from Fortran
 Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', 2, Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
-Generator.make_templated_c './blas', 'blas_header', ['igemm'], 'blas.c', 1, Generator::INTEGER_DTYPES
+Generator.make_templated_c './blas', 'blas_header', ['igemm', 'igemv'], 'blas.c', 1, Generator::INTEGER_DTYPES
 Generator.make_templated_c './blas', nil,           ['rationalmath', 'rgemm'], 'blas.partial.c', 1, Generator::RATIONAL_DTYPES.reverse
 `cat blas.partial.c >> blas.c`
 `rm blas.partial.c`

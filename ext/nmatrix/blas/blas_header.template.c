@@ -127,14 +127,14 @@ int vgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
         if (beta == 0) {
           for (i = 0; i < M; ++i) C[i+j*ldc] = RUBY_ZERO;
         } else if (beta != 1) {
-          for (i = 0; i < M; ++i) rb_funcall(C[i+j*ldc], rb_intern("*="), 1, beta);
+          for (i = 0; i < M; ++i) C[i+j*ldc] = rb_funcall(C[i+j*ldc], nm_id_mult, 1, beta);
         }
 
         for (l = 0; l < K; ++l) {
           if (B[l+j*ldb] != 0) {
             temp = rb_funcall(alpha, rb_intern("*"), 1, B[l+j*ldb]);
             for (i = 0; i < M; ++i)
-              rb_funcall(C[i+j*ldc], rb_intern("+="), 1, rb_funcall(A[i+l*lda], rb_intern("*"), 1, temp));
+              rb_funcall(C[i+j*ldc], rb_intern("+="), 1, rb_funcall(A[i+l*lda], nm_id_mult, 1, temp));
           }
         }
       }
@@ -146,10 +146,10 @@ int vgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
         for (i = 0; i < M; ++i) {
           temp = 0;
           for (l = 0; l < K; ++l)
-            rb_funcall(temp, rb_intern("+="), 1, rb_funcall(A[l+i*lda], rb_intern("*"), 1, B[l+j*ldb]));
+            rb_funcall(temp, rb_intern("+="), 1, rb_funcall(A[l+i*lda], nm_id_mult, 1, B[l+j*ldb]));
 
-          if (beta == 0)  C[i+j*ldc] = rb_funcall(alpha, rb_intern("*"), 1, temp);
-          else            C[i+j*ldc] = rb_funcall(rb_funcall(alpha, rb_intern("*"), 1, temp), rb_intern("+"), 1, rb_funcall(beta, rb_intern("*"), 1, C[i+j*ldc])); //alpha*temp + beta*C[i+j*ldc];
+          if (beta == 0)  C[i+j*ldc] = rb_funcall(alpha, nm_id_mult, 1, temp);
+          else            C[i+j*ldc] = rb_funcall(rb_funcall(alpha, nm_id_mult, 1, temp), nm_id_add, 1, rb_funcall(beta, nm_id_mult, 1, C[i+j*ldc])); //alpha*temp + beta*C[i+j*ldc];
         }
       }
 
@@ -162,14 +162,14 @@ int vgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
       if (beta == 0) {
         for (i = 0; i < M; ++i) C[i+j*ldc] = RUBY_ZERO;
       } else if (beta != 1) {
-        for (i = 0; i < M; ++i) rb_funcall(C[i+j*ldc], rb_intern("*="), 1, beta);
+        for (i = 0; i < M; ++i) rb_funcall(C[i+j*ldc], nm_id_multeq, 1, beta);
       }
 
       for (l = 0; l < K; ++l) {
         if (B[j+l*ldb] != 0) {
           temp = alpha * B[j+l*ldb];
           for (i = 0; i < M; ++i)
-            rb_funcall(C[i+j*ldc], rb_intern("+="), 1, rb_funcall(A[i+l*lda], rb_intern("*"), 1, temp));
+            rb_funcall(C[i+j*ldc], rb_intern("+="), 1, rb_funcall(A[i+l*lda], nm_id_mult, 1, temp));
         }
       }
 
@@ -182,10 +182,10 @@ int vgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB,
       for (i = 0; i < M; ++i) {
         temp = 0;
         for (l = 0; l < K; ++l) //temp += A[l+i*lda] * B[j+l*ldb];
-          rb_funcall(temp, rb_intern("+="), 1, rb_funcall(A[l+i*lda], rb_intern("*"), 1, B[j+l*ldb]));
+          rb_funcall(temp, rb_intern("+="), 1, rb_funcall(A[l+i*lda], nm_id_mult, 1, B[j+l*ldb]));
 
-        if (beta == 0) C[i+j*ldc] = rb_funcall(alpha, rb_intern("*"), 1, temp);
-        else           C[i+j*ldc] = rb_funcall(rb_funcall(alpha, rb_intern("*"), 1, temp), rb_intern("+"), 1, rb_funcall(beta, rb_intern("*"), 1, C[i+j*ldc]));
+        if (beta == 0) C[i+j*ldc] = rb_funcall(alpha, nm_id_mult, 1, temp);
+        else           C[i+j*ldc] = rb_funcall(rb_funcall(alpha, nm_id_mult, 1, temp), nm_id_add, 1, rb_funcall(beta, nm_id_mult, 1, C[i+j*ldc]));
       }
     }
 

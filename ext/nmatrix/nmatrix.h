@@ -579,6 +579,7 @@ typedef STORAGE* (*nm_create_storage_t[S_TYPES])();
 typedef STORAGE* (*nm_cast_copy_storage_t[S_TYPES])();
 typedef NMATRIX* (*nm_binary_op_t[S_TYPES])();
 typedef void     (*nm_delete_t[S_TYPES])();
+typedef void     (*nm_mark_t[S_TYPES])(void*);
 typedef void     (*nm_gemm_t[NM_TYPES])();           // general matrix/matrix multiply
 typedef void     (*nm_gemv_t[NM_TYPES])();           // general matrix/vector multiply
 typedef void     (*nm_smmp_t[NM_TYPES][NM_TYPES])(); // sparse (yale) multiply
@@ -590,25 +591,36 @@ extern nm_setfunc_t SetFuncs;
 extern nm_incfunc_t Increment;
 extern ID nm_id_real, nm_id_imag;
 extern ID nm_id_denom, nm_id_numer;
+extern ID nm_id_mult, nm_id_multeq, nm_id_add;
 
 /* blas.c */
 int r32gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const rational32 alpha, const rational32* A, const int lda, const rational32* B, const int ldb, const rational32 beta, rational32* C, const int ldc);
 int r64gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const rational64 alpha, const rational64* A, const int lda, const rational64* B, const int ldb, const rational64 beta, rational64* C, const int ldc);
 int r128gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const rational128 alpha, const rational128* A, const int lda, const rational128* B, const int ldb, const rational128 beta, rational128* C, const int ldc);
 int bgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const u_int8_t alpha, const u_int8_t* A, const int lda, const u_int8_t* B, const int ldb, const u_int8_t beta, u_int8_t* C, const int ldc);
+int bgemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const u_int8_t alpha, const u_int8_t* A, const size_t lda, const u_int8_t* X, const int incX, const u_int8_t beta, u_int8_t* Y, const int incY);
 int i8gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int8_t alpha, const int8_t* A, const int lda, const int8_t* B, const int ldb, const int8_t beta, int8_t* C, const int ldc);
+int i8gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const int8_t alpha, const int8_t* A, const size_t lda, const int8_t* X, const int incX, const int8_t beta, int8_t* Y, const int incY);
 int i16gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int16_t alpha, const int16_t* A, const int lda, const int16_t* B, const int ldb, const int16_t beta, int16_t* C, const int ldc);
+int i16gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const int16_t alpha, const int16_t* A, const size_t lda, const int16_t* X, const int incX, const int16_t beta, int16_t* Y, const int incY);
 int i32gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int32_t alpha, const int32_t* A, const int lda, const int32_t* B, const int ldb, const int32_t beta, int32_t* C, const int ldc);
+int i32gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const int32_t alpha, const int32_t* A, const size_t lda, const int32_t* X, const int incX, const int32_t beta, int32_t* Y, const int incY);
 int i64gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int64_t alpha, const int64_t* A, const int lda, const int64_t* B, const int ldb, const int64_t beta, int64_t* C, const int ldc);
+int i64gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const int64_t alpha, const int64_t* A, const size_t lda, const int64_t* X, const int incX, const int64_t beta, int64_t* Y, const int incY);
 int vgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const VALUE alpha, const VALUE* A, const int lda, const VALUE* B, const int ldb, const VALUE beta, VALUE* C, const int ldc);
 
 /* cblas.c */
 DENSE_PARAM init_cblas_params_for_nm_multiply_matrix(int8_t dtype);
 void cblas_bgemm_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_bgemv_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
 void cblas_i8gemm_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_i8gemv_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
 void cblas_i16gemm_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_i16gemv_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
 void cblas_i32gemm_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_i32gemv_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
 void cblas_i64gemm_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
+void cblas_i64gemv_(enum CBLAS_ORDER Order, enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
 void cblas_sgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
 void cblas_sgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
 void cblas_dgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
@@ -625,6 +637,7 @@ void cblas_vgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans
 /* dense.c */
 DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
 void            delete_dense_storage(DENSE_STORAGE* s);
+void            mark_dense_storage(void* s);
 DENSE_STORAGE*  cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype);
 
 size_t          count_dense_storage_elements(DENSE_STORAGE* s);
@@ -636,27 +649,19 @@ void            dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val);
 /* list.c */
 LIST_STORAGE*   create_list_storage(int8_t dtype, size_t* shape, size_t rank, void* init_val);
 void            delete_list_storage(LIST_STORAGE* s);
+void            mark_list_storage(void* s);
 LIST_STORAGE*   cast_copy_list_storage(LIST_STORAGE* rhs, int8_t new_dtype);
 
 void*           list_storage_get(LIST_STORAGE* s, size_t* coords);
 void*           list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val);
 void*           list_storage_remove(LIST_STORAGE* s, size_t* coords);
 
-LIST*           create_list();
-void            delete_list(LIST* list, size_t recursions);
-NODE*           list_find(LIST* list, size_t key);
-NODE*           list_find_preceding_from(NODE* prev, size_t key);
-NODE*           list_find_nearest_from(NODE* prev, size_t key);
-void*           list_remove(LIST* list, size_t key);
-NODE*           list_insert(LIST* list, bool replace, size_t key, void* val);
-NODE*           list_insert_after(NODE* node, size_t key, void* val);
-void            list_print_int(LIST* list);
-
 /* yale.c */
 void print_vectors(YALE_STORAGE* s);
 YALE_STORAGE*   create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size_t init_capacity);
 void            init_yale_storage(YALE_STORAGE* s);
 void            delete_yale_storage(YALE_STORAGE* s);
+void            mark_yale_storage(void* s);
 YALE_STORAGE*   cast_copy_yale_storage(YALE_STORAGE* rhs, int8_t new_dtype);
 
 void*           yale_storage_ref(YALE_STORAGE* s, size_t* coords);

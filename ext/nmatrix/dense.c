@@ -93,8 +93,7 @@ DENSE_STORAGE* cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype) {
   if (!shape) return NULL;
 
   // copy shape array
-  for (p = 0; p < rhs->rank; ++p)
-    shape[p] = rhs->shape[p];
+  for (p = 0; p < rhs->rank; ++p) shape[p] = rhs->shape[p];
 
   lhs = create_dense_storage(new_dtype, shape, rhs->rank, NULL, 0);
 
@@ -102,7 +101,8 @@ DENSE_STORAGE* cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype) {
     if (lhs->dtype == rhs->dtype)
       memcpy(lhs->elements, rhs->elements, nm_sizeof[rhs->dtype] * count);
     else
-      SetFuncs[new_dtype][rhs->dtype](count, lhs->elements, nm_sizeof[new_dtype], rhs->elements, nm_sizeof[rhs->dtype]);
+      SetFuncs[lhs->dtype][rhs->dtype](count, lhs->elements, nm_sizeof[lhs->dtype], rhs->elements, nm_sizeof[rhs->dtype]);
+
 
   return lhs;
 }
@@ -151,8 +151,22 @@ DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank, vo
 void delete_dense_storage(DENSE_STORAGE* s) {
   if (s) { // sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure)
     free(s->shape);
-    free(s->elements); // VALUEs are automatically registered with the GC
+    free(s->elements);
     free(s);
+  }
+}
+
+
+void mark_dense_storage(void* m) {
+  size_t i;
+  DENSE_STORAGE* storage;
+
+  if (m) {
+    storage = (DENSE_STORAGE*)(((NMATRIX*)m)->storage);
+    fprintf(stderr, "mark_dense_storage\n");
+    if (storage && storage->dtype == NM_ROBJ)
+      for (i = 0; i < count_dense_storage_elements(storage); ++i)
+        rb_gc_mark(*((VALUE*)(storage->elements + i*nm_sizeof[NM_ROBJ])));
   }
 }
 

@@ -38,6 +38,8 @@ ID nm_id_real, nm_id_imag;
 ID nm_id_numer, nm_id_denom;
 ID nm_id_transpose, nm_id_no_transpose, nm_id_complex_conjugate; // cblas
 ID nm_id_list, nm_id_dense;
+ID nm_id_mult, nm_id_multeq;
+ID nm_id_add;
 
 #include "dtypes.c"
 
@@ -66,13 +68,20 @@ nm_delete_t DeleteFuncs = {
 };
 
 
+nm_mark_t MarkFuncs = {
+  mark_dense_storage,
+  mark_list_storage,
+  mark_yale_storage
+};
+
+
 nm_gemv_t GemvFuncs = {
   NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
+  cblas_bgemv_,
+  cblas_i8gemv_,
+  cblas_i16gemv_,
+  cblas_i32gemv_,
+  cblas_i64gemv_,
   cblas_sgemv_,
   cblas_dgemv_,
   cblas_cgemv_,
@@ -98,7 +107,7 @@ nm_gemm_t GemmFuncs = { // by NM_TYPES
   cblas_r32gemm_,
   cblas_r64gemm_,
   cblas_r128gemm_,
-  NULL
+  cblas_vgemm_
 };
 
 static void TransposeTypeErr(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move) {
@@ -150,23 +159,25 @@ nm_smmp_t SmmpFuncs = {
 static inline DENSE_PARAM cblas_params_for_multiply(const DENSE_STORAGE* left, const DENSE_STORAGE* right, const DENSE_STORAGE* result, bool vector) {
   DENSE_PARAM p;
 
-  p.M = left->shape[0];
-  if (vector) p.N = left->shape[1];
-  else {
-    p.N = right->shape[1];
-    p.K = left->shape[1];
-  }
-
   p.A = left->elements;
+  p.B = right->elements;    // for vector, this is actually x
+  p.C = result->elements;   // vector Y
+
+  p.M = left->shape[0];
   p.lda = left->shape[1];
 
-  p.B = right->elements;    // for vector, this is actually x
-  if (vector) p.ldb = 1;    // for vector, this is actually incX
-  else        p.ldb = right->shape[1];
+  if (vector) {
+    p.N = left->shape[1];
 
-  p.C = result->elements;   // vector Y
-  if (vector) p.ldc = 1;    // vector incY
-  else        p.ldc = result->shape[1];
+    p.ldb = 1;  // incX
+    p.ldc = 1;  // incY
+  } else {
+    p.N = right->shape[1];
+    p.K = left->shape[1];
+
+    p.ldb = right->shape[1];
+    p.ldc = result->shape[1];
+  }
 
   switch(left->dtype) {
   case NM_FLOAT32:
@@ -305,7 +316,6 @@ nm_binary_op_t CastedMultiplyFuncs = {
 static void nm_delete(NMATRIX* mat) {
   DeleteFuncs[mat->stype](mat->storage);
 }
-
 
 
 static STORAGE* nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
@@ -649,7 +659,7 @@ static VALUE nm_alloc(VALUE klass) {
   NMATRIX* mat = ALLOC(NMATRIX);
   mat->storage = NULL;
   mat->stype   = S_TYPES;
-  return Data_Wrap_Struct(klass, 0, nm_delete, mat);
+  return Data_Wrap_Struct(klass, MarkFuncs[mat->stype], nm_delete, mat);
 }
 
 
@@ -712,6 +722,23 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_dtype_symbo
 }
 
 
+static VALUE nm_cast_copy(VALUE self, VALUE new_dtype_symbol) {
+  NMATRIX *original, *copy;
+  int8_t new_dtype = nm_dtypesymbol_to_dtype(new_dtype_symbol);
+
+  if (TYPE(self) != T_DATA || RDATA(self)->dfree != (RUBY_DATA_FUNC)nm_delete)
+    rb_raise(rb_eTypeError, "wrong argument type");
+
+  UnwrapNMatrix(self, original);
+
+  copy = ALLOC(NMATRIX);
+  copy->stype = original->stype;
+  copy->storage = CastCopyFuncs[original->stype](original->storage, new_dtype);
+
+  return Data_Wrap_Struct(cNMatrix, MarkFuncs[copy->stype], nm_delete, copy);
+}
+
+
 // Cast a single matrix to a new dtype (unless it's already casted, then just return it). Helper for binary_storage_cast_alloc.
 static inline STORAGE* storage_cast_alloc(NMATRIX* matrix, int8_t new_dtype) {
   if (matrix->storage->dtype == new_dtype) return matrix->storage;
@@ -759,7 +786,7 @@ static VALUE multiply_matrix(NMATRIX* left, NMATRIX* right) {
   if (left->storage != casted.left)   DeleteFuncs[left->stype](casted.left);
   if (right->storage != casted.right) DeleteFuncs[left->stype](casted.right);
 
-  if (result) return Data_Wrap_Struct(cNMatrix, 0, nm_delete, result);
+  if (result) return Data_Wrap_Struct(cNMatrix, MarkFuncs[result->stype], nm_delete, result);
   return Qnil; // Only if we try to multiply list matrices should we return Qnil.
 }
 
@@ -1098,7 +1125,7 @@ static VALUE nm_yale_size(VALUE self) {
   VALUE sz;
   YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
-  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+  if (NM_STYPE(self) != S_YALE) rb_raise(nm_eStorageTypeError, "wrong storage type");
 
   SetFuncs[NM_ROBJ][s->index_dtype](1, &sz, 0, (YALE_SIZE_PTR((s), nm_sizeof[s->index_dtype])), 0);
   return sz;
@@ -1111,7 +1138,7 @@ static VALUE nm_yale_a(VALUE self) {
   VALUE ary;
   YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
-  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+  if (NM_STYPE(self) != S_YALE) rb_raise(nm_eStorageTypeError, "wrong storage type");
 
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*sz);
@@ -1132,7 +1159,7 @@ static VALUE nm_yale_d(VALUE self) {
   VALUE ary;
   YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
-  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+  if (NM_STYPE(self) != S_YALE) rb_raise(nm_eStorageTypeError, "wrong storage type");
 
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*s->shape[0]);
@@ -1150,7 +1177,7 @@ static VALUE nm_yale_lu(VALUE self) {
   VALUE ary;
   YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
-  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+  if (NM_STYPE(self) != S_YALE) rb_raise(nm_eStorageTypeError, "wrong storage type");
 
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*(s->capacity - s->shape[0]));
@@ -1167,7 +1194,7 @@ static VALUE nm_yale_lu(VALUE self) {
 
 // Only works for i8/f64
 static VALUE nm_yale_print_vectors(VALUE self) {
-  if (NM_STYPE(self) != S_YALE || NM_DTYPE(self) != NM_FLOAT64) rb_raise(rb_eTypeError, "must be yale float64 matrix");
+  if (NM_STYPE(self) != S_YALE || NM_DTYPE(self) != NM_FLOAT64) rb_raise(nm_eDataTypeError, "must be yale float64 matrix");
 
   print_vectors((YALE_STORAGE*)(NM_STORAGE(self)));
 
@@ -1181,7 +1208,7 @@ static VALUE nm_yale_ia(VALUE self) {
   VALUE ary;
   YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
-  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+  if (NM_STYPE(self) != S_YALE) rb_raise(nm_eStorageTypeError, "wrong storage type");
 
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*(s->shape[0]+1));
@@ -1199,7 +1226,7 @@ static VALUE nm_yale_ja(VALUE self) {
   VALUE ary;
   YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
-  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+  if (NM_STYPE(self) != S_YALE) rb_raise(nm_eStorageTypeError, "wrong storage type");
 
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*(s->capacity - s->shape[0]));
@@ -1220,7 +1247,7 @@ static VALUE nm_yale_ija(VALUE self) {
   VALUE ary;
   YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
 
-  if (NM_STYPE(self) != S_YALE) rb_raise(rb_eTypeError, "wrong storage type");
+  if (NM_STYPE(self) != S_YALE) rb_raise(nm_eStorageTypeError, "wrong storage type");
 
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*s->capacity);
@@ -1326,7 +1353,7 @@ static VALUE nm_transpose_new(VALUE self) {
     rb_raise(rb_eNotImpError, "transpose for this type not implemented yet");
   }
 
-  return Data_Wrap_Struct(cNMatrix, 0, nm_delete, result);
+  return Data_Wrap_Struct(cNMatrix, MarkFuncs[result->stype], nm_delete, result);
 }
 
 //static VALUE nm_transpose_auto(VALUE self) {
@@ -1354,10 +1381,12 @@ void Init_nmatrix() {
 
     rb_define_method(cNMatrix, "initialize_copy", nm_init_copy, 1);
     rb_define_method(cNMatrix, "initialize_cast_copy", nm_init_cast_copy, 2);
+    rb_define_method(cNMatrix, "as_dtype", nm_cast_copy, 1);
 
     /* methods */
     rb_define_method(cNMatrix, "dtype", nm_dtype, 0);
     rb_define_method(cNMatrix, "stype", nm_stype, 0);
+
     rb_define_method(cNMatrix, "[]", nm_mref, -1);
     rb_define_method(cNMatrix, "[]=", nm_mset, -1);
     rb_define_method(cNMatrix, "rank", nm_rank, 0);
@@ -1393,6 +1422,9 @@ void Init_nmatrix() {
     nm_id_imag  = rb_intern("imag");
     nm_id_numer = rb_intern("numerator");
     nm_id_denom = rb_intern("denominator");
+    nm_id_mult  = rb_intern("*");
+    nm_id_add   = rb_intern("+");
+    nm_id_multeq= rb_intern("*=");
 
     nm_id_transpose = rb_intern("transpose");
     nm_id_no_transpose = rb_intern("no_transpose");

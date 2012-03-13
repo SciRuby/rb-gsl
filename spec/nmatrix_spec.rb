@@ -177,10 +177,10 @@ describe NMatrix do
     m.dtype.should == :float64
   end
 
-  #it "dense correctly pretty_prints complex values" do
-  #  n = NMatrix.new([4,3], COMPLEX_MATRIX43A_ARRAY, :complex128)
-  #  n.pretty_print
-  #end
+  it "dense correctly pretty_prints complex values" do
+    n = NMatrix.new([4,3], COMPLEX_MATRIX43A_ARRAY, :complex128)
+    n.pretty_print
+  end
 
    # TODO: Get it working with ROBJ too
   [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |left_dtype|
@@ -239,18 +239,18 @@ describe NMatrix do
     end
   end
 
-  [:int8,:int16,:int32,:int64,:float32,:float64].each do |left_dtype|
-    [:int8,:int16,:int32,:int64,:float32,:float64].each do |right_dtype|
+  [:byte,:int8,:int16,:int32,:int64,:float32,:float64].each do |left_dtype|
+    [:byte,:int8,:int16,:int32,:int64,:float32,:float64].each do |right_dtype|
 
-      # For now, don't bother testing int-int mult.
-      next if [:int8,:int16,:int32,:int64].include?(left_dtype) && [:int8,:int16,:int32,:int64].include?(right_dtype)
+      # Won't work if they're both 1-byte, due to overflow.
+      next if [:byte,:int8].include?(left_dtype) && [:byte,:int8].include?(right_dtype)
 
       it "dense correctly handles #{left_dtype.to_s}*#{right_dtype.to_s} vector multiplication" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "2"
         n = NMatrix.new([4,3], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0], left_dtype)
 
-        m = NVector.new(3, [-2.0, 1.0, 0.0], right_dtype)
+        m = NVector.new(3, [2.0, 1.0, 0.0], right_dtype)
 
         m.shape[0].should == 3
         m.shape[1].should == 1
@@ -264,10 +264,10 @@ describe NMatrix do
         r = n*m
         # r.class.should == NVector
 
-        r[0,0].should == 0
-        r[1,0].should == -3
-        r[2,0].should == -6
-        r[3,0].should == -9
+        r[0,0].should == 4
+        r[1,0].should == 13
+        r[2,0].should == 22
+        r[3,0].should == 31
 
         #r.dtype.should == :float64 unless left_dtype == :float32 && right_dtype == :float32
       end

@@ -196,6 +196,20 @@ void delete_yale_storage(YALE_STORAGE* s) {
 }
 
 
+void mark_yale_storage(void* m) {
+  size_t i;
+  YALE_STORAGE* storage;
+
+  if (m) {
+    storage = (YALE_STORAGE*)(((NMATRIX*)m)->storage);
+    fprintf(stderr, "mark_yale_storage\n");
+    if (storage && storage->dtype == NM_ROBJ)
+      for (i = 0; i < storage->capacity; ++i)
+        rb_gc_mark(*((VALUE*)(storage->a + i*nm_sizeof[NM_ROBJ])));
+  }
+}
+
+
 // copy constructor
 YALE_STORAGE* copy_yale_storage(YALE_STORAGE* rhs) {
   y_size_t size;
