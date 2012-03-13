@@ -42,14 +42,26 @@ inline void cblas_r32gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSP
   else                        r32gemm(TransB, TransA, p.N, p.M, p.K, p.alpha.r[0], p.B, p.ldb, p.A, p.lda, p.beta.r[0], p.C, p.ldc);
 }
 
+inline void cblas_r32gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
+  r32gemv(TransA, p.M, p.N, p.alpha.r[0], p.A, p.lda, p.B, p.ldb, p.beta.r[0], p.C, p.ldc);
+}
+
 inline void cblas_r64gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p) {
   if (Order == CblasColMajor) r64gemm(TransA, TransB, p.M, p.N, p.K, p.alpha.ra[0], p.A, p.lda, p.B, p.ldb, p.beta.ra[0], p.C, p.ldc);
   else                        r64gemm(TransB, TransA, p.N, p.M, p.K, p.alpha.ra[0], p.B, p.ldb, p.A, p.lda, p.beta.ra[0], p.C, p.ldc);
 }
 
+inline void cblas_r64gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
+  r64gemv(TransA, p.M, p.N, p.alpha.ra[0], p.A, p.lda, p.B, p.ldb, p.beta.ra[0], p.C, p.ldc);
+}
+
 inline void cblas_r128gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p) {
   if (Order == CblasColMajor) r128gemm(TransA, TransB, p.M, p.N, p.K, p.alpha.rat, p.A, p.lda, p.B, p.ldb, p.beta.rat, p.C, p.ldc);
   else                        r128gemm(TransB, TransA, p.N, p.M, p.K, p.alpha.rat, p.B, p.ldb, p.A, p.lda, p.beta.rat, p.C, p.ldc);
+}
+
+inline void cblas_r128gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {
+  r128gemv(TransA, p.M, p.N, p.alpha.rat, p.A, p.lda, p.B, p.ldb, p.beta.rat, p.C, p.ldc);
 }
 
 inline void cblas_bgemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p) {

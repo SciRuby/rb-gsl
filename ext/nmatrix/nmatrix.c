@@ -86,9 +86,9 @@ nm_gemv_t GemvFuncs = {
   cblas_dgemv_,
   cblas_cgemv_,
   cblas_zgemv_,
-  NULL,
-  NULL,
-  NULL,
+  cblas_r32gemv_,
+  cblas_r64gemv_,
+  cblas_r128gemv_,
   NULL
 };
 
