@@ -22,6 +22,7 @@
 #
 # == generator.rb
 #
+# Module for generating source files.
 
 require "../../../../lib/string.rb"
 

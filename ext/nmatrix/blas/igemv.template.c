@@ -10,9 +10,9 @@ int %%INT_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t 
   if (Trans < 111 || Trans > 113) {
     fprintf(stderr, "IGEMV: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans\n");
     return 0;
-  //} else if (lda < NM_MAX(1, M)) {
-  //  fprintf(stderr, "IGEMV: Expected lda >= max(1, M), with M = %d; got lda=%d\n", N, lda);
-  //  return 0;
+  } else if (lda < NM_MAX(1, N)) {
+    fprintf(stderr, "IGEMV: Expected lda >= max(1, N), with N = %d; got lda=%d\n", N, lda);
+    return 0;
   } else if (incX == 0) {
     fprintf(stderr, "IGEMV: Expected incX != 0\n");
     return 0;
