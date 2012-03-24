@@ -1,18 +1,18 @@
 
 // Symbolic matrix multiply c=a*b
-void %%INT_ABBREV%%_symbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
+void %%TYPE_ABBREV%%_symbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
 {
-  u_%%INT%% mask[m];
-  u_%%INT%% i, j, k, kk, jj, minmn, ndnz = n; /* Local variables */
+  u_%%TYPE%% mask[m];
+  u_%%TYPE%% i, j, k, kk, jj, minmn, ndnz = n; /* Local variables */
 
-  u_%%INT%% *ia = (u_%%INT%%*)(A.ia),
-            *ja = (u_%%INT%%*)(A.ja),
-            *ib = (u_%%INT%%*)(B.ia),
-            *jb = (u_%%INT%%*)(B.ja),
-            *ic = (u_%%INT%%*)(C.ia);
+  u_%%TYPE%% *ia = (u_%%TYPE%%*)(A.ia),
+            *ja = (u_%%TYPE%%*)(A.ja),
+            *ib = (u_%%TYPE%%*)(B.ia),
+            *jb = (u_%%TYPE%%*)(B.ja),
+            *ic = (u_%%TYPE%%*)(C.ia);
 
   for (j = 0; j < m; ++j)
-    mask[j] = U%%INT_MAX%%;
+    mask[j] = U%%TYPE_MAX%%;
 
   if (C.diag)  ic[0] = n+1;
   else        ic[0] = 0;

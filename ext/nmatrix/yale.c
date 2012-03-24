@@ -46,7 +46,6 @@
 extern const char *nm_dtypestring[];
 
 
-
 void print_vectors(YALE_STORAGE* s) {
   size_t i;
   fprintf(stderr, "------------------------------\n");

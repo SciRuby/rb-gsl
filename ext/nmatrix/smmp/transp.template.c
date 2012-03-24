@@ -1,5 +1,5 @@
 
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move)
+void %%INT_ABBREV%%_%%TYPE_ABBREV%%_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move)
 {
   u_%%INT%% i, j, index;
 
@@ -7,15 +7,16 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(y_size_t n, y_size_t m, YALE_PARAM A
             *ja = (u_%%INT%%*)(A.ja),
             *ib = (u_%%INT%%*)(B.ia),
             *jb = (u_%%INT%%*)(B.ja);
-  %%REAL%% *a = A.a,
+  %%TYPE%% *a = A.a,
            *b = B.a;
 
   // Clear B
   for (i = 0; i < m+1; ++i)
     ib[i] = 0;
   if (move) {
-    for (i = 0; i < m+1; ++i)
-      b[i] = 0;
+    for (i = 0; i < m+1; ++i) {
+      %%TYPE b[i] = 0%%
+    }
   }
 
   if (A.diag) ib[0] = m + 1;
@@ -40,7 +41,7 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(y_size_t n, y_size_t m, YALE_PARAM A
       jb[ib[index]] = i;
 
       if (move)
-        b[ib[index]] = a[j];
+        %%TYPE b[ib[index]] = a[j]%%
 
       ++(ib[index]);
     }
@@ -57,7 +58,7 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_transp_(y_size_t n, y_size_t m, YALE_PARAM A
       j = SMMP_MIN(n,m);
 
       for (i = 0; i < j; ++i)
-        b[i] = a[i];
+        %%TYPE b[i] = a[i]%%
     }
     ib[0] = m + 1;
 

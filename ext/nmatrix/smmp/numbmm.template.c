@@ -1,10 +1,11 @@
 // numeric matrix multiply c=a*b
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
+void %%INT_ABBREV%%_%%TYPE_ABBREV%%_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
 {
   u_%%INT%% next[m];
-  %%REAL%% sums[m];
+  %%TYPE%% sums[m];
 
-  %%REAL%% v;
+  %%TYPE%% v;
+  %%= if [:rational,:complex].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1;"; end%%
 
   u_%%INT%% head, length, temp, ndnz = 0;
   u_%%INT%% jj_start, jj_end, kk_start, kk_end;
@@ -17,13 +18,13 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A
             *jb = (u_%%INT%%*)(B.ja),
             *ic = (u_%%INT%%*)(C.ia),
             *jc = (u_%%INT%%*)(C.ja);
-  %%REAL%% *a = A.a,
+  %%TYPE%% *a = A.a,
            *b = B.a,
            *c = C.a;
 
   for (i = 0; i < m; ++i) { // initialize scratch arrays
     next[i] = U%%INT_MAX%%;
-    sums[i] = 0;
+    %%TYPE sums[i] = 0%%
   }
 
   for (i = 0; i < n; ++i) { // walk down the rows
@@ -38,10 +39,10 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A
       if (jj == jj_end) { // if we're in the last entry for this row:
         if (!A.diag || i >= minmn) continue;
         j   = i;      // if it's a new Yale matrix, and last entry, get the diagonal position (j) and entry (ajj)
-        v   = a[i];
+        %%TYPE v = a[i]%%
       } else {
         j   = ja[jj]; // if it's not the last entry for this row, get the column (j) and entry (ajj)
-        v   = a[jj];
+        %%TYPE v = a[jj]%%
       }
 
       kk_start = ib[j];   // Find the first entry of row j of matrix B
@@ -51,10 +52,10 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A
         if (kk == kk_end) { // Get the column id for that entry
           if (!B.diag || j >= minmn) continue;
           k  = j;
-          sums[k] += v*b[k];
+          %%TYPE sums[k] += v*b[k]%%
         } else {
           k  = jb[kk];
-          sums[k] += v*b[kk];
+          %%TYPE sums[k] += v*b[kk]%%
         }
 
         if (next[k] == U%%INT_MAX%%) {
@@ -66,12 +67,12 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A
     }
 
     for (jj = 0; jj < length; ++jj) {
-      if (sums[head]) {
+      if (%%TYPE sums[head] != 0%%) {
         if (C.diag && head == i) {
-          c[head]    = sums[head];
+          %%TYPE c[head] = sums[head]%%
         } else {
           jc[n+1+ndnz] = head;
-          c[ n+1+ndnz] = sums[head];
+          %%TYPE c[n+1+ndnz] = sums[head]%%
           ++ndnz;
         }
       }
@@ -80,7 +81,7 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A
       head = next[head];
 
       next[temp] = U%%INT_MAX%%;
-      sums[temp] = 0;
+      %%TYPE sums[temp] = 0%%
     }
 
     ic[i+1] = n+1+ndnz;

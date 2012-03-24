@@ -1,7 +1,7 @@
 
 
-static %%INT%% %%INT_ABBREV%%_muldiv(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k) {
-  %%INT%% result;
+%%TYPE%% %%TYPE_ABBREV%%_muldiv(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k) {
+  %%TYPE%% result;
   int64_t t, g1, g2;
 
   if (k == '/') { // Switch numerator and denominator for division (and move sign)
@@ -24,8 +24,8 @@ static %%INT%% %%INT_ABBREV%%_muldiv(int64_t anum, int64_t aden, int64_t bnum, i
 }
 
 
-static %%INT%% %%INT_ABBREV%%_addsub(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k) {
-  %%INT%% result;
+%%TYPE%% %%TYPE_ABBREV%%_addsub(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k) {
+  %%TYPE%% result;
 
   int64_t ig = nmrb_gcd(aden, bden);
   int64_t a  = anum * (bden / ig);

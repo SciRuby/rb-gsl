@@ -1,10 +1,11 @@
 
-int %%INT_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const %%INT%% alpha,
-  const %%INT%%* A, const size_t lda, const %%INT%%* X, const int incX, const %%INT%% beta, %%INT%%* Y, const int incY)
+int %%TYPE_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const %%TYPE%% alpha,
+  const %%TYPE%%* A, const size_t lda, const %%TYPE%%* X, const int incX, const %%TYPE%% beta, %%TYPE%%* Y, const int incY)
 {
   size_t lenX, lenY, i, j;
   int kx, ky, iy, jx, jy, ix;
-  rational128 temp, temp2, temp3;
+  %%TYPE_LONG%% temp;
+  %%= if [:rational,:complex].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1;"; end%%
 
   // Test the input parameters
   if (Trans < 111 || Trans > 113) {
@@ -22,7 +23,7 @@ int %%INT_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t 
   }
 
   // Quick return if possible
-  if (!M || !N || !alpha.n && beta.n == beta.d) return 0;
+  if (!M || !N || %%TYPE alpha == 0%% && %%TYPE beta == 1%%) return 0;
 
   if (Trans == CblasNoTrans) {
     lenX = N;
@@ -39,35 +40,34 @@ int %%INT_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t 
   else          ky =  (lenY - 1) * -incY;
 
   // Start the operations. In this version, the elements of A are accessed sequentially with one pass through A.
-  if (beta.n != beta.d) {
+  if (%%TYPE beta != 1%%) {
     if (incY == 1) {
-      if (!beta.n) {
+      if (%%TYPE beta == 0%%) {
         for (i = 0; i < lenY; ++i) {
-          Y[i].n = 0;
-          Y[i].d = 1;
+          %%TYPE Y[i] = 0%%
         }
       } else {
-        for (i = 0; i < lenY; ++i)
-          Y[i] = %%INT_ABBREV%%_muldiv(beta.n, beta.d, Y[i].n, Y[i].d, '*');
+        for (i = 0; i < lenY; ++i) {
+          %%TYPE Y[i] *= beta%%
+        }
       }
     } else {
       iy = ky;
-      if (!beta.n) {
+      if (%%TYPE beta == 0%%) {
         for (i = 0; i < lenY; ++i) {
-          Y[iy].n = 0;
-          Y[iy].d = 1;
+          %%TYPE Y[iy] = 0%%
           iy += incY;
         }
       } else {
         for (i = 0; i < lenY; ++i) {
-          Y[iy] = %%INT_ABBREV%%_muldiv(beta.n, beta.d, Y[iy].n, Y[iy].d, '*');
+          %%TYPE Y[iy] *= beta%%
           iy += incY;
         }
       }
     }
   }
 
-  if (!alpha.n) return 0;
+  if (%%TYPE alpha == 0%%) return 0;
 
   if (Trans == CblasNoTrans) {
 
@@ -75,23 +75,21 @@ int %%INT_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t 
     jx = kx;
     if (incY == 1) {
       for (j = 0; j < N; ++j) {
-        if (X[jx].n != 0) {
-          temp = r128_muldiv(alpha.n, alpha.d, X[jx].n, X[jx].d, '*');
+        if (%%TYPE X[jx] != 0%%) {
+          %%TYPE_LONG temp = alpha * X[jx]%%
           for (i = 0; i < M; ++i) {
-            temp2 = r128_muldiv(A[j+i*lda].n, A[j+i*lda].d, temp.n, temp.d, '*');
-            Y[i]  = %%INT_ABBREV%%_addsub(Y[i].n, Y[i].d, temp2.n, temp2.d, '+');
+            %%TYPE Y[i] += A[j+i*lda] * temp%%
           }
         }
         jx += incX;
       }
     } else {
       for (j = 0; j < N; ++j) {
-        if (X[jx].n != 0) {
-          temp = r128_muldiv(alpha.n, alpha.d, X[jx].n, X[jx].d, '*');
+        if (%%TYPE X[jx] != 0%%) {
+          %%TYPE_LONG temp = alpha * X[jx]%%
           iy = ky;
           for (i = 0; i < M; ++i) {
-            temp2 = r128_muldiv(A[j+i*lda].n, A[j+i*lda].d, temp.n, temp.d, '*');
-            Y[iy] = %%INT_ABBREV%%_addsub(Y[iy].n, Y[iy].d, temp2.n, temp2.d, '*');
+            %%TYPE Y[iy] += A[j+i*lda] * temp%%
             iy += incY;
           }
         }
@@ -102,38 +100,31 @@ int %%INT_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t 
   } else { // TODO: Check that indices are correct! They're switched for C.
 
     // Form  y := alpha*A**T*x + y.
-
     jy = ky;
 
     if (incX == 1) {
       for (j = 0; j < N; ++j) {
-        temp.n = 0;
-        temp.d = 1;
+        %%TYPE temp = 0%%
         for (i = 0; i < M; ++i) {
-          temp2 = r128_muldiv(A[j+i*lda].n, A[j+i*lda].d, X[j].n, X[j].d, '*');
-          temp  = r128_addsub(temp.n, temp.d, temp2.n, temp2.d, '+');
+          %%TYPE_LONG temp += A[j+i*lda]*X[j]%%
         }
-        temp3 = r128_muldiv(alpha.n, alpha.d, temp.n, temp.d, '*');
-        Y[jy] = %%INT_ABBREV%%_addsub(temp3.n, temp3.d, Y[jy].n, Y[jy].d, '+');
+        %%TYPE Y[jy] += alpha * temp%%
         jy += incY;
       }
     } else {
       for (j = 0; j < N; ++j) {
-        temp.n = 0;
-        temp.d = 1;
+        %%TYPE temp = 0%%
         ix = kx;
         for (i = 0; i < M; ++i) {
-          temp2 = r128_muldiv(A[j+i*lda].n, A[j+i*lda].d, X[ix].n, X[ix].d, '*');
-          temp  = r128_addsub(temp2.n, temp2.d, temp.n, temp.d, '+');
+          %%TYPE_LONG temp += A[j+i*lda] * X[ix]%%
           ix += incX;
         }
-        temp3 = r128_muldiv(alpha.n, alpha.d, temp.n, temp.d, '*');
-        Y[jy] = %%INT_ABBREV%%_addsub(temp3.n, temp3.d, Y[jy].n, Y[jy].d, '+');
+
+        %%TYPE Y[jy] += alpha * temp%%
         jy += incY;
       }
     }
   }
 
   return 0;
-  // end of GEMV
-}
+}  // end of GEMV

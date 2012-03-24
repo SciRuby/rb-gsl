@@ -1,5 +1,5 @@
 
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
+void %%INT_ABBREV%%_%%TYPE_ABBREV%%_numbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
 {
   if (A.diag && A.ia != A.ja) {
     fprintf(stderr, "A.diag=true, but ia!=ja. For new yale, ia must equal ja.");
@@ -16,11 +16,11 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm(y_size_t n, y_size_t m, YALE_PARAM A,
     return;
   }
 
-  %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, A, B, C);
+  %%INT_ABBREV%%_%%TYPE_ABBREV%%_numbmm_(n, m, A, B, C);
 }
 
 // Perform both the symbolic and numeric steps together.
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
+void %%INT_ABBREV%%_%%TYPE_ABBREV%%_smmp(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
 {
   if (A.diag && A.ia != A.ja) {
     fprintf(stderr, "A.diag=true, but ia!=ja. For new yale, ia must equal ja.");
@@ -38,6 +38,6 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp(y_size_t n, y_size_t m, YALE_PARAM A, Y
   }
 
   %%INT_ABBREV%%_symbmm_(n, m, A, B, C);
-  %%INT_ABBREV%%_%%REAL_ABBREV%%_numbmm_(n, m, A, B, C);
-  %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp_sort_columns_(n, C);
+  %%INT_ABBREV%%_%%TYPE_ABBREV%%_numbmm_(n, m, A, B, C);
+  %%INT_ABBREV%%_%%TYPE_ABBREV%%_smmp_sort_columns_(n, C);
 }

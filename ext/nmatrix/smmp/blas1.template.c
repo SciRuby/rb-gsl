@@ -1,5 +1,5 @@
 
-void %%INT_ABBREV%%_symbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
+void %%TYPE_ABBREV%%_symbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C)
 {
   if (A.diag && A.ia != A.ja) {
     fprintf(stderr, "A.diag=true, but ia!=ja. For new yale, ia must equal ja.");
@@ -17,5 +17,5 @@ void %%INT_ABBREV%%_symbmm(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, Y
   }
 
 
-  %%INT_ABBREV%%_symbmm_(n, m, A, B, C);
+  %%TYPE_ABBREV%%_symbmm_(n, m, A, B, C);
 }

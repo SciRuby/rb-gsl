@@ -57,6 +57,11 @@ namespace :spec do
 
   RSPEC_CMD = [ 'ruby', '-S', 'rspec', '-Ilib:ext', SPECDIR ]
 
+  #desc "Run the spec for generator.rb"
+  #task :generator do |task|
+  #  run 'rspec spec/generator_spec.rb'
+  #end
+
   desc "Run the specs under GDB."
   task :gdb => [ :compile ] do |task|
           cmd = [ 'gdb' ] + GDB_OPTIONS

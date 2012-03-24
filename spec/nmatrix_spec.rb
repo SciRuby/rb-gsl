@@ -225,6 +225,7 @@ describe NMatrix do
         n.shape[1].should == m.shape[0]
 
         r = n*m
+
         r[0,0].should == 273.0
         r[0,1].should == 455.0
         r[1,0].should == 243.0

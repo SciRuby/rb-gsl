@@ -2,14 +2,14 @@
 // Remember, we're dealing with unique keys, which simplifies things.
 // Doesn't have to be in-place, since we probably just multiplied and that wasn't in-place.
 
-void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp_sort_columns_(y_size_t n, YALE_PARAM A)
+void %%INT_ABBREV%%_%%TYPE_ABBREV%%_smmp_sort_columns_(y_size_t n, YALE_PARAM A)
 {
   u_%%INT%% i, jj, jj_start, jj_end, min, min_jj;
-  %%REAL%% temp_val;
+  %%TYPE%% temp_val;
 
   u_%%INT%% *ia = (u_%%INT%%*)(A.ia),
             *ja = (u_%%INT%%*)(A.ja);
-  %%REAL%% *a = (%%REAL%%*)(A.a);
+  %%TYPE%% *a = (%%TYPE%%*)(A.a);
 
   for (i = 0; i < n; ++i) {
     // No need to sort if there are 0 or 1 entries in the row
@@ -42,13 +42,13 @@ void %%INT_ABBREV%%_%%REAL_ABBREV%%_smmp_sort_columns_(y_size_t n, YALE_PARAM A)
         // swap minimum key/value pair with key/value pair in the first position.
         if (min_jj != jj) {
           // min already = ja[min_jj], so use this as temp_key
-          temp_val = a[min_jj];
+          %%TYPE temp_val = a[min_jj]%%
 
           ja[min_jj] = ja[jj];
-           a[min_jj] =  a[jj];
+          %%TYPE a[min_jj] = a[jj]%%
 
           ja[jj] = min;
-           a[jj] = temp_val;
+          %%TYPE a[jj] = temp_val%%
         }
       }
     }

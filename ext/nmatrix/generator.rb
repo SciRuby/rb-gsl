@@ -24,7 +24,19 @@
 #
 # Module for generating source files.
 
-require "../../../../lib/string.rb"
+$IN_MAKEFILE = begin
+  dir_pwd_split = Dir.pwd.split('/')
+  if dir_pwd_split.size >= 4 && dir_pwd_split[-4] == "tmp"
+    require "../../../../lib/string.rb" # from the Makefile
+    require "../../../../ext/nmatrix/generator/syntax_tree.rb"
+    true
+  else
+    # STDERR.puts Dir.pwd
+    require "./lib/string.rb"           # from the console, for testing
+    require "./ext/nmatrix/generator/syntax_tree.rb"
+    false
+  end
+end
 
 class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type,  :gemm)
   def max_macro
@@ -43,6 +55,11 @@ class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type,  :gemm)
       typename = ary[0...ary.size-1].join('')
     end
     typename.upcase + "_MIN"
+  end
+
+  # What type would this be if we used the maximum number of bytes available?
+  def long_dtype
+    Generator::DTYPES.select { |x| x.type == self.type }.last
   end
 end
 
@@ -87,9 +104,16 @@ module Generator
       [:NM_TYPES,       0,            :dtypes,      0,      :none,         nil]
   ].map { |d| DTypeInfo.new(*d) }
 
-  INDEX_DTYPES = DTYPES.select { |dtype| [:NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64].include?(dtype.enum) }
-  INTEGER_DTYPES = DTYPES.select { |dtype| [:NM_BYTE, :NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64].include?(dtype.enum) }
+  INDEX_DTYPES = DTYPES.select { |dtype| dtype.type == :int && dtype.id != :b }
+  INTEGER_DTYPES = DTYPES.select { |dtype| dtype.type == :int }
   RATIONAL_DTYPES = DTYPES.select { |dtype| dtype.type == :rational }
+  NONBLAS_DTYPES = DTYPES.select { |dtype| [:int,:rational,:value].include?(dtype.type) }
+  COMPLEX_DTYPES = DTYPES.select { |dtype| dtype.type == :complex }
+  FLOAT_DTYPES = DTYPES.select { |dtype| dtype.type == :float }
+  OBJECT_DTYPES = DTYPES.select { |dtype| dtype.type == :value }
+  ACTUAL_DTYPES = DTYPES.select { |dtype| dtype.type != :none }
+
+  YIELD_REGEX = /%%=\ [^%%]*%%/
 
 
   DTYPES_ASSIGN = {
@@ -132,7 +156,6 @@ module Generator
 
 
   class << self
-
 
     def decl spec_name, ary
       a = []
@@ -379,7 +402,7 @@ INCFN
     #
     # == Example
     #
-    #    make_templated_c './smmp', 'header', %w{numbmm transp bstoy ytobs}, "smmp1.c"
+    #    make_templated_c './smmp', 'header', %w{numbmm transp bstoy ytobs}, "smmp1.c", {:TYPE => RATIONAL_DTYPES, :INT => INDEX_DTYPES}
     #
     # TODO: index dtype is unsigned!
     # That means instead of int8_t, we should be doing uint8_t. But can't always do that because the Fortran code
@@ -389,26 +412,23 @@ INCFN
     #
     # TODO: Make templates work with complex and rational types too.
     #
-    def make_templated_c relative_path, header_name, names, output_name, subs=1, first_sub=INDEX_DTYPES
+    def make_templated_c relative_path, header_name, names, output_name, subs = {:TYPE => INDEX_DTYPES}
 
       # First print the header once
       `cat #{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{header_name}.template.c > ./#{output_name}` unless header_name.nil?
 
-      first_sub.each do |index_dtype|
-
-        if subs == 1
-          names.each do |name|
-            sub_int relative_path, name, output_name, index_dtype
-          end
-        else
-          DTYPES.each do |dtype|
-            next unless [:NM_BYTE, :NM_INT8, :NM_INT16, :NM_INT32, :NM_INT64, :NM_FLOAT32, :NM_FLOAT64].include?(dtype.enum)
+      subs[:TYPE].each do |type|
+        if subs.has_key?(:INT)
+          subs[:INT].each do |int|
             names.each do |name|
-              sub_int_real relative_path, name, output_name, index_dtype, dtype
+              template "#{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{name}.template.c", output_name, :TYPE => type, :INT => int
             end
           end
+        else
+          names.each do |name|
+            template "#{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{name}.template.c", output_name, :TYPE => type
+          end
         end
-
       end
     end
 
@@ -438,17 +458,129 @@ INCFN
     end
 
 
+    # Evaluate one-line Ruby statements embedded in a template.
+    def gsub_yield line, t, dtype, line_number=nil, filename=nil
+      match      = line.match YIELD_REGEX
+      while !match.nil?
+
+        statement = match[0][4...-2]
+        result = self.send :eval, statement, binding, filename, line_number
+        line["%%= #{statement}%%"] = result.to_s
+
+        match      = line.match YIELD_REGEX
+      end
+      line
+    end
+
+
+    def gsub_expression_re re, line, t, dtype, line_number=nil, filename=nil
+      match      = line.match re
+      while !match.nil?
+        expression = match[0][t.size+3...-2]
+        operation  = SyntaxTree.parse(expression)
+
+        begin
+          operation_output = operation.operate(dtype.type, dtype.id)
+
+          # Correctly join together the lines of output operations and insert them into the template line
+          if operation.is_boolean?
+            line["%%#{t} #{expression}%%"] = operation_output[0]
+          else
+            line["%%#{t} #{expression}%%"] = operation_output.join(";\n") + ";"
+          end
+
+        rescue NotImplementedError
+          raise(SyntaxError, "possible NotImplementedError (#{dtype.type}) in template #{filename}: #{line_number}: \"#{expression}\"")
+        rescue IndexError
+          raise(StandardError, "string not matched: '%%#{t} #{expression}%%'")
+        end
+
+        match      = line.match re
+      end
+      line
+    end
+
+
+    # Replace a pseudo-mathematical expression with an actual one with dtypes taken into account.
+    def gsub_expression line, t, dtype, line_number=nil, filename=nil
+      gsub_expression_re /%%#{t}\ [^%%]*%%/, line, t, dtype, line_number, filename
+    end
+
+    def gsub_expression_long line, t, dtype, line_number=nil, filename=nil
+      gsub_expression_re /%%#{t}_LONG\ [^%%]*%%/, line, "#{t}_LONG", dtype.long_dtype, line_number, filename
+    end
+
+
+    # Replaces sub_int_real and sub_int.
+    #
+    # Allows more flexible substitutions. Pass a hash of templates, e.g., {:INT => INDEX_DTYPES[0], :REAL => RATIONAL_DTYPES[1]}, and
+    # it'll produce all possible combinations thereof.
+    #
+    # At some point we should probably just switch to erb. This just started growing and pretty soon I realized
+    # erb would likely have been a better option. Oh well.
+    def template template_filepath, output_filepath, types = {}
+      raise(ArgumentError, "expected substitution templates") if types.size == 0
+
+      #STDERR.puts "output_filepath = #{output_filepath}; Dir.pwd = #{Dir.pwd}"
+
+      output   = File.new output_filepath, "a" # append
+      template = File.new template_filepath, "r"
+
+      line_count = 1
+
+      while line = template.gets
+        line.chomp!
+
+        types.each_pair do |t_sym,dtype|
+          t = t_sym.to_s
+
+          #STDERR.puts "Processing #{template_filepath}: #{line}"
+          if line.include?("%%#{t}")
+            line.gsub! "%%#{t}%%", dtype.sizeof.to_s
+            line.gsub! "%%#{t}_ABBREV%%", dtype.id.to_s
+            line.gsub! "%%#{t}_MAX%%", dtype.max_macro
+            line.gsub! "%%#{t}_LONG%%", dtype.long_dtype.sizeof.to_s #e.g., int64 instead of int8 for temporary variables
+
+            # Get any mathematical expressions that need to be translated
+            line = gsub_expression(line, t, dtype, line_count, template_filepath)
+
+            # Do the same for temp variables (which are often going to be more bytes)
+            line = gsub_expression_long(line, t, dtype, line_count, template_filepath)
+          end
+
+          # Deal with any Ruby statements in the template.
+          if line.include?("%%=")
+            line = gsub_yield(line, t, dtype, line_count, template_filepath)
+          end
+
+        end
+
+        line_count += 1
+
+        output.puts line
+      end
+
+      output.close
+
+      output_filepath
+    end
+
+
   end
 end
 
-Generator.make_dtypes_h
-Generator.make_dtypes_c
-Generator.make_dfuncs_c
-Generator.make_templated_c './smmp', 'blas_header', ['blas1'], 'smmp1.c', 1, Generator::INDEX_DTYPES # 1-type interface functions for SMMP
-Generator.make_templated_c './smmp', nil,           ['blas2'], 'smmp1.c', 2, Generator::INDEX_DTYPES # 2-type interface functions for SMMP
-Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp2.c', 1, Generator::INDEX_DTYPES # 1-type SMMP functions from Fortran
-Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', 2, Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
-Generator.make_templated_c './blas', 'blas_header', ['igemm', 'igemv'], 'blas.c', 1, Generator::INTEGER_DTYPES
-Generator.make_templated_c './blas', nil,           ['rationalmath', 'rgemm', 'rgemv'], 'blas.partial.c', 1, Generator::RATIONAL_DTYPES.reverse
-`cat blas.partial.c >> blas.c`
-`rm blas.partial.c`
+if $IN_MAKEFILE
+  Generator.make_dtypes_h
+  Generator.make_dtypes_c
+  Generator.make_dfuncs_c
+  Generator.make_templated_c './smmp', 'blas_header', ['blas1'], 'smmp1.c', :TYPE => Generator::INDEX_DTYPES # 1-type interface functions for SMMP
+  Generator.make_templated_c './smmp', nil,           ['blas2'], 'smmp1.c', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES # 2-type interface functions for SMMP
+  Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp2.c', :TYPE => Generator::INDEX_DTYPES # 1-type SMMP functions from Fortran
+  Generator.make_templated_c './smmp', nil,           ['complexmath'], 'smmp2.c', :TYPE => Generator::COMPLEX_DTYPES
+  Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
+  #Generator.make_templated_c './blas', 'blas_header', ['igemm', 'igemv'], 'blas.c', 1, Generator::INTEGER_DTYPES
+  Generator.make_templated_c './blas', 'blas_header', ['rationalmath'], 'blas.partial.c', :TYPE => Generator::RATIONAL_DTYPES
+  Generator.make_templated_c './blas', nil,           ['gemm', 'gemv'], 'blas.partial.c', :TYPE => Generator::NONBLAS_DTYPES
+  `cat blas.partial.c >> blas.c`
+  `rm blas.partial.c`
+end
