@@ -130,7 +130,6 @@ DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank, vo
   if (elements_length == count) s->elements = elements;
   else {
     s->elements = ALLOC_N(char, nm_sizeof[dtype]*count);
-    // allocation succeeded
 
     if (elements_length > 0) {
       // repeat elements over and over again until the end of the matrix

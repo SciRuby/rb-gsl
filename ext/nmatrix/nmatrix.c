@@ -585,6 +585,7 @@ size_t* nm_interpret_initial_capacity(VALUE arg) {
 
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   char    ZERO = 0;
+  VALUE   QNIL = Qnil;
   int8_t  dtype, stype, offset = 0;
   size_t  rank;
   size_t* shape;
@@ -616,10 +617,14 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
       if (TYPE(argv[1+offset]) == T_ARRAY) init_val_len = RARRAY_LEN(argv[1+offset]);
       else                                 init_val_len = 1;
     }
-  } else if (stype == S_DENSE) {
-    init_val = NULL; // no need to initialize dense with any kind of default value.
-  } else { // if it's a list or compressed, we want to assume default of 0 even if none provided
-    if (stype == S_YALE) {
+  } else {
+    if (stype == S_DENSE) { // no need to initialize dense with any kind of default value unless it's an NM_ROBJ matrix
+      if (dtype == NM_ROBJ) { // pretend [nil] was passed for ROBJ.
+        init_val = ALLOC(VALUE);
+        SetFuncs[NM_ROBJ][NM_ROBJ](1, init_val, 0, &QNIL, 0);
+        init_val_len = 1;
+      } else init_val = NULL;
+    } else if (stype == S_YALE) { // if it's a list or compressed, we want to assume default of 0 even if none provided
       init_val = ALLOC(size_t);
       *(size_t*)init_val = 0;
     } else {

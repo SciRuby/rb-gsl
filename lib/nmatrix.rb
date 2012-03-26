@@ -44,7 +44,7 @@ class NMatrix
     (0...shape[0]).each do |i|
       arr = []
       (0...shape[1]).each do |j|
-        arr << self[i,j]
+        arr << (self[i,j].nil? ? "nil" : self[i,j])
       end
       puts arr.join("  ")
     end

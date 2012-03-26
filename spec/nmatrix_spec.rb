@@ -36,6 +36,11 @@ describe NMatrix do
   RATIONAL_MATRIX43A_ARRAY = MATRIX43A_ARRAY.collect { |x| x.to_r }
   RATIONAL_MATRIX32A_ARRAY = MATRIX32A_ARRAY.collect { |x| x.to_r }
 
+  it "correctly fills dense Ruby object matrix with nil" do
+    n = NMatrix.new([4,3], :object)
+    n[0,0].should == nil
+  end
+
   it "correctly fills dense with individual assignments" do
     n = NMatrix.new([4,3], :float64)
     n[0,0] = 14.0
