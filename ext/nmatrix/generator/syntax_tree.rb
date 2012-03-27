@@ -52,13 +52,15 @@ end
 
 class SyntaxTree
   # Changing the order of these arrays will change the relative precedence of the operators.
-  ASSIGN_OPS = %w{+= -= *=}.map { |o| o.intern } # skipping: >>= <<= /= %= &= ^= |=
+  ASSIGN_OPS = %w{+= -= *= /= %= &= ^= |= >>= <<=}.map { |o| o.intern }
   COMP_OPS = %w{<= >= == != < >}.map { |o| o.intern }
   TRANSITIVE_BINARY_OPS = %w{&& || & ~ + *}.map { |o| o.intern }
-  BINARY_OPS = %w{>> << && || & ~ - + * / %}.map { |o| o.intern }
-  DISALLOWED_OPS = %w{++ -- !}.map { |o| o.intern }
-  OPS = ASSIGN_OPS.concat(%w{<= >= == != < > = - + * / %}).map { |o| o.intern } # skipping: >> << && || & | ~
-  OPS_REGEX = /[<>=!\+\-\*\/%]/
+  BINARY_OPS = %w{>> << && || & | ^ - + * / %}.map { |o| o.intern }
+  BITWISE_BINARY_OPS = %w{& | ^}.map { |o| o.intern }
+  UNARY_OPS = %w{~ - !}
+  DISALLOWED_OPS = %w{++ --}.map { |o| o.intern }
+  OPS = (%w{>> <<}.concat(ASSIGN_OPS).concat(COMP_OPS).concat(%w{= - + * / % & | ^}).concat(UNARY_OPS)).map { |o| o.intern } # skipping: >> << && || & | ~
+
   EQ = :'='
   FLIP_OPS = {:'<=' => :'>=',
               :'>=' => :'<=',
@@ -74,6 +76,10 @@ class SyntaxTree
       @op = FLIP_OPS[op]
       @left = right
       @right = left
+    elsif left.is_a?(String) && left.size == 0
+      @op = op
+      @left = nil
+      @right = right
     else
       @op = op
       @left = left
@@ -82,6 +88,11 @@ class SyntaxTree
   end
   attr_reader :op
   attr_accessor :left, :right
+
+
+  def unary?
+    left.nil?
+  end
 
 
   def is_boolean?
@@ -128,7 +139,7 @@ class SyntaxTree
 
 
   def depth
-    (left.depth > right.depth ? left.depth : right.depth) + 1
+    unary? ? right.depth : (left.depth > right.depth ? left.depth : right.depth) + 1
   end
 
   # Split the SyntaxTree into a whole bunch of simpler ones appropriate for doing struct-type operations.
@@ -170,7 +181,7 @@ class SyntaxTree
 
   # Deep copy.
   def dup
-    SyntaxTree.new(op, left.dup, right.dup)
+    SyntaxTree.new(op, (unary? ? nil : left.dup), right.dup)
   end
 
 
@@ -199,7 +210,7 @@ class SyntaxTree
     operations =
     case type
     when :int, :float
-      ["#{left.operate(type, exact_type).first} #{op} #{right.operate(type, exact_type).first}"]
+      operate_simple(type, exact_type)
     when :rational, :complex
       operate_on_subtrees(type, exact_type).flatten
     when :value,:object
@@ -217,20 +228,48 @@ class SyntaxTree
 
 
 protected
-  def operate_object
-    ruby_right = !right.is_a?(SyntaxTree) && right.to_i.to_s == right ? "INT2FIX(#{right})" : right.operate_object.first
-    case op
-    when EQ
-      ["#{left} #{op} #{ruby_right}"]
-    when *COMP_OPS
-      ["rb_funcall(#{left.operate_object.first}, rb_intern(\"#{op}\"), 1, #{ruby_right}) == Qtrue"]
+  def operate_simple type, exact_type
+    unary? ? ["#{op}#{right.operate(type, exact_type)}"] : ["#{left.operate(type, exact_type).first} #{op} #{right.operate(type, exact_type).first}"]
+  end
+
+  # Figure out what to do on the right side of the operation if we're dealing with Ruby objects and unary operators
+  def operate_object_right
+    if !right.is_a?(SyntaxTree) && right.to_i.to_s == right
+      unary? ? "INT2FIX(#{op}#{right})" : "INT2FIX(#{right})"
+    elsif right.is_a?(SyntaxTree) && right.unary? && right.right.to_i.to_s == right.right
+      "INT2FIX(#{op}#{right})"
     else
-      ["rb_funcall(#{left.operate_object.first}, rb_intern(\"#{op}\"), 1, #{ruby_right})"]
+      right.operate_object.first
+    end
+  end
+
+  def operate_object
+    if unary?
+      ["rb_funcall(#{operate_object_right}, rb_intern(\"#{op}@\"), 0)"] # e.g., -@ for negative
+    else
+      case op
+      when EQ
+        ["#{left} #{op} #{operate_object_right}"]
+      when *COMP_OPS
+        ["rb_funcall(#{left.operate_object.first}, rb_intern(\"#{op}\"), 1, #{operate_object_right}) == Qtrue"]
+      else
+        ["rb_funcall(#{left.operate_object.first}, rb_intern(\"#{op}\"), 1, #{operate_object_right})"]
+      end
     end
   end
 
   def operate_rational exact_type=:r128
-    if right == "0"
+    if unary?
+      if op == :'-'
+        ["{-#{left}.n, #{left}.d}"]
+      elsif op == :'~'
+        ["{~#{left}.n, ~#{right}.d}"]
+      elsif op == :'!'
+        ["{!#{left}.n, 1}"]
+      else
+        raise NotImplementedError, "unhandled unary operation #{op} on complex and 0"
+      end
+    elsif right == "0"
       if op == EQ
         ["#{left}.n = 0", " #{left}.d = 1"]
       elsif COMP_OPS.include?(op)
@@ -251,12 +290,20 @@ protected
     else
       if op == EQ
         ["#{left} = #{right.operate_rational(exact_type).first}"]
+      elsif op == :'=='
+        ["#{left}.n == #{right}.n && #{left}.d == #{right}.d"]
       elsif COMP_OPS.include?(op)
-        raise NotImplementedError, "unhandled comparison #{op} on rationals"
+        ["#{left}.n / #{left}.d #{op} #{right}.n / #{right}.d"] # TODO: Is there a faster way?
       elsif [:'+', :'-'].include?(op)
         ["#{exact_type}_addsub(#{left}.n, #{left}.d, #{right}.n, #{right}.d, '#{op}')"]
       elsif [:'*', :'/'].include?(op)
         ["#{exact_type}_muldiv(#{left}.n, #{left}.d, #{right}.n, #{right}.d, '#{op}')"]
+      elsif op == :'<<'
+        ["#{exact_type}_left_shift(#{left}.n, #{left}.d, #{right}.n)"]
+      elsif op == :'>>'
+        ["#{exact_type}_right_shift(#{left}.n, #{left}.d, #{right}.n)"]
+      elsif BITWISE_BINARY_OPS.include?(op)
+        ["#{left} #{op} #{right}"]
       else
         raise NotImplementedError, "unhandled operation #{op} on rationals"
       end
@@ -264,15 +311,31 @@ protected
   end
 
   def operate_complex exact_type=:c128
-    if right == "0"
+    if unary?
+      if op == :'-'
+        ["{-#{right}.r, -#{right}.i}"]
+      elsif op == :'~'
+        ["{~#{left}.r, ~#{left}.i}"]
+      elsif op == :'!'
+        ["{!#{left}.r, !#{left}.i}"]
+      else
+        raise NotImplementedError, "unhandled unary operation #{op} on complex and 0"
+      end
+    elsif right == "0"
       if op == EQ
         ["#{left}.r = 0", " #{left}.i = 0"]
       elsif op == :'=='
         ["#{left}.r == 0 && #{left}.i == 0"]
       elsif op == :'!='
         ["(#{left}.r != 0 || #{left}.i != 0)"]
-      elsif (COMP_OPS - [:'==']).include?(op)
-        raise NotImplementedError, "unhandled comparison #{op} on complex and 0"
+      elsif op == :'>'
+        ["(#{left}.r > 0 && #{left}.i > 0)"]
+      elsif op == :'<'
+        ["(#{left}.r < 0 && #{left}.i < 0)"]
+      elsif op == :'>='
+        ["(!(#{left}.r < 0 || #{left}.i < 0))"]
+      elsif op == :'<='
+        ["(!(#{left}.r > 0 || #{left}.i > 0))"]
       else
         raise NotImplementedError, "unhandled operation #{op} on complex and 0"
       end
@@ -281,8 +344,16 @@ protected
         ["#{left} = #{right.operate_complex(exact_type).first}"]
       elsif op == :'=='
         ["#{left}.r == #{right}.r && #{left}.i == #{right}.i"]
-      elsif (COMP_OPS - [:'==']).include?(op)
-        raise NotImplementedError, "unhandled comparison #{op} on complex numbers"
+      elsif op == :'!='
+        ["#{left}.r != #{right}.r || #{left}.i != #{right}.i"]
+      elsif op == :'>'
+        ["(#{left}.r > #{right}.r && #{left}.i > #{left}.i)"]
+      elsif op == :'<'
+        ["(#{left}.r < #{left}.r && #{left}.i < #{left}.i)"]
+      elsif op == :'>='
+        ["(!(#{left}.r < 0 || #{left}.i < 0))"]
+      elsif op == :'<='
+        ["(!(#{left}.r > 0 || #{left}.i > 0))"]
       elsif op == :'+'
         ["#{exact_type}_add(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
       elsif op == :'-'
@@ -291,8 +362,17 @@ protected
         ["#{exact_type}_mul(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
       elsif op == :'/'
         ["#{exact_type}_div(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+      elsif op == :'^'
+        ["#{exact_type}_bitwise_xor(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+      elsif op == :'|'
+        ["#{exact_type}_bitwise_or(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+      elsif op == :'&'
+        ["#{exact_type}_bitwise_and(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+      elsif op == :'!'
+        ["0"]
       else
-        raise NotImplementedError, "unhandled operation #{op} on complex numbers"
+        STDERR.puts "WARNING: unhandled operation #{op} on complex numbers"
+        ["0"]
       end
     end
   end
@@ -305,7 +385,7 @@ public
     def parse str
       SyntaxTree::OPS.each do |op_symbol|
         op = op_symbol.to_s
-        pos = str.index(op)
+        pos = str.index(op, 1)
 
         while !pos.nil? # Need to look for each operator multiple times in a line
 
@@ -330,13 +410,20 @@ public
           # Split around the operator
           left  = str[0...pos].strip
           right = str[pos+op.size...str.size].strip
-          #STDERR.puts "operator #{op_symbol} was found (#{pos}); parsing '#{left}' and '#{right}'"
+
+          STDERR.puts "operator #{op_symbol} was found (#{pos}); parsing '#{left}' and '#{right}'"
           return SyntaxTree.new(op_symbol, SyntaxTree.parse(left), SyntaxTree.parse(right))
 
         end
       end
-      STDERR.puts "Making identifier out of #{str}"
-      Identifier.new(str)
+
+      if str =~ /[~\-!]/
+        STDERR.puts "unary operator #{str[0]} was found (0); making identifier of #{str[1...str.size]}"
+        SyntaxTree.new(str[0].intern, "", Identifier.new(str[1...str.size]))
+      else
+        STDERR.puts "Making identifier out of #{str}"
+        Identifier.new(str)
+      end
     end
   end
 end

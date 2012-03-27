@@ -196,6 +196,29 @@ enum NMatrix_STypes {
 };
 
 
+// Element-wise operations (see blas/elementwise.template.c)
+enum NMatrix_Ops {
+  NM_OP_ADD = '+',
+  NM_OP_SUB = '-',
+  NM_OP_MUL = '*',
+  NM_OP_DIV = '/',
+  NM_OP_MOD = '%',
+  NM_OP_BANG = '!',
+  NM_OP_NEG, // unary minus
+  NM_OP_EQ, // ==
+  NM_OP_NEQ, // !=
+  NM_OP_GT, // >
+  NM_OP_LT, // <
+  NM_OP_GTE, // >=
+  NM_OP_LTE, // <=
+  NM_OP_NOT = '~',
+  NM_OP_AND = '&',
+  NM_OP_OR = '|',
+  NM_OP_XOR = '^',
+  NM_OP_LSH, // <<
+  NM_OP_RSH // >>
+};
+
 
 /* Singly-linked ordered list
  * - holds keys and values
@@ -658,7 +681,8 @@ typedef void*    (*nm_stype_ref_t[S_TYPES])(STORAGE*, size_t*);        // get/re
 typedef VALUE    (*nm_stype_ins_t[S_TYPES])(STORAGE*, size_t*, VALUE); // insert
 typedef STORAGE* (*nm_create_storage_t[S_TYPES])();
 typedef STORAGE* (*nm_cast_copy_storage_t[S_TYPES])();
-typedef NMATRIX* (*nm_binary_op_t[S_TYPES])();
+typedef NMATRIX* (*nm_matrix_multiply_op_t[S_TYPES])();
+typedef NMATRIX* (*nm_elementwise_binary_op_t[S_TYPES])();
 typedef void     (*nm_delete_t[S_TYPES])();
 typedef void     (*nm_mark_t[S_TYPES])(void*);
 typedef void     (*nm_gemm_t[NM_TYPES])();           // general matrix/matrix multiply

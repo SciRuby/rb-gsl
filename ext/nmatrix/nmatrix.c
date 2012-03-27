@@ -306,10 +306,47 @@ static NMATRIX* multiply_matrix_list_casted(STORAGE_PAIR casted_storage, size_t*
 }
 
 
-nm_binary_op_t CastedMultiplyFuncs = {
+nm_matrix_multiply_op_t CastedMultiplyFuncs = {
   multiply_matrix_dense_casted,
   multiply_matrix_list_casted,
   multiply_matrix_yale_casted
+};
+
+
+static NMATRIX* elementwise_dense_casted(STORAGE_PAIR casted_storage, char op) {
+  DENSE_STORAGE *left  = (DENSE_STORAGE*)(casted_storage.left),
+                *right = (DENSE_STORAGE*)(casted_storage.right),
+                *result;
+
+  // We can safely get dtype from the casted matrices; post-condition of binary_storage_cast_alloc is that dtype is the
+  // same for left and right.
+  size_t i;
+  int8_t dtype = left->dtype;
+
+  // Setup matrix shape for result
+  size_t* shape = ALLOC_N(size_t, left->rank);
+  for (i = 0; i < left->rank; ++i) shape[i] = left->shape[i];
+
+  // Create result storage.
+  result = create_dense_storage(dtype, shape, left->rank, NULL, 0);
+
+  // Do the operation
+  // TODO: Operation
+
+  return nm_create(S_DENSE, result);
+}
+
+
+static NMATRIX* elementwise_list_casted(STORAGE_PAIR casted_storage, char op) {
+  rb_raise(rb_eNotImpError, "elementwise operations not implemented for list-of-list matrices");
+  return NULL;
+}
+
+
+mm_elementwise_binary_op_t CastedElementwiseFuncs = {
+  elementwise_dense_casted,
+  elementwise_list_casted,
+  elementwise_yale_casted
 };
 
 
@@ -829,13 +866,37 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 }
 
 
+static VALUE elementwise(NMATRIX* left, NMATRIX* right, char op) {
+  ///TODO: multiplication for non-dense and/or non-decimal matrices
+  NMATRIX* result;
+
+  // Make sure both of our matrices are of the correct type.
+  STORAGE_PAIR casted = binary_storage_cast_alloc(left, right);
+
+  result = CastedElementwiseFuncs[left->stype](casted, op);
+
+  // Free up temporary casted matrices
+  if (left->storage != casted.left)   DeleteFuncs[left->stype](casted.left);
+  if (right->storage != casted.right) DeleteFuncs[left->stype](casted.right);
+
+  if (result) return Data_Wrap_Struct(cNMatrix, MarkFuncs[result->stype], nm_delete, result);
+  return Qnil; // Only if we try to multiply list matrices should we return Qnil.
+}
+
+
 static VALUE nm_add(VALUE leftv, VALUE rightv) {
   NMATRIX *left, *right;
 
   // left has to be of type NMatrix.
   CheckNMatrixType(leftv);
+  CheckNMatrixType(rightv);
 
-  rb_raise(rb_eNotImpError, "in progress");
+  UnwrapNMatrix(rightv, right);
+  UnwrapNMatrix(leftv, left);
+
+
+
+
 
   return Qnil;
 }

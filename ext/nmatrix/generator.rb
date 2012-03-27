@@ -489,7 +489,8 @@ INCFN
             line["%%#{t} #{expression}%%"] = operation_output.join(";\n") + ";"
           end
 
-        rescue NotImplementedError
+        rescue NotImplementedError => e
+          STDERR.puts "Error: #{e.inspect}"
           raise(SyntaxError, "possible NotImplementedError (#{dtype.type}) in template #{filename}: #{line_number}: \"#{expression}\"")
         rescue IndexError
           raise(StandardError, "string not matched: '%%#{t} #{expression}%%'")
@@ -581,6 +582,7 @@ if $IN_MAKEFILE
   #Generator.make_templated_c './blas', 'blas_header', ['igemm', 'igemv'], 'blas.c', 1, Generator::INTEGER_DTYPES
   Generator.make_templated_c './blas', 'blas_header', ['rationalmath'], 'blas.partial.c', :TYPE => Generator::RATIONAL_DTYPES
   Generator.make_templated_c './blas', nil,           ['gemm', 'gemv'], 'blas.partial.c', :TYPE => Generator::NONBLAS_DTYPES
+  Generator.make_templated_c './blas', nil,           ['elementwise'], 'blas.partial.c', :TYPE=>Generator::ACTUAL_DTYPES
   `cat blas.partial.c >> blas.c`
   `rm blas.partial.c`
 end

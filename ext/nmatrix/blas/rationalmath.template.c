@@ -44,3 +44,20 @@
   return result;
 }
 
+
+%%TYPE%% %%TYPE_ABBREV%%_left_shift(%%= dtype == :rational128 ? "int64_t anum, int64_t aden, int64_t bnum" : (dtype == :rational64 ? "int32_t anum, int32_t aden, int32_t bnum" : "int16_t anum, int16_t aden, int16_t bnum")%%)
+{
+  %%TYPE%% c;
+  c.n = anum << bnum;
+  c.d = aden << bnum; // assume its an integer cast to a rational
+  return c;
+}
+
+
+%%TYPE%% %%TYPE_ABBREV%%_right_shift(%%= dtype == :rational128 ? "int64_t anum, int64_t aden, int64_t bnum" : (dtype == :rational64 ? "int32_t anum, int32_t aden, int32_t bnum" : "int16_t anum, int16_t aden, int16_t bnum")%%)
+{
+  %%TYPE%% c;
+  c.n = anum >> bnum;
+  c.d = aden >> bnum; // assume its an integer cast to a rational
+  return c;
+}
