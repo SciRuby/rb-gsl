@@ -207,10 +207,10 @@ enum NMatrix_Ops {
   NM_OP_NEG, // unary minus
   NM_OP_EQ, // ==
   NM_OP_NEQ, // !=
-  NM_OP_GT, // >
-  NM_OP_LT, // <
-  NM_OP_GTE, // >=
-  NM_OP_LTE, // <=
+  NM_OP_GT = '>', // >
+  NM_OP_LT = '<', // <
+  NM_OP_GTE = ',', // >=
+  NM_OP_LTE = '.', // <=
   NM_OP_NOT = '~',
   NM_OP_AND = '&',
   NM_OP_OR = '|',
@@ -582,6 +582,21 @@ void i64_r128_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
 void i64_v_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C);
 void i64_v_transp_(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, bool move);
 void i64_v_smmp_sort_columns_(y_size_t n, YALE_PARAM A);
+
+int nm_b_elementwise(const u_int8_t* A, const u_int8_t* B, u_int8_t* C, size_t n, enum NMatrix_Ops op);
+int nm_i8_elementwise(const int8_t* A, const int8_t* B, int8_t* C, size_t n, enum NMatrix_Ops op);
+int nm_i16_elementwise(const int16_t* A, const int16_t* B, int16_t* C, size_t n, enum NMatrix_Ops op);
+int nm_i32_elementwise(const int32_t* A, const int32_t* B, int32_t* C, size_t n, enum NMatrix_Ops op);
+int nm_i64_elementwise(const int64_t* A, const int64_t* B, int64_t* C, size_t n, enum NMatrix_Ops op);
+int nm_f32_elementwise(const float* A, const float* B, float* C, size_t n, enum NMatrix_Ops op);
+int nm_f64_elementwise(const double* A, const double* B, double* C, size_t n, enum NMatrix_Ops op);
+int nm_c64_elementwise(const complex64* A, const complex64* B, complex64* C, size_t n, enum NMatrix_Ops op);
+int nm_c128_elementwise(const complex128* A, const complex128* B, complex128* C, size_t n, enum NMatrix_Ops op);
+int nm_r32_elementwise(const rational32* A, const rational32* B, rational32* C, size_t n, enum NMatrix_Ops op);
+int nm_r64_elementwise(const rational64* A, const rational64* B, rational64* C, size_t n, enum NMatrix_Ops op);
+int nm_r128_elementwise(const rational128* A, const rational128* B, rational128* C, size_t n, enum NMatrix_Ops op);
+int nm_v_elementwise(const VALUE* A, const VALUE* B, VALUE* C, size_t n, enum NMatrix_Ops op);
+
 // End Formerly in smmp.h
 
 
@@ -682,7 +697,9 @@ typedef VALUE    (*nm_stype_ins_t[S_TYPES])(STORAGE*, size_t*, VALUE); // insert
 typedef STORAGE* (*nm_create_storage_t[S_TYPES])();
 typedef STORAGE* (*nm_cast_copy_storage_t[S_TYPES])();
 typedef NMATRIX* (*nm_matrix_multiply_op_t[S_TYPES])();
-typedef NMATRIX* (*nm_elementwise_binary_op_t[S_TYPES])();
+typedef NMATRIX* (*nm_elementwise_binary_op_casted_t[S_TYPES])();
+typedef NMATRIX* (*nm_elementwise_binary_op_t[NM_TYPES])();
+typedef bool     (*nm_compare_t[S_TYPES])();
 typedef void     (*nm_delete_t[S_TYPES])();
 typedef void     (*nm_mark_t[S_TYPES])(void*);
 typedef void     (*nm_gemm_t[NM_TYPES])();           // general matrix/matrix multiply
@@ -760,6 +777,7 @@ void            mark_dense_storage(void* s);
 DENSE_STORAGE*  cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype);
 
 size_t          count_dense_storage_elements(DENSE_STORAGE* s);
+bool            dense_storage_eqeq(DENSE_STORAGE*, DENSE_STORAGE*);
 
 size_t          dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
 void*           dense_storage_get(DENSE_STORAGE* s, size_t* coords);
@@ -774,6 +792,7 @@ LIST_STORAGE*   cast_copy_list_storage(LIST_STORAGE* rhs, int8_t new_dtype);
 void*           list_storage_get(LIST_STORAGE* s, size_t* coords);
 void*           list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val);
 void*           list_storage_remove(LIST_STORAGE* s, size_t* coords);
+bool            list_storage_eqeq(LIST_STORAGE*, LIST_STORAGE*);
 
 /* yale.c */
 void print_vectors(YALE_STORAGE* s);
@@ -782,6 +801,7 @@ void            init_yale_storage(YALE_STORAGE* s);
 void            delete_yale_storage(YALE_STORAGE* s);
 void            mark_yale_storage(void* s);
 YALE_STORAGE*   cast_copy_yale_storage(YALE_STORAGE* rhs, int8_t new_dtype);
+bool            yale_storage_eqeq(YALE_STORAGE*, YALE_STORAGE*);
 
 void*           yale_storage_ref(YALE_STORAGE* s, size_t* coords);
 char            yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v);

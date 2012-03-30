@@ -92,6 +92,14 @@ int8_t yale_index_dtype(YALE_STORAGE* s) {
 }
 
 
+bool yale_storage_eqeq(YALE_STORAGE* left, YALE_STORAGE* right) {
+  // Easy comparison: Do the IJA and A vectors match exactly?
+  return (!memcmp(left->ija, right->ija, nm_sizeof[left->index_dtype]) && !memcmp(left->a, right->a, nm_sizeof[left->dtype]));
+
+  // TODO: Don't rely on the basic comparison unless it returns true. Particularly once element-wise operations are
+  // implemented, there is no guarantee that yale matrices won't have
+}
+
 
 char yale_vector_replace(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void* val, y_size_t n) {
 

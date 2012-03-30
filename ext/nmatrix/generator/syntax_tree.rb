@@ -51,6 +51,7 @@ end
 
 
 class SyntaxTree
+  EQ = :'='
   # Changing the order of these arrays will change the relative precedence of the operators.
   ASSIGN_OPS = %w{+= -= *= /= %= &= ^= |= >>= <<=}.map { |o| o.intern }
   COMP_OPS = %w{<= >= == != < >}.map { |o| o.intern }
@@ -59,9 +60,8 @@ class SyntaxTree
   BITWISE_BINARY_OPS = %w{& | ^}.map { |o| o.intern }
   UNARY_OPS = %w{~ - !}
   DISALLOWED_OPS = %w{++ --}.map { |o| o.intern }
-  OPS = (%w{>> <<}.concat(ASSIGN_OPS).concat(COMP_OPS).concat(%w{= - + * / % & | ^}).concat(UNARY_OPS)).map { |o| o.intern } # skipping: >> << && || & | ~
+  OPS = (%w{>> <<}.concat(ASSIGN_OPS + [EQ]).concat(COMP_OPS).concat(%w{- + * / % & | ^}).concat(UNARY_OPS)).map { |o| o.intern } # skipping: >> << && || & | ~
 
-  EQ = :'='
   FLIP_OPS = {:'<=' => :'>=',
               :'>=' => :'<=',
               :'==' => :'==',
@@ -228,8 +228,28 @@ class SyntaxTree
 
 
 protected
+  def is_expression_boolean? expr
+    expr =~ /^\(.*(==|!=|>=|<=| < | > |&&|\|\|)+.*\)$/ || expr =~ /^!/
+  end
+
+
   def operate_simple type, exact_type
-    unary? ? ["#{op}#{right.operate(type, exact_type)}"] : ["#{left.operate(type, exact_type).first} #{op} #{right.operate(type, exact_type).first}"]
+    if unary?
+      if op == :'~' && type == :float
+        ["rb_raise(rb_eSyntaxError, \"cannot perform bitwise operations on floats\")"]
+      else
+        ["#{op}#{right.operate(type, exact_type).first}"]
+      end
+    elsif op == EQ
+      r = right.operate(type, exact_type).first
+      r =~ /^rb_raise\(rb_eSyntaxError/ ? [r] : ["#{left} = #{r}"]
+    elsif op == :'%' && type == :float
+      ["fmod(#{left.operate(type, exact_type).first}, #{right.operate(type, exact_type).first})"]
+    elsif [:'&', :'|', :'^', :'<<', :'>>'].include?(op)
+      ["rb_raise(rb_eSyntaxError, \"cannot perform bitwise operations on floats\")"]
+    else
+      ["#{left.operate(type, exact_type).first} #{op} #{right.operate(type, exact_type).first}"]
+    end
   end
 
   # Figure out what to do on the right side of the operation if we're dealing with Ruby objects and unary operators
@@ -261,11 +281,11 @@ protected
   def operate_rational exact_type=:r128
     if unary?
       if op == :'-'
-        ["{-#{left}.n, #{left}.d}"]
+        ["#{exact_type}_negate(#{right}.n, #{right}.d)"]
       elsif op == :'~'
-        ["{~#{left}.n, ~#{right}.d}"]
+        ["rb_raise(rb_eSyntaxError, \"cannot perform bitwise operations on rational numbers\")"]
       elsif op == :'!'
-        ["{!#{left}.n, 1}"]
+        ["#{exact_type}_bang(#{right}.n, #{right}.d)"]
       else
         raise NotImplementedError, "unhandled unary operation #{op} on complex and 0"
       end
@@ -289,35 +309,51 @@ protected
       end
     else
       if op == EQ
-        ["#{left} = #{right.operate_rational(exact_type).first}"]
+        r = right.operate_rational(exact_type).first
+        if r =~ /^rb_raise\(rb_eSyntaxError/
+          [r]
+        elsif is_expression_boolean?(r) # x = boolean: can't assign directly.
+          ["#{left} = BOOL2#{exact_type.to_s.upcase}(#{r})"]
+        else
+          ["#{left} = #{right.operate_rational(exact_type).first}"]
+        end
       elsif op == :'=='
-        ["#{left}.n == #{right}.n && #{left}.d == #{right}.d"]
+        ["(#{left}.n == #{right}.n && #{left}.d == #{right}.d)"]
       elsif COMP_OPS.include?(op)
-        ["#{left}.n / #{left}.d #{op} #{right}.n / #{right}.d"] # TODO: Is there a faster way?
+        ["(#{left}.n / (double)(#{left}.d) #{op} #{right}.n / (double)(#{right}.d))"] # TODO: Is there a faster way?
       elsif [:'+', :'-'].include?(op)
         ["#{exact_type}_addsub(#{left}.n, #{left}.d, #{right}.n, #{right}.d, '#{op}')"]
       elsif [:'*', :'/'].include?(op)
         ["#{exact_type}_muldiv(#{left}.n, #{left}.d, #{right}.n, #{right}.d, '#{op}')"]
+      elsif op == :'%'
+        ["#{exact_type}_mod(#{left}.n, #{left}.d, #{right}.n, #{right}.d)"]
       elsif op == :'<<'
-        ["#{exact_type}_left_shift(#{left}.n, #{left}.d, #{right}.n)"]
+        ["rb_raise(rb_eSyntaxError, \"cannot perform bitwise operations on rational numbers\")"]
       elsif op == :'>>'
-        ["#{exact_type}_right_shift(#{left}.n, #{left}.d, #{right}.n)"]
+        ["rb_raise(rb_eSyntaxError, \"cannot perform bitwise operations on rational numbers\")"]
       elsif BITWISE_BINARY_OPS.include?(op)
-        ["#{left} #{op} #{right}"]
+        ["rb_raise(rb_eSyntaxError, \"cannot perform bitwise operations on rational numbers\")"]
       else
         raise NotImplementedError, "unhandled operation #{op} on rationals"
       end
     end
   end
 
+
+  def operate_complex_boolean_helper exact_type, real_comp, join = :'&&', imag_comp=nil
+    imag_comp ||= real_comp
+    ["(#{left.operate_complex(exact_type).first}.r #{real_comp} #{right.operate_complex(exact_type).first}.r && #{left.operate_complex(exact_type).first}.i #{imag_comp} #{right.operate_complex(exact_type).first}.i)"]
+  end
+
+
   def operate_complex exact_type=:c128
     if unary?
       if op == :'-'
-        ["{-#{right}.r, -#{right}.i}"]
+        ["#{exact_type}_negate(#{right}.r, #{right}.i)"]
       elsif op == :'~'
-        ["{~#{left}.r, ~#{left}.i}"]
+        ["rb_raise(rb_eSyntaxError, \"cannot perform bitwise operations on complex numbers\")"]
       elsif op == :'!'
-        ["{!#{left}.r, !#{left}.i}"]
+        ["#{exact_type}_bang(#{right}.r, #{right}.i)"]
       else
         raise NotImplementedError, "unhandled unary operation #{op} on complex and 0"
       end
@@ -325,7 +361,7 @@ protected
       if op == EQ
         ["#{left}.r = 0", " #{left}.i = 0"]
       elsif op == :'=='
-        ["#{left}.r == 0 && #{left}.i == 0"]
+        ["(#{left}.r == 0 && #{left}.i == 0)"]
       elsif op == :'!='
         ["(#{left}.r != 0 || #{left}.i != 0)"]
       elsif op == :'>'
@@ -333,27 +369,34 @@ protected
       elsif op == :'<'
         ["(#{left}.r < 0 && #{left}.i < 0)"]
       elsif op == :'>='
-        ["(!(#{left}.r < 0 || #{left}.i < 0))"]
+        ["(!(#{left}.r < 0 || #{left}.i < 0)"]
       elsif op == :'<='
-        ["(!(#{left}.r > 0 || #{left}.i > 0))"]
+        ["(!(#{left}.r > 0 || #{left}.i > 0)"]
       else
         raise NotImplementedError, "unhandled operation #{op} on complex and 0"
       end
     else
       if op == EQ
-        ["#{left} = #{right.operate_complex(exact_type).first}"]
+        r = right.operate_complex(exact_type).first
+        if r =~ /^rb_raise\(rb_eSyntaxError/
+          [r]
+        elsif is_expression_boolean?(r) # x = boolean: can't assign directly.
+          ["#{left} = BOOL2#{exact_type.to_s.upcase}(#{r})"]
+        else
+          ["#{left} = #{r}"]
+        end
       elsif op == :'=='
-        ["#{left}.r == #{right}.r && #{left}.i == #{right}.i"]
+        operate_complex_boolean_helper(exact_type, op)
       elsif op == :'!='
-        ["#{left}.r != #{right}.r || #{left}.i != #{right}.i"]
+        operate_complex_boolean_helper(exact_type, op, :'||')
       elsif op == :'>'
-        ["(#{left}.r > #{right}.r && #{left}.i > #{left}.i)"]
+        operate_complex_boolean_helper(exact_type, op)
       elsif op == :'<'
-        ["(#{left}.r < #{left}.r && #{left}.i < #{left}.i)"]
+        operate_complex_boolean_helper(exact_type, op)
       elsif op == :'>='
-        ["(!(#{left}.r < 0 || #{left}.i < 0))"]
+        operate_complex_boolean_helper(exact_type, op)
       elsif op == :'<='
-        ["(!(#{left}.r > 0 || #{left}.i > 0))"]
+        operate_complex_boolean_helper(exact_type, op)
       elsif op == :'+'
         ["#{exact_type}_add(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
       elsif op == :'-'
@@ -362,12 +405,10 @@ protected
         ["#{exact_type}_mul(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
       elsif op == :'/'
         ["#{exact_type}_div(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
-      elsif op == :'^'
-        ["#{exact_type}_bitwise_xor(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
-      elsif op == :'|'
-        ["#{exact_type}_bitwise_or(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
-      elsif op == :'&'
-        ["#{exact_type}_bitwise_and(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+      elsif op == :'%'
+        ["#{exact_type}_mod(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+      elsif [:'&', :'|', :'^', :'<<', :'>>'].include?(op)
+        ["rb_raise(rb_eSyntaxError, \"cannot perform bitwise operations on complex numbers\")"]
       elsif op == :'!'
         ["0"]
       else
@@ -410,6 +451,17 @@ public
           # Split around the operator
           left  = str[0...pos].strip
           right = str[pos+op.size...str.size].strip
+
+          # We don't want to process x <= y as 'x <' = 'y', but as 'x' <= 'y':
+          if op_symbol == EQ
+            if SyntaxTree::OPS.include?((left[-1]+'=').intern)
+              pos = str.index(op, pos+1)
+              next
+            elsif SyntaxTree::OPS.include?(('=' + right[0]).intern) # Same for ==
+              pos = str.index(op, pos+2)
+              next
+            end
+          end
 
           STDERR.puts "operator #{op_symbol} was found (#{pos}); parsing '#{left}' and '#{right}'"
           return SyntaxTree.new(op_symbol, SyntaxTree.parse(left), SyntaxTree.parse(right))

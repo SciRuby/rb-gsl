@@ -313,6 +313,25 @@ nm_matrix_multiply_op_t CastedMultiplyFuncs = {
 };
 
 
+nm_elementwise_binary_op_t ElementwiseFuncs = { // only for dense!
+  NULL,
+  nm_b_elementwise,
+  nm_i8_elementwise,
+  nm_i16_elementwise,
+  nm_i32_elementwise,
+  nm_i64_elementwise,
+  nm_f32_elementwise,
+  nm_f64_elementwise,
+  nm_c64_elementwise,
+  nm_c128_elementwise,
+  nm_r32_elementwise,
+  nm_r64_elementwise,
+  nm_r128_elementwise,
+  nm_v_elementwise,
+  NULL
+};
+
+
 static NMATRIX* elementwise_dense_casted(STORAGE_PAIR casted_storage, char op) {
   DENSE_STORAGE *left  = (DENSE_STORAGE*)(casted_storage.left),
                 *right = (DENSE_STORAGE*)(casted_storage.right),
@@ -331,7 +350,7 @@ static NMATRIX* elementwise_dense_casted(STORAGE_PAIR casted_storage, char op) {
   result = create_dense_storage(dtype, shape, left->rank, NULL, 0);
 
   // Do the operation
-  // TODO: Operation
+  ElementwiseFuncs[dtype](left->elements, right->elements, result->elements, count_dense_storage_elements(result), op);
 
   return nm_create(S_DENSE, result);
 }
@@ -342,11 +361,23 @@ static NMATRIX* elementwise_list_casted(STORAGE_PAIR casted_storage, char op) {
   return NULL;
 }
 
+static NMATRIX* elementwise_yale_casted(STORAGE_PAIR casted_storage, char op) {
+  rb_raise(rb_eNotImpError, "elementwise operations not implemented for yale matrices");
+  return NULL;
+}
 
-mm_elementwise_binary_op_t CastedElementwiseFuncs = {
+
+nm_elementwise_binary_op_casted_t CastedElementwiseFuncs = {
   elementwise_dense_casted,
   elementwise_list_casted,
   elementwise_yale_casted
+};
+
+
+nm_compare_t EqEqFuncs = {
+  dense_storage_eqeq,
+  list_storage_eqeq,
+  yale_storage_eqeq
 };
 
 
@@ -797,6 +828,38 @@ static inline STORAGE_PAIR binary_storage_cast_alloc(NMATRIX* left_matrix, NMATR
 }
 
 
+// Are the two matrices equal?
+//
+// This will raise an exception if incorrect dimensions are discovered.
+static VALUE nm_eqeq(VALUE left, VALUE right) {
+  bool result;
+  NMATRIX *l, *r;
+  STORAGE_PAIR casted;
+
+  CheckNMatrixType(left);
+  CheckNMatrixType(right);
+
+  UnwrapNMatrix(left, l);
+  UnwrapNMatrix(right, r);
+
+  if (l->stype != r->stype) //rb_raise(nm_eStorageTypeError, "wrong storage type");
+    rb_raise(rb_eNotImpError, "comparison between different matrix stypes not yet implemented");
+
+  casted = binary_storage_cast_alloc(l, r);
+
+  result = EqEqFuncs[l->stype](casted.left, casted.right);
+
+  // Free any casted-storage we created for the comparison.
+  // TODO: Can we make the Ruby GC take care of this stuff now that we're using it?
+  // If we did that, we night not have to re-create these every time, right? Or wrong? Need to do
+  // more research.
+  if (l->storage != casted.left)   DeleteFuncs[l->stype](casted.left);
+  if (r->storage != casted.right)  DeleteFuncs[l->stype](casted.right);
+
+  return result ? Qtrue : Qfalse;
+}
+
+
 // Preconditions: NMatrices with SAME stype but possibly different dtype. This function does NOT verify stype.
 // Returns: result NMatrix with upcasted dtype and same stype as left and right.
 static VALUE multiply_matrix(NMATRIX* left, NMATRIX* right) {
@@ -817,7 +880,7 @@ static VALUE multiply_matrix(NMATRIX* left, NMATRIX* right) {
   result = CastedMultiplyFuncs[left->stype](casted, resulting_shape, vector);
 
   // Free any casted-storage we created for the multiplication.
-  // TODO: This is probably an indication that we should use the Ruby garbage collector instead.
+  // TODO: Can we make the Ruby GC take care of this stuff now that we're using it?
   // If we did that, we night not have to re-create these every time, right? Or wrong? Need to do
   // more research.
   if (left->storage != casted.left)   DeleteFuncs[left->stype](casted.left);
@@ -866,12 +929,19 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 }
 
 
-static VALUE elementwise(NMATRIX* left, NMATRIX* right, char op) {
+static VALUE nm_elementwise(VALUE leftv, VALUE rightv, char op) {
   ///TODO: multiplication for non-dense and/or non-decimal matrices
-  NMATRIX* result;
+  NMATRIX *result, *left, *right;
+  STORAGE_PAIR casted;
+
+  CheckNMatrixType(leftv);
+  CheckNMatrixType(rightv);
+
+  UnwrapNMatrix(rightv, right);
+  UnwrapNMatrix(leftv, left);
 
   // Make sure both of our matrices are of the correct type.
-  STORAGE_PAIR casted = binary_storage_cast_alloc(left, right);
+  casted = binary_storage_cast_alloc(left, right);
 
   result = CastedElementwiseFuncs[left->stype](casted, op);
 
@@ -883,22 +953,20 @@ static VALUE elementwise(NMATRIX* left, NMATRIX* right, char op) {
   return Qnil; // Only if we try to multiply list matrices should we return Qnil.
 }
 
+static VALUE nm_add(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, '+');
+}
 
-static VALUE nm_add(VALUE leftv, VALUE rightv) {
-  NMATRIX *left, *right;
+static VALUE nm_subtract(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, '-');
+}
 
-  // left has to be of type NMatrix.
-  CheckNMatrixType(leftv);
-  CheckNMatrixType(rightv);
+static VALUE nm_multiply_elementwise(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, '*');
+}
 
-  UnwrapNMatrix(rightv, right);
-  UnwrapNMatrix(leftv, left);
-
-
-
-
-
-  return Qnil;
+static VALUE nm_divide(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, '/');
 }
 
 
@@ -1512,9 +1580,12 @@ void Init_nmatrix() {
 
     rb_define_method(cNMatrix, "each", nm_each, 0);
 
-    rb_define_method(cNMatrix, "*", nm_multiply, 1);
-    //rb_define_method(cNMatrix, "+", nm_add, 1);
-    rb_define_alias(cNMatrix, "dot", "*");
+    rb_define_method(cNMatrix, "*", nm_multiply_elementwise, 1);
+    rb_define_method(cNMatrix, "/", nm_divide, 1);
+    rb_define_method(cNMatrix, "+", nm_add, 1);
+    rb_define_method(cNMatrix, "-", nm_subtract, 1);
+    rb_define_method(cNMatrix, "==", nm_eqeq, 1);
+    rb_define_method(cNMatrix, "dot", nm_multiply, 1);
 
 
     rb_define_method(cNMatrix, "capacity", nm_capacity, 0);

@@ -36,6 +36,22 @@ describe NMatrix do
   RATIONAL_MATRIX43A_ARRAY = MATRIX43A_ARRAY.collect { |x| x.to_r }
   RATIONAL_MATRIX32A_ARRAY = MATRIX32A_ARRAY.collect { |x| x.to_r }
 
+
+  it "correctly compares two list matrices" do
+    n = NMatrix.new(:list, [3,3,3], :int64)
+    m = NMatrix.new(:list, [3,3,3], :int64)
+    n.should == m
+    n[0,0,0] = 5
+    n.should_not == m
+    n[0,0,1] = 52
+    n[1,2,1] = -4
+
+    m[0,0,0] = 5
+    m[0,0,1] = 52
+    m[1,2,1] = -4
+    n.should == m
+  end
+
   it "correctly fills dense Ruby object matrix with nil" do
     n = NMatrix.new([4,3], :object)
     n[0,0].should == nil
@@ -187,6 +203,14 @@ describe NMatrix do
     n.pretty_print
   end
 
+  it "dense correctly handles elementwise addition" do
+    n = NMatrix.new(:dense, [2,2], [1,2,3,4], :int64)
+    m = NMatrix.new(:dense, [2,2], [-4,-1,0,66], :int64)
+    rcorrect = NMatrix.new(:dense, [2,2], [-3, 1, 3, 70], :int64)
+    r = n+m
+    r.should == rcorrect
+  end
+
    # TODO: Get it working with ROBJ too
   [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |left_dtype|
     [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |right_dtype|
@@ -196,7 +220,7 @@ describe NMatrix do
 
       # For now, don't bother testing int-int mult.
       #next if [:int8,:int16,:int32,:int64].include?(left_dtype) && [:int8,:int16,:int32,:int64].include?(right_dtype)
-      it "dense correctly handles #{left_dtype.to_s}*#{right_dtype.to_s} matrix multiplication" do
+      it "dense correctly handles #{left_dtype.to_s} dot #{right_dtype.to_s} matrix multiplication" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "2"
 
@@ -229,7 +253,7 @@ describe NMatrix do
 
         n.shape[1].should == m.shape[0]
 
-        r = n*m
+        r = n.dot m
 
         r[0,0].should == 273.0
         r[0,1].should == 455.0
@@ -251,7 +275,7 @@ describe NMatrix do
       # Won't work if they're both 1-byte, due to overflow.
       next if [:byte,:int8].include?(left_dtype) && [:byte,:int8].include?(right_dtype)
 
-      it "dense correctly handles #{left_dtype.to_s}*#{right_dtype.to_s} vector multiplication" do
+      it "dense correctly handles #{left_dtype.to_s} dot #{right_dtype.to_s} vector multiplication" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "2"
         n = NMatrix.new([4,3], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0], left_dtype)
@@ -267,7 +291,7 @@ describe NMatrix do
 
         n.shape[1].should == m.shape[0]
 
-        r = n*m
+        r = n.dot m
         # r.class.should == NVector
 
         r[0,0].should == 4

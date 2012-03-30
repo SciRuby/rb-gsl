@@ -1,7 +1,8 @@
 
-int nm_%%TYPE_ABBREV_elementwise(const %%TYPE%%* A, const %%TYPE%%* B, %%TYPE%%* C, size_t n, enum NMatrix_Ops op)
+int nm_%%TYPE_ABBREV%%_elementwise(const %%TYPE%%* A, const %%TYPE%%* B, %%TYPE%%* C, size_t n, enum NMatrix_Ops op)
 {
   size_t i;
+  fprintf(stderr, "elementwise: n=%d, op=%c\n", n, op);
 
   switch (op) {
   case '+':
@@ -44,12 +45,12 @@ int nm_%%TYPE_ABBREV_elementwise(const %%TYPE%%* A, const %%TYPE%%* B, %%TYPE%%*
       %%TYPE C[i] = A[i] == B[i]%%
     }
     break;
-  case NM_OP_GT:
+  case '>':
     for (i = 0; i < n; ++i) {
       %%TYPE C[i] = A[i] > B[i]%%
     }
     break;
-  case NM_OP_LT:
+  case '<':
     for (i = 0; i < n; ++i) {
       %%TYPE C[i] = A[i] < B[i]%%
     }
@@ -64,7 +65,7 @@ int nm_%%TYPE_ABBREV_elementwise(const %%TYPE%%* A, const %%TYPE%%* B, %%TYPE%%*
       %%TYPE C[i] = A[i] <= B[i]%%
     }
     break;
-  case NM_OP_NOT:
+  case '~':
     for (i = 0; i < n; ++i) {
       %%TYPE C[i] = ~A[i]%%
     }

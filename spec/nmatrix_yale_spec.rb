@@ -27,14 +27,38 @@
 require "./lib/nmatrix"
 
 describe NMatrix do
-  it "correctly sets diagonal values" do
+  it "correctly compares two empty yale matrices" do
+    n = NMatrix.new(:yale, [4,4], :float64)
+    m = NMatrix.new(:yale, [4,4], :float64)
+    n.should == m
+  end
+
+  it "correctly compares two yale matrices following basic assignments" do
+    n = NMatrix.new(:yale, [2,2], :float64)
+    m = NMatrix.new(:yale, [2,2], :float64)
+    m[0,0] = 1
+    m[0,1] = 1
+    n.should == m
+  end
+
+  it "correctly compares two yale matrices following elementwise operations" do
+    n = NMatrix.new(:yale, [2,2], :float64)
+    n[0,1] = 1
+    m = NMatrix.new(:yale, [2,2], :float64)
+    m[0,1] = -1
+    r = NMatrix.new(:yale, [2,2], :float64)
+    r[0,1] = 0
+    (n+m).should == r
+  end
+
+  it "correctly sets diagonal values in yale" do
     n = NMatrix.new(:yale, [2,3], :float64)
     n[1,1] = 0.1
     n[0,0] = 0.2
     n.__yale_d__.should == [0.2, 0.1]
   end
 
-  it "does not resize until necessary" do
+  it "does not resize yale until necessary" do
     n = NMatrix.new(:yale, [2,3], :float64)
     n.__yale_size__.should == 3
     n.capacity.should == 5
@@ -46,7 +70,7 @@ describe NMatrix do
   end
 
 
-  it "correctly sets when not resizing" do
+  it "correctly sets when not resizing (yale)" do
     n = NMatrix.new(:yale, [2,3], :float64)
     n[0,0] = 0.1
     n[0,1] = 0.2
@@ -55,7 +79,7 @@ describe NMatrix do
     n.__yale_ija__ == [3,4,5,1,0]
   end
 
-  it "correctly sets when resizing" do
+  it "correctly sets when resizing (yale)" do
     n = NMatrix.new(:yale, [2,3], :float64)
     n[0,0] = 0.01
     n[1,1] = 0.1
@@ -68,7 +92,7 @@ describe NMatrix do
     n.__yale_lu__.should == [0.2, 0.3, 0.4, nil]
   end
 
-  it "correctly sets values within rows" do
+  it "correctly sets values within rows of yale" do
     n = NMatrix.new(:yale, [3,20], :float64)
     n[2,1]   = 1.0
     n[2,0]   = 1.5
@@ -77,7 +101,7 @@ describe NMatrix do
     n.__yale_ja__.should == [0, 1, 15]
   end
 
-  it "correctly gets values within rows" do
+  it "correctly gets values within rows of yale" do
     n = NMatrix.new(:yale, [3,20], :float64)
     n[2,1]   = 1.0
     n[2,0]   = 1.5
@@ -87,7 +111,7 @@ describe NMatrix do
     n[2,15].should == 2.0
   end
 
-  it "correctly sets values within large rows" do
+  it "correctly sets values within large rows of yale" do
     n = NMatrix.new(:yale, [10,300], :float64)
     n[5,1]   = 1.0
     n[5,0]   = 1.5
@@ -103,7 +127,7 @@ describe NMatrix do
     n.__yale_ja__.should == [0,   1,   15,  100, 289, 290, 291, 292, 293, 299]
   end
 
-  it "correctly gets values within large rows" do
+  it "correctly gets values within large rows of yale" do
     n = NMatrix.new(:yale, [10,300], :float64)
     n[5,1]   = 1.0
     n[5,0]   = 1.5
@@ -122,7 +146,7 @@ describe NMatrix do
     end
   end
 
-  it "correctly multiplies two identical yale matrices" do
+  it "correctly dots two identical yale matrices" do
     a = NMatrix.new(:yale, 4, :float64)
     a[0,1] = 4.0
     a[1,2] = 1.0
@@ -130,7 +154,7 @@ describe NMatrix do
     a[3,1] = 2.0
 
     b = a.dup
-    c = a*b
+    c = a.dot b
 
     c[0,0].should == 0.0
     c[0,1].should == 0.0
@@ -150,7 +174,7 @@ describe NMatrix do
     c[3,3].should == 2.0
   end
 
-  it "correctly multiplies two identical yale matrices where a positive and negative partial sum cancel on the diagonal" do
+  it "correctly dots two identical yale matrices where a positive and negative partial sum cancel on the diagonal" do
     a = NMatrix.new(:yale, 4, :float64)
     a[0,0] = 1.0
     a[0,1] = 4.0
@@ -160,7 +184,7 @@ describe NMatrix do
     a[3,3] = 4.0
 
     b = a.dup
-    c = a*b
+    c = a.dot b
 
     #c[0,0].should == 1.0
     #c[0,1].should == 4.0
@@ -184,7 +208,7 @@ describe NMatrix do
 
   end
 
-  it "correctly transposes" do
+  it "correctly transposes yale" do
     a = NMatrix.new(:yale, 4, :float64)
     a[0,0] = 1.0
     a[0,1] = 4.0

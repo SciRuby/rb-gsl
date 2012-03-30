@@ -1,6 +1,25 @@
 
+inline static %%TYPE%% BOOL2%%= dtype.id.to_s.upcase%%(bool expr) {
+  %%TYPE%% result;
+  result.n = expr;
+  result.d = 1;
+  return result;
+}
 
-%%TYPE%% %%TYPE_ABBREV%%_muldiv(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k) {
+inline static %%TYPE%% %%TYPE_ABBREV%%_bang(%%= dtype == :rational128 ? "int64_t n, int64_t d" : (dtype == :rational64 ? "int32_t n, int32_t d" : "int16_t n, int16_t d")%%)
+{
+  %%TYPE%% result = {!n, 1};
+  return result;
+}
+
+inline static %%TYPE%% %%TYPE_ABBREV%%_negate(%%= dtype == :rational128 ? "int64_t n, int64_t d" : (dtype == :rational64 ? "int32_t n, int32_t d" : "int16_t n, int16_t d")%%)
+{
+  %%TYPE%% result = {-n, -d};
+  return result;
+}
+
+
+inline %%TYPE%% %%TYPE_ABBREV%%_muldiv(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k) {
   %%TYPE%% result;
   int64_t t, g1, g2;
 
@@ -24,7 +43,7 @@
 }
 
 
-%%TYPE%% %%TYPE_ABBREV%%_addsub(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k) {
+inline %%TYPE%% %%TYPE_ABBREV%%_addsub(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k) {
   %%TYPE%% result;
 
   int64_t ig = nmrb_gcd(aden, bden);
@@ -44,8 +63,8 @@
   return result;
 }
 
-
-%%TYPE%% %%TYPE_ABBREV%%_left_shift(%%= dtype == :rational128 ? "int64_t anum, int64_t aden, int64_t bnum" : (dtype == :rational64 ? "int32_t anum, int32_t aden, int32_t bnum" : "int16_t anum, int16_t aden, int16_t bnum")%%)
+/*
+inline %%TYPE%% %%TYPE_ABBREV%%_left_shift(%%= dtype == :rational128 ? "int64_t anum, int64_t aden, int64_t bnum" : (dtype == :rational64 ? "int32_t anum, int32_t aden, int32_t bnum" : "int16_t anum, int16_t aden, int16_t bnum")%%)
 {
   %%TYPE%% c;
   c.n = anum << bnum;
@@ -53,11 +72,16 @@
   return c;
 }
 
-
-%%TYPE%% %%TYPE_ABBREV%%_right_shift(%%= dtype == :rational128 ? "int64_t anum, int64_t aden, int64_t bnum" : (dtype == :rational64 ? "int32_t anum, int32_t aden, int32_t bnum" : "int16_t anum, int16_t aden, int16_t bnum")%%)
+inline %%TYPE%% %%TYPE_ABBREV%%_right_shift(%%= dtype == :rational128 ? "int64_t anum, int64_t aden, int64_t bnum" : (dtype == :rational64 ? "int32_t anum, int32_t aden, int32_t bnum" : "int16_t anum, int16_t aden, int16_t bnum")%%)
 {
   %%TYPE%% c;
   c.n = anum >> bnum;
   c.d = aden >> bnum; // assume its an integer cast to a rational
   return c;
+} */
+
+inline %%TYPE%% %%TYPE_ABBREV%%_mod(%%= dtype == :rational128 ? "int64_t anum, int64_t aden, int64_t bnum, int64_t bden" : (dtype == :rational64 ? "int32_t anum, int32_t aden, int32_t bnum, int32_t bden" : "int16_t anum, int16_t aden, int16_t bnum, int16_t bden")%%)
+{
+  // a - (b * int(a/b))
+  return %%TYPE_ABBREV%%_addsub(anum, aden, bnum*((int64_t)((anum * bden) / (aden * bnum))), bden, '-');
 }

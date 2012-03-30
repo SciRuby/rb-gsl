@@ -42,6 +42,12 @@ size_t count_dense_storage_elements(DENSE_STORAGE* s) {
 }
 
 
+// Do these two dense matrices of the same dtype have exactly the same contents?
+bool dense_storage_eqeq(DENSE_STORAGE* left, DENSE_STORAGE* right) {
+  return !memcmp(left->elements, right->elements, count_dense_storage_elements(left) / nm_sizeof[left->dtype]);
+}
+
+
 size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords) {
   size_t k, l;
   size_t inner, outer = 0;

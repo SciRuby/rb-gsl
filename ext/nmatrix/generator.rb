@@ -504,11 +504,11 @@ INCFN
 
     # Replace a pseudo-mathematical expression with an actual one with dtypes taken into account.
     def gsub_expression line, t, dtype, line_number=nil, filename=nil
-      gsub_expression_re /%%#{t}\ [^%%]*%%/, line, t, dtype, line_number, filename
+      gsub_expression_re /%%#{t}\ .*?%%/, line, t, dtype, line_number, filename
     end
 
     def gsub_expression_long line, t, dtype, line_number=nil, filename=nil
-      gsub_expression_re /%%#{t}_LONG\ [^%%]*%%/, line, "#{t}_LONG", dtype.long_dtype, line_number, filename
+      gsub_expression_re /%%#{t}_LONG\ .*?%%/, line, "#{t}_LONG", dtype.long_dtype, line_number, filename
     end
 
 
@@ -581,6 +581,7 @@ if $IN_MAKEFILE
   Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
   #Generator.make_templated_c './blas', 'blas_header', ['igemm', 'igemv'], 'blas.c', 1, Generator::INTEGER_DTYPES
   Generator.make_templated_c './blas', 'blas_header', ['rationalmath'], 'blas.partial.c', :TYPE => Generator::RATIONAL_DTYPES
+  Generator.make_templated_c './smmp', nil,           ['complexmath'], 'blas.partial.c', :TYPE => Generator::COMPLEX_DTYPES
   Generator.make_templated_c './blas', nil,           ['gemm', 'gemv'], 'blas.partial.c', :TYPE => Generator::NONBLAS_DTYPES
   Generator.make_templated_c './blas', nil,           ['elementwise'], 'blas.partial.c', :TYPE=>Generator::ACTUAL_DTYPES
   `cat blas.partial.c >> blas.c`

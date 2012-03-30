@@ -34,6 +34,15 @@
 #include "nmatrix.h"
 
 
+/* Calculate the number of elements in the dense storage structure, based on shape and rank */
+static size_t count_list_storage_max_elements(LIST_STORAGE* s) {
+  size_t i;
+  size_t count = 1;
+  for (i = 0; i < s->rank; ++i) count *= s->shape[i];
+  return count;
+}
+
+
 /* Finds the node that should go before whatever key we request, whether or not that key is present */
 static NODE* list_find_preceding_from(NODE* prev, size_t key) {
   NODE* curr = prev->next;
@@ -400,6 +409,109 @@ static void delete_list(LIST* list, size_t recursions) {
   }
   //fprintf(stderr, "    free_list: %p\n", list);
   free(list);
+}
+
+// Do all values in a list == some value?
+static bool list_eqeq_value(const LIST* l, const void* v, size_t value_size, size_t recursions, size_t* checked) {
+  NODE *next, *curr = l->first;
+
+  while (curr) {
+    next = curr->next;
+
+    if (recursions == 0) {
+      ++(*checked);
+      if (memcmp(curr->val, v, value_size)) return false;
+    } else if (!list_eqeq_value(curr->val, v, value_size, recursions-1, checked))
+      return false;
+
+    curr = next;
+  }
+  return true;
+}
+
+
+// Are all values in the two lists equal? If one is missing a value, but the other isn't, does the value in the list match
+// the default value?
+static bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, const void* right_val, size_t value_size, size_t recursions, size_t* checked) {
+  NODE *lnext, *lcurr = left->first, *rnext, *rcurr = right->first;
+
+  while (lcurr && rcurr) {
+    lnext = lcurr;
+    rnext = rcurr->next;
+
+
+    if (lcurr->key == rcurr->key) {   // MATCHING KEYS
+      if (recursions == 0) {
+        ++(*checked);
+        if (memcmp(lcurr->val, rcurr->val, value_size)) return false;
+      } else if (!list_eqeq_list(lcurr->val, rcurr->val, left_val, right_val, value_size, recursions, checked))
+        return false;
+
+    } else if (lcurr->key < rcurr->key) { // NON-MATCHING KEYS
+
+      if (recursions == 0) {
+        // compare left entry to right default value
+        ++(*checked);
+        if (memcmp(lcurr->val, right_val, value_size)) return false;
+      } else if (!list_eqeq_value(lcurr->val, right_val, value_size, recursions-1, checked))
+        return false;
+
+      // increment left iterator
+      lcurr = lnext;
+      lnext = lcurr->next;
+
+    } else { // if (rcurr->key < lcurr->key)
+
+      if (recursions == 0) {
+        // compare right entry to left default value
+        ++(*checked);
+        if (memcmp(rcurr->val, left_val, value_size)) return false;
+      } else if (!list_eqeq_value(rcurr->val, left_val, value_size, recursions-1, checked))
+        return false;
+
+      // increment right iterator
+      rcurr = rnext;
+      rnext = rcurr->next;
+    }
+
+  }
+
+  // Nothing different between the two lists -- but make sure after this return that you compare the default values themselves,
+  // if we haven't visited every value in the two matrices.
+  return true;
+}
+
+
+// Do these two dense matrices of the same dtype have exactly the same contents?
+bool list_storage_eqeq(LIST_STORAGE* left, LIST_STORAGE* right) {
+
+  // in certain cases, we need to keep track of the number of elements checked.
+  size_t num_checked = 0, max_elements = count_list_storage_max_elements(left), sz = nm_sizeof[left->dtype];
+
+  if (!left->rows) {
+    // Easy: both lists empty -- just compare default values
+    if (!right->rows) return !memcmp(left->default_val, right->default_val, sz);
+
+    // Left empty, right not empty. Do all values in right == left->default_val?
+    if (!list_eqeq_value(right->rows, left->default_val, sz, left->rank-1, &num_checked)) return false;
+
+    // If the matrix isn't full, we also need to compare default values.
+    if (num_checked < max_elements) return !memcmp(left->default_val, right->default_val, sz);
+
+  } else if (!right->rows) {
+    // Right empty, left not empty. Do all values in left == right->default_val?
+    if (!list_eqeq_value(left->rows, right->default_val, sz, left->rank-1, &num_checked)) return false;
+
+    // If the matrix isn't full, we also need to compare default values.
+    if (num_checked < max_elements) return !memcmp(left->default_val, right->default_val, sz);
+
+  } else {
+    // Hardest case. Compare lists node by node. Let's make it simpler by requiring that both have the same default value
+    if (!list_eqeq_list(left->rows, right->rows, left->default_val, right->default_val, sz, left->rank-1, &num_checked)) return false;
+    if (num_checked < max_elements) return !memcmp(left->default_val, right->default_val, sz);
+  }
+
+  return true;
 }
 
 
