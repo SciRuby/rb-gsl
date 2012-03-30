@@ -92,12 +92,145 @@ int8_t yale_index_dtype(YALE_STORAGE* s) {
 }
 
 
-bool yale_storage_eqeq(YALE_STORAGE* left, YALE_STORAGE* right) {
-  // Easy comparison: Do the IJA and A vectors match exactly?
-  return (!memcmp(left->ija, right->ija, nm_sizeof[left->index_dtype]) && !memcmp(left->a, right->a, nm_sizeof[left->dtype]));
+/*char yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v) {
+  y_size_t i_next = coords[0] + 1;
+  y_size_t ija, ija_next, ija_size;
+  y_size_t pos;
+  bool found = false;
+  char ins_type;
 
-  // TODO: Don't rely on the basic comparison unless it returns true. Particularly once element-wise operations are
-  // implemented, there is no guarantee that yale matrices won't have
+  if (coords[0] == coords[1]) return yale_storage_set_diagonal(s, coords[0], v);
+
+  // Get IJA positions of the beginning and end of the row
+  YaleGetIJA(ija,      s, coords[0]);
+  YaleGetIJA(ija_next, s, i_next);
+
+  if (ija == ija_next) { // empty row
+    ins_type = yale_vector_insert(s, ija, &(coords[1]), v, 1);
+    yale_storage_increment_ia_after(s, YALE_IA_SIZE(s), coords[0], 1);
+    s->ndnz++;
+    return ins_type;
+  }
+
+  // non-empty row. search for coords[1] in the IJA array, between ija and ija_next
+  // (including ija, not including ija_next)
+  YaleGetSize(ija_size, s);
+  //--ija_next;
+
+  // Do a binary search for the column
+  pos = yale_storage_insert_search(s, ija, ija_next-1, coords[1], &found);
+
+  if (found) return yale_vector_replace(s, pos, &(coords[1]), v, 1);
+
+  ins_type = yale_vector_insert(s, pos, &(coords[1]), v, 1);
+  yale_storage_increment_ia_after(s, YALE_IA_SIZE(s), coords[0], 1);
+  s->ndnz++;
+  return ins_type;
+
+}*/
+
+
+// Is the non-diagonal portion of the row empty?
+static bool ndrow_is_empty(const YALE_STORAGE* s, y_size_t ija, const y_size_t ija_next, const void* ZERO) {
+  if (ija == ija_next) return true;
+  while (ija < ija_next) { // do all the entries = zero?
+    if (memcmp((char*)s->a + nm_sizeof[s->dtype]*ija, ZERO, nm_sizeof[s->dtype])) return false;
+    ++ija;
+  }
+  return true;
+}
+
+
+// Are two non-diagonal rows the same? We already know
+static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_size_t l_ija, const y_size_t l_ija_next, y_size_t r_ija, const y_size_t r_ija_next, const void* ZERO) {
+  y_size_t l_ja, r_ja, ja;
+  bool l_no_more = false, r_no_more = false;
+
+  YaleGetIJA(l_ja,   l,   l_ija);
+  YaleGetIJA(r_ja,   r,   r_ija);
+  ja = SMMP_MIN(l_ja, r_ja);
+
+  while (!(l_no_more && r_no_more)) {
+    if (l_no_more || ja < l_ja) {
+      if (memcmp((char*)r->a + nm_sizeof[r->dtype]*r_ija, ZERO, nm_sizeof[r->dtype])) return false;
+
+      ++r_ija;
+      if (r_ija < r_ija_next) {
+        YaleGetIJA(r_ja,  r,  r_ija); // get next column
+        ja = SMMP_MIN(l_ja, r_ja);
+      } else l_no_more = true;
+
+    } else if (r_no_more || ja < r_ja) {
+      if (memcmp((char*)l->a + nm_sizeof[l->dtype]*l_ija, ZERO, nm_sizeof[l->dtype])) return false;
+
+      ++l_ija;
+      if (l_ija < l_ija_next) {
+        YaleGetIJA(l_ja,  l,   l_ija); // get next column
+        ja = SMMP_MIN(l_ja, r_ja);
+      } else l_no_more = true;
+
+    } else if (l_ja == r_ja) { // both are same column
+      if (memcmp((char*)r->a + nm_sizeof[r->dtype]*r_ija, (char*)l->a + nm_sizeof[l->dtype]*l_ija, nm_sizeof[l->dtype])) return false;
+
+      ++l_ija;
+      ++r_ija;
+
+      if (l_ija < l_ija_next) YaleGetIJA(l_ja, l, l_ija);
+      else                    l_no_more = true;
+
+      if (r_ija < r_ija_next) YaleGetIJA(r_ja, r, r_ija);
+      else                    r_no_more = true;
+
+      ja = SMMP_MIN(l_ja, r_ja);
+    } else {
+      fprintf(stderr, "Unhandled in eqeq: l_ja=%d, r_ja=%d\n", l_ja, r_ja);
+    }
+  }
+
+  return true; // every item matched
+}
+
+
+bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right) {
+  y_size_t l_ija, l_ija_next, r_ija, r_ija_next;
+  y_size_t i;
+
+  // Need to know zero.
+  void* ZERO = alloca(nm_sizeof[left->dtype]);
+  if (left->dtype == NM_ROBJ) *(VALUE*)ZERO = INT2FIX(0);
+  else                        memset(ZERO, 0, nm_sizeof[left->dtype]);
+
+  // Easy comparison: Do the IJA and A vectors match exactly?
+  //if (!memcmp(left->ija, right->ija, nm_sizeof[left->index_dtype]) && !memcmp(left->a, right->a, nm_sizeof[left->dtype])) return true;
+
+  // Compare the diagonals first.
+  if (memcmp(left->a, right->a, nm_sizeof[left->dtype] * left->shape[0])) return false;
+
+  while (i < left->shape[0]) {
+    // Get start and end positions of row
+    YaleGetIJA(l_ija,      left,  i);
+    YaleGetIJA(l_ija_next, left,  i+1);
+    YaleGetIJA(r_ija,      right, i);
+    YaleGetIJA(r_ija_next, right, i+1);
+
+    // Check to see if one row is empty and the other isn't.
+    if (ndrow_is_empty(left, l_ija, l_ija_next, ZERO)) {
+      if (ndrow_is_empty(right, r_ija, r_ija_next, ZERO)) {
+        ++i;
+        continue;
+      } else { // one is empty but the other isn't
+        return false;
+      }
+    } else if (ndrow_is_empty(right, r_ija, r_ija_next, ZERO)) { // one is empty but the other isn't
+      return false;
+    } else if (!ndrow_eqeq_ndrow(left, right, l_ija, l_ija_next, r_ija, r_ija_next, ZERO)) { // Neither row is empty. Must compare the rows directly.
+      return false;
+    }
+
+    ++i;
+  }
+
+  return true;
 }
 
 

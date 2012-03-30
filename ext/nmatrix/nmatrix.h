@@ -776,8 +776,8 @@ void            delete_dense_storage(DENSE_STORAGE* s);
 void            mark_dense_storage(void* s);
 DENSE_STORAGE*  cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype);
 
-size_t          count_dense_storage_elements(DENSE_STORAGE* s);
-bool            dense_storage_eqeq(DENSE_STORAGE*, DENSE_STORAGE*);
+size_t          count_dense_storage_elements(const DENSE_STORAGE*);
+bool            dense_storage_eqeq(const DENSE_STORAGE*, const DENSE_STORAGE*);
 
 size_t          dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
 void*           dense_storage_get(DENSE_STORAGE* s, size_t* coords);
@@ -792,7 +792,7 @@ LIST_STORAGE*   cast_copy_list_storage(LIST_STORAGE* rhs, int8_t new_dtype);
 void*           list_storage_get(LIST_STORAGE* s, size_t* coords);
 void*           list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val);
 void*           list_storage_remove(LIST_STORAGE* s, size_t* coords);
-bool            list_storage_eqeq(LIST_STORAGE*, LIST_STORAGE*);
+bool            list_storage_eqeq(const LIST_STORAGE*, const LIST_STORAGE*);
 
 /* yale.c */
 void print_vectors(YALE_STORAGE* s);
@@ -801,7 +801,7 @@ void            init_yale_storage(YALE_STORAGE* s);
 void            delete_yale_storage(YALE_STORAGE* s);
 void            mark_yale_storage(void* s);
 YALE_STORAGE*   cast_copy_yale_storage(YALE_STORAGE* rhs, int8_t new_dtype);
-bool            yale_storage_eqeq(YALE_STORAGE*, YALE_STORAGE*);
+bool            yale_storage_eqeq(const YALE_STORAGE*, const YALE_STORAGE*);
 
 void*           yale_storage_ref(YALE_STORAGE* s, size_t* coords);
 char            yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v);

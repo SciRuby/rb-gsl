@@ -34,7 +34,7 @@
 
 
 /* Calculate the number of elements in the dense storage structure, based on shape and rank */
-size_t count_dense_storage_elements(DENSE_STORAGE* s) {
+size_t count_dense_storage_elements(const DENSE_STORAGE* s) {
   size_t i;
   size_t count = 1;
   for (i = 0; i < s->rank; ++i) count *= s->shape[i];
@@ -43,7 +43,7 @@ size_t count_dense_storage_elements(DENSE_STORAGE* s) {
 
 
 // Do these two dense matrices of the same dtype have exactly the same contents?
-bool dense_storage_eqeq(DENSE_STORAGE* left, DENSE_STORAGE* right) {
+bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
   return !memcmp(left->elements, right->elements, count_dense_storage_elements(left) / nm_sizeof[left->dtype]);
 }
 
@@ -171,7 +171,7 @@ void mark_dense_storage(void* m) {
     fprintf(stderr, "mark_dense_storage\n");
     if (storage && storage->dtype == NM_ROBJ)
       for (i = 0; i < count_dense_storage_elements(storage); ++i)
-        rb_gc_mark(*((VALUE*)(storage->elements + i*nm_sizeof[NM_ROBJ])));
+        rb_gc_mark(*((VALUE*)((char*)(storage->elements) + i*nm_sizeof[NM_ROBJ])));
   }
 }
 
