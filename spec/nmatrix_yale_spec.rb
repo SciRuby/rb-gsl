@@ -38,18 +38,22 @@ describe NMatrix do
     m = NMatrix.new(:yale, [2,2], :float64)
     m[0,0] = 1
     m[0,1] = 1
+    n.should_not == m
+    n[0,0] = 1
+    n.should_not == m
+    n[0,1] = 1
     n.should == m
   end
 
-  it "correctly compares two yale matrices following elementwise operations" do
-    n = NMatrix.new(:yale, [2,2], :float64)
-    n[0,1] = 1
-    m = NMatrix.new(:yale, [2,2], :float64)
-    m[0,1] = -1
-    r = NMatrix.new(:yale, [2,2], :float64)
-    r[0,1] = 0
-    (n+m).should == r
-  end
+  #it "correctly compares two yale matrices following elementwise operations" do
+  #  n = NMatrix.new(:yale, [2,2], :float64)
+  #  n[0,1] = 1
+  #  m = NMatrix.new(:yale, [2,2], :float64)
+  #  m[0,1] = -1
+  #  r = NMatrix.new(:yale, [2,2], :float64)
+  #  r[0,1] = 0
+  #  (n+m).should == r
+  #end
 
   it "correctly sets diagonal values in yale" do
     n = NMatrix.new(:yale, [2,3], :float64)

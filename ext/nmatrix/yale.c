@@ -132,6 +132,7 @@ int8_t yale_index_dtype(YALE_STORAGE* s) {
 
 // Is the non-diagonal portion of the row empty?
 static bool ndrow_is_empty(const YALE_STORAGE* s, y_size_t ija, const y_size_t ija_next, const void* ZERO) {
+  fprintf(stderr, "ndrow_is_empty: ija=%d, ija_next=%d\n", (size_t)(ija), (size_t)(ija_next));
   if (ija == ija_next) return true;
   while (ija < ija_next) { // do all the entries = zero?
     if (memcmp((char*)s->a + nm_sizeof[s->dtype]*ija, ZERO, nm_sizeof[s->dtype])) return false;
@@ -150,8 +151,23 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
   YaleGetIJA(r_ja,   r,   r_ija);
   ja = SMMP_MIN(l_ja, r_ja);
 
+  //fprintf(stderr, "ndrow_eqeq_ndrow\n");
   while (!(l_no_more && r_no_more)) {
-    if (l_no_more || ja < l_ja) {
+    //fprintf(stderr, "ndrow_eqeq_ndrow(loop): l_ija=%d, l_ija_next=%d, r_ija=%d, r_ija_next=%d\n", (size_t)(l_ija), (size_t)(l_ija_next), (size_t)(r_ija), (size_t)(r_ija_next));
+    if (l_ja == r_ja) {
+      if (memcmp((char*)r->a + nm_sizeof[r->dtype]*r_ija, (char*)l->a + nm_sizeof[l->dtype]*l_ija, nm_sizeof[l->dtype])) return false;
+
+      ++l_ija;
+      ++r_ija;
+
+      if (l_ija < l_ija_next) YaleGetIJA(l_ja, l, l_ija);
+      else                    l_no_more = true;
+
+      if (r_ija < r_ija_next) YaleGetIJA(r_ja, r, r_ija);
+      else                    r_no_more = true;
+
+      ja = SMMP_MIN(l_ja, r_ja);
+    } else if (l_no_more || ja < l_ja) {
       if (memcmp((char*)r->a + nm_sizeof[r->dtype]*r_ija, ZERO, nm_sizeof[r->dtype])) return false;
 
       ++r_ija;
@@ -169,19 +185,6 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
         ja = SMMP_MIN(l_ja, r_ja);
       } else l_no_more = true;
 
-    } else if (l_ja == r_ja) { // both are same column
-      if (memcmp((char*)r->a + nm_sizeof[r->dtype]*r_ija, (char*)l->a + nm_sizeof[l->dtype]*l_ija, nm_sizeof[l->dtype])) return false;
-
-      ++l_ija;
-      ++r_ija;
-
-      if (l_ija < l_ija_next) YaleGetIJA(l_ja, l, l_ija);
-      else                    l_no_more = true;
-
-      if (r_ija < r_ija_next) YaleGetIJA(r_ja, r, r_ija);
-      else                    r_no_more = true;
-
-      ja = SMMP_MIN(l_ja, r_ja);
     } else {
       fprintf(stderr, "Unhandled in eqeq: l_ja=%d, r_ja=%d\n", l_ja, r_ja);
     }
@@ -193,7 +196,7 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
 
 bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right) {
   y_size_t l_ija, l_ija_next, r_ija, r_ija_next;
-  y_size_t i;
+  y_size_t i = 0;
 
   // Need to know zero.
   void* ZERO = alloca(nm_sizeof[left->dtype]);
@@ -202,6 +205,7 @@ bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right) {
 
   // Easy comparison: Do the IJA and A vectors match exactly?
   //if (!memcmp(left->ija, right->ija, nm_sizeof[left->index_dtype]) && !memcmp(left->a, right->a, nm_sizeof[left->dtype])) return true;
+  //fprintf(stderr, "yale_storage_eqeq\n");
 
   // Compare the diagonals first.
   if (memcmp(left->a, right->a, nm_sizeof[left->dtype] * left->shape[0])) return false;
@@ -213,14 +217,12 @@ bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right) {
     YaleGetIJA(r_ija,      right, i);
     YaleGetIJA(r_ija_next, right, i+1);
 
+    //fprintf(stderr, "yale_storage_eqeq: l_ija=%d, l_ija_next=%d, r_ija=%d, r_ija_next=%d, i=%d\n", (size_t)(l_ija), (size_t)(l_ija_next), (size_t)(r_ija), (size_t)(r_ija_next), (size_t)(i));
+
     // Check to see if one row is empty and the other isn't.
     if (ndrow_is_empty(left, l_ija, l_ija_next, ZERO)) {
-      if (ndrow_is_empty(right, r_ija, r_ija_next, ZERO)) {
-        ++i;
-        continue;
-      } else { // one is empty but the other isn't
-        return false;
-      }
+      if (!ndrow_is_empty(right, r_ija, r_ija_next, ZERO)) return false;
+
     } else if (ndrow_is_empty(right, r_ija, r_ija_next, ZERO)) { // one is empty but the other isn't
       return false;
     } else if (!ndrow_eqeq_ndrow(left, right, l_ija, l_ija_next, r_ija, r_ija_next, ZERO)) { // Neither row is empty. Must compare the rows directly.
