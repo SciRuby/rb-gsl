@@ -92,44 +92,6 @@ int8_t yale_index_dtype(YALE_STORAGE* s) {
 }
 
 
-/*char yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v) {
-  y_size_t i_next = coords[0] + 1;
-  y_size_t ija, ija_next, ija_size;
-  y_size_t pos;
-  bool found = false;
-  char ins_type;
-
-  if (coords[0] == coords[1]) return yale_storage_set_diagonal(s, coords[0], v);
-
-  // Get IJA positions of the beginning and end of the row
-  YaleGetIJA(ija,      s, coords[0]);
-  YaleGetIJA(ija_next, s, i_next);
-
-  if (ija == ija_next) { // empty row
-    ins_type = yale_vector_insert(s, ija, &(coords[1]), v, 1);
-    yale_storage_increment_ia_after(s, YALE_IA_SIZE(s), coords[0], 1);
-    s->ndnz++;
-    return ins_type;
-  }
-
-  // non-empty row. search for coords[1] in the IJA array, between ija and ija_next
-  // (including ija, not including ija_next)
-  YaleGetSize(ija_size, s);
-  //--ija_next;
-
-  // Do a binary search for the column
-  pos = yale_storage_insert_search(s, ija, ija_next-1, coords[1], &found);
-
-  if (found) return yale_vector_replace(s, pos, &(coords[1]), v, 1);
-
-  ins_type = yale_vector_insert(s, pos, &(coords[1]), v, 1);
-  yale_storage_increment_ia_after(s, YALE_IA_SIZE(s), coords[0], 1);
-  s->ndnz++;
-  return ins_type;
-
-}*/
-
-
 // Is the non-diagonal portion of the row empty?
 static bool ndrow_is_empty(const YALE_STORAGE* s, y_size_t ija, const y_size_t ija_next, const void* ZERO) {
   fprintf(stderr, "ndrow_is_empty: ija=%d, ija_next=%d\n", (size_t)(ija), (size_t)(ija_next));
