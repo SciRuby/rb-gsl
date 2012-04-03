@@ -1,8 +1,8 @@
 
-int nm_%%TYPE_ABBREV%%_elementwise(const %%TYPE%%* A, const %%TYPE%%* B, %%TYPE%%* C, size_t n, enum NMatrix_Ops op)
+int nm_d_%%TYPE_ABBREV%%_elementwise(const %%TYPE%%* A, const %%TYPE%%* B, %%TYPE%%* C, size_t n, enum NMatrix_Ops op)
 {
   size_t i;
-  fprintf(stderr, "elementwise: n=%d, op=%c\n", n, op);
+  //fprintf(stderr, "elementwise: n=%d, op=%c\n", n, op);
 
   switch (op) {
   case '+':

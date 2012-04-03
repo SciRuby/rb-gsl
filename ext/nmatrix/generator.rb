@@ -38,7 +38,7 @@ $IN_MAKEFILE = begin
   end
 end
 
-class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type,  :gemm)
+class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type)
   def max_macro
     typename = self.sizeof.to_s
     if typename.include?('_')
@@ -86,22 +86,22 @@ end
 module Generator
   SRC_DIR = File.join("ext", "nmatrix")
   DTYPES = [
-      # dtype enum      sizeof        label/symbol/string   num-class
-      [:NM_NONE,        0,            :none,        0,      :none,        :igemm],
-      [:NM_BYTE,        :u_int8_t,    :byte,        :b,     :int,         :igemm],
-      [:NM_INT8,        :int8_t,      :int8,        :i8,    :int,         :igemm],
-      [:NM_INT16,       :int16_t,     :int16,       :i16,   :int,         :igemm],
-      [:NM_INT32,       :int32_t,     :int32,       :i32,   :int,         :igemm],
-      [:NM_INT64,       :int64_t,     :int64,       :i64,   :int,         :igemm],
-      [:NM_FLOAT32,     :float,       :float32,     :f32,   :float,       :cblas_sgemm],
-      [:NM_FLOAT64,     :double,      :float64,     :f64,   :float,       :cblas_dgemm],
-      [:NM_COMPLEX64,   :complex64,   :complex64,   :c64,   :complex,     :cblas_cgemm],
-      [:NM_COMPLEX128,  :complex128,  :complex128,  :c128,  :complex,     :cblas_zgemm],
-      [:NM_RATIONAL32,  :rational32,  :rational32,  :r32,   :rational,    :rgemm],
-      [:NM_RATIONAL64,  :rational64,  :rational64,  :r64,   :rational,    :rgemm],
-      [:NM_RATIONAL128, :rational128, :rational128, :r128,  :rational,    :rgemm],
-      [:NM_ROBJ,        :VALUE,       :object,      :v,     :value,       :vgemm],
-      [:NM_TYPES,       0,            :dtypes,      0,      :none,         nil]
+      # enum            sizeof        sym           id      type
+      [:NM_NONE,        0,            :none,        0,      :none],
+      [:NM_BYTE,        :u_int8_t,    :byte,        :b,     :int],
+      [:NM_INT8,        :int8_t,      :int8,        :i8,    :int],
+      [:NM_INT16,       :int16_t,     :int16,       :i16,   :int],
+      [:NM_INT32,       :int32_t,     :int32,       :i32,   :int],
+      [:NM_INT64,       :int64_t,     :int64,       :i64,   :int],
+      [:NM_FLOAT32,     :float,       :float32,     :f32,   :float],
+      [:NM_FLOAT64,     :double,      :float64,     :f64,   :float],
+      [:NM_COMPLEX64,   :complex64,   :complex64,   :c64,   :complex],
+      [:NM_COMPLEX128,  :complex128,  :complex128,  :c128,  :complex],
+      [:NM_RATIONAL32,  :rational32,  :rational32,  :r32,   :rational],
+      [:NM_RATIONAL64,  :rational64,  :rational64,  :r64,   :rational],
+      [:NM_RATIONAL128, :rational128, :rational128, :r128,  :rational],
+      [:NM_ROBJ,        :VALUE,       :object,      :v,     :value],
+      [:NM_TYPES,       0,            :dtypes,      0,      :none]
   ].map { |d| DTypeInfo.new(*d) }
 
   INDEX_DTYPES = DTYPES.select { |dtype| dtype.type == :int && dtype.id != :b }
@@ -576,9 +576,10 @@ if $IN_MAKEFILE
   Generator.make_dfuncs_c
   Generator.make_templated_c './smmp', 'blas_header', ['blas1'], 'smmp1.c', :TYPE => Generator::INDEX_DTYPES # 1-type interface functions for SMMP
   Generator.make_templated_c './smmp', nil,           ['blas2'], 'smmp1.c', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES # 2-type interface functions for SMMP
-  Generator.make_templated_c './smmp', 'smmp_header', ['symbmm'], 'smmp2.c', :TYPE => Generator::INDEX_DTYPES # 1-type SMMP functions from Fortran
+    Generator.make_templated_c './smmp','smmp_header',['symbmm'], 'smmp2.c', :TYPE => Generator::INDEX_DTYPES # 1-type SMMP functions from Fortran
   Generator.make_templated_c './smmp', nil,           ['complexmath'], 'smmp2.c', :TYPE => Generator::COMPLEX_DTYPES
-  Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns'], 'smmp2.c', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
+  Generator.make_templated_c './smmp', nil,           ['elementwise_op'], 'smmp2.c', :TYPE => Generator::ACTUAL_DTYPES
+  Generator.make_templated_c './smmp', nil,           ['numbmm', 'transp', 'sort_columns', 'elementwise'], 'smmp2.c', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
   #Generator.make_templated_c './blas', 'blas_header', ['igemm', 'igemv'], 'blas.c', 1, Generator::INTEGER_DTYPES
   Generator.make_templated_c './blas', 'blas_header', ['rationalmath'], 'blas.partial.c', :TYPE => Generator::RATIONAL_DTYPES
   Generator.make_templated_c './smmp', nil,           ['complexmath'], 'blas.partial.c', :TYPE => Generator::COMPLEX_DTYPES

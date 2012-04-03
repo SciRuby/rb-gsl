@@ -29,7 +29,7 @@ inline static %%TYPE%% %%TYPE_ABBREV%%_div(double ar, double ai, double br, doub
 }
 
 
-inline static %%TYPE%% %%TYPE_ABBREV%%_add(%%= dtype == :complex128 ? "double ar, double ai, double br, double bi" : "float ar, float ai, float br, float bi"%%) {
+inline static %%TYPE%% %%TYPE_ABBREV%%_add(%%= dtype.sym == :complex128 ? "double ar, double ai, double br, double bi" : "float ar, float ai, float br, float bi"%%) {
   %%TYPE%% result;
 
   result.r = ar + br;
@@ -39,7 +39,7 @@ inline static %%TYPE%% %%TYPE_ABBREV%%_add(%%= dtype == :complex128 ? "double ar
 }
 
 
-inline static %%TYPE%% %%TYPE_ABBREV%%_sub(%%= dtype == :complex128 ? "double ar, double ai, double br, double bi" : "float ar, float ai, float br, float bi"%%) {
+inline static %%TYPE%% %%TYPE_ABBREV%%_sub(%%= dtype.sym == :complex128 ? "double ar, double ai, double br, double bi" : "float ar, float ai, float br, float bi"%%) {
   %%TYPE%% result;
 
   result.r = ar - br;
@@ -49,7 +49,7 @@ inline static %%TYPE%% %%TYPE_ABBREV%%_sub(%%= dtype == :complex128 ? "double ar
 }
 
 
-inline static %%TYPE%% %%TYPE_ABBREV%%_mod(%%= dtype == :complex128 ? "double ar, double ai, double br, double bi" : "float ar, float ai, float br, float bi"%%) {
+inline static %%TYPE%% %%TYPE_ABBREV%%_mod(%%= dtype.sym == :complex128 ? "double ar, double ai, double br, double bi" : "float ar, float ai, float br, float bi"%%) {
   %%TYPE%% result;
   rb_raise(rb_eNotImpError, "modulo arithmetic for complex numbers not yet implemented");
 
@@ -57,12 +57,12 @@ inline static %%TYPE%% %%TYPE_ABBREV%%_mod(%%= dtype == :complex128 ? "double ar
 }
 
 
-inline static %%TYPE%% %%TYPE_ABBREV%%_bang(%%= dtype == :complex128 ? "double ar, double ai" : "float ar, float ai"%%) {
+inline static %%TYPE%% %%TYPE_ABBREV%%_bang(%%= dtype.sym == :complex128 ? "double ar, double ai" : "float ar, float ai"%%) {
   %%TYPE%% result = {!ar, 0};
   return result;
 }
 
-inline static %%TYPE%% %%TYPE_ABBREV%%_negate(%%= dtype == :complex128 ? "double ar, double ai" : "float ar, float ai"%%) {
+inline static %%TYPE%% %%TYPE_ABBREV%%_negate(%%= dtype.sym == :complex128 ? "double ar, double ai" : "float ar, float ai"%%) {
   %%TYPE%% result;
   result.r = -ar;
   result.i = -ai;

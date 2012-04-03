@@ -117,20 +117,20 @@ static void TransposeTypeErr(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B,
 
 // First dimension is dtype, second dimension is index dtype (so lots of nulls)
 nm_smmp_transpose_t SparseTransposeFuncs = {
-  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_NONE
-  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_BYTE
-  {TransposeTypeErr, TransposeTypeErr, i8_i8_transp_, i16_i8_transp_, i32_i8_transp_, i64_i8_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_INT8
-  {TransposeTypeErr, TransposeTypeErr, i8_i16_transp_, i16_i16_transp_, i32_i16_transp_, i64_i16_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_INT16
-  {TransposeTypeErr, TransposeTypeErr, i8_i32_transp_, i16_i32_transp_, i32_i32_transp_, i64_i32_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_INT32
-  {TransposeTypeErr, TransposeTypeErr, i8_i64_transp_, i16_i64_transp_, i32_i64_transp_, i64_i64_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_INT64
-  {TransposeTypeErr, TransposeTypeErr, i8_f32_transp_, i16_f32_transp_, i32_f32_transp_, i64_f32_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_FLOAT32
-  {TransposeTypeErr, TransposeTypeErr, i8_f64_transp_, i16_f64_transp_, i32_f64_transp_, i64_f64_transp_, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_FLOAT64
-  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_COMPLEX64
-  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_COMPLEX128
-  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_RATIONAL32
-  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_RATIONAL64
-  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_RATIONAL128
-  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}  // NM_ROBJ
+  {TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr, TransposeTypeErr}, // NM_NONE
+  {TransposeTypeErr, TransposeTypeErr, i8_b_transp_, i16_b_transp_, i32_b_transp_, i64_b_transp_}, // NM_BYTE
+  {TransposeTypeErr, TransposeTypeErr, i8_i8_transp_, i16_i8_transp_, i32_i8_transp_, i64_i8_transp_}, // NM_INT8
+  {TransposeTypeErr, TransposeTypeErr, i8_i16_transp_, i16_i16_transp_, i32_i16_transp_, i64_i16_transp_}, // NM_INT16
+  {TransposeTypeErr, TransposeTypeErr, i8_i32_transp_, i16_i32_transp_, i32_i32_transp_, i64_i32_transp_}, // NM_INT32
+  {TransposeTypeErr, TransposeTypeErr, i8_i64_transp_, i16_i64_transp_, i32_i64_transp_, i64_i64_transp_}, // NM_INT64
+  {TransposeTypeErr, TransposeTypeErr, i8_f32_transp_, i16_f32_transp_, i32_f32_transp_, i64_f32_transp_}, // NM_FLOAT32
+  {TransposeTypeErr, TransposeTypeErr, i8_f64_transp_, i16_f64_transp_, i32_f64_transp_, i64_f64_transp_}, // NM_FLOAT64
+  {TransposeTypeErr, TransposeTypeErr, i8_c64_transp_, i16_c64_transp_, i32_c64_transp_, i64_c64_transp_}, // NM_COMPLEX64
+  {TransposeTypeErr, TransposeTypeErr, i8_c128_transp_, i16_c128_transp_, i32_c128_transp_, i64_c128_transp_}, // NM_COMPLEX128
+  {TransposeTypeErr, TransposeTypeErr, i8_r32_transp_, i16_r32_transp_, i32_r32_transp_, i64_r32_transp_}, // NM_RATIONAL32
+  {TransposeTypeErr, TransposeTypeErr, i8_r64_transp_, i16_r64_transp_, i32_r64_transp_, i64_r64_transp_}, // NM_RATIONAL64
+  {TransposeTypeErr, TransposeTypeErr, i8_r128_transp_, i16_r128_transp_, i32_r128_transp_, i64_r128_transp_}, // NM_RATIONAL128
+  {TransposeTypeErr, TransposeTypeErr, i8_v_transp_, i16_v_transp_, i32_v_transp_, i64_v_transp_}  // NM_ROBJ
 };
 
 static void SmmpTypeErr(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C) {
@@ -139,20 +139,20 @@ static void SmmpTypeErr(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE
 
 // First dimension is dtype, second dimension is index dtype (so lots of nulls)
 nm_smmp_t SmmpFuncs = {
-  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_NONE
-  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_BYTE
-  {SmmpTypeErr, SmmpTypeErr, i8_i8_smmp, i16_i8_smmp, i32_i8_smmp, i64_i8_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_INT8
-  {SmmpTypeErr, SmmpTypeErr, i8_i16_smmp, i16_i16_smmp, i32_i16_smmp, i64_i16_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_INT16
-  {SmmpTypeErr, SmmpTypeErr, i8_i32_smmp, i16_i32_smmp, i32_i32_smmp, i64_i32_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_INT32
-  {SmmpTypeErr, SmmpTypeErr, i8_i64_smmp, i16_i64_smmp, i32_i64_smmp, i64_i64_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_INT64
-  {SmmpTypeErr, SmmpTypeErr, i8_f32_smmp, i16_f32_smmp, i32_f32_smmp, i64_f32_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_FLOAT32
-  {SmmpTypeErr, SmmpTypeErr, i8_f64_smmp, i16_f64_smmp, i32_f64_smmp, i64_f64_smmp, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_FLOAT64
-  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_COMPLEX64
-  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_COMPLEX128
-  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_RATIONAL32
-  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_RATIONAL64
-  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_RATIONAL128
-  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}  // NM_ROBJ
+  {SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr, SmmpTypeErr}, // NM_NONE
+  {SmmpTypeErr, SmmpTypeErr, i8_b_smmp, i16_b_smmp, i32_b_smmp, i64_b_smmp}, // NM_BYTE
+  {SmmpTypeErr, SmmpTypeErr, i8_i8_smmp, i16_i8_smmp, i32_i8_smmp, i64_i8_smmp}, // NM_INT8
+  {SmmpTypeErr, SmmpTypeErr, i8_i16_smmp, i16_i16_smmp, i32_i16_smmp, i64_i16_smmp}, // NM_INT16
+  {SmmpTypeErr, SmmpTypeErr, i8_i32_smmp, i16_i32_smmp, i32_i32_smmp, i64_i32_smmp}, // NM_INT32
+  {SmmpTypeErr, SmmpTypeErr, i8_i64_smmp, i16_i64_smmp, i32_i64_smmp, i64_i64_smmp}, // NM_INT64
+  {SmmpTypeErr, SmmpTypeErr, i8_f32_smmp, i16_f32_smmp, i32_f32_smmp, i64_f32_smmp}, // NM_FLOAT32
+  {SmmpTypeErr, SmmpTypeErr, i8_f64_smmp, i16_f64_smmp, i32_f64_smmp, i64_f64_smmp}, // NM_FLOAT64
+  {SmmpTypeErr, SmmpTypeErr, i8_c64_smmp, i16_c64_smmp, i32_c64_smmp, i64_c64_smmp}, // NM_COMPLEX64
+  {SmmpTypeErr, SmmpTypeErr, i8_c128_smmp, i16_c128_smmp, i32_c128_smmp, i64_c128_smmp}, // NM_COMPLEX128
+  {SmmpTypeErr, SmmpTypeErr, i8_r32_smmp, i16_r32_smmp, i32_r32_smmp, i64_r32_smmp}, // NM_RATIONAL32
+  {SmmpTypeErr, SmmpTypeErr, i8_r64_smmp, i16_r64_smmp, i32_r64_smmp, i64_r64_smmp}, // NM_RATIONAL64
+  {SmmpTypeErr, SmmpTypeErr, i8_r128_smmp, i16_r128_smmp, i32_r128_smmp, i64_r128_smmp}, // NM_RATIONAL128
+  {SmmpTypeErr, SmmpTypeErr, i8_v_smmp, i16_v_smmp, i32_v_smmp, i64_v_smmp}  // NM_ROBJ
 };
 
 
@@ -313,22 +313,44 @@ nm_matrix_multiply_op_t CastedMultiplyFuncs = {
 };
 
 
-nm_elementwise_binary_op_t ElementwiseFuncs = { // only for dense!
+nm_d_elementwise_binary_op_t DenseElementwiseFuncs = { // only for dense!
   NULL,
-  nm_b_elementwise,
-  nm_i8_elementwise,
-  nm_i16_elementwise,
-  nm_i32_elementwise,
-  nm_i64_elementwise,
-  nm_f32_elementwise,
-  nm_f64_elementwise,
-  nm_c64_elementwise,
-  nm_c128_elementwise,
-  nm_r32_elementwise,
-  nm_r64_elementwise,
-  nm_r128_elementwise,
-  nm_v_elementwise,
+  nm_d_b_elementwise,
+  nm_d_i8_elementwise,
+  nm_d_i16_elementwise,
+  nm_d_i32_elementwise,
+  nm_d_i64_elementwise,
+  nm_d_f32_elementwise,
+  nm_d_f64_elementwise,
+  nm_d_c64_elementwise,
+  nm_d_c128_elementwise,
+  nm_d_r32_elementwise,
+  nm_d_r64_elementwise,
+  nm_d_r128_elementwise,
+  nm_d_v_elementwise,
   NULL
+};
+
+static void EwTypeErr(y_size_t n, enum NMatrix_Ops op, void* ija, void* ijb, void* ijc, void* a, void* b, void* c) {
+  rb_raise(nm_eDataTypeError, "illegal operation with this matrix type");
+}
+
+// First dimension is dtype, second dimension is index dtype (so lots of nulls)
+nm_y_elementwise_binary_op_t YaleElementwiseFuncs = { // only for yale!
+  {EwTypeErr, EwTypeErr, EwTypeErr, EwTypeErr,  EwTypeErr,  EwTypeErr},
+  {EwTypeErr, EwTypeErr, EwTypeErr, EwTypeErr,  EwTypeErr,  EwTypeErr},
+  {EwTypeErr, EwTypeErr, i8_i8_ew,  i16_i8_ew,  i32_i8_ew,  i64_i8_ew},
+  {EwTypeErr, EwTypeErr, i8_i16_ew, i16_i16_ew, i32_i16_ew, i64_i16_ew},
+  {EwTypeErr, EwTypeErr, i8_i32_ew, i16_i32_ew, i32_i32_ew, i64_i32_ew},
+  {EwTypeErr, EwTypeErr, i8_i64_ew, i16_i64_ew, i32_i64_ew, i64_i64_ew},
+  {EwTypeErr, EwTypeErr, i8_f32_ew, i16_f32_ew, i32_f32_ew, i64_f32_ew},
+  {EwTypeErr, EwTypeErr, i8_f64_ew, i16_f64_ew, i32_f64_ew, i64_f64_ew},
+  {EwTypeErr, EwTypeErr, i8_c64_ew, i16_c64_ew, i32_c64_ew, i64_c64_ew},
+  {EwTypeErr, EwTypeErr, i8_c128_ew,i16_c128_ew,i32_c128_ew,i64_c128_ew},
+  {EwTypeErr, EwTypeErr, i8_r32_ew, i16_r32_ew, i32_r32_ew, i64_r32_ew},
+  {EwTypeErr, EwTypeErr, i8_r64_ew, i16_r64_ew, i32_r64_ew, i64_r64_ew},
+  {EwTypeErr, EwTypeErr, i8_r128_ew,i16_r128_ew,i32_r128_ew,i64_r128_ew},
+  {EwTypeErr, EwTypeErr, i8_v_ew,   i16_v_ew,   i32_v_ew,   i64_v_ew}
 };
 
 
@@ -350,7 +372,7 @@ static NMATRIX* elementwise_dense_casted(STORAGE_PAIR casted_storage, char op) {
   result = create_dense_storage(dtype, shape, left->rank, NULL, 0);
 
   // Do the operation
-  ElementwiseFuncs[dtype](left->elements, right->elements, result->elements, count_dense_storage_elements(result), op);
+  DenseElementwiseFuncs[dtype](left->elements, right->elements, result->elements, count_dense_storage_elements(result), op);
 
   return nm_create(S_DENSE, result);
 }
@@ -361,9 +383,18 @@ static NMATRIX* elementwise_list_casted(STORAGE_PAIR casted_storage, char op) {
   return NULL;
 }
 
+
 static NMATRIX* elementwise_yale_casted(STORAGE_PAIR casted_storage, char op) {
-  rb_raise(rb_eNotImpError, "elementwise operations not implemented for yale matrices");
-  return NULL;
+  YALE_STORAGE *left  = (YALE_STORAGE*)(casted_storage.left),
+               *right = (YALE_STORAGE*)(casted_storage.right);
+  YALE_STORAGE *result = create_merged_yale_storage(left, right);
+
+  fprintf(stderr, "result: %d, %d\n", result->dtype, result->index_dtype);
+
+  //fprintf(stderr, "Remember to fix elementwise for yale!\n");
+  YaleElementwiseFuncs[result->dtype][result->index_dtype](result->shape[0], result->shape[1], op, left->ija, right->ija, result->ija, left->a, right->a, result->a);
+
+  return nm_create(S_YALE, result);
 }
 
 
