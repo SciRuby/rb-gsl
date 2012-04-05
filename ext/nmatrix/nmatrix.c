@@ -463,6 +463,14 @@ nm_cast_copy_storage_t CastCopyFuncs = {
 };
 
 
+
+nm_scast_copy_storage_t ScastCopyFuncs = {
+  {cast_copy_dense_storage, scast_copy_dense_list, scast_copy_dense_yale},
+  {scast_copy_list_dense, cast_copy_list_storage, scast_copy_list_yale},
+  {scast_copy_yale_dense, scast_copy_yale_list, cast_copy_yale_storage}
+};
+
+
 nm_stype_ref_t RefFuncs = {
   dense_storage_get,
   list_storage_get,
@@ -608,6 +616,13 @@ int8_t nm_guess_dtype(VALUE v) {
     return NM_NONE;
   }
 }
+
+// Used for scasting (changing stype)
+inline void cast_copy_value_single(void* to, const void* from, int8_t l_dtype, int8_t r_dtype) {
+  if (l_dtype == r_dtype) memcpy(to, from, nm_sizeof[l_dtype]);
+  else                    SetFuncs[l_dtype][r_dtype](1, to, 0, from, 0);
+}
+
 
 
 // Read the shape argument to NMatrix.new, which may be either an array or a single number.
@@ -836,6 +851,27 @@ static VALUE nm_cast_copy(VALUE self, VALUE new_dtype_symbol) {
 
   return Data_Wrap_Struct(cNMatrix, MarkFuncs[copy->stype], nm_delete, copy);
 }
+
+
+static VALUE nm_scast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_symbol) {
+  NMATRIX* original, *copy;
+  int8_t new_dtype = nm_dtypesymbol_to_dtype(new_dtype_symbol);
+  int8_t new_stype = nm_stypesymbol_to_stype(new_stype_symbol);
+
+  CheckNMatrixType(self);
+
+  UnwrapNMatrix(self, original);
+
+  copy = ALLOC(NMATRIX);
+  copy->stype = new_stype;
+
+  // Copy and scast the storage.
+  if (new_stype == original->stype) copy->storage = CastCopyFuncs[original->stype](original->storage, new_dtype);
+  else                              copy->storage = ScastCopyFuncs[copy->stype][original->stype](original->storage, new_dtype);
+
+  return Data_Wrap_Struct(cNMatrix, MarkFuncs[copy->stype], nm_delete, copy);
+}
+
 
 
 // Cast a single matrix to a new dtype (unless it's already casted, then just return it). Helper for binary_storage_cast_alloc.
@@ -1575,7 +1611,6 @@ static VALUE nm_transpose_new(VALUE self) {
 //
 //}
 
-
 void Init_nmatrix() {
     /* Require Complex class */
     //rb_require("complex");
@@ -1600,6 +1635,7 @@ void Init_nmatrix() {
     /* methods */
     rb_define_method(cNMatrix, "dtype", nm_dtype, 0);
     rb_define_method(cNMatrix, "stype", nm_stype, 0);
+    rb_define_method(cNMatrix, "scast", nm_scast_copy, 2);
 
     rb_define_method(cNMatrix, "[]", nm_mref, -1);
     rb_define_method(cNMatrix, "[]=", nm_mset, -1);

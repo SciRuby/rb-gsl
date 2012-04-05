@@ -671,6 +671,7 @@ typedef void*    (*nm_stype_ref_t[S_TYPES])(STORAGE*, size_t*);        // get/re
 typedef VALUE    (*nm_stype_ins_t[S_TYPES])(STORAGE*, size_t*, VALUE); // insert
 typedef STORAGE* (*nm_create_storage_t[S_TYPES])();
 typedef STORAGE* (*nm_cast_copy_storage_t[S_TYPES])();
+typedef STORAGE* (*nm_scast_copy_storage_t[S_TYPES][S_TYPES])();
 typedef NMATRIX* (*nm_matrix_multiply_op_t[S_TYPES])();
 typedef NMATRIX* (*nm_elementwise_binary_op_casted_t[S_TYPES])();
 typedef int      (*nm_d_elementwise_binary_op_t[NM_TYPES])();
@@ -836,7 +837,7 @@ void            delete_dense_storage(DENSE_STORAGE* s);
 void            mark_dense_storage(void* s);
 DENSE_STORAGE*  cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype);
 
-size_t          count_dense_storage_elements(const DENSE_STORAGE*);
+size_t          count_dense_storage_elements(const DENSE_STORAGE* s);
 bool            dense_storage_eqeq(const DENSE_STORAGE*, const DENSE_STORAGE*);
 
 size_t          dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
@@ -848,6 +849,7 @@ LIST_STORAGE*   create_list_storage(int8_t dtype, size_t* shape, size_t rank, vo
 void            delete_list_storage(LIST_STORAGE* s);
 void            mark_list_storage(void* s);
 LIST_STORAGE*   cast_copy_list_storage(LIST_STORAGE* rhs, int8_t new_dtype);
+size_t          count_storage_max_elements(const STORAGE*);
 
 void*           list_storage_get(LIST_STORAGE* s, size_t* coords);
 void*           list_storage_insert(LIST_STORAGE* s, size_t* coords, void* val);
@@ -868,7 +870,17 @@ char            yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v);
 
 YALE_STORAGE* create_merged_yale_storage(const YALE_STORAGE*, const YALE_STORAGE*);
 
+
+/* stype casts */
+DENSE_STORAGE* scast_copy_dense_yale(const YALE_STORAGE* rhs, int8_t l_dtype);
+DENSE_STORAGE* scast_copy_dense_list(const LIST_STORAGE* rhs, int8_t l_dtype);
+YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
+YALE_STORAGE* scast_copy_yale_list(const LIST_STORAGE* rhs, int8_t l_dtype);
+LIST_STORAGE* scast_copy_list_yale(const YALE_STORAGE* rhs, int8_t l_dtype);
+LIST_STORAGE* scast_copy_list_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
+
 /* nmatrix.c */
+void cast_copy_value_single(void* to, const void* from, int8_t l_dtype, int8_t r_dtype);
 int8_t nm_dtypestring_to_dtype(VALUE str);
 int8_t nm_dtypesymbol_to_dtype(VALUE sym);
 int8_t nm_stypestring_to_stype(VALUE str);

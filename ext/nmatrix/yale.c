@@ -324,7 +324,7 @@ void mark_yale_storage(void* m) {
     fprintf(stderr, "mark_yale_storage\n");
     if (storage && storage->dtype == NM_ROBJ)
       for (i = 0; i < storage->capacity; ++i)
-        rb_gc_mark(*((VALUE*)(storage->a + i*nm_sizeof[NM_ROBJ])));
+        rb_gc_mark(*((VALUE*)((char*)(storage->a) + i*nm_sizeof[NM_ROBJ])));
   }
 }
 
@@ -382,6 +382,18 @@ YALE_STORAGE* cast_copy_yale_storage(YALE_STORAGE* rhs, int8_t new_dtype) {
   else                          SetFuncs[new_dtype][rhs->dtype](size, lhs->a, nm_sizeof[lhs->dtype], rhs->a, nm_sizeof[rhs->dtype]);
 
   return lhs;
+}
+
+
+YALE_STORAGE* scast_copy_yale_list(const LIST_STORAGE* rhs, int8_t l_dtype) {
+  rb_raise(rb_eNotImpError, "yale matrix construction from list matrix not yet implemented");
+  return NULL;
+}
+
+
+YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
+  rb_raise(rb_eNotImpError, "yale matrix construction from dense matrix not yet implemented");
+  return NULL;
 }
 
 

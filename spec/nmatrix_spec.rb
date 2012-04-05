@@ -37,6 +37,29 @@ describe NMatrix do
   RATIONAL_MATRIX32A_ARRAY = MATRIX32A_ARRAY.collect { |x| x.to_r }
 
 
+  #it "allows stype casting of an empty matrix between dense, sparse, and list" do
+  #  n = NMatrix.new(:list, [3,3], :int64)
+  #  m = n.scast(:dense, :int64) # list  -> dense
+    #o = m.scast(:yale, :int64)  # dense -> yale
+    #p = o.scast(:list, :int64)  # yale  -> list
+    #q = o.scast(:dense, :int64) # yale  -> dense
+  #  r = m.scast(:list, :int64)  # dense -> list
+    #s = n.scast(:yale, :int64)  # list  -> yale
+    #m.should == q
+    #o.should == s
+    #p.should == r
+  #  r.should == n
+  #end
+
+  it "correctly casts list to dense" do
+    n = NMatrix.new(:list, [3,3], :int64)
+    n[0,1] = 1
+    n[0,2] = 2
+    n[2,0] = 3
+    m = n.scast(:dense, :int64)
+  end
+
+
   it "correctly compares two list matrices" do
     n = NMatrix.new(:list, [3,3,3], :int64)
     m = NMatrix.new(:list, [3,3,3], :int64)

@@ -34,12 +34,9 @@
 #include "nmatrix.h"
 
 
-/* Calculate the number of elements in the dense storage structure, based on shape and rank */
-static size_t count_list_storage_max_elements(const LIST_STORAGE* s) {
-  size_t i;
-  size_t count = 1;
-  for (i = 0; i < s->rank; ++i) count *= s->shape[i];
-  return count;
+/* Calculate the max number of elements in the list storage structure, based on shape and rank */
+inline size_t count_storage_max_elements(const STORAGE* s) {
+  return count_dense_storage_elements((DENSE_STORAGE*)s);
 }
 
 
@@ -202,8 +199,8 @@ static NODE* list_insert_after(NODE* node, size_t key, void* val) {
   node->next = ins;
 
   // initialize our new node
-  ins->key  = key;
-  ins->val  = val;
+  ins->key   = key;
+  ins->val   = val;
 
   return ins;
 }
@@ -301,14 +298,14 @@ LIST_STORAGE* create_list_storage(int8_t dtype, size_t* shape, size_t rank, void
 
 
 static void cast_copy_list_contents(LIST* lhs, LIST* rhs, int8_t lhs_dtype, int8_t rhs_dtype, size_t recursions) {
-  NODE *lcurr = NULL, *rcurr = rhs->first;
+  NODE *lcurr, *rcurr;
 
   if (rhs->first) {
     // copy head node
     rcurr = rhs->first;
     lcurr = lhs->first = ALLOC( NODE );
 
-    while (rcurr != NULL) {
+    while (rcurr) {
       lcurr->key = rcurr->key;
 
       if (recursions == 0) { // contents is some kind of value
@@ -334,6 +331,82 @@ static void cast_copy_list_contents(LIST* lhs, LIST* rhs, int8_t lhs_dtype, int8
     lhs->first = NULL;
   }
 }
+
+
+/* Deletes the linked list and all of its contents. If you want to delete a list inside of a list,
+ * set recursions to 1. For lists inside of lists inside of the list, set it to 2; and so on.
+ * Setting it to 0 is for no recursions.
+ */
+static void delete_list(LIST* list, size_t recursions) {
+  NODE* next;
+  NODE* curr = list->first;
+
+  while (curr != NULL) {
+    next = curr->next;
+
+    if (recursions == 0) {
+      //fprintf(stderr, "    free_val: %p\n", curr->val);
+      free(curr->val);
+    } else {
+      //fprintf(stderr, "    free_list: %p\n", list);
+      delete_list(curr->val, recursions-1);
+    }
+
+    free(curr);
+    curr = next;
+  }
+  //fprintf(stderr, "    free_list: %p\n", list);
+  free(list);
+}
+
+
+// Copy dense into lists recursively
+//
+// TODO: This works, but could definitely be cleaner (do we really need to pass coords around?)
+static bool cast_copy_list_contents_dense(LIST* lhs, const char* rhs, void* zero, int8_t l_dtype, int8_t r_dtype, size_t* pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
+  NODE *prev;
+  LIST *sub_list;
+  bool added = false, added_list = false;
+  void* insert_value;
+
+  for (coords[rank-1-recursions] = 0; coords[rank-1-recursions] < shape[rank-1-recursions]; ++coords[rank-1-recursions], ++(*pos)) {
+    //fprintf(stderr, "(%u)\t<%u, %u>: ", recursions, coords[0], coords[1]);
+
+    if (recursions == 0) {  // create nodes
+      if (memcmp((char*)rhs + (*pos)*nm_sizeof[r_dtype], zero, nm_sizeof[r_dtype])) { // is not zero
+        //fprintf(stderr, "inserting value\n");
+
+        // Create a copy of our value that we will insert in the list
+        insert_value = ALLOC_N(char, nm_sizeof[l_dtype]);
+        cast_copy_value_single(insert_value, rhs + (*pos)*nm_sizeof[r_dtype], l_dtype, r_dtype);
+
+        if (!lhs->first) prev = list_insert(lhs, false, coords[rank-1-recursions], insert_value);
+        else prev = list_insert_after(prev, coords[rank-1-recursions], insert_value);
+        added = true;
+      } //else fprintf(stderr, "zero\n");
+      // no need to do anything if the element is zero
+    } else { // create lists
+      //fprintf(stderr, "inserting list\n");
+      // create a list as if there's something in the row in question, and then delete it if nothing turns out to be there
+      sub_list = create_list();
+
+      added_list = cast_copy_list_contents_dense(sub_list, rhs, zero, l_dtype, r_dtype, pos, coords, shape, rank, recursions-1);
+
+      if (!added_list)    { delete_list(sub_list, recursions-1); fprintf(stderr, "deleting list\n"); }// nothing added
+      else if (!lhs->first) prev = list_insert(lhs, false, coords[rank-1-recursions], sub_list);
+      else                  prev = list_insert_after(prev, coords[rank-1-recursions], sub_list);
+
+      // added = (added || added_list);
+
+    }
+  }
+
+  coords[rank-1-recursions] = 0;
+  --(*pos);
+
+  return added;
+}
+
 
 
 LIST_STORAGE* copy_list_storage(LIST_STORAGE* rhs) {
@@ -376,40 +449,49 @@ LIST_STORAGE* cast_copy_list_storage(LIST_STORAGE* rhs, int8_t new_dtype) {
 
   lhs = create_list_storage(new_dtype, shape, rhs->rank, default_val);
 
-  //if (lhs) {
   lhs->rows = create_list();
   cast_copy_list_contents(lhs->rows, rhs->rows, new_dtype, rhs->dtype, rhs->rank - 1);
-  //} else free(shape);
 
   return lhs;
 }
 
 
-/* Deletes the linked list and all of its contents. If you want to delete a list inside of a list,
- * set recursions to 1. For lists inside of lists inside of the list, set it to 2; and so on.
- * Setting it to 0 is for no recursions.
- */
-static void delete_list(LIST* list, size_t recursions) {
-  NODE* next;
-  NODE* curr = list->first;
 
-  while (curr != NULL) {
-    next = curr->next;
+LIST_STORAGE* scast_copy_list_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
+  LIST_STORAGE* lhs;
+  size_t pos = 0;
+  void* l_default_val = ALLOC_N(char, nm_sizeof[l_dtype]);
+  void* r_default_val = ALLOCA_N(char, nm_sizeof[rhs->dtype]); // clean up when finished with this function
 
-    if (recursions == 0) {
-      //fprintf(stderr, "    free_val: %p\n", curr->val);
-      free(curr->val);
-    } else {
-      //fprintf(stderr, "    free_list: %p\n", list);
-      delete_list(curr->val, recursions-1);
-    }
+  // allocate and copy shape and coords
+  size_t *shape = ALLOC_N(size_t, nm_sizeof[rhs->dtype]), *coords = ALLOC_N(size_t, nm_sizeof[rhs->dtype]);
+  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
+  memset(coords, 0, rhs->rank * sizeof(size_t));
 
-    free(curr);
-    curr = next;
-  }
-  //fprintf(stderr, "    free_list: %p\n", list);
-  free(list);
+  // set list default_val to 0
+  if (l_dtype == NM_ROBJ) *(VALUE*)l_default_val = INT2FIX(0);
+  else                    memset(l_default_val, 0, nm_sizeof[l_dtype]);
+
+  // need test default value for comparing to elements in dense matrix
+  if (rhs->dtype == l_dtype)      r_default_val = l_default_val;
+  else if (rhs->dtype == NM_ROBJ) *(VALUE*)r_default_val = INT2FIX(0);
+  else                            memset(r_default_val, 0, nm_sizeof[rhs->dtype]);
+
+  lhs = create_list_storage(l_dtype, shape, rhs->rank, l_default_val);
+
+  lhs->rows = create_list();
+  cast_copy_list_contents_dense(lhs->rows, rhs->elements, r_default_val, l_dtype, rhs->dtype, &pos, coords, rhs->shape, rhs->rank, rhs->rank - 1);
+
+  return lhs;
 }
+
+
+LIST_STORAGE* scast_copy_list_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
+  rb_raise(rb_eNotImpError, "list matrix construction from yale matrix not yet implemented");
+  return NULL;
+}
+
+
 
 // Do all values in a list == some value?
 static bool list_eqeq_value(const LIST* l, const void* v, size_t value_size, size_t recursions, size_t* checked) {
@@ -501,7 +583,9 @@ static bool list_eqeq_list(const LIST* left, const LIST* right, const void* left
 bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
 
   // in certain cases, we need to keep track of the number of elements checked.
-  size_t num_checked = 0, max_elements = count_list_storage_max_elements(left), sz = nm_sizeof[left->dtype];
+  size_t num_checked  = 0,
+         max_elements = count_storage_max_elements((STORAGE*)left),
+         sz           = nm_sizeof[left->dtype];
 
   if (!left->rows->first) {
     // fprintf(stderr, "!left->rows true\n");

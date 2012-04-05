@@ -13,3 +13,6 @@ $(DLLIB): dtypes.h dtypes.c dfuncs.c $(OBJS) Makefile
 	# $(ECHO) linking shared-object $(DLLIB)
 	@-$(RM) $(@)
 	$(Q) $(LDSHARED) -o $@ $(OBJS) $(LIBPATH) $(DLDFLAGS) $(LOCAL_LIBS) $(LIBS)
+
+soclean:
+	@-$(RM) *.so *.o *.bundle

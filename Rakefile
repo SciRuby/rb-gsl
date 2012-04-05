@@ -44,6 +44,24 @@ task :console do |task|
   run *cmd
 end
 
+#namespace :console do
+#  CONSOLE_CMD = ['irb', "-r './lib/nmatrix.rb'"]
+#  desc "Run console under GDB."
+#  task :gdb => [ :compile ] do |task|
+#          cmd = [ 'gdb' ] + GDB_OPTIONS
+#          cmd += [ '--args' ]
+#          cmd += CONSOLE_CMD
+#          run( *cmd )
+#  end
+#
+#  desc "Run console under Valgrind."
+#  task :valgrind => [ :compile ] do |task|
+#          cmd = [ 'valgrind' ] + VALGRIND_OPTIONS
+#          cmd += CONSOLE_CMD
+#          run( *cmd )
+#  end
+#end
+
 task :default => :spec
 
 def run *cmd
@@ -62,7 +80,7 @@ namespace :spec do
   #  run 'rspec spec/generator_spec.rb'
   #end
 
-  desc "Run the specs under GDB."
+  desc "Run specs under GDB."
   task :gdb => [ :compile ] do |task|
           cmd = [ 'gdb' ] + GDB_OPTIONS
           cmd += [ '--args' ]
@@ -70,11 +88,26 @@ namespace :spec do
           run( *cmd )
   end
 
-  desc "Run the specs under Valgrind."
-  task :valgrind do
+  desc "Run specs under Valgrind."
+  task :valgrind => [ :compile ] do |task|
           cmd = [ 'valgrind' ] + VALGRIND_OPTIONS
           cmd += RSPEC_CMD
           run( *cmd )
+  end
+end
+
+
+namespace :clean do
+  task :so do |task|
+    tmp_path = "tmp/#{RUBY_PLATFORM}/nmatrix/#{RUBY_VERSION}"
+    chdir tmp_path do
+      if RUBY_PLATFORM =~ /mswin/
+        `nmake soclean`
+      else
+        mkcmd = ENV['MAKE'] || %w[gmake make].find { |c| system("#{c} -v >> /dev/null 2>&1") }
+        `#{mkcmd} soclean`
+      end
+    end
   end
 end
 

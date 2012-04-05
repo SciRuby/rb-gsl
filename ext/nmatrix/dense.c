@@ -62,6 +62,7 @@ size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords) {
 }
 
 
+
 void* dense_storage_get(DENSE_STORAGE* s, size_t* coords) {
   return (char*)(s->elements) + dense_storage_pos(s, coords) * nm_sizeof[s->dtype];
 }
@@ -111,6 +112,72 @@ DENSE_STORAGE* cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype) {
 
 
   return lhs;
+}
+
+
+
+// Copy a set of default values into dense
+static inline void cast_copy_dense_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
+  size_t i;
+
+  for (i = 0; i < shape[rank-1-recursions]; ++i, ++(*pos)) {
+    //fprintf(stderr, "default: pos = %u, dim = %u\t", *pos, shape[rank-1-recursions]);
+
+    if (recursions == 0) { cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], default_val, l_dtype, r_dtype); fprintf(stderr, "zero\n"); }
+    else                 { cast_copy_dense_list_default(lhs, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1); fprintf(stderr, "column of zeros\n"); }
+  }
+  --(*pos);
+}
+
+
+// Copy list contents into dense recursively
+static void cast_copy_dense_list_contents(void* lhs, const LIST* rhs, void* default_val, int8_t l_dtype, int8_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
+  NODE *curr = rhs->first;
+  int last_key = -1;
+  size_t i = 0;
+
+  for (i = 0; i < shape[rank-1-recursions]; ++i, ++(*pos)) {
+
+    if (!curr || (curr->key > last_key+1)) {
+      //fprintf(stderr, "pos = %u, dim = %u, curr->key XX, last_key+1 = %d\t", *pos, shape[rank-1-recursions], last_key+1);
+      if (recursions == 0) cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], default_val, l_dtype, r_dtype); //fprintf(stderr, "zero\n"); }
+      else                 cast_copy_dense_list_default(lhs, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1); //fprintf(stderr, "column of zeros\n"); }
+
+      ++last_key;
+    } else {
+      //fprintf(stderr, "pos = %u, dim = %u, curr->key = %u, last_key+1 = %d\t", *pos, shape[rank-1-recursions], curr->key, last_key+1);
+      if (recursions == 0) cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], curr->val, l_dtype, r_dtype); //fprintf(stderr, "value\n"); }
+      else                 cast_copy_dense_list_contents(lhs, curr->val, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1); //fprintf(stderr, "column of values\n"); }
+
+      last_key = curr->key;
+      curr     = curr->next;
+    }
+  }
+  --(*pos);
+}
+
+
+// Convert (by creating a copy) from list storage to dense storage.
+DENSE_STORAGE* scast_copy_dense_list(const LIST_STORAGE* rhs, int8_t l_dtype) {
+  DENSE_STORAGE* lhs;
+  size_t pos   = 0; // position in lhs->elements
+
+  // allocate and copy shape
+  size_t* shape = ALLOC_N(size_t, rhs->rank);
+  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
+
+  lhs = create_dense_storage(l_dtype, shape, rhs->rank, NULL, 0);
+
+  // recursively copy the contents
+  cast_copy_dense_list_contents(lhs->elements, rhs->rows, rhs->default_val, l_dtype, rhs->dtype, &pos, shape, lhs->rank, count_storage_max_elements((STORAGE*)rhs), rhs->rank-1);
+
+  return lhs;
+}
+
+
+DENSE_STORAGE* scast_copy_dense_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
+  rb_raise(rb_eNotImpError, "dense matrix construction from yale matrix not yet implemented");
+  return NULL;
 }
 
 
