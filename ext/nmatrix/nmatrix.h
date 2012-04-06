@@ -868,7 +868,10 @@ bool            yale_storage_eqeq(const YALE_STORAGE*, const YALE_STORAGE*);
 void*           yale_storage_ref(YALE_STORAGE* s, size_t* coords);
 char            yale_storage_set(YALE_STORAGE* s, size_t* coords, void* v);
 
-YALE_STORAGE* create_merged_yale_storage(const YALE_STORAGE*, const YALE_STORAGE*);
+YALE_STORAGE*   create_merged_yale_storage(const YALE_STORAGE*, const YALE_STORAGE*);
+
+size_t          count_list_storage_nd_elements(const LIST_STORAGE*);
+size_t          count_list_storage_elements(const LIST_STORAGE*);
 
 
 /* stype casts */

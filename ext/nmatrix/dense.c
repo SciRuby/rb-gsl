@@ -222,7 +222,10 @@ DENSE_STORAGE* scast_copy_dense_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
 
           // get next
           ++ija;
-          YaleGetIJA(jj, rhs, ija);
+
+          // increment to next column ID (or go off the end)
+          if (ija < ija_next) YaleGetIJA(jj, rhs, ija);
+          else jj = rhs->shape[1];
 
         } else { // j < jj
 

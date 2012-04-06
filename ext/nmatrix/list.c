@@ -33,10 +33,50 @@
 
 #include "nmatrix.h"
 
+extern VALUE nm_eStorageTypeError;
+
 
 /* Calculate the max number of elements in the list storage structure, based on shape and rank */
 inline size_t count_storage_max_elements(const STORAGE* s) {
   return count_dense_storage_elements((DENSE_STORAGE*)s);
+}
+
+static size_t count_list_storage_elements_r(const LIST* l, size_t recursions) {
+  size_t count = 0;
+  NODE* curr = l->first;
+  if (recursions) {
+    while (curr) {
+      count += count_list_storage_elements_r(curr->val, recursions-1);
+      curr = curr->next;
+    }
+  } else {
+    while (curr) {
+      ++count;
+      curr = curr->next;
+    }
+  }
+  return count;
+}
+
+
+// Count non-zero elements. See also count_list_storage_nd_elements.
+size_t count_list_storage_elements(const LIST_STORAGE* s) {
+  return count_list_storage_elements_r(s->rows, s->rank-1);
+}
+
+
+// Count non-diagonal non-zero elements
+size_t count_list_storage_nd_elements(const LIST_STORAGE* s) {
+  NODE *i_curr, *j_curr;
+  size_t count = 0;
+  if (s->rank != 2) rb_raise(rb_eNotImpError, "non-diagonal element counting only defined for rank = 2");
+
+  for (i_curr = s->rows->first; i_curr; i_curr = i_curr->next) {
+    for (j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
+      if (i_curr->key != j_curr->key) ++count;
+    }
+  }
+  return count;
 }
 
 
@@ -279,17 +319,11 @@ LIST_STORAGE* create_list_storage(int8_t dtype, size_t* shape, size_t rank, void
 
   s = ALLOC( LIST_STORAGE );
 
-  //fprintf(stderr, "Creating list storage at %p\n", s);
-
   s->rank  = rank;
   s->shape = shape;
   s->dtype = dtype;
 
   s->rows  = create_list();
-  /*if (!(s->rows  = create_list())) {
-    free(s);
-    return NULL;
-  }*/
 
   s->default_val = init_val;
 
@@ -464,7 +498,7 @@ LIST_STORAGE* scast_copy_list_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
   void* r_default_val = ALLOCA_N(char, nm_sizeof[rhs->dtype]); // clean up when finished with this function
 
   // allocate and copy shape and coords
-  size_t *shape = ALLOC_N(size_t, nm_sizeof[rhs->dtype]), *coords = ALLOC_N(size_t, nm_sizeof[rhs->dtype]);
+  size_t *shape = ALLOC_N(size_t, rhs->rank), *coords = ALLOC_N(size_t, rhs->rank);
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
   memset(coords, 0, rhs->rank * sizeof(size_t));
 
@@ -487,8 +521,87 @@ LIST_STORAGE* scast_copy_list_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
 
 
 LIST_STORAGE* scast_copy_list_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
-  rb_raise(rb_eNotImpError, "list matrix construction from yale matrix not yet implemented");
-  return NULL;
+  LIST_STORAGE* lhs;
+  NODE *last_added, *last_row_added = NULL;
+  LIST* curr_row;
+  y_size_t ija, ija_next, i, jj;
+  bool add_diag;
+  void* default_val = ALLOC_N(char, nm_sizeof[l_dtype]);
+  void* R_ZERO = (char*)(rhs->a) + rhs->shape[0]*nm_sizeof[rhs->dtype];
+  void* insert_val;
+
+  // allocate and copy shape
+  size_t *shape = ALLOC_N(size_t, rhs->rank);
+  shape[0] = rhs->shape[0]; shape[1] = rhs->shape[1];
+
+  // copy default value from the zero location in the Yale matrix
+  SetFuncs[l_dtype][rhs->dtype](1, default_val, 0, R_ZERO, 0);
+
+  lhs = create_list_storage(l_dtype, shape, rhs->rank, default_val);
+
+  if (rhs->rank != 2)
+    rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 from yale");
+
+  // Walk through rows and columns as if RHS were a dense matrix
+  for (i = 0; i < rhs->shape[0]; ++i) {
+
+    // Get boundaries of beginning and end of row
+    YaleGetIJA(ija, rhs, i);
+    YaleGetIJA(ija_next, rhs, i+1);
+
+    // Are we going to need to add a diagonal for this row?
+    if (!memcmp((char*)(rhs->a) + i*nm_sizeof[rhs->dtype], R_ZERO, nm_sizeof[rhs->dtype])) add_diag = false; // zero
+    else add_diag = true; // nonzero diagonal
+
+
+    if (ija < ija_next || add_diag) {
+
+      curr_row = create_list();
+      last_added = NULL;
+
+      while (ija < ija_next) {
+        YaleGetIJA(jj, rhs, ija); // what column number is this?
+
+        // Is there a nonzero diagonal item between the previously added item and the current one?
+        if (jj > i && add_diag) {
+          // Allocate and copy insertion value
+          insert_val = ALLOC_N(char, nm_sizeof[l_dtype]);
+          SetFuncs[l_dtype][rhs->dtype](1, insert_val, 0, (char*)(rhs->a) + i*nm_sizeof[rhs->dtype], 0);
+
+          // insert the item in the list at the appropriate location
+          if (last_added) last_added = list_insert_after(last_added, i, insert_val);
+          else            last_added = list_insert(curr_row, false, i, insert_val);
+
+          add_diag = false; // don't add again!
+        }
+
+        // now allocate and add the current item
+        insert_val = ALLOC_N(char, nm_sizeof[l_dtype]);
+        SetFuncs[l_dtype][rhs->dtype](1, insert_val, 0, (char*)(rhs->a) + ija*nm_sizeof[rhs->dtype], 0);
+
+        if (last_added) last_added = list_insert_after(last_added, jj, insert_val);
+        else            last_added = list_insert(curr_row, false, jj, insert_val);
+
+        ++ija; // move to next entry in Yale matrix
+      }
+
+      if (add_diag) { // still haven't added the diagonal.
+        insert_val = ALLOC_N(char, nm_sizeof[l_dtype]);
+        SetFuncs[l_dtype][rhs->dtype](1, insert_val, 0, (char*)(rhs->a) + i*nm_sizeof[rhs->dtype], 0);
+
+        // insert the item in the list at the appropriate location
+        if (last_added) last_added = list_insert_after(last_added, i, insert_val);
+        else            last_added = list_insert(curr_row, false, i, insert_val);
+      }
+
+      // Now add the list at the appropriate location
+      if (last_row_added) last_row_added = list_insert_after(last_row_added, i, curr_row);
+      else                last_row_added = list_insert(lhs->rows, false, i, curr_row);
+    }
+
+  } // end of walk through rows
+
+  return lhs;
 }
 
 

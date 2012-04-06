@@ -37,31 +37,19 @@ describe NMatrix do
   RATIONAL_MATRIX32A_ARRAY = MATRIX32A_ARRAY.collect { |x| x.to_r }
 
 
-  #it "allows stype casting of an empty matrix between dense, sparse, and list" do
-  #  n = NMatrix.new(:list, [3,3], :int64)
-  #  m = n.scast(:dense, :int64) # list  -> dense
-    #o = m.scast(:yale, :int64)  # dense -> yale
-    #p = o.scast(:list, :int64)  # yale  -> list
-    #q = o.scast(:dense, :int64) # yale  -> dense
-  #  r = m.scast(:list, :int64)  # dense -> list
-    #s = n.scast(:yale, :int64)  # list  -> yale
-    #m.should == q
-    #o.should == s
-    #p.should == r
-  #  r.should == n
-  #end
-
-  it "correctly casts list to dense" do
-    n = NMatrix.new(:list, [3,3], :int64)
-    n[0,1] = 1
-    n[0,2] = 2
-    n[2,0] = 3
-    m = n.scast(:dense, :int32)
-  end
-
-  it "correctly casts dense to yale" do
-    n = NMatrix.new(:dense, [3,3], [0,0,1,0,2,0,3,4,5], :int64)
-    m = n.scast(:yale, :int32)
+  it "allows stype casting of a rank 2 matrix between dense, sparse, and list (different dtypes)" do
+    m = NMatrix.new(:dense, [3,3], [0,0,1,0,2,0,3,4,5], :int64).
+        scast(:yale, :int32).
+        scast(:dense, :float64).
+        scast(:list, :int32).
+        scast(:dense, :int16).
+        scast(:list, :int32).
+        scast(:yale, :int64) #.
+        #scast(:list, :int32).
+        #scast(:dense, :int16)
+    #m.should == original
+    # For some reason this causes some weird garbage collector problems when we uncomment these. The above lines won't
+    # work at all in IRB, but work fine when run in a regular Ruby session.
   end
 
 

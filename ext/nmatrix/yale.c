@@ -387,9 +387,71 @@ YALE_STORAGE* cast_copy_yale_storage(YALE_STORAGE* rhs, int8_t new_dtype) {
 }
 
 
+// Clear out the D portion of the A vector (clearing the diagonal and setting the zero value).
+//
+// Note: This sets a literal 0 value. If your dtype is NM_ROBJ (a Ruby object), it'll actually
+// be INT2FIX(0) instead of a string of NULLs.
+static void clear_diagonal_and_zero(YALE_STORAGE* s) {
+  y_size_t i;
+  // Clear out the diagonal + one extra entry
+  if (s->dtype == NM_ROBJ) {
+    for (i = 0; i < YALE_IA_SIZE(s)+1; ++i) // insert Ruby zeros
+      *(VALUE*)( (char*)(s->a) + i*nm_sizeof[s->dtype] ) = INT2FIX(0);
+  } else { // just insert regular zeros
+    memset(s->a, 0, nm_sizeof[s->dtype] * (YALE_IA_SIZE(s)+1));
+  }
+}
+
+
+
 YALE_STORAGE* scast_copy_yale_list(const LIST_STORAGE* rhs, int8_t l_dtype) {
-  rb_raise(rb_eNotImpError, "yale matrix construction from list matrix not yet implemented");
-  return NULL;
+  YALE_STORAGE* lhs;
+  size_t* shape;
+  NODE *i_curr, *j_curr;
+  y_size_t ija;
+  size_t ndnz = count_list_storage_nd_elements(rhs);
+
+  if (rhs->rank != 2)
+    rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
+
+  if ((rhs->dtype == NM_ROBJ && *(VALUE*)(rhs->default_val) == INT2FIX(0)) || strncmp(rhs->default_val, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", nm_sizeof[rhs->dtype]))
+    rb_raise(nm_eStorageTypeError, "list matrix must have default value of 0 to convert to yale");
+
+  // Copy shape for yale construction
+  shape = ALLOC_N(size_t, 2);
+  shape[0] = rhs->shape[0];
+  shape[1] = rhs->shape[1];
+
+  lhs = create_yale_storage(l_dtype, shape, 2, shape[0] + ndnz + 1);
+  clear_diagonal_and_zero(lhs); // clear the diagonal and the zero location.
+
+  ija = lhs->shape[0]+1;
+
+  for (i_curr = rhs->rows->first; i_curr; i_curr = i_curr->next) {
+
+    // indicate the beginning of a row in the IJA array
+    YaleSetIJA(i_curr->key, lhs, ija);
+
+    for (j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
+      if (i_curr->key == j_curr->key) {
+        // set diagonal
+        SetFuncs[l_dtype][rhs->dtype](1, (char*)(lhs->a) + (i_curr->key)*nm_sizeof[l_dtype], 0, j_curr->val, 0);
+      } else {
+        // set column value
+        YaleSetIJA(ija, lhs, j_curr->key); // write column index
+
+        // set cell value
+        SetFuncs[l_dtype][rhs->dtype](1, (char*)(lhs->a) + ija*nm_sizeof[l_dtype], 0, j_curr->val, 0);
+
+        ++ija;
+      }
+    }
+
+    if (!i_curr->next) YaleSetIJA(i_curr->key, lhs, ija); // indicate the end of the last row
+  }
+
+  lhs->ndnz = ndnz;
+  return lhs;
 }
 
 
@@ -433,7 +495,6 @@ YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
   // Copy contents
   for (i = 0; i < rhs->shape[0]; ++i) {
     // indicate the beginning of a row in the IJA array
-    //fprintf(stderr, "writing ija=%lu at position %lu\n", (unsigned long)(ija), (unsigned long)(i));
     YaleSetIJA(i, lhs, ija);
 
     for (j = 0; j < rhs->shape[1]; ++j) {
@@ -572,19 +633,13 @@ YALE_STORAGE* create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size
 
 // Empty the matrix
 void init_yale_storage(YALE_STORAGE* s) {
-  y_size_t i, ia_init = YALE_IA_SIZE(s)+1;
+  y_size_t IA_INIT = YALE_IA_SIZE(s)+1, i;
 
   // clear out IJA vector
-  for (i = 0; i < ia_init; ++i)
-    SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + i*nm_sizeof[s->index_dtype], 0, &ia_init, 0); // set initial values for IJA
+  for (i = 0; i < YALE_IA_SIZE(s)+1; ++i)
+    SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + i*nm_sizeof[s->index_dtype], 0, &IA_INIT, 0); // set initial values for IJA
 
-  // Clear out the diagonal + one extra entry
-  if (s->dtype == NM_ROBJ) {
-    for (i = 0; i < ia_init; ++i) // insert Ruby zeros
-      *(VALUE*)( (char*)(s->a) + i*nm_sizeof[s->dtype] ) = INT2FIX(0);
-  } else { // just insert regular zeros
-    memset(s->a, 0, nm_sizeof[s->dtype] * ia_init);
-  }
+  clear_diagonal_and_zero(s);
 }
 
 
