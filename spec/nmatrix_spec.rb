@@ -47,7 +47,7 @@ describe NMatrix do
         scast(:yale, :int64) #.
         #scast(:list, :int32).
         #scast(:dense, :int16)
-    #m.should == original
+    #m.should.equal?(original)
     # For some reason this causes some weird garbage collector problems when we uncomment these. The above lines won't
     # work at all in IRB, but work fine when run in a regular Ruby session.
   end
@@ -56,16 +56,16 @@ describe NMatrix do
   it "correctly compares two list matrices" do
     n = NMatrix.new(:list, [3,3,3], :int64)
     m = NMatrix.new(:list, [3,3,3], :int64)
-    n.should == m
+    n.should.eql? m
     n[0,0,0] = 5
-    n.should_not == m
+    n.should_not.eql? m
     n[0,0,1] = 52
     n[1,2,1] = -4
 
     m[0,0,0] = 5
     m[0,0,1] = 52
     m[1,2,1] = -4
-    n.should == m
+    n.should.eql? m
   end
 
   it "correctly fills dense Ruby object matrix with nil" do
@@ -224,7 +224,7 @@ describe NMatrix do
     m = NMatrix.new(:dense, [2,2], [-4,-1,0,66], :int64)
     rcorrect = NMatrix.new(:dense, [2,2], [-3, 1, 3, 70], :int64)
     r = n+m
-    r.should == rcorrect
+    r.should.eql? rcorrect
   end
 
    # TODO: Get it working with ROBJ too

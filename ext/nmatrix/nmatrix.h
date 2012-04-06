@@ -205,7 +205,7 @@ enum NMatrix_Ops {
   NM_OP_MOD = '%',
   NM_OP_BANG = '!',
   NM_OP_NEG, // unary minus
-  NM_OP_EQ, // ==
+  NM_OP_EQEQ, // ==
   NM_OP_NEQ, // !=
   NM_OP_GT = '>', // >
   NM_OP_LT = '<', // <

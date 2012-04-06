@@ -40,9 +40,14 @@ int nm_d_%%TYPE_ABBREV%%_elementwise(const %%TYPE%%* A, const %%TYPE%%* B, %%TYP
       %%TYPE C[i] = -A[i]%%
     }
     break;
-  case NM_OP_EQ:
+  case NM_OP_EQEQ:
     for (i = 0; i < n; ++i) {
       %%TYPE C[i] = A[i] == B[i]%%
+    }
+    break;
+  case NM_OP_NEQ:
+    for (i = 0; i < n; ++i) {
+      %%TYPE C[i] = A[i] != B[i]%%
     }
     break;
   case '>':

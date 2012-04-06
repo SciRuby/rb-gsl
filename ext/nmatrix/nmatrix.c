@@ -1020,20 +1020,44 @@ static VALUE nm_elementwise(VALUE leftv, VALUE rightv, char op) {
   return Qnil; // Only if we try to multiply list matrices should we return Qnil.
 }
 
-static VALUE nm_add(VALUE left, VALUE right) {
+static VALUE nm_ew_add(VALUE left, VALUE right) {
   return nm_elementwise(left, right, '+');
 }
 
-static VALUE nm_subtract(VALUE left, VALUE right) {
+static VALUE nm_ew_subtract(VALUE left, VALUE right) {
   return nm_elementwise(left, right, '-');
 }
 
-static VALUE nm_multiply_elementwise(VALUE left, VALUE right) {
+static VALUE nm_ew_multiply(VALUE left, VALUE right) {
   return nm_elementwise(left, right, '*');
 }
 
-static VALUE nm_divide(VALUE left, VALUE right) {
+static VALUE nm_ew_divide(VALUE left, VALUE right) {
   return nm_elementwise(left, right, '/');
+}
+
+static VALUE nm_ew_eqeq(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, NM_OP_EQEQ);
+}
+
+static VALUE nm_ew_leq(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, NM_OP_LTE);
+}
+
+static VALUE nm_ew_geq(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, NM_OP_GTE);
+}
+
+static VALUE nm_ew_lt(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, '<');
+}
+
+static VALUE nm_ew_gt(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, '>');
+}
+
+static VALUE nm_ew_neq(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, NM_OP_NEQ);
 }
 
 
@@ -1647,12 +1671,19 @@ void Init_nmatrix() {
 
     rb_define_method(cNMatrix, "each", nm_each, 0);
 
-    rb_define_method(cNMatrix, "*", nm_multiply_elementwise, 1);
-    rb_define_method(cNMatrix, "/", nm_divide, 1);
-    rb_define_method(cNMatrix, "+", nm_add, 1);
-    rb_define_method(cNMatrix, "-", nm_subtract, 1);
-    rb_define_method(cNMatrix, "==", nm_eqeq, 1);
+    rb_define_method(cNMatrix, "*", nm_ew_multiply, 1);
+    rb_define_method(cNMatrix, "/", nm_ew_divide, 1);
+    rb_define_method(cNMatrix, "+", nm_ew_add, 1);
+    rb_define_method(cNMatrix, "-", nm_ew_subtract, 1);
+    rb_define_method(cNMatrix, "==", nm_ew_eqeq, 1);
+    rb_define_method(cNMatrix, "!=", nm_ew_neq, 1);
+    rb_define_method(cNMatrix, "<=", nm_ew_leq, 1);
+    rb_define_method(cNMatrix, ">=", nm_ew_geq, 1);
+    rb_define_method(cNMatrix, "<", nm_ew_lt, 1);
+    rb_define_method(cNMatrix, ">", nm_ew_lt, 1);
+    rb_define_method(cNMatrix, "equal?", nm_eqeq, 1);
     rb_define_method(cNMatrix, "dot", nm_multiply, 1);
+    rb_define_alias(cNMatrix, "equal?", "eql?");
 
 
     rb_define_method(cNMatrix, "capacity", nm_capacity, 0);

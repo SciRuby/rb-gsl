@@ -34,8 +34,11 @@ static inline void %%TYPE_ABBREV%%_ew_op_binary(enum NMatrix_Ops op, %%TYPE%%* r
   case '%':
     %%TYPE *result = left % right%%
     break;
-  case NM_OP_EQ:
+  case NM_OP_EQEQ:
     %%TYPE *result = left == right%%
+    break;
+  case NM_OP_NEQ:
+    %%TYPE *result = left != right%%
     break;
   case '>':
     %%TYPE *result = left > right%%

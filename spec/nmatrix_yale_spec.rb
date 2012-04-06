@@ -30,7 +30,7 @@ describe NMatrix do
   it "correctly compares two empty yale matrices" do
     n = NMatrix.new(:yale, [4,4], :float64)
     m = NMatrix.new(:yale, [4,4], :float64)
-    n.should == m
+    n.should.eql? m
   end
 
   it "correctly compares two yale matrices following basic assignments" do
@@ -38,11 +38,11 @@ describe NMatrix do
     m = NMatrix.new(:yale, [2,2], :float64)
     m[0,0] = 1
     m[0,1] = 1
-    n.should_not == m
+    n.should_not.eql? m
     n[0,0] = 1
-    n.should_not == m
+    n.should_not.eql? m
     n[0,1] = 1
-    n.should == m
+    n.should.eql? m
   end
 
   it "correctly compares two yale matrices following elementwise operations" do
@@ -52,7 +52,7 @@ describe NMatrix do
     m[0,1] = -1
     r = NMatrix.new(:yale, [2,2], :float64)
     r[0,1] = 0
-    (n+m).should == r
+    (n+m).should.eql? r
   end
 
   it "correctly sets diagonal values in yale" do
