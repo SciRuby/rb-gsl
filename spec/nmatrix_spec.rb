@@ -56,7 +56,12 @@ describe NMatrix do
     n[0,1] = 1
     n[0,2] = 2
     n[2,0] = 3
-    m = n.scast(:dense, :int64)
+    m = n.scast(:dense, :int32)
+  end
+
+  it "correctly casts dense to yale" do
+    n = NMatrix.new(:dense, [3,3], [0,0,1,0,2,0,3,4,5], :int64)
+    m = n.scast(:yale, :int32)
   end
 
 

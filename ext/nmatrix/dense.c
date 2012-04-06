@@ -138,7 +138,7 @@ static void cast_copy_dense_list_contents(void* lhs, const LIST* rhs, void* defa
 
   for (i = 0; i < shape[rank-1-recursions]; ++i, ++(*pos)) {
 
-    if (!curr || (curr->key > last_key+1)) {
+    if (!curr || (curr->key > (size_t)(last_key+1))) {
       //fprintf(stderr, "pos = %u, dim = %u, curr->key XX, last_key+1 = %d\t", *pos, shape[rank-1-recursions], last_key+1);
       if (recursions == 0) cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], default_val, l_dtype, r_dtype); //fprintf(stderr, "zero\n"); }
       else                 cast_copy_dense_list_default(lhs, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1); //fprintf(stderr, "column of zeros\n"); }
@@ -176,8 +176,65 @@ DENSE_STORAGE* scast_copy_dense_list(const LIST_STORAGE* rhs, int8_t l_dtype) {
 
 
 DENSE_STORAGE* scast_copy_dense_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
-  rb_raise(rb_eNotImpError, "dense matrix construction from yale matrix not yet implemented");
-  return NULL;
+  DENSE_STORAGE* lhs;
+  y_size_t i, j, // position in lhs->elements
+           ija, ija_next, jj; // position in rhs->elements
+  y_size_t pos = 0;          // position in dense to write to
+  void* R_ZERO = (char*)(rhs->a) + rhs->shape[0] * nm_sizeof[rhs->dtype]; // determine zero representation
+
+  // allocate and set shape
+  size_t* shape = ALLOC_N(size_t, rhs->rank);
+  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
+
+  lhs = create_dense_storage(l_dtype, shape, rhs->rank, NULL, 0);
+
+  // Walk through rows. For each entry we set in dense, increment pos.
+  for (i = 0; i < rhs->shape[0]; ++i) {
+
+    // get boundaries of this row, store in ija and ija_next
+    YaleGetIJA(ija,      rhs, i);
+    YaleGetIJA(ija_next, rhs, i+1);
+
+    if (ija == ija_next) { // row is empty?
+
+      for (j = 0; j < rhs->shape[1]; ++j) {  // write zeros in each column
+
+        // Fill in zeros (except for diagonal)
+        if (i == j) cast_copy_value_single((char*)(lhs->elements) + pos*nm_sizeof[l_dtype], (char*)(rhs->a) + i*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
+        else        cast_copy_value_single((char*)(lhs->elements) + pos*nm_sizeof[l_dtype], R_ZERO, l_dtype, rhs->dtype);
+
+        ++pos; // move to next dense position
+      }
+
+    } else {
+      // row contains entries: write those in each column, interspersed with zeros
+      YaleGetIJA(jj, rhs, ija);
+
+      for (j = 0; j < rhs->shape[1]; ++j) {
+        if (i == j) {
+
+          cast_copy_value_single((char*)(lhs->elements) + pos*nm_sizeof[l_dtype], (char*)(rhs->a) + i*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
+
+        } else if (j == jj) {
+
+          // copy from rhs
+          cast_copy_value_single((char*)(lhs->elements) + pos*nm_sizeof[l_dtype], (char*)(rhs->a) + ija*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
+
+          // get next
+          ++ija;
+          YaleGetIJA(jj, rhs, ija);
+
+        } else { // j < jj
+
+          // insert zero
+          cast_copy_value_single((char*)(lhs->elements) + pos*nm_sizeof[l_dtype], R_ZERO, l_dtype, rhs->dtype);
+        }
+        ++pos; // move to next dense position
+      }
+    }
+  }
+
+  return lhs;
 }
 
 

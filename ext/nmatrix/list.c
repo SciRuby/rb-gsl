@@ -362,7 +362,7 @@ static void delete_list(LIST* list, size_t recursions) {
 
 // Copy dense into lists recursively
 //
-// TODO: This works, but could definitely be cleaner (do we really need to pass coords around?)
+// TODO: This works, but could probably be cleaner (do we really need to pass coords around?)
 static bool cast_copy_list_contents_dense(LIST* lhs, const char* rhs, void* zero, int8_t l_dtype, int8_t r_dtype, size_t* pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
   NODE *prev;
   LIST *sub_list;

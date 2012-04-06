@@ -42,6 +42,8 @@
 
 #include "nmatrix.h"
 
+extern VALUE nm_eStorageTypeError;
+
 
 extern const char *nm_dtypestring[];
 
@@ -56,7 +58,7 @@ void print_vectors(YALE_STORAGE* s) {
   // print indices
 
   fprintf(stderr, "i:\t");
-  for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", i);
+  for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5lu ", (unsigned long)i);
 
   fprintf(stderr, "\nija:\t");
   if (YALE_MAX_SIZE(s) < UINT8_MAX)
@@ -66,7 +68,7 @@ void print_vectors(YALE_STORAGE* s) {
   else if (YALE_MAX_SIZE(s) < UINT32_MAX)
     for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int32_t*)YALE_IJA(s,nm_sizeof[s->index_dtype],i));
   else
-    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int64_t*)YALE_IJA(s,nm_sizeof[s->index_dtype],i));
+    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5llu ", *(u_int64_t*)YALE_IJA(s,nm_sizeof[s->index_dtype],i));
   fprintf(stderr, "\n");
 
   // print values
@@ -86,7 +88,7 @@ int8_t yale_index_dtype(YALE_STORAGE* s) {
   else if (YALE_MAX_SIZE(s) < UINT16_MAX-2) return NM_INT16;
   else if (YALE_MAX_SIZE(s) < UINT32_MAX-2) return NM_INT32;
   else if (YALE_MAX_SIZE(s) >= UINT64_MAX-2)
-    fprintf(stderr, "WARNING: Matrix can contain no more than %u non-diagonal non-zero entries, or results may be unpredictable\n", UINT64_MAX - SMMP_MIN(s->shape[0],s->shape[1]) - 2);
+    fprintf(stderr, "WARNING: Matrix can contain no more than %llu non-diagonal non-zero entries, or results may be unpredictable\n", UINT64_MAX - SMMP_MIN(s->shape[0],s->shape[1]) - 2);
     // TODO: Turn this into an exception somewhere else. It's pretty unlikely, but who knows.
   return NM_INT64;
 }
@@ -392,8 +394,68 @@ YALE_STORAGE* scast_copy_yale_list(const LIST_STORAGE* rhs, int8_t l_dtype) {
 
 
 YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
-  rb_raise(rb_eNotImpError, "yale matrix construction from dense matrix not yet implemented");
-  return NULL;
+  YALE_STORAGE* lhs;
+  size_t i, j;
+  y_size_t pos = 0, ndnz = 0, ija;
+  size_t* shape;
+
+  // Figure out values to write for zero in yale and compare to zero in dense
+  void *R_ZERO = ALLOCA_N(char, nm_sizeof[rhs->dtype]);
+  if (rhs->dtype == NM_ROBJ) *(VALUE*)R_ZERO = INT2FIX(0);
+  else                       memset(R_ZERO, 0, nm_sizeof[rhs->dtype]);
+
+  if (rhs->rank != 2)
+    rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
+
+  // First, count the non-diagonal nonzeros
+  for (i = 0; i < rhs->shape[0]; ++i) {
+    for (j = 0; j < rhs->shape[1]; ++j) {
+      if (i != j && memcmp((char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], R_ZERO, nm_sizeof[rhs->dtype])) ++ndnz;
+      ++pos; // move forward 1 position in dense matrix elements array
+    }
+  }
+
+  // Copy shape for yale construction
+  shape = ALLOC_N(size_t, 2);
+  shape[0] = rhs->shape[0];
+  shape[1] = rhs->shape[1];
+
+  // Create with minimum possible capacity -- just enough to hold all of the entries
+  lhs = create_yale_storage(l_dtype, shape, 2, shape[0] + ndnz + 1);
+
+  // Set the zero position in the yale matrix
+  cast_copy_value_single((char*)(lhs->a) + shape[0]*nm_sizeof[l_dtype], R_ZERO, l_dtype, rhs->dtype);
+
+  // Start just after the zero position.
+  ija = lhs->shape[0]+1;
+  pos = 0;
+
+  // Copy contents
+  for (i = 0; i < rhs->shape[0]; ++i) {
+    // indicate the beginning of a row in the IJA array
+    //fprintf(stderr, "writing ija=%lu at position %lu\n", (unsigned long)(ija), (unsigned long)(i));
+    YaleSetIJA(i, lhs, ija);
+
+    for (j = 0; j < rhs->shape[1]; ++j) {
+
+      if (i == j) { // copy to diagonal
+        cast_copy_value_single((char*)(lhs->a) + i*nm_sizeof[l_dtype], (char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
+
+      } else if (memcmp((char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], R_ZERO, nm_sizeof[rhs->dtype])) {      // copy nonzero to LU
+        YaleSetIJA(ija, lhs, j); // write column index
+
+        cast_copy_value_single((char*)(lhs->a) + ija*nm_sizeof[l_dtype], (char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
+
+        ++ija;
+      }
+      ++pos;
+    }
+  }
+  YaleSetIJA(i, lhs, ija); // indicate the end of the last row
+
+  lhs->ndnz = ndnz;
+
+  return lhs;
 }
 
 
@@ -487,7 +549,7 @@ YALE_STORAGE* create_merged_yale_storage(const YALE_STORAGE* template, const YAL
 YALE_STORAGE* create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size_t init_capacity) {
   YALE_STORAGE* s;
 
-  if (rank > 2) rb_raise(rb_eNotImpError, "Can only support 2D matrices");
+  if (rank != 2) rb_raise(rb_eNotImpError, "Can only support 2D matrices");
 
   s = ALLOC( YALE_STORAGE );
 
@@ -517,7 +579,12 @@ void init_yale_storage(YALE_STORAGE* s) {
     SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + i*nm_sizeof[s->index_dtype], 0, &ia_init, 0); // set initial values for IJA
 
   // Clear out the diagonal + one extra entry
-  memset(s->a, 0, nm_sizeof[s->dtype] * ia_init);
+  if (s->dtype == NM_ROBJ) {
+    for (i = 0; i < ia_init; ++i) // insert Ruby zeros
+      *(VALUE*)( (char*)(s->a) + i*nm_sizeof[s->dtype] ) = INT2FIX(0);
+  } else { // just insert regular zeros
+    memset(s->a, 0, nm_sizeof[s->dtype] * ia_init);
+  }
 }
 
 
