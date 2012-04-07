@@ -33,7 +33,37 @@ GDB_OPTIONS = []
 
 
 h = Hoe.spec 'nmatrix' do
-  developer('John Woods', 'john.o.woods@gmail.com')
+  self.require_ruby_version ">=1.9"
+  self.developer('John Woods', 'john.o.woods@gmail.com')
+  self.post_install_message = <<-EOF
+***********************************************************
+Welcome to SciRuby: Tools for Scientific Computing in Ruby!
+
+                     *** WARNING ***
+Please be aware that NMatrix is in ALPHA status. If you're
+thinking of using NMatrix to write mission critical code,
+such as for driving a car or flying a space shuttle, you
+may wish to choose other software (for now).
+
+NMatrix requires a C compiler, and has been tested only
+with GCC 4.6.1. We are happy to accept contributions
+which improve the portability of this project.
+
+Also required is ATLAS. Most Linux distributions and Mac
+versions include ATLAS, but you may wish to compile it
+yourself.
+
+More explicit instructions for NMatrix and SciRuby should
+be available on the SciRuby website, sciruby.com, or
+through our mailing list (which can be found on our web-
+site).
+
+Thanks for trying out NMatrix! Happy coding!
+
+***********************************************************
+EOF
+  self.need_rdoc = false
+  self.readme_file = 'README.rdoc'
   # self.rubyforge_name = 'nmatrixx' # if different than 'nmatrix'
 end
 

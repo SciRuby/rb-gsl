@@ -29,6 +29,7 @@
 
 
 require File.join(File.dirname(__FILE__), "nmatrix/nmatrix.so")
+require File.join(File.dirname(__FILE__), "array.rb") # Load Array extensions
 
 
 class NMatrix

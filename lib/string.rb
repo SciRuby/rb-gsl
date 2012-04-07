@@ -24,7 +24,7 @@
 #
 # Ruby core extensions for NMatrix.
 
-class String
+class String #:nodoc:
   unless method_defined?(:constantize)
     # Based on constantize from ActiveSupport::Inflector
     def constantize

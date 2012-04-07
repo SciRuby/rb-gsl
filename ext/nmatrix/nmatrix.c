@@ -697,6 +697,30 @@ size_t* nm_interpret_initial_capacity(VALUE arg) {
 }
 
 
+/*
+ * Create a new NMatrix.
+ *
+ * There are several ways to do this. At a minimum, dimensions and either a dtype or initial values are needed, e.g.,
+ *
+ *     NMatrix.new(3, :int64)       # square 3x3 dense matrix
+ *     NMatrix.new([3,4], :float32) # 3x4 matrix
+ *     NMatrix.new(3, 0)            # 3x3 dense matrix initialized to all zeros
+ *     NMatrix.new([3,3], [1,2,3])  # [[1,2,3],[1,2,3],[1,2,3]]
+ *
+ * NMatrix will try to guess the dtype from the first value in the initial values array.
+ *
+ * You can also provide the stype prior to the dimensions. However, non-dense matrices cannot take initial values, and
+ * require a dtype (e.g., :int64):
+ *
+ *     NMatrix.new(:yale, [4,3], :int64)
+ *     NMatrix.new(:list, 5, :rational128)
+ *
+ * Finally, you can be extremely specific, and define a matrix very exactly:
+ *
+ *     NMatrix.new(:dense, [2,2,2], [0,1,2,3,4,5,6,7], :int8)
+ *
+ * Just be careful! There are no overflow warnings in NMatrix.
+ */
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   char    ZERO = 0;
   VALUE   QNIL = Qnil;
@@ -837,6 +861,11 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_dtype_symbo
 }
 
 
+/*
+ * Create a copy of an NMatrix with a different dtype. See also cast.
+ */
+ // TODO: Deprecate this function and farm it out to scast_copy. as_dtype will still work, but it'll be in pure Ruby and
+ // just use ::cast instead.
 static VALUE nm_cast_copy(VALUE self, VALUE new_dtype_symbol) {
   NMATRIX *original, *copy;
   int8_t new_dtype = nm_dtypesymbol_to_dtype(new_dtype_symbol);
@@ -853,6 +882,12 @@ static VALUE nm_cast_copy(VALUE self, VALUE new_dtype_symbol) {
 }
 
 
+/*
+ * Create a copy of an NMatrix with a different stype and dtype. See also cast.
+ *
+ *     m.cast(:dense, :int64)
+ *
+ */
 static VALUE nm_scast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_symbol) {
   NMATRIX* original, *copy;
   int8_t new_dtype = nm_dtypesymbol_to_dtype(new_dtype_symbol);
@@ -894,10 +929,13 @@ static inline STORAGE_PAIR binary_storage_cast_alloc(NMATRIX* left_matrix, NMATR
   return casted;
 }
 
-
-// Are the two matrices equal?
-//
-// This will raise an exception if incorrect dimensions are discovered.
+/*
+ * Equality operator. Returns a single true or false value indicating whether the matrices are equivalent.
+ *
+ * For elementwise, use == instead.
+ *
+ * This method will raise an exception if dimensions do not match.
+ */
 static VALUE nm_eqeq(VALUE left, VALUE right) {
   bool result;
   NMATRIX *l, *r;
@@ -927,8 +965,6 @@ static VALUE nm_eqeq(VALUE left, VALUE right) {
 }
 
 
-// Preconditions: NMatrices with SAME stype but possibly different dtype. This function does NOT verify stype.
-// Returns: result NMatrix with upcasted dtype and same stype as left and right.
 static VALUE multiply_matrix(NMATRIX* left, NMATRIX* right) {
   ///TODO: multiplication for non-dense and/or non-decimal matrices
   size_t*  resulting_shape   = ALLOC_N(size_t, 2);
@@ -964,6 +1000,13 @@ static VALUE multiply_scalar(NMATRIX* left, VALUE scalar) {
 }
 
 
+/*
+ * Matrix multiply (dot product): against another matrix or a vector.
+ *
+ * For elementwise, use * instead.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ */
 static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
   NMATRIX *left, *right;
 
@@ -1020,42 +1063,138 @@ static VALUE nm_elementwise(VALUE leftv, VALUE rightv, char op) {
   return Qnil; // Only if we try to multiply list matrices should we return Qnil.
 }
 
+
+/*
+ * Matrix element-wise addition.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ */
 static VALUE nm_ew_add(VALUE left, VALUE right) {
   return nm_elementwise(left, right, '+');
 }
 
+/*
+ * Matrix element-wise subtraction.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ */
 static VALUE nm_ew_subtract(VALUE left, VALUE right) {
   return nm_elementwise(left, right, '-');
 }
 
+/*
+ * Matrix element-wise multiplication.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ *
+ * For dot product, use +dot+ instead.
+ */
 static VALUE nm_ew_multiply(VALUE left, VALUE right) {
   return nm_elementwise(left, right, '*');
 }
 
+/*
+ * Matrix element-wise division.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ */
 static VALUE nm_ew_divide(VALUE left, VALUE right) {
   return nm_elementwise(left, right, '/');
 }
 
+
+/*
+ * Matrix element-wise comparison (equality) operator.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ *
+ * Note that the matrix returned will be of the same dtype as the upcast of the input matrices. If that's not what you
+ * want, use +cast+.
+ */
 static VALUE nm_ew_eqeq(VALUE left, VALUE right) {
   return nm_elementwise(left, right, NM_OP_EQEQ);
 }
 
+/*
+ * Matrix element-wise less-than-or-equals operator.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ *
+ * Note that the matrix returned will be of the same dtype as the upcast of the input matrices. If that's not what you
+ * want, use +cast+.
+ */
 static VALUE nm_ew_leq(VALUE left, VALUE right) {
   return nm_elementwise(left, right, NM_OP_LTE);
 }
 
+
+/*
+ * Matrix element-wise greater-than-or-equals operator.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ *
+ * Note that the matrix returned will be of the same dtype as the upcast of the input matrices. If that's not what you
+ * want, use +cast+.
+ */
 static VALUE nm_ew_geq(VALUE left, VALUE right) {
   return nm_elementwise(left, right, NM_OP_GTE);
 }
 
+
+/*
+ * Matrix element-wise strictly-less-than operator.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ *
+ * Note that the matrix returned will be of the same dtype as the upcast of the input matrices. If that's not what you
+ * want, use +cast+.
+ */
 static VALUE nm_ew_lt(VALUE left, VALUE right) {
   return nm_elementwise(left, right, '<');
 }
 
+
+/*
+ * Matrix element-wise strictly-greater-than operator.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ *
+ * Note that the matrix returned will be of the same dtype as the upcast of the input matrices. If that's not what you
+ * want, use +cast+.
+ */
 static VALUE nm_ew_gt(VALUE left, VALUE right) {
   return nm_elementwise(left, right, '>');
 }
 
+
+/*
+ * Matrix element-wise inequality operator.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ *
+ * Note that the matrix returned will be of the same dtype as the upcast of the input matrices. If that's not what you
+ * want, use +cast+.
+ */
 static VALUE nm_ew_neq(VALUE left, VALUE right) {
   return nm_elementwise(left, right, NM_OP_NEQ);
 }
@@ -1066,7 +1205,7 @@ static VALUE nm_ew_neq(VALUE left, VALUE right) {
 // Additionally, handles separately matrices containing VALUEs and matrices containing
 // other types of data.
 static VALUE nm_dense_each(VALUE nmatrix) {
-  DENSE_STORAGE* s = NM_STORAGE(nmatrix);
+  DENSE_STORAGE* s = (DENSE_STORAGE*)(NM_STORAGE(nmatrix));
   VALUE v;
   size_t i;
 
@@ -1092,7 +1231,11 @@ static VALUE nm_dense_each(VALUE nmatrix) {
 }
 
 
-// iterate through contents of an NMatrix using `each`
+/*
+ * Iterate over the matrix as you would an Enumerable (e.g., Array).
+ *
+ * Currently only works for dense.
+ */
 static VALUE nm_each(VALUE nmatrix) {
   volatile VALUE nm = nmatrix; // not sure why we do this, but it gets done in ruby's array.c.
 
@@ -1116,7 +1259,7 @@ NMATRIX* nm_create(int8_t stype, void* storage) {
 }
 
 
-size_t* convert_coords(size_t rank, VALUE* c, VALUE self) {
+static size_t* convert_coords(size_t rank, VALUE* c, VALUE self) {
   size_t r;
   size_t* coords = ALLOC_N(size_t,rank);
 
@@ -1129,6 +1272,12 @@ size_t* convert_coords(size_t rank, VALUE* c, VALUE self) {
 }
 
 
+/*
+ * Access the contents of an NMatrix at given coordinates.
+ *
+ *     n[3,3]  # => 5.0
+ *
+ */
 VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
   VALUE v;
 
@@ -1149,6 +1298,15 @@ VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
 }
 
 
+/*
+ * Modify the contents of an NMatrix in the given cell
+ *
+ *     n[3,3] = 5.0
+ *
+ * Also returns the new contents, so you can chain:
+ *
+ *     n[3,3] = n[2,3] = 5.0
+ */
 VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
   size_t rank = argc - 1; // last arg is the value
 
@@ -1169,6 +1327,15 @@ VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
 }
 
 
+/*
+ * Get the rank of an NMatrix (the number of dimensions).
+ *
+ * In other words, if you set your matrix to be 3x4, the rank is 2. If the matrix was initialized as 3x4x3, the rank
+ * is 3.
+ *
+ * This function may lie slightly for NVectors, which are internally stored as rank 2 (and have an orientation), but
+ * act as if they're rank 1.
+ */
 VALUE nm_rank(VALUE self) {
   VALUE ret;
   SetFuncs[NM_ROBJ][NM_INT64]( 1, &ret, 0, &(NM_STORAGE(self)->rank), 0 );
@@ -1176,6 +1343,9 @@ VALUE nm_rank(VALUE self) {
 }
 
 
+/*
+ * Get the shape (dimensions) of a matrix.
+ */
 VALUE nm_shape(VALUE self) {
   STORAGE* s   = NM_STORAGE(self);
 
@@ -1187,22 +1357,31 @@ VALUE nm_shape(VALUE self) {
 }
 
 
+/*
+ * Get the storage type (stype) of a matrix, e.g., :yale, :dense, or :list.
+ */
 static VALUE nm_stype(VALUE self) {
   ID stype = rb_intern(nm_stypestring[NM_STYPE(self)]);
   return ID2SYM(stype);
 }
 
 
+/*
+ * Get the data type (dtype) of a matrix, e.g., :byte, :int8, :int16, :int32, :int64, :float32, :float64, :complex64,
+ * :complex128, :rational32, :rational64, :rational128, or :object (the last is a Ruby object).
+ */
 static VALUE nm_dtype(VALUE self) {
   ID dtype = rb_intern(nm_dtypestring[NM_DTYPE(self)]);
   return ID2SYM(dtype);
 }
 
 
-// Interprets cblas argument which could be any of false/:no_transpose, :transpose, or :complex_conjugate,
-// into an enum recognized by cblas.
-//
-// Called by nm_cblas_gemm -- basically inline.
+/* Interprets cblas argument which could be any of false/:no_transpose, :transpose, or :complex_conjugate,
+ * into an enum recognized by cblas.
+ *
+ * Called by nm_cblas_gemm -- basically inline.
+ *
+ */
 static char gemm_op_sym(VALUE op) {
   if (op == false || rb_to_id(op) == nm_id_no_transpose) return CblasNoTrans;
   else if (rb_to_id(op) == nm_id_transpose) return CblasTrans;
@@ -1212,22 +1391,27 @@ static char gemm_op_sym(VALUE op) {
 }
 
 
-// Directly call cblas_xgemm as quickly as possible.
-//
-//     C: = alpha*op(A)*op(B) + beta*C
-//
-// where op(X) is one of:
-//
-//     op(X) = X   or   op(X) = X**T
-//
-// == Arguments
-// See: http://www.netlib.org/blas/dgemm.f
-//
-// You probably don't want to call this function. Instead of __cblas_gemm__, why don't you try cblas_gemm, which
-// is more flexible with its arguments?
-//
-// This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
-// handling!
+/* Call any of the cblas_xgemm functions as directly as possible.
+ *
+ * The cblas_xgemm functions (dgemm, sgemm, cgemm, and zgemm) define the following operation:
+ *
+ *    C = alpha*op(A)*op(B) + beta*C
+ *
+ * where op(X) is one of <tt>op(X) = X</tt>, <tt>op(X) = X**T</tt>, or the complex conjugate of X.
+ *
+ * Note that this will only work for dense matrices that are of types :float32, :float64, :complex64, and :complex128.
+ * Other types are not implemented in BLAS, and while they exist in NMatrix, this method is intended only to
+ * expose the ultra-optimized ATLAS versions.
+ *
+ * == Arguments
+ * See: http://www.netlib.org/blas/dgemm.f
+ *
+ * You probably don't want to call this function. Instead, why don't you try cblas_gemm, which is more flexible
+ * with its arguments?
+ *
+ * This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
+ * handling, so you can easily crash Ruby!
+ */
 static VALUE nm_cblas_gemm(VALUE self,
                            VALUE trans_a, VALUE trans_b,
                            VALUE m, VALUE n, VALUE k,
@@ -1320,6 +1504,27 @@ static VALUE nm_cblas_gemm(VALUE self,
 }
 
 
+/* Call any of the cblas_xgemv functions as directly as possible.
+ *
+ * The cblas_xgemv functions (dgemv, sgemv, cgemv, and zgemv) define the following operation:
+ *
+ *    y = alpha*op(A)*x + beta*y
+ *
+ * where op(A) is one of <tt>op(A) = A</tt>, <tt>op(A) = A**T</tt>, or the complex conjugate of A.
+ *
+ * Note that this will only work for dense matrices that are of types :float32, :float64, :complex64, and :complex128.
+ * Other types are not implemented in BLAS, and while they exist in NMatrix, this method is intended only to
+ * expose the ultra-optimized ATLAS versions.
+ *
+ * == Arguments
+ * See: http://www.netlib.org/blas/dgemm.f
+ *
+ * You probably don't want to call this function. Instead, why don't you try cblas_gemv, which is more flexible
+ * with its arguments?
+ *
+ * This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
+ * handling, so you can easily crash Ruby!
+ */
 static VALUE nm_cblas_gemv(VALUE self,
                            VALUE trans_a,
                            VALUE m, VALUE n,
@@ -1368,34 +1573,40 @@ static VALUE nm_cblas_gemv(VALUE self,
 }
 
 
+/*
+ * Find the capacity of an NMatrix. The capacity only differs from the size for Yale matrices, which occasionally
+ * allocate more space than they need. For list and dense, capacity gives the number of elements in the matrix.
+ */
 static VALUE nm_capacity(VALUE self) {
   VALUE cap;
-  size_t r, tmp=1;
 
   switch(NM_STYPE(self)) {
   case S_YALE:
-
     cap = UINT2NUM(((YALE_STORAGE*)(NM_STORAGE(self)))->capacity);
     break;
 
   case S_DENSE:
-
-    for (r = 0; r < NM_STORAGE(self)->rank; ++r)
-      tmp *= NM_STORAGE(self)->shape[r];
-
-    SetFuncs[NM_ROBJ][NM_INT64](1, &cap, 0, tmp, 0);
+    cap = UINT2NUM(count_dense_storage_elements( (DENSE_STORAGE*)(NM_STORAGE(self)) ));
     break;
 
   case S_LIST:
+    cap = UINT2NUM(count_list_storage_elements( (LIST_STORAGE*)(NM_STORAGE(self)) ));
+    break;
+
   default:
-    rb_raise(rb_eNotImpError, "TODO: implement capacity/size on other storage types");
+    //rb_raise(rb_eNotImpError, "TODO: implement capacity/size on other storage types");
+    rb_raise(nm_eStorageTypeError, "unrecognized stype");
   }
 
   return cap;
 }
 
 
-
+/*
+ * Get the size of a Yale matrix (the number of elements actually stored).
+ *
+ * For capacity (the maximum number of elements that can be stored without a resize), use capacity instead.
+ */
 static VALUE nm_yale_size(VALUE self) {
   VALUE sz;
   YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
@@ -1407,6 +1618,9 @@ static VALUE nm_yale_size(VALUE self) {
 }
 
 
+/*
+ * Get the A array of a Yale matrix (which stores the diagonal and the LU portions of the matrix).
+ */
 static VALUE nm_yale_a(VALUE self) {
   y_size_t sz, i;
   void* vals;
@@ -1428,6 +1642,9 @@ static VALUE nm_yale_a(VALUE self) {
 }
 
 
+/*
+ * Get the diagonal ("D") portion of the A array of a Yale matrix.
+ */
 static VALUE nm_yale_d(VALUE self) {
   y_size_t sz;
   void* vals;
@@ -1446,6 +1663,9 @@ static VALUE nm_yale_d(VALUE self) {
 }
 
 
+/*
+ * Get the non-diagonal ("LU") portion of the A array of a Yale matrix.
+ */
 static VALUE nm_yale_lu(VALUE self) {
   y_size_t sz, i;
   void* vals;
@@ -1467,16 +1687,10 @@ static VALUE nm_yale_lu(VALUE self) {
 }
 
 
-// Only works for i8/f64
-static VALUE nm_yale_print_vectors(VALUE self) {
-  if (NM_STYPE(self) != S_YALE || NM_DTYPE(self) != NM_FLOAT64) rb_raise(nm_eDataTypeError, "must be yale float64 matrix");
-
-  print_vectors((YALE_STORAGE*)(NM_STORAGE(self)));
-
-  return Qnil;
-}
-
-
+/*
+ * Get the IA portion of the IJA array of a Yale matrix. This gives the start and end positions of rows in the
+ * JA and LU portions of the IJA and A arrays, respectively.
+ */
 static VALUE nm_yale_ia(VALUE self) {
   y_size_t sz;
   void* vals;
@@ -1495,6 +1709,10 @@ static VALUE nm_yale_ia(VALUE self) {
 }
 
 
+/*
+ * Get the JA portion of the IJA array of a Yale matrix. This gives the column indices for entries in corresponding
+ * positions in the LU portion of the A array.
+ */
 static VALUE nm_yale_ja(VALUE self) {
   y_size_t sz, i;
   void* vals;
@@ -1516,6 +1734,9 @@ static VALUE nm_yale_ja(VALUE self) {
 }
 
 
+/*
+ * Get the IJA array of a Yale matrix.
+ */
 static VALUE nm_yale_ija(VALUE self) {
   y_size_t sz, i;
   void* vals;
@@ -1537,6 +1758,9 @@ static VALUE nm_yale_ija(VALUE self) {
 }
 
 
+/*
+ * Create a transposed copy of this matrix.
+ */
 static VALUE nm_transpose_new(VALUE self) {
   NMATRIX *self_m, *result, *result2;
   size_t sz;
@@ -1659,7 +1883,7 @@ void Init_nmatrix() {
     /* methods */
     rb_define_method(cNMatrix, "dtype", nm_dtype, 0);
     rb_define_method(cNMatrix, "stype", nm_stype, 0);
-    rb_define_method(cNMatrix, "scast", nm_scast_copy, 2);
+    rb_define_method(cNMatrix, "cast", nm_scast_copy, 2);
 
     rb_define_method(cNMatrix, "[]", nm_mref, -1);
     rb_define_method(cNMatrix, "[]=", nm_mset, -1);
@@ -1680,7 +1904,7 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, "<=", nm_ew_leq, 1);
     rb_define_method(cNMatrix, ">=", nm_ew_geq, 1);
     rb_define_method(cNMatrix, "<", nm_ew_lt, 1);
-    rb_define_method(cNMatrix, ">", nm_ew_lt, 1);
+    rb_define_method(cNMatrix, ">", nm_ew_gt, 1);
     rb_define_method(cNMatrix, "equal?", nm_eqeq, 1);
     rb_define_method(cNMatrix, "dot", nm_multiply, 1);
     rb_define_alias(cNMatrix, "equal?", "eql?");
@@ -1688,7 +1912,6 @@ void Init_nmatrix() {
 
     rb_define_method(cNMatrix, "capacity", nm_capacity, 0);
 
-    rb_define_method(cNMatrix, "__yale_print__", nm_yale_print_vectors, 0);
     rb_define_method(cNMatrix, "__yale_ija__", nm_yale_ija, 0);
     rb_define_method(cNMatrix, "__yale_a__", nm_yale_a, 0);
     rb_define_method(cNMatrix, "__yale_size__", nm_yale_size, 0);

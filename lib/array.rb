@@ -25,16 +25,19 @@
 # Ruby core extensions for NMatrix.
 
 class Array
-  # Convert array to an NMatrix
+  # Convert a Ruby Array to an NMatrix.
+  #
+  # You must provide a shape for the matrix as the first argument.
   #
   # == Arguments:
-  # <tt>stype</tt> :: Optional storage type (defaults to :dense)
   # <tt>shape</tt> :: Array describing matrix dimensions (or Fixnum for square) -- REQUIRED!
   # <tt>dtype</tt> :: Override data type (e.g., to store a Float as :float32 instead of :float64) -- optional.
+  # <tt>stype</tt> :: Optional storage type (defaults to :dense)
   def to_nm *args
     pos   = 0
-    stype = args[pos].is_a?(Symbol) ? args[pos].tap { pos += 1} : :dense
+
     shape = args[pos]; pos += 1
+
     dtype = begin
       if pos >= args.size
         # TODO: Upcasting.
@@ -46,12 +49,19 @@ class Array
           :rational128
         elsif self[0].is_a?(Complex)
           :complex128
-        end
+        end.tap { pos += 1 }
       else
-        args[pos]
+        args[pos].tap { pos += 1 }
       end
     end
 
-    m = NMatrix.new(stype, shape, dtype, self)
+    stype = args[pos].is_a?(Symbol) ? args[pos].tap { pos += 1} : :dense
+
+
+    if stype == :dense
+      NMatrix.new(stype, shape, self, dtype)
+    else
+      NMatrix.new(:dense, shape, self, dtype).cast(:stype, dtype)
+    end
   end
 end
