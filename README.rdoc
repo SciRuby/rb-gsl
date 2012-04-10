@@ -1,8 +1,6 @@
-= SciRuby: NMatrix
+= NMatrix
 
-A linear algebra library for scientific computing in Ruby. NMatrix is part of SciRuby.
-
-NMatrix was originally inspired by and derived from {NArray}[http://narray.rubyforge.org], by Masahiro Tanaka.
+http://sciruby.com
 
 * {Project homepage: sciruby.com}[http://sciruby.com]
 * {SciRuby on Google+}[https://plus.google.com/109304769076178160953/posts]
@@ -11,6 +9,8 @@ NMatrix was originally inspired by and derived from {NArray}[http://narray.rubyf
 == Description
 
 NMatrix is an experimental linear algebra library for Ruby, written mostly in C. It can be used with or without SciRuby, but is part of the SciRuby project.
+
+NMatrix was inspired by and based heavily upon {NArray}[http://narray.rubyforge.org], by Masahiro Tanaka.
 
 {<img src=https://www.pledgie.com/campaigns/15783.png?skin_name=chrome>}[http://www.pledgie.com/campaigns/15783]
 

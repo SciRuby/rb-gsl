@@ -3,9 +3,9 @@ dtypes.h dtypes.c smmp1.c smmp2.c blas.c: generator.rb
 
 blas.o: blas.c
 
-smmp2.o: smmp1.c smmp2.c nmatrix.h smmp/smmp_header.template.c smmp/symbmm.template.c smmp/transp.template.c smmp/numbmm.template.c
+smmp2.o: smmp1.c smmp2.c nmatrix.h yale/smmp2_header.template.c yale/symbmm.template.c yale/transp.template.c yale/numbmm.template.c
 
-smmp1.o: smmp1.c nmatrix_config.h nmatrix.h
+smmp1.o: smmp1.c nmatrix_config.h nmatrix.h yale/smmp1_header.template.c
 
 dfuncs.o: dfuncs.c $(hdrdir)/ruby.h
 

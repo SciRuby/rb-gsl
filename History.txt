@@ -1,6 +1,6 @@
-=== 1.0.0 / 2011-12-24
+=== 0.0.1 / 2012-04-10
 
 * 1 major enhancement
 
-  * Birthday!
+  * Initial alpha release
 

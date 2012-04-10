@@ -24,19 +24,24 @@
 #
 # Module for generating source files.
 
+$RELATIVE_PATH = nil
+
 $IN_MAKEFILE = begin
   dir_pwd_split = Dir.pwd.split('/')
-  if dir_pwd_split.size >= 4 && dir_pwd_split[-4] == "tmp"
-    require "../../../../lib/string.rb" # from the Makefile
-    require "../../../../ext/nmatrix/generator/syntax_tree.rb"
+  if dir_pwd_split.size >= 4 && dir_pwd_split[-4] == "tmp" # when running make by hand
+    $RELATIVE_PATH = "../../../../"
     true
-  else
-    # STDERR.puts Dir.pwd
-    require "./lib/string.rb"           # from the console, for testing
-    require "./ext/nmatrix/generator/syntax_tree.rb"
+  elsif dir_pwd_split[-2] == "ext" # when building gem
+    $RELATIVE_PATH = File.join(File.dirname(__FILE__), "../..")
+    true
+  else # when building in development dir
+    $RELATIVE_PATH = File.dirname(__FILE__)
     false
   end
 end
+
+require File.join($RELATIVE_PATH, "lib/string.rb") # from the Makefile
+require File.join($RELATIVE_PATH, "ext/nmatrix/generator/syntax_tree.rb")
 
 class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type)
   def max_macro
@@ -415,25 +420,25 @@ INCFN
     def make_templated_c relative_path, header_name, names, output_name, subs = {:TYPE => INDEX_DTYPES}
 
       # First print the header once
-      `cat #{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{header_name}.template.c > ./#{output_name}` unless header_name.nil?
+      `cat #{$RELATIVE_PATH}/#{SRC_DIR}/#{relative_path}/#{header_name}.template.c > ./#{output_name}` unless header_name.nil?
 
       subs[:TYPE].each do |type|
         if subs.has_key?(:INT)
           subs[:INT].each do |int|
             names.each do |name|
-              template "#{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{name}.template.c", output_name, :TYPE => type, :INT => int
+              template "#{$RELATIVE_PATH}/#{SRC_DIR}/#{relative_path}/#{name}.template.c", output_name, :TYPE => type, :INT => int
             end
           end
         else
           names.each do |name|
-            template "#{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{name}.template.c", output_name, :TYPE => type
+            template "#{$RELATIVE_PATH}/#{SRC_DIR}/#{relative_path}/#{name}.template.c", output_name, :TYPE => type
           end
         end
       end
     end
 
     def sub_int_real relative_path, name, output_name, int_dtype, real_dtype
-      cmd = ["#{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{name}.template.c",
+      cmd = ["#{$RELATIVE_PATH}/#{SRC_DIR}/#{relative_path}/#{name}.template.c",
              "sed s/%%INT_ABBREV%%/#{int_dtype.id}/g",
              "sed s/%%INT%%/#{int_dtype.sizeof}/g",
              "sed s/%%INT_MAX%%/#{int_dtype.max_macro}/g",
@@ -447,7 +452,7 @@ INCFN
 
 
     def sub_int relative_path, name, output_name, dtype
-      cmd = ["#{Dir.pwd}/../../../../#{SRC_DIR}/#{relative_path}/#{name}.template.c",
+      cmd = ["#{$RELATIVE_PATH}/#{SRC_DIR}/#{relative_path}/#{name}.template.c",
              "sed s/%%INT_ABBREV%%/#{dtype.id}/g",
              "sed s/%%INT%%/#{dtype.sizeof}/g",
              "sed s/%%INT_MAX%%/#{dtype.max_macro}/g"]
@@ -574,16 +579,16 @@ if $IN_MAKEFILE
   Generator.make_dtypes_h
   Generator.make_dtypes_c
   Generator.make_dfuncs_c
-  Generator.make_templated_c './smmp', 'blas_header', %w{blas1}, 'smmp1.c', :TYPE => Generator::INDEX_DTYPES # 1-type interface functions for SMMP
-  Generator.make_templated_c './smmp', nil,           %w{blas2}, 'smmp1.c', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES # 2-type interface functions for SMMP
-  Generator.make_templated_c './smmp','smmp_header',  %w{symbmm}, 'smmp2.c', :TYPE => Generator::INDEX_DTYPES # 1-type SMMP functions from Fortran
-  Generator.make_templated_c './smmp', nil,           %w{complexmath}, 'smmp2.c', :TYPE => Generator::COMPLEX_DTYPES
-  Generator.make_templated_c './smmp', nil,           %w{elementwise_op}, 'smmp2.c', :TYPE => Generator::ACTUAL_DTYPES
-  Generator.make_templated_c './smmp', nil,           %w{numbmm transp sort_columns elementwise}, 'smmp2.c', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
-  Generator.make_templated_c './blas', 'blas_header', %w{rationalmath}, 'blas.partial.c', :TYPE => Generator::RATIONAL_DTYPES
-  Generator.make_templated_c './smmp', nil,           %w{complexmath}, 'blas.partial.c', :TYPE => Generator::COMPLEX_DTYPES
-  Generator.make_templated_c './blas', nil,           %w{gemm gemv}, 'blas.partial.c', :TYPE => Generator::NONBLAS_DTYPES
-  Generator.make_templated_c './blas', nil,           %w{elementwise}, 'blas.partial.c', :TYPE=>Generator::ACTUAL_DTYPES
+  Generator.make_templated_c './yale', 'smmp1_header', %w{smmp1}, 'smmp1.c', :TYPE => Generator::INDEX_DTYPES # 1-type interface functions for SMMP
+  Generator.make_templated_c './yale', nil,            %w{smmp2}, 'smmp1.c', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES # 2-type interface functions for SMMP
+  Generator.make_templated_c './yale', 'smmp2_header', %w{symbmm}, 'smmp2.c', :TYPE => Generator::INDEX_DTYPES # 1-type SMMP functions from Fortran
+  Generator.make_templated_c './yale', nil,            %w{complexmath}, 'smmp2.c', :TYPE => Generator::COMPLEX_DTYPES
+  Generator.make_templated_c './yale', nil,            %w{elementwise_op}, 'smmp2.c', :TYPE => Generator::ACTUAL_DTYPES
+  Generator.make_templated_c './yale', nil,            %w{numbmm transp sort_columns elementwise}, 'smmp2.c', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES # 2-type SMMP functions from Fortran and selection sort
+  Generator.make_templated_c './dense', 'blas_header', %w{rationalmath}, 'blas.partial.c', :TYPE => Generator::RATIONAL_DTYPES
+  Generator.make_templated_c './yale', nil,            %w{complexmath}, 'blas.partial.c', :TYPE => Generator::COMPLEX_DTYPES
+  Generator.make_templated_c './dense', nil,           %w{gemm gemv}, 'blas.partial.c', :TYPE => Generator::NONBLAS_DTYPES
+  Generator.make_templated_c './dense', nil,           %w{elementwise}, 'blas.partial.c', :TYPE=>Generator::ACTUAL_DTYPES
   `cat blas.partial.c >> blas.c`
   `rm blas.partial.c`
 end

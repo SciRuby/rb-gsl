@@ -27,8 +27,12 @@
 # Also provided is NVector, which represents a rank-1 NMatrix in
 # vector operations.
 
-
-require File.join(File.dirname(__FILE__), "nmatrix/nmatrix.so")
+# For some reason nmatrix.so ends up in a different place during gem build
+if File.exist? "lib/nmatrix/nmatrix.so"
+  require File.join(File.dirname(__FILE__), "nmatrix/nmatrix.so") # development
+else
+  require File.join(File.dirname(__FILE__), "nmatrix.so")         # gem
+end
 require File.join(File.dirname(__FILE__), "array.rb") # Load Array extensions
 
 

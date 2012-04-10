@@ -1,6 +1,16 @@
 # -*- ruby -*-
 
 require 'rubygems'
+
+# Fix for problem described here: https://github.com/jbarnette/isolate/pull/39
+module Gem
+  Deprecate = Module.new do
+    include Deprecate
+  end
+end
+require 'isolate/now'
+# End Fix
+
 require 'hoe'
 require 'pathname'
 require 'rspec/core/rake_task'
