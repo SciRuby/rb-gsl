@@ -133,6 +133,32 @@ nm_smmp_transpose_t SparseTransposeFuncs = {
   {TransposeTypeErr, TransposeTypeErr, i8_v_transp_, i16_v_transp_, i32_v_transp_, i64_v_transp_}  // NM_ROBJ
 };
 
+/*
+// Currently commented out because dense_transpose_generic is about the same speed. Let's resurrect this when we write
+// an in-place transpose (e.g., transpose!).
+
+static void DenseTransTypeErr(int M, int N, void* A, int lda, void* B, int ldb, bool move) {
+  rb_raise(nm_eDataTypeError, "illegal operation with this matrix type");
+}
+
+nm_dense_transpose_t DenseTransposeFuncs = {
+  DenseTransTypeErr,
+  btransp,
+  i8transp,
+  i16transp,
+  i32transp,
+  i64transp,
+  f32transp,
+  f64transp,
+  c64transp,
+  c128transp,
+  r32transp,
+  r64transp,
+  r128transp,
+  vtransp
+}; */
+
+
 static void SmmpTypeErr(y_size_t n, y_size_t m, YALE_PARAM A, YALE_PARAM B, YALE_PARAM C) {
   rb_raise(nm_eDataTypeError, "illegal operation with this matrix type");
 }
@@ -235,8 +261,8 @@ static inline DENSE_PARAM cblas_params_for_multiply(const DENSE_STORAGE* left, c
     break;
 
   case NM_ROBJ:
-    p.alpha.v[0] = RUBY_ZERO;
-    p.beta.v[0]  = INT2FIX(1);
+    p.alpha.v[0] = INT2FIX(1);
+    p.beta.v[0]  = RUBY_ZERO;
     break;
 
   default:
@@ -1758,6 +1784,21 @@ static VALUE nm_yale_ija(VALUE self) {
 }
 
 
+// This is probably faster and smaller than writing an array of transpose functions. But if you want to see what it would look like,
+// see transp.template.c (not the yale one).
+//
+// Note that this is a copy-transpose. In-place transpose is a whole different operation and bag of worms.
+static void dense_transpose_generic(const unsigned int M, const unsigned int N, const char* A, const int lda, char* B, const int ldb, size_t dtype_size) {
+  unsigned int i, j;
+
+  for (i = 0; i < N; ++i) {
+    for (j = 0; j < M; ++j) {
+      memcpy(B + (i*ldb+j)*dtype_size, A + (j*lda+i)*dtype_size, dtype_size);
+    }
+  }
+}
+
+
 /*
  * Create a transposed copy of this matrix.
  */
@@ -1778,28 +1819,16 @@ static VALUE nm_transpose_new(VALUE self) {
 
   switch(self_m->stype) {
   case S_DENSE:
-    //result   = nm_create(S_DENSE, create_dense_storage(left->storage->dtype, shape, 2));
+    result   = nm_create(S_DENSE, create_dense_storage(self_m->storage->dtype, shape, 2, NULL, 0));
+    dense_transpose_generic(
+      self_m->storage->shape[0],
+      self_m->storage->shape[1],
+      ((DENSE_STORAGE*)(self_m->storage))->elements,
+      self_m->storage->shape[1],
+      ((DENSE_STORAGE*)(result->storage))->elements,
+      result->storage->shape[1],
+      nm_sizeof[self_m->storage->dtype]);
 
-    // call CBLAS xgemm (type-specific general matrix multiplication)
-    // good explanation: http://www.umbc.edu/hpcf/resources-tara/how-to-BLAS.html
-    /*GemmFuncs[left->storage->dtype](
-    //cblas_sgemm(
-          CblasRowMajor,
-          CblasNoTrans,
-          CblasNoTrans,
-          shape[0],                // M = number of rows in left
-          shape[1],                // N = number of columns in right and result
-          left->storage->shape[1], // K = number of columns in left
-          1.0,
-          ((DENSE_STORAGE*)(left->storage))->elements,
-              left->storage->shape[1], // * nm_sizeof[left->dtype],
-          ((DENSE_STORAGE*)(right->storage))->elements,
-              right->storage->shape[1], // * nm_sizeof[right->dtype],
-          0.0,
-          ((DENSE_STORAGE*)(result->storage))->elements,
-              shape[1] // * nm_sizeof[result->dtype]
-          ); */
-    rb_raise(rb_eNotImpError, "need dense transpose function");
     break;
   case S_YALE:
     YaleGetSize(sz, (YALE_STORAGE*)(self_m->storage)); // size of new matrix is going to be size of old matrix

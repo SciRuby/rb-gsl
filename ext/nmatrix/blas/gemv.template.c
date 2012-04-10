@@ -5,7 +5,7 @@ int %%TYPE_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t
   size_t lenX, lenY, i, j;
   int kx, ky, iy, jx, jy, ix;
   %%TYPE_LONG%% temp;
-  %%= if [:rational,:complex].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1;"; end%%
+  %%= if [:rational,:complex,:value].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1;"; end%%
 
   // Test the input parameters
   if (Trans < 111 || Trans > 113) {

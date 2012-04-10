@@ -9,7 +9,7 @@ int %%TYPE_ABBREV%%gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB
 
   // use longest possible type for intermediate value storage:
   %%TYPE_LONG%% temp;
-  %%= if [:rational,:complex].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1, temp2;"; end%%
+  %%= if [:rational,:complex,:value].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1, temp2;"; end%%
   int i, j, l;
 
   if (TransA == CblasNoTrans) num_rows_a = M;

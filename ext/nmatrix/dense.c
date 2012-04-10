@@ -295,7 +295,7 @@ void mark_dense_storage(void* m) {
 
   if (m) {
     storage = (DENSE_STORAGE*)(((NMATRIX*)m)->storage);
-    fprintf(stderr, "mark_dense_storage\n");
+    //fprintf(stderr, "mark_dense_storage\n");
     if (storage && storage->dtype == NM_ROBJ)
       for (i = 0; i < count_dense_storage_elements(storage); ++i)
         rb_gc_mark(*((VALUE*)((char*)(storage->elements) + i*nm_sizeof[NM_ROBJ])));

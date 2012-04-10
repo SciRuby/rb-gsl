@@ -44,7 +44,7 @@ class Identifier < String
     [to_s]
   end
 
-  def operate_object exact_type=nil
+  def operate_value exact_type=nil
     [to_s]
   end
 end
@@ -196,6 +196,8 @@ class SyntaxTree
         :r128
       when :complex
         :c128
+      when :object
+        :v
       end
     end
     subtrees = simplify_split
@@ -211,10 +213,8 @@ class SyntaxTree
     case type
     when :int, :float
       operate_simple(type, exact_type)
-    when :rational, :complex
+    when :rational, :complex, :value
       operate_on_subtrees(type, exact_type).flatten
-    when :value,:object
-      operate_object
     else
       raise ArgumentError, "undefined math expression type '#{type}'"
     end
@@ -253,27 +253,27 @@ protected
   end
 
   # Figure out what to do on the right side of the operation if we're dealing with Ruby objects and unary operators
-  def operate_object_right
+  def operate_value_right
     if !right.is_a?(SyntaxTree) && right.to_i.to_s == right
       unary? ? "INT2FIX(#{op}#{right})" : "INT2FIX(#{right})"
     elsif right.is_a?(SyntaxTree) && right.unary? && right.right.to_i.to_s == right.right
       "INT2FIX(#{op}#{right})"
     else
-      right.operate_object.first
+      right.operate_value.first
     end
   end
 
-  def operate_object
+  def operate_value exact_type=nil # exact_type is not used.
     if unary?
-      ["rb_funcall(#{operate_object_right}, rb_intern(\"#{op}@\"), 0)"] # e.g., -@ for negative
+      ["rb_funcall(#{operate_value_right}, rb_intern(\"#{op}@\"), 0)"] # e.g., -@ for negative
     else
       case op
       when EQ
-        ["#{left} #{op} #{operate_object_right}"]
+        ["#{left} #{op} #{operate_value_right}"]
       when *COMP_OPS
-        ["rb_funcall(#{left.operate_object.first}, rb_intern(\"#{op}\"), 1, #{operate_object_right}) == Qtrue"]
+        ["rb_funcall(#{left.operate_value.first}, rb_intern(\"#{op}\"), 1, #{operate_value_right}) == Qtrue"]
       else
-        ["rb_funcall(#{left.operate_object.first}, rb_intern(\"#{op}\"), 1, #{operate_object_right})"]
+        ["rb_funcall(#{left.operate_value.first}, rb_intern(\"#{op}\"), 1, #{operate_value_right})"]
       end
     end
   end

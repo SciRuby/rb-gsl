@@ -680,6 +680,7 @@ typedef bool     (*nm_compare_t[S_TYPES])();
 typedef void     (*nm_delete_t[S_TYPES])();
 typedef void     (*nm_mark_t[S_TYPES])(void*);
 typedef void     (*nm_gemm_t[NM_TYPES])();           // general matrix/matrix multiply
+typedef void     (*nm_dense_transpose_t[NM_TYPES])(); // dense transpose
 typedef void     (*nm_gemv_t[NM_TYPES])();           // general matrix/vector multiply
 typedef void     (*nm_smmp_t[NM_TYPES][NM_INDEX_TYPES])(); // sparse (yale) multiply
 typedef void     (*nm_smmp_transpose_t[NM_TYPES][NM_INDEX_TYPES])(y_size_t, y_size_t, YALE_PARAM, YALE_PARAM, bool); // sparse (yale) transpose
@@ -710,6 +711,21 @@ int i32gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const in
 int i64gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int64_t alpha, const int64_t* A, const int lda, const int64_t* B, const int ldb, const int64_t beta, int64_t* C, const int ldc);
 int i64gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const int64_t alpha, const int64_t* A, const size_t lda, const int64_t* X, const int incX, const int64_t beta, int64_t* Y, const int incY);
 int vgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const VALUE alpha, const VALUE* A, const int lda, const VALUE* B, const int ldb, const VALUE beta, VALUE* C, const int ldc);
+
+// void %%TYPE_ABBREV%%transp(unsigned int M, unsigned int N, const %%TYPE%%* A, int lda, %%TYPE%%* B, int ldb);
+void btransp(const unsigned int, const unsigned int, const u_int8_t*, const int, u_int8_t*, const int);
+void i8transp(const unsigned int, const unsigned int, const int8_t*, const int, int8_t*, const int);
+void i16transp(const unsigned int, const unsigned int, const int16_t*, const int, int16_t*, const int);
+void i32transp(const unsigned int, const unsigned int, const int32_t*, const int, int32_t*, const int);
+void i64transp(const unsigned int, const unsigned int, const int64_t*, const int, int64_t*, const int);
+void f32transp(const unsigned int, const unsigned int, const float*, const int, float*, const int);
+void f64transp(const unsigned int, const unsigned int, const double*, const int, double*, const int);
+void c64transp(const unsigned int, const unsigned int, const complex64*, const int, complex64*, const int);
+void c128transp(const unsigned int, const unsigned int, const complex128*, const int, complex128*, const int);
+void r32transp(const unsigned int, const unsigned int, const rational32*, const int, rational32*, const int);
+void r64transp(const unsigned int, const unsigned int, const rational64*, const int, rational64*, const int);
+void r128transp(const unsigned int, const unsigned int, const rational128*, const int, rational128*, const int);
+void vtransp(const unsigned int, const unsigned int, const VALUE*, const int, VALUE*, const int);
 
 int nm_d_b_elementwise(const u_int8_t* A, const u_int8_t* B, u_int8_t* C, size_t n, enum NMatrix_Ops op);
 int nm_d_i8_elementwise(const int8_t* A, const int8_t* B, int8_t* C, size_t n, enum NMatrix_Ops op);

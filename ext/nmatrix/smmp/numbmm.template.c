@@ -5,7 +5,7 @@ void %%INT_ABBREV%%_%%TYPE_ABBREV%%_numbmm_(y_size_t n, y_size_t m, YALE_PARAM A
   %%TYPE%% sums[m];
 
   %%TYPE%% v;
-  %%= if [:rational,:complex].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1;"; end%%
+  %%= if [:rational,:complex,:value].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1;"; end%%
 
   u_%%INT%% head, length, temp, ndnz = 0;
   u_%%INT%% jj_start, jj_end, kk_start, kk_end;

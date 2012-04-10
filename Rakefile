@@ -62,7 +62,7 @@ Thanks for trying out NMatrix! Happy coding!
 
 ***********************************************************
 EOF
-  self.need_rdoc = false
+  #self.need_rdoc = false
   self.readme_file = 'README.rdoc'
   # self.rubyforge_name = 'nmatrixx' # if different than 'nmatrix'
 end
