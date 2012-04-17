@@ -620,7 +620,11 @@ YALE_STORAGE* create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size
   s->rank        = rank;
   s->index_dtype = yale_index_dtype(s);
 
+  // Ensure that initial matrix capacity is valid.
   if (init_capacity < YALE_MINIMUM(s)) init_capacity = YALE_MINIMUM(s);
+  else if (init_capacity > count_dense_storage_elements(s) - s->shape[0])
+    init_capacity = count_dense_storage_elements(s) - s->shape[0]; // Don't allow storage to be created larger than necessary
+
   s->capacity    = init_capacity;
 
 
