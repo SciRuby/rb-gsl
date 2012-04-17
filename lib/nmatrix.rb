@@ -39,9 +39,10 @@ require File.join(File.dirname(__FILE__), "array.rb") # Load Array extensions
 class NMatrix
   VERSION = '0.0.1'
 
-  #def inspect
-  #
-  #end
+  # Read and write extensions for NMatrix. These are only loaded when needed.
+  module IO
+    autoload(:Matlab, File.join(File.dirname(__FILE__), 'nmatrix', 'io', 'matlab.rb'))
+  end
 
   # TODO: Make this actually pretty.
   def pretty_print
@@ -55,6 +56,7 @@ class NMatrix
     end
     nil
   end
+  alias :pp :pretty_print
 
 
   def inspect
