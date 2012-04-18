@@ -483,6 +483,7 @@ YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
   shape[1] = rhs->shape[1];
 
   // Create with minimum possible capacity -- just enough to hold all of the entries
+  fprintf(stderr, "creating yale with init capacity = %d\n", shape[0] + ndnz + 1);
   lhs = create_yale_storage(l_dtype, shape, 2, shape[0] + ndnz + 1);
 
   // Set the zero position in the yale matrix
@@ -500,9 +501,11 @@ YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
     for (j = 0; j < rhs->shape[1]; ++j) {
 
       if (i == j) { // copy to diagonal
+        fprintf(stderr, "writing diagonal at a[%u] shape=(%u,%u), sz=%u\n", ija,i, rhs->shape[0], rhs->shape[1], nm_sizeof[l_dtype]);
         cast_copy_value_single((char*)(lhs->a) + i*nm_sizeof[l_dtype], (char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
 
       } else if (memcmp((char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], R_ZERO, nm_sizeof[rhs->dtype])) {      // copy nonzero to LU
+        fprintf(stderr, "writing column index %lu at position (%u,%u) shape=(%u,%u)\n", ija,i,j, rhs->shape[0], rhs->shape[1]);
         YaleSetIJA(ija, lhs, j); // write column index
 
         cast_copy_value_single((char*)(lhs->a) + ija*nm_sizeof[l_dtype], (char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
@@ -622,8 +625,8 @@ YALE_STORAGE* create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size
 
   // Ensure that initial matrix capacity is valid.
   if (init_capacity < YALE_MINIMUM(s)) init_capacity = YALE_MINIMUM(s);
-  else if (init_capacity > count_dense_storage_elements(s) - s->shape[0])
-    init_capacity = count_dense_storage_elements(s) - s->shape[0]; // Don't allow storage to be created larger than necessary
+  else if (init_capacity > count_dense_storage_elements(s) - s->shape[0] + 1)
+    init_capacity = count_dense_storage_elements(s) - s->shape[0] + 1; // Don't allow storage to be created larger than necessary
 
   s->capacity    = init_capacity;
 
