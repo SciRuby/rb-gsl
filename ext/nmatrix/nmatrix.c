@@ -724,6 +724,31 @@ size_t* nm_interpret_initial_capacity(VALUE arg) {
 
 
 /*
+ * Create a new NMatrix helper for handling internal ia, ja, and a arguments.
+ *
+ * This constructor is only called by Ruby code, so we can skip most of the checks.
+ */
+static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_index_dtype, VALUE nm) {
+  size_t rank     = 2;
+  size_t* shape_  = nm_interpret_shape_arg(shape, &rank);
+  int8_t dtype_   = nm_dtypesymbol_to_dtype(dtype);
+  char *ia_       = RSTRING_PTR(ia),
+       *ja_       = RSTRING_PTR(ja),
+       *a_        = RSTRING_PTR(a);
+  int8_t from_dtype_ = nm_dtypesymbol_to_dtype(from_dtype);
+  int8_t from_index_dtype_ = nm_dtypesymbol_to_dtype(from_index_dtype);
+  NMATRIX* nmatrix;
+
+  UnwrapNMatrix( nm, nmatrix );
+
+  nmatrix->stype   = S_YALE;
+  nmatrix->storage = create_yale_storage_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_, from_index_dtype_);
+
+  return nm;
+}
+
+
+/*
  * Create a new NMatrix.
  *
  * There are several ways to do this. At a minimum, dimensions and either a dtype or initial values are needed, e.g.,
@@ -741,9 +766,17 @@ size_t* nm_interpret_initial_capacity(VALUE arg) {
  *     NMatrix.new(:yale, [4,3], :int64)
  *     NMatrix.new(:list, 5, :rational128)
  *
+ * For Yale, you can also give an initial size for the non-diagonal component of the matrix:
+ *
+ *     NMatrix.new(:yale, [4,3], 2, :int64)
+ *
  * Finally, you can be extremely specific, and define a matrix very exactly:
  *
  *     NMatrix.new(:dense, [2,2,2], [0,1,2,3,4,5,6,7], :int8)
+ *
+ * There is one additional constructor for advanced users, which takes seven arguments and is only for creating Yale matrices
+ * with known IA, JA, and A arrays. This is used primarily internally for IO, e.g., reading Matlab matrices, which are
+ * stored in old Yale format.
  *
  * Just be careful! There are no overflow warnings in NMatrix.
  */
@@ -761,7 +794,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
 
   //fprintf(stderr, "Called nmatrix new with %d arguments\n", argc);
 
-  if (argc < 2 || argc > 4) { rb_raise(rb_eArgError, "Expected 2, 3, or 4 arguments"); return Qnil; }
+  if (argc < 2) { rb_raise(rb_eArgError, "Expected 2-4 arguments (or 8 for internal Yale creation)"); return Qnil; }
 
   if (!SYMBOL_P(argv[0]) && !IS_STRING(argv[0])) {
     stype  = S_DENSE;
@@ -769,7 +802,15 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
     stype  = nm_interpret_stype(argv[0]);                        // 0: String or Symbol
     offset = 1;
   }
-  shape    = nm_interpret_shape_arg(argv[offset], &rank);        // 1: String or Symbol
+
+  // If there are 7 arguments and Yale, refer to a different init function with fewer sanity checks.
+  if (argc == 8) {
+    if (stype == S_YALE) return nm_init_yale_from_old_yale(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], nm);
+    rb_raise(rb_eArgError, "Expected 2-4 arguments (or 7 for internal Yale creation)");
+    return Qnil;
+  }
+
+  shape    = nm_interpret_shape_arg(argv[offset], &rank);        // 1: Array or Fixnum
   dtype    = nm_interpret_dtype(argc-1-offset, argv+offset+1, stype); // 2-3: dtype
 
   if (IS_NUMERIC(argv[1+offset]) || TYPE(argv[1+offset]) == T_ARRAY) { // initial value provided (could also be initial capacity, if yale)
@@ -1749,6 +1790,7 @@ static VALUE nm_yale_ja(VALUE self) {
 
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*(s->capacity - s->shape[0]));
+  fprintf(stderr, "nm_yale_ja: sz=%u, shape[0]=%u, capacity=%u\n", sz, s->shape[0], s->capacity);
 
   SetFuncs[NM_ROBJ][s->index_dtype](sz - s->shape[0] - 1, vals, nm_sizeof[NM_ROBJ], (char*)(s->ija) + (s->shape[0] + 1)*nm_sizeof[s->index_dtype], nm_sizeof[s->index_dtype]);
   ary = rb_ary_new4(sz - s->shape[0] - 1, vals);

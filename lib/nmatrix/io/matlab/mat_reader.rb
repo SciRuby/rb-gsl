@@ -34,7 +34,7 @@ module NMatrix::IO::Matlab
   # The full format of .mat files is available here:
   # * http://www.mathworks.com/help/pdf_doc/matlab/matfile_format.pdf
   #
-  class MatFileReader
+  class MatReader
     MDTYPE_UNPACK_ARGS = {
       :miINT8 => [Integer, {:signed => true, :bytes => 1}],
       :miUINT8 => [Integer, {:signed => false, :bytes => 1}],
@@ -46,6 +46,34 @@ module NMatrix::IO::Matlab
       :miDOUBLE => [Float, {:precision => :double, :bytes => 8}],
       :miINT64 => [Integer, {:signed => true, :bytes => 8}],
       :miUINT64 => [Integer, {:signed => false, :bytes => 8}]
+    }
+
+    DTYPE_PACK_ARGS = {
+      :byte => [Integer, {:signed => true, :bytes => 1}],
+      :int8 => [Integer, {:signed => false, :bytes => 1}],
+      :int16 => [Integer, {:signed => false, :bytes => 2}],
+      :int32 => [Integer, {:signed => false, :bytes => 4}],
+      :int64 => [Integer, {:signed => false, :bytes => 8}],
+      :float32 => [Float, {:precision => :single, :bytes => 4}],
+      :float64 => [Float, {:precision => :double, :bytes => 8}],
+      :complex64 => [Float, {:precision => :single, :bytes => 4}], #2x
+      :complex128 => [Float, {:precision => :double, :bytes => 8}]
+    }
+
+    NO_REPACK = [:miINT8, :miUINT8, :miINT16, :miINT32, :miSINGLE, :miDOUBLE, :miINT64]
+
+    # Convert from MATLAB dtype to NMatrix dtype.
+    MDTYPE_TO_DTYPE = {
+      :miUINT8 => :byte,
+      :miINT8 => :int8,
+      :miINT16 => :int16,
+      :miUINT16 => :int16,
+      :miINT32 => :int32,
+      :miUINT32 => :int32,
+      :miINT64 => :int64,
+      :miUINT64 => :int64,
+      :miSINGLE => :float32,
+      :miDOUBLE => :float64
     }
 
     # Before release v7.1 (release 14) matlab (TM) used the system

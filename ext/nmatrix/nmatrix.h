@@ -875,6 +875,7 @@ bool            list_storage_eqeq(const LIST_STORAGE*, const LIST_STORAGE*);
 /* yale.c */
 void print_vectors(YALE_STORAGE* s);
 YALE_STORAGE*   create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size_t init_capacity);
+YALE_STORAGE*   create_yale_storage_from_old_yale(int8_t dtype, size_t* shape, char* ia, char* ja, char* a, int8_t from_dtype, int8_t from_index_dtype);
 void            init_yale_storage(YALE_STORAGE* s);
 void            delete_yale_storage(YALE_STORAGE* s);
 void            mark_yale_storage(void* s);

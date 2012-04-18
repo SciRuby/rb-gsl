@@ -483,7 +483,6 @@ YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
   shape[1] = rhs->shape[1];
 
   // Create with minimum possible capacity -- just enough to hold all of the entries
-  fprintf(stderr, "creating yale with init capacity = %d\n", shape[0] + ndnz + 1);
   lhs = create_yale_storage(l_dtype, shape, 2, shape[0] + ndnz + 1);
 
   // Set the zero position in the yale matrix
@@ -501,11 +500,9 @@ YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
     for (j = 0; j < rhs->shape[1]; ++j) {
 
       if (i == j) { // copy to diagonal
-        fprintf(stderr, "writing diagonal at a[%u] shape=(%u,%u), sz=%u\n", ija,i, rhs->shape[0], rhs->shape[1], nm_sizeof[l_dtype]);
         cast_copy_value_single((char*)(lhs->a) + i*nm_sizeof[l_dtype], (char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
 
       } else if (memcmp((char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], R_ZERO, nm_sizeof[rhs->dtype])) {      // copy nonzero to LU
-        fprintf(stderr, "writing column index %lu at position (%u,%u) shape=(%u,%u)\n", ija,i,j, rhs->shape[0], rhs->shape[1]);
         YaleSetIJA(ija, lhs, j); // write column index
 
         cast_copy_value_single((char*)(lhs->a) + ija*nm_sizeof[l_dtype], (char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
@@ -609,11 +606,9 @@ YALE_STORAGE* create_merged_yale_storage(const YALE_STORAGE* template, const YAL
 }
 
 
-
-YALE_STORAGE* create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size_t init_capacity) {
+// Allocates and initializes the basic struct (but not the IJA or A vectors).
+static YALE_STORAGE* alloc_yale_storage(int8_t dtype, size_t* shape, size_t rank) {
   YALE_STORAGE* s;
-
-  if (rank != 2) rb_raise(rb_eNotImpError, "Can only support 2D matrices");
 
   s = ALLOC( YALE_STORAGE );
 
@@ -623,16 +618,94 @@ YALE_STORAGE* create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size
   s->rank        = rank;
   s->index_dtype = yale_index_dtype(s);
 
-  // Ensure that initial matrix capacity is valid.
-  if (init_capacity < YALE_MINIMUM(s)) init_capacity = YALE_MINIMUM(s);
-  else if (init_capacity > count_dense_storage_elements(s) - s->shape[0] + 1)
-    init_capacity = count_dense_storage_elements(s) - s->shape[0] + 1; // Don't allow storage to be created larger than necessary
-
-  s->capacity    = init_capacity;
+  return s;
+}
 
 
-  s->ija = ALLOC_N( char, nm_sizeof[s->index_dtype] * init_capacity );
-  s->a   = ALLOC_N( char, nm_sizeof[s->dtype] * init_capacity );
+YALE_STORAGE* create_yale_storage_from_old_yale(int8_t dtype, size_t* shape, char* ia, char* ja, char* a, int8_t from_dtype, int8_t from_index_dtype) {
+  YALE_STORAGE* s;
+  y_size_t i = 0, p, p_next, j, ndnz = 0, pp;
+
+  // Read through ia and ja and figure out the ndnz count.
+
+  // Walk down rows
+  for (i = 0; i < shape[0]; ++i) {
+    SetFuncs[Y_SIZE_T][from_index_dtype](1, &p, 0, ia + nm_sizeof[from_index_dtype]*i, 0);          // p = ia[i]
+    SetFuncs[Y_SIZE_T][from_index_dtype](1, &p_next, 0, ia + nm_sizeof[from_index_dtype]*(i+1), 0); // p_next = ia[i+1]
+
+    // Now walk through columns
+    for (; p < p_next; ++p) {
+      SetFuncs[Y_SIZE_T][from_index_dtype](1, &j, 0, ja + nm_sizeof[from_index_dtype]*p, 0);        // j = ja[p]
+
+      if (i != j) ++ndnz; // entry is non-diagonal and probably nonzero
+    }
+  }
+
+  // Having walked through the matrix, we now go about allocating the space for it.
+  s = alloc_yale_storage(dtype, shape, 2);
+  s->capacity = shape[0] + ndnz + 1;
+  s->ndnz     = ndnz;
+
+  // Setup IJA and A arrays
+  s->ija = ALLOC_N( char, nm_sizeof[s->index_dtype] * s->capacity );
+  s->a   = ALLOC_N( char, nm_sizeof[s->dtype] * s->capacity );
+
+  // Figure out where to start writing JA in IJA:
+  pp     = s->shape[0]+1;
+
+  // Find beginning of first row
+  SetFuncs[Y_SIZE_T][from_index_dtype](1, &p, 0, ia, 0);          // p = ia[i]
+
+  // Now fill the arrays
+  for (i = 0; i < s->shape[0]; ++i) {
+
+    // Find end of row (of input)
+    SetFuncs[Y_SIZE_T][from_index_dtype](1, &p_next, 0, ia + nm_sizeof[from_index_dtype]*(i+1), 0); // p_next = ia[i+1]
+
+    // Set the beginning of the row (of output)
+    SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + nm_sizeof[s->index_dtype]*i, 0, &pp, 0);
+
+    // Now walk through columns
+    for (; p < p_next; ++p, ++pp) {
+      SetFuncs[Y_SIZE_T][from_index_dtype](1, &j, 0, ja + nm_sizeof[from_index_dtype]*p, 0);        // j = ja[p]
+
+      if (i == j) {
+        SetFuncs[s->dtype][from_dtype](1, (char*)(s->a) + nm_sizeof[s->dtype]*i, 0, a + nm_sizeof[from_dtype]*p, 0);
+        --pp;
+      } else {
+        SetFuncs[s->index_dtype][from_index_dtype](1, (char*)(s->ija) + nm_sizeof[s->index_dtype]*pp, 0, ja + nm_sizeof[from_index_dtype]*p, 0);
+        SetFuncs[s->dtype][from_dtype](1,             (char*)(s->a)   + nm_sizeof[s->dtype]*pp,       0, a  + nm_sizeof[from_dtype]*p,       0);
+      }
+    }
+  }
+
+  // Set the end of the last row
+  SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + nm_sizeof[s->index_dtype]*i, 0, &pp, 0);
+
+  // Set the zero position for our output matrix
+  if (dtype == NM_ROBJ)     *(VALUE*)((char*)(s->a) + nm_sizeof[s->dtype]*i) = INT2FIX(0);
+  else                      memset((char*)(s->a) + nm_sizeof[s->dtype]*i, 0, nm_sizeof[s->dtype]);
+
+  return s;
+}
+
+
+YALE_STORAGE* create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size_t init_capacity) {
+  YALE_STORAGE* s;
+  size_t max_capacity;
+
+  if (rank != 2) rb_raise(rb_eNotImpError, "Can only support 2D matrices");
+
+  s = alloc_yale_storage(dtype, shape, rank);
+  max_capacity = count_storage_max_elements((STORAGE*)s) - s->shape[0] + 1;
+
+  // Set matrix capacity (and ensure its validity)
+  if (init_capacity < YALE_MINIMUM(s))   s->capacity = YALE_MINIMUM(s);
+  else if (init_capacity > max_capacity) s->capacity = max_capacity; // Don't allow storage to be created larger than necessary
+  else                                   s->capacity = init_capacity;
+
+  s->ija = ALLOC_N( char, nm_sizeof[s->index_dtype] * s->capacity );
+  s->a   = ALLOC_N( char, nm_sizeof[s->dtype] * s->capacity );
 
   return s;
 }

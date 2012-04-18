@@ -9,9 +9,13 @@ spec/nmatrix_spec.rb
 spec/nmatrix_yale_spec.rb
 spec/nvector_spec.rb
 spec/syntax_tree_spec.rb
+spec/io_spec.rb
 lib/array.rb
 lib/nmatrix.rb
 lib/string.rb
+lib/nmatrix/io/matlab.rb
+lib/nmatrix/io/matlab/mat5_reader.rb
+lib/nmatrix/io/matlab/mat_reader.rb
 ext/nmatrix/cblas.c
 ext/nmatrix/dense.c
 ext/nmatrix/depend
