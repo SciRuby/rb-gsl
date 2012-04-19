@@ -742,7 +742,7 @@ static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALU
   UnwrapNMatrix( nm, nmatrix );
 
   nmatrix->stype   = S_YALE;
-  nmatrix->storage = create_yale_storage_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_, from_index_dtype_);
+  nmatrix->storage = (STORAGE*)create_yale_storage_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_, from_index_dtype_);
 
   return nm;
 }
