@@ -104,6 +104,14 @@ module NMatrix::IO::Matlab
         packedio << [info, {:bytes => padded_bytes}.merge(options)]
       end
 
+      # Figure out the appropriate Ruby type to convert to, and do it. There are basically two possible types: NMatrix
+      # and Ruby Array. This function is recursive, so an Array is going to contain other Arrays and/or NMatrix objects.
+      #
+      # mxCELL types (cells) will be converted to the Array type.
+      #
+      # mxSPARSE and other types will be converted to NMatrix, with the appropriate stype (:yale or :dense, respectively).
+      #
+      # See also to_nm, which is responsible for NMatrix instantiation.
       def to_ruby
         case matlab_class
           when :mxSPARSE
@@ -115,53 +123,16 @@ module NMatrix::IO::Matlab
         end
       end
 
-      def to_matrix
-        return to_sparse_matrix.to_matrix if matlab_class == :mxSPARSE
-        raise(NotImplementedError, "Matrix must be two or fewer dimensions") if dimensions.size > 2
-        Matrix.build(*dimensions) do |row, col|
-          self.complex ? Complex(real_part[dimensions[1]*col + row], imaginary_part[dimensions[1]*col + row]) : real_part[dimensions[1]*col + row]
-        end
-      end
-
-
-      def to_sparse_matrix
-        raise(NotImplementedError, "Matrix must be two or fewer dimensions") if dimensions.size > 2
-        return to_matrix.to_sparse_matrix unless matlab_class == :mxSPARSE # Read as matrix first
-
-        ir = row_index
-        jc = column_index
-
-        mat = {}
-        (0...dimensions[1]).each do |j|
-          p_0 = jc[j]
-          p_n = jc[j+1]-1
-
-          (p_0..p_n).each do |p|
-            mat[j] ||= {}
-            mat[j][ir[p]] = complex ? Complex(real_part[p], imaginary_part[p]) : real_part[p]
-          end
-        end
-
-        SparseMatrix.send(:new, mat, dimensions[1], dimensions[0]).transpose
-      end
-
 
       # Try to determine what dtype and such to use.
       #
-      # TODO: Setup unpacking and repacking for unsigned values that NMatrix doesn't support.
+      # TODO: Needs to be verified that unsigned MATLAB types are being converted to the correct NMatrix signed dtypes.
       def guess_dtype_from_mdtype
-        raise(NotImplementedError, "expected .mat row indices to be of type :miINT32") unless self.row_index.tag.data_type == :miINT32
-        raise(NotImplementedError, "expected .mat column indices to be of type :miINT32") unless self.column_index.tag.data_type == :miINT32
-
         dtype = MatReader::MDTYPE_TO_DTYPE[self.real_part.tag.data_type]
 
-        if self.complex
-          as_dtype = dtype == :float32 ? :complex64 : :complex128
-        else
-          as_dtype = dtype
-        end
+        return dtype unless self.complex
 
-        return as_dtype
+        dtype == :float32 ? :complex64 : :complex128
       end
 
 
@@ -219,13 +190,32 @@ module NMatrix::IO::Matlab
       end
 
 
+      # Create an NMatrix from a MATLAB .mat (v5) matrix.
+      #
+      # This function matches the storage type exactly. That is, a regular matrix in MATLAB will be a dense NMatrix, and
+      # a sparse (old Yale) matrix in MATLAB will be a :yale (new Yale) matrix in NMatrix.
+      #
+      # Note that NMatrix has no old Yale type, so this uses a semi-hidden version of the NMatrix constructor to pass in
+      # -- as directly as possible -- the stored bytes in a MATLAB sparse matrix. This constructor should also be used
+      # for other IO formats that want to create sparse matrices from IA and JA vectors (e.g., SciPy).
+      #
+      # This is probably not the fastest code. An ideal solution would be a C plugin of some sort for reading the MATLAB
+      # .mat file. However, .mat v5 is a really complicated format, and lends itself to an object-oriented solution.
       def to_nm dtype=nil
         # Hardest part is figuring out from_dtype, from_index_dtype, and dtype
         dtype ||= guess_dtype_from_mdtype
         from_dtype = MatReader::MDTYPE_TO_DTYPE[self.real_part.tag.data_type]
 
-        # MATLAB always uses :miINT32 for indices according to the spec
-        NMatrix.new(:yale, dimensions, dtype, row_index.data, column_index.data, repacked_data(dtype), from_dtype, :int32)
+        case matlab_class # Create the same kind of matrix that MATLAB saved
+        when :mxSPARSE
+          raise(NotImplementedError, "expected .mat row indices to be of type :miINT32") unless row_index.tag.data_type == :miINT32
+          raise(NotImplementedError, "expected .mat column indices to be of type :miINT32") unless column_index.tag.data_type == :miINT32
+
+          # MATLAB always uses :miINT32 for indices according to the spec
+          NMatrix.new(:yale, dimensions, dtype, row_index.data, column_index.data, repacked_data(dtype), from_dtype, :int32)
+        else
+          NMatrix.new(:dense, dimensions, unpacked_data, dtype) # call regular dense constructor
+        end
       end
 
 
@@ -271,7 +261,7 @@ module NMatrix::IO::Matlab
             self.column_index = packedio.read(read_opts)
             self.row_index    = packedio.read(read_opts)
 
-            STDERR.puts "row and col indices: #{self.row_index.inspect}, #{self.column_index.inspect}"
+            # STDERR.puts "row and col indices: #{self.row_index.inspect}, #{self.column_index.inspect}"
           end
 
           self.real_part      = packedio.read(read_opts)

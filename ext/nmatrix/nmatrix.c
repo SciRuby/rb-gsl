@@ -1790,7 +1790,6 @@ static VALUE nm_yale_ja(VALUE self) {
 
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*(s->capacity - s->shape[0]));
-  fprintf(stderr, "nm_yale_ja: sz=%u, shape[0]=%u, capacity=%u\n", sz, s->shape[0], s->capacity);
 
   SetFuncs[NM_ROBJ][s->index_dtype](sz - s->shape[0] - 1, vals, nm_sizeof[NM_ROBJ], (char*)(s->ija) + (s->shape[0] + 1)*nm_sizeof[s->index_dtype], nm_sizeof[s->index_dtype]);
   ary = rb_ary_new4(sz - s->shape[0] - 1, vals);
