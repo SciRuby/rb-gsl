@@ -693,75 +693,11 @@ extern ID nm_id_real, nm_id_imag;
 extern ID nm_id_denom, nm_id_numer;
 extern ID nm_id_mult, nm_id_multeq, nm_id_add;
 
-/* blas.c */
-int r32gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const rational32 alpha, const rational32* A, const int lda, const rational32* B, const int ldb, const rational32 beta, rational32* C, const int ldc);
-int r32gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const rational32 alpha, const rational32* A, const size_t lda, const rational32* X, const int incX, const rational32 beta, rational32* Y, const int incY);
-int r64gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const rational64 alpha, const rational64* A, const int lda, const rational64* B, const int ldb, const rational64 beta, rational64* C, const int ldc);
-int r64gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const rational64 alpha, const rational64* A, const size_t lda, const rational64* X, const int incX, const rational64 beta, rational64* Y, const int incY);
-int r128gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const rational128 alpha, const rational128* A, const int lda, const rational128* B, const int ldb, const rational128 beta, rational128* C, const int ldc);
-int r128gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const rational128 alpha, const rational128* A, const size_t lda, const rational128* X, const int incX, const rational128 beta, rational128* Y, const int incY);
-int bgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const u_int8_t alpha, const u_int8_t* A, const int lda, const u_int8_t* B, const int ldb, const u_int8_t beta, u_int8_t* C, const int ldc);
-int bgemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const u_int8_t alpha, const u_int8_t* A, const size_t lda, const u_int8_t* X, const int incX, const u_int8_t beta, u_int8_t* Y, const int incY);
-int i8gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int8_t alpha, const int8_t* A, const int lda, const int8_t* B, const int ldb, const int8_t beta, int8_t* C, const int ldc);
-int i8gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const int8_t alpha, const int8_t* A, const size_t lda, const int8_t* X, const int incX, const int8_t beta, int8_t* Y, const int incY);
-int i16gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int16_t alpha, const int16_t* A, const int lda, const int16_t* B, const int ldb, const int16_t beta, int16_t* C, const int ldc);
-int i16gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const int16_t alpha, const int16_t* A, const size_t lda, const int16_t* X, const int incX, const int16_t beta, int16_t* Y, const int incY);
-int i32gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int32_t alpha, const int32_t* A, const int lda, const int32_t* B, const int ldb, const int32_t beta, int32_t* C, const int ldc);
-int i32gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const int32_t alpha, const int32_t* A, const size_t lda, const int32_t* X, const int incX, const int32_t beta, int32_t* Y, const int incY);
-int i64gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const int64_t alpha, const int64_t* A, const int lda, const int64_t* B, const int ldb, const int64_t beta, int64_t* C, const int ldc);
-int i64gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const int64_t alpha, const int64_t* A, const size_t lda, const int64_t* X, const int incX, const int64_t beta, int64_t* Y, const int incY);
-int vgemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const VALUE alpha, const VALUE* A, const int lda, const VALUE* B, const int ldb, const VALUE beta, VALUE* C, const int ldc);
-
-// void %%TYPE_ABBREV%%transp(unsigned int M, unsigned int N, const %%TYPE%%* A, int lda, %%TYPE%%* B, int ldb);
-void btransp(const unsigned int, const unsigned int, const u_int8_t*, const int, u_int8_t*, const int);
-void i8transp(const unsigned int, const unsigned int, const int8_t*, const int, int8_t*, const int);
-void i16transp(const unsigned int, const unsigned int, const int16_t*, const int, int16_t*, const int);
-void i32transp(const unsigned int, const unsigned int, const int32_t*, const int, int32_t*, const int);
-void i64transp(const unsigned int, const unsigned int, const int64_t*, const int, int64_t*, const int);
-void f32transp(const unsigned int, const unsigned int, const float*, const int, float*, const int);
-void f64transp(const unsigned int, const unsigned int, const double*, const int, double*, const int);
-void c64transp(const unsigned int, const unsigned int, const complex64*, const int, complex64*, const int);
-void c128transp(const unsigned int, const unsigned int, const complex128*, const int, complex128*, const int);
-void r32transp(const unsigned int, const unsigned int, const rational32*, const int, rational32*, const int);
-void r64transp(const unsigned int, const unsigned int, const rational64*, const int, rational64*, const int);
-void r128transp(const unsigned int, const unsigned int, const rational128*, const int, rational128*, const int);
-void vtransp(const unsigned int, const unsigned int, const VALUE*, const int, VALUE*, const int);
-
-int nm_d_b_elementwise(const u_int8_t* A, const u_int8_t* B, u_int8_t* C, size_t n, enum NMatrix_Ops op);
-int nm_d_i8_elementwise(const int8_t* A, const int8_t* B, int8_t* C, size_t n, enum NMatrix_Ops op);
-int nm_d_i16_elementwise(const int16_t* A, const int16_t* B, int16_t* C, size_t n, enum NMatrix_Ops op);
-int nm_d_i32_elementwise(const int32_t* A, const int32_t* B, int32_t* C, size_t n, enum NMatrix_Ops op);
-int nm_d_i64_elementwise(const int64_t* A, const int64_t* B, int64_t* C, size_t n, enum NMatrix_Ops op);
-int nm_d_f32_elementwise(const float* A, const float* B, float* C, size_t n, enum NMatrix_Ops op);
-int nm_d_f64_elementwise(const double* A, const double* B, double* C, size_t n, enum NMatrix_Ops op);
-int nm_d_c64_elementwise(const complex64* A, const complex64* B, complex64* C, size_t n, enum NMatrix_Ops op);
-int nm_d_c128_elementwise(const complex128* A, const complex128* B, complex128* C, size_t n, enum NMatrix_Ops op);
-int nm_d_r32_elementwise(const rational32* A, const rational32* B, rational32* C, size_t n, enum NMatrix_Ops op);
-int nm_d_r64_elementwise(const rational64* A, const rational64* B, rational64* C, size_t n, enum NMatrix_Ops op);
-int nm_d_r128_elementwise(const rational128* A, const rational128* B, rational128* C, size_t n, enum NMatrix_Ops op);
-int nm_d_v_elementwise(const VALUE* A, const VALUE* B, VALUE* C, size_t n, enum NMatrix_Ops op);
-
-// These are in blas.c but are needed by smmp2.c (the smmp template stuff)
-rational128 r128_muldiv(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k);
-rational128 r128_addsub(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k);
-rational128 r128_mod(int64_t anum, int64_t aden, int64_t bnum, int64_t bden);
-rational128 r128_bang(int64_t, int64_t);
-rational128 r128_negate(int64_t, int64_t);
-rational64 r64_muldiv(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k);
-rational64 r64_addsub(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k);
-rational64 r64_mod(int32_t anum, int32_t aden, int32_t bnum, int32_t bden);
-rational64 r64_bang(int32_t, int32_t);
-rational64 r64_negate(int32_t, int32_t);
-rational32 r32_muldiv(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k);
-rational32 r32_addsub(int64_t anum, int64_t aden, int64_t bnum, int64_t bden, char k);
-rational32 r32_mod(int16_t anum, int16_t aden, int16_t bnum, int16_t bden);
-rational32 r32_bang(int16_t, int16_t);
-rational32 r32_negate(int16_t, int16_t);
-
-rational32 BOOL2R32(bool);
-rational64 BOOL2R64(bool);
-rational128 BOOL2R128(bool);
-
+/**********************************************************************************************************************/
+/* DO NOT MODIFY BETWEEN THESE LINES                                                                                  */
+// %%INSERT_TEMPLATER_DECLARATIONS%%
+/* DO NOT MODIFY BETWEEN THESE LINES                                                                                  */
+/**********************************************************************************************************************/
 
 /* cblas.c */
 DENSE_PARAM init_cblas_params_for_nm_multiply_matrix(int8_t dtype);
@@ -790,61 +726,6 @@ void cblas_r64gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Tra
 void cblas_r128gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
 void cblas_r128gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
 void cblas_vgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
-
-
-/* smmp2.c */
-int i8_b_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, u_int8_t* a, u_int8_t* b, u_int8_t* c);
-int i16_b_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, u_int8_t* a, u_int8_t* b, u_int8_t* c);
-int i32_b_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, u_int8_t* a, u_int8_t* b, u_int8_t* c);
-int i64_b_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, u_int8_t* a, u_int8_t* b, u_int8_t* c);
-int i8_i8_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, int8_t* a, int8_t* b, int8_t* c);
-int i16_i8_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, int8_t* a, int8_t* b, int8_t* c);
-int i32_i8_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, int8_t* a, int8_t* b, int8_t* c);
-int i64_i8_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, int8_t* a, int8_t* b, int8_t* c);
-int i8_i16_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, int16_t* a, int16_t* b, int16_t* c);
-int i16_i16_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, int16_t* a, int16_t* b, int16_t* c);
-int i32_i16_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, int16_t* a, int16_t* b, int16_t* c);
-int i64_i16_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, int16_t* a, int16_t* b, int16_t* c);
-int i8_i32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, int32_t* a, int32_t* b, int32_t* c);
-int i16_i32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, int32_t* a, int32_t* b, int32_t* c);
-int i32_i32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, int32_t* a, int32_t* b, int32_t* c);
-int i64_i32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, int32_t* a, int32_t* b, int32_t* c);
-int i8_i64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, int64_t* a, int64_t* b, int64_t* c);
-int i16_i64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, int64_t* a, int64_t* b, int64_t* c);
-int i32_i64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, int64_t* a, int64_t* b, int64_t* c);
-int i64_i64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, int64_t* a, int64_t* b, int64_t* c);
-int i8_f32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, float* a, float* b, float* c);
-int i16_f32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, float* a, float* b, float* c);
-int i32_f32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, float* a, float* b, float* c);
-int i64_f32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, float* a, float* b, float* c);
-int i8_f64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, double* a, double* b, double* c);
-int i16_f64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, double* a, double* b, double* c);
-int i32_f64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, double* a, double* b, double* c);
-int i64_f64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, double* a, double* b, double* c);
-int i8_c64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, complex64* a, complex64* b, complex64* c);
-int i16_c64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, complex64* a, complex64* b, complex64* c);
-int i32_c64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, complex64* a, complex64* b, complex64* c);
-int i64_c64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, complex64* a, complex64* b, complex64* c);
-int i8_c128_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, complex128* a, complex128* b, complex128* c);
-int i16_c128_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, complex128* a, complex128* b, complex128* c);
-int i32_c128_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, complex128* a, complex128* b, complex128* c);
-int i64_c128_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, complex128* a, complex128* b, complex128* c);
-int i8_r32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, rational32* a, rational32* b, rational32* c);
-int i16_r32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, rational32* a, rational32* b, rational32* c);
-int i32_r32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, rational32* a, rational32* b, rational32* c);
-int i64_r32_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, rational32* a, rational32* b, rational32* c);
-int i8_r64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, rational64* a, rational64* b, rational64* c);
-int i16_r64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, rational64* a, rational64* b, rational64* c);
-int i32_r64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, rational64* a, rational64* b, rational64* c);
-int i64_r64_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, rational64* a, rational64* b, rational64* c);
-int i8_r128_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, rational128* a, rational128* b, rational128* c);
-int i16_r128_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, rational128* a, rational128* b, rational128* c);
-int i32_r128_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, rational128* a, rational128* b, rational128* c);
-int i64_r128_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, rational128* a, rational128* b, rational128* c);
-int i8_v_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int8_t* ija, const u_int8_t* ijb, const u_int8_t* ijc, VALUE* a, VALUE* b, VALUE* c);
-int i16_v_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int16_t* ija, const u_int16_t* ijb, const u_int16_t* ijc, VALUE* a, VALUE* b, VALUE* c);
-int i32_v_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int32_t* ija, const u_int32_t* ijb, const u_int32_t* ijc, VALUE* a, VALUE* b, VALUE* c);
-int i64_v_ew(y_size_t n, y_size_t m, enum NMatrix_Ops op, const u_int64_t* ija, const u_int64_t* ijb, const u_int64_t* ijc, VALUE* a, VALUE* b, VALUE* c);
 
 
 /* dense.c */

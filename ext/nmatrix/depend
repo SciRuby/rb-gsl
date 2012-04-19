@@ -1,4 +1,4 @@
-dtypes.h dtypes.c smmp1.c smmp2.c blas.c: generator.rb
+nmatrix.h dtypes.h dtypes.c smmp1.c smmp2.c blas.c: generator.rb nmatrix.inc.h
 	$(RUBY) -I$(srcdir) $(srcdir)/generator.rb
 
 blas.o: blas.c

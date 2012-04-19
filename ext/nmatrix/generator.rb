@@ -490,6 +490,43 @@ INCFN
       gsub_expression_re /%%#{t}_LONG\ .*?%%/, line, "#{t}_LONG", dtype.long_dtype, line_number, filename
     end
 
+    # Takes a list of declarations and cleans it for insertion in a header file.
+    #
+    # * Removes inline keyword
+    # * Removes static functions
+    # * Removes variable names
+    def process_declarations declarations
+      declarations.map do |d|
+        process_declaration d
+      end.compact
+    end
+
+    # Helper for process_declarations that works on a single function prototype.
+    #
+    # * Removes variable names
+    # * Removes inline keyword
+    # * Returns nil if declaration is static, otherwise returns corrected prototype
+    def process_declaration declaration
+      tokens = declaration.split(' ')
+
+      return nil if tokens.include?('static')
+      declaration = tokens.delete_if { |t| t == 'inline'}.join(' ')
+
+      tokens = declaration.split('(')
+      arg_list = tokens.last.split(')').first
+
+      # Remove variable names
+      args = arg_list.split(',')
+      args = args.map do |arg|
+        arg_tokens = arg.strip.split(' ')
+        arg_tokens[0...arg_tokens.size-1].join(' ')
+      end
+
+      tokens[tokens.size-1] = args.join(',') + ')'
+
+      tokens.join('(') + ";"
+    end
+
 
     # Replaces sub_int_real and sub_int.
     #
@@ -500,6 +537,16 @@ INCFN
     # erb would likely have been a better option. Oh well.
     def template template_filepath, output_filepath, types = {}
       raise(ArgumentError, "expected substitution templates") if types.size == 0
+
+      # Keep track of all declarations in this template
+      declarations = []
+
+      # Process the current declaration
+      block_level = 0
+      declaration = ""
+      decl_probably_finished = false
+
+      in_comment = false
 
       #STDERR.puts "output_filepath = #{output_filepath}; Dir.pwd = #{Dir.pwd}"
 
@@ -513,6 +560,29 @@ INCFN
 
         types.each_pair do |t_sym,dtype|
           t = t_sym.to_s
+
+          if in_comment && line.include?("*/")
+            m = line.split("*/", 1)
+            m.shift
+            line = m.first
+            in_comment = false
+          end
+
+          # Are we in a multi-line C-style comment?
+          unless in_comment
+            # Ignore C-style single-line comments
+            while m = line.match(/\/\*[^\*\/]*\*\//)
+              line = m.pre_match + m.post_match
+            end
+
+            if line.include?("/*")
+              line = line.split("/*").first
+              in_comment = true
+            end
+          end
+
+          # Remove C++-style comments
+          line = line.split("//")[0] if line.include?("//")
 
           #STDERR.puts "Processing #{template_filepath}: #{line}"
           if line.include?("%%#{t}")
@@ -532,19 +602,44 @@ INCFN
           if line.include?("%%=")
             line = gsub_yield(line, t, dtype, line_count, template_filepath)
           end
+        end
 
+        unless in_comment
+          # If we're not in a block, we should look for a function prototype.
+          if block_level == 0
+            maybe_prototype = line.split('{')[0] || ""
+            if maybe_prototype !~ /;/
+              declaration += maybe_prototype
+            end
+
+            paren_level = declaration.scan(/\(/).size
+            if paren_level > 0 && paren_level == declaration.scan(/\)/).size
+              decl_probably_finished = true
+            else
+              decl_probably_finished = false
+            end
+          end
+
+          # Keep track of the block level to make sure we can identify function prototypes.
+          block_level += line.scan(/{/).size
+
+          # Found {, so prototype is probably finished. Add it to the declarations list
+          if block_level > 0 && decl_probably_finished
+            declarations << declaration
+            declaration = ""
+            decl_probably_finished = false
+          end
+          block_level -= line.scan(/}/).size
         end
 
         line_count += 1
-
         output.puts line
       end
 
       output.close
 
-      output_filepath
+      declarations
     end
-
 
   end
 end
@@ -554,35 +649,45 @@ if $IN_MAKEFILE
   Generator.make_dtypes_c
   Generator.make_dfuncs_c
 
-  Generator::Templater.new('smmp1.c', :in => 'yale') do |c|
-    c.header 'smmp1_header'
+  #
+  # Order matters for these templates! Many functions are static.
+  #
 
+  Generator::Templater.new('smmp1.c', :in => 'yale', :boilerplate => 'smmp1_header') do |c|
     # 1-type interface functions for SMMP
     c.template 'smmp1', :TYPE => Generator::INDEX_DTYPES
-
     # 2-type interface functions for SMMP
     c.template 'smmp2', :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES
+
+    c.update_header 'nmatrix'
   end
 
-  Generator::Templater.new('smmp2.c', :in => 'yale') do |c|
-    c.header 'smmp2_header'
-
+  Generator::Templater.new('smmp2.c', :in => 'yale', :boilerplate => 'smmp2_header') do |c|
     # 1-type SMMP functions from Fortran
     c.template 'symbmm', :TYPE => Generator::INDEX_DTYPES
 
-    c.template 'complexmath', :TYPE => Generator::COMPLEX_DTYPES
+    c.template 'complexmath', :in => 'shared', :TYPE => Generator::COMPLEX_DTYPES
+
+    # Elementwise operations
     c.template 'elementwise_op', :TYPE => Generator::ACTUAL_DTYPES
 
     # 2-type SMMP functions from Fortran and selection sort
     c.template %w{numbmm transp sort_columns elementwise}, :TYPE => Generator::ACTUAL_DTYPES, :INT => Generator::INDEX_DTYPES
+
+    c.update_header 'nmatrix'
   end
 
-  Generator::Templater.new('blas.c', :in => 'dense') do |c|
-    c.header 'blas_header'
-    c.template 'rationalmath', :TYPE => Generator::RATIONAL_DTYPES
-    c.template 'complexmath', :in => 'yale', :TYPE => Generator::COMPLEX_DTYPES
+  Generator::Templater.new('blas.c', :in => 'dense', :boilerplate => 'blas_header') do |c|
+    c.template 'rationalmath', :in => 'shared', :TYPE => Generator::RATIONAL_DTYPES
+    c.template 'complexmath', :in => 'shared', :TYPE => Generator::COMPLEX_DTYPES
+
+    # Functions derived from BLAS but adapted for rationals, integers, and Ruby objects
     c.template %w{gemm gemv}, :TYPE => Generator::NONBLAS_DTYPES
+
+    # Elementwise operations
     c.template 'elementwise', :TYPE => Generator::ACTUAL_DTYPES
+
+    c.update_header 'nmatrix'
   end
 
 end
