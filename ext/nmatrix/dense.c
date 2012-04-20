@@ -31,7 +31,7 @@
 #include <ruby.h>
 
 #include "nmatrix.h"
-
+extern nm_eqeq_t ElemEqEq;
 
 /* Calculate the number of elements in the dense storage structure, based on shape and rank */
 size_t count_dense_storage_elements(const DENSE_STORAGE* s) {
@@ -44,7 +44,7 @@ size_t count_dense_storage_elements(const DENSE_STORAGE* s) {
 
 // Do these two dense matrices of the same dtype have exactly the same contents?
 bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
-  return !memcmp(left->elements, right->elements, count_dense_storage_elements(left) / nm_sizeof[left->dtype]);
+  return ElemEqEq[left->dtype](left->elements, right->elements, count_dense_storage_elements(left), nm_sizeof[left->dtype]);
 }
 
 

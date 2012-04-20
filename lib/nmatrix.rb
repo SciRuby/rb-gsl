@@ -59,6 +59,16 @@ class NMatrix
   alias :pp :pretty_print
 
 
+  # Get the complex conjugate of this matrix. See also complex_conjugate! for an in-place operation (provided the dtype
+  # is already :complex64 or :complex128).
+  #
+  # Does not work on list matrices, but you can optionally pass in the type you want to cast to if you're dealing with
+  # a list matrix.
+  def complex_conjugate(new_stype = nil)
+    self.cast(new_stype || self.stype, NMatrix::upcast(dtype, :complex64)).complex_conjugate!
+  end
+
+
   def inspect
     original_inspect = super
     original_inspect = original_inspect[0...original_inspect.size-1]

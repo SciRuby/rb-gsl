@@ -456,6 +456,30 @@ nm_compare_t EqEqFuncs = {
 };
 
 
+inline bool numeqeq(const void* x, const void* y, const size_t len, const size_t dtype_size) {
+  return (!memcmp(x, y, len * dtype_size));
+}
+
+
+// element eqeq -- like memcmp but handles 0.0 == -0.0 for complex and floating points.
+nm_eqeq_t ElemEqEq[15] = {
+  numeqeq, // byte
+  numeqeq, // int8
+  numeqeq, // int16
+  numeqeq, // int32
+  numeqeq, // int64
+  f32eqeq, // float32
+  f64eqeq, // float64
+  c64eqeq, // complex64
+  c128eqeq,// complex128
+  numeqeq, // rational32
+  numeqeq, // rational64
+  numeqeq, // rational128
+  numeqeq, // Ruby object
+  numeqeq
+};
+
+
 static void nm_delete(NMATRIX* mat) {
   DeleteFuncs[mat->stype](mat->storage);
 }
@@ -1884,17 +1908,91 @@ static void dense_transpose_generic(const unsigned int M, const unsigned int N, 
 }
 
 
+static NMATRIX* transpose_new_dense(NMATRIX* self_m, size_t* shape) {
+  NMATRIX* result = nm_create(S_DENSE, create_dense_storage(self_m->storage->dtype, shape, 2, NULL, 0));
+
+  dense_transpose_generic(self_m->storage->shape[0],
+                          self_m->storage->shape[1],
+                          ((DENSE_STORAGE*)(self_m->storage))->elements,
+                          self_m->storage->shape[1],
+                          ((DENSE_STORAGE*)(result->storage))->elements,
+                          result->storage->shape[1],
+                          nm_sizeof[self_m->storage->dtype]);
+  return result;
+}
+
+
+static NMATRIX* transpose_new_yale(NMATRIX* self_m, size_t* shape) {
+  YALE_PARAM A, B;
+  NMATRIX* result;
+  size_t sz;
+
+  YaleGetSize(sz, (YALE_STORAGE*)(self_m->storage)); // size of new matrix is going to be size of old matrix
+  result = nm_create(S_YALE, create_yale_storage(self_m->storage->dtype, shape, 2, sz));
+
+  // TODO: Do we really need to initialize the whole thing? Or just the A portion?
+  init_yale_storage((YALE_STORAGE*)(result->storage));
+
+  A.ia = A.ja = ((YALE_STORAGE*)(self_m->storage))->ija;
+  B.ia = B.ja = ((YALE_STORAGE*)(result->storage))->ija;
+  A.a  = ((YALE_STORAGE*)(self_m->storage))->a;
+  B.a  = ((YALE_STORAGE*)(result->storage))->a;
+  A.diag = true;
+
+  // call the appropriate function pointer
+  SparseTransposeFuncs[ self_m->storage->dtype ][ ((YALE_STORAGE*)(self_m->storage))->index_dtype ](shape[0], shape[1], A, B, true);
+
+  return result;
+}
+
+
+static NMATRIX* transpose_new_err(NMATRIX* self_m, size_t* shape) {
+  free(shape);
+  rb_raise(rb_eNotImpError, "no transpose written for this type");
+  return self_m;
+}
+
+nm_transpose_t TransposeFuncs = {
+  transpose_new_dense,
+  transpose_new_err,
+  transpose_new_yale
+};
+
+/*
+ * Transform the matrix (in-place) to its complex conjugate. Only works on complex matrices.
+ */
+static VALUE nm_complex_conjugate_bang(VALUE self) {
+  NMATRIX* m;
+  void* elem;
+  size_t sz, p;
+
+  UnwrapNMatrix(self, m);
+
+  if (m->stype == S_DENSE) sz = count_storage_max_elements(m->storage);
+  else if (m->stype == S_YALE) YaleGetSize(sz, m->storage);
+  else rb_raise(rb_eNotImpError, "please cast to yale or dense (complex) first");
+
+  elem = m->storage->elements; // this gets A array or elements array from dense and yale
+
+  // Walk through and negate the imaginary component
+  if (NM_DTYPE(self) == NM_COMPLEX64) {
+    for (p = 0; p < sz; ++p)      ((complex64*)elem)[p].i = -((complex64*)elem)[p].i;
+  } else if (NM_DTYPE(self) == NM_COMPLEX128) {
+    for (p = 0; p < sz; ++p)      ((complex128*)elem)[p].i = -((complex128*)elem)[p].i;
+  } else {
+    rb_raise(rb_eNotImpError, "can only calculate in-place complex conjugate on matrices of type :complex64 or :complex128");
+  }
+
+  return self;
+}
+
+
 /*
  * Create a transposed copy of this matrix.
  */
 static VALUE nm_transpose_new(VALUE self) {
-  NMATRIX *self_m, *result, *result2;
-  size_t sz;
+  NMATRIX *self_m, *result;
   size_t* shape   = ALLOC_N(size_t, 2);
-  YALE_PARAM A, B;
-#ifdef BENCHMARK
-  double t1, t2;
-#endif
 
   UnwrapNMatrix( self, self_m );
 
@@ -1902,78 +2000,25 @@ static VALUE nm_transpose_new(VALUE self) {
   shape[1] = self_m->storage->shape[0];
   shape[0] = self_m->storage->shape[1];
 
-  switch(self_m->stype) {
-  case S_DENSE:
-    result   = nm_create(S_DENSE, create_dense_storage(self_m->storage->dtype, shape, 2, NULL, 0));
-    dense_transpose_generic(
-      self_m->storage->shape[0],
-      self_m->storage->shape[1],
-      ((DENSE_STORAGE*)(self_m->storage))->elements,
-      self_m->storage->shape[1],
-      ((DENSE_STORAGE*)(result->storage))->elements,
-      result->storage->shape[1],
-      nm_sizeof[self_m->storage->dtype]);
-
-    break;
-  case S_YALE:
-    YaleGetSize(sz, (YALE_STORAGE*)(self_m->storage)); // size of new matrix is going to be size of old matrix
-    result = nm_create(S_YALE, create_yale_storage(self_m->storage->dtype, shape, 2, sz));
-
-    // TODO: Do we really need to initialize the whole thing? Or just the A portion?
-    init_yale_storage((YALE_STORAGE*)(result->storage));
-
-    result2 = nm_create(S_YALE, create_yale_storage(self_m->storage->dtype, shape, 2, sz));
-    init_yale_storage((YALE_STORAGE*)(result2->storage));
-
-    A.ia = A.ja = ((YALE_STORAGE*)(self_m->storage))->ija;
-    B.ia = B.ja = ((YALE_STORAGE*)(result->storage))->ija;
-    A.a  = ((YALE_STORAGE*)(self_m->storage))->a;
-    B.a  = ((YALE_STORAGE*)(result->storage))->a;
-    A.diag = true;
-
-#ifdef BENCHMARK
-    t1 = get_time();
-#endif
-
-    // call the appropriate function pointer
-    SparseTransposeFuncs[ self_m->storage->dtype ][ ((YALE_STORAGE*)(self_m->storage))->index_dtype ](shape[0], shape[1], A, B, true);
-#ifdef BENCHMARK
-    t1 = get_time() - t1;
-/*
-    t2 = get_time();
-    transp(
-          shape[0],
-          shape[1],
-          ((YALE_STORAGE*)(self_m->storage))->ija,
-          ((YALE_STORAGE*)(self_m->storage))->ija,
-          true,
-          ((YALE_STORAGE*)(self_m->storage))->a,
-          ((YALE_STORAGE*)(result2->storage))->ija,
-          ((YALE_STORAGE*)(result2->storage))->ija,
-          ((YALE_STORAGE*)(result2->storage))->a,
-          true, // move
-          ((YALE_STORAGE*)(self_m->storage))->index_dtype,
-          self_m->storage->dtype
-          );
-
-    t2 = get_time() - t2;
-    fprintf(stderr, "t1: %f\nt2: %f\n", t1, t2);
-*/
-#endif
-
-    break;
-  default:
-    rb_raise(rb_eNotImpError, "transpose for this type not implemented yet");
-  }
+  result = TransposeFuncs[self_m->stype](self_m, shape);
 
   return Data_Wrap_Struct(cNMatrix, MarkFuncs[result->stype], nm_delete, result);
 }
 
 
+/*
+ * Given a binary operation between types t1 and t2, what type will be returned?
+ */
+static VALUE nm_upcast(VALUE self, VALUE t1, VALUE t2) {
+  int8_t dtype = Upcast[nm_dtypesymbol_to_dtype(t1)][nm_dtypesymbol_to_dtype(t2)];
 
-//static VALUE nm_transpose_auto(VALUE self) {
-//
-//}
+  // The actual Upcast table returns NM_NONE if the types are unrecognized. If NM_NONE is the result, nil will be
+  // returned instead.
+  if (dtype == NM_NONE) return Qnil;
+
+  return ID2SYM(rb_intern(nm_dtypestring[dtype]));
+}
+
 
 void Init_nmatrix() {
     /* Require Complex class */
@@ -1986,6 +2031,7 @@ void Init_nmatrix() {
     /* class methods */
     rb_define_singleton_method(cNMatrix, "__cblas_gemm__", nm_cblas_gemm, 13);
     rb_define_singleton_method(cNMatrix, "__cblas_gemv__", nm_cblas_gemv, 11);
+    rb_define_singleton_method(cNMatrix, "upcast", nm_upcast, 2);
 
     rb_define_alloc_func(cNMatrix, nm_alloc);
     rb_define_method(cNMatrix, "initialize", nm_init, -1);
@@ -2009,6 +2055,7 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, "transpose", nm_transpose_new, 0);
     rb_define_method(cNMatrix, "det_exact", nm_det_exact, 0);
     //rb_define_method(cNMatrix, "transpose!", nm_transpose_auto, 0);
+    rb_define_method(cNMatrix, "complex_conjugate!", nm_complex_conjugate_bang, 0);
 
     rb_define_method(cNMatrix, "each", nm_each, 0);
 

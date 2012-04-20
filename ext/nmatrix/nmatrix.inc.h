@@ -249,6 +249,7 @@ typedef struct common_s { // Common elements found in all _s types.
   int8_t    dtype;
   size_t    rank;
   size_t*   shape;
+  void*     elements;
 } STORAGE;
 
 
@@ -273,11 +274,11 @@ typedef struct yale_s {
   int8_t    dtype;
   size_t    rank;
   size_t*   shape;
+  void*     a;
   size_t    ndnz; // strictly non-diagonal non-zero count!
   size_t    capacity;
   int8_t    index_dtype;
   void*     ija;
-  void*     a;
 } YALE_STORAGE;
 
 
@@ -427,7 +428,7 @@ extern const int nm_sizeof[NM_TYPES+1];
 // None of these next three return anything. They set a reference directly.
 #define YaleGetIJA(victim,s,i)              (SetFuncs[Y_SIZE_T][(s)->index_dtype](1, &(victim), 0, YALE_IJA((s), nm_sizeof[s->index_dtype], (i)), 0))
 #define YaleSetIJA(i,s,from)                (SetFuncs[s->index_dtype][Y_SIZE_T](1, YALE_IJA((s), nm_sizeof[s->index_dtype], (i)), 0, &(from), 0))
-#define YaleGetSize(sz,s)                   (SetFuncs[Y_SIZE_T][(s)->index_dtype](1, &sz, 0, (YALE_SIZE_PTR((s), nm_sizeof[(s)->index_dtype])), 0))
+#define YaleGetSize(sz,s)                   (SetFuncs[Y_SIZE_T][((YALE_STORAGE*)s)->index_dtype](1, &sz, 0, (YALE_SIZE_PTR(((YALE_STORAGE*)s), nm_sizeof[((YALE_STORAGE*)s)->index_dtype])), 0))
 //#define YALE_FIRST_NZ_ROW_ENTRY(sptr,elem_size,i)
 
 
@@ -459,10 +460,12 @@ typedef NMATRIX* (*nm_elementwise_binary_op_casted_t[S_TYPES])();
 typedef int      (*nm_d_elementwise_binary_op_t[NM_TYPES])();
 typedef int      (*nm_y_elementwise_binary_op_t[NM_TYPES][NM_INDEX_TYPES])();
 typedef bool     (*nm_compare_t[S_TYPES])();
+typedef bool     (*nm_eqeq_t[NM_TYPES])(const void*, const void*, const size_t, const size_t);
 typedef void     (*nm_delete_t[S_TYPES])();
 typedef void     (*nm_mark_t[S_TYPES])(void*);
 typedef void     (*nm_gemm_t[NM_TYPES])();           // general matrix/matrix multiply
 typedef void     (*nm_det_t[NM_TYPES])(const int, const void*, const int, void*);            // determinant
+typedef NMATRIX* (*nm_transpose_t[S_TYPES])();
 typedef void     (*nm_dense_transpose_t[NM_TYPES])(); // dense transpose
 typedef void     (*nm_gemv_t[NM_TYPES])();           // general matrix/vector multiply
 typedef void     (*nm_smmp_t[NM_TYPES][NM_INDEX_TYPES])(); // sparse (yale) multiply
@@ -510,6 +513,8 @@ void cblas_r128gemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Tr
 void cblas_r128gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, DENSE_PARAM p);
 void cblas_vgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
 
+
+// extern nm_eqeq_t ElemEqEq;
 
 /* dense.c */
 DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);

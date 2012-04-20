@@ -680,12 +680,12 @@ if $IN_MAKEFILE
   end
 
   Generator::Templater.new('blas.c', :in => 'dense', :boilerplate => 'blas_header') do |c|
+    c.template 'eqeq', :in => 'shared', :TYPE => Generator::COMPLEX_DTYPES.dup.concat(Generator::FLOAT_DTYPES)
     c.template 'rationalmath', :in => 'shared', :TYPE => Generator::RATIONAL_DTYPES
     c.template 'complexmath', :in => 'shared', :TYPE => Generator::COMPLEX_DTYPES
 
     # Functions derived from BLAS but adapted for rationals, integers, and Ruby objects
     c.template %w{gemm gemv}, :TYPE => Generator::NONBLAS_DTYPES
-
 
     # Elementwise operations, exact determinant
     c.template %w{elementwise det_exact}, :TYPE => Generator::ACTUAL_DTYPES
