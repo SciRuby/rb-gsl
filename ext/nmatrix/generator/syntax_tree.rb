@@ -308,25 +308,27 @@ protected
         raise NotImplementedError, "unhandled operation #{op} on rational and 1"
       end
     else
+      left_op  = left.operate_rational(exact_type).first
+      right_op = right.operate_rational(exact_type).first
+
       if op == EQ
-        r = right.operate_rational(exact_type).first
-        if r =~ /^rb_raise\(rb_eSyntaxError/
-          [r]
-        elsif is_expression_boolean?(r) # x = boolean: can't assign directly.
-          ["#{left} = BOOL2#{exact_type.to_s.upcase}(#{r})"]
+        if right_op =~ /^rb_raise\(rb_eSyntaxError/
+          [right_op]
+        elsif is_expression_boolean?(right_op) # x = boolean: can't assign directly.
+          ["#{left} = BOOL2#{exact_type.to_s.upcase}(#{right_op})"]
         else
-          ["#{left} = #{right.operate_rational(exact_type).first}"]
+          ["#{left} = #{right_op}"]
         end
       elsif op == :'=='
         ["(#{left}.n == #{right}.n && #{left}.d == #{right}.d)"]
       elsif COMP_OPS.include?(op)
-        ["(#{left}.n / (double)(#{left}.d) #{op} #{right}.n / (double)(#{right}.d))"] # TODO: Is there a faster way?
+        ["(#{left_op}.n / (double)(#{left_op}.d) #{op} #{right_op}.n / (double)(#{right_op}.d))"] # TODO: Is there a faster way?
       elsif [:'+', :'-'].include?(op)
-        ["#{exact_type}_addsub(#{left}.n, #{left}.d, #{right}.n, #{right}.d, '#{op}')"]
+        ["#{exact_type}_addsub(#{left_op}.n, #{left_op}.d, #{right_op}.n, #{right_op}.d, '#{op}')"]
       elsif [:'*', :'/'].include?(op)
-        ["#{exact_type}_muldiv(#{left}.n, #{left}.d, #{right}.n, #{right}.d, '#{op}')"]
+        ["#{exact_type}_muldiv(#{left_op}.n, #{left_op}.d, #{right_op}.n, #{right_op}.d, '#{op}')"]
       elsif op == :'%'
-        ["#{exact_type}_mod(#{left}.n, #{left}.d, #{right}.n, #{right}.d)"]
+        ["#{exact_type}_mod(#{left_op}.n, #{left_op}.d, #{right_op}.n, #{right_op}.d)"]
       elsif op == :'<<'
         ["rb_raise(rb_eSyntaxError, \"cannot perform bitwise operations on rational numbers\")"]
       elsif op == :'>>'
@@ -376,14 +378,16 @@ protected
         raise NotImplementedError, "unhandled operation #{op} on complex and 0"
       end
     else
+      left_op  = left.operate_complex(exact_type).first
+      right_op = right.operate_complex(exact_type).first
+
       if op == EQ
-        r = right.operate_complex(exact_type).first
-        if r =~ /^rb_raise\(rb_eSyntaxError/
-          [r]
-        elsif is_expression_boolean?(r) # x = boolean: can't assign directly.
-          ["#{left} = BOOL2#{exact_type.to_s.upcase}(#{r})"]
+        if right_op =~ /^rb_raise\(rb_eSyntaxError/
+          [right_op]
+        elsif is_expression_boolean?(right_op) # x = boolean: can't assign directly.
+          ["#{left} = BOOL2#{exact_type.to_s.upcase}(#{right_op})"]
         else
-          ["#{left} = #{r}"]
+          ["#{left} = #{right_op}"]
         end
       elsif op == :'=='
         operate_complex_boolean_helper(exact_type, op)
@@ -398,15 +402,15 @@ protected
       elsif op == :'<='
         operate_complex_boolean_helper(exact_type, op)
       elsif op == :'+'
-        ["#{exact_type}_add(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+        ["#{exact_type}_add(#{left_op}.r, #{left_op}.i, #{right_op}.r, #{right_op}.i)"]
       elsif op == :'-'
-        ["#{exact_type}_sub(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+        ["#{exact_type}_sub(#{left_op}.r, #{left_op}.i, #{right_op}.r, #{right_op}.i)"]
       elsif op == :'*'
-        ["#{exact_type}_mul(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+        ["#{exact_type}_mul(#{left_op}.r, #{left_op}.i, #{right_op}.r, #{right_op}.i)"]
       elsif op == :'/'
-        ["#{exact_type}_div(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+        ["#{exact_type}_div(#{left_op}.r, #{left_op}.i, #{right_op}.r, #{right_op}.i)"]
       elsif op == :'%'
-        ["#{exact_type}_mod(#{left}.r, #{left}.i, #{right}.r, #{right}.i)"]
+        ["#{exact_type}_mod(#{left_op}.r, #{left_op}.i, #{right_op}.r, #{right_op}.i)"]
       elsif [:'&', :'|', :'^', :'<<', :'>>'].include?(op)
         ["rb_raise(rb_eSyntaxError, \"cannot perform bitwise operations on complex numbers\")"]
       elsif op == :'!'

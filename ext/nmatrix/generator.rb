@@ -118,6 +118,7 @@ module Generator
   FLOAT_DTYPES = DTYPES.select { |dtype| dtype.type == :float }
   OBJECT_DTYPES = DTYPES.select { |dtype| dtype.type == :value }
   ACTUAL_DTYPES = DTYPES.select { |dtype| dtype.type != :none }
+  LONG_DTYPES = DTYPES.select { |dtype| [:b,:i64,:f64,:c128,:r128,:v].include?(dtype.id) }
 
   YIELD_REGEX = /%%=\ [^%%]*%%/
 
@@ -564,7 +565,7 @@ INCFN
           if in_comment && line.include?("*/")
             m = line.split("*/", 1)
             m.shift
-            line = m.first
+            line = m.first || ""
             in_comment = false
           end
 
@@ -576,13 +577,13 @@ INCFN
             end
 
             if line.include?("/*")
-              line = line.split("/*").first
+              line = line.split("/*").first || ""
               in_comment = true
             end
           end
 
           # Remove C++-style comments
-          line = line.split("//")[0] if line.include?("//")
+          line = line.split("//")[0] || "" if line.include?("//")
 
           #STDERR.puts "Processing #{template_filepath}: #{line}"
           if line.include?("%%#{t}")
@@ -590,6 +591,7 @@ INCFN
             line.gsub! "%%#{t}_ABBREV%%", dtype.id.to_s
             line.gsub! "%%#{t}_MAX%%", dtype.max_macro
             line.gsub! "%%#{t}_LONG%%", dtype.long_dtype.sizeof.to_s #e.g., int64 instead of int8 for temporary variables
+            line.gsub! "%%#{t}_LONG_ABBREV%%", dtype.long_dtype.id.to_s
 
             # Get any mathematical expressions that need to be translated
             line = gsub_expression(line, t, dtype, line_count, template_filepath)
@@ -684,8 +686,9 @@ if $IN_MAKEFILE
     # Functions derived from BLAS but adapted for rationals, integers, and Ruby objects
     c.template %w{gemm gemv}, :TYPE => Generator::NONBLAS_DTYPES
 
-    # Elementwise operations
-    c.template 'elementwise', :TYPE => Generator::ACTUAL_DTYPES
+
+    # Elementwise operations, exact determinant
+    c.template %w{elementwise det_exact}, :TYPE => Generator::ACTUAL_DTYPES
 
     c.update_header 'nmatrix'
   end

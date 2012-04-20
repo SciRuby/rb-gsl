@@ -357,6 +357,24 @@ nm_d_elementwise_binary_op_t DenseElementwiseFuncs = { // only for dense!
   NULL
 };
 
+nm_det_t DenseDetExact = {
+  NULL,
+  bdet_exact,
+  i8det_exact,
+  i16det_exact,
+  i32det_exact,
+  i64det_exact,
+  f32det_exact,
+  f64det_exact,
+  c64det_exact,
+  c128det_exact,
+  r32det_exact,
+  r64det_exact,
+  r128det_exact,
+  vdet_exact,
+  NULL
+};
+
 static void EwTypeErr(y_size_t n, enum NMatrix_Ops op, void* ija, void* ijb, void* ijc, void* a, void* b, void* c) {
   rb_raise(nm_eDataTypeError, "illegal operation with this matrix type");
 }
@@ -1825,6 +1843,32 @@ static VALUE nm_yale_ija(VALUE self) {
 }
 
 
+
+/*
+ * Calculate the exact determinant of a dense matrix.
+ *
+ * Returns nil for dense matrices which are not square or rank other than 2.
+ *
+ * Note: Currently only implemented for 2x2 and 3x3 matrices.
+ */
+static VALUE nm_det_exact(VALUE self) {
+  NMATRIX* m;
+  void* result = ALLOCA_N(char, nm_sizeof[NM_DTYPE(self)]);
+  VALUE ret;
+
+  if (NM_STYPE(self) != S_DENSE) rb_raise(nm_eStorageTypeError, "can only calculate exact determinant for dense matrices");
+
+  UnwrapNMatrix(self, m);
+  if (m->storage->rank != 2 || m->storage->shape[0] != m->storage->shape[1]) return Qnil;
+
+  // Calculate the determinant and then assign it to the return value
+  DenseDetExact[NM_DTYPE(self)](m->storage->shape[0], ((DENSE_STORAGE*)(m->storage))->elements, m->storage->shape[0], result);
+  SetFuncs[NM_ROBJ][NM_DTYPE(self)](1, &ret, 0, result, 0);
+
+  return ret;
+}
+
+
 // This is probably faster and smaller than writing an array of transpose functions. But if you want to see what it would look like,
 // see transp.template.c (not the yale one).
 //
@@ -1925,6 +1969,8 @@ static VALUE nm_transpose_new(VALUE self) {
   return Data_Wrap_Struct(cNMatrix, MarkFuncs[result->stype], nm_delete, result);
 }
 
+
+
 //static VALUE nm_transpose_auto(VALUE self) {
 //
 //}
@@ -1961,6 +2007,7 @@ void Init_nmatrix() {
     rb_define_alias(cNMatrix, "dim", "rank");
     rb_define_method(cNMatrix, "shape", nm_shape, 0);
     rb_define_method(cNMatrix, "transpose", nm_transpose_new, 0);
+    rb_define_method(cNMatrix, "det_exact", nm_det_exact, 0);
     //rb_define_method(cNMatrix, "transpose!", nm_transpose_auto, 0);
 
     rb_define_method(cNMatrix, "each", nm_each, 0);

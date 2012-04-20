@@ -36,6 +36,10 @@ describe NMatrix do
   RATIONAL_MATRIX43A_ARRAY = MATRIX43A_ARRAY.collect { |x| x.to_r }
   RATIONAL_MATRIX32A_ARRAY = MATRIX32A_ARRAY.collect { |x| x.to_r }
 
+  it "calculates exact determinants on small square matrices" do
+    a = NMatrix.new(:dense, 2, [1,2,3,4], :int64)
+    x = a.det_exact
+  end
 
   it "allows stype casting of a rank 2 matrix between dense, sparse, and list (different dtypes)" do
     m = NMatrix.new(:dense, [3,3], [0,0,1,0,2,0,3,4,5], :int64).
