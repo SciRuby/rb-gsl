@@ -463,6 +463,7 @@ inline bool numeqeq(const void* x, const void* y, const size_t len, const size_t
 
 // element eqeq -- like memcmp but handles 0.0 == -0.0 for complex and floating points.
 nm_eqeq_t ElemEqEq[15] = {
+  NULL,
   numeqeq, // byte
   numeqeq, // int8
   numeqeq, // int16
@@ -2069,9 +2070,9 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, ">=", nm_ew_geq, 1);
     rb_define_method(cNMatrix, "<", nm_ew_lt, 1);
     rb_define_method(cNMatrix, ">", nm_ew_gt, 1);
-    rb_define_method(cNMatrix, "equal?", nm_eqeq, 1);
+    rb_define_method(cNMatrix, "eql?", nm_eqeq, 1);
     rb_define_method(cNMatrix, "dot", nm_multiply, 1);
-    rb_define_alias(cNMatrix, "equal?", "eql?");
+    //rb_define_alias(cNMatrix, "equal?", "eql?");
 
 
     rb_define_method(cNMatrix, "capacity", nm_capacity, 0);

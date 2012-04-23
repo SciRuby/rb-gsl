@@ -344,7 +344,7 @@ protected
 
   def operate_complex_boolean_helper exact_type, real_comp, join = :'&&', imag_comp=nil
     imag_comp ||= real_comp
-    ["(#{left.operate_complex(exact_type).first}.r #{real_comp} #{right.operate_complex(exact_type).first}.r && #{left.operate_complex(exact_type).first}.i #{imag_comp} #{right.operate_complex(exact_type).first}.i)"]
+    ["(#{left.operate_complex(exact_type).first}.r #{real_comp} #{right.operate_complex(exact_type).first}.r #{join} #{left.operate_complex(exact_type).first}.i #{imag_comp} #{right.operate_complex(exact_type).first}.i)"]
   end
 
 
@@ -389,18 +389,10 @@ protected
         else
           ["#{left} = #{right_op}"]
         end
-      elsif op == :'=='
+      elsif [:'==', :'>', :'<', :'>=', :'<='].include?(op)
         operate_complex_boolean_helper(exact_type, op)
       elsif op == :'!='
         operate_complex_boolean_helper(exact_type, op, :'||')
-      elsif op == :'>'
-        operate_complex_boolean_helper(exact_type, op)
-      elsif op == :'<'
-        operate_complex_boolean_helper(exact_type, op)
-      elsif op == :'>='
-        operate_complex_boolean_helper(exact_type, op)
-      elsif op == :'<='
-        operate_complex_boolean_helper(exact_type, op)
       elsif op == :'+'
         ["#{exact_type}_add(#{left_op}.r, #{left_op}.i, #{right_op}.r, #{right_op}.i)"]
       elsif op == :'-'
