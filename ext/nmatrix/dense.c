@@ -44,7 +44,23 @@ size_t count_dense_storage_elements(const DENSE_STORAGE* s) {
 
 // Do these two dense matrices of the same dtype have exactly the same contents?
 bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
-  return ElemEqEq[left->dtype](left->elements, right->elements, count_dense_storage_elements(left), nm_sizeof[left->dtype]);
+  return ElemEqEq[left->dtype][0](left->elements, right->elements, count_dense_storage_elements(left), nm_sizeof[left->dtype]);
+}
+
+// Is this dense matrix symmetric about the diagonal?
+bool dense_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitian) {
+  unsigned int i, j;
+
+  for (i = 0; i < mat->shape[0]; ++i) {
+    for (j = i+1; j < mat->shape[1]; ++j) {
+      if ( !(ElemEqEq[mat->dtype][(int8_t)(hermitian)]( (char*)(mat->elements) + (i*lda+j)*nm_sizeof[mat->dtype],
+                                                       (char*)(mat->elements) + (j*lda+i)*nm_sizeof[mat->dtype],
+                                                       1,
+                                                       nm_sizeof[mat->dtype] )) )
+        return false;
+    }
+  }
+  return true;
 }
 
 

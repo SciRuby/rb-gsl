@@ -408,7 +408,7 @@ static bool cast_copy_list_contents_dense(LIST* lhs, const char* rhs, void* zero
     //fprintf(stderr, "(%u)\t<%u, %u>: ", recursions, coords[0], coords[1]);
 
     if (recursions == 0) {  // create nodes
-      if (!ElemEqEq[r_dtype]((char*)rhs + (*pos)*nm_sizeof[r_dtype], zero, 1, nm_sizeof[r_dtype])) { // is not zero
+      if (!ElemEqEq[r_dtype][0]((char*)rhs + (*pos)*nm_sizeof[r_dtype], zero, 1, nm_sizeof[r_dtype])) { // is not zero
         //fprintf(stderr, "inserting value\n");
 
         // Create a copy of our value that we will insert in the list
@@ -551,7 +551,7 @@ LIST_STORAGE* scast_copy_list_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
     YaleGetIJA(ija_next, rhs, i+1);
 
     // Are we going to need to add a diagonal for this row?
-    if (ElemEqEq[rhs->dtype]((char*)(rhs->a) + i*nm_sizeof[rhs->dtype], R_ZERO, 1, nm_sizeof[rhs->dtype])) add_diag = false; // zero
+    if (ElemEqEq[rhs->dtype][0]((char*)(rhs->a) + i*nm_sizeof[rhs->dtype], R_ZERO, 1, nm_sizeof[rhs->dtype])) add_diag = false; // zero
     else add_diag = true; // nonzero diagonal
 
 
@@ -616,7 +616,7 @@ static bool list_eqeq_value(const LIST* l, const void* v, int8_t dtype, size_t r
 
     if (recursions == 0) {
       ++(*checked);
-      if (!ElemEqEq[dtype](curr->val, v, 1, nm_sizeof[dtype])) return false;
+      if (!ElemEqEq[dtype][0](curr->val, v, 1, nm_sizeof[dtype])) return false;
     } else if (!list_eqeq_value(curr->val, v, dtype, recursions-1, checked))
       return false;
 
@@ -641,7 +641,7 @@ static bool list_eqeq_list(const LIST* left, const LIST* right, const void* left
     if (lcurr->key == rcurr->key) {   // MATCHING KEYS
       if (recursions == 0) {
         ++(*checked);
-        if (!ElemEqEq[dtype](lcurr->val, rcurr->val, 1, nm_sizeof[dtype])) return false;
+        if (!ElemEqEq[dtype][0](lcurr->val, rcurr->val, 1, nm_sizeof[dtype])) return false;
       } else if (!list_eqeq_list(lcurr->val, rcurr->val, left_val, right_val, dtype, recursions-1, checked))
         return false;
 
@@ -656,7 +656,7 @@ static bool list_eqeq_list(const LIST* left, const LIST* right, const void* left
       if (recursions == 0) {
         // compare left entry to right default value
         ++(*checked);
-        if (!ElemEqEq[dtype](lcurr->val, right_val, 1, nm_sizeof[dtype])) return false;
+        if (!ElemEqEq[dtype][0](lcurr->val, right_val, 1, nm_sizeof[dtype])) return false;
       } else if (!list_eqeq_value(lcurr->val, right_val, dtype, recursions-1, checked))
         return false;
 
@@ -669,7 +669,7 @@ static bool list_eqeq_list(const LIST* left, const LIST* right, const void* left
       if (recursions == 0) {
         // compare right entry to left default value
         ++(*checked);
-        if (!ElemEqEq[dtype](rcurr->val, left_val, 1, nm_sizeof[dtype])) return false;
+        if (!ElemEqEq[dtype][0](rcurr->val, left_val, 1, nm_sizeof[dtype])) return false;
       } else if (!list_eqeq_value(rcurr->val, left_val, dtype, recursions-1, checked))
         return false;
 
@@ -682,9 +682,9 @@ static bool list_eqeq_list(const LIST* left, const LIST* right, const void* left
 
   // One final check, in case we get to the end of one list but not the other one.
   if (lcurr) { // nothing left in right-hand list
-    if (!ElemEqEq[dtype](lcurr->val, right_val, 1, nm_sizeof[dtype])) return false;
+    if (!ElemEqEq[dtype][0](lcurr->val, right_val, 1, nm_sizeof[dtype])) return false;
   } else if (rcurr) { // nothing left in left-hand list
-    if (!ElemEqEq[dtype](rcurr->val, left_val, 1, nm_sizeof[dtype])) return false;
+    if (!ElemEqEq[dtype][0](rcurr->val, left_val, 1, nm_sizeof[dtype])) return false;
   }
 
   // Nothing different between the two lists -- but make sure after this return that you compare the default values themselves,
@@ -703,13 +703,13 @@ bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
   if (!left->rows->first) {
     // fprintf(stderr, "!left->rows true\n");
     // Easy: both lists empty -- just compare default values
-    if (!right->rows->first) return ElemEqEq[left->dtype](left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
+    if (!right->rows->first) return ElemEqEq[left->dtype][0](left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
 
     // Left empty, right not empty. Do all values in right == left->default_val?
     if (!list_eqeq_value(right->rows, left->default_val, left->dtype, left->rank-1, &num_checked)) return false;
 
     // If the matrix isn't full, we also need to compare default values.
-    if (num_checked < max_elements) return ElemEqEq[left->dtype](left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
+    if (num_checked < max_elements) return ElemEqEq[left->dtype][0](left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
 
   } else if (!right->rows->first) {
     // fprintf(stderr, "!right->rows true\n");
@@ -717,13 +717,13 @@ bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
     if (!list_eqeq_value(left->rows, right->default_val, left->dtype, left->rank-1, &num_checked)) return false;
 
     // If the matrix isn't full, we also need to compare default values.
-    if (num_checked < max_elements) return ElemEqEq[left->dtype](left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
+    if (num_checked < max_elements) return ElemEqEq[left->dtype][0](left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
 
   } else {
     // fprintf(stderr, "both matrices have entries\n");
     // Hardest case. Compare lists node by node. Let's make it simpler by requiring that both have the same default value
     if (!list_eqeq_list(left->rows, right->rows, left->default_val, right->default_val, left->dtype, left->rank-1, &num_checked)) return false;
-    if (num_checked < max_elements) return ElemEqEq[left->dtype](left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
+    if (num_checked < max_elements) return ElemEqEq[left->dtype][0](left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
   }
 
   return true;

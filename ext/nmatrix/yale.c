@@ -100,7 +100,7 @@ static bool ndrow_is_empty(const YALE_STORAGE* s, y_size_t ija, const y_size_t i
   //fprintf(stderr, "ndrow_is_empty: ija=%d, ija_next=%d\n", (size_t)(ija), (size_t)(ija_next));
   if (ija == ija_next) return true;
   while (ija < ija_next) { // do all the entries = zero?
-    if (!ElemEqEq[s->dtype]((char*)s->a + nm_sizeof[s->dtype]*ija, ZERO, 1, nm_sizeof[s->dtype])) return false;
+    if (!ElemEqEq[s->dtype][0]((char*)s->a + nm_sizeof[s->dtype]*ija, ZERO, 1, nm_sizeof[s->dtype])) return false;
     ++ija;
   }
   return true;
@@ -120,7 +120,7 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
   while (!(l_no_more && r_no_more)) {
     //fprintf(stderr, "ndrow_eqeq_ndrow(loop): l_ija=%d, l_ija_next=%d, r_ija=%d, r_ija_next=%d\n", (size_t)(l_ija), (size_t)(l_ija_next), (size_t)(r_ija), (size_t)(r_ija_next));
     if (l_ja == r_ja) {
-      if (!ElemEqEq[r->dtype]((char*)r->a + nm_sizeof[r->dtype]*r_ija, (char*)l->a + nm_sizeof[l->dtype]*l_ija, 1, nm_sizeof[l->dtype])) return false;
+      if (!ElemEqEq[r->dtype][0]((char*)r->a + nm_sizeof[r->dtype]*r_ija, (char*)l->a + nm_sizeof[l->dtype]*l_ija, 1, nm_sizeof[l->dtype])) return false;
 
       ++l_ija;
       ++r_ija;
@@ -133,7 +133,7 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
 
       ja = SMMP_MIN(l_ja, r_ja);
     } else if (l_no_more || ja < l_ja) {
-      if (!ElemEqEq[r->dtype]((char*)r->a + nm_sizeof[r->dtype]*r_ija, ZERO, 1, nm_sizeof[r->dtype])) return false;
+      if (!ElemEqEq[r->dtype][0]((char*)r->a + nm_sizeof[r->dtype]*r_ija, ZERO, 1, nm_sizeof[r->dtype])) return false;
 
       ++r_ija;
       if (r_ija < r_ija_next) {
@@ -142,7 +142,7 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
       } else l_no_more = true;
 
     } else if (r_no_more || ja < r_ja) {
-      if (!ElemEqEq[l->dtype]((char*)l->a + nm_sizeof[l->dtype]*l_ija, ZERO, 1, nm_sizeof[l->dtype])) return false;
+      if (!ElemEqEq[l->dtype][0]((char*)l->a + nm_sizeof[l->dtype]*l_ija, ZERO, 1, nm_sizeof[l->dtype])) return false;
 
       ++l_ija;
       if (l_ija < l_ija_next) {
@@ -173,7 +173,7 @@ bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right) {
   //fprintf(stderr, "yale_storage_eqeq\n");
 
   // Compare the diagonals first.
-  if (!ElemEqEq[left->dtype](left->a, right->a, left->shape[0], nm_sizeof[left->dtype])) return false;
+  if (!ElemEqEq[left->dtype][0](left->a, right->a, left->shape[0], nm_sizeof[left->dtype])) return false;
 
   while (i < left->shape[0]) {
     // Get start and end positions of row
@@ -473,7 +473,7 @@ YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
   // First, count the non-diagonal nonzeros
   for (i = 0; i < rhs->shape[0]; ++i) {
     for (j = 0; j < rhs->shape[1]; ++j) {
-      if (i != j && !ElemEqEq[rhs->dtype]((char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], R_ZERO, 1, nm_sizeof[rhs->dtype])) ++ndnz;
+      if (i != j && !ElemEqEq[rhs->dtype][0]((char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], R_ZERO, 1, nm_sizeof[rhs->dtype])) ++ndnz;
       ++pos; // move forward 1 position in dense matrix elements array
     }
   }
@@ -503,7 +503,7 @@ YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype) {
       if (i == j) { // copy to diagonal
         cast_copy_value_single((char*)(lhs->a) + i*nm_sizeof[l_dtype], (char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
 
-      } else if (!ElemEqEq[rhs->dtype]((char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], R_ZERO, 1, nm_sizeof[rhs->dtype])) {      // copy nonzero to LU
+      } else if (!ElemEqEq[rhs->dtype][0]((char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], R_ZERO, 1, nm_sizeof[rhs->dtype])) {      // copy nonzero to LU
         YaleSetIJA(ija, lhs, j); // write column index
 
         cast_copy_value_single((char*)(lhs->a) + ija*nm_sizeof[l_dtype], (char*)(rhs->elements) + pos*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);

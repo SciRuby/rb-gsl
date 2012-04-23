@@ -68,6 +68,22 @@ class NMatrix
     self.cast(new_stype || self.stype, NMatrix::upcast(dtype, :complex64)).complex_conjugate!
   end
 
+  # Calculate the conjugate transpose of a matrix. If your dtype is already complex, this should
+  # only require one copy (for the transpose).
+  def conjugate_transpose
+    self.transpose.complex_conjugate!
+  end
+
+  def hermitian?
+    return false if self.rank != 2 || self.shape[0] != self.shape[1]
+    if [:complex64, :complex128].include?(self.dtype)
+      # TODO: Write much faster Hermitian test in C
+      self.eql?(conjugate_transpose)
+    else
+      symmetric?
+    end
+  end
+
 
   def inspect
     original_inspect = super

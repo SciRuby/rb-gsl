@@ -46,4 +46,3 @@
 // rational.c in Ruby 1.9.3.
 
 #include "nmatrix.h"
-

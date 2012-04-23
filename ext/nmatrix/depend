@@ -1,7 +1,7 @@
 nmatrix.h dtypes.h dtypes.c smmp1.c smmp2.c blas.c: generator.rb nmatrix.inc.h
 	$(RUBY) -I$(srcdir) $(srcdir)/generator.rb
 
-blas.o: blas.c
+blas.o: blas.c shared/complex.template.c shared/rational.template.c shared/eqeq.template.c
 
 smmp2.o: smmp1.c smmp2.c nmatrix.h yale/smmp2_header.template.c yale/symbmm.template.c yale/transp.template.c yale/numbmm.template.c
 

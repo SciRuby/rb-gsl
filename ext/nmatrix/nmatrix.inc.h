@@ -460,7 +460,7 @@ typedef NMATRIX* (*nm_elementwise_binary_op_casted_t[S_TYPES])();
 typedef int      (*nm_d_elementwise_binary_op_t[NM_TYPES])();
 typedef int      (*nm_y_elementwise_binary_op_t[NM_TYPES][NM_INDEX_TYPES])();
 typedef bool     (*nm_compare_t[S_TYPES])();
-typedef bool     (*nm_eqeq_t[NM_TYPES])(const void*, const void*, const size_t, const size_t);
+typedef bool     (*nm_eqeq_t[NM_TYPES][2])(const void*, const void*, const size_t, const size_t);
 typedef void     (*nm_delete_t[S_TYPES])();
 typedef void     (*nm_mark_t[S_TYPES])(void*);
 typedef void     (*nm_gemm_t[NM_TYPES])();           // general matrix/matrix multiply
@@ -514,8 +514,6 @@ void cblas_r128gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Tr
 void cblas_vgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
 
 
-// extern nm_eqeq_t ElemEqEq;
-
 /* dense.c */
 DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
 void            delete_dense_storage(DENSE_STORAGE* s);
@@ -524,6 +522,7 @@ DENSE_STORAGE*  cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype);
 
 size_t          count_dense_storage_elements(const DENSE_STORAGE* s);
 bool            dense_storage_eqeq(const DENSE_STORAGE*, const DENSE_STORAGE*);
+bool            dense_is_symmetric(const DENSE_STORAGE*, int, bool);
 
 size_t          dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
 void*           dense_storage_get(DENSE_STORAGE* s, size_t* coords);

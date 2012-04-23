@@ -462,22 +462,22 @@ inline bool numeqeq(const void* x, const void* y, const size_t len, const size_t
 
 
 // element eqeq -- like memcmp but handles 0.0 == -0.0 for complex and floating points.
-nm_eqeq_t ElemEqEq[15] = {
-  NULL,
-  numeqeq, // byte
-  numeqeq, // int8
-  numeqeq, // int16
-  numeqeq, // int32
-  numeqeq, // int64
-  f32eqeq, // float32
-  f64eqeq, // float64
-  c64eqeq, // complex64
-  c128eqeq,// complex128
-  numeqeq, // rational32
-  numeqeq, // rational64
-  numeqeq, // rational128
-  numeqeq, // Ruby object
-  numeqeq
+// Second dimension is for hermitians -- complex conjugate. Use 0 for regular equality and 1 for conjugate equality.
+nm_eqeq_t ElemEqEq = {
+  {NULL, NULL},
+  {numeqeq, numeqeq}, // byte
+  {numeqeq, numeqeq}, // int8
+  {numeqeq, numeqeq}, // int16
+  {numeqeq, numeqeq}, // int32
+  {numeqeq, numeqeq}, // int64
+  {f32eqeq, f32eqeq}, // float32
+  {f64eqeq, f64eqeq}, // float64
+  {c64eqeq, c64conjeq}, // complex64
+  {c128eqeq, c128conjeq}, // complex128
+  {numeqeq, numeqeq}, // rational32
+  {numeqeq, numeqeq}, // rational64
+  {numeqeq, numeqeq}, // rational128
+  {numeqeq, numeqeq}  // Ruby object
 };
 
 
@@ -489,6 +489,7 @@ static void nm_delete(NMATRIX* mat) {
 static STORAGE* nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
   return (STORAGE*)(create_dense_storage(dtype, shape, rank, init_val, init_val_len));
 }
+
 
 static STORAGE* nm_list_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
   if (init_val_len > 1) {
@@ -2021,6 +2022,46 @@ static VALUE nm_upcast(VALUE self, VALUE t1, VALUE t2) {
 }
 
 
+// Helper function for nm_symmetric and nm_hermitian.
+static VALUE is_symmetric(VALUE self, bool hermitian) {
+  NMATRIX* m;
+  UnwrapNMatrix(self, m);
+
+  if (m->storage->shape[0] == m->storage->shape[1] && m->storage->rank == 2) {
+
+    if (NM_STYPE(self) == S_DENSE) {
+      if (dense_is_symmetric((DENSE_STORAGE*)(m->storage), m->storage->shape[0], hermitian)) return Qtrue;
+    } else {
+      // TODO: Implement, at the very least, yale_is_symmetric. Model it after yale/transp.template.c.
+      rb_raise(rb_eNotImpError, "symmetric? and hermitian? only implemented for dense currently");
+    }
+
+  }
+
+  return Qfalse;
+}
+
+
+/*
+ * Is this matrix symmetric?
+ */
+static VALUE nm_symmetric(VALUE self) {
+  return is_symmetric(self, false);
+}
+
+/*
+ * Is this matrix hermitian?
+ *
+ * Definition: http://en.wikipedia.org/wiki/Hermitian_matrix
+ *
+ * For non-complex matrices, this function should return the same result as symmetric?.
+ */
+static VALUE nm_hermitian(VALUE self) {
+  return is_symmetric(self, true);
+}
+
+
+
 void Init_nmatrix() {
     /* Require Complex class */
     //rb_require("complex");
@@ -2073,6 +2114,9 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, "eql?", nm_eqeq, 1);
     rb_define_method(cNMatrix, "dot", nm_multiply, 1);
     //rb_define_alias(cNMatrix, "equal?", "eql?");
+
+    rb_define_method(cNMatrix, "symmetric?", nm_symmetric, 0);
+    rb_define_method(cNMatrix, "hermitian?", nm_hermitian, 0);
 
 
     rb_define_method(cNMatrix, "capacity", nm_capacity, 0);
