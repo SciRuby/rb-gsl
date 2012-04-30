@@ -68,9 +68,9 @@ size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice) {
   size_t k, l;
   size_t inner, outer = 0;
   for (k = 0; k < s->rank; ++k) {
-    inner = slice->coords[k];
+    inner = slice->coords[k] + s->offset[k];
     for (l = k+1; l < s->rank; ++l) {
-      inner *= s->shape[l];
+      inner *= ((DENSE_STORAGE*)s->src)->shape[l];
     }
     outer += inner;
   }
@@ -80,7 +80,24 @@ size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice) {
 
 
 void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
-  return (char*)(s->elements) + dense_storage_pos(s, slice) * nm_sizeof[s->dtype];
+  DENSE_STORAGE *ns;
+
+  if (slice->is_one_el)
+    return (char*)(s->elements) + dense_storage_pos(s, slice) * nm_sizeof[s->dtype];
+  else {
+    ns = ALLOC( DENSE_STORAGE );
+
+    ns->rank       = s->rank;
+    ns->shape      = slice->lens;
+    ns->dtype      = s->dtype;
+    ns->offset     = slice->coords;
+    ns->elements   = s->elements;
+    
+    s->count++;
+    ns->src = (void*)s;
+
+    return ns;
+  }
 }
 
 
@@ -270,6 +287,9 @@ DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank, vo
   s->rank       = rank;
   s->shape      = shape;
   s->dtype      = dtype;
+  s->offset     = calloc(sizeof(size_t),rank);
+  s->count      = 1;
+  s->src        = s;
 
   //fprintf(stderr, "create_dense_storage: %p\n", s);
 
@@ -298,8 +318,19 @@ DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank, vo
 
 void delete_dense_storage(DENSE_STORAGE* s) {
   if (s) { // sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure)
+    if(s->count <= 1) {
+      free(s->shape);
+      free(s->offset);
+      free(s->elements);
+      free(s);
+    }
+  }
+}
+void delete_dense_storage_ref(DENSE_STORAGE* s) {
+  if (s) { // sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure)
+    ((DENSE_STORAGE*)s->src)->count--;
     free(s->shape);
-    free(s->elements);
+    free(s->offset);
     free(s);
   }
 }

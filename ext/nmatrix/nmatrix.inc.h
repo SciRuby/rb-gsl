@@ -269,6 +269,8 @@ typedef struct dense_s {
   size_t    rank;
   size_t*   shape;
   size_t*   offset;
+  int       count;
+  void*     src;
   void*     elements;
 } DENSE_STORAGE;
 
@@ -294,6 +296,7 @@ typedef struct numeric_matrix {
 typedef struct slice_s {
   size_t *coords;           // Coordinate of first element
   size_t *lens;             // Lenght of slice
+  uint8_t is_one_el;        // 1 - if all lens eql 1
 } SLICE;
 
 /* Local */
@@ -419,7 +422,7 @@ extern const int nm_sizeof[NM_TYPES+1];
 #define IS_NUMERIC(v)   (FIXNUM_P(v) || TYPE(v) == T_FLOAT || TYPE(v) == T_COMPLEX || TYPE(v) == T_RATIONAL)
 #define IS_STRING(v)    (TYPE(v) == T_STRING)
 
-#define CheckNMatrixType(v)   if (TYPE(v) != T_DATA || RDATA(v)->dfree != (RUBY_DATA_FUNC)nm_delete) rb_raise(rb_eTypeError, "expected NMatrix on left-hand side of operation");
+#define CheckNMatrixType(v)   if (TYPE(v) != T_DATA || (RDATA(v)->dfree != (RUBY_DATA_FUNC)nm_delete && RDATA(v)->dfree != (RUBY_DATA_FUNC)nm_delete_ref)) rb_raise(rb_eTypeError, "expected NMatrix on left-hand side of operation");
 
 //#define YALE_JA_START(sptr)             (((YALE_STORAGE*)(sptr))->shape[0]+1)
 #define YALE_IJA(sptr,elem_size,i)          (void*)( (char*)(((YALE_STORAGE*)(sptr))->ija) + i * elem_size )
@@ -458,8 +461,8 @@ extern const int nm_sizeof[NM_TYPES+1];
 
 typedef void     (*nm_setfunc_t[NM_TYPES][NM_TYPES])(); // copy functions
 typedef void     (*nm_incfunc_t[NM_TYPES])();           // increment functions
-typedef void*    (*nm_stype_ref_t[S_TYPES])(STORAGE*, size_t*);        // get/ref
-typedef VALUE    (*nm_stype_ins_t[S_TYPES])(STORAGE*, size_t*, VALUE); // insert
+typedef void*    (*nm_stype_ref_t[S_TYPES])(STORAGE*, SLICE*);        // get/ref
+typedef VALUE    (*nm_stype_ins_t[S_TYPES])(STORAGE*, SLICE*, VALUE); // insert
 typedef STORAGE* (*nm_create_storage_t[S_TYPES])();
 typedef STORAGE* (*nm_cast_copy_storage_t[S_TYPES])();
 typedef STORAGE* (*nm_scast_copy_storage_t[S_TYPES][S_TYPES])();
@@ -524,6 +527,7 @@ void cblas_vgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans
 
 /* dense.c */
 DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
+void            delete_dense_storage_ref(DENSE_STORAGE* s);
 void            delete_dense_storage(DENSE_STORAGE* s);
 void            mark_dense_storage(void* s);
 DENSE_STORAGE*  cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype);
