@@ -64,11 +64,11 @@ bool dense_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitian) {
 }
 
 
-size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords) {
+size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice) {
   size_t k, l;
   size_t inner, outer = 0;
   for (k = 0; k < s->rank; ++k) {
-    inner = coords[k];
+    inner = slice->coords[k];
     for (l = k+1; l < s->rank; ++l) {
       inner *= s->shape[l];
     }
@@ -79,14 +79,14 @@ size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords) {
 
 
 
-void* dense_storage_get(DENSE_STORAGE* s, size_t* coords) {
-  return (char*)(s->elements) + dense_storage_pos(s, coords) * nm_sizeof[s->dtype];
+void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
+  return (char*)(s->elements) + dense_storage_pos(s, slice) * nm_sizeof[s->dtype];
 }
 
 
 /* Does not free passed-in value! Different from list_storage_insert. */
-void dense_storage_set(DENSE_STORAGE* s, size_t* coords, void* val) {
-  memcpy((char*)(s->elements) + dense_storage_pos(s, coords) * nm_sizeof[s->dtype], val, nm_sizeof[s->dtype]);
+void dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val) {
+  memcpy((char*)(s->elements) + dense_storage_pos(s, slice) * nm_sizeof[s->dtype], val, nm_sizeof[s->dtype]);
 }
 
 

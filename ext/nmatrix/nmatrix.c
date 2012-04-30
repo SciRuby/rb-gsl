@@ -1370,16 +1370,36 @@ NMATRIX* nm_create(int8_t stype, void* storage) {
 }
 
 
-static size_t* convert_coords(size_t rank, VALUE* c, VALUE self) {
+static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
   size_t r;
-  size_t* coords = ALLOC_N(size_t,rank);
+  VALUE beg, end;
+  int i;
+  SLICE* slice = ALLOC(SLICE);
+  slice->coords = ALLOC_N(size_t,rank);
+  slice->lens = ALLOC_N(size_t, rank);
 
   for (r = 0; r < rank; ++r) {
-    coords[r] = FIX2UINT(c[r]);
-    if (coords[r] >= NM_SHAPE(self,r)) rb_raise(rb_eArgError, "out of range");
+    VALUE cl = CLASS_OF(c[r]);
+    if (cl == rb_cFixnum) {
+      slice->coords[r] = FIX2UINT(c[r]);
+      slice->lens[r] = 1;
+    }
+    else {
+      if (cl == rb_cRange) {
+        rb_range_values(c[r], &beg, &end, &i);
+        slice->coords[r] = FIX2UINT(beg);
+        slice->lens[r] = FIX2UINT(end) - slice->coords[r] + 1;
+      }
+      else {
+        rb_raise(rb_eArgError, "%s is not used for slicing", rb_class2name(cl));
+      }
+    }
+
+    if (slice->coords[r] + slice->lens[r] > NM_SHAPE(self,r)) 
+      rb_raise(rb_eArgError, "out of range");
   }
 
-  return coords;
+  return slice;
 }
 
 
@@ -1396,7 +1416,7 @@ VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
 
     SetFuncs[NM_ROBJ][NM_DTYPE(self)](1, &v, 0,
       RefFuncs[NM_STYPE(self)](NM_STORAGE(self),
-                               convert_coords((size_t)(argc), argv, self)
+                               get_slice((size_t)(argc), argv, self)
                               ), 0);
     return v;
 
@@ -1426,7 +1446,7 @@ VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
 
   } else if (NM_RANK(self) == rank) {
     return (*(InsFuncs[NM_STYPE(self)]))( NM_STORAGE(self),
-                                         convert_coords(rank, argv, self),
+                                         get_slice(rank, argv, self),
                                          argv[rank] );
 
   } else if (NM_RANK(self) < rank) {
