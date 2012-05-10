@@ -1,16 +1,16 @@
 require "nmatrix"
 
-describe "Slicing" do
+describe "Slice operation" do
   before :each do
     @m = NMatrix.new(:dense, [3,3], (0..9).to_a, :int32)
   end
 
-  it 'should return NMatrix' do
+  it 'should return an NMatrix' do
     n = @m[0..1,0..1]
     @m.should == NMatrix.new(:dense, [2,2], [0,1,3,4], :int32) #== don't work
   end
 
-  it 'should return [2x2] matrix with refs to self elements' do
+  it 'should return a 2x2 matrix with refs to self elements' do
     n = @m[1..2,0..1]
     n.shape.should eql([2,2])
     
@@ -19,7 +19,7 @@ describe "Slicing" do
     @m[1,0].should eql(-9)
   end
 
-  it 'should return [1x2] matrix with refs to self elements' do
+  it 'should return a 1x2 matrix with refs to self elements' do
     n = @m[0,1..2]
     n.shape.should eql([1,2])
     
@@ -28,7 +28,7 @@ describe "Slicing" do
     @m[0,1].should eql(-9)
   end
 
-  it 'should return [2x1] matrix with refs to self elements' do
+  it 'should return a 2x1 matrix with refs to self elements' do
     n = @m[0..1,1]
     n.shape.should eql([2,1])
     
@@ -39,7 +39,7 @@ describe "Slicing" do
 
   it 'should set value from NMatrix'
     
-  it 'should be elimenanted GC correctly'  do
+  it 'should be cleaned up by garbage collector without errors'  do
     1.times do
       n = @m[1..2,0..1]
     end

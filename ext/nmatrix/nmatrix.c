@@ -1435,9 +1435,10 @@ VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
       return Data_Wrap_Struct(cNMatrix, MarkFuncs[mat->stype], nm_delete_ref, mat);
     } 
     else {
-      SetFuncs[NM_ROBJ][NM_DTYPE(self)](1, &v, 0,
+      v = ALLOC(VALUE);
+      SetFuncs[NM_ROBJ][NM_DTYPE(self)](1, v, 0,
                 RefFuncs[NM_STYPE(self)](NM_STORAGE(self), slice), 0);
-      return v;
+      return *(VALUE*)v;
     }
                               
   } else if (NM_RANK(self) < (size_t)(argc)) {
