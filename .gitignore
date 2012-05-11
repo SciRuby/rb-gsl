@@ -16,3 +16,4 @@ test.c
 spec/*.mtx
 *.so
 /tags
+*.gem
