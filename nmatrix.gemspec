@@ -7,6 +7,7 @@ Gem::Specification.new do |gem|
   gem.name = "nmatrix"
   gem.version = NMatrix::VERSION
   gem.summary = "NMatrix is an experimental linear algebra library for Ruby, written mostly in C." 
+  gem.description = "NMatrix is an experimental linear algebra library for Ruby, written mostly in C." 
   gem.homepage = 'http://sciruby.com'
   gem.authors = ['John Woods']
   gem.email =  ['john.o.woods@gmail.com']
@@ -38,9 +39,11 @@ Thanks for trying out NMatrix! Happy coding!
 ***********************************************************
 EOF
 
-  gem.files = Dir['ext/**/*', 'lib/**/*.rb','spec/*.rb', 'Rakefile', "History.txt", "Rakefile", "Manifest.txt", "LICENSE.txt"]
-  gem.extra_rdoc_files = ["README.rdoc"]
+  gem.files         = `git ls-files`.split("\n")
+  gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.extensions = ['ext/nmatrix/extconf.rb']
+  gem.require_paths = ["lib"]
 
   gem.required_ruby_version = '>= 1.9.2'
 
