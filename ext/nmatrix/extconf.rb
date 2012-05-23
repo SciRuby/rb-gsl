@@ -94,6 +94,7 @@ smmp2
 cblas
 blas
 rational
+csquare
 )
 # add smmp in to get generic transp; remove smmp2 to eliminate funcptr transp
 

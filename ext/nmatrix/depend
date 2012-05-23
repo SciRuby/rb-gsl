@@ -1,5 +1,7 @@
-nmatrix.h dtypes.h dtypes.c smmp1.c smmp2.c blas.c: generator.rb nmatrix.inc.h
+nmatrix.h dtypes.h dtypes.c smmp1.c smmp2.c blas.c csquare.c: generator.rb nmatrix.inc.h
 	$(RUBY) -I$(srcdir) $(srcdir)/generator.rb
+
+csquare.o: csquare.c templates/complex/*.c templates/rational/*.c templates/integer/*.c
 
 blas.o: blas.c shared/complex.template.c shared/rational.template.c shared/eqeq.template.c
 
