@@ -1,5 +1,5 @@
 
-int gemm(int TransA, int TransB, const int M, const int N, const int K, const TYPE alpha,
+int gemm(enum CBLAS_TRANSPOSE TransA, enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const TYPE alpha,
   const TYPE* A, const int lda, const TYPE* B, const int ldb,
   const TYPE beta, TYPE* C, const int ldc)
 {

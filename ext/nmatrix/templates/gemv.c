@@ -1,11 +1,10 @@
 
-int %%TYPE_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t N, const %%TYPE%% alpha,
-  const %%TYPE%%* A, const size_t lda, const %%TYPE%%* X, const int incX, const %%TYPE%% beta, %%TYPE%%* Y, const int incY)
+int gemv(enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE alpha,
+  const TYPE* A, const int lda, const TYPE* X, const int incX, const TYPE beta, TYPE* Y, const int incY)
 {
-  size_t lenX, lenY, i, j;
+  int lenX, lenY, i, j;
   int kx, ky, iy, jx, jy, ix;
-  %%TYPE_LONG%% temp;
-  %%= if [:rational,:complex,:value].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1;"; end%%
+  LONG_TYPE temp;
 
   // Test the input parameters
   if (Trans < 111 || Trans > 113) {
@@ -23,7 +22,7 @@ int %%TYPE_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t
   }
 
   // Quick return if possible
-  if (!M || !N || %%TYPE alpha == 0%% && %%TYPE beta == 1%%) return 0;
+  if (!M || !N || alpha == 0 && beta == 1) return 0;
 
   if (Trans == CblasNoTrans) {
     lenX = N;
@@ -40,34 +39,34 @@ int %%TYPE_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t
   else          ky =  (lenY - 1) * -incY;
 
   // Start the operations. In this version, the elements of A are accessed sequentially with one pass through A.
-  if (%%TYPE beta != 1%%) {
+  if (beta != 1) {
     if (incY == 1) {
-      if (%%TYPE beta == 0%%) {
+      if (beta == 0) {
         for (i = 0; i < lenY; ++i) {
-          %%TYPE Y[i] = 0%%
+          Y[i] = 0;
         }
       } else {
         for (i = 0; i < lenY; ++i) {
-          %%TYPE Y[i] *= beta%%
+          Y[i] *= beta;
         }
       }
     } else {
       iy = ky;
-      if (%%TYPE beta == 0%%) {
+      if (beta == 0) {
         for (i = 0; i < lenY; ++i) {
-          %%TYPE Y[iy] = 0%%
+          Y[iy] = 0;
           iy += incY;
         }
       } else {
         for (i = 0; i < lenY; ++i) {
-          %%TYPE Y[iy] *= beta%%
+          Y[iy] *= beta;
           iy += incY;
         }
       }
     }
   }
 
-  if (%%TYPE alpha == 0%%) return 0;
+  if (alpha == 0) return 0;
 
   if (Trans == CblasNoTrans) {
 
@@ -75,21 +74,21 @@ int %%TYPE_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t
     jx = kx;
     if (incY == 1) {
       for (j = 0; j < N; ++j) {
-        if (%%TYPE X[jx] != 0%%) {
-          %%TYPE_LONG temp = alpha * X[jx]%%
+        if (X[jx] != 0) {
+          temp = alpha * X[jx];
           for (i = 0; i < M; ++i) {
-            %%TYPE Y[i] += A[j+i*lda] * temp%%
+            Y[i] += A[j+i*lda] * temp;
           }
         }
         jx += incX;
       }
     } else {
       for (j = 0; j < N; ++j) {
-        if (%%TYPE X[jx] != 0%%) {
-          %%TYPE_LONG temp = alpha * X[jx]%%
+        if (X[jx] != 0) {
+          temp = alpha * X[jx];
           iy = ky;
           for (i = 0; i < M; ++i) {
-            %%TYPE Y[iy] += A[j+i*lda] * temp%%
+            Y[iy] += A[j+i*lda] * temp;
             iy += incY;
           }
         }
@@ -104,23 +103,23 @@ int %%TYPE_ABBREV%%gemv(enum CBLAS_TRANSPOSE Trans, const size_t M, const size_t
 
     if (incX == 1) {
       for (j = 0; j < N; ++j) {
-        %%TYPE temp = 0%%
+        temp = 0;
         for (i = 0; i < M; ++i) {
-          %%TYPE_LONG temp += A[j+i*lda]*X[j]%%
+          temp += A[j+i*lda]*X[j];
         }
-        %%TYPE Y[jy] += alpha * temp%%
+        Y[jy] += alpha * temp;
         jy += incY;
       }
     } else {
       for (j = 0; j < N; ++j) {
-        %%TYPE temp = 0%%
+        temp = 0;
         ix = kx;
         for (i = 0; i < M; ++i) {
-          %%TYPE_LONG temp += A[j+i*lda] * X[ix]%%
+          temp += A[j+i*lda] * X[ix];
           ix += incX;
         }
 
-        %%TYPE Y[jy] += alpha * temp%%
+        Y[jy] += alpha * temp;
         jy += incY;
       }
     }

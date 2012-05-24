@@ -697,10 +697,19 @@ if $IN_MAKEFILE
 
   CSquare::Generator.new('../../../../ext/nmatrix/templates', 'csquare') do |c|
 
-    c.externs 'NM_MAX'       => :integer,
-              'CblasNoTrans' => 'char',
-              'stderr'       => :integer
+    c.externs(
+      'NM_MAX'          => :integer,
+      'CblasNoTrans'    => 'char',
+      'stderr'          => :integer,
+      'rb_raise'        => 'VALUE',
+      'rb_eArgError'    => 'VALUE',
+      'rb_eNotImpError' => 'VALUE',
+      'fmod'            => :float
+    )
 
+    c.blueprint(:boolean, 'TYPE') do |t|
+      t.type :_bool_, 'bool'
+    end
 
     # This basic type should have its functions in the int directory
     c.blueprint(:integer, 'TYPE') do |t|
@@ -710,7 +719,7 @@ if $IN_MAKEFILE
 
       # Generator will first look in templates/ and then look in templates/integer for each
       # of these functions.
-      t.sources %w{gemm gcf}
+      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool gcf}
     end
 
 
@@ -718,6 +727,10 @@ if $IN_MAKEFILE
     c.blueprint(:float, 'TYPE') do |t|
       t.type :f32, 'float'
       t.type :f64, 'double'
+
+      t.sources %w{gemm gemv eqeq ew_hom det_exact}
+
+      t.op :'%', 'TYPE' => 'fmod($0, $1)', 'LONG_TYPE' => 'fmod($0, (double)($1))'
     end
 
 
@@ -725,7 +738,7 @@ if $IN_MAKEFILE
       t.type :c64, 'complex64', :long => :c128, 'FLOAT' => :f32
       t.type :c128, 'complex128', 'FLOAT' => :f64
 
-      t.sources %w{gemm downcast add2 add4 sub2 sub4 div2 div4 mul2 mul4}
+      t.sources %w{gemm gemv conjeq det_exact ew_hom ew_bool downcast add2 add4 sub2 sub4 div2 div4 mul2 mul4}
 
       t.op :'==', 'TYPE' => '$0.r == $1.r && $0.i == $1.i', [:integer, :float] => '$0.r == $1 && $0.i == 0'
       t.op :'!=', 'TYPE' => '$0.r != $1.r || $0.i != $1.i', [:integer, :float] => '$0.r != $1 || $0.i != 0'
@@ -755,11 +768,16 @@ if $IN_MAKEFILE
 
       # Source files which should be templated for this type. Some of these may be needed for
       # the operations given by :op (below).
-      t.sources %w{gemm downcast div2 div4 mul2 mul4 add2 add4 sub2 sub4}
+      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool downcast div2 div4 mul2 mul4 add2 add4 sub2 sub4}
 
       # Only use this form for simple operations that don't need temporary variables and don't call other functions.
       t.op :'==', 'TYPE' => '$0.n == $1.n && $0.d == $1.d', 1 => '$0.n == $0.d', 0 => '$0.n == 0'
       t.op :'!=', 'TYPE' => '$0.n != $1.n || $0.d != $1.d', 1 => '$0.n != $0.d', 0 => '$0.n != 0'
+      t.op :'<',  'TYPE' => '$0.n * (int64_t)$1.d < $1.n * (int64_t)$0.d'
+      t.op :'<=', 'TYPE' => '$0.n * (int64_t)$1.d <= $1.n * (int64_t)$0.d'
+      t.op :'>',  'TYPE' => '$0.n * (int64_t)$1.d > $1.n * (int64_t)$0.d'
+      t.op :'>=', 'TYPE' => '$0.n * (int64_t)$1.d >= $1.n * (int64_t)$0.d'
+      t.op :'!@', 'TYPE' => '(struct TYPE) { !$0.n, 1 }'
 
       t.op :'=', [:integer, :boolean] => '$0 = (struct TYPE) { $1, 1 }', 'LONG_TYPE' => '$0 = downcast($1)'
 
@@ -773,17 +791,23 @@ if $IN_MAKEFILE
       t.op :'+='
       t.op :'-='
 
-      t.op :'-@', 'TYPE' => '(struct $t) { -$0.n, $0.d }'
+      t.op :'-@', 'TYPE' => '(struct TYPE) { -$0.n, $0.d }'
     end
 
     # Ruby object
     c.blueprint(:object, 'TYPE') do |t|
       t.type :v, 'VALUE'
 
-      t.sources %w{gemm}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool}
       # t.externs %w{INT2FIX rb_funcall rb_intern}
 
       t.op :'==', 'TYPE' => 'rb_funcall($0, rb_intern("=="), 1, $1)'
+      t.op :'<=', 'TYPE' => 'rb_funcall($0, rb_intern("<="), 1, $1)'
+      t.op :'>=', 'TYPE' => 'rb_funcall($0, rb_intern(">="), 1, $1)'
+      t.op :'<',  'TYPE' => 'rb_funcall($0, rb_intern("<"),  1, $1)'
+      t.op :'>',  'TYPE' => 'rb_funcall($0, rb_intern(">"),  1, $1)'
+      t.op :'!=', 'TYPE' => 'rb_funcall($0, rb_intern("!="), 1, $1)'
+      t.op :'!@', 'TYPE' => 'rb_funcall($0, rb_intern("!@"), 0)'
 
       t.op :'=', :integer => '$0 = INT2FIX($1)'
 
@@ -798,6 +822,8 @@ if $IN_MAKEFILE
       t.op :'*='
       t.op :'/='
       t.op :'%='
+
+      t.op :'-@', 'TYPE' => 'rb_funcall($0, rb_intern("-@"), 0)'
     end
 
   end
