@@ -18,6 +18,7 @@ int ew_bool(const TYPE* A, const TYPE* B, bool* C, const int n, enum NMatrix_Ops
       C[i] = A[i] != B[i];
     }
     break;
+#RUBY if blueprint.id != :complex
   case '>':
     for (i = 0; i < n; ++i) {
       C[i] = A[i] > B[i];
@@ -38,6 +39,7 @@ int ew_bool(const TYPE* A, const TYPE* B, bool* C, const int n, enum NMatrix_Ops
       C[i] = A[i] <= B[i];
     }
     break;
+#RUBY end
   default:
     rb_raise(rb_eNotImpError, "Unrecognized boolean element-wise operator");
   }

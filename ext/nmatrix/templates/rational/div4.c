@@ -1,4 +1,4 @@
-inline TYPE div(INT anum, INT aden, INT bnum, INT bden) {
+inline TYPE div4(INT anum, INT aden, INT bnum, INT bden) {
 
   if (bnum < 0) {
     anum = -anum;

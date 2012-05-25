@@ -749,6 +749,7 @@ if $IN_MAKEFILE
       t.op :'/', 'TYPE' => 'div2($0, $1)', :cast => 'div4($0.r, $0.i, $1.r, $1.i)', [:integer, :float] => 'div4($0.r, $0.i, $1, 0)'
       t.op :'+', 'TYPE' => 'add2($0, $1)', :cast => 'add4($0.r, $0.i, $1.r, $1.i)'
       t.op :'-', 'TYPE' => 'sub2($0, $1)', :cast => 'sub4($0.r, $0.i, $1.r, $1.i)'
+      t.op :'%', 'TYPE' => 'norm2($0, $1)', :cast => 'norm4($0.n, $0.d, $1.n, $1.d)', :integer => 'norm4($0.n, $0.d, $1, 0)'
 
       # Don't specify patterns for these. Just including them will tell the blueprint to expand them.
       t.op :'*='
@@ -785,6 +786,7 @@ if $IN_MAKEFILE
       t.op :'/', 'TYPE' => 'div2($0, $1)', :cast => 'div4($0.n, $0.d, $1.n, $1.d)', :integer => 'div4($0.n, $0.d, $1, 1)'
       t.op :'+', 'TYPE' => 'add2($0, $1)', :cast => 'add4($0.n, $0.d, $1.n, $1.d)', :integer => 'add4($0.n, $0.d, $1, 1)'
       t.op :'-', 'TYPE' => 'sub2($0, $1)', :cast => 'sub4($0.n, $0.d, $1.n, $1.d)', :integer => 'sub4($0.n, $0.d, $1, 1)'
+      t.op :'%', 'TYPE' => 'mod2($0, $1)', :cast => 'mod4($0.n, $0.d, $1.n, $1.d)', :integer => 'mod4($0.n, $0.d, $1, 1)'
 
       t.op :'*='
       t.op :'/='
