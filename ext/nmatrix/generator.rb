@@ -704,8 +704,11 @@ if $IN_MAKEFILE
       'rb_raise'        => 'VALUE',
       'rb_eArgError'    => 'VALUE',
       'rb_eNotImpError' => 'VALUE',
+      'nm_eDataTypeError' => 'VALUE',
       'fmod'            => :float
     )
+
+    c.enumerate 'MathHomOps', :on => CSquare::Generator::BINARY_CAST_TO_OP.values, :prefix => 'NM_MATHOP', :with => :SparseOpNamer
 
     c.blueprint(:boolean, 'TYPE') do |t|
       t.type :_bool_, 'bool'
@@ -717,7 +720,8 @@ if $IN_MAKEFILE
       t.type :i32, 'int32_t', :long => :i64
       t.type :i16, 'int16_t', :long => :i32
 
-      # Generator will first look in templates/ and then look in templates/integer for each
+      # Generator will first look in templates/ a
+      #nd then look in templates/integer for each
       # of these functions.
       t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool gcf}
     end
@@ -738,7 +742,10 @@ if $IN_MAKEFILE
       t.type :c64, 'complex64', :long => :c128, 'FLOAT' => :f32
       t.type :c128, 'complex128', 'FLOAT' => :f64
 
-      t.sources %w{gemm gemv conjeq det_exact ew_hom ew_bool downcast add2 add4 sub2 sub4 div2 div4 mul2 mul4}
+      t.sources %w{gemm gemv conjeq det_exact ew_hom ew_bool downcast add4 sub4 mul4 div4}
+      t.index 'MathHomOps',
+              :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'norm2',
+              :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values, :default => 'err2'
 
       t.op :'==', 'TYPE' => '$0.r == $1.r && $0.i == $1.i', [:integer, :float] => '$0.r == $1 && $0.i == 0'
       t.op :'!=', 'TYPE' => '$0.r != $1.r || $0.i != $1.i', [:integer, :float] => '$0.r != $1 || $0.i != 0'
@@ -769,7 +776,10 @@ if $IN_MAKEFILE
 
       # Source files which should be templated for this type. Some of these may be needed for
       # the operations given by :op (below).
-      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool downcast div2 div4 mul2 mul4 add2 add4 sub2 sub4}
+      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool downcast add4 sub4 mul4 div4}
+      t.index 'MathHomOps',
+              :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2',
+              :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values, :default => 'err2'
 
       # Only use this form for simple operations that don't need temporary variables and don't call other functions.
       t.op :'==', 'TYPE' => '$0.n == $1.n && $0.d == $1.d', 1 => '$0.n == $0.d', 0 => '$0.n == 0'
