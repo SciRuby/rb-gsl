@@ -11,27 +11,27 @@ int ew_hom(const TYPE* A, const TYPE* B, TYPE* C, const int n, enum MathHomOps o
 #RUBY else
 
   switch(op) {
-  case '+':
+  case NM_MATHOP_ADD:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] + B[i];
     }
     break;
-  case '-':
+  case NM_MATHOP_SUB:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] - B[i];
     }
     break;
-  case '*':
+  case NM_MATHOP_MUL:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] * B[i];
     }
     break;
-  case '/':
+  case NM_MATHOP_DIV:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] / B[i];
     }
     break;
-  case '%':
+  case NM_MATHOP_MOD:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] % B[i];
     }
