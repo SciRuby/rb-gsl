@@ -3,32 +3,32 @@ int ew_bit(const TYPE* A, const TYPE* B, TYPE* C, const int n, enum NMatrix_Ops 
   int i;
 
   switch(op) {
-  case '~':
+  case NM_MATHOP_NOT:
     for (i = 0; i < n; ++i) {
       C[i] = ~A[i];
     }
     break;
-  case '&':
+  case NM_MATHOP_AND:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] & B[i];
     }
     break;
-  case '|':
+  case NM_MATHOP_OR:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] | B[i];
     }
     break;
-  case '^':
+  case NM_MATHOP_XOR:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] ^ B[i];
     }
     break;
-  case NM_OP_LSH:
+  case NM_MATHOP_LSH:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] << B[i];
     }
     break;
-  case NM_OP_RSH:
+  case NM_MATHOP_RSH:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] >> B[i];
     }

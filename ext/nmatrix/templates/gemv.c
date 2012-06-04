@@ -1,5 +1,5 @@
 
-int gemv(enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE alpha,
+int gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE alpha,
   const TYPE* A, const int lda, const TYPE* X, const int incX, const TYPE beta, TYPE* Y, const int incY)
 {
   int lenX, lenY, i, j;

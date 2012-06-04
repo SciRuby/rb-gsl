@@ -720,10 +720,20 @@ if $IN_MAKEFILE
       t.type :i32, 'int32_t', :long => :i64
       t.type :i16, 'int16_t', :long => :i32
 
+      t.index 'MathHomOps', [:'*', :'/', :'+', :'-', :'%'] => :inline, :default => 'err2', :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values
+
       # Generator will first look in templates/ a
       #nd then look in templates/integer for each
       # of these functions.
       t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool gcf}
+    end
+
+    # This basic type is used for Yale indices
+    c.blueprint(:unsigned_integer) do |t|
+      t.type :u64, 'u_int64_t'
+      t.type :u32, 'u_int32_t', :long => :u64
+      t.type :u16, 'u_int16_t', :long => :u32
+      t.type :u8,  'u_int8_t',  :long => :i16
     end
 
 
@@ -734,6 +744,8 @@ if $IN_MAKEFILE
 
       t.sources %w{gemm gemv eqeq ew_hom det_exact}
 
+      t.index 'MathHomOps', [:'*', :'/', :'+', :'-'] => :inline, :'%' => 'mod2', :default => 'err2', :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values
+
       t.op :'%', 'TYPE' => 'fmod($0, $1)', 'LONG_TYPE' => 'fmod($0, (double)($1))'
     end
 
@@ -743,6 +755,9 @@ if $IN_MAKEFILE
       t.type :c128, 'complex128', 'FLOAT' => :f64
 
       t.sources %w{gemm gemv conjeq det_exact ew_hom ew_bool downcast add4 sub4 mul4 div4}
+
+      t.sources %w{ew_yale_hom}, 'UINT' => :unsigned_integer
+
       t.index 'MathHomOps',
               :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'norm2',
               :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values, :default => 'err2'
@@ -777,6 +792,10 @@ if $IN_MAKEFILE
       # Source files which should be templated for this type. Some of these may be needed for
       # the operations given by :op (below).
       t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool downcast add4 sub4 mul4 div4}
+
+      # Additional source files that make use of multiple blueprints
+      t.sources %w{ew_yale_hom}, 'UINT' => :unsigned_integer
+
       t.index 'MathHomOps',
               :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2',
               :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values, :default => 'err2'
@@ -811,7 +830,12 @@ if $IN_MAKEFILE
       t.type :v, 'VALUE'
 
       t.sources %w{gemm gemv det_exact ew_hom ew_bool}
-      # t.externs %w{INT2FIX rb_funcall rb_intern}
+
+      t.sources %w{ew_yale_hom}, 'UINT' => :unsigned_integer
+
+      t.index 'MathHomOps',
+              :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2',
+              :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values, :default => 'err2'
 
       t.op :'==', 'TYPE' => 'rb_funcall($0, rb_intern("=="), 1, $1)'
       t.op :'<=', 'TYPE' => 'rb_funcall($0, rb_intern("<="), 1, $1)'
