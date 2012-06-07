@@ -40,8 +40,8 @@ else
 	require 'nmatrix.so'
 end
 
-require 'nmatrix/array'
-require 'nmatrix/string'
+# Monkey patches.
+require 'nmatrix/monkeys'
 
 #############
 # Autoloads #

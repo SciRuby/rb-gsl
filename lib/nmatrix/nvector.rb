@@ -51,36 +51,34 @@ class NVector < NMatrix
 	end
 
 	def transpose
-		
-		t = super()
-		t.instance_exec { @orientation = @orientation == :row ? :column : :row }
-		t
+		super().flip
 	end
 
 	def transpose!
-		super
-		@orientation = @orientation == :row ? :column : :row
-		self
+		super()
+		self.flip
 	end
 
-	def multiply m
-		v = super(m)
-		v.send :eval, "@orientation = @orientation == :row ? :column : :row"
-		v
+	def multiply(m)
+		super(m).flip
 	end
 
-	def multiply! m
-		super
-		@orientation = @orientation == :row ? :column : :row
-		self
+	def multiply!(m)
+		super().flip
 	end
 
-	def [] i
-		@orientation == :row ? super(0,i) : super(i,0)
+	def [](i)
+		case @orientation
+		when :row			super(0, i)
+		when :column	super(i, 0)
+		end
 	end
 
-	def []= i,val
-		@orientation == :row ? super(0,i,val) : super(i,0,val)
+	def []=(i, val)
+		case @orientation
+		when :row			super(0, i, val)
+		when :column	super(i, 0, val)
+		end
 	end
 
 	def rank; 1; end
@@ -88,16 +86,17 @@ class NVector < NMatrix
 	# TODO: Make this actually pretty.
 	def pretty_print
 		dim = @orientation == :row ? 1 : 0
-		arr = []
-		(0...shape[dim]).each { |i| arr << self[i] }
-		puts arr.join("  ")
-		nil
+		
+		puts (0...shape[dim]).inject(Array.new) { |a, i| a << self[i] }.join('  ')
 	end
 
 	protected
 	def inspect_helper
-		ary = super
-		ary << "orientation:#{(@orientation || 'column').to_s}"
-		ary
+		super() << "orientation:#{self.orientation}"
 	end
+	
+	def flip_orientation
+		returning(self) { @orientation = @orientation == :row ? :column : :row }
+	end
+	alias :flip :flip_orientation
 end
