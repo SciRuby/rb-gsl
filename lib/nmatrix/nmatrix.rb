@@ -25,10 +25,19 @@
 # This file adds a few additional pieces of functionality (e.g., inspect,
 # pretty_print).
 
+############
+# Requires #
+############
+
+#######################
+# Classes and Modules #
+#######################
+
 class NMatrix
 	# Read and write extensions for NMatrix. These are only loaded when needed.
 	module IO
-		autoload :Matlab, 'nmatrix/io/matlab'
+		autoload :MatReader, 'nmatrix/io/mat_reader'
+		autoload :Mat5Reader, 'nmatrix/io/mat5_reader'
 	end
 
 	# TODO: Make this actually pretty.
@@ -82,58 +91,6 @@ class NMatrix
 	end
 
 	class << self
-
-		# Helper function for loading a file in the first sparse format given here:
-		#   http://math.nist.gov/MatrixMarket/formats.html
-		#
-		# Override type specifier (e.g., 'real') using :read_with => :to_f (or any other string-to-numeric conversion
-		# function), and with :dtype => :float32 or :dtype => :int8 to force storage in a lesser type.
-		def load_matrix_matrix_coordinate_file(filename, options = {})
-			f = File.new(filename, "r")
-
-			func	= options[:read_with]
-			dtype = options[:dtype]
-			
-			line = f.gets
-			raise IOError, 'Incorrect file type specifier.' unless line =~ /^%%MatrixMarket\ matrix\ coordinate/
-			spec = line.split
-			
-			case spec[3]
-			when 'real'
-				func	||= :to_f
-				dtype ||= :float64
-			when 'integer'
-				func	||= :to_i
-				dtype ||= :int64
-			when 'complex'
-				func	||= :to_complex
-				dtype ||= :complex128
-			when 'rational'
-				func	||= :to_rational
-				dtype ||= :rational128
-			else
-				raise ArgumentError, 'Unrecognized dtype.'
-			end unless func and dtype
-			
-			begin
-				line = f.gets
-			end while line =~ /^%/
-			
-			# Close the file.
-			f.close
-			
-			rows, cols, entries = line.split.collect { |x| x.to_i }
-			
-			matrix = NMatrix.new(:yale, [rows, cols], entries, dtype)
-			
-			entries.times do
-				i, j, v = line.split
-				matrix[i.to_i - 1, j.to_i - 1] = v.send(func)
-			end
-			
-			matrix
-		end
-
 		def cblas_gemm(a, b, c = nil, alpha = 1.0, beta = 0.0, transpose_a = false, transpose_b = false, m = nil, n = nil, k = nil, lda = nil, ldb = nil, ldc = nil)
 			raise ArgumentError, 'Expected dense NMatrices as first two arguments.' unless a.is_a?(NMatrix) and b.is_a?(NMatrix) and a.stype == :dense and b.stype == :dense
 			raise ArgumentError, 'Expected nil or dense NMatrix as third argument.' unless c.nil? or (c.is_a?(NMatrix) and c.stype == :dense)
@@ -196,6 +153,61 @@ class NMatrix
 			NMatrix.__cblas_gemv__(transpose_a, m, n, alpha, a, lda, x, incx, beta, y, incy)
 			
 			return y
+		end
+		
+		def load_file(file_path)
+			NMatrix::IO::Mat5Reader.new(File.open(file_path, 'rb')).to_ruby
+		end
+		
+		# Helper function for loading a file in the first sparse format given here:
+		#   http://math.nist.gov/MatrixMarket/formats.html
+		#
+		# Override type specifier (e.g., 'real') using :read_with => :to_f (or any other string-to-numeric conversion
+		# function), and with :dtype => :float32 or :dtype => :int8 to force storage in a lesser type.
+		def load_matrix_matrix_coordinate_file(filename, options = {})
+			f = File.new(filename, "r")
+
+			func	= options[:read_with]
+			dtype = options[:dtype]
+			
+			line = f.gets
+			raise IOError, 'Incorrect file type specifier.' unless line =~ /^%%MatrixMarket\ matrix\ coordinate/
+			spec = line.split
+			
+			case spec[3]
+			when 'real'
+				func	||= :to_f
+				dtype ||= :float64
+			when 'integer'
+				func	||= :to_i
+				dtype ||= :int64
+			when 'complex'
+				func	||= :to_complex
+				dtype ||= :complex128
+			when 'rational'
+				func	||= :to_rational
+				dtype ||= :rational128
+			else
+				raise ArgumentError, 'Unrecognized dtype.'
+			end unless func and dtype
+			
+			begin
+				line = f.gets
+			end while line =~ /^%/
+			
+			# Close the file.
+			f.close
+			
+			rows, cols, entries = line.split.collect { |x| x.to_i }
+			
+			matrix = NMatrix.new(:yale, [rows, cols], entries, dtype)
+			
+			entries.times do
+				i, j, v = line.split
+				matrix[i.to_i - 1, j.to_i - 1] = v.send(func)
+			end
+			
+			matrix
 		end
 	end
 
