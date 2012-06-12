@@ -348,14 +348,6 @@ typedef struct smmp_param_t {
   bool diag;
 } YALE_PARAM;
 
-// Shouldn't be necessary, as they're defined in nmatrix.h:
-// (Oddly, though, these fix the error.)
-/*typedef uint8_t   u_int8_t;
-typedef uint16_t  u_int16_t;
-typedef uint32_t  u_int32_t;
-typedef uint64_t  u_int64_t; */
-
-
 // rational.c
 int64_t nmrb_gcd(int64_t x, int64_t y);
 

@@ -23,14 +23,16 @@ int ew_yale_hom(const TYPE* A, const TYPE* B, TYPE* C, const UINT* ija, const UI
         left = 0;
       }
 
-      if (b_jj < ijb[i+1] && ijb[b_jj] == ijc[c_jj]) {
-        right = B[b_jj];
-        ++b_jj;
-      } else {
-        right = 0;
+      if (B) {
+        if (b_jj < ijb[i+1] && ijb[b_jj] == ijc[c_jj]) {
+          right = B[b_jj];
+          ++b_jj;
+        } else {
+          right = 0;
+        }
       }
 
-      C[i] = MathHomOps[op](A[i], B[i]);
+      C[i] = MathHomOps[op](left, right);
 
       ++c_jj;
     }

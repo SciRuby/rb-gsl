@@ -1,6 +1,6 @@
 int ew_yale_bool(const TYPE* a, const TYPE* b, TYPE* c,
-            const u_%%INT%%* ija, const u_%%INT%%* ijb, const u_%%INT%%* ijc,
-            unsigned int n, unsigned int m, enum MathBoolOps op)
+            const UINT* ija, const UINT* ijb, UINT* ijc,
+            const unsigned int n, const unsigned int m, const enum MathBoolOps op)
 {
   unsigned int i, c_jj, a_jj, b_jj;
   TYPE left, right;
@@ -8,8 +8,7 @@ int ew_yale_bool(const TYPE* a, const TYPE* b, TYPE* c,
   for (i = 0; i < n; ++i) {
     // do operation on diagonals first:
     if (i < m) {
-      if (b) ew_op_binary(op, &(c[i]), a[i], b[i]);
-      else   ew_op_unary(op, &(c[i]), a[i]);
+      ew_bool(a, b, c, 1, op);
     }
 
     c_jj = ijc[i];
@@ -32,11 +31,9 @@ int ew_yale_bool(const TYPE* a, const TYPE* b, TYPE* c,
         } else {
           right = 0;
         }
-
-        ew_op_binary(op, &(c[c_jj]), left, right);
-      } else {
-        ew_op_unary(op,  &(c[c_jj]), left);
       }
+
+      ew_bool(&left, &right, &(c[c_jj]), 1, op);
 
       ++c_jj;
     }

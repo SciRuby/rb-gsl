@@ -1,5 +1,5 @@
 // Bitwise element-wise operators
-int ew_bit(const TYPE* A, const TYPE* B, TYPE* C, const int n, enum NMatrix_Ops op) {
+int ew_bit(const TYPE* A, const TYPE* B, TYPE* C, const int n, const enum MathBitOps op) {
   int i;
 
   switch(op) {

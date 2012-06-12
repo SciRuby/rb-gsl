@@ -1,5 +1,5 @@
 // Boolean element-wise operators
-int ew_bool(const TYPE* A, const TYPE* B, bool* C, const int n, enum NMatrix_Ops op) {
+int ew_bool(const TYPE* A, const TYPE* B, bool* C, const int n, const enum MathBoolOps op) {
   int i;
 
   switch(op) {

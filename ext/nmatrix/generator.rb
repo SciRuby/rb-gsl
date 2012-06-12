@@ -699,6 +699,7 @@ if $IN_MAKEFILE
 
     c.externs(
       'NM_MAX'          => :integer,
+      'NM_MIN'          => :integer,
       'CblasNoTrans'    => 'char',
       'stderr'          => :integer,
       'rb_raise'        => 'VALUE',
@@ -708,10 +709,38 @@ if $IN_MAKEFILE
       'fmod'            => :float
     )
 
-    c.enumerate 'MathHomOps', :on => CSquare::Generator::BINARY_CAST_TO_OP.values, :prefix => 'NM_MATHOP', :with => :SparseOpNamer
+    c.enumerate 'MathHomOps', :ops => CSquare::Generator::BINARY_CAST_TO_OP.values, :prefix => 'NM_MATHOP', :with => :SparseOpNamer
+    c.enumerate 'MathBoolOps', :ops => CSquare::Generator::BOOL_CAST_TO_OP.values, :prefix => 'NM_MATHOP', :with => :SparseOpNamer
+    c.enumerate 'MathBitOps', :ops => CSquare::Generator::BIT_CAST_TO_OP.values + [:'~'], :prefix => 'NM_MATHOP', :with => :SparseOpNamer
+    c.enumerate 'NMatrix_DTypes', :types => {
+        NONE: nil,
+        BYTE: :b,
+        INT8: :i8,
+        INT16: :i16,
+        INT32: :i32,
+        INT64: :i64,
+        FLOAT32: :f32,
+        FLOAT64: :f64,
+        COMPLEX64: :c64,
+        COMPLEX128: :c128,
+        RATIONAL32: :r32,
+        RATIONAL64: :r64,
+        RATIONAL128: :r128,
+        ROBJ: :v,
+        TYPES: nil}, :prefix => 'NM'
 
     c.blueprint(:boolean, 'TYPE') do |t|
       t.type :_bool_, 'bool'
+    end
+
+    c.blueprint(:byte, 'TYPE') do |t|
+      t.type :b, 'u_int8_t', :long => :u16
+
+      t.index 'MathHomOps', [:'*', :'/', :'+', :'-', :'%'] => :inline, :default => 'err2'
+
+      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
+
+      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool ew_bit}
     end
 
     # This basic type should have its functions in the int directory
@@ -719,21 +748,26 @@ if $IN_MAKEFILE
       t.type :i64, 'int64_t'
       t.type :i32, 'int32_t', :long => :i64
       t.type :i16, 'int16_t', :long => :i32
+      t.type :i8, 'int8_t', :long => :i16
 
-      t.index 'MathHomOps', [:'*', :'/', :'+', :'-', :'%'] => :inline, :default => 'err2', :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values
+      t.index 'MathHomOps', [:'*', :'/', :'+', :'-', :'%'] => :inline, :default => 'err2'
+
+      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
 
       # Generator will first look in templates/ a
       #nd then look in templates/integer for each
       # of these functions.
-      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool gcf}
+      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool ew_bit gcf}
     end
 
     # This basic type is used for Yale indices
-    c.blueprint(:unsigned_integer) do |t|
+    c.blueprint(:unsigned_integer, 'UINT') do |t|
       t.type :u64, 'u_int64_t'
       t.type :u32, 'u_int32_t', :long => :u64
       t.type :u16, 'u_int16_t', :long => :u32
       t.type :u8,  'u_int8_t',  :long => :i16
+
+      t.sources %w{symbmm}
     end
 
 
@@ -742,9 +776,11 @@ if $IN_MAKEFILE
       t.type :f32, 'float'
       t.type :f64, 'double'
 
-      t.sources %w{gemm gemv eqeq ew_hom det_exact}
+      t.sources %w{gemm gemv eqeq ew_hom ew_bool ew_bit det_exact}
 
-      t.index 'MathHomOps', [:'*', :'/', :'+', :'-'] => :inline, :'%' => 'mod2', :default => 'err2', :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values
+      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
+
+      t.index 'MathHomOps', [:'*', :'/', :'+', :'-'] => :inline, :'%' => 'mod2', :default => 'err2'
 
       t.op :'%', 'TYPE' => 'fmod($0, $1)', 'LONG_TYPE' => 'fmod($0, (double)($1))'
     end
@@ -754,13 +790,11 @@ if $IN_MAKEFILE
       t.type :c64, 'complex64', :long => :c128, 'FLOAT' => :f32
       t.type :c128, 'complex128', 'FLOAT' => :f64
 
-      t.sources %w{gemm gemv conjeq det_exact ew_hom ew_bool downcast add4 sub4 mul4 div4}
+      t.sources %w{gemm gemv conjeq det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4}
 
-      t.sources %w{ew_yale_hom}, 'UINT' => :unsigned_integer
+      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
 
-      t.index 'MathHomOps',
-              :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'norm2',
-              :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values, :default => 'err2'
+      t.index 'MathHomOps', :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'norm2', :default => 'err2'
 
       t.op :'==', 'TYPE' => '$0.r == $1.r && $0.i == $1.i', [:integer, :float] => '$0.r == $1 && $0.i == 0'
       t.op :'!=', 'TYPE' => '$0.r != $1.r || $0.i != $1.i', [:integer, :float] => '$0.r != $1 || $0.i != 0'
@@ -791,14 +825,12 @@ if $IN_MAKEFILE
 
       # Source files which should be templated for this type. Some of these may be needed for
       # the operations given by :op (below).
-      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool downcast add4 sub4 mul4 div4}
+      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4}
 
       # Additional source files that make use of multiple blueprints
-      t.sources %w{ew_yale_hom}, 'UINT' => :unsigned_integer
+      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
 
-      t.index 'MathHomOps',
-              :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2',
-              :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values, :default => 'err2'
+      t.index 'MathHomOps', :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2', :default => 'err2'
 
       # Only use this form for simple operations that don't need temporary variables and don't call other functions.
       t.op :'==', 'TYPE' => '$0.n == $1.n && $0.d == $1.d', 1 => '$0.n == $0.d', 0 => '$0.n == 0'
@@ -829,13 +861,11 @@ if $IN_MAKEFILE
     c.blueprint(:object, 'TYPE') do |t|
       t.type :v, 'VALUE'
 
-      t.sources %w{gemm gemv det_exact ew_hom ew_bool}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit}
 
-      t.sources %w{ew_yale_hom}, 'UINT' => :unsigned_integer
+      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
 
-      t.index 'MathHomOps',
-              :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2',
-              :on => ::CSquare::Generator::BINARY_CAST_TO_OP.values, :default => 'err2'
+      t.index 'MathHomOps', :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2', :default => 'err2'
 
       t.op :'==', 'TYPE' => 'rb_funcall($0, rb_intern("=="), 1, $1)'
       t.op :'<=', 'TYPE' => 'rb_funcall($0, rb_intern("<="), 1, $1)'
@@ -861,6 +891,8 @@ if $IN_MAKEFILE
 
       t.op :'-@', 'TYPE' => 'rb_funcall($0, rb_intern("-@"), 0)'
     end
+
+    c.index 'GemmFuncs', :on => 'NMatrix_DTypes', :with => 'gemm'
 
   end
 
