@@ -729,6 +729,17 @@ if $IN_MAKEFILE
         ROBJ: :v,
         TYPES: nil}, :prefix => 'NM'
 
+    # Subset of dtypes
+    c.enumerate 'NMatrix_ITypes', :types => {
+        NONE: nil,
+        BYTE: nil,
+        UINT8: :u8,
+        UINT16: :u16,
+        UINT32: :u32,
+        UINT64: :u64,
+        TYPES: nil
+    }, :prefix => 'NM_I'
+
     c.blueprint(:boolean, 'TYPE') do |t|
       t.type :_bool_, 'bool'
     end
@@ -892,7 +903,10 @@ if $IN_MAKEFILE
       t.op :'-@', 'TYPE' => 'rb_funcall($0, rb_intern("-@"), 0)'
     end
 
-    c.index 'GemmFuncs', :on => 'NMatrix_DTypes', :with => 'gemm'
+    c.index 'Gemm', :on => 'NMatrix_DTypes', :with => 'gemm'
+    c.index 'Gemv', :on => 'NMatrix_DTypes', :with => 'gemv'
+    c.index 'Symbmm', :on => 'NMatrix_ITypes', :with => 'symbmm'
+    c.index 'Numbmm', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'numbmm'
 
   end
 
