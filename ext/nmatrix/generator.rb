@@ -695,7 +695,7 @@ if $IN_MAKEFILE
 
   require "csquare"
 
-  CSquare::Generator.new('../../../../ext/nmatrix/templates', 'csquare') do |c|
+  CSquare::Generator.new('../../../../ext/nmatrix/templates', 'csquare', :include_header => "nmatrix.h") do |c|
 
     c.externs(
       'NM_MAX'          => :integer,
@@ -751,7 +751,7 @@ if $IN_MAKEFILE
 
       t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
 
-      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool ew_bit}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit}
     end
 
     # This basic type should have its functions in the int directory
@@ -768,7 +768,7 @@ if $IN_MAKEFILE
       # Generator will first look in templates/ a
       #nd then look in templates/integer for each
       # of these functions.
-      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool ew_bit gcf}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit gcf}
     end
 
     # This basic type is used for Yale indices
@@ -801,7 +801,7 @@ if $IN_MAKEFILE
       t.type :c64, 'complex64', :long => :c128, 'FLOAT' => :f32
       t.type :c128, 'complex128', 'FLOAT' => :f64
 
-      t.sources %w{gemm gemv conjeq det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4}
+      t.sources %w{gemm gemv conjeq eqeq det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4}
 
       t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
 
@@ -836,7 +836,7 @@ if $IN_MAKEFILE
 
       # Source files which should be templated for this type. Some of these may be needed for
       # the operations given by :op (below).
-      t.sources %w{gemm gemv eqeq det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4}
 
       # Additional source files that make use of multiple blueprints
       t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
@@ -905,9 +905,29 @@ if $IN_MAKEFILE
 
     c.index 'Gemm', :on => 'NMatrix_DTypes', :with => 'gemm'
     c.index 'Gemv', :on => 'NMatrix_DTypes', :with => 'gemv'
+
     c.index 'Symbmm', :on => 'NMatrix_ITypes', :with => 'symbmm'
     c.index 'Numbmm', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'numbmm'
+
+    c.index 'Transp', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'transp'
+    c.index 'DetExact', :on => 'NMatrix_DTypes', :with => 'det_exact'
+
+    # Elementwise dense
+    c.index 'EwDenseHom', :on => 'NMatrix_DTypes', :with => 'ew_hom'
+    c.index 'EwDenseBool', :on => 'NMatrix_DTypes', :with => 'ew_bool'
+    #c.index 'EwDenseBit', :on => 'NMatrix_DTypes', :with => 'ew_bit'
+
+    # Elementwise yale
+    c.index 'EwYaleHom', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'ew_yale_hom'
+    c.index 'EwYaleBool', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'ew_yale_bool'
+    #c.index 'EwYaleBit', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'ew_yale_bit'
 
   end
 
 end
+
+`rm nmatrix.h`
+
+d = $RELATIVE_PATH + Generator::SRC_DIR + '/'
+
+`cat #{d}nmatrix.pre.h csquare.h #{d}nmatrix.post.h >> nmatrix.h`

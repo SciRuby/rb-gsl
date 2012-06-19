@@ -31,7 +31,7 @@
 #include <ruby.h>
 
 #include "nmatrix.h"
-extern nm_eqeq_t ElemEqEq;
+extern bool (*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
 
 /* Calculate the number of elements in the dense storage structure, based on shape and rank */
 size_t count_dense_storage_elements(const DENSE_STORAGE* s) {

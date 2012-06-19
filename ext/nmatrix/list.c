@@ -34,7 +34,7 @@
 #include "nmatrix.h"
 
 extern VALUE nm_eStorageTypeError;
-extern nm_eqeq_t ElemEqEq;
+extern bool (*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
 
 
 /* Calculate the max number of elements in the list storage structure, based on shape and rank */

@@ -1,17 +1,11 @@
-nmatrix.h dtypes.h dtypes.c smmp1.c smmp2.c blas.c csquare.c: generator.rb nmatrix.inc.h
+nmatrix.h smmp1.c smmp2.c blas.c csquare.c: generator.rb nmatrix.pre.h nmatrix.post.h
 	$(RUBY) -I$(srcdir) $(srcdir)/generator.rb
 
-csquare.o: csquare.c templates/complex/*.c templates/rational/*.c templates/integer/*.c
+csquare.o: csquare.c
 
-blas.o: blas.c shared/complex.template.c shared/rational.template.c shared/eqeq.template.c
+dfuncs.o: dfuncs.c nmatrix.h
 
-smmp2.o: smmp1.c smmp2.c nmatrix.h yale/smmp2_header.template.c yale/symbmm.template.c yale/transp.template.c yale/numbmm.template.c
-
-smmp1.o: smmp1.c nmatrix_config.h nmatrix.h yale/smmp1_header.template.c
-
-dfuncs.o: dfuncs.c $(hdrdir)/ruby.h
-
-$(DLLIB): dtypes.h dtypes.c dfuncs.c $(OBJS) Makefile
+$(DLLIB): nmatrix.h $(OBJS) Makefile
 	# $(ECHO) linking shared-object $(DLLIB)
 	@-$(RM) $(@)
 	$(Q) $(LDSHARED) -o $@ $(OBJS) $(LIBPATH) $(DLDFLAGS) $(LOCAL_LIBS) $(LIBS)

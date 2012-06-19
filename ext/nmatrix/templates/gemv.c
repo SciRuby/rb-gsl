@@ -1,6 +1,6 @@
 
-int gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE alpha,
-  const TYPE* A, const int lda, const TYPE* X, const int incX, const TYPE beta, TYPE* Y, const int incY)
+int gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE* alpha,
+  const TYPE* A, const int lda, const TYPE* X, const int incX, const TYPE* beta, TYPE* Y, const int incY)
 {
   int lenX, lenY, i, j;
   int kx, ky, iy, jx, jy, ix;
@@ -22,7 +22,7 @@ int gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE 
   }
 
   // Quick return if possible
-  if (!M || !N || alpha == 0 && beta == 1) return 0;
+  if (!M || !N || *alpha == 0 && *beta == 1) return 0;
 
   if (Trans == CblasNoTrans) {
     lenX = N;
@@ -39,34 +39,34 @@ int gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE 
   else          ky =  (lenY - 1) * -incY;
 
   // Start the operations. In this version, the elements of A are accessed sequentially with one pass through A.
-  if (beta != 1) {
+  if (*beta != 1) {
     if (incY == 1) {
-      if (beta == 0) {
+      if (*beta == 0) {
         for (i = 0; i < lenY; ++i) {
           Y[i] = 0;
         }
       } else {
         for (i = 0; i < lenY; ++i) {
-          Y[i] *= beta;
+          Y[i] *= *beta;
         }
       }
     } else {
       iy = ky;
-      if (beta == 0) {
+      if (*beta == 0) {
         for (i = 0; i < lenY; ++i) {
           Y[iy] = 0;
           iy += incY;
         }
       } else {
         for (i = 0; i < lenY; ++i) {
-          Y[iy] *= beta;
+          Y[iy] *= *beta;
           iy += incY;
         }
       }
     }
   }
 
-  if (alpha == 0) return 0;
+  if (*alpha == 0) return 0;
 
   if (Trans == CblasNoTrans) {
 
@@ -75,7 +75,7 @@ int gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE 
     if (incY == 1) {
       for (j = 0; j < N; ++j) {
         if (X[jx] != 0) {
-          temp = alpha * X[jx];
+          temp = *alpha * X[jx];
           for (i = 0; i < M; ++i) {
             Y[i] += A[j+i*lda] * temp;
           }
@@ -85,7 +85,7 @@ int gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE 
     } else {
       for (j = 0; j < N; ++j) {
         if (X[jx] != 0) {
-          temp = alpha * X[jx];
+          temp = *alpha * X[jx];
           iy = ky;
           for (i = 0; i < M; ++i) {
             Y[iy] += A[j+i*lda] * temp;
@@ -107,7 +107,7 @@ int gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE 
         for (i = 0; i < M; ++i) {
           temp += A[j+i*lda]*X[j];
         }
-        Y[jy] += alpha * temp;
+        Y[jy] += *alpha * temp;
         jy += incY;
       }
     } else {
@@ -119,7 +119,7 @@ int gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE 
           ix += incX;
         }
 
-        Y[jy] += alpha * temp;
+        Y[jy] += *alpha * temp;
         jy += incY;
       }
     }

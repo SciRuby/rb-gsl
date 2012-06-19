@@ -18,7 +18,7 @@ int ew_bool(const TYPE* A, const TYPE* B, bool* C, const int n, const enum MathB
       C[i] = A[i] != B[i];
     }
     break;
-#RUBY if blueprint.id != :complex
+#RUBY if !blueprint.is_a?(CSquare::Generator) && blueprint.id != :complex
   case NM_MATHOP_GT:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] > B[i];

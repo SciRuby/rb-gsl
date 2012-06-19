@@ -89,10 +89,6 @@ list
 dense
 yale
 dfuncs
-smmp1
-smmp2
-cblas
-blas
 rational
 csquare
 )

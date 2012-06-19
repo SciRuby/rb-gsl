@@ -77,6 +77,10 @@ void numbmm(const unsigned int n, const unsigned int m,
 
     ic[i+1] = n+1+ndnz;
   }
+
+  // Not normally a part of numbmm. Easier to call it here than to create a new 2D function
+  // pointer array just for smmp_sort_columns.
+  smmp_sort_columns(n, ic, jc, c);
 } /* numbmm_ */
 
 
