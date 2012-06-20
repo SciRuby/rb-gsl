@@ -9,7 +9,7 @@ void symbmm(const unsigned int n, const unsigned int m,
 
 
   for (j = 0; j < m; ++j)
-    mask[j] = -1;
+    mask[j] = UINT_MAX;
 
   if (diagc)  ic[0] = n+1;
   else        ic[0] = 0;

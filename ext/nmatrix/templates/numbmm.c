@@ -14,12 +14,12 @@ void numbmm(const unsigned int n, const unsigned int m,
   UINT minmn = NM_MIN(m,n);
 
   for (i = 0; i < m; ++i) { // initialize scratch arrays
-    next[i] = -1;
+    next[i] = UINT_MAX;
     sums[i] = 0;
   }
 
   for (i = 0; i < n; ++i) { // walk down the rows
-    head = -2; // head gets assigned as whichever column of B's row j we last visited
+    head = UINT_MAX-1; // head gets assigned as whichever column of B's row j we last visited
     length = 0;
 
     jj_start = ia[i];
@@ -49,7 +49,7 @@ void numbmm(const unsigned int n, const unsigned int m,
           sums[k] += v*b[kk];
         }
 
-        if (next[k] == -1) {
+        if (next[k] == UINT_MAX) {
           next[k] = head;
           head    = k;
           ++length;
@@ -71,7 +71,7 @@ void numbmm(const unsigned int n, const unsigned int m,
       temp = head;
       head = next[head];
 
-      next[temp] = -1;
+      next[temp] = UINT_MAX;
       sums[temp] = 0;
     }
 

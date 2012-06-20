@@ -773,10 +773,10 @@ if $IN_MAKEFILE
 
     # This basic type is used for Yale indices
     c.blueprint(:unsigned_integer, 'UINT') do |t|
-      t.type :u64, 'u_int64_t'
-      t.type :u32, 'u_int32_t', :long => :u64
-      t.type :u16, 'u_int16_t', :long => :u32
-      t.type :u8,  'u_int8_t',  :long => :i16
+      t.type :u64, 'u_int64_t', :max => 'UINT64_MAX'
+      t.type :u32, 'u_int32_t', :long => :u64, :max => 'UINT32_MAX'
+      t.type :u16, 'u_int16_t', :long => :u32, :max => 'UINT16_MAX'
+      t.type :u8,  'u_int8_t',  :long => :i16, :max => 'UINT8_MAX'
 
       t.sources %w{symbmm}
     end
@@ -787,7 +787,7 @@ if $IN_MAKEFILE
       t.type :f32, 'float'
       t.type :f64, 'double'
 
-      t.sources %w{gemm gemv eqeq ew_hom ew_bool ew_bit det_exact}
+      t.sources %w{gemm gemv eqeq ew_hom ew_bool ew_bit det_exact mod2 err2}
 
       t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
 
@@ -801,7 +801,7 @@ if $IN_MAKEFILE
       t.type :c64, 'complex64', :long => :c128, 'FLOAT' => :f32
       t.type :c128, 'complex128', 'FLOAT' => :f64
 
-      t.sources %w{gemm gemv conjeq eqeq det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4}
+      t.sources %w{gemm gemv conjeq eqeq det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4 add2 sub2 mul2 div2 norm2}
 
       t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
 
@@ -836,7 +836,7 @@ if $IN_MAKEFILE
 
       # Source files which should be templated for this type. Some of these may be needed for
       # the operations given by :op (below).
-      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4 mod4 add2 sub2 mul2 div2 mod2}
 
       # Additional source files that make use of multiple blueprints
       t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
@@ -872,7 +872,7 @@ if $IN_MAKEFILE
     c.blueprint(:object, 'TYPE') do |t|
       t.type :v, 'VALUE'
 
-      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit add2 sub2 mul2 div2 mod2}
 
       t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
 
