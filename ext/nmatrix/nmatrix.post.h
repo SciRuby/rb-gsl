@@ -26,6 +26,7 @@ extern nm_incfunc_t Increment;
 extern ID nm_id_real, nm_id_imag;
 extern ID nm_id_denom, nm_id_numer;
 extern ID nm_id_mult, nm_id_multeq, nm_id_add;
+extern VALUE nm_eDataTypeError, nm_eStorageTypeError;
 
 //TODO: Auto-generate this
 extern int (*EwDenseHom[15])(const void *, const void *, void *, const int, enum MathHomOps);

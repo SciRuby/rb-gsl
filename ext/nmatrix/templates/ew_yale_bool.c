@@ -1,4 +1,4 @@
-int ew_yale_bool(const TYPE* a, const TYPE* b, TYPE* c,
+int ew_yale_bool(const TYPE* a, const TYPE* b, bool* c,
             const UINT* ija, const UINT* ijb, UINT* ijc,
             const unsigned int n, const unsigned int m, const enum MathBoolOps op)
 {

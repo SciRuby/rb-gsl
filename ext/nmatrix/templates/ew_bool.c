@@ -3,11 +3,15 @@ int ew_bool(const TYPE* A, const TYPE* B, bool* C, const int n, const enum MathB
   int i;
 
   switch(op) {
-  case NM_MATHOP_BANG:
+// This can't work properly because C[i] is bool, so it doesn't know to look in the blueprint for
+// the !@ op. Even if it did, it would produce something like C[i] = (struct rational128) { 0, 1 };
+// which doesn't make any sense.
+// TODO: Fix !@ bang operator for ew_bool.
+/*  case NM_MATHOP_BANG:
     for (i = 0; i < n; ++i) {
       C[i] = !A[i];
     }
-    break;
+    break; */
   case NM_MATHOP_EQEQ:
     for (i = 0; i < n; ++i) {
       C[i] = A[i] == B[i];

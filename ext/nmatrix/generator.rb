@@ -749,9 +749,9 @@ if $IN_MAKEFILE
 
       t.index 'MathHomOps', [:'*', :'/', :'+', :'-', :'%'] => :inline, :default => 'err2'
 
-      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer #ew_yale_bit
 
-      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool} # ew_bit}
     end
 
     # This basic type should have its functions in the int directory
@@ -763,12 +763,12 @@ if $IN_MAKEFILE
 
       t.index 'MathHomOps', [:'*', :'/', :'+', :'-', :'%'] => :inline, :default => 'err2'
 
-      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer # ew_yale_bit
 
       # Generator will first look in templates/ a
       #nd then look in templates/integer for each
       # of these functions.
-      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit gcf}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool gcf} #ew_bit
     end
 
     # This basic type is used for Yale indices
@@ -787,9 +787,9 @@ if $IN_MAKEFILE
       t.type :f32, 'float'
       t.type :f64, 'double'
 
-      t.sources %w{gemm gemv eqeq ew_hom ew_bool ew_bit det_exact mod2 err2}
+      t.sources %w{gemm gemv eqeq ew_hom ew_bool det_exact mod2 err2} #ew_bit
 
-      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer #ew_yale_bit
 
       t.index 'MathHomOps', [:'*', :'/', :'+', :'-'] => :inline, :'%' => 'mod2', :default => 'err2'
 
@@ -801,9 +801,9 @@ if $IN_MAKEFILE
       t.type :c64, 'complex64', :long => :c128, 'FLOAT' => :f32
       t.type :c128, 'complex128', 'FLOAT' => :f64
 
-      t.sources %w{gemm gemv conjeq eqeq det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4 add2 sub2 mul2 div2 norm2}
+      t.sources %w{gemm gemv conjeq eqeq det_exact ew_hom ew_bool downcast add4 sub4 mul4 div4 add2 sub2 mul2 div2 norm2} # ew_bit
 
-      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer #ew_yale_bit
 
       t.index 'MathHomOps', :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'norm2', :default => 'err2'
 
@@ -836,10 +836,10 @@ if $IN_MAKEFILE
 
       # Source files which should be templated for this type. Some of these may be needed for
       # the operations given by :op (below).
-      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit downcast add4 sub4 mul4 div4 mod4 add2 sub2 mul2 div2 mod2}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool downcast add4 sub4 mul4 div4 mod4 add2 sub2 mul2 div2 mod2} #ew_bit
 
       # Additional source files that make use of multiple blueprints
-      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer # ew_yale_bit
 
       t.index 'MathHomOps', :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2', :default => 'err2'
 
@@ -872,9 +872,9 @@ if $IN_MAKEFILE
     c.blueprint(:object, 'TYPE') do |t|
       t.type :v, 'VALUE'
 
-      t.sources %w{gemm gemv det_exact ew_hom ew_bool ew_bit add2 sub2 mul2 div2 mod2}
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool add2 sub2 mul2 div2 mod2} # ew_bit
 
-      t.sources %w{ew_yale_hom ew_yale_bit ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer # ew_yale_bit
 
       t.index 'MathHomOps', :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2', :default => 'err2'
 
@@ -908,6 +908,7 @@ if $IN_MAKEFILE
 
     c.index 'Symbmm', :on => 'NMatrix_ITypes', :with => 'symbmm'
     c.index 'Numbmm', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'numbmm'
+    c.index 'SmmpSortColumns', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'smmp_sort_columns'
 
     c.index 'Transp', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'transp'
     c.index 'DetExact', :on => 'NMatrix_DTypes', :with => 'det_exact'

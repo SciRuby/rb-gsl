@@ -166,15 +166,18 @@ static NMATRIX* multiply_matrix_yale_casted(STORAGE_PAIR casted_storage, size_t*
 
   // We can safely get dtype from the casted matrices; post-condition of binary_storage_cast_alloc is that dtype is the
   // same for left and right.
-  int8_t dtype = left->dtype;
+  // int8_t dtype = left->dtype;
 
   // Create result storage.
-  result = create_yale_storage(dtype, resulting_shape, 2, left->capacity + right->capacity);
+  result = create_yale_storage(left->dtype, resulting_shape, 2, left->capacity + right->capacity);
   init_yale_storage(result);
 
   // Do the multiplication
   Symbmm[left->index_dtype](result->shape[0], result->shape[1], left->ija, left->ija, true, right->ija, right->ija, true, result->ija, true);
-  Numbmm[dtype][left->index_dtype](result->shape[0], result->shape[1], left->ija, left->ija, left->a, true, right->ija, right->ija, right->a, true, result->ija, result->ija, result->a, true);
+  Numbmm[left->dtype][left->index_dtype](result->shape[0], result->shape[1], left->ija, left->ija, left->a, true, right->ija, right->ija, right->a, true, result->ija, result->ija, result->a, true);
+
+  // Sort the columns
+  SmmpSortColumns[left->dtype][left->index_dtype](result->shape[0], result->ija, result->ija, result->a);
 
   return nm_create(S_YALE, result);
 }

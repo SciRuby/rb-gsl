@@ -414,6 +414,7 @@ const int nm_sizeof[15] = {
 #define NM_IsCOMPLEX(a) \
     (NM_DTYPE(a)==NM_COMPLEX32 || NM_DTYPE(a)==NM_COMPLEX64)
 #define NM_MAX(a,b) (((a)>(b))?(a):(b))
+#define NM_MIN(a,b) (((a)>(b))?(b):(a))
 #define NM_SWAP(a,b,tmp) {(tmp)=(a);(a)=(b);(b)=(tmp);}
 
 //#define NUM2REAL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) ) // deprecated
@@ -484,5 +485,6 @@ extern int (*Gemm[15])(const enum CBLAS_TRANSPOSE, const enum CBLAS_TRANSPOSE, c
 extern int (*Gemv[15])(const enum CBLAS_TRANSPOSE, const int, const int, const void *, const void *, const int, const void *, const int, const void *, void *, const int);
 extern void (*Symbmm[7])(const unsigned int, const unsigned int, const void *, const void *, const bool, const void *, const void *, const bool, void *, const bool);
 extern void (*Numbmm[15][7])(const unsigned int, const unsigned int, const void *, const void *, const void *, const bool, const void *, const void *, const void *, const bool, void *, void *, void *, const bool);
+extern void (*SmmpSortColumns[15][7])(const unsigned int, const void *, void *, void *);
 extern void (*Transp[15][7])(const unsigned int, const unsigned int, const void *, const void *, const void *, const bool, void *, void *, void *, const bool);
 extern void (*DetExact[15])(const int, const void *, const int, void *);
