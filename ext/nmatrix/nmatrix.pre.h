@@ -368,25 +368,6 @@ typedef struct storage_pair_t {
 extern VALUE cNMatrix;
 #endif
 
-//TODO: Auto-generate this
-const int nm_sizeof[15] = {
-  0,
-  sizeof(u_int8_t),
-  sizeof(int8_t),
-  sizeof(int16_t),
-  sizeof(int32_t),
-  sizeof(int64_t),
-  sizeof(float),
-  sizeof(double),
-  sizeof(complex64),
-  sizeof(complex128),
-  sizeof(rational32),
-  sizeof(rational64),
-  sizeof(rational128),
-  sizeof(VALUE),
-  0,
-};
-
 
 #define NM_MAX_RANK 15
 

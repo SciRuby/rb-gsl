@@ -32,6 +32,7 @@
 
 #include "nmatrix.h"
 extern bool (*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
+extern const int nm_sizeof[NM_TYPES];
 
 /* Calculate the number of elements in the dense storage structure, based on shape and rank */
 size_t count_dense_storage_elements(const DENSE_STORAGE* s) {
