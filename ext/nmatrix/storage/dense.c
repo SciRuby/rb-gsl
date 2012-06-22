@@ -42,7 +42,7 @@ extern const int	nm_sizeof[NM_TYPES];
 
 // Forward Declarations
 
-static inline void cast_copy_dense_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
+static void cast_copy_dense_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
 	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
 
 static void cast_copy_dense_list_contents(void* lhs, const LIST* rhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
@@ -167,7 +167,7 @@ DENSE_STORAGE* cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype) {
 
 
 // Copy a set of default values into dense
-static inline void cast_copy_dense_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
+static void cast_copy_dense_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
   size_t i;
 
   for (i = 0; i < shape[rank-1-recursions]; ++i, ++(*pos)) {

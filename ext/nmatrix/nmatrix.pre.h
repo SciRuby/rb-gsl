@@ -182,10 +182,6 @@ typedef struct rational128 { int64_t n,d; } rational128;
 # endif
 #endif
 
-
-#define YALE_GROWTH_CONSTANT    1.5
-
-
 enum NMatrix_STypes {
   S_DENSE,
   S_LIST,

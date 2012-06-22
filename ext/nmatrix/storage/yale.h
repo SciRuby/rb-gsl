@@ -48,6 +48,8 @@
 
 // Macros
 
+#define YALE_GROWTH_CONSTANT 1.5
+
 // Types
 
 typedef struct {
