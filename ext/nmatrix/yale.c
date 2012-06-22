@@ -42,9 +42,9 @@
 
 #include "nmatrix.h"
 
-extern nm_eqeq_t ElemEqEq;
+extern bool (*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
 extern VALUE nm_eStorageTypeError;
-
+extern const int nm_sizeof[NM_TYPES];
 
 extern const char *nm_dtypestring[];
 

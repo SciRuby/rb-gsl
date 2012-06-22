@@ -655,6 +655,7 @@ if $IN_MAKEFILE
   # Order matters for these templates! Many functions are static.
   #
 
+=begin
   Generator::Templater.new('smmp1.c', :in => 'yale', :boilerplate => 'smmp1_header') do |c|
     # 1-type interface functions for SMMP
     c.template 'smmp1', :TYPE => Generator::INDEX_DTYPES
@@ -690,5 +691,244 @@ if $IN_MAKEFILE
 
     c.update_header 'nmatrix'
   end
+=end
+
+  require "csquare"
+
+  CSquare::Generator.new('../../../../ext/nmatrix/templates', 'csquare', :include_header => "nmatrix.h") do |c|
+
+    c.externs(
+      'NM_MAX'          => :integer,
+      'NM_MIN'          => :integer,
+      'CblasNoTrans'    => 'char',
+      'stderr'          => :integer,
+      'rb_raise'        => 'VALUE',
+      'rb_eArgError'    => 'VALUE',
+      'rb_eNotImpError' => 'VALUE',
+      'nm_eDataTypeError' => 'VALUE',
+      'fmod'            => :float
+    )
+
+    c.enumerate 'MathHomOps', :ops => CSquare::Generator::BINARY_CAST_TO_OP.values, :prefix => 'NM_MATHOP', :with => :SparseOpNamer
+    c.enumerate 'MathBoolOps', :ops => CSquare::Generator::BOOL_CAST_TO_OP.values, :prefix => 'NM_MATHOP', :with => :SparseOpNamer
+    c.enumerate 'MathBitOps', :ops => CSquare::Generator::BIT_CAST_TO_OP.values + [:'~'], :prefix => 'NM_MATHOP', :with => :SparseOpNamer
+    c.enumerate 'NMatrix_DTypes', :types => {
+        NONE: nil,
+        BYTE: :b,
+        INT8: :i8,
+        INT16: :i16,
+        INT32: :i32,
+        INT64: :i64,
+        FLOAT32: :f32,
+        FLOAT64: :f64,
+        COMPLEX64: :c64,
+        COMPLEX128: :c128,
+        RATIONAL32: :r32,
+        RATIONAL64: :r64,
+        RATIONAL128: :r128,
+        ROBJ: :v,
+        TYPES: nil}, :prefix => 'NM'
+
+    # Subset of dtypes
+    c.enumerate 'NMatrix_ITypes', :types => {
+        NONE: nil,
+        BYTE: nil,
+        UINT8: :u8,
+        UINT16: :u16,
+        UINT32: :u32,
+        UINT64: :u64,
+        TYPES: nil
+    }, :prefix => 'NM_I'
+
+    c.blueprint(:boolean, 'TYPE') do |t|
+      t.type :_bool_, 'bool'
+    end
+
+    c.blueprint(:byte, 'TYPE') do |t|
+      t.type :b, 'u_int8_t', :long => :u16
+
+      t.index 'MathHomOps', [:'*', :'/', :'+', :'-', :'%'] => :inline, :default => 'err2'
+
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer #ew_yale_bit
+
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool} # ew_bit}
+    end
+
+    # This basic type should have its functions in the int directory
+    c.blueprint(:integer, 'TYPE') do |t|
+      t.type :i64, 'int64_t'
+      t.type :i32, 'int32_t', :long => :i64
+      t.type :i16, 'int16_t', :long => :i32
+      t.type :i8, 'int8_t', :long => :i16
+
+      t.index 'MathHomOps', [:'*', :'/', :'+', :'-', :'%'] => :inline, :default => 'err2'
+
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer # ew_yale_bit
+
+      # Generator will first look in templates/ a
+      #nd then look in templates/integer for each
+      # of these functions.
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool gcf} #ew_bit
+    end
+
+    # This basic type is used for Yale indices
+    c.blueprint(:unsigned_integer, 'UINT') do |t|
+      t.type :u64, 'u_int64_t', :max => 'UINT64_MAX'
+      t.type :u32, 'u_int32_t', :long => :u64, :max => 'UINT32_MAX'
+      t.type :u16, 'u_int16_t', :long => :u32, :max => 'UINT16_MAX'
+      t.type :u8,  'u_int8_t',  :long => :i16, :max => 'UINT8_MAX'
+
+      t.sources %w{symbmm}
+    end
+
+
+    # Do this to register abbreviations for basic types
+    c.blueprint(:float, 'TYPE') do |t|
+      t.type :f32, 'float'
+      t.type :f64, 'double'
+
+      t.sources %w{gemm gemv eqeq ew_hom ew_bool det_exact mod2 err2} #ew_bit
+
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer #ew_yale_bit
+
+      t.index 'MathHomOps', [:'*', :'/', :'+', :'-'] => :inline, :'%' => 'mod2', :default => 'err2'
+
+      t.op :'%', 'TYPE' => 'fmod($0, $1)', 'LONG_TYPE' => 'fmod($0, (double)($1))'
+    end
+
+
+    c.blueprint(:complex, 'TYPE', :r => 'FLOAT', :i => 'FLOAT') do |t|
+      t.type :c64, 'complex64', :long => :c128, 'FLOAT' => :f32
+      t.type :c128, 'complex128', 'FLOAT' => :f64
+
+      t.sources %w{gemm gemv conjeq eqeq det_exact ew_hom ew_bool downcast add4 sub4 mul4 div4 add2 sub2 mul2 div2 norm2} # ew_bit
+
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer #ew_yale_bit
+
+      t.index 'MathHomOps', :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'norm2', :default => 'err2'
+
+      t.op :'==', 'TYPE' => '$0.r == $1.r && $0.i == $1.i', [:integer, :float] => '$0.r == $1 && $0.i == 0'
+      t.op :'!=', 'TYPE' => '$0.r != $1.r || $0.i != $1.i', [:integer, :float] => '$0.r != $1 || $0.i != 0'
+
+      t.op :'=', 'LONG_TYPE' => '$0 = downcast($1)', [:integer, :boolean, :float] => '$0 = (struct TYPE) { $1, 0 }'
+
+      t.op :'*', 'TYPE' => 'mul2($0, $1)', :cast => 'mul4($0.r, $0.i, $1.r, $1.i)', [:integer, :float] => 'mul4($0.r, $0.i, $1, 0)'
+      t.op :'/', 'TYPE' => 'div2($0, $1)', :cast => 'div4($0.r, $0.i, $1.r, $1.i)', [:integer, :float] => 'div4($0.r, $0.i, $1, 0)'
+      t.op :'+', 'TYPE' => 'add2($0, $1)', :cast => 'add4($0.r, $0.i, $1.r, $1.i)'
+      t.op :'-', 'TYPE' => 'sub2($0, $1)', :cast => 'sub4($0.r, $0.i, $1.r, $1.i)'
+      t.op :'%', 'TYPE' => 'norm2($0, $1)', :cast => 'norm4($0.n, $0.d, $1.n, $1.d)', :integer => 'norm4($0.n, $0.d, $1, 0)'
+
+      # Don't specify patterns for these. Just including them will tell the blueprint to expand them.
+      t.op :'*='
+      t.op :'/='
+      t.op :'+='
+      t.op :'-='
+    end
+
+
+    # this basic type's operations should be in the rational directory.
+    c.blueprint(:rational, 'TYPE', :n => 'INT', :d => 'INT') do |t|
+      t.type :r32, 'rational32', :long => :r64, 'INT' => :i16
+      t.type :r64, 'rational64', :long => :r128, 'INT' => :i32
+      t.type :r128, 'rational128', 'INT' => :i64
+
+      t.externs 'gcf' => 'INT'
+
+      # Source files which should be templated for this type. Some of these may be needed for
+      # the operations given by :op (below).
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool downcast add4 sub4 mul4 div4 mod4 add2 sub2 mul2 div2 mod2} #ew_bit
+
+      # Additional source files that make use of multiple blueprints
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer # ew_yale_bit
+
+      t.index 'MathHomOps', :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2', :default => 'err2'
+
+      # Only use this form for simple operations that don't need temporary variables and don't call other functions.
+      t.op :'==', 'TYPE' => '$0.n == $1.n && $0.d == $1.d', 1 => '$0.n == $0.d', 0 => '$0.n == 0'
+      t.op :'!=', 'TYPE' => '$0.n != $1.n || $0.d != $1.d', 1 => '$0.n != $0.d', 0 => '$0.n != 0'
+      t.op :'<',  'TYPE' => '$0.n * (int64_t)$1.d < $1.n * (int64_t)$0.d'
+      t.op :'<=', 'TYPE' => '$0.n * (int64_t)$1.d <= $1.n * (int64_t)$0.d'
+      t.op :'>',  'TYPE' => '$0.n * (int64_t)$1.d > $1.n * (int64_t)$0.d'
+      t.op :'>=', 'TYPE' => '$0.n * (int64_t)$1.d >= $1.n * (int64_t)$0.d'
+      t.op :'!@', 'TYPE' => '(struct TYPE) { !$0.n, 1 }'
+
+      t.op :'=', [:integer, :boolean] => '$0 = (struct TYPE) { $1, 1 }', 'LONG_TYPE' => '$0 = downcast($1)'
+
+      t.op :'*', 'TYPE' => 'mul2($0, $1)', :cast => 'mul4($0.n, $0.d, $1.n, $1.d)', :integer => 'mul4($0.n, $0.d, $1, 1)'
+      t.op :'/', 'TYPE' => 'div2($0, $1)', :cast => 'div4($0.n, $0.d, $1.n, $1.d)', :integer => 'div4($0.n, $0.d, $1, 1)'
+      t.op :'+', 'TYPE' => 'add2($0, $1)', :cast => 'add4($0.n, $0.d, $1.n, $1.d)', :integer => 'add4($0.n, $0.d, $1, 1)'
+      t.op :'-', 'TYPE' => 'sub2($0, $1)', :cast => 'sub4($0.n, $0.d, $1.n, $1.d)', :integer => 'sub4($0.n, $0.d, $1, 1)'
+      t.op :'%', 'TYPE' => 'mod2($0, $1)', :cast => 'mod4($0.n, $0.d, $1.n, $1.d)', :integer => 'mod4($0.n, $0.d, $1, 1)'
+
+      t.op :'*='
+      t.op :'/='
+      t.op :'+='
+      t.op :'-='
+
+      t.op :'-@', 'TYPE' => '(struct TYPE) { -$0.n, $0.d }'
+    end
+
+    # Ruby object
+    c.blueprint(:object, 'TYPE') do |t|
+      t.type :v, 'VALUE'
+
+      t.sources %w{gemm gemv det_exact ew_hom ew_bool add2 sub2 mul2 div2 mod2} # ew_bit
+
+      t.sources %w{ew_yale_hom ew_yale_bool numbmm smmp_sort_columns transp}, 'UINT' => :unsigned_integer # ew_yale_bit
+
+      t.index 'MathHomOps', :'*' => 'mul2', :'/' => 'div2', :'+' => 'add2', :'-' => 'sub2', :'%' => 'mod2', :default => 'err2'
+
+      t.op :'==', 'TYPE' => 'rb_funcall($0, rb_intern("=="), 1, $1)'
+      t.op :'<=', 'TYPE' => 'rb_funcall($0, rb_intern("<="), 1, $1)'
+      t.op :'>=', 'TYPE' => 'rb_funcall($0, rb_intern(">="), 1, $1)'
+      t.op :'<',  'TYPE' => 'rb_funcall($0, rb_intern("<"),  1, $1)'
+      t.op :'>',  'TYPE' => 'rb_funcall($0, rb_intern(">"),  1, $1)'
+      t.op :'!=', 'TYPE' => 'rb_funcall($0, rb_intern("!="), 1, $1)'
+      t.op :'!@', 'TYPE' => 'rb_funcall($0, rb_intern("!@"), 0)'
+
+      t.op :'=', :integer => '$0 = INT2FIX($1)'
+
+      t.op :'+', 'TYPE' => 'rb_funcall($0, rb_intern("+"), 1, $1)'
+      t.op :'-', 'TYPE' => 'rb_funcall($0, rb_intern("-"), 1, $1)'
+      t.op :'*', 'TYPE' => 'rb_funcall($0, rb_intern("*"), 1, $1)'
+      t.op :'/', 'TYPE' => 'rb_funcall($0, rb_intern("/"), 1, $1)'
+      t.op :'%', 'TYPE' => 'rb_funcall($0, rb_intern("%"), 1, $1)'
+
+      t.op :'+='
+      t.op :'-='
+      t.op :'*='
+      t.op :'/='
+      t.op :'%='
+
+      t.op :'-@', 'TYPE' => 'rb_funcall($0, rb_intern("-@"), 0)'
+    end
+
+    c.index 'Gemm', :on => 'NMatrix_DTypes', :with => 'gemm'
+    c.index 'Gemv', :on => 'NMatrix_DTypes', :with => 'gemv'
+
+    c.index 'Symbmm', :on => 'NMatrix_ITypes', :with => 'symbmm'
+    c.index 'Numbmm', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'numbmm'
+    c.index 'SmmpSortColumns', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'smmp_sort_columns'
+
+    c.index 'Transp', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'transp'
+    c.index 'DetExact', :on => 'NMatrix_DTypes', :with => 'det_exact'
+
+    # Elementwise dense
+    c.index 'EwDenseHom', :on => 'NMatrix_DTypes', :with => 'ew_hom'
+    c.index 'EwDenseBool', :on => 'NMatrix_DTypes', :with => 'ew_bool'
+    #c.index 'EwDenseBit', :on => 'NMatrix_DTypes', :with => 'ew_bit'
+
+    # Elementwise yale
+    c.index 'EwYaleHom', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'ew_yale_hom'
+    c.index 'EwYaleBool', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'ew_yale_bool'
+    #c.index 'EwYaleBit', :on => %w{NMatrix_DTypes NMatrix_ITypes}, :with => 'ew_yale_bit'
+
+  end
 
 end
+
+`rm nmatrix.h`
+
+d = $RELATIVE_PATH + Generator::SRC_DIR + '/'
+
+`cat #{d}nmatrix.pre.h csquare.h #{d}nmatrix.post.h >> nmatrix.h`
