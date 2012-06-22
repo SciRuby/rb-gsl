@@ -54,12 +54,22 @@ extern const char	*nm_dtypestring[];
 
 // Forward Declarations
 
+static bool ndrow_is_empty(const YALE_STORAGE* s, y_size_t ija, const y_size_t ija_next, const void* ZERO);
+static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_size_t l_ija, const y_size_t l_ija_next, y_size_t r_ija, const y_size_t r_ija_next, const void* ZERO);
+static char yale_vector_replace_j(YALE_STORAGE* s, y_size_t pos, y_size_t* j);
+static YALE_STORAGE* copy_alloc_yale_storage_struct(const YALE_STORAGE* rhs, const int8_t new_dtype, const y_size_t new_capacity, const y_size_t new_size);
+static void clear_diagonal_and_zero(YALE_STORAGE* s);
+static void yale_storage_increment_ia_after(YALE_STORAGE* s, y_size_t ija_size, y_size_t i, y_size_t n);
+static y_size_t yale_storage_insert_search(YALE_STORAGE* s, y_size_t left, y_size_t right, y_size_t key, bool* found);
+static YALE_STORAGE* alloc_yale_storage(int8_t dtype, size_t* shape, size_t rank);
+
 // Functions
 
 void print_vectors(YALE_STORAGE* s) {
   size_t i;
   fprintf(stderr, "------------------------------\n");
-  fprintf(stderr, "dtype:%s\tshape:%dx%d\tndnz:%d\tcapacity:%d\tindex_dtype:%s\n", nm_dtypestring[s->dtype], s->shape[0], s->shape[1], s->ndnz, s->capacity, nm_dtypestring[s->index_dtype]);
+  fprintf(stderr, "dtype:%s\tshape:%dx%d\tndnz:%d\tcapacity:%d\tindex_dtype:%s\n",
+  	nm_dtypestring[s->dtype], s->shape[0], s->shape[1], s->ndnz, s->capacity, nm_dtypestring[s->index_dtype]);
 
 
   if (s->capacity > 60) rb_raise(rb_eArgError, "overflow in print_vectors; cannot handle that large of a vector");
@@ -814,5 +824,3 @@ void* yale_storage_ref(YALE_STORAGE* s, SLICE* slice) {
   // return a pointer that happens to be zero
   return YALE_A(s, nm_sizeof[s->dtype], s->shape[0]);
 }
-
-#endif
