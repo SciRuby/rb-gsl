@@ -50,6 +50,14 @@ class Array
 	
 		if stype != :dense then matrix.cast(stype, dtype) else matrix end
 	end
+	
+	def max
+		self.inject(self.first) { |m, n| if n < m then n else m end }
+	end
+
+	def min
+		self.inject(self.first) { |m, n| if n > m then n else m end }
+	end
 end
 
 class Object

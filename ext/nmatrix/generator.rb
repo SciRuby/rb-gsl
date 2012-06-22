@@ -40,9 +40,9 @@ $IN_MAKEFILE = begin
   end
 end
 
-require File.join($RELATIVE_PATH, "lib/string.rb") # from the Makefile
-require File.join($RELATIVE_PATH, "ext/nmatrix/generator/syntax_tree.rb")
-require File.join($RELATIVE_PATH, "ext/nmatrix/generator/templater.rb")
+require File.join($RELATIVE_PATH, "lib/nmatrix/monkeys") # from the Makefile
+require File.join($RELATIVE_PATH, "ext/nmatrix/generator/syntax_tree")
+require File.join($RELATIVE_PATH, "ext/nmatrix/generator/templater")
 
 class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type)
   def max_macro
@@ -68,26 +68,6 @@ class DTypeInfo < Struct.new(:enum, :sizeof, :sym, :id, :type)
     Generator::DTYPES.select { |x| x.type == self.type }.last
   end
 end
-
-
-class Array
-  def max
-    found_max   = nil
-    self.each_index do |i|
-      found_max = self[i] if found_max.nil? || self[i] > found_max
-    end
-    found_max
-  end
-
-  def min
-    found_min   = nil
-    self.each_index do |i|
-      found_min = self[i] if found_min.nil? || self[i] < found_min
-    end
-    found_min
-  end
-end
-
 
 module Generator
   SRC_DIR = File.join("ext", "nmatrix")
