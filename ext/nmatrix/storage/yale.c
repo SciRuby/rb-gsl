@@ -35,19 +35,26 @@
 // * vectors must be able to grow as necessary
 //      * maximum size is rows*cols+1
 
-#ifndef YALE_C
-# define YALE_C
+// Standard Includes
 
-#include <ruby.h> // mostly for exceptions
+#include <ruby.h>
+
+// Project Includes
 
 #include "nmatrix.h"
 
-extern bool (*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
-extern VALUE nm_eStorageTypeError;
-extern const int nm_sizeof[NM_TYPES];
+// Macros
 
-extern const char *nm_dtypestring[];
+// Global Variables
 
+extern						VALUE nm_eStorageTypeError;
+extern bool				(*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
+extern const int	nm_sizeof[NM_TYPES];
+extern const char	*nm_dtypestring[];
+
+// Forward Declarations
+
+// Functions
 
 void print_vectors(YALE_STORAGE* s) {
   size_t i;

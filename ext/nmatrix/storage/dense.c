@@ -25,14 +25,30 @@
 //
 // Dense n-dimensional matrix storage.
 
-#ifndef DENSE_C
-#define DENSE_C
+// Standard Includes
 
 #include <ruby.h>
 
-#include "nmatrix.h"
-extern bool (*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
-extern const int nm_sizeof[NM_TYPES];
+// Project Includes
+
+#include "dense.h"
+
+// Macros
+
+// Global Variables
+
+extern bool				(*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
+extern const int	nm_sizeof[NM_TYPES];
+
+// Forward Declarations
+
+static inline void cast_copy_dense_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
+	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
+
+static void cast_copy_dense_list_contents(void* lhs, const LIST* rhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
+	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
+
+// Functions
 
 /* Calculate the number of elements in the dense storage structure, based on shape and rank */
 size_t count_dense_storage_elements(const DENSE_STORAGE* s) {
@@ -349,7 +365,3 @@ void mark_dense_storage(void* m) {
         rb_gc_mark(*((VALUE*)((char*)(storage->elements) + i*nm_sizeof[NM_ROBJ])));
   }
 }
-
-
-
-#endif

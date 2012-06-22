@@ -26,16 +26,25 @@
 // List-of-lists n-dimensional matrix storage. Uses singly-linked
 // lists.
 
-#ifndef LIST_C
-# define LIST_C
+// Standard Includes
 
 #include <ruby.h>
 
+// Project Includes
+
 #include "nmatrix.h"
 
-extern VALUE nm_eStorageTypeError;
-extern bool (*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
-extern const int nm_sizeof[NM_TYPES];
+// Macros
+
+// Global Variables
+
+extern						VALUE nm_eStorageTypeError;
+extern bool				(*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
+extern const int	nm_sizeof[NM_TYPES];
+
+// Forward Declarations
+
+// Functions
 
 /* Calculate the max number of elements in the list storage structure, based on shape and rank */
 inline size_t count_storage_max_elements(const STORAGE* s) {
