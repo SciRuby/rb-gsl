@@ -18,28 +18,31 @@ int gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, c
 
   // Test the input parameters
   if (TransA < 111 || TransA > 113) {
-    fprintf(stderr, "GEMM: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans\n");
+    rb_raise(rb_eArgError, "GEMM: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans");
     return 0;
   } else if (TransB < 111 || TransB > 113) {
-    fprintf(stderr, "GEMM: TransB must be CblasNoTrans, CblasTrans, or CblasConjTrans\n");
+    rb_raise(rb_eArgError, "GEMM: TransB must be CblasNoTrans, CblasTrans, or CblasConjTrans");
     return 0;
   } else if (M < 0) {
-    fprintf(stderr, "GEMM: Expected M >= 0\n");
+    rb_raise(rb_eArgError, "GEMM: Expected M >= 0");
     return 0;
   } else if (N < 0) {
-    fprintf(stderr, "GEMM: Expected N >= 0\n");
+    rb_raise(rb_eArgError, "GEMM: Expected N >= 0");
     return 0;
   } else if (K < 0) {
-    fprintf(stderr, "GEMM: Expected K >= 0\n");
+    rb_raise(rb_eArgError, "GEMM: Expected K >= 0");
     return 0;
   } else if (lda < NM_MAX(1, num_rows_a)) {
-    fprintf(stderr, "GEMM: Expected lda >= max(1, num_rows_a), with num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
+    fprintf(stderr, "GEMM: num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
+    rb_raise(rb_eArgError, "GEMM: Expected lda >= max(1, num_rows_a)");
     return 0;
   } else if (ldb < NM_MAX(1, num_rows_b)) {
-    fprintf(stderr, "GEMM: Expected ldb >= max(1, num_rows_b), with num_rows_b = %d; got ldb=%d\n", num_rows_b, ldb);
+    fprintf(stderr, "GEMM: num_rows_b = %d; got ldb=%d\n", num_rows_b, ldb);
+    rb_raise(rb_eArgError, "GEMM: Expected ldb >= max(1, num_rows_b)");
     return 0;
   } else if (ldc < NM_MAX(1,M)) {
-    fprintf(stderr, "GEMM: Expected ldc >= max(1,M) with M=%d; got ldc=%d\n", M, ldc);
+    fprintf(stderr, "GEMM: M=%d; got ldc=%d\n", M, ldc);
+    rb_raise(rb_eArgError, "GEMM: Expected ldc >= max(1,M)");
     return 0;
   }
 

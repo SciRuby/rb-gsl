@@ -681,10 +681,12 @@ if $IN_MAKEFILE
       'NM_MAX'          => :integer,
       'NM_MIN'          => :integer,
       'CblasNoTrans'    => 'char',
+      'CblasRowMajor'   => 'char',
       'stderr'          => :integer,
       'rb_raise'        => 'VALUE',
       'rb_eArgError'    => 'VALUE',
       'rb_eNotImpError' => 'VALUE',
+      'rb_eStandardError' => 'VALUE',
       'nm_eDataTypeError' => 'VALUE',
       'fmod'            => :float
     )

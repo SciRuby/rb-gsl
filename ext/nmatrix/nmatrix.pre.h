@@ -193,7 +193,6 @@ enum NMatrix_STypes {
   S_TYPES
 };
 
-
 // Element-wise operations (see blas/elementwise.template.c)
 enum NMatrix_Ops {
   NM_OP_ADD = '+',

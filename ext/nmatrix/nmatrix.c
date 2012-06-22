@@ -209,7 +209,7 @@ static NMATRIX* multiply_matrix_dense_casted(STORAGE_PAIR casted_storage, size_t
 
   // Do the multiplication
   if (vector) Gemv[left->dtype](CblasNoTrans, left->shape[0], left->shape[1], pAlpha, left->elements, left->shape[1], right->elements, 1, pBeta, result->elements, 1);
-  else        Gemm[left->dtype](CblasNoTrans, CblasNoTrans, left->shape[0], right->shape[1], left->shape[1], pAlpha, left->elements, left->shape[1], right->elements, right->shape[1], pBeta, result->elements, result->shape[1]);
+  else        Gemm[left->dtype](CblasNoTrans, CblasNoTrans, right->shape[1], left->shape[0], left->shape[1], pAlpha, right->elements, right->shape[1], left->elements, left->shape[1], pBeta, result->elements, result->shape[1]);
 
   return nm_create(S_DENSE, result);
 }
@@ -1043,7 +1043,7 @@ static VALUE nm_elementwise(VALUE leftv, VALUE rightv, char op) {
  * Not available for list matrices. You should cast to a yale or dense matrix first.
  */
 static VALUE nm_ew_add(VALUE left, VALUE right) {
-  return nm_elementwise(left, right, '+');
+  return nm_elementwise(left, right, NM_MATHOP_ADD);
 }
 
 /*
@@ -1054,7 +1054,7 @@ static VALUE nm_ew_add(VALUE left, VALUE right) {
  * Not available for list matrices. You should cast to a yale or dense matrix first.
  */
 static VALUE nm_ew_subtract(VALUE left, VALUE right) {
-  return nm_elementwise(left, right, '-');
+  return nm_elementwise(left, right, NM_MATHOP_SUB);
 }
 
 /*
@@ -1067,7 +1067,7 @@ static VALUE nm_ew_subtract(VALUE left, VALUE right) {
  * For dot product, use +dot+ instead.
  */
 static VALUE nm_ew_multiply(VALUE left, VALUE right) {
-  return nm_elementwise(left, right, '*');
+  return nm_elementwise(left, right, NM_MATHOP_MUL);
 }
 
 /*
@@ -1078,7 +1078,19 @@ static VALUE nm_ew_multiply(VALUE left, VALUE right) {
  * Not available for list matrices. You should cast to a yale or dense matrix first.
  */
 static VALUE nm_ew_divide(VALUE left, VALUE right) {
-  return nm_elementwise(left, right, '/');
+  return nm_elementwise(left, right, NM_MATHOP_DIV);
+}
+
+
+/*
+ * Matrix element-wise modulus/norm.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ *
+ * Not available for list matrices. You should cast to a yale or dense matrix first.
+ */
+static VALUE nm_ew_mod(VALUE left, VALUE right) {
+  return nm_elementwise(left, right, NM_MATHOP_MOD);
 }
 
 
@@ -1093,7 +1105,7 @@ static VALUE nm_ew_divide(VALUE left, VALUE right) {
  * want, use +cast+.
  */
 static VALUE nm_ew_eqeq(VALUE left, VALUE right) {
-  return nm_elementwise(left, right, NM_OP_EQEQ);
+  return nm_elementwise(left, right, NM_MATHOP_EQEQ);
 }
 
 /*
@@ -1107,7 +1119,7 @@ static VALUE nm_ew_eqeq(VALUE left, VALUE right) {
  * want, use +cast+.
  */
 static VALUE nm_ew_leq(VALUE left, VALUE right) {
-  return nm_elementwise(left, right, NM_OP_LTE);
+  return nm_elementwise(left, right, NM_MATHOP_LTE);
 }
 
 
@@ -1122,7 +1134,7 @@ static VALUE nm_ew_leq(VALUE left, VALUE right) {
  * want, use +cast+.
  */
 static VALUE nm_ew_geq(VALUE left, VALUE right) {
-  return nm_elementwise(left, right, NM_OP_GTE);
+  return nm_elementwise(left, right, NM_MATHOP_GTE);
 }
 
 
@@ -1137,7 +1149,7 @@ static VALUE nm_ew_geq(VALUE left, VALUE right) {
  * want, use +cast+.
  */
 static VALUE nm_ew_lt(VALUE left, VALUE right) {
-  return nm_elementwise(left, right, '<');
+  return nm_elementwise(left, right, NM_MATHOP_LT);
 }
 
 
@@ -1152,7 +1164,7 @@ static VALUE nm_ew_lt(VALUE left, VALUE right) {
  * want, use +cast+.
  */
 static VALUE nm_ew_gt(VALUE left, VALUE right) {
-  return nm_elementwise(left, right, '>');
+  return nm_elementwise(left, right, NM_MATHOP_GT);
 }
 
 
@@ -1167,7 +1179,7 @@ static VALUE nm_ew_gt(VALUE left, VALUE right) {
  * want, use +cast+.
  */
 static VALUE nm_ew_neq(VALUE left, VALUE right) {
-  return nm_elementwise(left, right, NM_OP_NEQ);
+  return nm_elementwise(left, right, NM_MATHOP_NEQ);
 }
 
 
@@ -1428,9 +1440,9 @@ static VALUE nm_cblas_gemm(VALUE self,
   SetFuncs[NM_DTYPE(c)][NM_ROBJ](1, pAlpha, 0, &alpha, 0);
   SetFuncs[NM_DTYPE(c)][NM_ROBJ](1, pBeta, 0, &beta, 0);
 
-  Gemm[NM_DTYPE(c)](gemm_op_sym(trans_a), gemm_op_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha,
-                    ((DENSE_STORAGE*)(NM_STORAGE(a)))->elements, FIX2INT(lda),
-                    ((DENSE_STORAGE*)(NM_STORAGE(b)))->elements, FIX2INT(ldb), pBeta,
+  Gemm[NM_DTYPE(c)](gemm_op_sym(trans_a), gemm_op_sym(trans_b), FIX2INT(n), FIX2INT(m), FIX2INT(k), pAlpha,
+                    ((DENSE_STORAGE*)(NM_STORAGE(b)))->elements, FIX2INT(ldb),
+                    ((DENSE_STORAGE*)(NM_STORAGE(a)))->elements, FIX2INT(lda), pBeta,
                     ((DENSE_STORAGE*)(NM_STORAGE(c)))->elements, FIX2INT(ldc));
 
   return Qtrue;
@@ -1905,12 +1917,15 @@ void Init_nmatrix() {
     rb_define_method(cNMatrix, "/", nm_ew_divide, 1);
     rb_define_method(cNMatrix, "+", nm_ew_add, 1);
     rb_define_method(cNMatrix, "-", nm_ew_subtract, 1);
+    rb_define_method(cNMatrix, "%", nm_ew_mod, 1);
+    /* // TODO: Write new elementwise code for boolean operations
     rb_define_method(cNMatrix, "==", nm_ew_eqeq, 1);
     rb_define_method(cNMatrix, "!=", nm_ew_neq, 1);
     rb_define_method(cNMatrix, "<=", nm_ew_leq, 1);
     rb_define_method(cNMatrix, ">=", nm_ew_geq, 1);
     rb_define_method(cNMatrix, "<", nm_ew_lt, 1);
     rb_define_method(cNMatrix, ">", nm_ew_gt, 1);
+    */
     rb_define_method(cNMatrix, "eql?", nm_eqeq, 1);
     rb_define_method(cNMatrix, "dot", nm_multiply, 1);
     //rb_define_alias(cNMatrix, "equal?", "eql?");

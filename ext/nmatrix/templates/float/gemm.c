@@ -4,7 +4,12 @@ int gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, c
   const TYPE* beta, TYPE* C, const int ldc) {
 
   if (sizeof(TYPE) == sizeof(float))
-    return cblas_sgemm(CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
+    cblas_sgemm(CblasRowMajor, TransB, TransA, N, M, K, *alpha, B, ldb, A, lda, *beta, C, ldc);
   else if (sizeof(TYPE) == sizeof(double))
-    return cblas_dgemm(CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
+    cblas_dgemm(CblasRowMajor, TransB, TransA, N, M, K, *alpha, B, ldb, A, lda, *beta, C, ldc);
+  else
+    rb_raise(rb_eStandardError, "unrecognized type");
+
+  return 0;
+  // CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc
 }

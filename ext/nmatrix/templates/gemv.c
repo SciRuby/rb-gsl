@@ -8,16 +8,17 @@ int gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const TYPE*
 
   // Test the input parameters
   if (Trans < 111 || Trans > 113) {
-    fprintf(stderr, "IGEMV: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans\n");
+    rb_raise(rb_eArgError, "GEMV: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans");
     return 0;
   } else if (lda < NM_MAX(1, N)) {
-    fprintf(stderr, "IGEMV: Expected lda >= max(1, N), with N = %d; got lda=%d\n", N, lda);
+    fprintf(stderr, "GEMV: N = %d; got lda=%d", N, lda);
+    rb_raise(rb_eArgError, "GEMV: Expected lda >= max(1, N)");
     return 0;
   } else if (incX == 0) {
-    fprintf(stderr, "IGEMV: Expected incX != 0\n");
+    rb_raise(rb_eArgError, "GEMV: Expected incX != 0\n");
     return 0;
   } else if (incY == 0) {
-    fprintf(stderr, "IGEMV: Expected incY != 0\n");
+    rb_raise(rb_eArgError, "GEMV: Expected incY != 0\n");
     return 0;
   }
 
