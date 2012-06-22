@@ -42,60 +42,111 @@ extern const int	nm_sizeof[NM_TYPES];
 
 // Forward Declarations
 
-static void cast_copy_dense_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
+static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
 	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
 
-static void cast_copy_dense_list_contents(void* lhs, const LIST* rhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
+static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
 	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
 
 // Functions
 
-/* Calculate the number of elements in the dense storage structure, based on shape and rank */
-size_t count_dense_storage_elements(const DENSE_STORAGE* s) {
+/*
+ * Lifecycle
+ */
+
+/*
+ * Note that elements and elements_length are for initial value(s) passed in.
+ * If they are the correct length, they will be used directly. If not, they
+ * will be concatenated over and over again into a new elements array. If
+ * elements is NULL, the new elements array will not be initialized.
+ */
+DENSE_STORAGE* dense_storage_create(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length) {
+  DENSE_STORAGE* s;
+  size_t count, i, copy_length = elements_length;
+
+  s = ALLOC( DENSE_STORAGE );
+
+  s->rank       = rank;
+  s->shape      = shape;
+  s->dtype      = dtype;
+  s->offset     = calloc(sizeof(size_t),rank);
+  s->count      = 1;
+  s->src        = s;
+	
+	count         = count_dense_storage_elements(s);
+
+  if (elements_length == count) {
+  	s->elements = elements;
+  	
+  } else {
+    s->elements = ALLOC_N(char, nm_sizeof[dtype]*count);
+
+    if (elements_length > 0) {
+      // repeat elements over and over again until the end of the matrix
+      for (i = 0; i < count; i += elements_length) {
+        if (i + elements_length > count) copy_length = count - i;
+        memcpy((char*)(s->elements)+i*nm_sizeof[dtype], (char*)(elements)+(i % elements_length)*nm_sizeof[dtype], copy_length*nm_sizeof[dtype]);
+      }
+
+      // get rid of the init_val
+      free(elements);
+    }
+  }
+
+  return s;
+}
+
+/*
+ * Documentation goes here.
+ */
+void dense_storage_delete(DENSE_STORAGE* s) {
+  // sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure)
+  if (s) {
+    if(s->count <= 1) {
+      free(s->shape);
+      free(s->offset);
+      free(s->elements);
+      free(s);
+    }
+  }
+}
+
+/*
+ * Documentation goes here.
+ */
+void dense_storage_delete_ref(DENSE_STORAGE* s) {
+  // sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure)
+  if (s) {
+    ((DENSE_STORAGE*)s->src)->count--;
+    free(s->shape);
+    free(s->offset);
+    free(s);
+  }
+}
+
+/*
+ * Documentation goes here.
+ */
+void dense_storage_mark(void* m) {
   size_t i;
-  size_t count = 1;
-  for (i = 0; i < s->rank; ++i) count *= s->shape[i];
-  return count;
-}
+  DENSE_STORAGE* storage;
 
-
-// Do these two dense matrices of the same dtype have exactly the same contents?
-bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
-  return ElemEqEq[left->dtype][0](left->elements, right->elements, count_dense_storage_elements(left), nm_sizeof[left->dtype]);
-}
-
-// Is this dense matrix symmetric about the diagonal?
-bool dense_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitian) {
-  unsigned int i, j;
-
-  for (i = 0; i < mat->shape[0]; ++i) {
-    for (j = i+1; j < mat->shape[1]; ++j) {
-      if ( !(ElemEqEq[mat->dtype][(int8_t)(hermitian)]( (char*)(mat->elements) + (i*lda+j)*nm_sizeof[mat->dtype],
-                                                       (char*)(mat->elements) + (j*lda+i)*nm_sizeof[mat->dtype],
-                                                       1,
-                                                       nm_sizeof[mat->dtype] )) )
-        return false;
-    }
+  if (m) {
+    storage = (DENSE_STORAGE*)(((NMATRIX*)m)->storage);
+    //fprintf(stderr, "dense_storage_mark\n");
+    if (storage && storage->dtype == NM_ROBJ)
+      for (i = 0; i < count_dense_storage_elements(storage); ++i)
+        rb_gc_mark(*((VALUE*)((char*)(storage->elements) + i*nm_sizeof[NM_ROBJ])));
   }
-  return true;
 }
 
+/*
+ * Accessors
+ */
 
-size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice) {
-  size_t k, l;
-  size_t inner, outer = 0;
-  for (k = 0; k < s->rank; ++k) {
-    inner = slice->coords[k] + s->offset[k];
-    for (l = k+1; l < s->rank; ++l) {
-      inner *= ((DENSE_STORAGE*)s->src)->shape[l];
-    }
-    outer += inner;
-  }
-  return outer;
-}
-
-
-
+/*
+ * Documentation goes here.
+ */
 void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
   DENSE_STORAGE *ns;
 
@@ -118,13 +169,90 @@ void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
 }
 
 
-/* Does not free passed-in value! Different from list_storage_insert. */
+/*
+ * Does not free passed-in value! Different from list_storage_insert.
+ */
 void dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val) {
   memcpy((char*)(s->elements) + dense_storage_pos(s, slice) * nm_sizeof[s->dtype], val, nm_sizeof[s->dtype]);
 }
 
+/*
+ * Tests
+ */
 
-DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs) {
+/*
+ * Do these two dense matrices of the same dtype have exactly the same
+ * contents?
+ */
+bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
+  return ElemEqEq[left->dtype][0](left->elements, right->elements, count_dense_storage_elements(left), nm_sizeof[left->dtype]);
+}
+
+/*
+ * Is this dense matrix symmetric about the diagonal?
+ */
+bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitian) {
+  unsigned int i, j;
+
+  for (i = 0; i < mat->shape[0]; ++i) {
+    for (j = i+1; j < mat->shape[1]; ++j) {
+      if ( !(ElemEqEq[mat->dtype][(int8_t)(hermitian)]( (char*)(mat->elements) + (i*lda+j)*nm_sizeof[mat->dtype],
+                                                       (char*)(mat->elements) + (j*lda+i)*nm_sizeof[mat->dtype],
+                                                       1,
+                                                       nm_sizeof[mat->dtype] )) )
+        return false;
+    }
+  }
+  return true;
+}
+
+/*
+ * Utility
+ */
+
+/*
+ * Calculate the number of elements in the dense storage structure, based on
+ * shape and rank.
+ */
+size_t dense_storage_count_elements(const DENSE_STORAGE* s) {
+  size_t i;
+  size_t count = 1;
+  
+  for (i = 0; i < s->rank; ++i) {
+  	count *= s->shape[i];
+  }
+  
+  return count;
+}
+
+/*
+ * Documentation goes here.
+ */
+size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice) {
+  size_t k, l;
+  size_t inner, outer = 0;
+  
+  for (k = 0; k < s->rank; ++k) {
+    inner = slice->coords[k] + s->offset[k];
+    
+    for (l = k+1; l < s->rank; ++l) {
+      inner *= ((DENSE_STORAGE*)s->src)->shape[l];
+    }
+    
+    outer += inner;
+  }
+  
+  return outer;
+}
+
+/*
+ * Copying and Casting
+ */
+
+/*
+ * Documentation goes here.
+ */
+DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs) {
   DENSE_STORAGE* lhs;
   size_t count = count_dense_storage_elements(rhs), p;
   size_t* shape = ALLOC_N(size_t, rhs->rank);
@@ -134,7 +262,7 @@ DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs) {
   for (p = 0; p < rhs->rank; ++p)
     shape[p] = rhs->shape[p];
 
-  lhs = create_dense_storage(rhs->dtype, shape, rhs->rank, NULL, 0);
+  lhs = dense_storage_create(rhs->dtype, shape, rhs->rank, NULL, 0);
 
   if (lhs && count) // ensure that allocation worked before copying
     memcpy(lhs->elements, rhs->elements, nm_sizeof[rhs->dtype] * count);
@@ -142,8 +270,10 @@ DENSE_STORAGE* copy_dense_storage(DENSE_STORAGE* rhs) {
   return lhs;
 }
 
-
-DENSE_STORAGE* cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype) {
+/*
+ * Documentation goes here.
+ */
+DENSE_STORAGE* dense_storage_cast_copy(DENSE_STORAGE* rhs, int8_t new_dtype) {
   DENSE_STORAGE* lhs;
   size_t count = count_dense_storage_elements(rhs), p;
   size_t* shape = ALLOC_N(size_t, rhs->rank);
@@ -152,7 +282,7 @@ DENSE_STORAGE* cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype) {
   // copy shape array
   for (p = 0; p < rhs->rank; ++p) shape[p] = rhs->shape[p];
 
-  lhs = create_dense_storage(new_dtype, shape, rhs->rank, NULL, 0);
+  lhs = dense_storage_create(new_dtype, shape, rhs->rank, NULL, 0);
 
   if (lhs && count) // ensure that allocation worked before copying
     if (lhs->dtype == rhs->dtype)
@@ -164,51 +294,10 @@ DENSE_STORAGE* cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype) {
   return lhs;
 }
 
-
-
-// Copy a set of default values into dense
-static void cast_copy_dense_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
-  size_t i;
-
-  for (i = 0; i < shape[rank-1-recursions]; ++i, ++(*pos)) {
-    //fprintf(stderr, "default: pos = %u, dim = %u\t", *pos, shape[rank-1-recursions]);
-
-    if (recursions == 0) { cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], default_val, l_dtype, r_dtype); fprintf(stderr, "zero\n"); }
-    else                 { cast_copy_dense_list_default(lhs, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1); fprintf(stderr, "column of zeros\n"); }
-  }
-  --(*pos);
-}
-
-
-// Copy list contents into dense recursively
-static void cast_copy_dense_list_contents(void* lhs, const LIST* rhs, void* default_val, int8_t l_dtype, int8_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
-  NODE *curr = rhs->first;
-  int last_key = -1;
-  size_t i = 0;
-
-  for (i = 0; i < shape[rank-1-recursions]; ++i, ++(*pos)) {
-
-    if (!curr || (curr->key > (size_t)(last_key+1))) {
-      //fprintf(stderr, "pos = %u, dim = %u, curr->key XX, last_key+1 = %d\t", *pos, shape[rank-1-recursions], last_key+1);
-      if (recursions == 0) cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], default_val, l_dtype, r_dtype); //fprintf(stderr, "zero\n"); }
-      else                 cast_copy_dense_list_default(lhs, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1); //fprintf(stderr, "column of zeros\n"); }
-
-      ++last_key;
-    } else {
-      //fprintf(stderr, "pos = %u, dim = %u, curr->key = %u, last_key+1 = %d\t", *pos, shape[rank-1-recursions], curr->key, last_key+1);
-      if (recursions == 0) cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], curr->val, l_dtype, r_dtype); //fprintf(stderr, "value\n"); }
-      else                 cast_copy_dense_list_contents(lhs, curr->val, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1); //fprintf(stderr, "column of values\n"); }
-
-      last_key = curr->key;
-      curr     = curr->next;
-    }
-  }
-  --(*pos);
-}
-
-
-// Convert (by creating a copy) from list storage to dense storage.
-DENSE_STORAGE* scast_copy_dense_list(const LIST_STORAGE* rhs, int8_t l_dtype) {
+/*
+ * Convert (by creating a copy) from list storage to dense storage.
+ */
+DENSE_STORAGE* dense_storage_from_list(const LIST_STORAGE* rhs, int8_t l_dtype) {
   DENSE_STORAGE* lhs;
   size_t pos   = 0; // position in lhs->elements
 
@@ -216,16 +305,18 @@ DENSE_STORAGE* scast_copy_dense_list(const LIST_STORAGE* rhs, int8_t l_dtype) {
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
 
-  lhs = create_dense_storage(l_dtype, shape, rhs->rank, NULL, 0);
+  lhs = dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
 
   // recursively copy the contents
-  cast_copy_dense_list_contents(lhs->elements, rhs->rows, rhs->default_val, l_dtype, rhs->dtype, &pos, shape, lhs->rank, count_storage_max_elements((STORAGE*)rhs), rhs->rank-1);
+  dense_storage_cast_copy_list_contents(lhs->elements, rhs->rows, rhs->default_val, l_dtype, rhs->dtype, &pos, shape, lhs->rank, count_storage_max_elements((STORAGE*)rhs), rhs->rank-1);
 
   return lhs;
 }
 
-
-DENSE_STORAGE* scast_copy_dense_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
+/*
+ * Documentation goes here.
+ */
+DENSE_STORAGE* dense_storage_from_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
   DENSE_STORAGE* lhs;
   y_size_t i, j, // position in lhs->elements
            ija, ija_next, jj; // position in rhs->elements
@@ -236,7 +327,7 @@ DENSE_STORAGE* scast_copy_dense_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
 
-  lhs = create_dense_storage(l_dtype, shape, rhs->rank, NULL, 0);
+  lhs = dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
 
   // Walk through rows. For each entry we set in dense, increment pos.
   for (i = 0; i < rhs->shape[0]; ++i) {
@@ -290,78 +381,51 @@ DENSE_STORAGE* scast_copy_dense_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
   return lhs;
 }
 
+/*
+ * Helper Functions
+ */
 
-// Note that elements and elements_length are for initial value(s) passed in. If they are the correct length, they will
-// be used directly. If not, they will be concatenated over and over again into a new elements array. If elements is NULL,
-// the new elements array will not be initialized.
-DENSE_STORAGE* create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length) {
-  DENSE_STORAGE* s;
-  size_t count, i, copy_length = elements_length;
+/*
+ * Copy list contents into dense recursively.
+ */
+static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, void* default_val, int8_t l_dtype, int8_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
+  NODE *curr = rhs->first;
+  int last_key = -1;
+  size_t i = 0;
 
-  s = ALLOC( DENSE_STORAGE );
-  //if (!(s = malloc(sizeof(DENSE_STORAGE)))) return NULL;
+  for (i = 0; i < shape[rank-1-recursions]; ++i, ++(*pos)) {
 
-  s->rank       = rank;
-  s->shape      = shape;
-  s->dtype      = dtype;
-  s->offset     = calloc(sizeof(size_t),rank);
-  s->count      = 1;
-  s->src        = s;
+    if (!curr || (curr->key > (size_t)(last_key+1))) {
+      //fprintf(stderr, "pos = %u, dim = %u, curr->key XX, last_key+1 = %d\t", *pos, shape[rank-1-recursions], last_key+1);
+      if (recursions == 0) cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], default_val, l_dtype, r_dtype); //fprintf(stderr, "zero\n"); }
+      else                 dense_storage_cast_copy_list_default(lhs, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1); //fprintf(stderr, "column of zeros\n"); }
 
-  //fprintf(stderr, "create_dense_storage: %p\n", s);
+      ++last_key;
+    } else {
+      //fprintf(stderr, "pos = %u, dim = %u, curr->key = %u, last_key+1 = %d\t", *pos, shape[rank-1-recursions], curr->key, last_key+1);
+      if (recursions == 0) cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], curr->val, l_dtype, r_dtype); //fprintf(stderr, "value\n"); }
+      else                 dense_storage_cast_copy_list_default(lhs, curr->val, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1); //fprintf(stderr, "column of values\n"); }
 
-  count         = count_dense_storage_elements(s);
-  //fprintf(stderr, "count_dense_storage_elements: %d\n", count);
-
-  if (elements_length == count) s->elements = elements;
-  else {
-    s->elements = ALLOC_N(char, nm_sizeof[dtype]*count);
-
-    if (elements_length > 0) {
-      // repeat elements over and over again until the end of the matrix
-      for (i = 0; i < count; i += elements_length) {
-        if (i + elements_length > count) copy_length = count - i;
-        memcpy((char*)(s->elements)+i*nm_sizeof[dtype], (char*)(elements)+(i % elements_length)*nm_sizeof[dtype], copy_length*nm_sizeof[dtype]);
-      }
-
-      // get rid of the init_val
-      free(elements);
+      last_key = curr->key;
+      curr     = curr->next;
     }
   }
-
-  return s;
+  --(*pos);
 }
 
-
-void delete_dense_storage(DENSE_STORAGE* s) {
-  if (s) { // sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure)
-    if(s->count <= 1) {
-      free(s->shape);
-      free(s->offset);
-      free(s->elements);
-      free(s);
-    }
-  }
-}
-void delete_dense_storage_ref(DENSE_STORAGE* s) {
-  if (s) { // sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure)
-    ((DENSE_STORAGE*)s->src)->count--;
-    free(s->shape);
-    free(s->offset);
-    free(s);
-  }
-}
-
-
-void mark_dense_storage(void* m) {
+/*
+ * Copy a set of default values into dense.
+ */
+static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
   size_t i;
-  DENSE_STORAGE* storage;
 
-  if (m) {
-    storage = (DENSE_STORAGE*)(((NMATRIX*)m)->storage);
-    //fprintf(stderr, "mark_dense_storage\n");
-    if (storage && storage->dtype == NM_ROBJ)
-      for (i = 0; i < count_dense_storage_elements(storage); ++i)
-        rb_gc_mark(*((VALUE*)((char*)(storage->elements) + i*nm_sizeof[NM_ROBJ])));
+  for (i = 0; i < shape[rank-1-recursions]; ++i, ++(*pos)) {
+    //fprintf(stderr, "default: pos = %u, dim = %u\t", *pos, shape[rank-1-recursions]);
+
+    if (recursions == 0) { cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], default_val, l_dtype, r_dtype); fprintf(stderr, "zero\n"); }
+    else                 { dense_storage_cast_copy_list_default(lhs, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1); fprintf(stderr, "column of zeros\n"); }
   }
+  --(*pos);
 }
+
+
