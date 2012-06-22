@@ -2,4 +2,4 @@
 source "http://rubygems.org"
 gemspec
 
-gem 'csquare', :path => "../sciruby/csquare" # version 0.0.2
+gem 'csquare', :path => "../csquare" # version 0.0.2
