@@ -217,31 +217,12 @@ enum NMatrix_Ops {
   NM_OP_RSH // >>
 };
 
-
-/* Singly-linked ordered list
- * - holds keys and values
- * - no duplicate keys
- * - keys are ordered
- * - values may be lists themselves
- */
-typedef struct l_node { /* Linked list node */
-  size_t key;
-  void*  val;
-  struct l_node * next; // next
-} NODE;
-
-typedef struct l_list {
-  NODE* first;
-} LIST;
-
-
 // two vectors and a capacity
 typedef struct y_vector {
   void*  ija;
   void*  a;
   size_t capacity;
 } VECTOR;
-
 
 typedef struct common_s { // Common elements found in all _s types.
   int8_t    dtype;
@@ -250,41 +231,6 @@ typedef struct common_s { // Common elements found in all _s types.
   size_t*   offset;
   void*     elements;
 } STORAGE;
-
-
-typedef struct list_s {
-  int8_t    dtype;
-  size_t    rank;
-  size_t*   shape;
-  size_t*   offset;
-  void*     default_val;
-  LIST*     rows;
-} LIST_STORAGE;
-
-
-typedef struct dense_s {
-  int8_t    dtype;
-  size_t    rank;
-  size_t*   shape;
-  size_t*   offset;
-  int       count;
-  void*     src;
-  void*     elements;
-} DENSE_STORAGE;
-
-
-typedef struct yale_s {
-  int8_t    dtype;
-  size_t    rank;
-  size_t*   shape;
-  size_t*   offset;
-  void*     a;
-  size_t    ndnz; // strictly non-diagonal non-zero count!
-  size_t    capacity;
-  int8_t    index_dtype;
-  void*     ija;
-} YALE_STORAGE;
-
 
 typedef struct numeric_matrix {
   int8_t   stype;             /* method of storage (csc, dense, etc) */
