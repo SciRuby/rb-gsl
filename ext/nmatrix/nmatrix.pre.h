@@ -194,30 +194,6 @@ enum NMatrix_STypes {
 };
 
 
-// Element-wise operations (see blas/elementwise.template.c)
-enum NMatrix_Ops {
-  NM_OP_ADD = '+',
-  NM_OP_SUB = '-',
-  NM_OP_MUL = '*',
-  NM_OP_DIV = '/',
-  NM_OP_MOD = '%',
-  NM_OP_BANG = '!',
-  NM_OP_NEG, // unary minus
-  NM_OP_EQEQ, // ==
-  NM_OP_NEQ, // !=
-  NM_OP_GT = '>', // >
-  NM_OP_LT = '<', // <
-  NM_OP_GTE = ',', // >=
-  NM_OP_LTE = '.', // <=
-  NM_OP_NOT = '~',
-  NM_OP_AND = '&',
-  NM_OP_OR = '|',
-  NM_OP_XOR = '^',
-  NM_OP_LSH, // <<
-  NM_OP_RSH // >>
-};
-
-
 /* Singly-linked ordered list
  * - holds keys and values
  * - no duplicate keys
