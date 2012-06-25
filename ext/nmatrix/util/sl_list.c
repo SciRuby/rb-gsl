@@ -443,6 +443,11 @@ NODE* list_find_nearest_from(NODE* prev, size_t key) {
 // Copying and Casting //
 /////////////////////////
 
+/*
+ * Documentation goes here.
+ *
+ * FIXME: Add templating.
+ */
 void list_cast_copy_contents(LIST* lhs, LIST* rhs, int8_t lhs_dtype, int8_t rhs_dtype, size_t recursions) {
   NODE *lcurr, *rcurr;
 
