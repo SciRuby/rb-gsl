@@ -2,5 +2,5 @@
 source "http://rubygems.org"
 gemspec
 
-gem 'csquare', :path => "../sciruby/csquare" # version 0.0.2
-gem 'packable'
+gem 'csquare', :version => "~>0.1.0"
+gem 'packable' # for Matlab IO
