@@ -219,14 +219,6 @@ typedef struct y_vector {
   size_t capacity;
 } VECTOR;
 
-typedef struct common_s { // Common elements found in all _s types.
-  int8_t    dtype;
-  size_t    rank;
-  size_t*   shape;
-  size_t*   offset;
-  void*     elements;
-} STORAGE;
-
 typedef struct numeric_matrix {
   int8_t   stype;             /* method of storage (csc, dense, etc) */
   STORAGE* storage;           /* pointer to storage struct */
