@@ -25,22 +25,32 @@
 //
 // Dense n-dimensional matrix storage.
 
-// Standard Includes
+/*
+ * Standard Includes
+ */
 
 #include <ruby.h>
 
-// Project Includes
+/*
+ * Project Includes
+ */
 
 #include "dense.h"
 
-// Macros
+/*
+ * Macros
+ */
 
-// Global Variables
+/*
+ * Global Variables
+ */
 
 extern bool				(*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
 extern const int	nm_sizeof[NM_TYPES];
 
-// Forward Declarations
+/*
+ * Forward Declarations
+ */
 
 static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
 	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
@@ -48,11 +58,13 @@ static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, vo
 static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
 	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
 
-// Functions
-
 /*
- * Lifecycle
+ * Functions
  */
+
+///////////////
+// Lifecycle //
+///////////////
 
 /*
  * Note that elements and elements_length are for initial value(s) passed in.
@@ -146,9 +158,9 @@ void dense_storage_mark(void* m) {
   }
 }
 
-/*
- * Accessors
- */
+///////////////
+// Accessors //
+///////////////
 
 /*
  * Documentation goes here.
@@ -183,13 +195,15 @@ void dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val) {
   memcpy((char*)(s->elements) + dense_storage_pos(s, slice) * nm_sizeof[s->dtype], val, nm_sizeof[s->dtype]);
 }
 
-/*
- * Tests
- */
+///////////
+// Tests //
+///////////
 
 /*
  * Do these two dense matrices of the same dtype have exactly the same
  * contents?
+ *
+ * FIXME: Add templating.
  */
 bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
   return ElemEqEq[left->dtype][0](left->elements, right->elements, count_dense_storage_elements(left), nm_sizeof[left->dtype]);
@@ -197,6 +211,8 @@ bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
 
 /*
  * Is this dense matrix symmetric about the diagonal?
+ *
+ * FIXME: Add templating.
  */
 bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitian) {
   unsigned int i, j;
@@ -219,9 +235,9 @@ bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitia
   return true;
 }
 
-/*
- * Utility
- */
+/////////////
+// Utility //
+/////////////
 
 /*
  * Calculate the number of elements in the dense storage structure, based on
@@ -258,9 +274,9 @@ size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice) {
   return outer;
 }
 
-/*
- * Copying and Casting
- */
+/////////////////////////
+// Copying and Casting //
+/////////////////////////
 
 /*
  * Documentation goes here.
@@ -433,9 +449,9 @@ DENSE_STORAGE* dense_storage_from_yale(const YALE_STORAGE* rhs, int8_t l_dtype) 
   return lhs;
 }
 
-/*
- * Helper Functions
- */
+//////////////////////
+// Helper Functions //
+//////////////////////
 
 /*
  * Copy list contents into dense recursively.
@@ -503,5 +519,4 @@ static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, i
   
   --(*pos);
 }
-
 
