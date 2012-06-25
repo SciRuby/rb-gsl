@@ -29,18 +29,26 @@
 #ifndef LIST_H
 #define LIST_H
 
-// Standard Includes
+/*
+ * Standard Includes
+ */
 
 #include <stdlib.h>
 
-// Project Includes
+/*
+ * Project Includes
+ */
 
 #include "nmatrix.h"
 #include "util/sl_list.h"
 
-// Macros
+/*
+ * Macros
+ */
 
-// Types
+/*
+ * Types
+ */
 
 typedef struct {
 	int8_t    dtype;
@@ -51,29 +59,53 @@ typedef struct {
 	LIST*     rows;
 } LIST_STORAGE;
 
-// Functions
+/*
+ * Functions
+ */
 
-/* Calculate the max number of elements in the list storage structure, based on shape and rank */
-inline size_t count_storage_max_elements(const STORAGE* s) {
-  return count_dense_storage_elements((DENSE_STORAGE*)s);
-}
+////////////////
+// Lifecycle //
+///////////////
 
-// Count non-zero elements. See also count_list_storage_nd_elements.
-size_t count_list_storage_elements(const LIST_STORAGE* s) {
-  return count_list_storage_elements_r(s->rows, s->rank-1);
-}
+LIST_STORAGE*	list_storage_create(int8_t dtype, size_t* shape, size_t rank, void* init_val);
+void					list_storage_delete(LIST_STORAGE* s);
+void					list_storage_mark(void* m);
 
-size_t count_list_storage_nd_elements(const LIST_STORAGE* s)
+///////////////
+// Accessors //
+///////////////
+
 void* list_storage_get(LIST_STORAGE* s, SLICE* slice);
-void* list_storage_remove(LIST_STORAGE* s, SLICE* slice);
 void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val);
-LIST_STORAGE* create_list_storage(int8_t dtype, size_t* shape, size_t rank, void* init_val);
-LIST_STORAGE* copy_list_storage(LIST_STORAGE* rhs);
-LIST_STORAGE* cast_copy_list_storage(LIST_STORAGE* rhs, int8_t new_dtype);
-LIST_STORAGE* scast_copy_list_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
-LIST_STORAGE* scast_copy_list_yale(const YALE_STORAGE* rhs, int8_t l_dtype);
+void* list_storage_remove(LIST_STORAGE* s, SLICE* slice);
+
+///////////
+// Tests //
+///////////
+
 bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right);
-void delete_list_storage(LIST_STORAGE* s);
-void mark_list_storage(void* m)
+
+/////////////
+// Utility //
+/////////////
+
+/*
+ * Count non-zero elements. See also count_list_storage_nd_elements.
+ */
+inline size_t list_storage_count_elements(const LIST_STORAGE* s) {
+  return list_storage_count_elements_r(s->rows, s->rank - 1);
+}
+
+size_t list_storage_count_elements_r(const LIST* l, size_t recursions);
+size_t list_storage_count_nd_elements(const LIST_STORAGE* s);
+
+/////////////////////////
+// Copying and Casting //
+/////////////////////////
+
+LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs);
+LIST_STORAGE* list_storage_cast_copy(LIST_STORAGE* rhs, int8_t new_dtype);
+LIST_STORAGE* list_storage_from_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
+LIST_STORAGE* list_storage_from_yale(const YALE_STORAGE* rhs, int8_t l_dtype);
 
 #endif
