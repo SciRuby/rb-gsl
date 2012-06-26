@@ -42,7 +42,7 @@
  * Macros
  */
 
-#define TEMPLATE_TABLE(fun, ret, ...)							\
+#define DTYPE_TEMPLATE_TABLE(fun, ret, ...)				\
 	static ret (*ttable[NM_TYPES])(__VA_ARGS__) =	{	\
 		fun<char>,																		\
 		fun<unsigned char>,														\
@@ -84,7 +84,7 @@ extern "C" {
 	 * contents?
 	 */
 	bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
-		TEMPLATE_TABLE(dense_storage_eqeq_template, bool, const DENSE_STORAGE*, const DENSE_STORAGE*);
+		DTYPE_TEMPLATE_TABLE(dense_storage_eqeq_template, bool, const DENSE_STORAGE*, const DENSE_STORAGE*);
 		
 		return ttable[left->dtype](left, right);
 	}
@@ -93,7 +93,7 @@ extern "C" {
 	 * Is this dense matrix symmetric about the diagonal?
 	 */
 	bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
-		TEMPLATE_TABLE(dense_storage_is_semetric_template, bool, const DENSE_STORAGE*, int);
+		DTYPE_TEMPLATE_TABLE(dense_storage_is_semetric_template, bool, const DENSE_STORAGE*, int);
 		
 		return ttable[mat->dtype];
 	}
