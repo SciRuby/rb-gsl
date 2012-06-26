@@ -42,30 +42,16 @@
  * Macros
  */
 
-#define TEMPLATE_SWITCH(fun, dtype, ...) switch(dtype) {	\
-	case CHAR:																							\
-		return fun<char>(__VA_ARGS__);												\
-																													\
-	case UCHAR:																							\
-		return fun<unsigned char>(__VA_ARGS__);								\
-																													\
-	case SHORT:																							\
-		return fun<short>(__VA_ARGS__);												\
-																													\
-	case USHORT:																						\
-		return fun<unsigned short>(__VA_ARGS__);							\
-																													\
-	case INT:																								\
-		return fun<int>(__VA_ARGS__);													\
-																													\
-	case UINT:																							\
-		return fun<unsigned int>(__VA_ARGS__);								\
-																													\
-	case FLOAT:																							\
-		return fun<float>(__VA_ARGS__);												\
-																													\
-	case DOUBLE:																						\
-		return fun<double>(__VA_ARGS__);											\
+#define TEMPLATE_TABLE(fun, ret, ...)							\
+	static ret (*ttable[NM_TYPES])(__VA_ARGS__) =	{	\
+		fun<char>,																		\
+		fun<unsigned char>,														\
+		fun<short>,																		\
+		fun<unsigned short>,													\
+		fun<int>,																			\
+		fun<unsigned int>,														\
+		fun<float>,																		\
+		fun<double>																		\
 	}
 
 /*
@@ -88,21 +74,28 @@ extern const int	nm_sizeof[NM_TYPES];
 /////////////////////////
 
 extern "C" {
+	
+	///////////
+	// Tests //
+	///////////	
+	
 	/*
 	 * Do these two dense matrices of the same dtype have exactly the same
 	 * contents?
 	 */
 	bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
-		TEMPLATE_SWITCH(dense_storage_eqeq_template, left->dtype, left, right)
+		TEMPLATE_TABLE(dense_storage_eqeq_template, bool, const DENSE_STORAGE*, const DENSE_STORAGE*);
+		
+		return ttable[left->dtype](left, right);
 	}
 
 	/*
 	 * Is this dense matrix symmetric about the diagonal?
-	 *
-	 * FIXME: Add templating.
 	 */
-	bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitian) {
-		TEMPLATE_SWITCH(dense_storage_is_semetric_template, mat->dtype, mat, lda, hermitian)
+	bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
+		TEMPLATE_TABLE(dense_storage_is_semetric_template, bool, const DENSE_STORAGE*, int);
+		
+		return ttable[mat->dtype];
 	}
 }
 
@@ -127,15 +120,15 @@ bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE*
 }
 
 template <typename DType>
-bool dense_storage_is_symmetric_template(const DENSE_STORAGE* mat, int lda, bool hermitian) {
+bool dense_storage_is_symmetric_template(const DENSE_STORAGE* mat, int lda) {
 	unsigned int i, j;
 	const DType* els = (DType*) mat->elements;
 	const DType* a, * b;
 	
 	for (i = mat->shape[0]; i-- > 0;) {
 		for (j = i + 1; j < mat->shape[1]; ++j) {
-			a = mat->elements + (i*lda+j);
-	  	b = mat->elements + (j*lda+i);
+			a = mat->elements[i*lda+j];
+	  	b = mat->elements[j*lda+i];
 	  	
 	  	if (*a != *b) {
 	      return false;

@@ -82,9 +82,6 @@ void	dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val);
 // Tests //
 ///////////
 
-bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
-bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitian);
-
 /////////////
 // Utility //
 /////////////

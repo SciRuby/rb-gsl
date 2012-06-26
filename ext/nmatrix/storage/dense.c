@@ -199,42 +199,6 @@ void dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val) {
 // Tests //
 ///////////
 
-/*
- * Do these two dense matrices of the same dtype have exactly the same
- * contents?
- *
- * FIXME: Add templating.
- */
-bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
-  return ElemEqEq[left->dtype][0](left->elements, right->elements, count_dense_storage_elements(left), nm_sizeof[left->dtype]);
-}
-
-/*
- * Is this dense matrix symmetric about the diagonal?
- *
- * FIXME: Add templating.
- */
-bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitian) {
-  unsigned int i, j;
-  const void* a, * b;
-  
-  // Select the appropriate equality tester.
-  (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[mat->dtype][(int8_t)(hermitian)];
-	
-	for (i = mat->shape[0]; i-- > 0;) {
-		for (j = i + 1; j < mat->shape[1]; ++j) {
-			a = (char*)(mat->elements) + (i*lda+j)*nm_sizeof[mat->dtype];
-    	b = (char*)(mat->elements) + (j*lda+i)*nm_sizeof[mat->dtype];
-    	
-    	if (!eqeq(a, b, 1, nm_sizeof[mat->dtype])) {
-        return false;
-      }
-		}
-	}
-  
-  return true;
-}
-
 /////////////
 // Utility //
 /////////////
