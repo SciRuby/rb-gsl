@@ -475,60 +475,6 @@ void cblas_r128gemv_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Tr
 void cblas_vgemm_(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, DENSE_PARAM p);
 
 
-/* dense.c */
-DENSE_STORAGE*  create_dense_storage(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
-void            delete_dense_storage_ref(DENSE_STORAGE* s);
-void            delete_dense_storage(DENSE_STORAGE* s);
-void            mark_dense_storage(void* s);
-DENSE_STORAGE*  cast_copy_dense_storage(DENSE_STORAGE* rhs, int8_t new_dtype);
-
-size_t          count_dense_storage_elements(const DENSE_STORAGE* s);
-bool            dense_storage_eqeq(const DENSE_STORAGE*, const DENSE_STORAGE*);
-bool            dense_is_symmetric(const DENSE_STORAGE*, int, bool);
-
-size_t          dense_storage_pos(DENSE_STORAGE* s, SLICE* slice);
-void*           dense_storage_get(DENSE_STORAGE* s, SLICE* slice);
-void            dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val);
-
-/* list.c */
-LIST_STORAGE*   create_list_storage(int8_t dtype, size_t* shape, size_t rank, void* init_val);
-void            delete_list_storage(LIST_STORAGE* s);
-void            mark_list_storage(void* s);
-LIST_STORAGE*   cast_copy_list_storage(LIST_STORAGE* rhs, int8_t new_dtype);
-size_t          count_storage_max_elements(const STORAGE*);
-
-void*           list_storage_get(LIST_STORAGE* s, SLICE* slice);
-void*           list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val);
-void*           list_storage_remove(LIST_STORAGE* s, SLICE* slice);
-bool            list_storage_eqeq(const LIST_STORAGE*, const LIST_STORAGE*);
-
-/* yale.c */
-void print_vectors(YALE_STORAGE* s);
-YALE_STORAGE*   create_yale_storage(int8_t dtype, size_t* shape, size_t rank, size_t init_capacity);
-YALE_STORAGE*   create_yale_storage_from_old_yale(int8_t dtype, size_t* shape, char* ia, char* ja, char* a, int8_t from_dtype, int8_t from_index_dtype);
-void            init_yale_storage(YALE_STORAGE* s);
-void            delete_yale_storage(YALE_STORAGE* s);
-void            mark_yale_storage(void* s);
-YALE_STORAGE*   cast_copy_yale_storage(YALE_STORAGE* rhs, int8_t new_dtype);
-bool            yale_storage_eqeq(const YALE_STORAGE*, const YALE_STORAGE*);
-
-void*           yale_storage_ref(YALE_STORAGE* s, SLICE* slice);
-char            yale_storage_set(YALE_STORAGE* s, SLICE* slice, void* v);
-
-YALE_STORAGE*   create_merged_yale_storage(const YALE_STORAGE*, const YALE_STORAGE*);
-
-size_t          count_list_storage_nd_elements(const LIST_STORAGE*);
-size_t          count_list_storage_elements(const LIST_STORAGE*);
-
-
-/* stype casts */
-DENSE_STORAGE* scast_copy_dense_yale(const YALE_STORAGE* rhs, int8_t l_dtype);
-DENSE_STORAGE* scast_copy_dense_list(const LIST_STORAGE* rhs, int8_t l_dtype);
-YALE_STORAGE* scast_copy_yale_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
-YALE_STORAGE* scast_copy_yale_list(const LIST_STORAGE* rhs, int8_t l_dtype);
-LIST_STORAGE* scast_copy_list_yale(const YALE_STORAGE* rhs, int8_t l_dtype);
-LIST_STORAGE* scast_copy_list_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
-
 /* nmatrix.c */
 void cast_copy_value_single(void* to, const void* from, int8_t l_dtype, int8_t r_dtype);
 int8_t nm_dtypestring_to_dtype(VALUE str);
