@@ -35,8 +35,8 @@
 // * vectors must be able to grow as necessary
 //      * maximum size is rows*cols+1
 
-#ifndef DENSE_H
-#define DENSE_H
+#ifndef YALE_H
+#define YALE_H
 
 /*
  * Standard Includes
