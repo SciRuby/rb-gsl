@@ -35,6 +35,8 @@
  * Project Includes
  */
 
+#include "dtype/dtype.h"
+
 #include "dense.h"
 #include "dense_templates.h"
 
@@ -42,24 +44,9 @@
  * Macros
  */
 
-#define DTYPE_TEMPLATE_TABLE(fun, ret, ...)				\
-	static ret (*ttable[NM_TYPES])(__VA_ARGS__) =	{	\
-		fun<char>,																		\
-		fun<unsigned char>,														\
-		fun<short>,																		\
-		fun<unsigned short>,													\
-		fun<int>,																			\
-		fun<unsigned int>,														\
-		fun<float>,																		\
-		fun<double>																		\
-	}
-
 /*
  * Global Variables
  */
-
-extern bool				(*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
-extern const int	nm_sizeof[NM_TYPES];
 
 /*
  * Forward Declarations
