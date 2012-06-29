@@ -49,6 +49,11 @@
 
 #define NUM_DTYPES 13
 
+/*
+ * FIXME: Provide a 2D version of the DTYPE_TEMPLATE_TABLE for operations with
+ * different left- and right-hand side data types.
+ */ 
+
 #define DTYPE_TEMPLATE_TABLE(fun, ret, ...)					\
 	static ret (*ttable[NUM_DTYPES])(__VA_ARGS__) =	{	\
 		fun<unsigned char>,															\
