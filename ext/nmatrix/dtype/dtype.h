@@ -32,6 +32,8 @@
  * Standard Includes
  */
 
+#include <stdio.h>
+
 /*
  * Project Includes
  */
@@ -115,7 +117,7 @@
 
 #define EPSILON 1E-10
 #define FP_IS_ZERO(n) (-EPSILON < n && n < EPSILON)
-#define FP_EQUAL(a, b) (FP_IS_ZERO(a - b))
+#define FP_EQUAL(a, b) FP_IS_ZERO((a - b_)
 
 /*
  * Types
@@ -138,7 +140,20 @@ typedef enum {
 } dtype;
 
 /*
+ * Data
+ */
+
+extern const char* const DTYPE_NAMES[NUM_DTYPES];
+
+/*
  * Functions
  */
+
+inline void* test_function(char* op_name, void* ptr, dtype left, dtype right) {
+	if (ptr == NULL) {
+		// FIXME: Make this do something useful, like raise a Ruby exception.
+		printf("Operation '%s' is not permitted with data types %s and %s.\n", op_name, DTYPE_NAMES[left], DTYPE_NAMES[right]);
+	}
+}
 
 #endif
