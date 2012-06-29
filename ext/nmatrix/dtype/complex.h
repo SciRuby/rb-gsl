@@ -236,8 +236,8 @@ class Complex {
 		COMPLEX_COMPLEX_OPS(float)
 		COMPLEX_COMPLEX_OPS(double)
 		
-		COMPLEX_NATIVE_OPS(char)
 		COMPLEX_NATIVE_OPS(unsigned char)
+		COMPLEX_NATIVE_OPS(char)
 		COMPLEX_NATIVE_OPS(short)
 		COMPLEX_NATIVE_OPS(int)
 		COMPLEX_NATIVE_OPS(long)
@@ -245,16 +245,16 @@ class Complex {
 		COMPLEX_NATIVE_OPS(double)
 };
 
-NATIVE_COMPLEX_OPS(char,					float)
 NATIVE_COMPLEX_OPS(unsigned char,	float)
+NATIVE_COMPLEX_OPS(char,					float)
 NATIVE_COMPLEX_OPS(short,					float)
 NATIVE_COMPLEX_OPS(int,						float)
 NATIVE_COMPLEX_OPS(long,					float)
 NATIVE_COMPLEX_OPS(float,					float)
 NATIVE_COMPLEX_OPS(double,				float)
 
-NATIVE_COMPLEX_OPS(char,					double)
 NATIVE_COMPLEX_OPS(unsigned char,	double)
+NATIVE_COMPLEX_OPS(char,					double)
 NATIVE_COMPLEX_OPS(short,					double)
 NATIVE_COMPLEX_OPS(int,						double)
 NATIVE_COMPLEX_OPS(long,					double)

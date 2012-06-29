@@ -91,6 +91,8 @@ class RubyObject {
 	inline RubyObject& operator%(RubyObject other) {
 		return RubyObject(rb_funcall(this->obj_ref, rb_internal("%"), 1, other->obj_ref));
 	}
+	
+	// FIXME: Add comparison operators.
 };
 
 #endif

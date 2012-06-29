@@ -350,8 +350,8 @@ class Rational {
 	RATIONAL_RATIONAL_OPS(int)
 	RATIONAL_RATIONAL_OPS(long)
 	
-	RATIONAL_NATIVE_OPS(char)
 	RATIONAL_NATIVE_OPS(unsigned char)
+	RATIONAL_NATIVE_OPS(char)
 	RATIONAL_NATIVE_OPS(short)
 	RATIONAL_NATIVE_OPS(int)
 	RATIONAL_NATIVE_OPS(long)
@@ -369,20 +369,20 @@ class Rational {
 	}
 };
 
-NATIVE_RATIONAL_OPS(char,						short)
 NATIVE_RATIONAL_OPS(unsigned char,	short)
+NATIVE_RATIONAL_OPS(char,						short)
 NATIVE_RATIONAL_OPS(short,					short)
 NATIVE_RATIONAL_OPS(int,						short)
 NATIVE_RATIONAL_OPS(long,						short)
 
-NATIVE_RATIONAL_OPS(char,						int)
 NATIVE_RATIONAL_OPS(unsigned char,	int)
+NATIVE_RATIONAL_OPS(char,						int)
 NATIVE_RATIONAL_OPS(short,					int)
 NATIVE_RATIONAL_OPS(int,						int)
 NATIVE_RATIONAL_OPS(long,						int)
 
-NATIVE_RATIONAL_OPS(char,						long)
 NATIVE_RATIONAL_OPS(unsigned char,	long)
+NATIVE_RATIONAL_OPS(char,						long)
 NATIVE_RATIONAL_OPS(short,					long)
 NATIVE_RATIONAL_OPS(int,						long)
 NATIVE_RATIONAL_OPS(long,						long)
