@@ -36,6 +36,8 @@
  * Project Includes
  */
 
+#include "nmatrix.h"
+
 /*
  * Macros
  */
@@ -199,8 +201,8 @@
  
 template <typename Type> class Complex;
 
-typedef Complex<float>	Complex64;
-typedef Complex<double>	Complex128;
+typedef Complex<float32> Complex64;
+typedef Complex<float64> Complex128;
 
 /*
  * Data
@@ -237,32 +239,32 @@ class Complex {
 		 * Binary operator definitions for varous types.
 		 */
 		
-		COMPLEX_COMPLEX_OPS(float)
-		COMPLEX_COMPLEX_OPS(double)
+		COMPLEX_COMPLEX_OPS(float32)
+		COMPLEX_COMPLEX_OPS(float64)
 		
-		COMPLEX_NATIVE_OPS(unsigned char)
-		COMPLEX_NATIVE_OPS(char)
-		COMPLEX_NATIVE_OPS(short)
-		COMPLEX_NATIVE_OPS(int)
-		COMPLEX_NATIVE_OPS(long)
-		COMPLEX_NATIVE_OPS(float)
-		COMPLEX_NATIVE_OPS(double)
+		COMPLEX_NATIVE_OPS(u_int8_t)
+		COMPLEX_NATIVE_OPS(int8_t)
+		COMPLEX_NATIVE_OPS(int16_t)
+		COMPLEX_NATIVE_OPS(int32_t)
+		COMPLEX_NATIVE_OPS(int64_t)
+		COMPLEX_NATIVE_OPS(float32)
+		COMPLEX_NATIVE_OPS(float64)
 };
 
-NATIVE_COMPLEX_OPS(unsigned char,	float)
-NATIVE_COMPLEX_OPS(char,					float)
-NATIVE_COMPLEX_OPS(short,					float)
-NATIVE_COMPLEX_OPS(int,						float)
-NATIVE_COMPLEX_OPS(long,					float)
-NATIVE_COMPLEX_OPS(float,					float)
-NATIVE_COMPLEX_OPS(double,				float)
+NATIVE_COMPLEX_OPS(u_int8_t,	float32)
+NATIVE_COMPLEX_OPS(int8_t,		float32)
+NATIVE_COMPLEX_OPS(int16_t,		float32)
+NATIVE_COMPLEX_OPS(int32_t,		float32)
+NATIVE_COMPLEX_OPS(int64_t,		float32)
+NATIVE_COMPLEX_OPS(float32,		float32)
+NATIVE_COMPLEX_OPS(float64,		float32)
 
-NATIVE_COMPLEX_OPS(unsigned char,	double)
-NATIVE_COMPLEX_OPS(char,					double)
-NATIVE_COMPLEX_OPS(short,					double)
-NATIVE_COMPLEX_OPS(int,						double)
-NATIVE_COMPLEX_OPS(long,					double)
-NATIVE_COMPLEX_OPS(float,					double)
-NATIVE_COMPLEX_OPS(double,				double)
+NATIVE_COMPLEX_OPS(u_int8_t,	float64)
+NATIVE_COMPLEX_OPS(int8_t,		float64)
+NATIVE_COMPLEX_OPS(int16_t,		float64)
+NATIVE_COMPLEX_OPS(int32_t,		float64)
+NATIVE_COMPLEX_OPS(int64_t,		float64)
+NATIVE_COMPLEX_OPS(float32,		float64)
+NATIVE_COMPLEX_OPS(float64,		float64)
 
 #endif

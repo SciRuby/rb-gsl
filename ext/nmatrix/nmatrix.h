@@ -240,6 +240,9 @@
 	#endif
 #endif
 
+typedef float32 float;
+typedef float64 float;
+
 /*
  * For when we need to return array indices. This must never be larger than
  * size_t.

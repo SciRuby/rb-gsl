@@ -36,6 +36,8 @@
  * Project Includes
  */
 
+#include "nmatrix.h"
+
 /*
  * Macros
  */
@@ -292,9 +294,9 @@
  */
 template <typename Type> class Rational;
 
-typedef Rational<short>	Rational32;
-typedef Rational<int>		Rational64;
-typedef Rational<long>	Rational128;
+typedef Rational<int16_t>	Rational32;
+typedef Rational<int32_t>	Rational64;
+typedef Rational<int64_t>	Rational128;
 
 /*
  * Data
@@ -351,45 +353,45 @@ class Rational {
 	 * Binary operator definitions for varous types.
 	 */
 	
-	RATIONAL_RATIONAL_OPS(short)
-	RATIONAL_RATIONAL_OPS(int)
-	RATIONAL_RATIONAL_OPS(long)
+	RATIONAL_RATIONAL_OPS(int16_t)
+	RATIONAL_RATIONAL_OPS(int32_t)
+	RATIONAL_RATIONAL_OPS(int64_t)
 	
-	RATIONAL_NATIVE_OPS(unsigned char)
-	RATIONAL_NATIVE_OPS(char)
-	RATIONAL_NATIVE_OPS(short)
-	RATIONAL_NATIVE_OPS(int)
-	RATIONAL_NATIVE_OPS(long)
+	RATIONAL_NATIVE_OPS(u_int8_t)
+	RATIONAL_NATIVE_OPS(int8_t)
+	RATIONAL_NATIVE_OPS(int16_t)
+	RATIONAL_NATIVE_OPS(int32_t)
+	RATIONAL_NATIVE_OPS(int64_t)
 	 
 	/*
 	 * Special cast operations for floats and doubles.
 	 */
 	
-	inline operator float () {
-		return (float)this->n / (float)this->d;
+	inline operator float32 () {
+		return (float32)this->n / (float32)this->d;
 	}
 	
-	inline operator double () {
-		return (double)this->n / (double)this->d;
+	inline operator float64 () {
+		return (float64)this->n / (float64)this->d;
 	}
 };
 
-NATIVE_RATIONAL_OPS(unsigned char,	short)
-NATIVE_RATIONAL_OPS(char,						short)
-NATIVE_RATIONAL_OPS(short,					short)
-NATIVE_RATIONAL_OPS(int,						short)
-NATIVE_RATIONAL_OPS(long,						short)
+NATIVE_RATIONAL_OPS(u_int8_t,	int16_t)
+NATIVE_RATIONAL_OPS(int8_t,		int16_t)
+NATIVE_RATIONAL_OPS(int16_t,	int16_t)
+NATIVE_RATIONAL_OPS(int32_t,	int16_t)
+NATIVE_RATIONAL_OPS(int64_t,	int16_t)
 
-NATIVE_RATIONAL_OPS(unsigned char,	int)
-NATIVE_RATIONAL_OPS(char,						int)
-NATIVE_RATIONAL_OPS(short,					int)
-NATIVE_RATIONAL_OPS(int,						int)
-NATIVE_RATIONAL_OPS(long,						int)
+NATIVE_RATIONAL_OPS(u_int8_t,	int32_t)
+NATIVE_RATIONAL_OPS(int8_t,		int32_t)
+NATIVE_RATIONAL_OPS(int16_t,	int32_t)
+NATIVE_RATIONAL_OPS(int32_t,	int32_t)
+NATIVE_RATIONAL_OPS(int64_t,	int32_t)
 
-NATIVE_RATIONAL_OPS(unsigned char,	long)
-NATIVE_RATIONAL_OPS(char,						long)
-NATIVE_RATIONAL_OPS(short,					long)
-NATIVE_RATIONAL_OPS(int,						long)
-NATIVE_RATIONAL_OPS(long,						long)
+NATIVE_RATIONAL_OPS(u_int8_t,	int64_t)
+NATIVE_RATIONAL_OPS(int8_t,		int64_t)
+NATIVE_RATIONAL_OPS(int16_t,	int64_t)
+NATIVE_RATIONAL_OPS(int32_t,	int64_t)
+NATIVE_RATIONAL_OPS(int64_t,	int64_t)
 
 #endif
