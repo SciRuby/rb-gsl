@@ -203,6 +203,10 @@ typedef Complex<float>	Complex64;
 typedef Complex<double>	Complex128;
 
 /*
+ * Data
+ */
+ 
+/*
  * Classes and Functions
  */
 

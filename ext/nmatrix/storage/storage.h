@@ -48,15 +48,31 @@
  * Types
  */
 
+typedef enum {
+  DENSE,
+  LIST,
+  YALE
+} stype_t;
+
 typedef struct {
-	// Common elements found in all _s types.
+	// Common elements found in all storage types.
 	
-  int8_t    dtype;
-  size_t    rank;
-  size_t*   shape;
-  size_t*   offset;
-  void*     elements;
+  dtype_t	dtype;
+  size_t	rank;
+  size_t*	shape;
+  size_t*	offset;
+  void*		elements;
 } STORAGE;
+
+// For binary operations involving matrices that need to be casted.
+typedef struct {
+  STORAGE* left;
+  STORAGE* right;
+} STORAGE_PAIR;
+
+/*
+ * Data
+ */
 
 /*
  * Functions

@@ -59,6 +59,11 @@ typedef struct {
 } DENSE_STORAGE;
 
 /*
+ * Data
+ */
+ 
+
+/*
  * Functions
  */
 

@@ -297,6 +297,11 @@ typedef Rational<int>		Rational64;
 typedef Rational<long>	Rational128;
 
 /*
+ * Data
+ */
+ 
+
+/*
  * Classes and Functions
  */
 

@@ -19,6 +19,8 @@
  * Standard Includes
  */
 
+#include <ruby.h>
+
 /*
  * Project Includes
  */
@@ -32,6 +34,9 @@
 /*
  * Global Variables
  */
+ 
+extern bool				(*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
+extern const int	nm_sizeof[NM_TYPES];
 
 /*
  * Forward Declarations
@@ -78,7 +83,7 @@ void list_delete(LIST* list, size_t recursions) {
       
     } else {
       //fprintf(stderr, "    free_list: %p\n", list);
-      delete_list(curr->val, recursions - 1);
+      list_delete(curr->val, recursions - 1);
     }
 
     free(curr);
@@ -102,7 +107,7 @@ void list_mark(LIST* list, size_t recursions) {
     	rb_gc_mark(*((VALUE*)(curr->val)));
     	
     } else {
-    	mark_list(curr->val, recursions - 1);
+    	list_mark(curr->val, recursions - 1);
     }
     
     curr = next;
@@ -242,10 +247,10 @@ void* list_remove(LIST* list, size_t key) {
  * FIXME: Add templating.
  */
 bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, const void* right_val, int8_t dtype, size_t recursions, size_t* checked) {
-  NODE *lnext, *lcurr = left->first, *rnext, *rcurr = right->first;
+  NODE *lnext = NULL, *lcurr = left->first, *rnext = NULL, *rcurr = right->first;
 	
 	// Select the appropriate equality tester.
-  (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[dtype][0];
+  bool (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[dtype][0];
 	
   //fprintf(stderr, "list_eqeq_list: recursions=%d\n", recursions);
 
@@ -348,7 +353,7 @@ bool list_eqeq_value(const LIST* l, const void* v, int8_t dtype, size_t recursio
   NODE *next, *curr = l->first;
   
   // Select the appropriate equality tester.
-  (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[dtype][0];
+  bool (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[dtype][0];
 
   while (curr) {
     next = curr->next;
@@ -478,7 +483,7 @@ void list_cast_copy_contents(LIST* lhs, LIST* rhs, int8_t lhs_dtype, int8_t rhs_
         lcurr->val = ALLOC( LIST );
         //fprintf(stderr, "    create_list: %p\n", lcurr->val);
 
-        cast_copy_list_contents(lcurr->val, rcurr->val, lhs_dtype, rhs_dtype, recursions-1);
+        list_cast_copy_contents(lcurr->val, rcurr->val, lhs_dtype, rhs_dtype, recursions-1);
       }
       if (rcurr->next) {
       	lcurr->next = ALLOC( NODE );

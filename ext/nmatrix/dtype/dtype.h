@@ -137,7 +137,7 @@ typedef enum {
 	RATIONAL64	= 10, // Rational64 class
 	RATIONAL128	= 11, // Rational128 class
 	RUBYOBJ			= 12  // Ruby VALUE type
-} dtype;
+} dtype_t;
 
 /*
  * Data
