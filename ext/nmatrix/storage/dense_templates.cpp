@@ -36,7 +36,6 @@
 #include "data/data.h"
 
 #include "dense.h"
-#include "dense_templates.h"
 
 /*
  * Macros
