@@ -49,10 +49,13 @@
  */
 
 typedef struct {
-	int8_t    dtype;
-	size_t    rank;
-	size_t*   shape;
-	size_t*   offset;
+	// Common elements found in all storage types.  Must not be re-arranged.
+	dtype_t	dtype;
+	size_t	rank;
+	size_t*	shape;
+	size_t*	offset;
+
+	// Dense storage specific elements.
 	int       count;
 	void*     src;
 	void*     elements;
@@ -71,7 +74,7 @@ typedef struct {
 // Lifecycle //
 ///////////////
 
-DENSE_STORAGE*	dense_storage_create(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
+DENSE_STORAGE*	dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
 void						dense_storage_delete(DENSE_STORAGE* s);
 void						dense_storage_delete_ref(DENSE_STORAGE* s);
 void						dense_storage_mark(void* m);
@@ -99,8 +102,6 @@ size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice);
 /////////////////////////
 
 DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs);
-DENSE_STORAGE* dense_storage_cast_copy(DENSE_STORAGE* rhs, int8_t new_dtype);
-DENSE_STORAGE* dense_storage_from_list(const LIST_STORAGE* rhs, int8_t l_dtype);
-DENSE_STORAGE* dense_storage_from_yale(const YALE_STORAGE* rhs, int8_t l_dtype);
+DENSE_STORAGE* dense_storage_cast_copy(DENSE_STORAGE* rhs, dtype_t new_dtype);
 
 #endif

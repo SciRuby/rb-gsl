@@ -51,12 +51,15 @@
  */
 
 typedef struct {
-	int8_t    dtype;
-	size_t    rank;
-	size_t*   shape;
-	size_t*   offset;
-	void*     default_val;
-	LIST*     rows;
+	// Common elements found in all storage types.  Must not be re-arranged.
+	dtype_t	dtype;
+	size_t	rank;
+	size_t*	shape;
+	size_t*	offset;
+	
+	// List storage specific elements.
+	void* default_val;
+	LIST* rows;
 } LIST_STORAGE;
 
 /*
@@ -94,6 +97,9 @@ bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right);
 // Utility //
 /////////////
 
+size_t list_storage_count_elements_r(const LIST* l, size_t recursions);
+size_t list_storage_count_nd_elements(const LIST_STORAGE* s);
+
 /*
  * Count non-zero elements. See also count_list_storage_nd_elements.
  */
@@ -101,16 +107,11 @@ inline size_t list_storage_count_elements(const LIST_STORAGE* s) {
   return list_storage_count_elements_r(s->rows, s->rank - 1);
 }
 
-size_t list_storage_count_elements_r(const LIST* l, size_t recursions);
-size_t list_storage_count_nd_elements(const LIST_STORAGE* s);
-
 /////////////////////////
 // Copying and Casting //
 /////////////////////////
 
 LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs);
 LIST_STORAGE* list_storage_cast_copy(LIST_STORAGE* rhs, int8_t new_dtype);
-LIST_STORAGE* list_storage_from_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
-LIST_STORAGE* list_storage_from_yale(const YALE_STORAGE* rhs, int8_t l_dtype);
 
 #endif

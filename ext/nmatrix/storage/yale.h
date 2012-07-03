@@ -79,18 +79,21 @@
  */
 
 typedef struct {
-	int8_t    dtype;
-	size_t    rank;
-	size_t*   shape;
-	size_t*   offset;
-	void*     a;
+	// Common elements found in all storage types.  Must not be re-arranged.
+	dtype_t	dtype;
+	size_t	rank;
+	size_t*	shape;
+	size_t*	offset;
 	
+	// Yale storage specific elements.
+	void* a;
+
 	// Strictly non-diagonal non-zero count!
-	size_t    ndnz;
-	
-	size_t    capacity;
-	int8_t    index_dtype;
-	void*     ija;
+	size_t ndnz;
+
+	size_t	capacity;
+	int8_t	index_dtype;
+	void*		ija;
 } YALE_STORAGE;
 
 /*
@@ -147,7 +150,5 @@ char yale_storage_vector_insert(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void
 
 YALE_STORAGE* yale_storage_cast_copy(YALE_STORAGE* rhs, int8_t new_dtype);
 YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs);
-YALE_STORAGE* yale_storage_from_list(const LIST_STORAGE* rhs, int8_t l_dtype);
-YALE_STORAGE* yale_storage_from_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
 
 #endif

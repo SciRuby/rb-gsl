@@ -38,36 +38,40 @@
  * Project Includes
  */
 
-#include "nmatrix.h"
+#include "data/data.h"
+
+#include "dense.h"
+#include "list.h"
+#include "yale.h"
 
 /*
  * Macros
  */
+
+#define NUM_STYPES 3
 
 /*
  * Types
  */
 
 typedef enum {
-  DENSE,
-  LIST,
-  YALE
+	DENSE_STORE,
+	LIST_STORE,
+	YALE_STORE
 } stype_t;
 
 typedef struct {
-	// Common elements found in all storage types.
-	
-  dtype_t	dtype;
-  size_t	rank;
-  size_t*	shape;
-  size_t*	offset;
-  void*		elements;
+	// Common elements found in all storage types.  Must not be re-arranged.
+	dtype_t	dtype;
+	size_t	rank;
+	size_t*	shape;
+	size_t*	offset;
 } STORAGE;
 
 // For binary operations involving matrices that need to be casted.
 typedef struct {
-  STORAGE* left;
-  STORAGE* right;
+	STORAGE* left;
+	STORAGE* right;
 } STORAGE_PAIR;
 
 /*
@@ -78,13 +82,24 @@ typedef struct {
  * Functions
  */
 
+/////////////////////////
+// Copying and Casting //
+/////////////////////////
+
+DENSE_STORAGE*	dense_storage_from_list(const LIST_STORAGE* rhs, dtype_t l_dtype);
+DENSE_STORAGE*	dense_storage_from_yale(const YALE_STORAGE* rhs, dtype_t l_dtype);
+LIST_STORAGE*		list_storage_from_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
+LIST_STORAGE*		list_storage_from_yale(const YALE_STORAGE* rhs, int8_t l_dtype);
+YALE_STORAGE*		yale_storage_from_list(const LIST_STORAGE* rhs, int8_t l_dtype);
+YALE_STORAGE*		yale_storage_from_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
+
 /* Calculate the max number of elements in the list storage structure, based
  * on shape and rank.
  *
  * FIXME: Massively unsafe.  Should be removed or re-done.
  */
-inline size_t storage_count_max_elements(const STORAGE* s) {
-  return dense_storage_count_elements((DENSE_STORAGE*)s);
-}
+//inline size_t storage_count_max_elements(const STORAGE* s) {
+//  return dense_storage_count_elements((DENSE_STORAGE*)s);
+//}
 
 #endif

@@ -36,6 +36,8 @@
  */
 
 #include "dense.h"
+#include "list.h"
+#include "yale.h"
 
 /*
  * Macros
@@ -52,10 +54,10 @@ extern const int	nm_sizeof[NM_TYPES];
  * Forward Declarations
  */
 
-static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
+static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, void* default_val, dtype_t l_dtype, dtype_t r_dtype,
 	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
 
-static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype,
+static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, dtype_t l_dtype, dtype_t r_dtype,
 	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
 
 /*
@@ -72,7 +74,7 @@ static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, i
  * will be concatenated over and over again into a new elements array. If
  * elements is NULL, the new elements array will not be initialized.
  */
-DENSE_STORAGE* dense_storage_create(int8_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length) {
+DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length) {
   DENSE_STORAGE* s;
   size_t count, i, copy_length = elements_length;
 
@@ -273,7 +275,7 @@ DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs) {
 /*
  * Documentation goes here.
  */
-DENSE_STORAGE* dense_storage_cast_copy(DENSE_STORAGE* rhs, int8_t new_dtype) {
+DENSE_STORAGE* dense_storage_cast_copy(DENSE_STORAGE* rhs, dtype_t new_dtype) {
   DENSE_STORAGE* lhs;
   
   size_t count = count_dense_storage_elements(rhs), p;
@@ -304,115 +306,6 @@ DENSE_STORAGE* dense_storage_cast_copy(DENSE_STORAGE* rhs, int8_t new_dtype) {
   return lhs;
 }
 
-/*
- * Convert (by creating a copy) from list storage to dense storage.
- */
-DENSE_STORAGE* dense_storage_from_list(const LIST_STORAGE* rhs, int8_t l_dtype) {
-  DENSE_STORAGE* lhs;
-  
-  // Position in lhs->elements.
-  size_t pos = 0;
-
-  // allocate and copy shape
-  size_t* shape = ALLOC_N(size_t, rhs->rank);
-  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
-
-  lhs = dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
-
-  // recursively copy the contents
-  dense_storage_cast_copy_list_contents(lhs->elements, rhs->rows, rhs->default_val, l_dtype, rhs->dtype, &pos, shape, lhs->rank, count_storage_max_elements((STORAGE*)rhs), rhs->rank-1);
-
-  return lhs;
-}
-
-/*
- * Documentation goes here.
- */
-DENSE_STORAGE* dense_storage_from_yale(const YALE_STORAGE* rhs, int8_t l_dtype) {
-  DENSE_STORAGE* lhs;
-  // Position in lhs->elements.
-  y_size_t i, j
-  
-  // Position in rhs->elements.
-  y_size_t ija, ija_next, jj;
-  
-  // Position in dense to write to.
-  y_size_t pos = 0;
-  
-  // Determine zero representation.
-  void* R_ZERO = (char*)(rhs->a) + rhs->shape[0] * nm_sizeof[rhs->dtype];
-
-  // Allocate and set shape.
-  size_t* shape = ALLOC_N(size_t, rhs->rank);
-  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
-
-  lhs = dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
-
-  // Walk through rows. For each entry we set in dense, increment pos.
-  for (i = rhs->shape[0]; i-- > 0;) {
-
-    // Get boundaries of this row, store in ija and ija_next.
-    YaleGetIJA(ija,      rhs, i);
-    YaleGetIJA(ija_next, rhs, i+1);
-
-    if (ija == ija_next) {
-    	// Row is empty?
-			
-			// Write zeros in each column.
-			for (j = rhs->shape[1]; j-- > 0;) {
-
-        // Fill in zeros (except for diagonal)
-        if (i == j) {
-        	cast_copy_value_single((char*)(lhs->elements) + pos*nm_sizeof[l_dtype], (char*)(rhs->a) + i*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
-        	
-				} else {
-					cast_copy_value_single((char*)(lhs->elements) + pos*nm_sizeof[l_dtype], R_ZERO, l_dtype, rhs->dtype);
-				}
-				
-				// Move to next dense position.
-        ++pos;
-      }
-
-    } else {
-      // Row contains entries: write those in each column, interspersed with zeros.
-      YaleGetIJA(jj, rhs, ija);
-			
-			for (j = rhs->shape[1]; j-- > 0;) {
-        if (i == j) {
-          cast_copy_value_single((char*)(lhs->elements) + pos*nm_sizeof[l_dtype], (char*)(rhs->a) + i*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
-
-        } else if (j == jj) {
-
-          // Copy from rhs.
-          cast_copy_value_single((char*)(lhs->elements) + pos*nm_sizeof[l_dtype], (char*)(rhs->a) + ija*nm_sizeof[rhs->dtype], l_dtype, rhs->dtype);
-
-          // Get next.
-          ++ija;
-
-          // Increment to next column ID (or go off the end).
-          if (ija < ija_next) {
-          	YaleGetIJA(jj, rhs, ija);
-          	
-          } else {
-          	jj = rhs->shape[1];
-          }
-          
-        } else {
-        	// j < jj
-
-          // Insert zero.
-          cast_copy_value_single((char*)(lhs->elements) + pos*nm_sizeof[l_dtype], R_ZERO, l_dtype, rhs->dtype);
-        }
-        
-        // Move to next dense position.
-        ++pos;
-      }
-    }
-  }
-
-  return lhs;
-}
-
 //////////////////////
 // Helper Functions //
 //////////////////////
@@ -420,7 +313,7 @@ DENSE_STORAGE* dense_storage_from_yale(const YALE_STORAGE* rhs, int8_t l_dtype) 
 /*
  * Copy list contents into dense recursively.
  */
-static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, void* default_val, int8_t l_dtype, int8_t r_dtype,size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
+static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, void* default_val, dtype_t l_dtype, dtype_t r_dtype,size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
 
   NODE *curr = rhs->first;
   int last_key = -1;
@@ -465,7 +358,7 @@ static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, vo
 /*
  * Copy a set of default values into dense.
  */
-static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, int8_t l_dtype, int8_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
+static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, dtype_t l_dtype, dtype_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
   size_t i;
 
 	for (i = shape[rank - 1 - recursions]; i-- > 0; ++(*pos)) {
