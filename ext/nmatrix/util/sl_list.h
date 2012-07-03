@@ -38,6 +38,8 @@
  * Project Includes
  */
 
+#include "nmatrix.h"
+
 /*
  * Macros
  */
@@ -91,8 +93,8 @@ void* list_remove(LIST* list, size_t key);
 // Tests //
 ///////////
 
-bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, const void* right_val, int8_t dtype, size_t recursions, size_t* checked);
-bool list_eqeq_value(const LIST* l, const void* v, int8_t dtype, size_t recursions, size_t* checked);
+bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, const void* right_val, dtype_t dtype, size_t recursions, size_t* checked);
+bool list_eqeq_value(const LIST* l, const void* v, dtype_t dtype, size_t recursions, size_t* checked);
 
 /////////////
 // Utility //
@@ -107,6 +109,6 @@ NODE* list_find_nearest_from(NODE* prev, size_t key);
 // Copying and Casting //
 /////////////////////////
 
-void list_cast_copy_contents(LIST* lhs, LIST* rhs, int8_t lhs_dtype, int8_t rhs_dtype, size_t recursions);
+void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
 
 #endif

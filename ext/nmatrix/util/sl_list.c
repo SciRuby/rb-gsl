@@ -25,6 +25,7 @@
  * Project Includes
  */
 
+#include "nmatrix.h"
 #include "sl_list.h"
 
 /*
@@ -35,8 +36,8 @@
  * Global Variables
  */
  
-extern bool				(*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
-extern const int	nm_sizeof[NM_TYPES];
+extern bool				(*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, const int);
+extern const int	nm_sizeof[NUM_DTYPES];
 
 /*
  * Forward Declarations
@@ -246,7 +247,7 @@ void* list_remove(LIST* list, size_t key) {
  *
  * FIXME: Add templating.
  */
-bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, const void* right_val, int8_t dtype, size_t recursions, size_t* checked) {
+bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, const void* right_val, dtype_t dtype, size_t recursions, size_t* checked) {
   NODE *lnext = NULL, *lcurr = left->first, *rnext = NULL, *rcurr = right->first;
 	
 	// Select the appropriate equality tester.
@@ -349,7 +350,7 @@ bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, c
  *
  * FIXME: Add templating.
  */
-bool list_eqeq_value(const LIST* l, const void* v, int8_t dtype, size_t recursions, size_t* checked) {
+bool list_eqeq_value(const LIST* l, const void* v, dtype_t dtype, size_t recursions, size_t* checked) {
   NODE *next, *curr = l->first;
   
   // Select the appropriate equality tester.
@@ -453,7 +454,7 @@ NODE* list_find_nearest_from(NODE* prev, size_t key) {
  *
  * FIXME: Add templating.
  */
-void list_cast_copy_contents(LIST* lhs, LIST* rhs, int8_t lhs_dtype, int8_t rhs_dtype, size_t recursions) {
+void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
   NODE *lcurr, *rcurr;
 
   if (rhs->first) {
