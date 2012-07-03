@@ -21,15 +21,13 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == dense_templates.c
+// == dense_templates.cpp
 //
 // Templates for dense n-dimensional matrix storage.
 
 /*
  * Standard Includes
  */
-
-#include <ruby.h>
 
 /*
  * Project Includes
