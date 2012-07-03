@@ -31,10 +31,14 @@
 /*
  * Standard Includes
  */
+ 
+#include <cblas.h>
 
 /*
  * Project Includes
  */
+
+#include "nmatrix.h"
 
 /*
  * Macros
@@ -61,10 +65,19 @@ typedef struct {
   void *ia, *ja, *a;
   bool diag;
 } YALE_PARAM;
+																																	// dense transpose
+typedef void     (*nm_gemv_t[NUM_DTYPES])();																																						// general matrix/vector multiply
+typedef void     (*nm_smmp_t[NUM_DTYPES][NM_INDEX_TYPES])();																														// sparse (yale) multiply
+typedef void     (*nm_smmp_transpose_t[NUM_DTYPES][NM_INDEX_TYPES])(y_size_t, y_size_t, YALE_PARAM, YALE_PARAM, bool);	// sparse (yale) transpose
 
 /*
  * Data
  */
+
+extern int (*Gemm[15])(const enum CBLAS_TRANSPOSE, const enum CBLAS_TRANSPOSE, const int, const int, const int, const void *, const void *, const int, const void *, const int, const void *, void *, const int);
+extern int (*Gemv[15])(const enum CBLAS_TRANSPOSE, const int, const int, const void *, const void *, const int, const void *, const int, const void *, void *, const int);
+extern void (*Symbmm[7])(const unsigned int, const unsigned int, const void *, const void *, const bool, const void *, const void *, const bool, void *, const bool);
+extern void (*Numbmm[15][7])(const unsigned int, const unsigned int, const void *, const void *, const void *, const bool, const void *, const void *, const void *, const bool, void *, void *, void *, const bool);
 
 /*
  * Functions

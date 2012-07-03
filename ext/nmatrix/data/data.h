@@ -41,7 +41,7 @@
 #ifdef __cplusplus
 	// These inlcudes are only needed for C++ programs.
 	#include "complex.h"
-	#include "object.h"
+	#include "ruby_object.h"
 	#include "rational.h"
 #endif
 
@@ -50,11 +50,6 @@
  */
 
 #define NUM_DTYPES 13
-
-/*
- * FIXME: Provide a 2D version of the DTYPE_TEMPLATE_TABLE for operations with
- * different left- and right-hand side data types.
- */ 
 
 #define DTYPE_TEMPLATE_TABLE(fun, ret, ...)					\
 	static ret (*ttable[NUM_DTYPES])(__VA_ARGS__) =	{	\
@@ -139,6 +134,42 @@ typedef enum {
 	RUBYOBJ			= 12  // Ruby VALUE type
 } dtype_t;
 
+#ifdef __CPLUSPLUS
+
+typedef union {
+  u_int8_t b[2];
+  int16_t s;
+} nm_size16_t;
+
+typedef union {
+  u_int8_t b[4];
+  int32_t  i;
+  float    f;
+} nm_size32_t;
+
+typedef union {
+  u_int8_t  b[8];
+  int64_t   q;
+  float     f[2];
+  double    d;
+  Complex64 c;
+} nm_size64_t;
+
+typedef union {
+  u_int8_t   b[16];
+  int64_t    i[2];
+  double     d[2];
+  float      f[4];
+  Complex64  c[2];
+  Complex128 z;
+  Rational32 r[4];
+  Rational64 ra[2];
+  Rational128 rat;
+  VALUE      v[2];
+} nm_size128_t;
+
+#endif
+
 /*
  * Data
  */
@@ -149,11 +180,13 @@ extern const char* const DTYPE_NAMES[NUM_DTYPES];
  * Functions
  */
 
-inline void* test_function(char* op_name, void* ptr, dtype left, dtype right) {
+inline void* test_function(char* op_name, void* ptr, dtype_t left, dtype_t right) {
 	if (ptr == NULL) {
 		// FIXME: Make this do something useful, like raise a Ruby exception.
 		printf("Operation '%s' is not permitted with data types %s and %s.\n", op_name, DTYPE_NAMES[left], DTYPE_NAMES[right]);
 	}
+	
+	return ptr;
 }
 
 #endif

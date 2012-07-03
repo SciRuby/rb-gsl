@@ -34,7 +34,6 @@
  * Standard Includes
  */
 
-#include <cblas.h>
 #include <math.h>
 #include <ruby.h>
 #include <stddef.h>
@@ -57,7 +56,8 @@
  * Project Includes
  */
 
-#include "cblas.h"
+#include "data/data.h"
+#include "storage/storage.h"
 
 /*
  * Macros
@@ -135,7 +135,9 @@
 	#define RARRAY_PTR(a) RARRAY(a)->ptr
 #endif
 
-#define NM_INDEX_TYPES  NM_FLOAT32
+// FIXME: What should this actually be?
+//#define NM_INDEX_TYPES  NM_FLOAT32
+#define NM_INDEX_TYPES  5
 
 /*
  * Types
@@ -240,8 +242,8 @@
 	#endif
 #endif
 
-typedef float32 float;
-typedef float64 float;
+typedef float		float32;
+typedef double	float64;
 
 /*
  * For when we need to return array indices. This must never be larger than
@@ -281,60 +283,25 @@ typedef struct {
 	uint8_t	is_one_el;
 } SLICE;
 
-typedef union {
-  u_int8_t b[2];
-  int16_t s;
-} nm_size16_t;
-
-typedef union {
-  u_int8_t b[4];
-  int32_t  i;
-  float    f;
-} nm_size32_t;
-
-typedef union {
-  u_int8_t  b[8];
-  int64_t   q;
-  float     f[2];
-  double    d;
-  complex64 c;
-} nm_size64_t;
-
-typedef union {
-  u_int8_t   b[16];
-  int64_t    i[2];
-  double     d[2];
-  float      f[4];
-  complex64  c[2];
-  complex128 z;
-  rational32 r[4];
-  rational64 ra[2];
-  rational128 rat;
-  VALUE      v[2];
-} nm_size128_t;
-
 // These have to come after enumerators
-typedef void     (*nm_setfunc_t[NM_TYPES][NM_TYPES])();								// copy functions
-typedef void     (*nm_incfunc_t[NM_TYPES])();													// increment functions
-typedef void*    (*nm_stype_ref_t[S_TYPES])(STORAGE*, SLICE*);				// get/ref
-typedef VALUE    (*nm_stype_ins_t[S_TYPES])(STORAGE*, SLICE*, VALUE);	// insert
-typedef STORAGE* (*nm_create_storage_t[S_TYPES])();
-typedef STORAGE* (*nm_cast_copy_storage_t[S_TYPES])();
-typedef STORAGE* (*nm_scast_copy_storage_t[S_TYPES][S_TYPES])();
-typedef NMATRIX* (*nm_matrix_multiply_op_t[S_TYPES])();
-typedef NMATRIX* (*nm_elementwise_binary_op_casted_t[S_TYPES])();
-typedef int      (*nm_d_elementwise_binary_op_t[NM_TYPES])();
-typedef int      (*nm_y_elementwise_binary_op_t[NM_TYPES][NM_INDEX_TYPES])();
-typedef bool     (*nm_compare_t[S_TYPES])();
-typedef void     (*nm_delete_t[S_TYPES])();
-typedef void     (*nm_mark_t[S_TYPES])(void*);
-typedef void     (*nm_gemm_t[NM_TYPES])();																																						// general matrix/matrix multiply
-typedef void     (*nm_det_t[NM_TYPES])(const int, const void*, const int, void*);																			// determinant
-typedef NMATRIX* (*nm_transpose_t[S_TYPES])();
-typedef void     (*nm_dense_transpose_t[NM_TYPES])();																																	// dense transpose
-typedef void     (*nm_gemv_t[NM_TYPES])();																																						// general matrix/vector multiply
-typedef void     (*nm_smmp_t[NM_TYPES][NM_INDEX_TYPES])();																														// sparse (yale) multiply
-typedef void     (*nm_smmp_transpose_t[NM_TYPES][NM_INDEX_TYPES])(y_size_t, y_size_t, YALE_PARAM, YALE_PARAM, bool);	// sparse (yale) transpose
+typedef void     (*nm_setfunc_t[NUM_DTYPES][NUM_DTYPES])();								// copy functions
+typedef void     (*nm_incfunc_t[NUM_DTYPES])();														// increment functions
+typedef void*    (*nm_stype_ref_t[NUM_STYPES])(STORAGE*, SLICE*);					// get/ref
+typedef VALUE    (*nm_stype_ins_t[NUM_STYPES])(STORAGE*, SLICE*, VALUE);	// insert
+typedef STORAGE* (*nm_create_storage_t[NUM_STYPES])();
+typedef STORAGE* (*nm_cast_copy_storage_t[NUM_STYPES])();
+typedef STORAGE* (*nm_scast_copy_storage_t[NUM_STYPES][NUM_STYPES])();
+typedef NMATRIX* (*nm_matrix_multiply_op_t[NUM_STYPES])();
+typedef NMATRIX* (*nm_elementwise_binary_op_casted_t[NUM_STYPES])();
+typedef int      (*nm_d_elementwise_binary_op_t[NUM_DTYPES])();
+typedef int      (*nm_y_elementwise_binary_op_t[NUM_DTYPES][NM_INDEX_TYPES])();
+typedef bool     (*nm_compare_t[NUM_STYPES])();
+typedef void     (*nm_delete_t[NUM_STYPES])();
+typedef void     (*nm_mark_t[NUM_STYPES])(void*);
+typedef void     (*nm_gemm_t[NUM_DTYPES])();																																						// general matrix/matrix multiply
+typedef void     (*nm_det_t[NUM_DTYPES])(const int, const void*, const int, void*);																			// determinant
+typedef NMATRIX* (*nm_transpose_t[NUM_STYPES])();
+typedef void     (*nm_dense_transpose_t[NUM_DTYPES])();
 
 /*
  * Data
@@ -345,26 +312,22 @@ typedef void     (*nm_smmp_transpose_t[NM_TYPES][NM_INDEX_TYPES])(y_size_t, y_si
 #endif
 
 // TODO: Make these automatic
-extern u_int8_t (*MathHomOps_b[5])(const u_int8_t, const u_int8_t);
-extern int64_t (*MathHomOps_i64[5])(const int64_t, const int64_t);
-extern int32_t (*MathHomOps_i32[5])(const int32_t, const int32_t);
-extern int16_t (*MathHomOps_i16[5])(const int16_t, const int16_t);
-extern int8_t (*MathHomOps_i8[5])(const int8_t, const int8_t);
-extern float (*MathHomOps_f32[5])(const float, const float);
-extern double (*MathHomOps_f64[5])(const double, const double);
-extern complex64 (*MathHomOps_c64[5])(const complex64, const complex64);
-extern complex128 (*MathHomOps_c128[5])(const complex128, const complex128);
-extern rational32 (*MathHomOps_r32[5])(rational32, rational32);
-extern rational64 (*MathHomOps_r64[5])(rational64, rational64);
-extern rational128 (*MathHomOps_r128[5])(rational128, rational128);
-extern VALUE (*MathHomOps_v[5])(const VALUE, const VALUE);
-extern int (*Gemm[15])(const enum CBLAS_TRANSPOSE, const enum CBLAS_TRANSPOSE, const int, const int, const int, const void *, const void *, const int, const void *, const int, const void *, void *, const int);
-extern int (*Gemv[15])(const enum CBLAS_TRANSPOSE, const int, const int, const void *, const void *, const int, const void *, const int, const void *, void *, const int);
-extern void (*Symbmm[7])(const unsigned int, const unsigned int, const void *, const void *, const bool, const void *, const void *, const bool, void *, const bool);
-extern void (*Numbmm[15][7])(const unsigned int, const unsigned int, const void *, const void *, const void *, const bool, const void *, const void *, const void *, const bool, void *, void *, void *, const bool);
-extern void (*SmmpSortColumns[15][7])(const unsigned int, const void *, void *, void *);
-extern void (*Transp[15][7])(const unsigned int, const unsigned int, const void *, const void *, const void *, const bool, void *, void *, void *, const bool);
-extern void (*DetExact[15])(const int, const void *, const int, void *);
+//extern u_int8_t (*MathHomOps_b[5])(const u_int8_t, const u_int8_t);
+//extern int64_t (*MathHomOps_i64[5])(const int64_t, const int64_t);
+//extern int32_t (*MathHomOps_i32[5])(const int32_t, const int32_t);
+//extern int16_t (*MathHomOps_i16[5])(const int16_t, const int16_t);
+//extern int8_t (*MathHomOps_i8[5])(const int8_t, const int8_t);
+//extern float (*MathHomOps_f32[5])(const float, const float);
+//extern double (*MathHomOps_f64[5])(const double, const double);
+//extern complex64 (*MathHomOps_c64[5])(const complex64, const complex64);
+//extern complex128 (*MathHomOps_c128[5])(const complex128, const complex128);
+//extern rational32 (*MathHomOps_r32[5])(rational32, rational32);
+//extern rational64 (*MathHomOps_r64[5])(rational64, rational64);
+//extern rational128 (*MathHomOps_r128[5])(rational128, rational128);
+//extern VALUE (*MathHomOps_v[5])(const VALUE, const VALUE);
+//extern void (*SmmpSortColumns[15][7])(const unsigned int, const void *, void *, void *);
+//extern void (*Transp[15][7])(const unsigned int, const unsigned int, const void *, const void *, const void *, const bool, void *, void *, void *, const bool);
+//extern void (*DetExact[15])(const int, const void *, const int, void *);
 
 extern nm_setfunc_t SetFuncs;
 extern nm_incfunc_t Increment;
@@ -374,12 +337,12 @@ extern ID nm_id_mult, nm_id_multeq, nm_id_add;
 extern VALUE nm_eDataTypeError, nm_eStorageTypeError;
 
 //TODO: Auto-generate this
-extern int (*EwDenseHom[15])(const void *, const void *, void *, const int, enum MathHomOps);
-extern int (*EwDenseBool[15])(const void *, const void *, void *, const int, const enum MathBoolOps);
-extern int (*EwDenseBit[15])(const void *, const void *, void *, const int, const enum MathBitOps);
-extern int (*EwYaleHom[15][7])(const void *, const void *, void *, const void *, const void *, void *, const unsigned int, const unsigned int, const enum MathHomOps);
-extern int (*EwYaleBool[15][7])(const void *, const void *, void *, const void *, const void *, void *, const unsigned int, const unsigned int, const enum MathBoolOps);
-extern int (*EwYaleBit[15][7])(const void *, const void *, void *, const void *, const void *, void *, const unsigned int, const unsigned int, const enum MathBitOps);
+//extern int (*EwDenseHom[15])(const void *, const void *, void *, const int, enum MathHomOps);
+//extern int (*EwDenseBool[15])(const void *, const void *, void *, const int, const enum MathBoolOps);
+//extern int (*EwDenseBit[15])(const void *, const void *, void *, const int, const enum MathBitOps);
+//extern int (*EwYaleHom[15][7])(const void *, const void *, void *, const void *, const void *, void *, const unsigned int, const unsigned int, const enum MathHomOps);
+//extern int (*EwYaleBool[15][7])(const void *, const void *, void *, const void *, const void *, void *, const unsigned int, const unsigned int, const enum MathBoolOps);
+//extern int (*EwYaleBit[15][7])(const void *, const void *, void *, const void *, const void *, void *, const unsigned int, const unsigned int, const enum MathBitOps);
 
 /*
  * Functions
