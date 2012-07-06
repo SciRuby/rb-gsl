@@ -17,3 +17,8 @@ spec/*.mtx
 *.so
 /tags
 *.gem
+
+ext/nmatrix/**/*.o
+ext/nmatrix/Makefile
+ext/nmatrix/**/Makefile
+ext/nmatrix/nmatrix_config.h

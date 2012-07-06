@@ -316,9 +316,18 @@ inline bool eqeq_generic(const void* x, const void* y, const int len, const int 
   return (!memcmp(x, y, len * dtype_size));
 }
 
-// TODO: Make this auto-generated in some future version of CSquare.
-// element eqeq -- like memcmp but handles 0.0 == -0.0 for complex and floating points.
-// Second dimension is for hermitians -- complex conjugate. Use 0 for regular equality and 1 for conjugate equality.
+/*
+ * TODO: Make this auto-generated in some future version of CSquare.
+ *
+ * element eqeq -- like memcmp but handles 0.0 == -0.0 for complex and floating
+ * points. Second dimension is for hermitians -- complex conjugate. Use 0 for
+ * regular equality and 1 for conjugate equality.
+ *
+ * FIXME: Each comparison here requires a function call, even if it is a
+ * simple integer comparison.  They also can't be inlined because the
+ * dtype isn't know until runtime.  This might be something that can be
+ * solved with templating.
+ */
 bool (*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int) = {
   {NULL, NULL},
   {eqeq_generic, eqeq_generic}, // byte
