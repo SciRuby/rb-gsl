@@ -83,7 +83,7 @@ DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, v
   s->count      = 1;
   s->src        = s;
 	
-	count         = storage_count_elements((STORAGE*)s);
+	count         = storage_count_max_elements(s->rank, s->shape);
 
   if (elements_length == count) {
   	s->elements = elements;
@@ -145,7 +145,7 @@ void dense_storage_mark(DENSE_STORAGE* storage) {
   size_t i;
 
   if (storage && storage->dtype == RUBYOBJ) {
-    for (i = storage_count_elements((STORAGE*)storage); i-- > 0;) {
+  	for (i = storage_count_max_elements(storage->rank, storage->shape); i-- > 0;) {
       rb_gc_mark(*((VALUE*)((char*)(storage->elements) + i*DTYPE_SIZES[RUBYOBJ])));
     }
   }
@@ -226,7 +226,7 @@ size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice) {
 DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs) {
   DENSE_STORAGE* lhs;
   
-  size_t count = storage_count_elements((STORAGE*)rhs), p;
+  size_t count = storage_count_max_elements(rhs->rank, rhs->shape), p;
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   
   if (!shape) {
@@ -256,7 +256,7 @@ DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs) {
 DENSE_STORAGE* dense_storage_cast_copy(DENSE_STORAGE* rhs, dtype_t new_dtype) {
   DENSE_STORAGE* lhs;
   
-  size_t count = storage_count_elements((STORAGE*)rhs), p;
+  size_t count = storage_count_max_elements(rhs->rank, rhs->shape), p;
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   
   if (!shape) {

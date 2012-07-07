@@ -53,8 +53,7 @@
  * Global Variables
  */
 
-extern						VALUE nm_eStorageTypeError;
-extern bool				(*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, const int);
+extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, const int);
 
 /*
  * Forward Declarations
@@ -233,7 +232,7 @@ bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
 
   // in certain cases, we need to keep track of the number of elements checked.
   size_t num_checked  = 0,
-         max_elements = storage_count_max_elements((STORAGE*)left);
+         max_elements = storage_count_max_elements(left->rank, left->shape);
   
   bool (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[left->dtype][0];
 

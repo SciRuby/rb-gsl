@@ -79,19 +79,15 @@ typedef struct {
  * Calculate the number of elements in the dense storage structure, based on
  * shape and rank.
  */
-inline size_t storage_count_elements(const STORAGE* s) {
+inline size_t storage_count_max_elements(size_t rank, const size_t* shape) {
   unsigned int i;
   size_t count = 1;
   
-  for (i = s->rank; i-- > 0;) {
-  	count *= s->shape[i];
+  for (i = rank; i-- > 0;) {
+  	count *= shape[i];
   }
   
   return count;
-}
-
-inline size_t storage_count_max_elements(const STORAGE* s) {
-	return storage_count_elements(s);
 }
 
 #endif
