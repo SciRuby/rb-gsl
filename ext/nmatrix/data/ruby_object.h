@@ -77,24 +77,24 @@ class RubyObject {
 	 * Binary operator definitions.
 	 */
 	
-	inline RubyObject& operator+(RubyObject other) {
-		return RubyObject(rb_funcall(this->obj_ref, rb_internal("+"), 1, other->obj_ref));
+	inline RubyObject operator+(const RubyObject& other) const {
+		return RubyObject(rb_funcall(this->obj_ref, rb_intern("+"), 1, other.obj_ref));
 	}
 	
-	inline RubyObject& operator-(RubyObject other) {
-		return RubyObject(rb_funcall(this->obj_ref, rb_internal("-"), 1, other->obj_ref));
+	inline RubyObject operator-(const RubyObject& other) const {
+		return RubyObject(rb_funcall(this->obj_ref, rb_intern("-"), 1, other.obj_ref));
 	}
 	
-	inline RubyObject& operator*(RubyObject other) {
-		return RubyObject(rb_funcall(this->obj_ref, rb_internal("*"), 1, other->obj_ref));
+	inline RubyObject operator*(const RubyObject& other) const {
+		return RubyObject(rb_funcall(this->obj_ref, rb_intern("*"), 1, other.obj_ref));
 	}
 	
-	inline RubyObject& operator/(RubyObject other) {
-		return RubyObject(rb_funcall(this->obj_ref, rb_internal("/"), 1, other->obj_ref));
+	inline RubyObject operator/(const RubyObject& other) const {
+		return RubyObject(rb_funcall(this->obj_ref, rb_intern("/"), 1, other.obj_ref));
 	}
 	
-	inline RubyObject& operator%(RubyObject other) {
-		return RubyObject(rb_funcall(this->obj_ref, rb_internal("%"), 1, other->obj_ref));
+	inline RubyObject operator%(const RubyObject& other) const {
+		return RubyObject(rb_funcall(this->obj_ref, rb_intern("%"), 1, other.obj_ref));
 	}
 	
 	// FIXME: Add comparison operators.

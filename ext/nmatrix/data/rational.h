@@ -36,7 +36,7 @@
  * Project Includes
  */
 
-#include "nmatrix.h"
+#include "types.h"
 
 /*
  * Macros
@@ -126,7 +126,7 @@
 		long simplify;																									\
 		Rational<Type> result;																					\
 																																		\
-		result.n = this->n + (other.n * this->d);												\
+		result.n = this->n + (other * this->d);												\
 		result.d = this->d;																							\
 																																		\
 		simplify = gcf<Type>(result.n, result.d);												\
@@ -141,7 +141,7 @@
 		int simplify;																										\
 		Rational<Type> result;																					\
 																																		\
-		result.n = this->n - (other.n * this->d);												\
+		result.n = this->n - (other * this->d);												\
 		result.d = this->d;																							\
 																																		\
 		simplify = gcf<Type>(result.n, result.d);												\
@@ -175,11 +175,11 @@
 	}																																	\
 																																		\
 	inline bool operator<(const NativeType& other) const {						\
-		return this->n < (other.n * this->d);														\
+		return this->n < (other * this->d);														\
 	}																																	\
 																																		\
 	inline bool operator>(const NativeType& other) const {						\
-		return this->n > (other.n * this->d);														\
+		return this->n > (other * this->d);														\
 	}																																	\
 																																		\
 	inline bool operator==(const NativeType& other) const {						\
@@ -203,14 +203,14 @@
 	}
 
 #define NATIVE_RATIONAL_OPS(NativeType, RationalType)																											\
-	inline Rational<RationalType>& operator+(const NativeType& left, const Rational<RationalType>& right) {	\
+	inline Rational<RationalType> operator+(const NativeType& left, const Rational<RationalType>& right) {	\
 		long simplify;																																												\
-		Rational<Type> result;																																								\
+		Rational<RationalType> result;																																				\
 																																																					\
 		result.n = (left * right.d) + right.n;																																\
 		result.d = right.d;																																										\
 																																																					\
-		simplify = gcf<Type>(result.n, result.d);																															\
+		simplify = gcf<RationalType>(result.n, result.d);																											\
 																																																					\
 		result.n /= simplify;																																									\
 		result.d /= simplify;																																									\
@@ -218,14 +218,14 @@
 		return result;																																												\
 	}																																																				\
 																																																					\
-	inline Rational<RationalType>& operator-(const NativeType& left, const Rational<RationalType>& right) {	\
+	inline Rational<RationalType> operator-(const NativeType& left, const Rational<RationalType>& right) {	\
 		long simplify;																																												\
 		Rational<RationalType> result;																																				\
 																																																					\
 		result.n = (left * right.d) - right.n;																																\
 		result.d = right.d;																																										\
 																																																					\
-		simplify = gcf<Type>(result.n, result.d);																															\
+		simplify = gcf<RationalType>(result.n, result.d);																											\
 																																																					\
 		result.n /= simplify;																																									\
 		result.d /= simplify;																																									\
@@ -233,27 +233,27 @@
 		return result;																																												\
 	}																																																				\
 																																																					\
-	inline Rational<RationalType>& operator*(const NativeType& left, const Rational<RationalType>& right) {	\
+	inline Rational<RationalType> operator*(const NativeType& left, const Rational<RationalType>& right) {	\
 		long simplify;																																												\
 		Rational<RationalType> result;																																				\
 																																																					\
 		result.n = left * right.n;																																						\
 																																																					\
-		simplify = gcf<Type>(result.n, right.d);																															\
+		simplify = gcf<RationalType>(result.n, right.d);																											\
 																																																					\
 		result.n /= simplify;																																									\
-		result.d  = right->d / simplify;																																			\
+		result.d  = right.d / simplify;																																				\
 																																																					\
 		return result;																																												\
 	}																																																				\
 																																																					\
-	inline Rational<RationalType>& operator/(const NativeType& left, const Rational<RationalType>& right) {	\
+	inline Rational<RationalType> operator/(const NativeType& left, const Rational<RationalType>& right) {	\
 		long simplify;																																												\
 		Rational<RationalType> result;																																				\
 																																																					\
 		result.n = left * right.d;																																						\
 																																																					\
-		simplify = gcf<Type>(result.n, right.n);																															\
+		simplify = gcf<RationalType>(result.n, right.n);																											\
 																																																					\
 		result.n /= simplify;																																									\
 		result.d  = right.n / simplify;																																				\
@@ -261,32 +261,28 @@
 		return result;																																												\
 	}																																																				\
 																																																					\
-	inline bool operator<(const NativeType left, const Rational<RationalType>& right) const {								\
+	inline bool operator<(const NativeType left, const Rational<RationalType>& right) {											\
 		return (left * right.d) < right.n;																																		\
 	}																																																				\
 																																																					\
-	inline bool operator>(const NativeType left, const Rational<RationalType>& right) const {								\
+	inline bool operator>(const NativeType left, const Rational<RationalType>& right) {											\
 		return (left * right.d) > right.n;																																		\
 	}																																																				\
 																																																					\
-	inline bool operator==(const NativeType left, const Rational<RationalType>& right) const {							\
+	inline bool operator==(const NativeType left, const Rational<RationalType>& right) {										\
 		return (left * right.d) == right.n;																																		\
 	}																																																				\
 																																																					\
-	inline bool operator!=(const NativeType left, const Rational<RationalType>& right) const {							\
+	inline bool operator!=(const NativeType left, const Rational<RationalType>& right) {										\
 		return !(left == right);																																							\
 	}																																																				\
 																																																					\
-	inline bool operator<=(const NativeType left, const Rational<RationalType>& right) const {							\
+	inline bool operator<=(const NativeType left, const Rational<RationalType>& right) {										\
 		return (left < right) || (left == right);																															\
 	}																																																				\
 																																																					\
-	inline bool operator>=(const NativeType left, const Rational<RationalType>& right) const {							\
+	inline bool operator>=(const NativeType left, const Rational<RationalType>& right) {										\
 		return (left > right) || (left == right);;																														\
-	}																																																				\
-																																																					\
-	inline operator Rational<RationalType> (NativeType nv) {																								\
-		return Rational<RationalType>(nv, 1);																																	\
 	}
 
 /*
@@ -367,31 +363,31 @@ class Rational {
 	 * Special cast operations for floats and doubles.
 	 */
 	
-	inline operator float32 () {
-		return (float32)this->n / (float32)this->d;
+	inline operator float32_t () {
+		return (float32_t)this->n / (float32_t)this->d;
 	}
 	
-	inline operator float64 () {
-		return (float64)this->n / (float64)this->d;
+	inline operator float64_t () {
+		return (float64_t)this->n / (float64_t)this->d;
 	}
 };
 
 NATIVE_RATIONAL_OPS(u_int8_t,	int16_t)
-NATIVE_RATIONAL_OPS(int8_t,		int16_t)
-NATIVE_RATIONAL_OPS(int16_t,	int16_t)
-NATIVE_RATIONAL_OPS(int32_t,	int16_t)
-NATIVE_RATIONAL_OPS(int64_t,	int16_t)
+//NATIVE_RATIONAL_OPS(int8_t,		int16_t)
+//NATIVE_RATIONAL_OPS(int16_t,	int16_t)
+//NATIVE_RATIONAL_OPS(int32_t,	int16_t)
+//NATIVE_RATIONAL_OPS(int64_t,	int16_t)
 
-NATIVE_RATIONAL_OPS(u_int8_t,	int32_t)
-NATIVE_RATIONAL_OPS(int8_t,		int32_t)
-NATIVE_RATIONAL_OPS(int16_t,	int32_t)
-NATIVE_RATIONAL_OPS(int32_t,	int32_t)
-NATIVE_RATIONAL_OPS(int64_t,	int32_t)
+//NATIVE_RATIONAL_OPS(u_int8_t,	int32_t)
+//NATIVE_RATIONAL_OPS(int8_t,		int32_t)
+//NATIVE_RATIONAL_OPS(int16_t,	int32_t)
+//NATIVE_RATIONAL_OPS(int32_t,	int32_t)
+//NATIVE_RATIONAL_OPS(int64_t,	int32_t)
 
-NATIVE_RATIONAL_OPS(u_int8_t,	int64_t)
-NATIVE_RATIONAL_OPS(int8_t,		int64_t)
-NATIVE_RATIONAL_OPS(int16_t,	int64_t)
-NATIVE_RATIONAL_OPS(int32_t,	int64_t)
-NATIVE_RATIONAL_OPS(int64_t,	int64_t)
+//NATIVE_RATIONAL_OPS(u_int8_t,	int64_t)
+//NATIVE_RATIONAL_OPS(int8_t,		int64_t)
+//NATIVE_RATIONAL_OPS(int16_t,	int64_t)
+//NATIVE_RATIONAL_OPS(int32_t,	int64_t)
+//NATIVE_RATIONAL_OPS(int64_t,	int64_t)
 
 #endif

@@ -39,7 +39,11 @@
  * Project Includes
  */
 
-#include "nmatrix.h"
+#include "types.h"
+
+#include "data/data.h"
+
+#include "common.h"
 
 /*
  * Macros
@@ -78,7 +82,7 @@ typedef struct {
 DENSE_STORAGE*	dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
 void						dense_storage_delete(DENSE_STORAGE* s);
 void						dense_storage_delete_ref(DENSE_STORAGE* s);
-void						dense_storage_mark(void* m);
+void						dense_storage_mark(DENSE_STORAGE* storage);
 
 ///////////////
 // Accessors //
@@ -106,7 +110,6 @@ bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitia
 // Utility //
 /////////////
 
-size_t dense_storage_count_elements(const DENSE_STORAGE* s);
 size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice);
 
 /////////////////////////

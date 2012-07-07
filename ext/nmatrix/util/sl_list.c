@@ -25,7 +25,10 @@
  * Project Includes
  */
 
-#include "nmatrix.h"
+#include "types.h"
+
+#include "data/data.h"
+
 #include "sl_list.h"
 
 /*
@@ -475,7 +478,8 @@ void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rh
         	memcpy(lcurr->val, rcurr->val, nm_sizeof[lhs_dtype]);
         	
         } else {
-        	SetFuncs[lhs_dtype][rhs_dtype](1, lcurr->val, 0, rcurr->val, 0);
+        	// FIXME: Replace this with templating.  Removed now to sort out this header nonsense.
+        	//SetFuncs[lhs_dtype][rhs_dtype](1, lcurr->val, 0, rcurr->val, 0);
         }
 
       } else {

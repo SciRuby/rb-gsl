@@ -21,7 +21,7 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == dtype.c
+// == data.cpp
 //
 // Functions and data for dealing the data types.
 
@@ -33,6 +33,8 @@
  * Project Includes
  */
 
+#include "types.h"
+
 #include "data.h"
 
 /*
@@ -42,7 +44,9 @@
 /*
  * Global Variables
  */
- 
+
+extern "C" {
+
 const char* const DTYPE_NAMES[NUM_DTYPES] = {
 	"Byte",
 	"Int8",
@@ -58,6 +62,24 @@ const char* const DTYPE_NAMES[NUM_DTYPES] = {
 	"Rational128",
 	"RubyObject"
 };
+
+const size_t DTYPE_SIZES[NUM_DTYPES] = {
+	sizeof(u_int8_t),
+	sizeof(int8_t),
+	sizeof(int16_t),
+	sizeof(int32_t),
+	sizeof(int64_t),
+	sizeof(float32_t),
+	sizeof(float64_t),
+	sizeof(Complex64),
+	sizeof(Complex128),
+	sizeof(Rational32),
+	sizeof(Rational64),
+	sizeof(Rational128),
+	sizeof(RubyObject)
+};
+
+}
 
 /*
  * Forward Declarations

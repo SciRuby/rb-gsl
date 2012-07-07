@@ -21,12 +21,12 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == slice.h
+// == common.h
 //
-// Header file for slice related code.
+// Header file for code common to all storage types.
 
-#ifndef SLICE_H
-#define SLICE_H
+#ifndef STORAGE_COMMON_H
+#define STORAGE_COMMON_H
 
 /*
  * Standard Includes
@@ -45,6 +45,20 @@
  */
 
 typedef struct {
+	// Common elements found in all storage types.  Must not be re-arranged.
+	dtype_t	dtype;
+	size_t	rank;
+	size_t*	shape;
+	size_t*	offset;
+} STORAGE;
+
+// For binary operations involving matrices that need to be casted.
+typedef struct {
+	STORAGE* left;
+	STORAGE* right;
+} STORAGE_PAIR;
+
+typedef struct {
 	// Coordinate of first element
 	size_t*	coords;
 	// Lenght of slice
@@ -60,5 +74,24 @@ typedef struct {
 /*
  * Functions
  */
+
+/*
+ * Calculate the number of elements in the dense storage structure, based on
+ * shape and rank.
+ */
+inline size_t storage_count_elements(const STORAGE* s) {
+  unsigned int i;
+  size_t count = 1;
+  
+  for (i = s->rank; i-- > 0;) {
+  	count *= s->shape[i];
+  }
+  
+  return count;
+}
+
+inline size_t storage_count_max_elements(const STORAGE* s) {
+	return storage_count_elements(s);
+}
 
 #endif

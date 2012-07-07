@@ -23,7 +23,7 @@
 //
 // == types.h
 //
-// Resources for all storage types.
+// Definition of simple types used throughout NMatrix.
 
 #ifndef NMATRIX_TYPES_H
 #define NMATRIX_TYPES_H
@@ -34,6 +34,9 @@
 /*
  * Standard Includes
  */
+
+#include <stddef.h>
+#include <stdlib.h>
 
 #ifdef HAVE_STDINT_H
 	#include <stdint.h>
@@ -46,6 +49,10 @@
 /*
  * Macros
  */
+
+#define EPSILON 1E-10
+#define FP_IS_ZERO(n) (-EPSILON < n && n < EPSILON)
+#define FP_EQUAL(a, b) FP_IS_ZERO((a - b))
 
 /*
  * Types
@@ -150,8 +157,8 @@
 	#endif
 #endif
 
-typedef float		float32;
-typedef double	float64;
+typedef float		float32_t;
+typedef double	float64_t;
 
 /*
  * For when we need to return array indices. This must never be larger than
@@ -160,12 +167,14 @@ typedef double	float64;
 typedef uint32_t    y_size_t;
 #define Y_SIZE_T    NM_INT32
 
-#ifdef HAVE_STDBOOL_H
-	#include <stdbool.h>
-#else
-	typedef char    bool;
-	#define true    1;
-	#define false   0;
+#ifndef __cplusplus
+	#ifdef HAVE_STDBOOL_H
+		#include <stdbool.h>
+	#else
+		typedef char    bool;
+		#define true    1;
+		#define false   0;
+	#endif
 #endif
 
 /*

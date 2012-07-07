@@ -21,28 +21,30 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == dtype.h
+// == data.h
 //
 // Header file for dealing with data types.
 
-#ifndef DTYPE_H
-#define DTYPE_H
+#ifndef DATA_TYPES_H
+#define DATA_TYPES_H
 
 /*
  * Standard Includes
  */
 
-#include <stdio.h>
+//#include <stdio.h>
 
 /*
  * Project Includes
  */
 
+#include "types.h"
+
 #ifdef __cplusplus
 	// These inlcudes are only needed for C++ programs.
 	#include "complex.h"
-	#include "ruby_object.h"
 	#include "rational.h"
+	#include "ruby_object.h"
 #endif
 
 /*
@@ -110,10 +112,6 @@
 		{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, fun<RubyObject, RubyObject>}																							\\ RubyObject			\
 	}
 
-#define EPSILON 1E-10
-#define FP_IS_ZERO(n) (-EPSILON < n && n < EPSILON)
-#define FP_EQUAL(a, b) FP_IS_ZERO((a - b_)
-
 /*
  * Types
  */
@@ -134,39 +132,39 @@ typedef enum {
 	RUBYOBJ			= 12  // Ruby VALUE type
 } dtype_t;
 
-#ifdef __CPLUSPLUS
+#ifdef __cplusplus
 
-typedef union {
-  u_int8_t b[2];
-  int16_t s;
-} nm_size16_t;
+//typedef union {
+//  u_int8_t b[2];
+//  int16_t s;
+//} nm_size16_t;
 
-typedef union {
-  u_int8_t b[4];
-  int32_t  i;
-  float    f;
-} nm_size32_t;
+//typedef union {
+//  u_int8_t b[4];
+//  int32_t  i;
+//  float    f;
+//} nm_size32_t;
 
-typedef union {
-  u_int8_t  b[8];
-  int64_t   q;
-  float     f[2];
-  double    d;
-  Complex64 c;
-} nm_size64_t;
+//typedef union {
+//  u_int8_t  b[8];
+//  int64_t   q;
+//  float     f[2];
+//  double    d;
+//  Complex64 c;
+//} nm_size64_t;
 
-typedef union {
-  u_int8_t   b[16];
-  int64_t    i[2];
-  double     d[2];
-  float      f[4];
-  Complex64  c[2];
-  Complex128 z;
-  Rational32 r[4];
-  Rational64 ra[2];
-  Rational128 rat;
-  VALUE      v[2];
-} nm_size128_t;
+//typedef union {
+//  u_int8_t   b[16];
+//  int64_t    i[2];
+//  double     d[2];
+//  float      f[4];
+//  Complex64  c[2];
+//  Complex128 z;
+//  Rational32 r[4];
+//  Rational64 ra[2];
+//  Rational128 rat;
+//  VALUE      v[2];
+//} nm_size128_t;
 
 #endif
 
@@ -174,19 +172,28 @@ typedef union {
  * Data
  */
 
-extern const char* const DTYPE_NAMES[NUM_DTYPES];
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern const char* const	DTYPE_NAMES[NUM_DTYPES];
+extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
+
+#ifdef __cplusplus
+}
+#endif
 
 /*
  * Functions
  */
 
-inline void* test_function(char* op_name, void* ptr, dtype_t left, dtype_t right) {
-	if (ptr == NULL) {
-		// FIXME: Make this do something useful, like raise a Ruby exception.
-		printf("Operation '%s' is not permitted with data types %s and %s.\n", op_name, DTYPE_NAMES[left], DTYPE_NAMES[right]);
-	}
-	
-	return ptr;
-}
+//inline void* test_function(char* op_name, void* ptr, dtype_t left, dtype_t right) {
+//	if (ptr == NULL) {
+//		// FIXME: Make this do something useful, like raise a Ruby exception.
+//		printf("Operation '%s' is not permitted with data types %s and %s.\n", op_name, DTYPE_NAMES[left], DTYPE_NAMES[right]);
+//	}
+//	
+//	return ptr;
+//}
 
 #endif

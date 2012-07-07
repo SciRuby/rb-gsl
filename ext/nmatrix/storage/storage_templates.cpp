@@ -49,6 +49,14 @@
  * Forward Declarations
  */
 
+// FIXME: Template
+static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, void* default_val, dtype_t l_dtype, dtype_t r_dtype,
+	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
+
+// FIXME: Template
+static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, dtype_t l_dtype, dtype_t r_dtype,
+	size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
+
 /*
  * Functions
  */
@@ -473,5 +481,76 @@ YALE_STORAGE* yale_storage_from_list(const LIST_STORAGE* rhs, int8_t l_dtype) {
 
   lhs->ndnz = ndnz;
   return lhs;
+}
+
+//////////////////////
+// Helper Functions //
+//////////////////////
+
+/*
+ * Copy list contents into dense recursively.
+ */
+static void dense_storage_cast_copy_list_contents(void* lhs, const LIST* rhs, void* default_val, dtype_t l_dtype, dtype_t r_dtype,size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
+
+  NODE *curr = rhs->first;
+  int last_key = -1;
+  size_t i = 0;
+
+	for (i = shape[rank - 1 - recursions]; i-- > 0; ++(*pos) {
+
+    if (!curr || (curr->key > (size_t)(last_key+1))) {
+      //fprintf(stderr, "pos = %u, dim = %u, curr->key XX, last_key+1 = %d\t", *pos, shape[rank-1-recursions], last_key+1);
+      
+      if (recursions == 0) {
+      	cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], default_val, l_dtype, r_dtype);
+    		//fprintf(stderr, "zero\n");
+      
+      } else {
+     		dense_storage_cast_copy_list_default(lhs, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1);
+    		//fprintf(stderr, "column of zeros\n");
+			}
+
+      ++last_key;
+      
+    } else {
+      //fprintf(stderr, "pos = %u, dim = %u, curr->key = %u, last_key+1 = %d\t", *pos, shape[rank-1-recursions], curr->key, last_key+1);
+      
+      if (recursions == 0) {
+      	cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], curr->val, l_dtype, r_dtype);
+    		//fprintf(stderr, "zero\n");
+      	
+      } else {
+      	dense_storage_cast_copy_list_default(lhs, curr->val, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1);
+    		//fprintf(stderr, "column of zeros\n");
+      }
+
+      last_key = curr->key;
+      curr     = curr->next;
+    }
+  }
+  
+  --(*pos);
+}
+
+/*
+ * Copy a set of default values into dense.
+ */
+static void dense_storage_cast_copy_list_default(void* lhs, void* default_val, dtype_t l_dtype, dtype_t r_dtype, size_t* pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
+  size_t i;
+
+	for (i = shape[rank - 1 - recursions]; i-- > 0; ++(*pos)) {
+    //fprintf(stderr, "default: pos = %u, dim = %u\t", *pos, shape[rank-1-recursions]);
+
+    if (recursions == 0) {
+    	cast_copy_value_single((char*)lhs + (*pos)*nm_sizeof[l_dtype], default_val, l_dtype, r_dtype);
+    	//fprintf(stderr, "zero\n");
+    	
+    } else {
+    	dense_storage_cast_copy_list_default(lhs, default_val, l_dtype, r_dtype, pos, shape, rank, max_elements, recursions-1);
+    	//fprintf(stderr, "column of zeros\n");
+  	}
+  }
+  
+  --(*pos);
 }
 

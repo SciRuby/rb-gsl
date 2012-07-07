@@ -36,7 +36,7 @@
  * Project Includes
  */
 
-#include "nmatrix.h"
+#include "types.h"
 
 /*
  * Macros
@@ -121,7 +121,7 @@
 	}																																\
 																																	\
 	inline bool operator>(const NativeType& other) const {					\
-		return this->r > other.r;																			\
+		return this->r > other;																				\
 	}																																\
 																																	\
 	inline bool operator==(const NativeType& other) const {					\
@@ -145,26 +145,26 @@
 	}
 
 #define NATIVE_COMPLEX_OPS(NativeType, ComplexType)																										\
-	inline Complex<ComplexType>& operator+(const NativeType& left, const Complex<ComplexType>& right) {	\
+	inline Complex<ComplexType> operator+(const NativeType& left, const Complex<ComplexType>& right) {	\
 		return Complex<ComplexType>(left + right.r, right.i);																							\
 	}																																																		\
 																																																			\
-	inline Complex<ComplexType>& operator-(const NativeType& left, const Complex<ComplexType>& right) {	\
+	inline Complex<ComplexType> operator-(const NativeType& left, const Complex<ComplexType>& right) {	\
 		return Complex<ComplexType>(left - right.r, right.i);																							\
 	}																																																		\
 																																																			\
-	inline Complex<ComplexType>& operator*(const NativeType& left, const Complex<ComplexType>& right) {	\
+	inline Complex<ComplexType> operator*(const NativeType& left, const Complex<ComplexType>& right) {	\
 		return Complex<ComplexType>(left * right.r, left * right.i);																			\
 	}																																																		\
 																																																			\
-	inline Complex<ComplexType>& operator/(const NativeType& left, const Complex<ComplexType>& right) {	\
+	inline Complex<ComplexType> operator/(const NativeType& left, const Complex<ComplexType>& right) {	\
 		ComplexType new_r, new_i;																																					\
 		ComplexType denom = right.r * right.r;																														\
 																																																			\
 		new_r = (left * right.r) / denom;																																	\
 		new_i = (left * right.i) / denom;																																	\
 																																																			\
-		return Complex<Type>(new_r, new_i);																																\
+		return Complex<ComplexType>(new_r, new_i);																												\
 	}																																																		\
 																																																			\
 	inline bool operator<(const NativeType left, const Complex<ComplexType>& right) {										\
@@ -189,10 +189,6 @@
 																																																			\
 	inline bool operator>=(const NativeType left, const Complex<ComplexType>& right) {									\
 		return (left > right) || (left == right);																													\
-	}																																																		\
-																																																			\
-	inline operator Complex<ComplexType> (NativeType nv) {																							\
-		return Complex<ComplexType>(nv, 0);																																\
 	}
 
 /*
@@ -201,8 +197,8 @@
  
 template <typename Type> class Complex;
 
-typedef Complex<float32> Complex64;
-typedef Complex<float64> Complex128;
+typedef Complex<float32_t> Complex64;
+typedef Complex<float64_t> Complex128;
 
 /*
  * Data
@@ -239,32 +235,32 @@ class Complex {
 		 * Binary operator definitions for varous types.
 		 */
 		
-		COMPLEX_COMPLEX_OPS(float32)
-		COMPLEX_COMPLEX_OPS(float64)
+		COMPLEX_COMPLEX_OPS(float32_t)
+		COMPLEX_COMPLEX_OPS(float64_t)
 		
 		COMPLEX_NATIVE_OPS(u_int8_t)
 		COMPLEX_NATIVE_OPS(int8_t)
 		COMPLEX_NATIVE_OPS(int16_t)
 		COMPLEX_NATIVE_OPS(int32_t)
 		COMPLEX_NATIVE_OPS(int64_t)
-		COMPLEX_NATIVE_OPS(float32)
-		COMPLEX_NATIVE_OPS(float64)
+		COMPLEX_NATIVE_OPS(float32_t)
+		COMPLEX_NATIVE_OPS(float64_t)
 };
 
-NATIVE_COMPLEX_OPS(u_int8_t,	float32)
-NATIVE_COMPLEX_OPS(int8_t,		float32)
-NATIVE_COMPLEX_OPS(int16_t,		float32)
-NATIVE_COMPLEX_OPS(int32_t,		float32)
-NATIVE_COMPLEX_OPS(int64_t,		float32)
-NATIVE_COMPLEX_OPS(float32,		float32)
-NATIVE_COMPLEX_OPS(float64,		float32)
+NATIVE_COMPLEX_OPS(u_int8_t,		float32_t)
+NATIVE_COMPLEX_OPS(int8_t,			float32_t)
+NATIVE_COMPLEX_OPS(int16_t,			float32_t)
+NATIVE_COMPLEX_OPS(int32_t,			float32_t)
+NATIVE_COMPLEX_OPS(int64_t,			float32_t)
+NATIVE_COMPLEX_OPS(float32_t,		float32_t)
+NATIVE_COMPLEX_OPS(float64_t,		float32_t)
 
-NATIVE_COMPLEX_OPS(u_int8_t,	float64)
-NATIVE_COMPLEX_OPS(int8_t,		float64)
-NATIVE_COMPLEX_OPS(int16_t,		float64)
-NATIVE_COMPLEX_OPS(int32_t,		float64)
-NATIVE_COMPLEX_OPS(int64_t,		float64)
-NATIVE_COMPLEX_OPS(float32,		float64)
-NATIVE_COMPLEX_OPS(float64,		float64)
+NATIVE_COMPLEX_OPS(u_int8_t,		float64_t)
+NATIVE_COMPLEX_OPS(int8_t,			float64_t)
+NATIVE_COMPLEX_OPS(int16_t,			float64_t)
+NATIVE_COMPLEX_OPS(int32_t,			float64_t)
+NATIVE_COMPLEX_OPS(int64_t,			float64_t)
+NATIVE_COMPLEX_OPS(float32_t,		float64_t)
+NATIVE_COMPLEX_OPS(float64_t,		float64_t)
 
 #endif

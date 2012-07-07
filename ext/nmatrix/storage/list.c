@@ -36,7 +36,14 @@
  * Project Includes
  */
 
-#include "nmatrix.h"
+#include "types.h"
+
+#include "data/data.h"
+
+#include "common.h"
+#include "list.h"
+
+#include "util/sl_list.h"
 
 /*
  * Macros
@@ -47,8 +54,7 @@
  */
 
 extern						VALUE nm_eStorageTypeError;
-extern bool				(*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
-extern const int	nm_sizeof[NM_TYPES];
+extern bool				(*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, const int);
 
 /*
  * Forward Declarations
@@ -71,7 +77,7 @@ static bool list_storage_cast_copy_contents_dense(LIST* lhs, const char* rhs, vo
  * Note: The pointers you pass in for shape and init_val become property of our
  * new storage. You don't need to free them, and you shouldn't re-use them.
  */
-LIST_STORAGE* list_storage_create(int8_t dtype, size_t* shape, size_t rank, void* init_val) {
+LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val) {
   LIST_STORAGE* s;
 
   s = ALLOC( LIST_STORAGE );
@@ -80,7 +86,7 @@ LIST_STORAGE* list_storage_create(int8_t dtype, size_t* shape, size_t rank, void
   s->shape = shape;
   s->dtype = dtype;
 
-  s->rows  = create_list();
+  s->rows  = list_create();
 
   s->default_val = init_val;
 
@@ -93,7 +99,7 @@ LIST_STORAGE* list_storage_create(int8_t dtype, size_t* shape, size_t rank, void
 void list_storage_delete(LIST_STORAGE* s) {
   if (s) {
     //fprintf(stderr, "* Deleting list storage rows at %p\n", s->rows);
-    delete_list( s->rows, s->rank - 1 );
+    list_delete( s->rows, s->rank - 1 );
 
     //fprintf(stderr, "  Deleting list storage shape at %p\n", s->shape);
     free(s->shape);
@@ -107,16 +113,11 @@ void list_storage_delete(LIST_STORAGE* s) {
 /*
  * Documentation goes here.
  */
-void mark_list_storage(void* m) {
-  LIST_STORAGE* storage;
+void list_storage_mark(LIST_STORAGE* storage) {
 
-  if (m) {
-    storage = (LIST_STORAGE*)(((NMATRIX*)m)->storage);
-    
-    if (storage && storage->dtype == NM_ROBJ) {
-      rb_gc_mark(*((VALUE*)(storage->default_val)));
-      list_mark(storage->rows, storage->rank - 1);
-    }
+  if (storage && storage->dtype == RUBYOBJ) {
+    rb_gc_mark(*((VALUE*)(storage->default_val)));
+    list_mark(storage->rows, storage->rank - 1);
   }
 }
 
@@ -160,7 +161,7 @@ void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val) {
 
   // drill down into the structure
   for (r = s->rank; r > 1; --r) {
-    n = list_insert(l, false, slice->coords[s->rank - r], create_list());
+    n = list_insert(l, false, slice->coords[s->rank - r], list_create());
     l = n->val;
   }
 
@@ -232,15 +233,15 @@ bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
 
   // in certain cases, we need to keep track of the number of elements checked.
   size_t num_checked  = 0,
-         max_elements = count_storage_max_elements((STORAGE*)left);
+         max_elements = storage_count_max_elements((STORAGE*)left);
   
-  (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[left->dtype][0];
+  bool (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[left->dtype][0];
 
   if (!left->rows->first) {
     // fprintf(stderr, "!left->rows true\n");
     // Easy: both lists empty -- just compare default values
     if (!right->rows->first) {
-    	return eqeq(left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
+    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
     	
     } else if (!list_eqeq_value(right->rows, left->default_val, left->dtype, left->rank-1, &num_checked)) {
     	// Left empty, right not empty. Do all values in right == left->default_val?
@@ -248,7 +249,7 @@ bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
     	
     } else if (num_checked < max_elements) {
     	// If the matrix isn't full, we also need to compare default values.
-    	return eqeq(left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
+    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
     }
 
   } else if (!right->rows->first) {
@@ -259,7 +260,7 @@ bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
     	
     } else if (num_checked < max_elements) {
    		// If the matrix isn't full, we also need to compare default values.
-    	return eqeq(left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
+    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
     }
 
   } else {
@@ -269,7 +270,7 @@ bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
     	return false;
     	
     } else if (num_checked < max_elements) {
-    	return eqeq(left->default_val, right->default_val, 1, nm_sizeof[left->dtype]);
+    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
     }
   }
 
@@ -335,20 +336,20 @@ size_t count_list_storage_nd_elements(const LIST_STORAGE* s) {
 LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
   LIST_STORAGE* lhs;
   size_t* shape;
-  void* default_val = ALLOC_N(char, nm_sizeof[rhs->dtype]);
+  void* default_val = ALLOC_N(char, DTYPE_SIZES[rhs->dtype]);
 
   //fprintf(stderr, "copy_list_storage\n");
 
   // allocate and copy shape
   shape = ALLOC_N(size_t, rhs->rank);
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
-  memcpy(default_val, rhs->default_val, nm_sizeof[rhs->dtype]);
+  memcpy(default_val, rhs->default_val, DTYPE_SIZES[rhs->dtype]);
 
-  lhs = create_list_storage(rhs->dtype, shape, rhs->rank, default_val);
+  lhs = list_storage_create(rhs->dtype, shape, rhs->rank, default_val);
 
   if (lhs) {
-    lhs->rows = create_list();
-    cast_copy_list_contents(lhs->rows, rhs->rows, rhs->dtype, rhs->dtype, rhs->rank - 1);
+    lhs->rows = list_create();
+    list_cast_copy_contents(lhs->rows, rhs->rows, rhs->dtype, rhs->dtype, rhs->rank - 1);
   } else {
   	free(shape);
   }
@@ -358,11 +359,13 @@ LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
 
 /*
  * Documentation goes here.
+ *
+ * FIXME: Template this.
  */
-LIST_STORAGE* list_storage_cast_copy(LIST_STORAGE* rhs, int8_t new_dtype) {
+LIST_STORAGE* list_storage_cast_copy(LIST_STORAGE* rhs, dtype_t new_dtype) {
   LIST_STORAGE* lhs;
   size_t* shape;
-  void* default_val = ALLOC_N(char, nm_sizeof[rhs->dtype]);
+  void* default_val = ALLOC_N(char, DTYPE_SIZES[rhs->dtype]);
 
   //fprintf(stderr, "copy_list_storage\n");
 
@@ -372,16 +375,16 @@ LIST_STORAGE* list_storage_cast_copy(LIST_STORAGE* rhs, int8_t new_dtype) {
 
   // copy default value
   if (new_dtype == rhs->dtype) {
-  	memcpy(default_val, rhs->default_val, nm_sizeof[rhs->dtype]);
+  	memcpy(default_val, rhs->default_val, DTYPE_SIZES[rhs->dtype]);
   	
   } else {
-  	SetFuncs[new_dtype][rhs->dtype](1, default_val, 0, rhs->default_val, 0);
+  	//SetFuncs[new_dtype][rhs->dtype](1, default_val, 0, rhs->default_val, 0);
   }
 
-  lhs = create_list_storage(new_dtype, shape, rhs->rank, default_val);
+  lhs = list_storage_create(new_dtype, shape, rhs->rank, default_val);
 
-  lhs->rows = create_list();
-  cast_copy_list_contents(lhs->rows, rhs->rows, new_dtype, rhs->dtype, rhs->rank - 1);
+  lhs->rows = list_create();
+  list_cast_copy_contents(lhs->rows, rhs->rows, new_dtype, rhs->dtype, rhs->rank - 1);
 
   return lhs;
 }
@@ -403,13 +406,13 @@ static bool list_storage_cast_copy_contents_dense(LIST* lhs, const char* rhs, vo
     if (recursions == 0) {
     	// create nodes
     	
-      if (!ElemEqEq[r_dtype][0]((char*)rhs + (*pos)*nm_sizeof[r_dtype], zero, 1, nm_sizeof[r_dtype])) {
+      if (!ElemEqEq[r_dtype][0]((char*)rhs + (*pos)*DTYPE_SIZES[r_dtype], zero, 1, DTYPE_SIZES[r_dtype])) {
       	// is not zero
         //fprintf(stderr, "inserting value\n");
 
         // Create a copy of our value that we will insert in the list
-        insert_value = ALLOC_N(char, nm_sizeof[l_dtype]);
-        cast_copy_value_single(insert_value, rhs + (*pos)*nm_sizeof[r_dtype], l_dtype, r_dtype);
+        insert_value = ALLOC_N(char, DTYPE_SIZES[l_dtype]);
+        cast_copy_value_single(insert_value, rhs + (*pos)*DTYPE_SIZES[r_dtype], l_dtype, r_dtype);
 
         if (!lhs->first) {
         	prev = list_insert(lhs, false, coords[rank-1-recursions], insert_value);
@@ -425,12 +428,12 @@ static bool list_storage_cast_copy_contents_dense(LIST* lhs, const char* rhs, vo
     } else { // create lists
       //fprintf(stderr, "inserting list\n");
       // create a list as if there's something in the row in question, and then delete it if nothing turns out to be there
-      sub_list = create_list();
+      sub_list = list_create();
 
-      added_list = cast_copy_list_contents_dense(sub_list, rhs, zero, l_dtype, r_dtype, pos, coords, shape, rank, recursions-1);
+      added_list = list_storage_cast_copy_contents_dense(sub_list, rhs, zero, l_dtype, r_dtype, pos, coords, shape, rank, recursions-1);
 
       if (!added_list) {
-      	delete_list(sub_list, recursions-1);
+      	list_delete(sub_list, recursions-1);
       	fprintf(stderr, "deleting list\n");
       	
       } else if (!lhs->first) {
@@ -449,3 +452,4 @@ static bool list_storage_cast_copy_contents_dense(LIST* lhs, const char* rhs, vo
 
   return added;
 }
+
