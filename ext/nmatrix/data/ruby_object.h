@@ -97,6 +97,30 @@ class RubyObject {
 		return RubyObject(rb_funcall(this->obj_ref, rb_intern("%"), 1, other.obj_ref));
 	}
 	
+	inline bool operator<(const RubyObject& other) const {
+		return rb_funcall(this->obj_ref, rb_intern(">"), 1, other.obj_ref) == Qtrue;
+	}
+	
+	inline bool operator>(const RubyObject& other) const {
+		return rb_funcall(this->obj_ref, rb_intern("<"), 1, other.obj_ref) == Qtrue;
+	}
+	
+	inline bool operator==(const RubyObject& other) const {
+		return rb_funcall(this->obj_ref, rb_intern("=="), 1, other.obj_ref) == Qtrue;
+	}
+	
+	inline bool operator!=(const RubyObject& other) const {
+		return rb_funcall(this->obj_ref, rb_intern("!="), 1, other.obj_ref) == Qtrue;
+	}
+	
+	inline bool operator<=(const RubyObject& other) const {
+		return rb_funcall(this->obj_ref, rb_intern("<="), 1, other.obj_ref) == Qtrue;
+	}
+	
+	inline bool operator>=(const RubyObject& other) const {
+		return rb_funcall(this->obj_ref, rb_intern("%"), 1, other.obj_ref) == Qtrue;
+	}
+	
 	// FIXME: Add comparison operators.
 };
 
