@@ -53,6 +53,9 @@ template <typename DType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
 
 template <typename DType>
+bool dense_storage_is_hermitian_template(const DENSE_STORAGE* mat, int lda);
+
+template <typename DType>
 bool dense_storage_is_symmetric_template(const DENSE_STORAGE* mat, int lda);
 
 /*
@@ -78,7 +81,19 @@ extern "C" {
 		
 		return ttable[left->dtype](left, right);
 	}
-
+	
+	bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda) {
+		if (mat->dtype == COMPLEX64) {
+			return dense_storage_is_hermitian_template<Complex64>(mat, lda);
+			
+		} else if (mat->dtype == COMPLEX128) {
+			return dense_storage_is_hermitian_template<Complex128>(mat, lda);
+			
+		} else {
+			return dense_storage_is_symmetric(mat, lda);
+		}
+	}
+	
 	/*
 	 * Is this dense matrix symmetric about the diagonal?
 	 */
@@ -103,6 +118,27 @@ bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE*
 	for (index = storage_count_max_elements(left->rank, left->shape); index-- > 0;) {
 		if (left_els[index] != right_els[index]) {
 			return false;
+		}
+	}
+	
+	return true;
+}
+
+template <typename DType>
+bool dense_storage_is_hermitian_template(const DENSE_STORAGE* mat, int lda) {
+	unsigned int i, j;
+	register DType complex_conj;
+	
+	const DType* els = (DType*) mat->elements;
+	
+	for (i = mat->shape[0]; i-- > 0;) {
+		for (j = i + 1; j < mat->shape[1]; ++j) {
+			complex_conj		= els[j*lda + 1];
+			complex_conj.i	= -complex_conj.i;
+			
+			if (els[i*lda+j] != complex_conj) {
+	      return false;
+	    }
 		}
 	}
 	
