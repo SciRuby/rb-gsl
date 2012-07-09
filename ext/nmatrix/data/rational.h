@@ -373,21 +373,21 @@ class Rational {
 };
 
 NATIVE_RATIONAL_OPS(u_int8_t,	int16_t)
-//NATIVE_RATIONAL_OPS(int8_t,		int16_t)
-//NATIVE_RATIONAL_OPS(int16_t,	int16_t)
-//NATIVE_RATIONAL_OPS(int32_t,	int16_t)
-//NATIVE_RATIONAL_OPS(int64_t,	int16_t)
+NATIVE_RATIONAL_OPS(int8_t,		int16_t)
+NATIVE_RATIONAL_OPS(int16_t,	int16_t)
+NATIVE_RATIONAL_OPS(int32_t,	int16_t)
+NATIVE_RATIONAL_OPS(int64_t,	int16_t)
 
-//NATIVE_RATIONAL_OPS(u_int8_t,	int32_t)
-//NATIVE_RATIONAL_OPS(int8_t,		int32_t)
-//NATIVE_RATIONAL_OPS(int16_t,	int32_t)
-//NATIVE_RATIONAL_OPS(int32_t,	int32_t)
-//NATIVE_RATIONAL_OPS(int64_t,	int32_t)
+NATIVE_RATIONAL_OPS(u_int8_t,	int32_t)
+NATIVE_RATIONAL_OPS(int8_t,		int32_t)
+NATIVE_RATIONAL_OPS(int16_t,	int32_t)
+NATIVE_RATIONAL_OPS(int32_t,	int32_t)
+NATIVE_RATIONAL_OPS(int64_t,	int32_t)
 
-//NATIVE_RATIONAL_OPS(u_int8_t,	int64_t)
-//NATIVE_RATIONAL_OPS(int8_t,		int64_t)
-//NATIVE_RATIONAL_OPS(int16_t,	int64_t)
-//NATIVE_RATIONAL_OPS(int32_t,	int64_t)
-//NATIVE_RATIONAL_OPS(int64_t,	int64_t)
+NATIVE_RATIONAL_OPS(u_int8_t,	int64_t)
+NATIVE_RATIONAL_OPS(int8_t,		int64_t)
+NATIVE_RATIONAL_OPS(int16_t,	int64_t)
+NATIVE_RATIONAL_OPS(int32_t,	int64_t)
+NATIVE_RATIONAL_OPS(int64_t,	int64_t)
 
 #endif
