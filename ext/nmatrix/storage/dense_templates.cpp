@@ -49,7 +49,7 @@
  * Forward Declarations
  */
 
-template <typename DType>
+template <typename LDType, typename RDType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
 
 template <typename DType>
@@ -77,9 +77,9 @@ extern "C" {
 	 * contents?
 	 */
 	bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
-		DTYPE_TEMPLATE_TABLE(dense_storage_eqeq_template, bool, const DENSE_STORAGE*, const DENSE_STORAGE*);
+		LR_DTYPE_TEMPLATE_TABLE(dense_storage_eqeq_template, bool, const DENSE_STORAGE*, const DENSE_STORAGE*);
 		
-		return ttable[left->dtype](left, right);
+		return ttable[left->dtype][right->dtype](left, right);
 	}
 	
 	bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda) {
@@ -108,12 +108,12 @@ extern "C" {
 // Templated Functions //
 /////////////////////////
 
-template <typename DType>
+template <typename LDType, typename RDType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
 	int index;
 	
-	DType* left_els		= (DType*)left->elements;
-	DType* right_els	= (DType*)right->elements;
+	LDType* left_els	= (LDType*)left->elements;
+	RDType* right_els	= (RDType*)right->elements;
 	
 	for (index = storage_count_max_elements(left->rank, left->shape); index-- > 0;) {
 		if (left_els[index] != right_els[index]) {
