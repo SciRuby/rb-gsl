@@ -79,7 +79,7 @@ DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, v
   s->rank       = rank;
   s->shape      = shape;
   s->dtype      = dtype;
-  s->offset     = calloc(sizeof(size_t),rank);
+  s->offset     = (size_t*) calloc(sizeof(size_t), rank);
   s->count      = 1;
   s->src        = s;
 	

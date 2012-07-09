@@ -100,7 +100,7 @@ extern "C" {
 #endif
 
 bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
-bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitian);
+bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda);
 
 #ifdef __cplusplus
 }

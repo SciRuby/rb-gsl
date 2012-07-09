@@ -49,6 +49,12 @@
  * Forward Declarations
  */
 
+template <typename DType>
+bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
+
+template <typename DType>
+bool dense_storage_is_symmetric_template(const DENSE_STORAGE* mat, int lda);
+
 /*
  * Functions
  */
@@ -77,7 +83,7 @@ extern "C" {
 	 * Is this dense matrix symmetric about the diagonal?
 	 */
 	bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
-		DTYPE_TEMPLATE_TABLE(dense_storage_is_semetric_template, bool, const DENSE_STORAGE*, int);
+		DTYPE_TEMPLATE_TABLE(dense_storage_is_symmetric_template, bool, const DENSE_STORAGE*, int);
 		
 		return ttable[mat->dtype];
 	}
@@ -94,7 +100,7 @@ bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE*
 	DType* left_els		= (DType*)left->elements;
 	DType* right_els	= (DType*)right->elements;
 	
-	for (index = count_dense_storage_elements(left); index-- > 0;) {
+	for (index = storage_count_max_elements(left->rank, left->shape); index-- > 0;) {
 		if (left_els[index] != right_els[index]) {
 			return false;
 		}
@@ -107,14 +113,10 @@ template <typename DType>
 bool dense_storage_is_symmetric_template(const DENSE_STORAGE* mat, int lda) {
 	unsigned int i, j;
 	const DType* els = (DType*) mat->elements;
-	const DType* a, * b;
 	
 	for (i = mat->shape[0]; i-- > 0;) {
 		for (j = i + 1; j < mat->shape[1]; ++j) {
-			a = mat->elements[i*lda+j];
-	  	b = mat->elements[j*lda+i];
-	  	
-	  	if (*a != *b) {
+			if (els[i*lda+j] != els[j*lda+i]) {
 	      return false;
 	    }
 		}
