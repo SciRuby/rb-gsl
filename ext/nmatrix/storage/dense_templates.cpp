@@ -77,6 +77,10 @@ extern "C" {
 	
 	/*
 	 * Do these two dense matrices have the same contents?
+	 *
+	 * TODO: Test the shape of the two matrices.
+	 * TODO: See if using memcmp is faster when the left- and right-hand matrices
+	 *				have the same dtype.
 	 */
 	bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
 		LR_DTYPE_TEMPLATE_TABLE(dense_storage_eqeq_template, bool, const DENSE_STORAGE*, const DENSE_STORAGE*);
