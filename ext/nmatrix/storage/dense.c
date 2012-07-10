@@ -50,8 +50,6 @@
  * Global Variables
  */
 
-extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, const int);
-
 /*
  * Forward Declarations
  */
@@ -226,7 +224,7 @@ size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice) {
 DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs) {
   DENSE_STORAGE* lhs;
   
-  size_t count = storage_count_max_elements(rhs->rank, rhs->shape), p;
+  size_t  count = storage_count_max_elements(rhs->rank, rhs->shape), p;
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   
   if (!shape) {
@@ -244,43 +242,6 @@ DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs) {
   if (lhs && count) {
     memcpy(lhs->elements, rhs->elements, DTYPE_SIZES[rhs->dtype] * count);
   }
-
-  return lhs;
-}
-
-/*
- * Documentation goes here.
- *
- * FIXME: Template this function.
- */
-DENSE_STORAGE* dense_storage_cast_copy(DENSE_STORAGE* rhs, dtype_t new_dtype) {
-  DENSE_STORAGE* lhs;
-  
-  size_t count = storage_count_max_elements(rhs->rank, rhs->shape), p;
-  size_t* shape = ALLOC_N(size_t, rhs->rank);
-  
-  if (!shape) {
-  	return NULL;
-  }
-
-  // Copy shape array.
-  for (p = rhs->rank; p-- > 0;) {
-  	shape[p] = rhs->shape[p];
-  }
-
-  lhs = dense_storage_create(new_dtype, shape, rhs->rank, NULL, 0);
-
-	// Ensure that allocation worked before copying.
-  if (lhs && count) {
-    if (lhs->dtype == rhs->dtype) {
-      memcpy(lhs->elements, rhs->elements, DTYPE_SIZES[rhs->dtype] * count);
-      
-    } else {
-    	// FIXME: Template
-      //SetFuncs[lhs->dtype][rhs->dtype](count, lhs->elements, DTYPE_SIZES[lhs->dtype], rhs->elements, DTYPE_SIZES[rhs->dtype]);
-    }
-  }
-
 
   return lhs;
 }

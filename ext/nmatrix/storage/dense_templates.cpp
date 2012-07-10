@@ -49,6 +49,9 @@
  * Forward Declarations
  */
 
+template <typename DType, typename NewDType>
+DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_t new_dtype);
+
 template <typename LDType, typename RDType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
 
@@ -73,8 +76,7 @@ extern "C" {
 	///////////	
 	
 	/*
-	 * Do these two dense matrices of the same dtype have exactly the same
-	 * contents?
+	 * Do these two dense matrices have the same contents?
 	 */
 	bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
 		LR_DTYPE_TEMPLATE_TABLE(dense_storage_eqeq_template, bool, const DENSE_STORAGE*, const DENSE_STORAGE*);
@@ -82,6 +84,10 @@ extern "C" {
 		return ttable[left->dtype][right->dtype](left, right);
 	}
 	
+	/*
+	 * Test to see if the matrix is Hermitian.  If the matrix does not have a
+	 * dtype of Complex64 or Complex128 this is the same as testing for symmetry.
+	 */
 	bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda) {
 		if (mat->dtype == COMPLEX64) {
 			return dense_storage_is_hermitian_template<Complex64>(mat, lda);
@@ -100,13 +106,63 @@ extern "C" {
 	bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
 		DTYPE_TEMPLATE_TABLE(dense_storage_is_symmetric_template, bool, const DENSE_STORAGE*, int);
 		
-		return ttable[mat->dtype];
+		return ttable[mat->dtype](mat, lda);
+	}
+	
+	/////////////////////////
+	// Casting and Copying //
+	/////////////////////////
+	
+	/*
+	 * Documentation goes here.
+	 */
+	DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
+		LR_DTYPE_TEMPLATE_TABLE(dense_storage_cast_copy_template, DENSE_STORAGE*, const DENSE_STORAGE*, dtype_t);
+		
+		return ttable[new_dtype][rhs->dtype](rhs, new_dtype);
 	}
 }
 
 /////////////////////////
 // Templated Functions //
 /////////////////////////
+
+template <typename DType, typename NewDType>
+DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
+  size_t  count = storage_count_max_elements(rhs->rank, rhs->shape), p;
+  size_t* shape = ALLOC_N(size_t, rhs->rank);
+  
+  DType*		rhs_els = (DType*)rhs->elements;
+  NewDType* lhs_els;
+  
+  DENSE_STORAGE* lhs;
+  
+  if (!shape) {
+  	return NULL;
+  }
+	
+  // Copy shape array.
+  for (p = rhs->rank; p-- > 0;) {
+  	shape[p] = rhs->shape[p];
+  }
+	
+  lhs			= dense_storage_create(new_dtype, shape, rhs->rank, NULL, 0);
+  lhs_els	= (NewDType*)lhs->elements;
+
+	// Ensure that allocation worked before copying.
+  if (lhs && count) {
+    if (lhs->dtype == rhs->dtype) {
+      memcpy(lhs->elements, rhs->elements, DTYPE_SIZES[rhs->dtype] * count);
+      
+    } else {
+    	while (count-- > 0) {
+    		lhs_els[count] = rhs_els[count];
+      }
+    }
+  }
+	
+  return lhs;
+}
 
 template <typename LDType, typename RDType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
