@@ -113,7 +113,7 @@ typedef struct {
 
 YALE_STORAGE* yale_storage_create(dtype_t dtype, size_t* shape, size_t rank, size_t init_capacity);
 YALE_STORAGE* yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, char* ia, char* ja, char* a, dtype_t from_dtype, dtype_t from_index_dtype);
-YALE_STORAGE*	yale_storage_create_merged(const YALE_STORAGE* template, const YALE_STORAGE* other);
+YALE_STORAGE*	yale_storage_create_merged(const YALE_STORAGE* merge_template, const YALE_STORAGE* other);
 void					yale_storage_delete(YALE_STORAGE* s);
 void					yale_storage_init(YALE_STORAGE* s);
 void					yale_storage_mark(YALE_STORAGE* storage);

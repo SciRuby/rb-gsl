@@ -44,7 +44,7 @@
 
 #include "data/data.h"
 
-#include "slice.h"
+#include "common.h"
 #include "dense.h"
 #include "list.h"
 #include "yale.h"
