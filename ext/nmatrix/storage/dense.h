@@ -23,8 +23,7 @@
 //
 // == dense.h
 //
-// Dense n-dimensional matrix storage.  Used by both the C dense.c file and the
-// C++ dense_templates.cpp file.
+// Dense n-dimensional matrix storage.
 
 #ifndef DENSE_H
 #define DENSE_H
@@ -95,16 +94,8 @@ void	dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val);
 // Tests //
 ///////////
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
 bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda);
-
-#ifdef __cplusplus
-}
-#endif
 
 /////////////
 // Utility //
