@@ -38,6 +38,8 @@
 
 #include "types.h"
 
+#include "util/util.h"
+
 /*
  * Macros
  */
@@ -126,7 +128,7 @@
 		long simplify;																									\
 		Rational<Type> result;																					\
 																																		\
-		result.n = this->n + (other * this->d);												\
+		result.n = this->n + (other * this->d);													\
 		result.d = this->d;																							\
 																																		\
 		simplify = gcf<Type>(result.n, result.d);												\
@@ -141,7 +143,7 @@
 		int simplify;																										\
 		Rational<Type> result;																					\
 																																		\
-		result.n = this->n - (other * this->d);												\
+		result.n = this->n - (other * this->d);													\
 		result.d = this->d;																							\
 																																		\
 		simplify = gcf<Type>(result.n, result.d);												\
@@ -175,11 +177,11 @@
 	}																																	\
 																																		\
 	inline bool operator<(const NativeType& other) const {						\
-		return this->n < (other * this->d);														\
+		return this->n < (other * this->d);															\
 	}																																	\
 																																		\
 	inline bool operator>(const NativeType& other) const {						\
-		return this->n > (other * this->d);														\
+		return this->n > (other * this->d);															\
 	}																																	\
 																																		\
 	inline bool operator==(const NativeType& other) const {						\
@@ -297,30 +299,10 @@ typedef Rational<int64_t>	Rational128;
 /*
  * Data
  */
- 
 
 /*
  * Classes and Functions
  */
-
-template <typename Type>
-inline Type gcf(Type x, Type y) {
-  Type t;
-
-  if (x < 0) x = -x;
-  if (y < 0) y = -y;
-
-  if (x == 0) return y;
-  if (y == 0) return x;
-
-  while (x > 0) {
-    t = x;
-    x = y % x;
-    y = t;
-  }
-
-  return y;
-}
 
 template <typename Type>
 class Rational {

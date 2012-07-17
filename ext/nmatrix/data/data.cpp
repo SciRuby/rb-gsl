@@ -47,8 +47,6 @@
  * Global Variables
  */
 
-extern "C" {
-
 const char* const DTYPE_NAMES[NUM_DTYPES] = {
 	"Byte",
 	"Int8",
@@ -138,4 +136,3 @@ void* rubyobj_to_val(RubyObject obj, dtype_t dtype) {
 	return ret_val;
 }
 
-}

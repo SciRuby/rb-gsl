@@ -32,20 +32,15 @@
  * Standard Includes
  */
 
-//#include <stdio.h>
-
 /*
  * Project Includes
  */
 
 #include "types.h"
 
-#ifdef __cplusplus
-	// These inlcudes are only needed for C++ programs.
-	#include "complex.h"
-	#include "rational.h"
-	#include "ruby_object.h"
-#endif
+#include "complex.h"
+#include "rational.h"
+#include "ruby_object.h"
 
 /*
  * Macros
@@ -53,6 +48,10 @@
 
 #define NUM_DTYPES 13
 
+/*
+ * Defines a static array named ttables that hold function pointers to
+ * dtype templated versions of the specified function.
+ */
 #define DTYPE_TEMPLATE_TABLE(fun, ret, ...)					\
 	static ret (*ttable[NUM_DTYPES])(__VA_ARGS__) =	{	\
 		fun<u_int8_t>,																	\
@@ -71,6 +70,9 @@
 	}
 
 /*
+ * Same as DTYPE_TEMPLATE_TABLE but for functions that have two template
+ * parameters.
+ *
  * The left-hand DType is used as the first index, and the right-hand side is
  * the second index.  Not all left- and right-hand side combinations are valid,
  * and an invalid combination will result in a NULL pointer.
@@ -137,8 +139,6 @@ typedef enum {
 	RUBYOBJ			= 12  // Ruby VALUE type
 } dtype_t;
 
-#ifdef __cplusplus
-
 //typedef union {
 //  u_int8_t b[2];
 //  int16_t s;
@@ -171,15 +171,9 @@ typedef enum {
 //  VALUE      v[2];
 //} nm_size128_t;
 
-#endif
-
 /*
  * Data
  */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 extern const char* const	DTYPE_NAMES[NUM_DTYPES];
 extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
@@ -190,18 +184,5 @@ extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
 
 RubyObject	rubyobj_from_val(void* val, dtype_t dtype);
 void*				rubyobj_to_val(RubyObject obj, dtype_t dtype);
-
-//inline void* test_function(char* op_name, void* ptr, dtype_t left, dtype_t right) {
-//	if (ptr == NULL) {
-//		// FIXME: Make this do something useful, like raise a Ruby exception.
-//		printf("Operation '%s' is not permitted with data types %s and %s.\n", op_name, DTYPE_NAMES[left], DTYPE_NAMES[right]);
-//	}
-//	
-//	return ptr;
-//}
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
