@@ -45,6 +45,12 @@
  * Global Variables
  */
 
+const char* const STYPE_NAMES[NUM_STYPES] {
+	"dense",
+	"list",
+	"yale"
+}
+
 /*
  * Forward Declarations
  */

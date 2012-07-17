@@ -184,13 +184,12 @@ extern "C" {
 extern const char* const	DTYPE_NAMES[NUM_DTYPES];
 extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
 
-#ifdef __cplusplus
-}
-#endif
-
 /*
  * Functions
  */
+
+RubyObject	rubyobj_from_val(void* val, dtype_t dtype);
+void*				rubyobj_to_val(RubyObject obj, dtype_t dtype);
 
 //inline void* test_function(char* op_name, void* ptr, dtype_t left, dtype_t right) {
 //	if (ptr == NULL) {
@@ -200,5 +199,9 @@ extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
 //	
 //	return ptr;
 //}
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -49,7 +49,6 @@
 /*
  * Data
  */
- 
 
 /*
  * Classes and Functions
@@ -57,20 +56,20 @@
 
 class RubyObject {
 	public:
-	VALUE obj_ref;
+	VALUE rval;
 	
 	/*
 	 * Default constructor.
 	 */
 	inline RubyObject(VALUE ref) {
-		this->obj_ref = ref;
+		this->rval = ref;
 	}
 	
 	/*
 	 * Copy constructors.
 	 */
 	inline RubyObject(const RubyObject& other) {
-		this->obj_ref = other.obj_ref;
+		this->rval = other.rval;
 	}
 	
 	/*
@@ -78,50 +77,48 @@ class RubyObject {
 	 */
 	
 	inline RubyObject operator+(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->obj_ref, rb_intern("+"), 1, other.obj_ref));
+		return RubyObject(rb_funcall(this->rval, rb_intern("+"), 1, other.rval));
 	}
 	
 	inline RubyObject operator-(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->obj_ref, rb_intern("-"), 1, other.obj_ref));
+		return RubyObject(rb_funcall(this->rval, rb_intern("-"), 1, other.rval));
 	}
 	
 	inline RubyObject operator*(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->obj_ref, rb_intern("*"), 1, other.obj_ref));
+		return RubyObject(rb_funcall(this->rval, rb_intern("*"), 1, other.rval));
 	}
 	
 	inline RubyObject operator/(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->obj_ref, rb_intern("/"), 1, other.obj_ref));
+		return RubyObject(rb_funcall(this->rval, rb_intern("/"), 1, other.rval));
 	}
 	
 	inline RubyObject operator%(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->obj_ref, rb_intern("%"), 1, other.obj_ref));
+		return RubyObject(rb_funcall(this->rval, rb_intern("%"), 1, other.rval));
 	}
 	
 	inline bool operator<(const RubyObject& other) const {
-		return rb_funcall(this->obj_ref, rb_intern(">"), 1, other.obj_ref) == Qtrue;
+		return rb_funcall(this->rval, rb_intern(">"), 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator>(const RubyObject& other) const {
-		return rb_funcall(this->obj_ref, rb_intern("<"), 1, other.obj_ref) == Qtrue;
+		return rb_funcall(this->rval, rb_intern("<"), 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator==(const RubyObject& other) const {
-		return rb_funcall(this->obj_ref, rb_intern("=="), 1, other.obj_ref) == Qtrue;
+		return rb_funcall(this->rval, rb_intern("=="), 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator!=(const RubyObject& other) const {
-		return rb_funcall(this->obj_ref, rb_intern("!="), 1, other.obj_ref) == Qtrue;
+		return rb_funcall(this->rval, rb_intern("!="), 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator<=(const RubyObject& other) const {
-		return rb_funcall(this->obj_ref, rb_intern("<="), 1, other.obj_ref) == Qtrue;
+		return rb_funcall(this->rval, rb_intern("<="), 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator>=(const RubyObject& other) const {
-		return rb_funcall(this->obj_ref, rb_intern("%"), 1, other.obj_ref) == Qtrue;
+		return rb_funcall(this->rval, rb_intern("%"), 1, other.rval) == Qtrue;
 	}
-	
-	// FIXME: Add comparison operators.
 };
 
 #endif

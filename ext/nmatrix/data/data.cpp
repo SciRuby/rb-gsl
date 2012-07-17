@@ -29,6 +29,8 @@
  * Standard Includes
  */
 
+#include <ruby.h>
+
 /*
  * Project Includes
  */
@@ -79,8 +81,6 @@ const size_t DTYPE_SIZES[NUM_DTYPES] = {
 	sizeof(RubyObject)
 };
 
-}
-
 /*
  * Forward Declarations
  */
@@ -88,3 +88,54 @@ const size_t DTYPE_SIZES[NUM_DTYPES] = {
 /*
  * Functions
  */
+
+RubyObject rubyobj_from_val(void* val, dtype_t dtype) {
+	return RubyObject((VALUE)NULL);
+}
+
+void* rubyobj_to_val(RubyObject obj, dtype_t dtype) {
+	void* ret_val = malloc(DTYPE_SIZES[dtype]);
+	
+//	switch (dtype) {
+//		case BYTE:
+//			*(u_int8_t)ret_val	= NUM2UINT(obj);
+//			break;
+//			
+//		case INT8:
+//			*(int8_t)ret_val		= NUM2INT(obj);
+//			break;
+//		
+//		case INT16:
+//			*(int16_t)ret_val		= NUM2INT(obj);
+//			break;
+//		
+//		case INT32:
+//			*(int32_t)ret_val		= NUM2INT(obj);
+//			break;
+//		
+//		case INT64:
+//			*(int64_t)ret_val		= NUM2INT(obj);
+//			break;
+//		
+//		case FLOAT32:
+//			*(float32_t)ret_val = NUM2DBL(obj);
+//			break;
+//		
+//		case FLOAT64:
+//			*(float32_t)ret_val = NUM2DBL(obj);
+//			break;
+//		
+//		case COMPLEX64:
+//		case COMPLEX128:
+//		case RATIONAL32:
+//		case RATIONAL64:
+//		case RATIONAL128:
+//		case RUBYOBJ:
+//			free(ret_val);
+//			rb_raise(rb_eException, "Trying to cast a Ruby object to a Ruby object.");
+//	}
+	
+	return ret_val;
+}
+
+}

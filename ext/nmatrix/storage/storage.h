@@ -69,6 +69,8 @@ typedef enum {
  * Data
  */
 
+extern const char* const STYPE_NAMES[NUM_STYPES];
+
 /*
  * Functions
  */
@@ -79,9 +81,9 @@ typedef enum {
 
 DENSE_STORAGE*	dense_storage_from_list(const LIST_STORAGE* rhs, dtype_t l_dtype);
 DENSE_STORAGE*	dense_storage_from_yale(const YALE_STORAGE* rhs, dtype_t l_dtype);
-LIST_STORAGE*		list_storage_from_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
-LIST_STORAGE*		list_storage_from_yale(const YALE_STORAGE* rhs, int8_t l_dtype);
-YALE_STORAGE*		yale_storage_from_list(const LIST_STORAGE* rhs, int8_t l_dtype);
-YALE_STORAGE*		yale_storage_from_dense(const DENSE_STORAGE* rhs, int8_t l_dtype);
+LIST_STORAGE*		list_storage_from_dense(const DENSE_STORAGE* rhs, dtype_t l_dtype);
+LIST_STORAGE*		list_storage_from_yale(const YALE_STORAGE* rhs, dtype_t l_dtype);
+YALE_STORAGE*		yale_storage_from_list(const LIST_STORAGE* rhs, dtype_t l_dtype);
+YALE_STORAGE*		yale_storage_from_dense(const DENSE_STORAGE* rhs, dtype_t l_dtype);
 
 #endif

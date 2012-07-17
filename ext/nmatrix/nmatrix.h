@@ -222,11 +222,11 @@ extern VALUE nm_eDataTypeError, nm_eStorageTypeError;
 void transp(y_size_t n, y_size_t m, void* ia, void* ja, bool diaga, void* a, void* ib, void* jb, void* b, bool move, int8_t itype, dtype_t dtype);
 
 void cast_copy_value_single(void* to, const void* from, dtype_t l_dtype, dtype_t r_dtype);
-int8_t nm_dtypestring_to_dtype(VALUE str);
-int8_t nm_dtypesymbol_to_dtype(VALUE sym);
-int8_t nm_stypestring_to_stype(VALUE str);
-int8_t nm_stypesymbol_to_stype(VALUE sym);
-int8_t nm_guess_dtype(VALUE v);
+dtype_t nm_dtypestring_to_dtype(VALUE str);
+dtype_t nm_dtypesymbol_to_dtype(VALUE sym);
+dtype_t nm_stypestring_to_stype(VALUE str);
+dtype_t nm_stypesymbol_to_stype(VALUE sym);
+dtype_t nm_guess_dtype(VALUE v);
 size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank);
 NMATRIX* nm_create(int8_t stype, void* storage);
 void Init_nmatrix();
