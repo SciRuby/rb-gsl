@@ -11,7 +11,7 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == sl_list.c
+// == sl_list.cpp
 //
 // Singly-linked list implementation
 
@@ -39,8 +39,7 @@
  * Global Variables
  */
  
-extern bool				(*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, const int);
-extern const int	nm_sizeof[NUM_DTYPES];
+extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, const int);
 
 /*
  * Forward Declarations
@@ -87,7 +86,7 @@ void list_delete(LIST* list, size_t recursions) {
       
     } else {
       //fprintf(stderr, "    free_list: %p\n", list);
-      list_delete(curr->val, recursions - 1);
+      list_delete((LIST*)curr->val, recursions - 1);
     }
 
     free(curr);
@@ -111,7 +110,7 @@ void list_mark(LIST* list, size_t recursions) {
     	rb_gc_mark(*((VALUE*)(curr->val)));
     	
     } else {
-    	list_mark(curr->val, recursions - 1);
+    	list_mark((LIST*)curr->val, recursions - 1);
     }
     
     curr = next;
@@ -269,11 +268,11 @@ bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, c
       if (recursions == 0) {
         ++(*checked);
         
-        if (!eqeq(lcurr->val, rcurr->val, 1, nm_sizeof[dtype])) {
+        if (!eqeq(lcurr->val, rcurr->val, 1, DTYPE_SIZES[dtype])) {
         	return false;
         }
         
-      } else if (!list_eqeq_list(lcurr->val, rcurr->val, left_val, right_val, dtype, recursions - 1, checked)) {
+      } else if (!list_eqeq_list((LIST*)lcurr->val, (LIST*)rcurr->val, left_val, right_val, dtype, recursions - 1, checked)) {
         return false;
       }
 
@@ -290,11 +289,11 @@ bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, c
         // compare left entry to right default value
         ++(*checked);
         
-        if (!eqeq(lcurr->val, right_val, 1, nm_sizeof[dtype])) {
+        if (!eqeq(lcurr->val, right_val, 1, DTYPE_SIZES[dtype])) {
         	return false;
         }
         
-      } else if (!list_eqeq_value(lcurr->val, right_val, dtype, recursions - 1, checked)) {
+      } else if (!list_eqeq_value((LIST*)lcurr->val, right_val, dtype, recursions - 1, checked)) {
         return false;
       }
 
@@ -308,11 +307,11 @@ bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, c
       if (recursions == 0) {
         // compare right entry to left default value
         ++(*checked);
-        if (!eqeq(rcurr->val, left_val, 1, nm_sizeof[dtype])) {
+        if (!eqeq(rcurr->val, left_val, 1, DTYPE_SIZES[dtype])) {
         	return false;
         }
         
-      } else if (!list_eqeq_value(rcurr->val, left_val, dtype, recursions - 1, checked)) {
+      } else if (!list_eqeq_value((LIST*)rcurr->val, left_val, dtype, recursions - 1, checked)) {
         return false;
       }
 
@@ -329,13 +328,13 @@ bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, c
    */
   if (lcurr) {
   	// nothing left in right-hand list
-    if (!eqeq(lcurr->val, right_val, 1, nm_sizeof[dtype])) {
+    if (!eqeq(lcurr->val, right_val, 1, DTYPE_SIZES[dtype])) {
     	return false;
     }
     
   } else if (rcurr) {
   	// nothing left in left-hand list
-    if (!eqeq(rcurr->val, left_val, 1, nm_sizeof[dtype])) {
+    if (!eqeq(rcurr->val, left_val, 1, DTYPE_SIZES[dtype])) {
     	return false;
     }
   }
@@ -364,11 +363,11 @@ bool list_eqeq_value(const LIST* l, const void* v, dtype_t dtype, size_t recursi
 
     if (recursions == 0) {
       ++(*checked);
-      if (!eqeq(curr->val, v, 1, nm_sizeof[dtype])) {
+      if (!eqeq(curr->val, v, 1, DTYPE_SIZES[dtype])) {
       	return false;
       }
       
-    } else if (!list_eqeq_value(curr->val, v, dtype, recursions - 1, checked)) {
+    } else if (!list_eqeq_value((LIST*)curr->val, v, dtype, recursions - 1, checked)) {
       return false;
     }
 
@@ -471,11 +470,11 @@ void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rh
       if (recursions == 0) {
       	// contents is some kind of value
       	
-        lcurr->val = ALLOC_N(char, nm_sizeof[lhs_dtype]);
+        lcurr->val = ALLOC_N(char, DTYPE_SIZES[lhs_dtype]);
         //fprintf(stderr, "    create_val: %p\n", lcurr->val);
 
         if (lhs_dtype == rhs_dtype) {
-        	memcpy(lcurr->val, rcurr->val, nm_sizeof[lhs_dtype]);
+        	memcpy(lcurr->val, rcurr->val, DTYPE_SIZES[lhs_dtype]);
         	
         } else {
         	// FIXME: Replace this with templating.  Removed now to sort out this header nonsense.
@@ -488,8 +487,9 @@ void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rh
         lcurr->val = ALLOC( LIST );
         //fprintf(stderr, "    create_list: %p\n", lcurr->val);
 
-        list_cast_copy_contents(lcurr->val, rcurr->val, lhs_dtype, rhs_dtype, recursions-1);
+        list_cast_copy_contents((LIST*)lcurr->val, (LIST*)rcurr->val, lhs_dtype, rhs_dtype, recursions-1);
       }
+      
       if (rcurr->next) {
       	lcurr->next = ALLOC( NODE );
       	
