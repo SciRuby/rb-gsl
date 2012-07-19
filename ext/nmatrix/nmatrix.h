@@ -182,7 +182,7 @@ typedef void     (*nm_dense_transpose_t[NUM_DTYPES])();
 #endif
 
 // TODO: Make these automatic
-//extern u_int8_t (*MathHomOps_b[5])(const u_int8_t, const u_int8_t);
+//extern uint8_t (*MathHomOps_b[5])(const uint8_t, const uint8_t);
 //extern int64_t (*MathHomOps_i64[5])(const int64_t, const int64_t);
 //extern int32_t (*MathHomOps_i32[5])(const int32_t, const int32_t);
 //extern int16_t (*MathHomOps_i16[5])(const int16_t, const int16_t);

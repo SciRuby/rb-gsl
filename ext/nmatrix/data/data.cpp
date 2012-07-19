@@ -64,7 +64,7 @@ const char* const DTYPE_NAMES[NUM_DTYPES] = {
 };
 
 const size_t DTYPE_SIZES[NUM_DTYPES] = {
-	sizeof(u_int8_t),
+	sizeof(uint8_t),
 	sizeof(int8_t),
 	sizeof(int16_t),
 	sizeof(int32_t),
@@ -96,34 +96,35 @@ void* rubyobj_to_val(RubyObject obj, dtype_t dtype) {
 	
 //	switch (dtype) {
 //		case BYTE:
-//			*(u_int8_t)ret_val	= NUM2UINT(obj);
+//			*(uint8_t*)ret_val	= NUM2UINT(obj);
 //			break;
 //			
 //		case INT8:
-//			*(int8_t)ret_val		= NUM2INT(obj);
+//			*(int8_t*)ret_val		= NUM2INT(obj);
 //			break;
 //		
 //		case INT16:
-//			*(int16_t)ret_val		= NUM2INT(obj);
+//			*(int16_t*)ret_val		= NUM2INT(obj);
 //			break;
 //		
 //		case INT32:
-//			*(int32_t)ret_val		= NUM2INT(obj);
+//			*(int32_t*)ret_val		= NUM2INT(obj);
 //			break;
 //		
 //		case INT64:
-//			*(int64_t)ret_val		= NUM2INT(obj);
+//			*(int64_t*)ret_val		= NUM2INT(obj);
 //			break;
 //		
 //		case FLOAT32:
-//			*(float32_t)ret_val = NUM2DBL(obj);
+//			*(float32_t*)ret_val = NUM2DBL(obj);
 //			break;
 //		
 //		case FLOAT64:
-//			*(float32_t)ret_val = NUM2DBL(obj);
+//			*(float32_t*)ret_val = NUM2DBL(obj);
 //			break;
 //		
 //		case COMPLEX64:
+//			*(Complex64*)ret_val
 //		case COMPLEX128:
 //		case RATIONAL32:
 //		case RATIONAL64:

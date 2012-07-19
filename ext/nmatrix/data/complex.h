@@ -21,7 +21,7 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == dtype.h
+// == complex.h
 //
 // Functions and classes for dealing with complex numbers.
 
@@ -238,7 +238,7 @@ class Complex {
 		COMPLEX_COMPLEX_OPS(float32_t)
 		COMPLEX_COMPLEX_OPS(float64_t)
 		
-		COMPLEX_NATIVE_OPS(u_int8_t)
+		COMPLEX_NATIVE_OPS(uint8_t)
 		COMPLEX_NATIVE_OPS(int8_t)
 		COMPLEX_NATIVE_OPS(int16_t)
 		COMPLEX_NATIVE_OPS(int32_t)
@@ -247,7 +247,7 @@ class Complex {
 		COMPLEX_NATIVE_OPS(float64_t)
 };
 
-NATIVE_COMPLEX_OPS(u_int8_t,		float32_t)
+NATIVE_COMPLEX_OPS(uint8_t,		float32_t)
 NATIVE_COMPLEX_OPS(int8_t,			float32_t)
 NATIVE_COMPLEX_OPS(int16_t,			float32_t)
 NATIVE_COMPLEX_OPS(int32_t,			float32_t)
@@ -255,7 +255,7 @@ NATIVE_COMPLEX_OPS(int64_t,			float32_t)
 NATIVE_COMPLEX_OPS(float32_t,		float32_t)
 NATIVE_COMPLEX_OPS(float64_t,		float32_t)
 
-NATIVE_COMPLEX_OPS(u_int8_t,		float64_t)
+NATIVE_COMPLEX_OPS(uint8_t,		float64_t)
 NATIVE_COMPLEX_OPS(int8_t,			float64_t)
 NATIVE_COMPLEX_OPS(int16_t,			float64_t)
 NATIVE_COMPLEX_OPS(int32_t,			float64_t)

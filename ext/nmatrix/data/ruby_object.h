@@ -21,7 +21,7 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == dtype.h
+// == ruby_object.h
 //
 // Functions and classes for dealing with Ruby objects.
 

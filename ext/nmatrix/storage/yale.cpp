@@ -622,7 +622,7 @@ void yale_storage_print_vectors(YALE_STORAGE* s) {
 
   fprintf(stderr, "\nija:\t");
   if (YALE_MAX_SIZE(s) < UINT8_MAX)
-    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int8_t*)YALE_IJA(s,DTYPE_SIZES[s->index_dtype],i));
+    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(uint8_t*)YALE_IJA(s,DTYPE_SIZES[s->index_dtype],i));
   else if (YALE_MAX_SIZE(s) < UINT16_MAX)
     for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int16_t*)YALE_IJA(s,DTYPE_SIZES[s->index_dtype],i));
   else if (YALE_MAX_SIZE(s) < UINT32_MAX)
