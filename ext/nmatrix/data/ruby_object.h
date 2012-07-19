@@ -38,6 +38,8 @@
  * Project Includes
  */
 
+#include "ruby_symbols.h"
+
 /*
  * Macros
  */
@@ -77,47 +79,47 @@ class RubyObject {
 	 */
 	
 	inline RubyObject operator+(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->rval, rb_intern("+"), 1, other.rval));
+		return RubyObject(rb_funcall(this->rval, rbsym_add, 1, other.rval));
 	}
 	
 	inline RubyObject operator-(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->rval, rb_intern("-"), 1, other.rval));
+		return RubyObject(rb_funcall(this->rval, rbsym_sub, 1, other.rval));
 	}
 	
 	inline RubyObject operator*(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->rval, rb_intern("*"), 1, other.rval));
+		return RubyObject(rb_funcall(this->rval, rbsym_mul, 1, other.rval));
 	}
 	
 	inline RubyObject operator/(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->rval, rb_intern("/"), 1, other.rval));
+		return RubyObject(rb_funcall(this->rval, rbsym_div, 1, other.rval));
 	}
 	
 	inline RubyObject operator%(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->rval, rb_intern("%"), 1, other.rval));
-	}
-	
-	inline bool operator<(const RubyObject& other) const {
-		return rb_funcall(this->rval, rb_intern(">"), 1, other.rval) == Qtrue;
+		return RubyObject(rb_funcall(this->rval, rbsym_percent, 1, other.rval));
 	}
 	
 	inline bool operator>(const RubyObject& other) const {
-		return rb_funcall(this->rval, rb_intern("<"), 1, other.rval) == Qtrue;
+		return rb_funcall(this->rval, rbsym_gt, 1, other.rval) == Qtrue;
+	}
+	
+	inline bool operator<(const RubyObject& other) const {
+		return rb_funcall(this->rval, rbsym_lt, 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator==(const RubyObject& other) const {
-		return rb_funcall(this->rval, rb_intern("=="), 1, other.rval) == Qtrue;
+		return rb_funcall(this->rval, rbsym_eql, 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator!=(const RubyObject& other) const {
-		return rb_funcall(this->rval, rb_intern("!="), 1, other.rval) == Qtrue;
-	}
-	
-	inline bool operator<=(const RubyObject& other) const {
-		return rb_funcall(this->rval, rb_intern("<="), 1, other.rval) == Qtrue;
+		return rb_funcall(this->rval, rbsym_neql, 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator>=(const RubyObject& other) const {
-		return rb_funcall(this->rval, rb_intern("%"), 1, other.rval) == Qtrue;
+		return rb_funcall(this->rval, rbsym_gte, 1, other.rval) == Qtrue;
+	}
+	
+	inline bool operator<=(const RubyObject& other) const {
+		return rb_funcall(this->rval, rbsym_lte, 1, other.rval) == Qtrue;
 	}
 };
 

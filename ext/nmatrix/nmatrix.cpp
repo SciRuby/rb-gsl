@@ -62,6 +62,7 @@
  */
 
 #include "nmatrix.h"
+#include "ruby_symbols.h"
 
 /*
  * Macros
@@ -73,13 +74,6 @@
 
 static VALUE cNMatrix, cNVector;
 static VALUE nm_eDataTypeError, nm_eStorageTypeError;
-
-static ID nm_id_real, nm_id_imag;
-static ID nm_id_numer, nm_id_denom;
-static ID nm_id_transpose, nm_id_no_transpose, nm_id_complex_conjugate;
-static ID nm_id_list, nm_id_dense;
-static ID nm_id_mult, nm_id_multeq;
-static ID nm_id_add;
 
 /*
  * Forward Declarations
@@ -122,7 +116,7 @@ void Init_nmatrix() {
 	rb_define_alloc_func(cNMatrix, nm_alloc);
 	
 	/*
-	 * FIXME: THese need to be bound in a better way.
+	 * FIXME: These need to be bound in a better way.
 	rb_define_singleton_method(cNMatrix, "__cblas_gemm__", nm_cblas_gemm, 13);
 	rb_define_singleton_method(cNMatrix, "__cblas_gemv__", nm_cblas_gemv, 11);
 	rb_define_singleton_method(cNMatrix, "upcast", nm_upcast, 2);
@@ -199,20 +193,7 @@ void Init_nmatrix() {
 	// Symbol Generation //
 	///////////////////////
 	
-	nm_id_real  	= rb_intern("real");
-	nm_id_imag  	= rb_intern("imag");
-	nm_id_numer 	= rb_intern("numerator");
-	nm_id_denom 	= rb_intern("denominator");
-	nm_id_mult  	= rb_intern("*");
-	nm_id_add   	= rb_intern("+");
-	nm_id_multeq	= rb_intern("*=");
-
-	nm_id_transpose					= rb_intern("transpose");
-	nm_id_no_transpose			= rb_intern("no_transpose");
-	nm_id_complex_conjugate	= rb_intern("complex_conjugate");
-
-	nm_id_dense	= rb_intern("dense");
-	nm_id_list	= rb_intern("list");
+	ruby_symbols_init();
 }
 
 /*
@@ -531,6 +512,8 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
 
 /*
  * Convert an Ruby value or an array of Ruby values into initial C values.
+ *
+ * FIXME: Remove the references to SetFuncs.
  */
 void* interpret_initial_value(VALUE arg, dtype_t dtype) {
   void* init_val;
@@ -545,7 +528,7 @@ void* interpret_initial_value(VALUE arg, dtype_t dtype) {
   	// Single value
   	
     init_val = ALLOC_N(int8_t, DTYPE_SIZES[dtype]);
-    SetFuncs[dtype][NM_ROBJ](1, init_val, 0, &arg, 0);
+    SetFuncs[dtype][RUBYOBJ](1, init_val, 0, &arg, 0);
   }
 
   return init_val;
