@@ -21,7 +21,7 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == dtype.h
+// == rational.h
 //
 // Functions and classes for dealing with rational numbers.
 
@@ -31,6 +31,8 @@
 /*
  * Standard Includes
  */
+
+#include <type_traits>
 
 /*
  * Project Includes
@@ -43,249 +45,6 @@
 /*
  * Macros
  */
-
-#define RATIONAL_RATIONAL_OPS(OtherType)																											\
-	inline Rational<Type> operator+(const Rational<OtherType>& other) const {										\
-		long simplify;																																						\
-		Rational<Type> result;																																		\
-																																															\
-		result.n = (this->n * other.d) + (other.n * this->d);																			\
-		result.d = this->d * other.d;																															\
-																																															\
-		simplify = gcf<Type>(result.n, result.d);																									\
-																																															\
-		result.n /= simplify;																																			\
-		result.d /= simplify;																																			\
-																																															\
-		return result;																																						\
-	}																																														\
-																																															\
-	inline Rational<Type> operator-(const Rational<OtherType>& other) const {										\
-		long simplify;																																						\
-		Rational<Type> result;																																		\
-																																															\
-		result.n = (this->n * other.d) - (other.n * this->d);																			\
-		result.d = this->d * other.d;																															\
-																																															\
-		simplify = gcf<Type>(result.n, result.d);																									\
-																																															\
-		result.n /= simplify;																																			\
-		result.d /= simplify;																																			\
-																																															\
-		return result;																																						\
-	}																																														\
-																																															\
-	inline Rational<Type> operator*(const Rational<OtherType>& other) const {										\
-		int g1 = gcf<Type>(this->n, other.d);																											\
-		int g2 = gcf<Type>(this->d, other.n);																											\
-																																															\
-		return Rational<Type>((this->n / g1) * (other.n / g2), (this->d / g2) * (other.d / g1));	\
-	}																																														\
-																																															\
-	inline Rational<Type> operator/(const Rational<OtherType>& other) const {										\
-		return *this * Rational<OtherType>(other.d, other.n);																			\
-	}																																														\
-																																															\
-	inline Rational<Type> operator%(const Rational<OtherType>& other) const {										\
-		Rational<Type> prod;																																			\
-		long floor_div;																																						\
-																																															\
-		floor_div = (this->n * other.n) / (this->d * other.d);																		\
-		prod = other * Rational<long>(floor_div, 1);																							\
-		return Rational<long>(this->n, other.n) - prod;																						\
-	}																																														\
-																																															\
-	inline bool operator<(const Rational<OtherType>& other) const {															\
-		return (this->n * other.d) < (other.n * this->d);																					\
-	}																																														\
-																																															\
-	inline bool operator>(const Rational<OtherType>& other) const {															\
-		return (this->n * other.d) > (other.n * this->d);																					\
-	}																																														\
-																																															\
-	inline bool operator==(const Rational<OtherType>& other) const {														\
-		return (this->n == other.n) && (this->d == other.d);																			\
-	}																																														\
-																																															\
-	inline bool operator!=(const Rational<OtherType>& other) const {														\
-		return !(*this == other);																																	\
-	}																																														\
-																																															\
-	inline bool operator<=(const Rational<OtherType>& other) const {														\
-		return (*this < other) || (*this == other);																								\
-	}																																														\
-																																															\
-	inline bool operator>=(const Rational<OtherType>& other) const {														\
-		return (*this > other) || (*this == other);																								\
-	}																																														\
-																																															\
-	inline operator Rational<OtherType> () {																										\
-		return Rational<OtherType>((OtherType)this->n, (OtherType)this->d);												\
-	}
-
-#define RATIONAL_NATIVE_OPS(NativeType) 														\
-	inline Rational<Type> operator+(const NativeType& other) const {	\
-		long simplify;																									\
-		Rational<Type> result;																					\
-																																		\
-		result.n = this->n + (other * this->d);													\
-		result.d = this->d;																							\
-																																		\
-		simplify = gcf<Type>(result.n, result.d);												\
-																																		\
-		result.n /= simplify;																						\
-		result.d /= simplify;																						\
-																																		\
-		return result;																									\
-	}																																	\
-																																		\
-	inline Rational<Type> operator-(const NativeType& other) const {	\
-		int simplify;																										\
-		Rational<Type> result;																					\
-																																		\
-		result.n = this->n - (other * this->d);													\
-		result.d = this->d;																							\
-																																		\
-		simplify = gcf<Type>(result.n, result.d);												\
-																																		\
-		result.n /= simplify;																						\
-		result.d /= simplify;																						\
-																																		\
-		return result;																									\
-	}																																	\
-																																		\
-	inline Rational<Type> operator*(const NativeType& other) const {	\
-		long simplify;																									\
-		Rational<Type> result;																					\
-																																		\
-		result.n = other * this->n;																			\
-																																		\
-		simplify = gcf<Type>(result.n, this->d);												\
-																																		\
-		result.n /= simplify;																						\
-		result.d  = this->d / simplify;																	\
-																																		\
-		return result;																									\
-	}																																	\
-																																		\
-	inline Rational<Type> operator/(const NativeType& other) const {	\
-		return *this * other;																						\
-	}																																	\
-																																		\
-	inline Rational<Type> operator%(const NativeType& other) const {	\
-		return *this % Rational<Type>(other, 1);												\
-	}																																	\
-																																		\
-	inline bool operator<(const NativeType& other) const {						\
-		return this->n < (other * this->d);															\
-	}																																	\
-																																		\
-	inline bool operator>(const NativeType& other) const {						\
-		return this->n > (other * this->d);															\
-	}																																	\
-																																		\
-	inline bool operator==(const NativeType& other) const {						\
-		return (this->d == 1) && (this->n == other);										\
-	}																																	\
-																																		\
-	inline bool operator!=(const NativeType& other) const {						\
-		return !(*this == other);																				\
-	}																																	\
-																																		\
-	inline bool operator<=(const NativeType& other) const {						\
-		return (*this < other) || (*this == other);											\
-	}																																	\
-																																		\
-	inline bool operator>=(const NativeType& other) const {						\
-		return (*this > other) || (*this == other);											\
-	}																																	\
-																																		\
-	inline operator NativeType () {																		\
-		return (NativeType)this->n / (NativeType)this->d;								\
-	}
-
-#define NATIVE_RATIONAL_OPS(NativeType, RationalType)																											\
-	inline Rational<RationalType> operator+(const NativeType& left, const Rational<RationalType>& right) {	\
-		long simplify;																																												\
-		Rational<RationalType> result;																																				\
-																																																					\
-		result.n = (left * right.d) + right.n;																																\
-		result.d = right.d;																																										\
-																																																					\
-		simplify = gcf<RationalType>(result.n, result.d);																											\
-																																																					\
-		result.n /= simplify;																																									\
-		result.d /= simplify;																																									\
-																																																					\
-		return result;																																												\
-	}																																																				\
-																																																					\
-	inline Rational<RationalType> operator-(const NativeType& left, const Rational<RationalType>& right) {	\
-		long simplify;																																												\
-		Rational<RationalType> result;																																				\
-																																																					\
-		result.n = (left * right.d) - right.n;																																\
-		result.d = right.d;																																										\
-																																																					\
-		simplify = gcf<RationalType>(result.n, result.d);																											\
-																																																					\
-		result.n /= simplify;																																									\
-		result.d /= simplify;																																									\
-																																																					\
-		return result;																																												\
-	}																																																				\
-																																																					\
-	inline Rational<RationalType> operator*(const NativeType& left, const Rational<RationalType>& right) {	\
-		long simplify;																																												\
-		Rational<RationalType> result;																																				\
-																																																					\
-		result.n = left * right.n;																																						\
-																																																					\
-		simplify = gcf<RationalType>(result.n, right.d);																											\
-																																																					\
-		result.n /= simplify;																																									\
-		result.d  = right.d / simplify;																																				\
-																																																					\
-		return result;																																												\
-	}																																																				\
-																																																					\
-	inline Rational<RationalType> operator/(const NativeType& left, const Rational<RationalType>& right) {	\
-		long simplify;																																												\
-		Rational<RationalType> result;																																				\
-																																																					\
-		result.n = left * right.d;																																						\
-																																																					\
-		simplify = gcf<RationalType>(result.n, right.n);																											\
-																																																					\
-		result.n /= simplify;																																									\
-		result.d  = right.n / simplify;																																				\
-																																																					\
-		return result;																																												\
-	}																																																				\
-																																																					\
-	inline bool operator<(const NativeType left, const Rational<RationalType>& right) {											\
-		return (left * right.d) < right.n;																																		\
-	}																																																				\
-																																																					\
-	inline bool operator>(const NativeType left, const Rational<RationalType>& right) {											\
-		return (left * right.d) > right.n;																																		\
-	}																																																				\
-																																																					\
-	inline bool operator==(const NativeType left, const Rational<RationalType>& right) {										\
-		return (left * right.d) == right.n;																																		\
-	}																																																				\
-																																																					\
-	inline bool operator!=(const NativeType left, const Rational<RationalType>& right) {										\
-		return !(left == right);																																							\
-	}																																																				\
-																																																					\
-	inline bool operator<=(const NativeType left, const Rational<RationalType>& right) {										\
-		return (left < right) || (left == right);																															\
-	}																																																				\
-																																																					\
-	inline bool operator>=(const NativeType left, const Rational<RationalType>& right) {										\
-		return (left > right) || (left == right);;																														\
-	}
 
 /*
  * Types
@@ -314,62 +73,226 @@ class Rational {
 	/*
 	 * Default constructor.
 	 */
-	inline Rational(Type n = 0, Type d = 1) {
-		this->n = n;
-		this->d = d;
-	}
+	inline Rational(Type num = 0, Type den = 1) : n(num), d(den) {}
 	
 	/*
 	 * Copy constructors.
 	 */
-	inline Rational(const Rational<Type>& other) {
-		this->n = other.n;
-		this->d = other.d;
-	}
+	template <typename OtherType>
+	inline Rational(const Rational<OtherType>& other) : n(other.n), d(other.d) {}
 	
 	/*
 	 * Binary operator definitions for varous types.
 	 */
 	
-	RATIONAL_RATIONAL_OPS(int16_t)
-	RATIONAL_RATIONAL_OPS(int32_t)
-	RATIONAL_RATIONAL_OPS(int64_t)
+	//////////////////////////////////
+	// Rational-Rational Operations //
+	//////////////////////////////////
 	
-	RATIONAL_NATIVE_OPS(uint8_t)
-	RATIONAL_NATIVE_OPS(int8_t)
-	RATIONAL_NATIVE_OPS(int16_t)
-	RATIONAL_NATIVE_OPS(int32_t)
-	RATIONAL_NATIVE_OPS(int64_t)
-	 
-	/*
-	 * Special cast operations for floats and doubles.
-	 */
-	
-	inline operator float32_t () {
-		return (float32_t)this->n / (float32_t)this->d;
+	template <typename OtherType>
+	inline Rational<Type> operator+(const Rational<OtherType>& other) const {
+		long simplify;
+		
+		Rational<Type> result((this->n * other.d) + (other.n * this->d), this->d * other.d);
+		
+		simplify = gcf<Type>(result.n, result.d);
+		
+		result.n /= simplify;
+		result.d /= simplify;
+		
+		return result;
 	}
 	
-	inline operator float64_t () {
-		return (float64_t)this->n / (float64_t)this->d;
+	template <typename OtherType>
+	inline Rational<Type> operator-(const Rational<OtherType>& other) const {
+		long simplify;
+		
+		Rational<Type> result((this->n * other.d) - (other.n * this->d), this->d * other.d);
+		
+		simplify = gcf<Type>(result.n, result.d);
+		
+		result.n /= simplify;
+		result.d /= simplify;
+		
+		return result;
+	}
+	
+	template <typename OtherType>
+	inline Rational<Type> operator*(const Rational<OtherType>& other) const {
+		int g1 = gcf<Type>(this->n, other.d);
+		int g2 = gcf<Type>(this->d, other.n);
+		
+		return Rational<Type>((this->n / g1) * (other.n / g2), (this->d / g2) * (other.d / g1));
+	}
+	
+	template <typename OtherType>
+	inline Rational<Type> operator/(const Rational<OtherType>& other) const {
+		return *this * Rational<OtherType>(other.d, other.n);
+	}
+	
+	template <typename OtherType>
+	inline Rational<Type> operator%(const Rational<OtherType>& other) const {
+		long floor_div;
+		Rational<Type> prod;
+		
+		floor_div = (this->n * other.n) / (this->d * other.d);
+		prod			= other * Rational<long>(floor_div, 1);
+		
+		return Rational<long>(this->n, other.n) - prod;
+	}
+	
+	template <typename OtherType>
+	inline bool operator<(const Rational<OtherType>& other) const {
+		return (this->n * other.d) < (other.n * this->d);
+	}
+	
+	template <typename OtherType>
+	inline bool operator>(const Rational<OtherType>& other) const {
+		return (this->n * other.d) > (other.n * this->d);
+	}
+	
+	template <typename OtherType>
+	inline bool operator==(const Rational<OtherType>& other) const {
+		return (this->n == other.n) && (this->d == other.d);
+	}
+	
+	template <typename OtherType>
+	inline bool operator!=(const Rational<OtherType>& other) const {
+		return !(*this == other);
+	}
+	
+	template <typename OtherType>
+	inline bool operator<=(const Rational<OtherType>& other) const {
+		return (*this < other) || (*this == other);
+	}
+	
+	template <typename OtherType>
+	inline bool operator>=(const Rational<OtherType>& other) const {
+		return (*this > other) || (*this == other);
+	}
+	
+	template <typename OtherType>
+	inline operator Rational<OtherType> () {
+		return Rational<OtherType>((OtherType)this->n, (OtherType)this->d);
+	}
+	
+	////////////////////////////////
+	// Rational-Native Operations //
+	////////////////////////////////
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline Rational<Type> operator+(const NativeType& other) const {
+		return *this + Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline Rational<Type> operator-(const NativeType& other) const {
+		return *this - Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline Rational<Type> operator*(const NativeType& other) const {
+		return *this * Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline Rational<Type> operator/(const NativeType& other) const {
+		return *this / Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline Rational<Type> operator%(const NativeType& other) const {
+		return *this % Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline bool operator<(const NativeType& other) const {
+		return *this < Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline bool operator>(const NativeType& other) const {
+		return *this > Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline bool operator==(const NativeType& other) const {
+		return *this == Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline bool operator!=(const NativeType& other) const {
+		return *this != Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline bool operator<=(const NativeType& other) const {
+		return *this <= Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline bool operator>=(const NativeType& other) const {
+		return *this >= Rational<Type>(other);
+	}
+	
+	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+	inline operator NativeType () {
+		return (NativeType)this->n / (NativeType)this->d;
 	}
 };
 
-NATIVE_RATIONAL_OPS(uint8_t,	int16_t)
-NATIVE_RATIONAL_OPS(int8_t,		int16_t)
-NATIVE_RATIONAL_OPS(int16_t,	int16_t)
-NATIVE_RATIONAL_OPS(int32_t,	int16_t)
-NATIVE_RATIONAL_OPS(int64_t,	int16_t)
+////////////////////////////////
+// Native-Rational Operations //
+////////////////////////////////
 
-NATIVE_RATIONAL_OPS(uint8_t,	int32_t)
-NATIVE_RATIONAL_OPS(int8_t,		int32_t)
-NATIVE_RATIONAL_OPS(int16_t,	int32_t)
-NATIVE_RATIONAL_OPS(int32_t,	int32_t)
-NATIVE_RATIONAL_OPS(int64_t,	int32_t)
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+inline Rational<RationalType> operator+(const NativeType& left, const Rational<RationalType>& right) {
+	return Rational<RationalType>(left) + right;
+}
 
-NATIVE_RATIONAL_OPS(uint8_t,	int64_t)
-NATIVE_RATIONAL_OPS(int8_t,		int64_t)
-NATIVE_RATIONAL_OPS(int16_t,	int64_t)
-NATIVE_RATIONAL_OPS(int32_t,	int64_t)
-NATIVE_RATIONAL_OPS(int64_t,	int64_t)
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+inline Rational<RationalType> operator-(const NativeType& left, const Rational<RationalType>& right) {
+	return Rational<RationalType>(left) - right;
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+inline Rational<RationalType> operator*(const NativeType& left, const Rational<RationalType>& right) {
+	return Rational<RationalType>(left) * right;
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+inline Rational<RationalType> operator/(const NativeType& left, const Rational<RationalType>& right) {
+	return Rational<RationalType>(left) / right;
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+inline bool operator<(const NativeType left, const Rational<RationalType>& right) {
+	return Rational<RationalType>(left) < right;
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+inline bool operator>(const NativeType left, const Rational<RationalType>& right) {
+	return Rational<RationalType>(left) > right;
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+inline bool operator==(const NativeType left, const Rational<RationalType>& right) {
+	return Rational<RationalType>(left) == right;
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+inline bool operator!=(const NativeType left, const Rational<RationalType>& right) {
+	return Rational<RationalType>(left) != right;
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+inline bool operator<=(const NativeType left, const Rational<RationalType>& right) {
+	return Rational<RationalType>(left) <= right;
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
+inline bool operator>=(const NativeType left, const Rational<RationalType>& right) {
+	return Rational<RationalType>(left) >= right;
+}
 
 #endif
