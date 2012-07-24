@@ -21,25 +21,22 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == dense_templates.h
+// == util.h
 //
-// Templates for dense n-dimensional matrix storage.
+// Header file for utility functions and data.
 
-#ifndef DENSE_TEMPLATES_H
-#define DENSE_TEMPLATES_H
+#ifndef UTIL_H
+#define UTIL_H
 
 /*
  * Standard Includes
  */
 
-#include <stdlib.h>
-
 /*
  * Project Includes
  */
 
-#include "nmatrix.h"
-#include "dense.h"
+#include "types.h"
 
 /*
  * Macros
@@ -52,41 +49,16 @@
 /*
  * Data
  */
- 
 
 /*
  * Functions
  */
 
-///////////////
-// Lifecycle //
-///////////////
+template <typename Type>
+Type gcf(Type x, Type y);
 
-///////////////
-// Accessors //
-///////////////
-
-///////////
-// Tests //
-///////////
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
-bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda, bool hermitian);
-
-#ifdef __cplusplus
-}
-#endif
-
-/////////////
-// Utility //
-/////////////
-
-/////////////////////////
-// Copying and Casting //
-/////////////////////////
+extern template int16_t gcf<int16_t>(int16_t, int16_t);
+extern template int32_t gcf<int32_t>(int32_t, int32_t);
+extern template int64_t gcf<int64_t>(int64_t, int64_t);
 
 #endif

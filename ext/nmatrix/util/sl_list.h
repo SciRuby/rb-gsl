@@ -38,7 +38,9 @@
  * Project Includes
  */
 
-#include "nmatrix.h"
+#include "types.h"
+
+#include "data/data.h"
 
 /*
  * Macros

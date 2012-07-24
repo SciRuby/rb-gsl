@@ -21,9 +21,9 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == storage.c
+// == util.cpp
 //
-// Code that is used by or involves more then one storage type.
+// Utility functions and data.
 
 /*
  * Standard Includes
@@ -33,9 +33,9 @@
  * Project Includes
  */
 
-#include "data/data.h"
+#include "types.h"
 
-#include "storage.h"
+#include "util.h"
 
 /*
  * Macros
@@ -49,7 +49,30 @@
  * Forward Declarations
  */
 
+template int16_t gcf<int16_t>(int16_t, int16_t);
+template int32_t gcf<int32_t>(int32_t, int32_t);
+template int64_t gcf<int64_t>(int64_t, int64_t);
+
 /*
  * Functions
  */
+
+template <typename Type>
+Type gcf(Type x, Type y) {
+	Type t;
+	
+	if (x < 0) x = -x;
+	if (y < 0) y = -y;
+	
+	if (x == 0) return y;
+	if (y == 0) return x;
+	
+	while (x > 0) {
+		t = x;
+		x = y % x;
+		y = t;
+	}
+	
+	return y;
+}
 

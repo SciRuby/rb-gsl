@@ -21,48 +21,66 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == dtype.c
+// == data.h
 //
-// Functions and data for dealing the data types.
+// Header file for dealing with data types.
+
+#ifndef RUBY_SYMBOLS_H
+#define RUBY_SYMBOLS_H
 
 /*
  * Standard Includes
  */
 
+#include <ruby.h>
+
 /*
  * Project Includes
  */
-
-#include "data.h"
 
 /*
  * Macros
  */
 
 /*
- * Global Variables
+ * Types
  */
- 
-const char* const DTYPE_NAMES[NUM_DTYPES] = {
-	"Byte",
-	"Int8",
-	"Int16",
-	"Int32",
-	"Int64",
-	"Float32",
-	"Float64",
-	"Complex64",
-	"Complex128",
-	"Rational32",
-	"Rational64",
-	"Rational128",
-	"RubyObject"
-};
 
 /*
- * Forward Declarations
+ * Data
  */
+
+extern ID rbsym_real,
+					rbsym_imag,
+		
+					rbsym_numer,
+					rbsym_denom,
+		
+					rbsym_complex_conjugate,
+					rbsym_transpose,
+					rbsym_no_transpose,
+		
+					rbsym_dense,
+					rbsym_list,
+					rbsym_yale,
+		
+					rbsym_add,
+					rbsym_sub,
+					rbsym_mul,
+					rbsym_div,
+		
+					rbsym_percent,
+					rbsym_gt,
+					rbsym_lt,
+					rbsym_eql,
+					rbsym_neql,
+					rbsym_gte,
+					rbsym_lte;
 
 /*
  * Functions
  */
+
+void ruby_symbols_init(void);
+
+#endif

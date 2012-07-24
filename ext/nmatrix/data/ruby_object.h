@@ -21,7 +21,7 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == dtype.h
+// == ruby_object.h
 //
 // Functions and classes for dealing with Ruby objects.
 
@@ -38,6 +38,8 @@
  * Project Includes
  */
 
+#include "ruby_symbols.h"
+
 /*
  * Macros
  */
@@ -49,7 +51,6 @@
 /*
  * Data
  */
- 
 
 /*
  * Classes and Functions
@@ -57,47 +58,69 @@
 
 class RubyObject {
 	public:
-	VALUE obj_ref;
+	VALUE rval;
 	
 	/*
 	 * Default constructor.
 	 */
 	inline RubyObject(VALUE ref) {
-		this->obj_ref = ref;
+		this->rval = ref;
 	}
 	
 	/*
 	 * Copy constructors.
 	 */
 	inline RubyObject(const RubyObject& other) {
-		this->obj_ref = other.obj_ref;
+		this->rval = other.rval;
 	}
 	
 	/*
 	 * Binary operator definitions.
 	 */
 	
-	inline RubyObject& operator+(RubyObject other) {
-		return RubyObject(rb_funcall(this->obj_ref, rb_internal("+"), 1, other->obj_ref));
+	inline RubyObject operator+(const RubyObject& other) const {
+		return RubyObject(rb_funcall(this->rval, rbsym_add, 1, other.rval));
 	}
 	
-	inline RubyObject& operator-(RubyObject other) {
-		return RubyObject(rb_funcall(this->obj_ref, rb_internal("-"), 1, other->obj_ref));
+	inline RubyObject operator-(const RubyObject& other) const {
+		return RubyObject(rb_funcall(this->rval, rbsym_sub, 1, other.rval));
 	}
 	
-	inline RubyObject& operator*(RubyObject other) {
-		return RubyObject(rb_funcall(this->obj_ref, rb_internal("*"), 1, other->obj_ref));
+	inline RubyObject operator*(const RubyObject& other) const {
+		return RubyObject(rb_funcall(this->rval, rbsym_mul, 1, other.rval));
 	}
 	
-	inline RubyObject& operator/(RubyObject other) {
-		return RubyObject(rb_funcall(this->obj_ref, rb_internal("/"), 1, other->obj_ref));
+	inline RubyObject operator/(const RubyObject& other) const {
+		return RubyObject(rb_funcall(this->rval, rbsym_div, 1, other.rval));
 	}
 	
-	inline RubyObject& operator%(RubyObject other) {
-		return RubyObject(rb_funcall(this->obj_ref, rb_internal("%"), 1, other->obj_ref));
+	inline RubyObject operator%(const RubyObject& other) const {
+		return RubyObject(rb_funcall(this->rval, rbsym_percent, 1, other.rval));
 	}
 	
-	// FIXME: Add comparison operators.
+	inline bool operator>(const RubyObject& other) const {
+		return rb_funcall(this->rval, rbsym_gt, 1, other.rval) == Qtrue;
+	}
+	
+	inline bool operator<(const RubyObject& other) const {
+		return rb_funcall(this->rval, rbsym_lt, 1, other.rval) == Qtrue;
+	}
+	
+	inline bool operator==(const RubyObject& other) const {
+		return rb_funcall(this->rval, rbsym_eql, 1, other.rval) == Qtrue;
+	}
+	
+	inline bool operator!=(const RubyObject& other) const {
+		return rb_funcall(this->rval, rbsym_neql, 1, other.rval) == Qtrue;
+	}
+	
+	inline bool operator>=(const RubyObject& other) const {
+		return rb_funcall(this->rval, rbsym_gte, 1, other.rval) == Qtrue;
+	}
+	
+	inline bool operator<=(const RubyObject& other) const {
+		return rb_funcall(this->rval, rbsym_lte, 1, other.rval) == Qtrue;
+	}
 };
 
 #endif

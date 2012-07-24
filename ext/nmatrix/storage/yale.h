@@ -42,13 +42,15 @@
  * Standard Includes
  */
 
-#include <stdlib.h>
-
 /*
  * Project Includes
  */
 
-#include "nmatrix.h"
+#include "types.h"
+
+#include "data/data.h"
+
+#include "common.h"
 
 /*
  * Macros
@@ -69,9 +71,9 @@
 #define YALE_IA_SIZE(sptr)                  ((YALE_STORAGE*)(sptr))->shape[0]
 
 // None of these next three return anything. They set a reference directly.
-#define YaleGetIJA(victim,s,i)              (SetFuncs[Y_SIZE_T][(s)->index_dtype](1, &(victim), 0, YALE_IJA((s), nm_sizeof[s->index_dtype], (i)), 0))
-#define YaleSetIJA(i,s,from)                (SetFuncs[s->index_dtype][Y_SIZE_T](1, YALE_IJA((s), nm_sizeof[s->index_dtype], (i)), 0, &(from), 0))
-#define YaleGetSize(sz,s)                   (SetFuncs[Y_SIZE_T][((YALE_STORAGE*)s)->index_dtype](1, &sz, 0, (YALE_SIZE_PTR(((YALE_STORAGE*)s), nm_sizeof[((YALE_STORAGE*)s)->index_dtype])), 0))
+#define YaleGetIJA(victim,s,i)              //(SetFuncs[Y_SIZE_T][(s)->index_dtype](1, &(victim), 0, YALE_IJA((s), DTYPE_SIZES[s->index_dtype], (i)), 0))
+#define YaleSetIJA(i,s,from)                //(SetFuncs[s->index_dtype][Y_SIZE_T](1, YALE_IJA((s), DTYPE_SIZES[s->index_dtype], (i)), 0, &(from), 0))
+#define YaleGetSize(sz,s)                   //(SetFuncs[Y_SIZE_T][((YALE_STORAGE*)s)->index_dtype](1, &sz, 0, (YALE_SIZE_PTR(((YALE_STORAGE*)s), DTYPE_SIZES[((YALE_STORAGE*)s)->index_dtype])), 0))
 //#define YALE_FIRST_NZ_ROW_ENTRY(sptr,elem_size,i)
 
 /*
@@ -109,12 +111,12 @@ typedef struct {
 // Lifecycle //
 ///////////////
 
-YALE_STORAGE* yale_storage_create(int8_t dtype, size_t* shape, size_t rank, size_t init_capacity);
-YALE_STORAGE* yale_storage_create_from_old_yale(int8_t dtype, size_t* shape, char* ia, char* ja, char* a, int8_t from_dtype, int8_t from_index_dtype);
-YALE_STORAGE*	yale_storage_create_merged(const YALE_STORAGE* template, const YALE_STORAGE* other);
+YALE_STORAGE* yale_storage_create(dtype_t dtype, size_t* shape, size_t rank, size_t init_capacity);
+YALE_STORAGE* yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, char* ia, char* ja, char* a, dtype_t from_dtype, dtype_t from_index_dtype);
+YALE_STORAGE*	yale_storage_create_merged(const YALE_STORAGE* merge_template, const YALE_STORAGE* other);
 void					yale_storage_delete(YALE_STORAGE* s);
 void					yale_storage_init(YALE_STORAGE* s);
-void					yale_storage_mark(void* m);
+void					yale_storage_mark(YALE_STORAGE* storage);
 
 ///////////////
 // Accessors //
@@ -133,7 +135,7 @@ bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right);
 // Utility //
 /////////////
 
-int8_t	yale_storage_index_dtype(YALE_STORAGE* s);
+dtype_t	yale_storage_index_dtype(YALE_STORAGE* s);
 void		yale_storage_print_vectors(YALE_STORAGE* s);
 
 int yale_storage_binary_search(YALE_STORAGE* s, y_size_t left, y_size_t right, y_size_t key);
@@ -148,7 +150,7 @@ char yale_storage_vector_insert(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void
 // Copying and Casting //
 /////////////////////////
 
-YALE_STORAGE* yale_storage_cast_copy(YALE_STORAGE* rhs, int8_t new_dtype);
+YALE_STORAGE* yale_storage_cast_copy(YALE_STORAGE* rhs, dtype_t new_dtype);
 YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs);
 
 #endif

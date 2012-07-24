@@ -59,12 +59,21 @@ end
 
 def create_conf_h(file)
   print "creating #{file}\n"
-  hfile = open(file, "w")
-  for line in $defs
-    line =~ /^-D(.*)/
-    hfile.printf "#define %s 1\n", $1
+  File.open(file, 'w') do |hfile|
+  	header_guard = file.upcase.sub(/\s|\./, '_')
+		
+		hfile.puts "#ifndef #{header_guard}"
+		hfile.puts "#define #{header_guard}"
+		hfile.puts
+		
+		for line in $defs
+		  line =~ /^-D(.*)/
+		  hfile.printf "#define %s 1\n", $1
+		end
+		
+		hfile.puts
+		hfile.puts "#endif"
   end
-  hfile.close
 end
 
 if RUBY_VERSION < '1.9'

@@ -21,29 +21,26 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == dtype.h
+// == data.h
 //
 // Header file for dealing with data types.
 
-#ifndef DTYPE_H
-#define DTYPE_H
+#ifndef DATA_TYPES_H
+#define DATA_TYPES_H
 
 /*
  * Standard Includes
  */
 
-#include <stdio.h>
-
 /*
  * Project Includes
  */
 
-#ifdef __cplusplus
-	// These inlcudes are only needed for C++ programs.
-	#include "complex.h"
-	#include "ruby_object.h"
-	#include "rational.h"
-#endif
+#include "types.h"
+
+#include "complex.h"
+#include "rational.h"
+#include "ruby_object.h"
 
 /*
  * Macros
@@ -51,15 +48,19 @@
 
 #define NUM_DTYPES 13
 
+/*
+ * Defines a static array named ttables that hold function pointers to
+ * dtype templated versions of the specified function.
+ */
 #define DTYPE_TEMPLATE_TABLE(fun, ret, ...)					\
 	static ret (*ttable[NUM_DTYPES])(__VA_ARGS__) =	{	\
-		fun<unsigned char>,															\
-		fun<char>,																			\
-		fun<short>,																			\
-		fun<int>,																				\
-		fun<long>,																			\
-		fun<float>,																			\
-		fun<double>,																		\
+		fun<uint8_t>,																		\
+		fun<int8_t>,																		\
+		fun<int16_t>,																		\
+		fun<int32_t>,																		\
+		fun<int64_t>,																		\
+		fun<float32_t>,																	\
+		fun<float64_t>,																	\
 		fun<Complex64>,																	\
 		fun<Complex128>,																\
 		fun<Rational32>,																\
@@ -68,51 +69,54 @@
 		fun<RubyObject>																	\
 	}
 
-#define LR_DTYPE_TEMPLATE_TABLE(fun, ret, ...) \
-	static ret (*ttable[NUM_DTYPES][NUM_DTYPES])(__VA__ARGS) = {																																																					\
-		{fun<unsigned char, unsigned char>, fun<unsigned char, char>, fun<unsigned char, short>, fun<unsigned char, int>, fun<unsigned char, long>,													\
-			fun<unsigned char, float>, fun<unsigned char, double>, fun<unsigned char, Complex64>, fun<unsigned char, Complex128>,																							\
-			fun<unsigned char, Rational32>, fun<unsigned char, Rational64>, fun<unsigned char, Rational128>, NULL}, 																				\\ unsigned char	\
-																																																																																				\
-		{fun<char, unsigned char>, fun<char, char>, fun<char, short>, fun<char, int>, fun<char, long>, fun<char, float>, fun<char, double>,																	\
-			fun<char, Complex64>, fun<char, Complex128>, fun<char, Rational32>, fun<char, Rational64>, fun<char, Rational128>, NULL},												\\ char						\
-																																																																																				\
-		{fun<short, unsigned char>, fun<short, char>, fun<short, short>, fun<short, int>, fun<short, long>, fun<short, float>, fun<short, double>,													\
-			fun<short, Complex64>, fun<short, Complex128>, fun<short, Rational32>, fun<short, Rational64>, fun<short, Rational128>, NULL},									\\ short					\
-																																																																																				\
-		{fun<int, unsigned char>, fun<int, char>, fun<int, short>, fun<int, int>, fun<int, long>, fun<int, float>, fun<int, double>,																				\
-			fun<int, Complex64>, fun<int, Complex128>, fun<int, Rational32>, fun<int, Rational64>, fun<int, Rational128>, NULL},														\\ int						\
-																																																																																				\
-		{fun<long, unsigned char>, fun<long, char>, fun<long, short>, fun<long, int>, fun<long, long>, fun<long, float>, fun<long, double>,																	\
-			fun<long, Complex64>, fun<long, Complex128>, fun<long, Rational32>, fun<long, Rational64>, fun<long, Rational128>, NULL},												\\ long						\
-																																																																																				\
-		{fun<float, unsigned char>, fun<float, char>, fun<float, short>, fun<float, int>, fun<float, long>, fun<float, float>, fun<float, double>,													\
-			fun<float, Complex64>, fun<float, Complex128>,  NULL, NULL, NULL, NULL},																																				\\ float					\
-																																																																																				\
-		{fun<double, unsigned char>, fun<double, char>, fun<double, short>, fun<double, int>, fun<double, long>, fun<double, float>, fun<double, double>,										\
-			fun<double, Complex64>, fun<double, Complex128>, NULL, NULL, NULL, NULL},																																				\\ double					\
-																																																																																				\
-		{fun<Complex64, unsigned char>, fun<Complex64, char>, fun<Complex64, short>, fun<Complex64, int>, fun<Complex64, long>,																							\
-			fun<Complex64, float>, fun<Complex64, double>, fun<Complex64, Complex64>, fun<Complex64, Complex128>, NULL, NULL, NULL, NULL},									\\ Complex64			\
-																																																																																				\
-		{fun<Complex128, unsigned char>, fun<Complex128, char>, fun<Complex128, short>, fun<Complex128, int>, fun<Complex128, long>,																				\
-			fun<Complex128, float>, fun<Complex128, double>, fun<Complex128, Complex64>, fun<Complex128, Complex128>, NULL, NULL, NULL, NULL},							\\ Complex128			\
-																																																																																				\
-		{fun<Rational32, unsigned char>, fun<Rational32, char>, fun<Rational32, short>, fun<Rational32, int>, fun<Rational32, long>, NULL, NULL,														\
-			NULL, Null, fun<Rational32, Rational32>, fun<Rational32, Rational64>, fun<Rational32, Rational128>, NULL},																			\\ Rational32			\
-																																																																																				\
-		{fun<Rational64, unsigned char>, fun<Rational64, char>, fun<Rational64, short>, fun<Rational64, int>, fun<Rational64, long>, NULL, NULL,														\
-			NULL, Null, fun<Rational64, Rational32>, fun<Rational64, Rational64>, fun<Rational64, Rational128>, NULL},																			\\ Rational64			\
-																																																																																				\
-		{fun<Rational128, unsigned char>, fun<Rational128, char>, fun<Rational128, short>, fun<Rational128, int>, fun<Rational128, long>, NULL, NULL,												\
-			NULL, Null, fun<Rational128, Rational32>, fun<Rational128, Rational64>, fun<Rational128, Rational128>, NULL},																		\\ Rational128		\
-																																																																																				\
-		{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, fun<RubyObject, RubyObject>}																							\\ RubyObject			\
+/*
+ * Same as DTYPE_TEMPLATE_TABLE but for functions that have two template
+ * parameters.
+ *
+ * The left-hand DType is used as the first index, and the right-hand side is
+ * the second index.  Not all left- and right-hand side combinations are valid,
+ * and an invalid combination will result in a NULL pointer.
+ */
+#define LR_DTYPE_TEMPLATE_TABLE(fun, ret, ...)																																																														\
+	static ret (*ttable[NUM_DTYPES][NUM_DTYPES])(__VA_ARGS__) = {																																																						\
+		{fun<uint8_t, uint8_t>, fun<uint8_t, int8_t>, fun<uint8_t, int16_t>, fun<uint8_t, int32_t>, fun<uint8_t, int64_t>, fun<uint8_t, float32_t>, fun<uint8_t, float64_t>,	\
+			fun<uint8_t, Complex64>, fun<uint8_t, Complex128>, fun<uint8_t, Rational32>, fun<uint8_t, Rational64>, fun<uint8_t, Rational128>, NULL},														\
+																																																																																					\
+		{fun<int8_t, uint8_t>, fun<int8_t, int8_t>, fun<int8_t, int16_t>, fun<int8_t, int32_t>, fun<int8_t, int64_t>, fun<int8_t, float32_t>, fun<int8_t, float64_t>,					\
+			fun<int8_t, Complex64>, fun<int8_t, Complex128>, fun<int8_t, Rational32>, fun<int8_t, Rational64>, fun<int8_t, Rational128>, NULL},																	\
+																																																																																					\
+		{fun<int16_t, uint8_t>, fun<int16_t, int8_t>, fun<int16_t, int16_t>, fun<int16_t, int32_t>, fun<int16_t, int64_t>, fun<int16_t, float32_t>, fun<int16_t, float64_t>,	\
+			fun<int16_t, Complex64>, fun<int16_t, Complex128>, fun<int16_t, Rational32>, fun<int16_t, Rational64>, fun<int16_t, Rational128>, NULL},														\
+																																																																																					\
+		{fun<int32_t, uint8_t>, fun<int32_t, int8_t>, fun<int32_t, int16_t>, fun<int32_t, int32_t>, fun<int32_t, int64_t>, fun<int32_t, float32_t>, fun<int32_t, float64_t>,	\
+			fun<int32_t, Complex64>, fun<int32_t, Complex128>, fun<int32_t, Rational32>, fun<int32_t, Rational64>, fun<int32_t, Rational128>, NULL},														\
+																																																																																					\
+		{fun<int64_t, uint8_t>, fun<int64_t, int8_t>, fun<int64_t, int16_t>, fun<int64_t, int32_t>, fun<int64_t, int64_t>, fun<int64_t, float32_t>, fun<int64_t, float64_t>,	\
+			fun<int64_t, Complex64>, fun<int64_t, Complex128>, fun<int64_t, Rational32>, fun<int64_t, Rational64>, fun<int64_t, Rational128>, NULL},														\
+																																																																																					\
+		{fun<float32_t, uint8_t>, fun<float32_t, int8_t>, fun<float32_t, int16_t>, fun<float32_t, int32_t>, fun<float32_t, int64_t>,																					\
+			fun<float32_t, float32_t>, fun<float32_t, float64_t>, fun<float32_t, Complex64>, fun<float32_t, Complex128>,  NULL, NULL, NULL, NULL},															\
+																																																																																					\
+		{fun<float64_t, uint8_t>, fun<float64_t, int8_t>, fun<float64_t, int16_t>, fun<float64_t, int32_t>, fun<float64_t, int64_t>,																					\
+			fun<float64_t, float32_t>, fun<float64_t, float64_t>, fun<float64_t, Complex64>, fun<float64_t, Complex128>, NULL, NULL, NULL, NULL},																\
+																																																																																					\
+		{fun<Complex64, uint8_t>, fun<Complex64, int8_t>, fun<Complex64, int16_t>, fun<Complex64, int32_t>, fun<Complex64, int64_t>,																					\
+			fun<Complex64, float32_t>, fun<Complex64, float64_t>, fun<Complex64, Complex64>, fun<Complex64, Complex128>, NULL, NULL, NULL, NULL},																\
+																																																																																					\
+		{fun<Complex128, uint8_t>, fun<Complex128, int8_t>, fun<Complex128, int16_t>, fun<Complex128, int32_t>, fun<Complex128, int64_t>,																			\
+			fun<Complex128, float32_t>, fun<Complex128, float64_t>, fun<Complex128, Complex64>, fun<Complex128, Complex128>, NULL, NULL, NULL, NULL},														\
+																																																																																					\
+		{fun<Rational32, uint8_t>, fun<Rational32, int8_t>, fun<Rational32, int16_t>, fun<Rational32, int32_t>, fun<Rational32, int64_t>, NULL, NULL,													\
+			NULL, NULL, fun<Rational32, Rational32>, fun<Rational32, Rational64>, fun<Rational32, Rational128>, NULL},																													\
+																																																																																					\
+		{fun<Rational64, uint8_t>, fun<Rational64, int8_t>, fun<Rational64, int16_t>, fun<Rational64, int32_t>, fun<Rational64, int64_t>, NULL, NULL,													\
+			NULL, NULL, fun<Rational64, Rational32>, fun<Rational64, Rational64>, fun<Rational64, Rational128>, NULL},																													\
+																																																																																					\
+		{fun<Rational128, uint8_t>, fun<Rational128, int8_t>, fun<Rational128, int16_t>, fun<Rational128, int32_t>, fun<Rational128, int64_t>, NULL, NULL,										\
+			NULL, NULL, fun<Rational128, Rational32>, fun<Rational128, Rational64>, fun<Rational128, Rational128>, NULL},																												\
+																																																																																					\
+		{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, fun<RubyObject, RubyObject>}																																	\
 	}
-
-#define EPSILON 1E-10
-#define FP_IS_ZERO(n) (-EPSILON < n && n < EPSILON)
-#define FP_EQUAL(a, b) FP_IS_ZERO((a - b_)
 
 /*
  * Types
@@ -134,59 +138,50 @@ typedef enum {
 	RUBYOBJ			= 12  // Ruby VALUE type
 } dtype_t;
 
-#ifdef __CPLUSPLUS
+//typedef union {
+//  uint8_t b[2];
+//  int16_t s;
+//} nm_size16_t;
 
-typedef union {
-  u_int8_t b[2];
-  int16_t s;
-} nm_size16_t;
+//typedef union {
+//  uint8_t b[4];
+//  int32_t  i;
+//  float    f;
+//} nm_size32_t;
 
-typedef union {
-  u_int8_t b[4];
-  int32_t  i;
-  float    f;
-} nm_size32_t;
+//typedef union {
+//  uint8_t  b[8];
+//  int64_t   q;
+//  float     f[2];
+//  double    d;
+//  Complex64 c;
+//} nm_size64_t;
 
-typedef union {
-  u_int8_t  b[8];
-  int64_t   q;
-  float     f[2];
-  double    d;
-  Complex64 c;
-} nm_size64_t;
-
-typedef union {
-  u_int8_t   b[16];
-  int64_t    i[2];
-  double     d[2];
-  float      f[4];
-  Complex64  c[2];
-  Complex128 z;
-  Rational32 r[4];
-  Rational64 ra[2];
-  Rational128 rat;
-  VALUE      v[2];
-} nm_size128_t;
-
-#endif
+//typedef union {
+//  uint8_t   b[16];
+//  int64_t    i[2];
+//  double     d[2];
+//  float      f[4];
+//  Complex64  c[2];
+//  Complex128 z;
+//  Rational32 r[4];
+//  Rational64 ra[2];
+//  Rational128 rat;
+//  VALUE      v[2];
+//} nm_size128_t;
 
 /*
  * Data
  */
 
-extern const char* const DTYPE_NAMES[NUM_DTYPES];
+extern const char* const	DTYPE_NAMES[NUM_DTYPES];
+extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
 
 /*
  * Functions
  */
 
-inline void* test_function(char* op_name, void* ptr, dtype_t left, dtype_t right) {
-	if (ptr == NULL) {
-		// FIXME: Make this do something useful, like raise a Ruby exception.
-		printf("Operation '%s' is not permitted with data types %s and %s.\n", op_name, DTYPE_NAMES[left], DTYPE_NAMES[right]);
-	}
-	
-	return ptr;
-}
+RubyObject	rubyobj_from_val(void* val, dtype_t dtype);
+void*				rubyobj_to_val(RubyObject obj, dtype_t dtype);
 
 #endif

@@ -45,7 +45,12 @@
  * Project Includes
  */
 
-#include "nmatrix.h"
+#include "types.h"
+
+#include "data/data.h"
+
+#include "common.h"
+#include "yale.h"
 
 /*
  * Macros
@@ -55,10 +60,7 @@
  * Global Variables
  */
 
-extern						VALUE nm_eStorageTypeError;
-extern bool				(*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int);
-extern const int	nm_sizeof[NM_TYPES];
-extern const char	*nm_dtypestring[];
+extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, const int);
 
 /*
  * Forward Declarations
@@ -67,11 +69,11 @@ extern const char	*nm_dtypestring[];
 static bool						ndrow_is_empty(const YALE_STORAGE* s, y_size_t ija, const y_size_t ija_next, const void* ZERO);
 static bool						ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_size_t l_ija, const y_size_t l_ija_next, y_size_t r_ija, const y_size_t r_ija_next, const void* ZERO);
 static char						yale_storage_vector_replace_j(YALE_STORAGE* s, y_size_t pos, y_size_t* j);
-static YALE_STORAGE*	yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, const int8_t new_dtype, const y_size_t new_capacity, const y_size_t new_size);
+static YALE_STORAGE*	yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const y_size_t new_capacity, const y_size_t new_size);
 static void						clear_diagonal_and_zero(YALE_STORAGE* s);
 static void						yale_storage_increment_ia_after(YALE_STORAGE* s, y_size_t ija_size, y_size_t i, y_size_t n);
 static y_size_t				yale_storage_insert_search(YALE_STORAGE* s, y_size_t left, y_size_t right, y_size_t key, bool* found);
-static YALE_STORAGE*	yale_storage_alloc(int8_t dtype, size_t* shape, size_t rank);
+static YALE_STORAGE*	yale_storage_alloc(dtype_t dtype, size_t* shape, size_t rank);
 
 /*
  * Functions
@@ -84,16 +86,17 @@ static YALE_STORAGE*	yale_storage_alloc(int8_t dtype, size_t* shape, size_t rank
 /*
  * Documentation goes here.
  */
-YALE_STORAGE* yale_storage_create(int8_t dtype, size_t* shape, size_t rank, size_t init_capacity) {
+YALE_STORAGE* yale_storage_create(dtype_t dtype, size_t* shape, size_t rank, size_t init_capacity) {
   YALE_STORAGE* s;
   size_t max_capacity;
 
-  if (rank != 2) {
-  	rb_raise(rb_eNotImpError, "Can only support 2D matrices");
-  }
+	// FIXME: This error should be handled in the nmatrix.c file.
+//if (rank != 2) {
+// 	rb_raise(rb_eNotImpError, "Can only support 2D matrices");
+//}
 
-  s = alloc_yale_storage(dtype, shape, rank);
-  max_capacity = count_storage_max_elements((STORAGE*)s) - s->shape[0] + 1;
+  s = yale_storage_alloc(dtype, shape, rank);
+  max_capacity = storage_count_max_elements(s->rank, s->shape) - s->shape[0] + 1;
 
   // Set matrix capacity (and ensure its validity)
   if (init_capacity < YALE_MINIMUM(s)) {
@@ -107,16 +110,18 @@ YALE_STORAGE* yale_storage_create(int8_t dtype, size_t* shape, size_t rank, size
   	s->capacity = init_capacity;
   }
 
-  s->ija = ALLOC_N( char, nm_sizeof[s->index_dtype] * s->capacity );
-  s->a   = ALLOC_N( char, nm_sizeof[s->dtype] * s->capacity );
+  s->ija = ALLOC_N( char, DTYPE_SIZES[s->index_dtype] * s->capacity );
+  s->a   = ALLOC_N( char, DTYPE_SIZES[s->dtype] * s->capacity );
 
   return s;
 }
 
 /*
  * Documentation goes here.
+ *
+ * FIXME: Add templating.
  */
-YALE_STORAGE* yale_storage_create_from_old_yale(int8_t dtype, size_t* shape, char* ia, char* ja, char* a, int8_t from_dtype, int8_t from_index_dtype) {
+YALE_STORAGE* yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, char* ia, char* ja, char* a, dtype_t from_dtype, dtype_t from_index_dtype) {
   YALE_STORAGE* s;
   y_size_t i = 0, p, p_next, j, ndnz = 0, pp;
 
@@ -124,12 +129,12 @@ YALE_STORAGE* yale_storage_create_from_old_yale(int8_t dtype, size_t* shape, cha
 
   // Walk down rows
   for (i = shape[0]; i-- > 0;) {
-    SetFuncs[Y_SIZE_T][from_index_dtype](1, &p, 0, ia + nm_sizeof[from_index_dtype]*i, 0);          // p = ia[i]
-    SetFuncs[Y_SIZE_T][from_index_dtype](1, &p_next, 0, ia + nm_sizeof[from_index_dtype]*(i+1), 0); // p_next = ia[i+1]
+/*    SetFuncs[Y_SIZE_T][from_index_dtype](1, &p, 0, ia + DTYPE_SIZES[from_index_dtype]*i, 0);          // p = ia[i]*/
+/*    SetFuncs[Y_SIZE_T][from_index_dtype](1, &p_next, 0, ia + DTYPE_SIZES[from_index_dtype]*(i+1), 0); // p_next = ia[i+1]*/
 
     // Now walk through columns
     for (; p < p_next; ++p) {
-      SetFuncs[Y_SIZE_T][from_index_dtype](1, &j, 0, ja + nm_sizeof[from_index_dtype]*p, 0);        // j = ja[p]
+/*      SetFuncs[Y_SIZE_T][from_index_dtype](1, &j, 0, ja + DTYPE_SIZES[from_index_dtype]*p, 0);        // j = ja[p]*/
 
       if (i != j) {
       	// entry is non-diagonal and probably nonzero
@@ -144,48 +149,48 @@ YALE_STORAGE* yale_storage_create_from_old_yale(int8_t dtype, size_t* shape, cha
   s->ndnz     = ndnz;
 
   // Setup IJA and A arrays
-  s->ija = ALLOC_N( char, nm_sizeof[s->index_dtype] * s->capacity );
-  s->a   = ALLOC_N( char, nm_sizeof[s->dtype] * s->capacity );
+  s->ija = ALLOC_N( char, DTYPE_SIZES[s->index_dtype] * s->capacity );
+  s->a   = ALLOC_N( char, DTYPE_SIZES[s->dtype] * s->capacity );
 
   // Figure out where to start writing JA in IJA:
   pp = s->shape[0]+1;
 
   // Find beginning of first row
-  SetFuncs[Y_SIZE_T][from_index_dtype](1, &p, 0, ia, 0);          // p = ia[i]
+/*  SetFuncs[Y_SIZE_T][from_index_dtype](1, &p, 0, ia, 0);          // p = ia[i]*/
 
   // Now fill the arrays
   for (i = s->shape[0]; i-- > 0;) {
 
     // Find end of row (of input)
-    SetFuncs[Y_SIZE_T][from_index_dtype](1, &p_next, 0, ia + nm_sizeof[from_index_dtype]*(i+1), 0); // p_next = ia[i+1]
+/*    SetFuncs[Y_SIZE_T][from_index_dtype](1, &p_next, 0, ia + DTYPE_SIZES[from_index_dtype]*(i+1), 0); // p_next = ia[i+1]*/
 
     // Set the beginning of the row (of output)
-    SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + nm_sizeof[s->index_dtype]*i, 0, &pp, 0);
+/*    SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + DTYPE_SIZES[s->index_dtype]*i, 0, &pp, 0);*/
 
     // Now walk through columns
     for (; p < p_next; ++p, ++pp) {
-      SetFuncs[Y_SIZE_T][from_index_dtype](1, &j, 0, ja + nm_sizeof[from_index_dtype]*p, 0);        // j = ja[p]
+/*      SetFuncs[Y_SIZE_T][from_index_dtype](1, &j, 0, ja + DTYPE_SIZES[from_index_dtype]*p, 0);        // j = ja[p]*/
 
       if (i == j) {
-        SetFuncs[s->dtype][from_dtype](1, (char*)(s->a) + nm_sizeof[s->dtype]*i, 0, a + nm_sizeof[from_dtype]*p, 0);
+/*        SetFuncs[s->dtype][from_dtype](1, (char*)(s->a) + DTYPE_SIZES[s->dtype]*i, 0, a + DTYPE_SIZES[from_dtype]*p, 0);*/
         --pp;
         
       } else {
-        SetFuncs[s->index_dtype][from_index_dtype](1, (char*)(s->ija) + nm_sizeof[s->index_dtype]*pp, 0, ja + nm_sizeof[from_index_dtype]*p, 0);
-        SetFuncs[s->dtype][from_dtype](1,             (char*)(s->a)   + nm_sizeof[s->dtype]*pp,       0, a  + nm_sizeof[from_dtype]*p,       0);
+/*        SetFuncs[s->index_dtype][from_index_dtype](1, (char*)(s->ija) + DTYPE_SIZES[s->index_dtype]*pp, 0, ja + DTYPE_SIZES[from_index_dtype]*p, 0);*/
+/*        SetFuncs[s->dtype][from_dtype](1,             (char*)(s->a)   + DTYPE_SIZES[s->dtype]*pp,       0, a  + DTYPE_SIZES[from_dtype]*p,       0);*/
       }
     }
   }
 
   // Set the end of the last row
-  SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + nm_sizeof[s->index_dtype]*i, 0, &pp, 0);
+/*  SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + DTYPE_SIZES[s->index_dtype]*i, 0, &pp, 0);*/
 
   // Set the zero position for our output matrix
-  if (dtype == NM_ROBJ) {
-  	*(VALUE*)((char*)(s->a) + nm_sizeof[s->dtype]*i) = INT2FIX(0);
+  if (dtype == RUBYOBJ) {
+  	*(VALUE*)((char*)(s->a) + DTYPE_SIZES[s->dtype]*i) = INT2FIX(0);
   	
   } else {
-  	memset((char*)(s->a) + nm_sizeof[s->dtype]*i, 0, nm_sizeof[s->dtype]);
+  	memset((char*)(s->a) + DTYPE_SIZES[s->dtype]*i, 0, DTYPE_SIZES[s->dtype]);
   }
 
   return s;
@@ -196,17 +201,19 @@ YALE_STORAGE* yale_storage_create_from_old_yale(int8_t dtype, size_t* shape, cha
  */
 YALE_STORAGE* yale_storage_create_merged(const YALE_STORAGE* template, const YALE_STORAGE* other) {
   y_size_t ija, ija_next, o_ija, o_ija_next;
-  y_size_t ja, o_ja, size, pos;
+  y_size_t ja, size, pos;
   YALE_STORAGE* s;
   bool found;
   char ins_type;
   size_t i;
 
   YaleGetSize(size, template);
-  s = yale_storage_copy_alloc_struct(template, template->dtype, SMMP_MAX(template->capacity, other->capacity), size);
+  
+  // FIXME: Something needs to happen here.  I'm not sure what SMMP_MAX is.
+  //s = yale_storage_copy_alloc_struct(template, template->dtype, SMMP_MAX(template->capacity, other->capacity), size);
 
   // set the element between D and LU (the boundary in A), which should be 0.
-  memcpy((char*)(s->a) + nm_sizeof[s->dtype] * s->shape[0], (char*)(template->a) + nm_sizeof[template->dtype] * template->shape[0], nm_sizeof[s->dtype]);
+  memcpy((char*)(s->a) + DTYPE_SIZES[s->dtype] * s->shape[0], (char*)(template->a) + DTYPE_SIZES[template->dtype] * template->shape[0], DTYPE_SIZES[s->dtype]);
 
   if (other && other != template) {
   	// some operations are unary and don't need this; others are x+x and don't need this
@@ -272,14 +279,16 @@ void yale_storage_delete(YALE_STORAGE* s) {
 }
 
 /*
- * Empty the matrix
+ * Empty the matrix.
+ *
+ * FIXME: Add templating.
  */
 void yale_storage_init(YALE_STORAGE* s) {
   y_size_t IA_INIT = YALE_IA_SIZE(s)+1, i;
 
   // clear out IJA vector
   for (i = YALE_IA_SIZE(s) + 1; i-- > 0;) {
-    SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + i*nm_sizeof[s->index_dtype], 0, &IA_INIT, 0); // set initial values for IJA
+    //SetFuncs[s->index_dtype][Y_SIZE_T](1, (char*)(s->ija) + i*DTYPE_SIZES[s->index_dtype], 0, &IA_INIT, 0); // set initial values for IJA
   }
 
   clear_diagonal_and_zero(s);
@@ -288,19 +297,12 @@ void yale_storage_init(YALE_STORAGE* s) {
 /*
  * Documentation goes here.
  */
-void yale_storage_mark(void* m) {
+void yale_storage_mark(YALE_STORAGE* storage) {
   size_t i;
-  YALE_STORAGE* storage;
-
-  if (m) {
-    storage = (YALE_STORAGE*)(((NMATRIX*)m)->storage);
-    
-    fprintf(stderr, "mark_yale_storage\n");
-    
-    if (storage && storage->dtype == NM_ROBJ) {
-    	for (i = storage->capacity; i-- > 0;) {
-        rb_gc_mark(*((VALUE*)((char*)(storage->a) + i*nm_sizeof[NM_ROBJ])));
-      }
+  
+  if (storage && storage->dtype == RUBYOBJ) {
+  	for (i = storage->capacity; i-- > 0;) {
+      rb_gc_mark(*((VALUE*)((char*)(storage->a) + i*DTYPE_SIZES[RUBYOBJ])));
     }
   }
 }
@@ -308,7 +310,7 @@ void yale_storage_mark(void* m) {
 /*
  * Allocates and initializes the basic struct (but not the IJA or A vectors).
  */
-static YALE_STORAGE* yale_storage_alloc(int8_t dtype, size_t* shape, size_t rank) {
+static YALE_STORAGE* yale_storage_alloc(dtype_t dtype, size_t* shape, size_t rank) {
   YALE_STORAGE* s;
 
   s = ALLOC( YALE_STORAGE );
@@ -317,7 +319,7 @@ static YALE_STORAGE* yale_storage_alloc(int8_t dtype, size_t* shape, size_t rank
   s->dtype       = dtype;
   s->shape       = shape;
   s->rank        = rank;
-  s->index_dtype = yale_index_dtype(s);
+  s->index_dtype = yale_storage_index_dtype(s);
 
   return s;
 }
@@ -336,7 +338,7 @@ void* yale_storage_ref(YALE_STORAGE* s, SLICE* slice) {
   int pos;
 
   if (coords[0] == coords[1]) {
-  	return YALE_DIAG(s,nm_sizeof[s->dtype],coords[0]);
+  	return YALE_DIAG(s,DTYPE_SIZES[s->dtype],coords[0]);
   }
 
   YaleGetIJA(l, s, coords[0]);
@@ -344,7 +346,7 @@ void* yale_storage_ref(YALE_STORAGE* s, SLICE* slice) {
 
   if (l == r) {
   	// return zero pointer
-  	return YALE_A(s, nm_sizeof[s->dtype], s->shape[0]);
+  	return YALE_A(s, DTYPE_SIZES[s->dtype], s->shape[0]);
   }
 	
 	// binary search for the column's location
@@ -354,12 +356,12 @@ void* yale_storage_ref(YALE_STORAGE* s, SLICE* slice) {
     YaleGetIJA(test_j, s, pos);
     if (test_j == coords[1]) {
     	// Found exact value.
-      return YALE_A(s, nm_sizeof[s->dtype], pos);
+      return YALE_A(s, DTYPE_SIZES[s->dtype], pos);
     }
   }
 
   // return a pointer that happens to be zero
-  return YALE_A(s, nm_sizeof[s->dtype], s->shape[0]);
+  return YALE_A(s, DTYPE_SIZES[s->dtype], s->shape[0]);
 }
 
 /*
@@ -422,21 +424,21 @@ bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right) {
   y_size_t i = 0;
 
   // Need to know zero.
-  void* ZERO = alloca(nm_sizeof[left->dtype]);
+  void* ZERO = alloca(DTYPE_SIZES[left->dtype]);
   
-  if (left->dtype == NM_ROBJ) {
+  if (left->dtype == RUBYOBJ) {
   	*(VALUE*)ZERO = INT2FIX(0);
   	
   } else {
-  	memset(ZERO, 0, nm_sizeof[left->dtype]);
+  	memset(ZERO, 0, DTYPE_SIZES[left->dtype]);
   }
 
   // Easy comparison: Do the IJA and A vectors match exactly?
-  //if (!memcmp(left->ija, right->ija, nm_sizeof[left->index_dtype]) && !memcmp(left->a, right->a, nm_sizeof[left->dtype])) return true;
+  //if (!memcmp(left->ija, right->ija, DTYPE_SIZES[left->index_dtype]) && !memcmp(left->a, right->a, DTYPE_SIZES[left->dtype])) return true;
   //fprintf(stderr, "yale_storage_eqeq\n");
 
   // Compare the diagonals first.
-  if (!ElemEqEq[left->dtype][0](left->a, right->a, left->shape[0], nm_sizeof[left->dtype])) {
+  if (!ElemEqEq[left->dtype][0](left->a, right->a, left->shape[0], DTYPE_SIZES[left->dtype])) {
   	return false;
   }
 
@@ -481,13 +483,13 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
 
   YaleGetIJA(l_ja,   l,   l_ija);
   YaleGetIJA(r_ja,   r,   r_ija);
-  ja = SMMP_MIN(l_ja, r_ja);
+/*  ja = SMMP_MIN(l_ja, r_ja);*/
 
   //fprintf(stderr, "ndrow_eqeq_ndrow\n");
   while (!(l_no_more && r_no_more)) {
     //fprintf(stderr, "ndrow_eqeq_ndrow(loop): l_ija=%d, l_ija_next=%d, r_ija=%d, r_ija_next=%d\n", (size_t)(l_ija), (size_t)(l_ija_next), (size_t)(r_ija), (size_t)(r_ija_next));
     if (l_ja == r_ja) {
-      if (!ElemEqEq[r->dtype][0]((char*)r->a + nm_sizeof[r->dtype]*r_ija, (char*)l->a + nm_sizeof[l->dtype]*l_ija, 1, nm_sizeof[l->dtype])) {
+      if (!ElemEqEq[r->dtype][0]((char*)r->a + DTYPE_SIZES[r->dtype]*r_ija, (char*)l->a + DTYPE_SIZES[l->dtype]*l_ija, 1, DTYPE_SIZES[l->dtype])) {
       	return false;
       }
 
@@ -511,7 +513,7 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
       ja = SMMP_MIN(l_ja, r_ja);
       
     } else if (l_no_more || ja < l_ja) {
-      if (!ElemEqEq[r->dtype][0]((char*)r->a + nm_sizeof[r->dtype]*r_ija, ZERO, 1, nm_sizeof[r->dtype])) {
+      if (!ElemEqEq[r->dtype][0]((char*)r->a + DTYPE_SIZES[r->dtype]*r_ija, ZERO, 1, DTYPE_SIZES[r->dtype])) {
       	return false;
       }
 
@@ -526,7 +528,7 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
       }
 
     } else if (r_no_more || ja < r_ja) {
-      if (!ElemEqEq[l->dtype][0]((char*)l->a + nm_sizeof[l->dtype]*l_ija, ZERO, 1, nm_sizeof[l->dtype])) {
+      if (!ElemEqEq[l->dtype][0]((char*)l->a + DTYPE_SIZES[l->dtype]*l_ija, ZERO, 1, DTYPE_SIZES[l->dtype])) {
       	return false;
       }
 
@@ -562,7 +564,7 @@ static bool ndrow_is_empty(const YALE_STORAGE* s, y_size_t ija, const y_size_t i
   while (ija < ija_next) {
   	// do all the entries = zero?
   	
-    if (!ElemEqEq[s->dtype][0]((char*)s->a + nm_sizeof[s->dtype]*ija, ZERO, 1, nm_sizeof[s->dtype])) {
+    if (!ElemEqEq[s->dtype][0]((char*)s->a + DTYPE_SIZES[s->dtype]*ija, ZERO, 1, DTYPE_SIZES[s->dtype])) {
     	return false;
     }
     
@@ -581,21 +583,23 @@ static bool ndrow_is_empty(const YALE_STORAGE* s, y_size_t ija, const y_size_t i
  * determined by matrix shape, not IJA/A vector capacity. Note that it's MAX-2
  * because UINTX_MAX and UINTX_MAX-1 are both reserved for sparse matrix
  * multiplication.
+ *
+ * FIXME: Needs a default case.
  */
-int8_t yale_index_dtype(YALE_STORAGE* s) {
+dtype_t yale_storage_index_dtype(YALE_STORAGE* s) {
   if (YALE_MAX_SIZE(s) < UINT8_MAX-2) {
-  	return NM_INT8;
+  	return INT8;
   	
   } else if (YALE_MAX_SIZE(s) < UINT16_MAX - 2) {
-  	return NM_INT16;
+  	return INT16;
   	
   } else if (YALE_MAX_SIZE(s) < UINT32_MAX - 2) {
-  	return NM_INT32;
+  	return INT32;
   	
   } else if (YALE_MAX_SIZE(s) >= UINT64_MAX - 2) {
     fprintf(stderr, "WARNING: Matrix can contain no more than %llu non-diagonal non-zero entries, or results may be unpredictable\n", UINT64_MAX - SMMP_MIN(s->shape[0], s->shape[1]) - 2);
     // TODO: Turn this into an exception somewhere else. It's pretty unlikely, but who knows.
-  	return NM_INT64;
+  	return INT64;
   }
 }
 
@@ -606,10 +610,11 @@ void yale_storage_print_vectors(YALE_STORAGE* s) {
   size_t i;
   fprintf(stderr, "------------------------------\n");
   fprintf(stderr, "dtype:%s\tshape:%dx%d\tndnz:%d\tcapacity:%d\tindex_dtype:%s\n",
-  	nm_dtypestring[s->dtype], s->shape[0], s->shape[1], s->ndnz, s->capacity, nm_dtypestring[s->index_dtype]);
+  	DTYPE_NAMES[s->dtype], s->shape[0], s->shape[1], s->ndnz, s->capacity, nm_dtypestring[s->index_dtype]);
 
 
-  if (s->capacity > 60) rb_raise(rb_eArgError, "overflow in print_vectors; cannot handle that large of a vector");
+	// This needs to be handled somewhere else.
+  //if (s->capacity > 60) rb_raise(rb_eArgError, "overflow in print_vectors; cannot handle that large of a vector");
   // print indices
 
   fprintf(stderr, "i:\t");
@@ -617,19 +622,19 @@ void yale_storage_print_vectors(YALE_STORAGE* s) {
 
   fprintf(stderr, "\nija:\t");
   if (YALE_MAX_SIZE(s) < UINT8_MAX)
-    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int8_t*)YALE_IJA(s,nm_sizeof[s->index_dtype],i));
+    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(uint8_t*)YALE_IJA(s,DTYPE_SIZES[s->index_dtype],i));
   else if (YALE_MAX_SIZE(s) < UINT16_MAX)
-    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int16_t*)YALE_IJA(s,nm_sizeof[s->index_dtype],i));
+    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int16_t*)YALE_IJA(s,DTYPE_SIZES[s->index_dtype],i));
   else if (YALE_MAX_SIZE(s) < UINT32_MAX)
-    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int32_t*)YALE_IJA(s,nm_sizeof[s->index_dtype],i));
+    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int32_t*)YALE_IJA(s,DTYPE_SIZES[s->index_dtype],i));
   else
-    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5llu ", *(u_int64_t*)YALE_IJA(s,nm_sizeof[s->index_dtype],i));
+    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5llu ", *(u_int64_t*)YALE_IJA(s,DTYPE_SIZES[s->index_dtype],i));
   fprintf(stderr, "\n");
 
   // print values
   fprintf(stderr, "a:\t");
   for (i = 0; i < s->capacity; ++i)
-    fprintf(stderr, "%-*.3g ", 5, *(double*)((char*)(s->a) + nm_sizeof[NM_FLOAT64]*i));
+    fprintf(stderr, "%-*.3g ", 5, *(double*)((char*)(s->a) + DTYPE_SIZES[FLOAT64]*i));
   fprintf(stderr, "\n");
 
   fprintf(stderr, "------------------------------\n");
@@ -661,7 +666,7 @@ int yale_storage_binary_search(YALE_STORAGE* s, y_size_t left, y_size_t right, y
  * Documentation goes here.
  */
 char yale_storage_set_diagonal(YALE_STORAGE* s, y_size_t i, void* v) {
-  memcpy(YALE_DIAG(s, nm_sizeof[s->dtype], i), v, nm_sizeof[s->dtype]);
+  memcpy(YALE_DIAG(s, DTYPE_SIZES[s->dtype], i), v, DTYPE_SIZES[s->dtype]);
   
   return 'r';
 }
@@ -673,15 +678,15 @@ char yale_storage_vector_replace(YALE_STORAGE* s, y_size_t pos, y_size_t* j, voi
 
   // Now insert the new values
   SetFuncs[s->index_dtype][Y_SIZE_T](n,
-                                     pos*nm_sizeof[s->index_dtype] + (char*)(s->ija),
-                                     nm_sizeof[s->index_dtype],
+                                     pos*DTYPE_SIZES[s->index_dtype] + (char*)(s->ija),
+                                     DTYPE_SIZES[s->index_dtype],
                                      j,
                                      sizeof(y_size_t));
   SetFuncs[s->dtype][s->dtype](n,
-                               pos*nm_sizeof[s->dtype] + (char*)(s->a),
-                               nm_sizeof[s->dtype],
+                               pos*DTYPE_SIZES[s->dtype] + (char*)(s->a),
+                               DTYPE_SIZES[s->dtype],
                                val,
-                               nm_sizeof[s->dtype]);
+                               DTYPE_SIZES[s->dtype]);
 
   return 'r';
 }
@@ -708,8 +713,8 @@ char yale_storage_vector_insert_resize(YALE_STORAGE* s, y_size_t current_size, y
   }
 
   // Allocate the new vectors.
-  new_ija     = ALLOC_N( char, nm_sizeof[s->index_dtype] * new_capacity );
-  new_a       = ALLOC_N( char, nm_sizeof[s->dtype]       * new_capacity );
+  new_ija     = ALLOC_N( char, DTYPE_SIZES[s->index_dtype] * new_capacity );
+  new_a       = ALLOC_N( char, DTYPE_SIZES[s->dtype]       * new_capacity );
 
   // Check that allocation succeeded.
   if (!new_ija || !new_a) {
@@ -719,17 +724,17 @@ char yale_storage_vector_insert_resize(YALE_STORAGE* s, y_size_t current_size, y
   }
 
   // Copy all values prior to the insertion site to the new IJA and new A
-  SetFuncs[s->index_dtype][s->index_dtype](pos, new_ija, nm_sizeof[s->index_dtype], s->ija, nm_sizeof[s->index_dtype]);
+  SetFuncs[s->index_dtype][s->index_dtype](pos, new_ija, DTYPE_SIZES[s->index_dtype], s->ija, DTYPE_SIZES[s->index_dtype]);
   if (!struct_only) {
-    SetFuncs[s->dtype][s->dtype](pos, new_a, nm_sizeof[s->dtype], s->a, nm_sizeof[s->dtype]);
+    SetFuncs[s->dtype][s->dtype](pos, new_a, DTYPE_SIZES[s->dtype], s->a, DTYPE_SIZES[s->dtype]);
   }
 
   // Copy all values subsequent to the insertion site to the new IJA and new A, leaving room (size n) for insertion.
-  SetFuncs[s->index_dtype][s->index_dtype](current_size-pos+n-1, (char*)new_ija + nm_sizeof[s->index_dtype]*(pos+n), nm_sizeof[s->index_dtype],
-  	(char*)(s->ija) + nm_sizeof[s->index_dtype]*pos, nm_sizeof[s->index_dtype]);
+  SetFuncs[s->index_dtype][s->index_dtype](current_size-pos+n-1, (char*)new_ija + DTYPE_SIZES[s->index_dtype]*(pos+n), DTYPE_SIZES[s->index_dtype],
+  	(char*)(s->ija) + DTYPE_SIZES[s->index_dtype]*pos, DTYPE_SIZES[s->index_dtype]);
   	
   if (!struct_only) {
-    SetFuncs[s->dtype][s->dtype](current_size-pos+n-1, (char*)new_a + nm_sizeof[s->dtype]*(pos+n), nm_sizeof[s->dtype], (char*)(s->a) + nm_sizeof[s->dtype]*pos, nm_sizeof[s->dtype]);
+    SetFuncs[s->dtype][s->dtype](current_size-pos+n-1, (char*)new_a + DTYPE_SIZES[s->dtype]*(pos+n), DTYPE_SIZES[s->dtype], (char*)(s->a) + DTYPE_SIZES[s->dtype]*pos, DTYPE_SIZES[s->dtype]);
   }
 
   s->capacity = new_capacity;
@@ -774,10 +779,10 @@ char yale_storage_vector_insert(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void
      *	are written.
      */
     for (i = 0; i < sz - pos; ++i) {
-      SetFuncs[s->index_dtype][s->index_dtype](1, (char*)(s->ija) + (sz+n-1-i)*nm_sizeof[s->index_dtype], 0, (char*)(s->ija) + (sz-1-i)*nm_sizeof[s->index_dtype], 0);
+      SetFuncs[s->index_dtype][s->index_dtype](1, (char*)(s->ija) + (sz+n-1-i)*DTYPE_SIZES[s->index_dtype], 0, (char*)(s->ija) + (sz-1-i)*DTYPE_SIZES[s->index_dtype], 0);
 
       if (!struct_only) {
-        SetFuncs[s->dtype    ][s->dtype      ](1, (char*)(s->a)   + (sz+n-1-i)*nm_sizeof[s->dtype      ], 0, (char*)(s->a)   + (sz-1-i)*nm_sizeof[s->dtype      ], 0);
+        SetFuncs[s->dtype    ][s->dtype      ](1, (char*)(s->a)   + (sz+n-1-i)*DTYPE_SIZES[s->dtype      ], 0, (char*)(s->a)   + (sz-1-i)*DTYPE_SIZES[s->dtype      ], 0);
       }
     }
   }
@@ -797,17 +802,17 @@ char yale_storage_vector_insert(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void
  * Clear out the D portion of the A vector (clearing the diagonal and setting
  * the zero value).
  *
- * Note: This sets a literal 0 value. If your dtype is NM_ROBJ (a Ruby object),
+ * Note: This sets a literal 0 value. If your dtype is RUBYOBJ (a Ruby object),
  * it'll actually be INT2FIX(0) instead of a string of NULLs.
  */
 static void clear_diagonal_and_zero(YALE_STORAGE* s) {
   y_size_t i;
   // Clear out the diagonal + one extra entry
-  if (s->dtype == NM_ROBJ) {
+  if (s->dtype == RUBYOBJ) {
     for (i = 0; i < YALE_IA_SIZE(s)+1; ++i) // insert Ruby zeros
-      *(VALUE*)( (char*)(s->a) + i*nm_sizeof[s->dtype] ) = INT2FIX(0);
+      *(VALUE*)( (char*)(s->a) + i*DTYPE_SIZES[s->dtype] ) = INT2FIX(0);
   } else { // just insert regular zeros
-    memset(s->a, 0, nm_sizeof[s->dtype] * (YALE_IA_SIZE(s)+1));
+    memset(s->a, 0, DTYPE_SIZES[s->dtype] * (YALE_IA_SIZE(s)+1));
   }
 }
 
@@ -857,8 +862,8 @@ static y_size_t yale_storage_insert_search(YALE_STORAGE* s, y_size_t left, y_siz
  */
 static char yale_storage_vector_replace_j(YALE_STORAGE* s, y_size_t pos, y_size_t* j) {
   SetFuncs[s->index_dtype][Y_SIZE_T](1,
-                                     pos*nm_sizeof[s->index_dtype] + (char*)(s->ija),
-                                     nm_sizeof[s->index_dtype],
+                                     pos*DTYPE_SIZES[s->index_dtype] + (char*)(s->ija),
+                                     DTYPE_SIZES[s->index_dtype],
                                      j,
                                      sizeof(y_size_t));
 
@@ -872,7 +877,7 @@ static char yale_storage_vector_replace_j(YALE_STORAGE* s, y_size_t pos, y_size_
 /*
  * Copy constructor.
  */
-YALE_STORAGE* cast_copy_yale_storage(YALE_STORAGE* rhs, int8_t new_dtype) {
+YALE_STORAGE* cast_copy_yale_storage(YALE_STORAGE* rhs, dtype_t new_dtype) {
   y_size_t size;
   YALE_STORAGE* lhs;
 
@@ -881,10 +886,10 @@ YALE_STORAGE* cast_copy_yale_storage(YALE_STORAGE* rhs, int8_t new_dtype) {
 
   // Copy contents (not structure)
   if (lhs->dtype == rhs->dtype) {
-  	memcpy(lhs->a, rhs->a, size * nm_sizeof[lhs->dtype]);
+  	memcpy(lhs->a, rhs->a, size * DTYPE_SIZES[lhs->dtype]);
   	
   } else {
-  	SetFuncs[new_dtype][rhs->dtype](size, lhs->a, nm_sizeof[lhs->dtype], rhs->a, nm_sizeof[rhs->dtype]);
+  	SetFuncs[new_dtype][rhs->dtype](size, lhs->a, DTYPE_SIZES[lhs->dtype], rhs->a, DTYPE_SIZES[rhs->dtype]);
   }
 
   return lhs;
@@ -902,7 +907,7 @@ YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs) {
 
   // Now copy the contents -- but only within the boundaries set by the size. Leave
   // the rest uninitialized.
-  memcpy(lhs->a, rhs->a, size * nm_sizeof[lhs->dtype]);
+  memcpy(lhs->a, rhs->a, size * DTYPE_SIZES[lhs->dtype]);
 
   return lhs;
 }
@@ -911,7 +916,7 @@ YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs) {
  * Allocate for a copy or copy-cast operation, and copy the IJA portion of the
  * matrix (the structure).
  */
-static YALE_STORAGE* yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, const int8_t new_dtype, const y_size_t new_capacity, const y_size_t new_size) {
+static YALE_STORAGE* yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const y_size_t new_capacity, const y_size_t new_size) {
   YALE_STORAGE* lhs = ALLOC( YALE_STORAGE );
   lhs->rank         = rhs->rank;
   lhs->shape        = ALLOC_N( size_t, lhs->rank );
@@ -921,13 +926,13 @@ static YALE_STORAGE* yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, con
   lhs->dtype        = new_dtype;
   lhs->ndnz         = rhs->ndnz;
 
-  lhs->ija          = ALLOC_N( char, nm_sizeof[lhs->index_dtype] * lhs->capacity );
-  lhs->a            = ALLOC_N( char, nm_sizeof[lhs->dtype] * lhs->capacity );
+  lhs->ija          = ALLOC_N( char, DTYPE_SIZES[lhs->index_dtype] * lhs->capacity );
+  lhs->a            = ALLOC_N( char, DTYPE_SIZES[lhs->dtype] * lhs->capacity );
 
   // Now copy the contents -- but only within the boundaries set by the size. Leave
   // the rest uninitialized.
   YaleGetSize(new_size, rhs);
-  memcpy(lhs->ija, rhs->ija, new_size * nm_sizeof[lhs->index_dtype]); // indices
+  memcpy(lhs->ija, rhs->ija, new_size * DTYPE_SIZES[lhs->index_dtype]); // indices
 
   return lhs;
 }

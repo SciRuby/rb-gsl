@@ -39,7 +39,12 @@
  * Project Includes
  */
 
-#include "nmatrix.h"
+#include "types.h"
+
+#include "data/data.h"
+
+#include "common.h"
+
 #include "util/sl_list.h"
 
 /*
@@ -75,9 +80,9 @@ typedef struct {
 // Lifecycle //
 ///////////////
 
-LIST_STORAGE*	list_storage_create(int8_t dtype, size_t* shape, size_t rank, void* init_val);
+LIST_STORAGE*	list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val);
 void					list_storage_delete(LIST_STORAGE* s);
-void					list_storage_mark(void* m);
+void					list_storage_mark(LIST_STORAGE* storage);
 
 ///////////////
 // Accessors //
@@ -112,6 +117,6 @@ inline size_t list_storage_count_elements(const LIST_STORAGE* s) {
 /////////////////////////
 
 LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs);
-LIST_STORAGE* list_storage_cast_copy(LIST_STORAGE* rhs, int8_t new_dtype);
+LIST_STORAGE* list_storage_cast_copy(LIST_STORAGE* rhs, dtype_t new_dtype);
 
 #endif
