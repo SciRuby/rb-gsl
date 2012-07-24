@@ -77,6 +77,12 @@ extern ID rbsym_real,
 					rbsym_gte,
 					rbsym_lte;
 
+extern VALUE	cNMatrix,
+							cNVector,
+			
+							nm_eDataTypeError,
+							nm_eStorageTypeError;
+
 /*
  * Functions
  */

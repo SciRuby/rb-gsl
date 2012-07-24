@@ -72,9 +72,6 @@
  * Global Variables
  */
 
-static VALUE cNMatrix, cNVector;
-static VALUE nm_eDataTypeError, nm_eStorageTypeError;
-
 /*
  * Forward Declarations
  */

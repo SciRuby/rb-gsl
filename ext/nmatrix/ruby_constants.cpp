@@ -70,6 +70,12 @@ ID	rbsym_real,
 		rbsym_gte,
 		rbsym_lte;
 
+VALUE cNMatrix,
+			cNVector,
+			
+			nm_eDataTypeError,
+			nm_eStorageTypeError;
+
 /*
  * Forward Declarations
  */
