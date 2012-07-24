@@ -180,64 +180,64 @@ class Rational {
 	// Rational-Native Operations //
 	////////////////////////////////
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline Rational<Type> operator+(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline Rational<Type> operator+(const IntType& other) const {
 		return *this + Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline Rational<Type> operator-(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline Rational<Type> operator-(const IntType& other) const {
 		return *this - Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline Rational<Type> operator*(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline Rational<Type> operator*(const IntType& other) const {
 		return *this * Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline Rational<Type> operator/(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline Rational<Type> operator/(const IntType& other) const {
 		return *this / Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline Rational<Type> operator%(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline Rational<Type> operator%(const IntType& other) const {
 		return *this % Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline bool operator<(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline bool operator<(const IntType& other) const {
 		return *this < Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline bool operator>(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline bool operator>(const IntType& other) const {
 		return *this > Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline bool operator==(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline bool operator==(const IntType& other) const {
 		return *this == Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline bool operator!=(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline bool operator!=(const IntType& other) const {
 		return *this != Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline bool operator<=(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline bool operator<=(const IntType& other) const {
 		return *this <= Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline bool operator>=(const NativeType& other) const {
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline bool operator>=(const IntType& other) const {
 		return *this >= Rational<Type>(other);
 	}
 	
-	template <typename NativeType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-	inline operator NativeType () {
-		return (NativeType)this->n / (NativeType)this->d;
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline operator IntType () {
+		return (IntType)this->n / (IntType)this->d;
 	}
 };
 
@@ -245,53 +245,53 @@ class Rational {
 // Native-Rational Operations //
 ////////////////////////////////
 
-template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-inline Rational<RationalType> operator+(const NativeType& left, const Rational<RationalType>& right) {
+template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline Rational<RationalType> operator+(const IntType& left, const Rational<RationalType>& right) {
 	return Rational<RationalType>(left) + right;
 }
 
-template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-inline Rational<RationalType> operator-(const NativeType& left, const Rational<RationalType>& right) {
+template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline Rational<RationalType> operator-(const IntType& left, const Rational<RationalType>& right) {
 	return Rational<RationalType>(left) - right;
 }
 
-template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-inline Rational<RationalType> operator*(const NativeType& left, const Rational<RationalType>& right) {
+template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline Rational<RationalType> operator*(const IntType& left, const Rational<RationalType>& right) {
 	return Rational<RationalType>(left) * right;
 }
 
-template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-inline Rational<RationalType> operator/(const NativeType& left, const Rational<RationalType>& right) {
+template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline Rational<RationalType> operator/(const IntType& left, const Rational<RationalType>& right) {
 	return Rational<RationalType>(left) / right;
 }
 
-template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-inline bool operator<(const NativeType left, const Rational<RationalType>& right) {
+template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator<(const IntType left, const Rational<RationalType>& right) {
 	return Rational<RationalType>(left) < right;
 }
 
-template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-inline bool operator>(const NativeType left, const Rational<RationalType>& right) {
+template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator>(const IntType left, const Rational<RationalType>& right) {
 	return Rational<RationalType>(left) > right;
 }
 
-template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-inline bool operator==(const NativeType left, const Rational<RationalType>& right) {
+template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator==(const IntType left, const Rational<RationalType>& right) {
 	return Rational<RationalType>(left) == right;
 }
 
-template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-inline bool operator!=(const NativeType left, const Rational<RationalType>& right) {
+template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator!=(const IntType left, const Rational<RationalType>& right) {
 	return Rational<RationalType>(left) != right;
 }
 
-template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-inline bool operator<=(const NativeType left, const Rational<RationalType>& right) {
+template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator<=(const IntType left, const Rational<RationalType>& right) {
 	return Rational<RationalType>(left) <= right;
 }
 
-template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_integral<NativeType>::value>::type>
-inline bool operator>=(const NativeType left, const Rational<RationalType>& right) {
+template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator>=(const IntType left, const Rational<RationalType>& right) {
 	return Rational<RationalType>(left) >= right;
 }
 
