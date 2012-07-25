@@ -1,14 +1,32 @@
 =begin
 == Description
-Ruby/GSL, a ruby interface to GSL (GNU Scientific library)
+Ruby/GSL, a ruby interface to GSL (GNU Scientific library), with NMatrix support instead of NArray
+
+== NMatrix Fork
+There is a naming conflict between the nmatrix and narray gems: both make use of the global class names NMatrix and
+NVector.
+
+SciRuby and its component gem statsample make use of Ruby/GSL, but also increasingly depend on NMatrix. As such, we
+needed an NMatrix-specific fork which removed references to NArray, and allowed conversion between GSL and NMatrix data
+types.
 
 == Installation
-   (0) Make sure the command "gsl-config" is in search path.
-   (1) % ruby setup.rb config
-   (2) % ruby setup.rb setup
-   (3) % ruby setup.rb install (as root)
 
-See also html/index.html.
+If you want the nmatrix conversions to work, you should probably do as follows before installing GSL:
+
+  gem install nmatrix
+
+=== Installation from Source
+
+  git clone https://github.com/SciRuby/rb-gsl.git
+  cd rb-gsl/
+  ruby setup.rb config
+  ruby setup.rb setup
+  ruby setup.rb install # as root
+
+=== Installation from RubyGems
+
+  gem install gsl-nmatrix
 
 == Reference
 
@@ -25,8 +43,13 @@ Any bug reports are welcome.
 If you encounter bugs in Ruby/GSL, please e-mail to me, or
 submit reports from http://rubyforge.org/projects/rb-gsl/.
 
-== Author
+== Authors
 Yoshiki Tsunesada
 y-tsunesada at mm dot em-net dot ne dot jp
 
+David MacMahon
+david at astro dot berkeley dot edu
+
+John Woods (only gsl_nmatrix.c)
+john dot woods at marcottelab dot org
 =end

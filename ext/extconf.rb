@@ -238,22 +238,22 @@ rescue
 end
 
 #narray_config = dir_config("narray")
-narray_config = dir_config('narray',$sitearchdir,$sitearchdir)
-# Try to find narray with RubyGems
+#narray_config = dir_config('narray',$sitearchdir,$sitearchdir)
+nmatrix_config = dir_config('nmatrix',$sitearchdir,$sitearchdir)
+# Try to find nmatrix with RubyGems
 begin
   require 'rubygems'
-  na_gemspec=Gem.searcher.find('narray.h')
-  if na_gemspec
-    narray_config = File.join(na_gemspec.full_gem_path, na_gemspec.require_path)
-    $CPPFLAGS = " -I#{narray_config} "+$CPPFLAGS
+  nm_gemspec=Gem.searcher.find('nmatrix.h')
+  if nm_gemspec
+    nmatrix_config = File.join(nm_gemspec.full_gem_path, nm_gemspec.require_path)
+    $CPPFLAGS = " -I#{nmatrix_config} "+$CPPFLAGS
   end
 rescue LoadError
 end
-have_narray_h = have_header("narray.h")
-if narray_config
+have_nmatrix_h = have_header("nmatrix.h")
+if nmatrix_config
   if RUBY_PLATFORM =~ /cygwin|mingw/
-#    have_library("narray") || raise("ERROR: narray import library is not found") 
-  have_library("narray")
+    have_library("nmatrix")
   end
 end
 
@@ -267,8 +267,8 @@ if tamu_anova_config
 end
 
 File.open("../lib/gsl.rb", "w") do |file|
-  if have_narray_h
-    file.print("require('narray')\n")
+  if have_nmatrix_h
+    file.print("require('nmatrix')\n")
   end
 #  file.print("require('rb_gsl')\ninclude GSL\n")
   file.print("require('rb_gsl')\n")  
@@ -276,8 +276,8 @@ File.open("../lib/gsl.rb", "w") do |file|
 end
 
 File.open("../lib/rbgsl.rb", "w") do |file|
-  if have_narray_h
-    file.print("require('narray')\n")
+  if have_nmatrix_h
+    file.print("require('nmatrix')\n")
   end
   file.print("require('rb_gsl')\n")
   file.print("require('gsl/oper.rb')\n")
