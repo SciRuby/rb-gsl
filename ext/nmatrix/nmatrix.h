@@ -74,7 +74,6 @@
 #define NM_MAX_RANK 15
 
 #define UnwrapNMatrix(obj,var)  Data_Get_Struct(obj, struct numeric_matrix, var)
-#define IsNMatrix(obj)          (rb_obj_is_kind_of(obj, CNMatrix)==Qtrue)
 
 #define NM_STORAGE(val)         (((struct numeric_matrix*)DATA_PTR(val))->storage)
 //#define NM_PTR(a, p)            ((a)->ptr+(p)*nm_sizeof[(a)->type])
@@ -88,48 +87,10 @@
 #define NM_SHAPE1(val)          (((struct numeric_matrix*)DATA_PTR(val))->shape[1])
 #define NM_SIZEOF_DTYPE(val)    (nm_sizeof[NM_DTYPE(val)])
 #define NM_REF(val,slice)      (RefFuncs[NM_STYPE(val)]( NM_STORAGE(val), slice, NM_SIZEOF_DTYPE(val) ))
-
-#define NM_IsNMatrix(obj) (rb_obj_is_kind_of(obj, cNMatrix)==Qtrue)
-#define NM_IsArray(obj)   (TYPE(obj)==T_ARRAY || rb_obj_is_kind_of(obj,cNMatrix)==Qtrue)
-#define NM_IsROBJ(d) ((d)->dtype==NM_ROBJ)
-#define NM_IsINTEGER(a) \
-    (NM_DTYPE(a)==NM_BYTE || NM_DTYPE(a)==NM_INT8 || NM_DTYPE(a)==NM_INT16 || NM_DTYPE(a)==NM_INT32 || NM_DTYPE(a)==NM_INT64)
-#define NM_IsCOMPLEX(a) \
-    (NM_DTYPE(a)==NM_COMPLEX32 || NM_DTYPE(a)==NM_COMPLEX64)
+    
 #define NM_MAX(a,b) (((a)>(b))?(a):(b))
 #define NM_MIN(a,b) (((a)>(b))?(b):(a))
 #define NM_SWAP(a,b,tmp) {(tmp)=(a);(a)=(b);(b)=(tmp);}
-
-//#define NUM2REAL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) ) // deprecated
-#define REAL2DBL(v) NUM2DBL( rb_funcall((v),nm_id_real,0) )
-//#define NUM2IMAG(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) ) // deprecated
-#define IMAG2DBL(v) NUM2DBL( rb_funcall((v),nm_id_imag,0) )
-
-#define NUM2NUMER(v) NUM2INT( rb_funcall((v), nm_id_numer,0) ) // deprecated
-#define NUMER2INT(v) NUM2INT( rb_funcall((v), nm_id_numer,0) )
-#define NUM2DENOM(v) NUM2INT( rb_funcall((v), nm_id_denom,0) ) // deprecated
-#define DENOM2INT(v) NUM2INT( rb_funcall((v), nm_id_denom,0) )
-
-#define IS_NUMERIC(v)   (FIXNUM_P(v) || TYPE(v) == T_FLOAT || TYPE(v) == T_COMPLEX || TYPE(v) == T_RATIONAL)
-#define IS_STRING(v)    (TYPE(v) == T_STRING)
-
-#define CheckNMatrixType(v)   if (TYPE(v) != T_DATA || (RDATA(v)->dfree != (RUBY_DATA_FUNC)nm_delete && RDATA(v)->dfree != (RUBY_DATA_FUNC)nm_delete_ref)) rb_raise(rb_eTypeError, "expected NMatrix on left-hand side of operation");
-
-#if !defined RSTRING_LEN
-	#define RSTRING_LEN(a) RSTRING(a)->len
-#endif
-
-#if !defined RSTRING_PTR
-	#define RSTRING_PTR(a) RSTRING(a)->ptr
-#endif
-
-#if !defined RARRAY_LEN
-	#define RARRAY_LEN(a) RARRAY(a)->len
-#endif
-
-#if !defined RARRAY_PTR
-	#define RARRAY_PTR(a) RARRAY(a)->ptr
-#endif
 
 // FIXME: What should this actually be?
 //#define NM_INDEX_TYPES  NM_FLOAT32
