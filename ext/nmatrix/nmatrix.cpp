@@ -88,10 +88,13 @@ static void*    interpret_initial_value(VALUE arg, dtype_t dtype);
 static stype_t	stype_from_string(VALUE str);
 static stype_t	stype_from_symbol(VALUE sym);
 static VALUE    nm_init(int argc, VALUE* argv, VALUE nm);
+static VALUE    nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_index_dtype, VALUE nm);
 static VALUE    nm_dtype(VALUE self);
 static VALUE    nm_stype(VALUE self);
+static VALUE    nm_rank(VALUE self);
 static VALUE    nm_shape(VALUE self);
 static VALUE    nm_capacity(VALUE self);
+static VALUE    nm_each(VALUE nmatrix);
 static VALUE    nm_symmetric(VALUE self);
 static VALUE    nm_hermitian(VALUE self);
 
@@ -360,6 +363,32 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   return nm;
 }
 
+
+/*
+ * Create a new NMatrix helper for handling internal ia, ja, and a arguments.
+ *
+ * This constructor is only called by Ruby code, so we can skip most of the checks.
+ */
+static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_index_dtype, VALUE nm) {
+  size_t rank     = 2;
+  size_t* shape_  = nm_interpret_shape_arg(shape, &rank);
+  dtype_t dtype_   = nm_dtypesymbol_to_dtype(dtype);
+  char *ia_       = RSTRING_PTR(ia),
+       *ja_       = RSTRING_PTR(ja),
+       *a_        = RSTRING_PTR(a);
+  dtype_t from_dtype_ = nm_dtypesymbol_to_dtype(from_dtype);
+  dtype_t from_index_dtype_ = nm_dtypesymbol_to_dtype(from_index_dtype);
+  NMATRIX* nmatrix;
+
+  UnwrapNMatrix( nm, nmatrix );
+
+  nmatrix->stype   = YALE_STORE;
+  nmatrix->storage = (STORAGE*)yale_storage_create_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_, from_index_dtype_);
+
+  return nm;
+}
+
+
 /*
  * Get the data type (dtype) of a matrix, e.g., :byte, :int8, :int16, :int32, :int64, :float32, :float64, :complex64,
  * :complex128, :rational32, :rational64, :rational128, or :object (the last is a Ruby object).
@@ -416,7 +445,7 @@ static VALUE nm_capacity(VALUE self) {
  * This function may lie slightly for NVectors, which are internally stored as rank 2 (and have an orientation), but
  * act as if they're rank 1.
  */
-VALUE nm_rank(VALUE self) {
+static VALUE nm_rank(VALUE self) {
   return rubyobj_from_val(&(NM_STORAGE(self)->rank), INT64).rval;
 }
 

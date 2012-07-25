@@ -375,29 +375,6 @@ inline void cast_copy_value_single(void* to, const void* from, int8_t l_dtype, i
   else                    SetFuncs[l_dtype][r_dtype](1, to, 0, from, 0);
 }
 
-/*
- * Create a new NMatrix helper for handling internal ia, ja, and a arguments.
- *
- * This constructor is only called by Ruby code, so we can skip most of the checks.
- */
-static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_index_dtype, VALUE nm) {
-  size_t rank     = 2;
-  size_t* shape_  = nm_interpret_shape_arg(shape, &rank);
-  int8_t dtype_   = nm_dtypesymbol_to_dtype(dtype);
-  char *ia_       = RSTRING_PTR(ia),
-       *ja_       = RSTRING_PTR(ja),
-       *a_        = RSTRING_PTR(a);
-  int8_t from_dtype_ = nm_dtypesymbol_to_dtype(from_dtype);
-  int8_t from_index_dtype_ = nm_dtypesymbol_to_dtype(from_index_dtype);
-  NMATRIX* nmatrix;
-
-  UnwrapNMatrix( nm, nmatrix );
-
-  nmatrix->stype   = S_YALE;
-  nmatrix->storage = (STORAGE*)create_yale_storage_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_, from_index_dtype_);
-
-  return nm;
-}
 
 
 static VALUE nm_alloc(VALUE klass) {
@@ -816,7 +793,7 @@ static VALUE nm_ew_neq(VALUE left, VALUE right) {
 
 
 
-// Does not create storage, but does destroy it.
+// You must create the storage manually. NMatrix will clean it up when the matrix itself is destroyed.
 NMATRIX* nm_create(int8_t stype, void* storage) {
   NMATRIX* mat = ALLOC(NMATRIX);
 
@@ -865,9 +842,9 @@ static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
  *     n[3,3]  # => 5.0
  *
  */
-VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
+static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
   NMATRIX* mat;
-  SLICE* slice;  
+  SLICE* slice;
   void* v;
 
   if (NM_RANK(self) == (size_t)(argc)) {
@@ -879,14 +856,14 @@ VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
       mat->stype = S_DENSE;
       mat->storage = RefFuncs[NM_STYPE(self)](NM_STORAGE(self), slice);
       return Data_Wrap_Struct(cNMatrix, MarkFuncs[mat->stype], nm_delete_ref, mat);
-    } 
+    }
     else {
       v = ALLOC(VALUE);
       SetFuncs[NM_ROBJ][NM_DTYPE(self)](1, v, 0,
                 RefFuncs[NM_STYPE(self)](NM_STORAGE(self), slice), 0);
       return *(VALUE*)v;
     }
-                              
+
   } else if (NM_RANK(self) < (size_t)(argc)) {
     rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");
   } else {
@@ -905,7 +882,7 @@ VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
  *
  *     n[3,3] = n[2,3] = 5.0
  */
-VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
+static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
   size_t rank = argc - 1; // last arg is the value
 
   if (argc <= 1) {
