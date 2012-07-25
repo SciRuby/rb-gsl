@@ -183,5 +183,6 @@ extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
 
 RubyObject	rubyobj_from_val(void* val, dtype_t dtype);
 void*				rubyobj_to_val(RubyObject obj, dtype_t dtype);
+void        rubyobj_to_val_noalloc(RubyObject obj, dtype_t dtype, void* ret_val);
 
 #endif

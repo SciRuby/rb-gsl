@@ -48,19 +48,19 @@
  */
 
 const char* const DTYPE_NAMES[NUM_DTYPES] = {
-	"Byte",
-	"Int8",
-	"Int16",
-	"Int32",
-	"Int64",
-	"Float32",
-	"Float64",
-	"Complex64",
-	"Complex128",
-	"Rational32",
-	"Rational64",
-	"Rational128",
-	"RubyObject"
+	"byte",
+	"int8",
+	"int16",
+	"int32",
+	"int64",
+	"float32",
+	"float64",
+	"complex64",
+	"complex128",
+	"rational32",
+	"rational64",
+	"rational128",
+	"object"
 };
 
 const size_t DTYPE_SIZES[NUM_DTYPES] = {
@@ -91,8 +91,10 @@ RubyObject rubyobj_from_val(void* val, dtype_t dtype) {
 	return RubyObject((VALUE)NULL);
 }
 
-void* rubyobj_to_val(RubyObject obj, dtype_t dtype) {
-	void* ret_val = malloc(DTYPE_SIZES[dtype]);
+
+// Mostly necessary for copying Ruby Arrays into C arrays, where we want to allocate
+// ret_val all at once instead of piecewise.
+void rubyobj_to_val_noalloc(RubyObject obj, dtype_t dtype, void* ret_val) {
 	
 //	switch (dtype) {
 //		case BYTE:
@@ -137,3 +139,11 @@ void* rubyobj_to_val(RubyObject obj, dtype_t dtype) {
 	return ret_val;
 }
 
+// Allocate and return a piece of data of the correct dtype, converted from a given RubyObject.
+void* rubyobj_to_val(RubyObject obj, dtype_t dtype) {
+  void* ret_val = malloc(DTYPE_SIZES[dtype]);
+
+  rubyobj_to_val_noalloc(obj, dtype, ret_val);
+
+  return ret_val;
+}

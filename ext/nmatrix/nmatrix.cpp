@@ -62,7 +62,7 @@
  */
 
 #include "nmatrix.h"
-#include "ruby_symbols.h"
+#include "ruby_constants.h"
 
 /*
  * Macros
@@ -79,11 +79,16 @@
 static dtype_t	dtype_from_string(VALUE str);
 static dtype_t	dtype_from_symbol(VALUE sym);
 static dtype_t	dtype_guess(VALUE v);
-static double		get_time(void);
 static dtype_t	interpret_dtype(int argc, VALUE* argv, stype_t stype);
 static stype_t	interpret_stype(VALUE arg);
+static size_t*  interpret_shape(VALUE arg, size_t* rank);
+static void*    interpret_initial_value(VALUE arg, dtype_t dtype);
 static stype_t	stype_from_string(VALUE str);
 static stype_t	stype_from_symbol(VALUE sym);
+
+#ifdef BENCHMARK
+static double		get_time(void);
+#endif
 
 /*
  * Functions
@@ -226,7 +231,6 @@ void Init_nmatrix() {
  * Just be careful! There are no overflow warnings in NMatrix.
  */
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
-  char    ZERO = 0;
   VALUE   QNIL = Qnil;
   dtype_t dtype;
   stype_t stype;
@@ -245,7 +249,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   	return Qnil;
   }
 
-  if (!SYMBOL_P(argv[0]) && !IS_STRING(argv[0])) {
+  if (!SYMBOL_P(argv[0]) && !RUBYVAL_IS_STRING(argv[0])) {
     stype = DENSE_STORE;
     
   } else {
@@ -270,7 +274,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   // 2-3: dtype
   dtype = interpret_dtype(argc-1-offset, argv+offset+1, stype);
 
-  if (IS_NUMERIC(argv[1+offset]) || TYPE(argv[1+offset]) == T_ARRAY) {
+  if (RUBYVAL_IS_NUMERIC(argv[1+offset]) || RUBYVAL_IS_ARRAY(argv[1+offset])) {
   	// Initial value provided (could also be initial capacity, if yale).
   	
     if (stype == YALE_STORE) {
@@ -280,7 +284,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
     	// 4: initial value / dtype
       init_val = interpret_initial_value(argv[1+offset], dtype);
       
-      if (TYPE(argv[1+offset]) == T_ARRAY) {
+      if (RUBYVAL_IS_ARRAY(argv[1+offset])) {
       	init_val_len = RARRAY_LEN(argv[1+offset]);
       	
       } else {
@@ -330,7 +334,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   		
   	case YALE_STORE:
   		nmatrix->storage = (STORAGE*)yale_storage_create(dtype, shape, rank, init_cap);
-  		yale_storage_init(nmatrix->storage);
+  		yale_storage_init((YALE_STORAGE*)(nmatrix->storage));
   		
   		// Do we not need to free the initial value when using other stypes?
   		free(init_val);
@@ -357,7 +361,7 @@ dtype_t dtype_from_string(VALUE str) {
   
   for (index = 0; index < NUM_DTYPES; ++index) {
   	if (!strncmp(RSTRING_PTR(str), DTYPE_NAMES[index], RSTRING_LEN(str))) {
-  		return index;
+  		return static_cast<dtype_t>(index);
   	}
   }
   
@@ -371,8 +375,8 @@ dtype_t dtype_from_symbol(VALUE sym) {
   size_t index;
   
   for (index = 0; index < NUM_DTYPES; ++index) {
-    if (SYM2ID(sym) == rb_intern(nm_dtypestring[i])) {
-    	return index;
+    if (SYM2ID(sym) == rb_intern(DTYPE_NAMES[index])) {
+    	return static_cast<dtype_t>(index);
     }
   }
   
@@ -496,10 +500,10 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
   if (SYMBOL_P(argv[offset])) {
   	return dtype_from_symbol(argv[offset]);
   	
-  } else if (IS_STRING(argv[offset])) {
+  } else if (RUBYVAL_IS_STRING(argv[offset])) {
   	return dtype_from_string(StringValue(argv[offset]));
   	
-  } else if (stype == S_YALE) {
+  } else if (stype == YALE_STORE) {
   	rb_raise(rb_eArgError, "Yale storage class requires a dtype.");
   	
   } else {
@@ -509,23 +513,21 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
 
 /*
  * Convert an Ruby value or an array of Ruby values into initial C values.
- *
- * FIXME: Remove the references to SetFuncs.
  */
-void* interpret_initial_value(VALUE arg, dtype_t dtype) {
+static void* interpret_initial_value(VALUE arg, dtype_t dtype) {
   void* init_val;
 
-  if (TYPE(arg) == T_ARRAY) {
+  if (RUBYVAL_IS_ARRAY(arg)) {
   	// Array
-    
-    init_val = ALLOC_N(int8_t, DTYPE_SIZES[dtype] * RARRAY_LEN(arg));
-    SetFuncs[dtype][RUBYOBJ](RARRAY_LEN(arg), init_val, DTYPE_SIZES[dtype], RARRAY_PTR(arg), DTYPE_SIZES[RUBYOBJ]);
+
+    init_val = ALLOC_N(char, RARRAY_LEN(arg));
+    for (size_t index = 0; index < RARRAY_LEN(arg); ++index)
+      rubyobj_to_val_noalloc(RARRAY_PTR(arg)[index], dtype, (char*)init_val + index*DTYPE_SIZES[dtype]);
     
   } else {
-  	// Single value
-  	
-    init_val = ALLOC_N(int8_t, DTYPE_SIZES[dtype]);
-    SetFuncs[dtype][RUBYOBJ](1, init_val, 0, &arg, 0);
+    // Single value
+
+    init_val = rubyobj_to_val(arg, dtype);
   }
 
   return init_val;
@@ -537,11 +539,11 @@ void* interpret_initial_value(VALUE arg, dtype_t dtype) {
  * matrix will be stored.  The function itself returns a pointer to the array
  * describing the shape, which must be freed manually.
  */
-size_t* interpret_shape(VALUE arg, size_t* rank) {
+static size_t* interpret_shape(VALUE arg, size_t* rank) {
   size_t index;
   size_t* shape;
 
-  if (TYPE(arg) == T_ARRAY) {
+  if (RUBYVAL_IS_ARRAY(arg)) {
     *rank = RARRAY_LEN(arg);
     shape = ALLOC_N(size_t, *rank);
     
@@ -570,7 +572,7 @@ static stype_t interpret_stype(VALUE arg) {
   if (SYMBOL_P(arg)) {
   	return stype_from_symbol(arg);
   	
-  } else if (IS_STRING(arg)) {
+  } else if (RUBYVAL_IS_STRING(arg)) {
   	return stype_from_string(StringValue(arg));
   	
   } else {
@@ -587,7 +589,7 @@ static stype_t stype_from_string(VALUE str) {
   
   for (index = 0; index < NUM_STYPES; ++index) {
     if (!strncmp(RSTRING_PTR(str), STYPE_NAMES[index], 3)) {
-    	return index;
+    	return static_cast<stype_t>(index);
     }
   }
   
@@ -602,7 +604,7 @@ static stype_t stype_from_symbol(VALUE sym) {
   size_t index;
   for (index = 0; index < NUM_STYPES; ++index) {
     if (SYM2ID(sym) == rb_intern(STYPE_NAMES[index])) {
-    	return index;
+    	return static_cast<stype_t>(index);
     }
   }
   

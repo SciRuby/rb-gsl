@@ -51,7 +51,7 @@
 #define RUBYVAL_IS_INTEGER(val)		(FIXNUM_P(val))
 #define RUBYVAL_IS_FLOAT(val)			(TYPE(val) == T_FLOAT)
 #define RUBYVAL_IS_NMATRIX(val) 	(rb_obj_is_kind_of(val, cNMatrix) == Qtrue)
-#define RUBYVAL_IS_NUMERIC(val)		(FIXNUM_P(v) or (TYPE(v) == T_FLOAT) or (TYPE(v) == T_COMPLEX) or (TYPE(v) == T_RATIONAL))
+#define RUBYVAL_IS_NUMERIC(val)		(FIXNUM_P(val) or (TYPE(val) == T_FLOAT) or (TYPE(val) == T_COMPLEX) or (TYPE(val) == T_RATIONAL))
 #define RUBYVAL_IS_NVECTOR(val) 	(rb_obj_is_kind_of(val, cNVector) == Qtrue)
 #define RUBYVAL_IS_RATIONAL(val)	(TYPE(val) == T_RATIONAL)
 #define RUBYVAL_IS_STRING(val)    (TYPE(val) == T_STRING)
