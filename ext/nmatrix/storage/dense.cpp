@@ -149,7 +149,7 @@ void dense_storage_delete_ref(DENSE_STORAGE* s) {
 }
 
 /*
- * Documentation goes here.
+ * Mark values in a dense matrix for garbage collection. This may not be necessary -- further testing required.
  */
 void dense_storage_mark(DENSE_STORAGE* storage) {
   size_t i;

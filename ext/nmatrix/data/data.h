@@ -49,7 +49,7 @@
 #define NUM_DTYPES 13
 
 /*
- * Defines a static array named ttables that hold function pointers to
+ * Defines a static array named ttable that hold function pointers to
  * dtype templated versions of the specified function.
  */
 #define DTYPE_TEMPLATE_TABLE(fun, ret, ...)					\

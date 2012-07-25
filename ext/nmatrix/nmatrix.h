@@ -73,18 +73,18 @@
 
 #define NM_MAX_RANK 15
 
-#define UnwrapNMatrix(obj,var)  Data_Get_Struct(obj, struct numeric_matrix, var)
+#define UnwrapNMatrix(obj,var)  Data_Get_Struct(obj, NMATRIX, var)
 
-#define NM_STORAGE(val)         (((struct numeric_matrix*)DATA_PTR(val))->storage)
+#define NM_STORAGE(val)         (((struct NMATRIX*)DATA_PTR(val))->storage)
 //#define NM_PTR(a, p)            ((a)->ptr+(p)*nm_sizeof[(a)->type])
-#define NM_STRUCT(val)          ((struct numeric_matrix*)DATA_PTR(val))
+#define NM_STRUCT(val)          ((struct NMATRIX*)DATA_PTR(val))
 //#define NM_PTR_TYPE(val,type)   (type)(((struct numeric_matrix*)DATA_PTR(val))->ptr)
 #define NM_RANK(val)            (((STORAGE*)(NM_STORAGE(val)))->rank)
 #define NM_DTYPE(val)           (((STORAGE*)(NM_STORAGE(val)))->dtype)
-#define NM_STYPE(val)           (((struct numeric_matrix*)DATA_PTR(val))->stype)
+#define NM_STYPE(val)           (((struct NMATRIX*)DATA_PTR(val))->stype)
 #define NM_SHAPE(val,i)         (((STORAGE*)(NM_STORAGE(val)))->shape[(i)])
-#define NM_SHAPE0(val)          (((struct numeric_matrix*)DATA_PTR(val))->shape[0])
-#define NM_SHAPE1(val)          (((struct numeric_matrix*)DATA_PTR(val))->shape[1])
+#define NM_SHAPE0(val)          (((struct NMATRIX*)DATA_PTR(val))->shape[0])
+#define NM_SHAPE1(val)          (((struct NMATRIX*)DATA_PTR(val))->shape[1])
 #define NM_SIZEOF_DTYPE(val)    (nm_sizeof[NM_DTYPE(val)])
 #define NM_REF(val,slice)      (RefFuncs[NM_STYPE(val)]( NM_STORAGE(val), slice, NM_SIZEOF_DTYPE(val) ))
     
@@ -107,7 +107,7 @@ typedef struct {
   size_t capacity;
 } VECTOR;
 
-typedef struct {
+typedef struct NMATRIX {
 	// Method of storage (csc, dense, etc).
 	stype_t		stype;
 	// Pointer to storage struct.
