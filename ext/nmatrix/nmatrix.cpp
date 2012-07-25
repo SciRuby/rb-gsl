@@ -90,6 +90,7 @@ static stype_t	stype_from_symbol(VALUE sym);
 static VALUE    nm_init(int argc, VALUE* argv, VALUE nm);
 static VALUE    nm_dtype(VALUE self);
 static VALUE    nm_stype(VALUE self);
+static VALUE    nm_shape(VALUE self);
 static VALUE    nm_capacity(VALUE self);
 static VALUE    nm_symmetric(VALUE self);
 static VALUE    nm_hermitian(VALUE self);
@@ -423,7 +424,7 @@ VALUE nm_rank(VALUE self) {
 /*
  * Get the shape (dimensions) of a matrix.
  */
-VALUE nm_shape(VALUE self) {
+static VALUE nm_shape(VALUE self) {
   STORAGE* s   = NM_STORAGE(self);
   size_t index;
 
