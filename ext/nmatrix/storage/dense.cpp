@@ -152,11 +152,13 @@ void dense_storage_delete_ref(DENSE_STORAGE* s) {
  * Documentation goes here.
  */
 void dense_storage_mark(DENSE_STORAGE* storage) {
-  size_t i;
-
+  size_t index;
+	
+	VALUE* els = (VALUE*)storage->elements;
+	
   if (storage && storage->dtype == RUBYOBJ) {
-  	for (i = storage_count_max_elements(storage->rank, storage->shape); i-- > 0;) {
-      rb_gc_mark(*((VALUE*)((char*)(storage->elements) + i*DTYPE_SIZES[RUBYOBJ])));
+  	for (index = storage_count_max_elements(storage->rank, storage->shape); index-- > 0;) {
+      rb_gc_mark(els[index]);
     }
   }
 }
