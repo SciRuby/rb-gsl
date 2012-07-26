@@ -838,14 +838,23 @@ static stype_t stype_from_symbol(VALUE sym) {
  */
 VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t length) {
   NMATRIX* nm;
+  VALUE klass;
+  size_t nm_rank;
+  size_t* shape_copy;
 
   // Do not allow a rank of 1; if rank == 1, this should probably be an NVector instead, but that still has rank 2.
-  size_t nm_rank = (rank == 1 ? 2 : rank);
-
-  // Get shape information
-  size_t* shape_copy = ALLOC_N(size_t, nm_rank);
-  memcpy(shape_copy, shape, sizeof(size_t)*rank);
-  if (nm_rank > rank) shape_copy[1] = 1;
+  if (rank == 1) {
+    klass   = cNVector;
+    nm_rank = 2;
+    shape_copy = ALLOC_N(size_t, nm_rank);
+    shape_copy[0] = shape[0];
+    shape_copy[1] = 1;
+  } else {
+    klass   = cNMatrix;
+    nm_rank = rank;
+    shape_copy = ALLOC_N(size_t, nm_rank);
+    memcpy(shape_copy, shape, sizeof(size_t)*nm_rank);
+  }
 
   // Copy elements
   void* elements_copy = ALLOC_N(char, DTYPE_SIZES[dtype]*length);
@@ -855,5 +864,20 @@ VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t rank, void* e
   nm = nm_create(DENSE_STORE, dense_storage_create(dtype, shape_copy, rank, elements_copy, length));
 
   // tell Ruby about the matrix and its storage, particularly how to garbage collect it.
-  return Data_Wrap_Struct(cNMatrix, dense_storage_mark, dense_storage_delete, nm);
+  return Data_Wrap_Struct(klass, dense_storage_mark, dense_storage_delete, nm);
+}
+
+
+/*
+ * Create a dense vector. Used by the NMatrix GSL fork.
+ *
+ * Basically just a convenience wrapper for rb_nmatrix_dense_create().
+ *
+ * Returns a properly-wrapped Ruby NVector object as a VALUE.
+ *
+ * TODO: Add a transpose option for setting the orientation of the vector?
+ */
+VALUE rb_nvector_dense_create(dtype_t dtype, void* elements, size_t length) {
+  size_t rank = 1, shape = length;
+  return rb_nmatrix_dense_create(dtype, &shape, rank, elements, length);
 }

@@ -192,7 +192,8 @@ size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank);
 NMATRIX* nm_create(int8_t stype, void* storage);
 void Init_nmatrix();
 
-// API
+// External API
 VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t length);
+VALUE rb_nvector_dense_create(dtype_t dtype, void* elements, size_t length);
 
 #endif
