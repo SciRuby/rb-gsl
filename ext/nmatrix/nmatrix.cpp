@@ -563,6 +563,7 @@ static VALUE nm_each(VALUE nmatrix) {
 // Utility Functions //
 ///////////////////////
 
+
 /*
  * Converts a string to a data type.
  */
@@ -819,4 +820,40 @@ static stype_t stype_from_symbol(VALUE sym) {
   }
   
   return DENSE_STORE;
+}
+
+
+/////////////////
+// Exposed API //
+/////////////////
+
+/*
+ * Create a dense matrix. Used by the NMatrix GSL fork. Unlike nm_create, this one copies all of the
+ * arrays and such passed in -- so you don't have to allocate and pass a new shape object for every
+ * matrix you want to create, for example. Same goes for elements.
+ *
+ * Returns a properly-wrapped Ruby object as a VALUE.
+ *
+ * TODO: Add a column-major option for libraries that use column-major matrices.
+ */
+VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t length) {
+  NMATRIX* nm;
+
+  // Do not allow a rank of 1; if rank == 1, this should probably be an NVector instead, but that still has rank 2.
+  size_t nm_rank = (rank == 1 ? 2 : rank);
+
+  // Get shape information
+  size_t* shape_copy = ALLOC_N(size_t, nm_rank);
+  memcpy(shape_copy, shape, sizeof(size_t)*rank);
+  if (nm_rank > rank) shape_copy[1] = 1;
+
+  // Copy elements
+  void* elements_copy = ALLOC_N(char, DTYPE_SIZES[dtype]*length);
+  memcpy(elements_copy, elements, DTYPE_SIZES[dtype]*length);
+
+  // allocate and create the matrix and its storage
+  nm = nm_create(DENSE_STORE, dense_storage_create(dtype, shape_copy, rank, elements_copy, length));
+
+  // tell Ruby about the matrix and its storage, particularly how to garbage collect it.
+  return Data_Wrap_Struct(cNMatrix, dense_storage_mark, dense_storage_delete, nm);
 }
