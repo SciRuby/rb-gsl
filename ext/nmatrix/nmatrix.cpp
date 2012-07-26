@@ -76,14 +76,16 @@
  * Forward Declarations
  */
  
-static dtype_t	dtype_from_string(VALUE str);
-static dtype_t	dtype_from_symbol(VALUE sym);
+static dtype_t	dtype_from_rbstring(VALUE str);
+static dtype_t	dtype_from_rbsymbol(VALUE sym);
 static dtype_t	dtype_guess(VALUE v);
 static double		get_time(void);
 static dtype_t	interpret_dtype(int argc, VALUE* argv, stype_t stype);
+static void*		interpret_initial_value(VALUE arg, dtype_t dtype);
+static size_t*	interpret_shape(VALUE arg, size_t* rank)
 static stype_t	interpret_stype(VALUE arg);
-static stype_t	stype_from_string(VALUE str);
-static stype_t	stype_from_symbol(VALUE sym);
+static stype_t	stype_from_rbstring(VALUE str);
+static stype_t	stype_from_rbsymbol(VALUE sym);
 
 /*
  * Functions
@@ -92,6 +94,8 @@ static stype_t	stype_from_symbol(VALUE sym);
 ///////////////////
 // Ruby Bindings //
 ///////////////////
+
+extern "C" {
 
 void Init_nmatrix() {
 	
@@ -245,7 +249,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   	return Qnil;
   }
 
-  if (!SYMBOL_P(argv[0]) && !IS_STRING(argv[0])) {
+  if (!SYMBOL_P(argv[0]) && !RUBYVAL_IS_STRING(argv[0])) {
     stype = DENSE_STORE;
     
   } else {
@@ -270,7 +274,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   // 2-3: dtype
   dtype = interpret_dtype(argc-1-offset, argv+offset+1, stype);
 
-  if (IS_NUMERIC(argv[1+offset]) || TYPE(argv[1+offset]) == T_ARRAY) {
+  if (RUBYVAL_IS_NUMERIC(argv[1+offset]) || RUBYVAL_IS_ARRAY(argv[1+offset])) {
   	// Initial value provided (could also be initial capacity, if yale).
   	
     if (stype == YALE_STORE) {
@@ -345,6 +349,11 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   return nm;
 }
 
+/*
+ * End of the Ruby binding functions in the `extern "C" {}` block.
+ */
+}
+
 ///////////////////////
 // Utility Functions //
 ///////////////////////
@@ -352,7 +361,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
 /*
  * Converts a string to a data type.
  */
-dtype_t dtype_from_string(VALUE str) {
+dtype_t dtype_from_rbstring(VALUE str) {
   size_t index;
   
   for (index = 0; index < NUM_DTYPES; ++index) {
@@ -367,11 +376,11 @@ dtype_t dtype_from_string(VALUE str) {
 /*
  * Converts a symbol to a data type.
  */
-dtype_t dtype_from_symbol(VALUE sym) {
+dtype_t dtype_from_rbsymbol(VALUE sym) {
   size_t index;
   
   for (index = 0; index < NUM_DTYPES; ++index) {
-    if (SYM2ID(sym) == rb_intern(nm_dtypestring[i])) {
+    if (SYM2ID(sym) == rb_intern(DTYPE_NAMES[i])) {
     	return index;
     }
   }
@@ -494,10 +503,10 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
   }
 
   if (SYMBOL_P(argv[offset])) {
-  	return dtype_from_symbol(argv[offset]);
+  	return dtype_from_rbsymbol(argv[offset]);
   	
   } else if (IS_STRING(argv[offset])) {
-  	return dtype_from_string(StringValue(argv[offset]));
+  	return dtype_from_rbstring(StringValue(argv[offset]));
   	
   } else if (stype == S_YALE) {
   	rb_raise(rb_eArgError, "Yale storage class requires a dtype.");
@@ -512,20 +521,23 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
  *
  * FIXME: Remove the references to SetFuncs.
  */
-void* interpret_initial_value(VALUE arg, dtype_t dtype) {
-  void* init_val;
-
-  if (TYPE(arg) == T_ARRAY) {
+static void* interpret_initial_value(VALUE arg, dtype_t dtype) {
+  unsigned int index;
+  int8_t* init_val;
+  
+  if (RUBYVAL_IS_ARRAY(arg)) {
   	// Array
     
     init_val = ALLOC_N(int8_t, DTYPE_SIZES[dtype] * RARRAY_LEN(arg));
-    SetFuncs[dtype][RUBYOBJ](RARRAY_LEN(arg), init_val, DTYPE_SIZES[dtype], RARRAY_PTR(arg), DTYPE_SIZES[RUBYOBJ]);
+    for (index = 0; index < RARRAY_LEN(arg); ++index) {
+    	rubyval_to_dtype(RARRAY_PTR(arg)[index], dtype, init_val + (index * DTYPE_SIZES[dtype]));
+    }
     
   } else {
   	// Single value
   	
     init_val = ALLOC_N(int8_t, DTYPE_SIZES[dtype]);
-    SetFuncs[dtype][RUBYOBJ](1, init_val, 0, &arg, 0);
+  	rubyval_to_dtype(arg, dtype, init_val);
   }
 
   return init_val;
@@ -537,7 +549,7 @@ void* interpret_initial_value(VALUE arg, dtype_t dtype) {
  * matrix will be stored.  The function itself returns a pointer to the array
  * describing the shape, which must be freed manually.
  */
-size_t* interpret_shape(VALUE arg, size_t* rank) {
+static size_t* interpret_shape(VALUE arg, size_t* rank) {
   size_t index;
   size_t* shape;
 
@@ -568,10 +580,10 @@ size_t* interpret_shape(VALUE arg, size_t* rank) {
  */
 static stype_t interpret_stype(VALUE arg) {
   if (SYMBOL_P(arg)) {
-  	return stype_from_symbol(arg);
+  	return stype_from_rbsymbol(arg);
   	
   } else if (IS_STRING(arg)) {
-  	return stype_from_string(StringValue(arg));
+  	return stype_from_rbstring(StringValue(arg));
   	
   } else {
   	rb_raise(rb_eArgError, "Expected storage type");
@@ -582,7 +594,7 @@ static stype_t interpret_stype(VALUE arg) {
  * Converts a string to a storage type. Only looks at the first three
  * characters.
  */
-static stype_t stype_from_string(VALUE str) {
+static stype_t stype_from_rbstring(VALUE str) {
   size_t index;
   
   for (index = 0; index < NUM_STYPES; ++index) {
@@ -597,9 +609,9 @@ static stype_t stype_from_string(VALUE str) {
 /*
  * Converts a symbol to a storage type.
  */
-static stype_t stype_from_symbol(VALUE sym) {
-  
+static stype_t stype_from_rbsymbol(VALUE sym) {
   size_t index;
+  
   for (index = 0; index < NUM_STYPES; ++index) {
     if (SYM2ID(sym) == rb_intern(STYPE_NAMES[index])) {
     	return index;
