@@ -72,6 +72,12 @@
  * Classes and Functions
  */
 
+template<typename T, typename U>
+struct made_from_same_template : std::false_type {}; 
+ 
+template<template<typename> class Templ, typename Arg1, typename Arg2>
+struct made_from_same_template<Templ<Arg1>, Templ<Arg2>> : std::true_type {};
+
 class RubyObject {
 	public:
 	VALUE rval;
@@ -135,33 +141,31 @@ class RubyObject {
 	}
 	
 	/*
-	 * Convert Ruby objects to integers.
+	 * Convert a Ruby object to an integer.
 	 */
 	template <typename IntType>
-	inline operator typename std::enable_if<std::is_integral<IntType>::value>::type () {
-		// This macro does all of the necessary type checking and error raising.
+	inline typename std::enable_if<std::is_integral<IntType>::value, IntType>::type to(void) {
 		return NUM2INT(this->rval);
 	}
 	
 	/*
-	 * Convert Ruby objects to floating point numbers.
+	 * Convert a Ruby object to a floating point number.
 	 */
 	template <typename FloatType>
-	inline operator typename std::enable_if<std::is_floating_point<FloatType>::value>::type () {
-		// This macro does all of the necessary type checking and error raising.
+	inline typename std::enable_if<std::is_floating_point<FloatType>::value, FloatType>::type to(void) {
 		return NUM2DBL(this->rval);
 	}
 	
 	/*
 	 * Convert a Ruby object to a complex number.
 	 */
-	template <typename ComplexType, typename = typename std::enable_if<std::is_floating_point<ComplexType>::value>::type>
-	inline operator Complex<ComplexType> () {
+	template <typename ComplexType>
+	inline typename std::enable_if<made_from_same_template<ComplexType, Complex64>::value, ComplexType>::type to(void) {
 		if (RUBYVAL_IS_INTEGER(this->rval) or RUBYVAL_IS_FLOAT(this->rval) or RUBYVAL_IS_RATIONAL(this->rval)) {
-			return Complex<ComplexType>(NUM2DBL(this->rval));
+			return ComplexType(NUM2DBL(this->rval));
 			
 		} else if (RUBYVAL_IS_COMPLEX(this->rval)) {
-			return Complex<ComplexType>(NUM2DBL(rb_funcall(this->rval, rbsym_real, 0)), NUM2DBL(rb_funcall(this->rval, rbsym_imag, 0)));
+			return ComplexType(NUM2DBL(rb_funcall(this->rval, rbsym_real, 0)), NUM2DBL(rb_funcall(this->rval, rbsym_imag, 0)));
 			
 		} else {
 			rb_raise(rb_eTypeError, "Invalid conversion to Complex type.");
@@ -171,17 +175,22 @@ class RubyObject {
 	/*
 	 * Convert a Ruby object to a rational number.
 	 */
-	template <typename RationalType, typename = typename std::enable_if<std::is_integral<RationalType>::value>::type>
-	inline operator Rational<RationalType> () {
+	template <typename RationalType>
+	inline typename std::enable_if<made_from_same_template<RationalType, Rational32>::value, RationalType>::type to(void) {
 		if (RUBYVAL_IS_INTEGER(this->rval) or RUBYVAL_IS_FLOAT(this->rval) or RUBYVAL_IS_COMPLEX(this->rval)) {
-			return Rational<RationalType>(NUM2INT(this->rval));
+			return RationalType(NUM2INT(this->rval));
 			
 		} else if (RUBYVAL_IS_RATIONAL(this->rval)) {
-			return Rational<RationalType>(NUM2INT(rb_funcall(this->rval, rbsym_numer, 0)), NUM2INT(rb_funcall(this->rval, rbsym_denom, 0)));
+			return RationalType(NUM2INT(rb_funcall(this->rval, rbsym_numer, 0)), NUM2INT(rb_funcall(this->rval, rbsym_denom, 0)));
 			
 		} else {
 			rb_raise(rb_eTypeError, "Invalid conversion to Rational type.");
 		}
+	}
+	
+	template <typename OtherType>
+	inline operator OtherType () {
+		return to<OtherType>();
 	}
 };
 

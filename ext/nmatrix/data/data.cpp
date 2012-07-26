@@ -87,53 +87,62 @@ const size_t DTYPE_SIZES[NUM_DTYPES] = {
  * Functions
  */
 
-RubyObject rubyobj_from_val(void* val, dtype_t dtype) {
-	return RubyObject((VALUE)NULL);
-}
-
-void* rubyobj_to_val(RubyObject obj, dtype_t dtype) {
-	void* ret_val = malloc(DTYPE_SIZES[dtype]);
-	
-//	switch (dtype) {
-//		case BYTE:
-//			*(uint8_t*)ret_val	= NUM2UINT(obj);
-//			break;
-//			
-//		case INT8:
-//			*(int8_t*)ret_val		= NUM2INT(obj);
-//			break;
-//		
-//		case INT16:
-//			*(int16_t*)ret_val		= NUM2INT(obj);
-//			break;
-//		
-//		case INT32:
-//			*(int32_t*)ret_val		= NUM2INT(obj);
-//			break;
-//		
-//		case INT64:
-//			*(int64_t*)ret_val		= NUM2INT(obj);
-//			break;
-//		
-//		case FLOAT32:
-//			*(float32_t*)ret_val = NUM2DBL(obj);
-//			break;
-//		
-//		case FLOAT64:
-//			*(float32_t*)ret_val = NUM2DBL(obj);
-//			break;
-//		
-//		case COMPLEX64:
-//			*(Complex64*)ret_val
-//		case COMPLEX128:
-//		case RATIONAL32:
-//		case RATIONAL64:
-//		case RATIONAL128:
-//		case RUBYOBJ:
-//			free(ret_val);
-//			rb_raise(rb_eException, "Trying to cast a Ruby object to a Ruby object.");
-//	}
-	
-	return ret_val;
+/*
+ * Converts a RubyObject
+ */
+void rubyval_to_dtype(VALUE val, dtype_t dtype, void* loc) {
+	switch (dtype) {
+		case BYTE:
+			*reinterpret_cast<uint8_t*>(loc)			= static_cast<uint8_t>(RubyObject(val));
+			break;
+			
+		case INT8:
+			*reinterpret_cast<int8_t*>(loc)				= static_cast<int8_t>(RubyObject(val));
+			break;
+			
+		case INT16:
+			*reinterpret_cast<int16_t*>(loc)			= static_cast<int16_t>(RubyObject(val));
+			break;
+			
+		case INT32:
+			*reinterpret_cast<int32_t*>(loc)			= static_cast<int32_t>(RubyObject(val));
+			break;
+			
+		case INT64:
+			*reinterpret_cast<int64_t*>(loc)			= static_cast<int64_t>(RubyObject(val));
+			break;
+			
+		case FLOAT32:
+			*reinterpret_cast<float32_t*>(loc)		= static_cast<float32_t>(RubyObject(val));
+			break;
+			
+		case FLOAT64:
+			*reinterpret_cast<float64_t*>(loc)		= static_cast<float64_t>(RubyObject(val));
+			break;
+			
+		case COMPLEX64:
+			*reinterpret_cast<Complex64*>(loc)		= RubyObject(val).to<Complex64>();
+			break;
+			
+		case COMPLEX128:
+			*reinterpret_cast<Complex128*>(loc)		= RubyObject(val).to<Complex64>();
+			break;
+			
+		case RATIONAL32:
+			*reinterpret_cast<Rational32*>(loc)		= RubyObject(val).to<Rational32>();
+			break;
+			
+		case RATIONAL64:
+			*reinterpret_cast<Rational64*>(loc)		= RubyObject(val).to<Rational64>();
+			break;
+			
+		case RATIONAL128:
+			*reinterpret_cast<Rational128*>(loc)	= RubyObject(val).to<Rational128>();
+			break;
+			
+		case RUBYOBJ:
+			rb_raise(rb_eTypeError, "Attempting a bad conversion from a Ruby value.");
+			break;
+	}
 }
 
