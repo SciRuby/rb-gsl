@@ -27,9 +27,6 @@
 #ifndef NMATRIX_H
 #define NMATRIX_H
 
-// This include is needed here so we can figure out what else to include.
-#include "nmatrix_config.h"
-
 /*
  * Standard Includes
  */
@@ -160,13 +157,6 @@ typedef void     (*nm_dense_transpose_t[NUM_DTYPES])();
 //extern void (*Transp[15][7])(const unsigned int, const unsigned int, const void *, const void *, const void *, const bool, void *, void *, void *, const bool);
 //extern void (*DetExact[15])(const int, const void *, const int, void *);
 
-extern nm_setfunc_t SetFuncs;
-extern nm_incfunc_t Increment;
-extern ID nm_id_real, nm_id_imag;
-extern ID nm_id_denom, nm_id_numer;
-extern ID nm_id_mult, nm_id_multeq, nm_id_add;
-extern VALUE nm_eDataTypeError, nm_eStorageTypeError;
-
 //TODO: Auto-generate this
 //extern int (*EwDenseHom[15])(const void *, const void *, void *, const int, enum MathHomOps);
 //extern int (*EwDenseBool[15])(const void *, const void *, void *, const int, const enum MathBoolOps);
@@ -183,13 +173,14 @@ extern VALUE nm_eDataTypeError, nm_eStorageTypeError;
 void transp(y_size_t n, y_size_t m, void* ia, void* ja, bool diaga, void* a, void* ib, void* jb, void* b, bool move, int8_t itype, dtype_t dtype);
 
 void cast_copy_value_single(void* to, const void* from, dtype_t l_dtype, dtype_t r_dtype);
-dtype_t nm_dtypestring_to_dtype(VALUE str);
-dtype_t nm_dtypesymbol_to_dtype(VALUE sym);
-dtype_t nm_stypestring_to_stype(VALUE str);
-dtype_t nm_stypesymbol_to_stype(VALUE sym);
-dtype_t nm_guess_dtype(VALUE v);
-size_t* nm_interpret_shape_arg(VALUE arg, size_t* rank);
 NMATRIX* nm_create(int8_t stype, void* storage);
-void Init_nmatrix();
+
+extern "C" {
+	
+	void Init_nmatrix();
+	
+	VALUE nm_init(int argc, VALUE* argv, VALUE nm);
+	
+}
 
 #endif

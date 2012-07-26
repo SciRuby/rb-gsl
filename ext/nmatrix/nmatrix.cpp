@@ -62,7 +62,7 @@
  */
 
 #include "nmatrix.h"
-#include "ruby_symbols.h"
+#include "ruby_constants.h"
 
 /*
  * Macros
@@ -79,13 +79,16 @@
 static dtype_t	dtype_from_rbstring(VALUE str);
 static dtype_t	dtype_from_rbsymbol(VALUE sym);
 static dtype_t	dtype_guess(VALUE v);
-static double		get_time(void);
 static dtype_t	interpret_dtype(int argc, VALUE* argv, stype_t stype);
 static void*		interpret_initial_value(VALUE arg, dtype_t dtype);
-static size_t*	interpret_shape(VALUE arg, size_t* rank)
+static size_t*	interpret_shape(VALUE arg, size_t* rank);
 static stype_t	interpret_stype(VALUE arg);
 static stype_t	stype_from_rbstring(VALUE str);
 static stype_t	stype_from_rbsymbol(VALUE sym);
+
+#ifdef BENCHMARK
+static double get_time(void);
+#endif
 
 /*
  * Functions
@@ -114,7 +117,7 @@ void Init_nmatrix() {
 	// Class Methods //
 	///////////////////
 	
-	rb_define_alloc_func(cNMatrix, nm_alloc);
+//	rb_define_alloc_func(cNMatrix, nm_alloc);
 	
 	/*
 	 * FIXME: These need to be bound in a better way.
@@ -127,34 +130,34 @@ void Init_nmatrix() {
 	// Instance Methods //
 	//////////////////////
 	
-	rb_define_method(cNMatrix, "initialize", nm_init, -1);
+	rb_define_method(cNMatrix, "initialize", (VALUE(*)(...))nm_init, -1);
 	
-	rb_define_method(cNMatrix, "initialize_copy", nm_init_copy, 1);
-	rb_define_method(cNMatrix, "initialize_cast_copy", nm_init_cast_copy, 2);
-	rb_define_method(cNMatrix, "as_dtype", nm_cast_copy, 1);
-	
-	rb_define_method(cNMatrix, "dtype", nm_dtype, 0);
-	rb_define_method(cNMatrix, "stype", nm_stype, 0);
-	rb_define_method(cNMatrix, "cast",  nm_scast_copy, 2);
+//	rb_define_method(cNMatrix, "initialize_copy", nm_init_copy, 1);
+//	rb_define_method(cNMatrix, "initialize_cast_copy", nm_init_cast_copy, 2);
+//	rb_define_method(cNMatrix, "as_dtype", nm_cast_copy, 1);
+//	
+//	rb_define_method(cNMatrix, "dtype", nm_dtype, 0);
+//	rb_define_method(cNMatrix, "stype", nm_stype, 0);
+//	rb_define_method(cNMatrix, "cast",  nm_scast_copy, 2);
 
-	rb_define_method(cNMatrix, "[]", nm_mref, -1);
-	rb_define_method(cNMatrix, "[]=", nm_mset, -1);
-	rb_define_method(cNMatrix, "rank", nm_rank, 0);
-	rb_define_method(cNMatrix, "shape", nm_shape, 0);
-	rb_define_method(cNMatrix, "transpose", nm_transpose_new, 0);
-	rb_define_method(cNMatrix, "det_exact", nm_det_exact, 0);
-	rb_define_method(cNMatrix, "transpose!", nm_transpose_self, 0);
-	rb_define_method(cNMatrix, "complex_conjugate!", nm_complex_conjugate_bang, 0);
+//	rb_define_method(cNMatrix, "[]", nm_mref, -1);
+//	rb_define_method(cNMatrix, "[]=", nm_mset, -1);
+//	rb_define_method(cNMatrix, "rank", nm_rank, 0);
+//	rb_define_method(cNMatrix, "shape", nm_shape, 0);
+//	rb_define_method(cNMatrix, "transpose", nm_transpose_new, 0);
+//	rb_define_method(cNMatrix, "det_exact", nm_det_exact, 0);
+//	rb_define_method(cNMatrix, "transpose!", nm_transpose_self, 0);
+//	rb_define_method(cNMatrix, "complex_conjugate!", nm_complex_conjugate_bang, 0);
 
-	rb_define_method(cNMatrix, "each", nm_each, 0);
+//	rb_define_method(cNMatrix, "each", nm_each, 0);
 
-	rb_define_method(cNMatrix, "*", nm_ew_multiply, 1);
-	rb_define_method(cNMatrix, "/", nm_ew_divide, 1);
-	rb_define_method(cNMatrix, "+", nm_ew_add, 1);
-	rb_define_method(cNMatrix, "-", nm_ew_subtract, 1);
-	rb_define_method(cNMatrix, "%", nm_ew_mod, 1);
-	rb_define_method(cNMatrix, "eql?", nm_eqeq, 1);
-	rb_define_method(cNMatrix, "dot", nm_multiply, 1);
+//	rb_define_method(cNMatrix, "*", nm_ew_multiply, 1);
+//	rb_define_method(cNMatrix, "/", nm_ew_divide, 1);
+//	rb_define_method(cNMatrix, "+", nm_ew_add, 1);
+//	rb_define_method(cNMatrix, "-", nm_ew_subtract, 1);
+//	rb_define_method(cNMatrix, "%", nm_ew_mod, 1);
+//	rb_define_method(cNMatrix, "eql?", nm_eqeq, 1);
+//	rb_define_method(cNMatrix, "dot", nm_multiply, 1);
 	
 	/*
 	 * TODO: Write new elementwise code for boolean operations
@@ -166,10 +169,10 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, ">", nm_ew_gt, 1);
 	 */
 
-	rb_define_method(cNMatrix, "symmetric?", nm_symmetric, 0);
-	rb_define_method(cNMatrix, "hermitian?", nm_hermitian, 0);
+//	rb_define_method(cNMatrix, "symmetric?", nm_symmetric, 0);
+//	rb_define_method(cNMatrix, "hermitian?", nm_hermitian, 0);
 
-	rb_define_method(cNMatrix, "capacity", nm_capacity, 0);
+//	rb_define_method(cNMatrix, "capacity", nm_capacity, 0);
 
 	/*
 	 * FIXME: I don't think these should actually be exposed to the Ruby class.
@@ -229,7 +232,7 @@ void Init_nmatrix() {
  *
  * Just be careful! There are no overflow warnings in NMatrix.
  */
-static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
+VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   char    ZERO = 0;
   VALUE   QNIL = Qnil;
   dtype_t dtype;
@@ -261,7 +264,8 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   // If there are 7 arguments and Yale, refer to a different init function with fewer sanity checks.
   if (argc == 8) {
     if (stype == YALE_STORE) {
-    	return nm_init_yale_from_old_yale(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], nm);
+    	// FIXME: Un-comment this when we include nm_init_yale_from_old_yale.
+    	//return nm_init_yale_from_old_yale(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], nm);
     	
 		} else {
 		  rb_raise(rb_eArgError, "Expected 2-4 arguments (or 7 for internal Yale creation)");
@@ -334,7 +338,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   		
   	case YALE_STORE:
   		nmatrix->storage = (STORAGE*)yale_storage_create(dtype, shape, rank, init_cap);
-  		yale_storage_init(nmatrix->storage);
+  		yale_storage_init((YALE_STORAGE*)nmatrix->storage);
   		
   		// Do we not need to free the initial value when using other stypes?
   		free(init_val);
@@ -366,7 +370,7 @@ dtype_t dtype_from_rbstring(VALUE str) {
   
   for (index = 0; index < NUM_DTYPES; ++index) {
   	if (!strncmp(RSTRING_PTR(str), DTYPE_NAMES[index], RSTRING_LEN(str))) {
-  		return index;
+  		return (dtype_t)index;
   	}
   }
   
@@ -380,8 +384,8 @@ dtype_t dtype_from_rbsymbol(VALUE sym) {
   size_t index;
   
   for (index = 0; index < NUM_DTYPES; ++index) {
-    if (SYM2ID(sym) == rb_intern(DTYPE_NAMES[i])) {
-    	return index;
+    if (SYM2ID(sym) == rb_intern(DTYPE_NAMES[index])) {
+    	return (dtype_t)index;
     }
   }
   
@@ -505,10 +509,10 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
   if (SYMBOL_P(argv[offset])) {
   	return dtype_from_rbsymbol(argv[offset]);
   	
-  } else if (IS_STRING(argv[offset])) {
+  } else if (RUBYVAL_IS_STRING(argv[offset])) {
   	return dtype_from_rbstring(StringValue(argv[offset]));
   	
-  } else if (stype == S_YALE) {
+  } else if (stype == YALE_STORE) {
   	rb_raise(rb_eArgError, "Yale storage class requires a dtype.");
   	
   } else {
@@ -582,7 +586,7 @@ static stype_t interpret_stype(VALUE arg) {
   if (SYMBOL_P(arg)) {
   	return stype_from_rbsymbol(arg);
   	
-  } else if (IS_STRING(arg)) {
+  } else if (RUBYVAL_IS_STRING(arg)) {
   	return stype_from_rbstring(StringValue(arg));
   	
   } else {
@@ -599,7 +603,7 @@ static stype_t stype_from_rbstring(VALUE str) {
   
   for (index = 0; index < NUM_STYPES; ++index) {
     if (!strncmp(RSTRING_PTR(str), STYPE_NAMES[index], 3)) {
-    	return index;
+    	return (stype_t)index;
     }
   }
   
@@ -614,7 +618,7 @@ static stype_t stype_from_rbsymbol(VALUE sym) {
   
   for (index = 0; index < NUM_STYPES; ++index) {
     if (SYM2ID(sym) == rb_intern(STYPE_NAMES[index])) {
-    	return index;
+    	return (stype_t)index;
     }
   }
   

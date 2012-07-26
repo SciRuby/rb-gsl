@@ -51,6 +51,9 @@ find_header('ruby/config.h')
 
 # List the source files that need to be compiled.
 $srcs = [
+	'nmatrix.cpp',
+	'ruby_constants.cpp',
+	
 	'data/data.cpp',
 	
 	'storage/storage.cpp',
