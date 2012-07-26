@@ -222,47 +222,53 @@ void carray_set_from_rarray(double *a, VALUE ary)
   }
 }
 
-#ifdef HAVE_NARRAY_H
-/* NArray -> CArray */
-void carray_set_from_narray(double *a, VALUE ary)
+#ifdef HAVE_NMATRIX_H
+/* NVector -> CArray */
+void carray_set_from_nvector(double *a, VALUE vec)
 {
-  int size;
-  VALUE ary2;
-  if (!NA_IsNArray(ary))
+  int length;
+  if (!NM_IsNVector(vec))
     rb_raise(rb_eTypeError,
-             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
-  size = NA_TOTAL(ary);
-  if (size == 0) return;
-  ary2 = na_change_type(ary, NA_DFLOAT);
-  memcpy(a, NA_PTR_TYPE(ary2,double*), size*sizeof(double));
+             "wrong argument type %s", rb_class2name(CLASS_OF(vec)));
+  length = NM_DENSE_COUNT(vec);
+  if (length == 0) return;
+
+  if (NM_DTYPE(vec) != NM_FLOAT64)
+    rb_raise(nm_eDataTypeError, "expected :float64 dtype for conversion");
+
+  memcpy(a, NM_DENSE_STORAGE(vec)->elements, length * sizeof(double));
 }
 
-/* NArray -> GSL::Vector */
-gsl_vector* make_cvector_from_narray(VALUE ary)
+/* NVector -> GSL::Vector */
+gsl_vector* make_cvector_from_nvector(VALUE vec)
 {
   gsl_vector *v = NULL;
-  size_t size;
-  VALUE ary2;
-  if (!NA_IsNArray(ary))
+  size_t length;
+
+  if (!NM_IsNVector(vec))
     rb_raise(rb_eTypeError,
-             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
-  size = NA_TOTAL(ary);
+             "wrong argument type %s", rb_class2name(CLASS_OF(vec)));
+  else if (!NM_STYPE(vec))
+    rb_raise(nm_eStorageTypeError, "requires dense storage for conversion");
+
+  length = NM_DENSE_COUNT(vec);
   v = gsl_vector_alloc(size);
   if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_alloc failed");
-  ary2 = na_change_type(ary, NA_DFLOAT);
-  memcpy(v->data, NA_PTR_TYPE(ary2,double*), size*sizeof(double));
-  /*  cvector_set_from_narray(v, ary);*/
+
+  if (NM_DTYPE(vec) != NM_FLOAT64)
+    rb_raise(nm_eDataTypeError, "expected :float64 dtype for conversion");
+
+  memcpy(v->data, NM_DENSE_STORAGE(vec)->elements, length*sizeof(double));
+
   return v;
 }
 
-void cvector_set_from_narray(gsl_vector *v, VALUE ary)
+void cvector_set_from_nvector(gsl_vector *v, VALUE vec)
 {
-  int size;
-  if (!NA_IsNArray(ary))
+  if (!NM_IsNVector(vec))
     rb_raise(rb_eTypeError,
-             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
-  size = NA_TOTAL(ary);
-  carray_set_from_narray(v->data, ary);
+             "wrong argument type %s", rb_class2name(CLASS_OF(vec)));
+  carray_set_from_nvector(v->data, vec);
 }
 #endif
 
