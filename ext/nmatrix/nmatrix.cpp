@@ -423,11 +423,11 @@ static VALUE nm_capacity(VALUE self) {
     break;
 
   case DENSE_STORE:
-    cap = UINT2NUM(((DENSE_STORAGE*)(NM_STORAGE(self)))->count);
+    cap = UINT2NUM(count_dense_storage_elements( NM_DENSE_STORAGE(self) ));
     break;
 
   case LIST_STORE:
-    cap = UINT2NUM(list_storage_count_elements( (LIST_STORAGE*)(NM_STORAGE(self)) ));
+    cap = UINT2NUM(list_storage_count_elements( NM_LIST_STORAGE(self) ));
     break;
 
   default:
@@ -524,7 +524,7 @@ static VALUE nm_dense_each(VALUE nmatrix) {
   if (NM_DTYPE(nmatrix) == RUBYOBJ) {
 
     // matrix of Ruby objects -- yield those objects directly
-    for (i = 0; i < s->count; ++i)
+    for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i)
       rb_yield( *((VALUE*)((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)])) );
 
   } else {
@@ -532,7 +532,7 @@ static VALUE nm_dense_each(VALUE nmatrix) {
     // modify it and cause a seg fault.
     //copy = SetFuncs[NM_ROBJ][NM_DTYPE(nmatrix)];
 
-    for (i = 0; i < s->count; ++i) {
+    for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i) {
       v = rubyobj_from_val((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)], NM_DTYPE(nmatrix)).rval;
       // (*copy)(1, &v, 0, (char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)], 0);
       rb_yield(v); // yield to the copy we made

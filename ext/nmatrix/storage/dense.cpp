@@ -321,7 +321,7 @@ void dense_storage_slice_copy(
 {
   size_t index;
 
-  if (src->rank - n > 2) {
+  if (src->rank - n > 1) {
     for (index = 0; index < lengths[n]; ++index) {
       dense_storage_slice_copy(src, dest, lengths,
                                     psrc + src->stride[n]*i, pdest + dest->stride[n]*i,
