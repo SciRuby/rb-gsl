@@ -378,8 +378,10 @@ DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
 
 	// Ensure that allocation worked before copying.
   if (lhs && count) {
-    if (rhs == rhs->ref) memcpy(lhs->elements, rhs->elements, DTYPE_SIZES[rhs->dtype] * count); // not a reference
-    else dense_storage_slice_copy(lhs, rhs->src, rhs->shape, 0, 0, 0); // slice whole matrix
+    if (rhs == rhs->ref) // not a reference
+      memcpy(lhs->elements, rhs->elements, DTYPE_SIZES[rhs->dtype] * count);
+    else // slice whole matrix
+      dense_storage_slice_copy(lhs, rhs->src, rhs->shape, dense_storage_pos(rhs->src, rhs->offset), 0, 0);
   }
 
   return lhs;

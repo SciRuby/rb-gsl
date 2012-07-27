@@ -110,7 +110,7 @@ size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
 // Copying and Casting //
 /////////////////////////
 
-DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs);
+DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs);
 DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype);
 
 #endif
