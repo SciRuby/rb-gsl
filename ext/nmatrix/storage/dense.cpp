@@ -209,9 +209,14 @@ void* dense_storage_ref(DENSE_STORAGE* s, SLICE* slice) {
     ns = ALLOC( DENSE_STORAGE );
 
     ns->rank       = s->rank;
-    ns->shape      = slice->lengths;
     ns->dtype      = s->dtype;
-    ns->offset     = slice->coords;
+
+    ns->offset     = calloc(sizeof(*ns->offset), ns->rank);
+    ns->shape      = calloc(sizeof(*ns->offset), ns->rank);
+
+    memcpy(ns->offset, slice->coords, sizeof(*ns->offset) * ns->rank);
+    memcpy(ns->shape, slice->lengths, sizeof(*ns->shape) * ns->rank);
+
     ns->stride     = s->stride;
     ns->elements   = s->elements;
     
@@ -423,6 +428,9 @@ bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE*
 	bool result = true;
 
 	DENSE_STORAGE *l_copy, *r_copy;
+
+  /* FIXME: Very strange behavior! The GC calls the method directly with non-initialized data. */
+  if (left->rank != right->rank) return false;
 
 	l_copy = (dense_is_ref(left)  ? dense_storage_copy(left)  : left);
 	r_copy = (dense_is_ref(right) ? dense_storage_copy(right) : right);

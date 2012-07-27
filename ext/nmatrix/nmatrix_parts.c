@@ -850,6 +850,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
   NMATRIX* mat;
   SLICE* slice;
   void* v;
+  VALUE result = Qnil;
 
   if (NM_RANK(self) == (size_t)(argc)) {
     slice = get_slice((size_t)(argc), argv, self);
@@ -860,7 +861,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
         mat = ALLOC(NMATRIX);
         mat->stype = NM_STYPE(self);
         mat->storage = (*slice_func)(NM_STORAGE(self), slice);
-        return Data_Wrap_Struct(cNMatrix, MarkFuncs[mat->stype], delete_func, mat);
+        result = Data_Wrap_Struct(cNMatrix, MarkFuncs[mat->stype], delete_func, mat);
       } else {
         rb_raise(rb_eNotImpError, "slicing only implemented for dense so far");
       }
@@ -868,16 +869,19 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
     } else {
       v = ALLOC(VALUE);
       SetFuncs[NM_ROBJ][NM_DTYPE(self)](1, v, 0,
-                (*slice_func)(NM_STORAGE(self), slice), 0);
-      return *(VALUE*)v;
+                RefFuncs[NM_STYPE(self)](NM_STORAGE(self), slice), 0);
+      result = *(VALUE*)v;
     }
+
+    free(slice);
 
   } else if (NM_RANK(self) < (size_t)(argc)) {
     rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");
   } else {
     rb_raise(rb_eNotImpError, "This type slicing not supported yet");
   }
-  return Qnil;
+
+  return result;
 }
 
 
