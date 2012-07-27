@@ -154,6 +154,7 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, "[]", (METHOD)nm_mref, -1);
 	rb_define_method(cNMatrix, "slice", (METHOD)nm_mget, -1);
 	rb_define_method(cNMatrix, "[]=", (METHOD)nm_mset, -1);
+	rb_define_method(cNMatrix, "is_ref?", (METHOD)nm_is_ref, 0);
 	rb_define_method(cNMatrix, "rank", (METHOD)nm_rank, 0);
 	rb_define_method(cNMatrix, "shape", (METHOD)nm_shape, 0);
 	rb_define_method(cNMatrix, "transpose", (METHOD)nm_transpose_new, 0);
@@ -558,6 +559,16 @@ static VALUE nm_each(VALUE nmatrix) {
   }
 }
 
+
+/*
+ * Check to determine whether matrix is a reference to another matrix.
+ */
+VALUE nm_is_ref(VALUE self) {
+  if (NM_STYPE(self) == DENSE_STORE) // refs only allowed for dense matrices.
+    return (NM_DENSE_STORAGE(self)->src == NM_STORAGE(self)) ? Qfalse : Qtrue;
+
+  return Qfalse;
+}
 
 
 ///////////////////////

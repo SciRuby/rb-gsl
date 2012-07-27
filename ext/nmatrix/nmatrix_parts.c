@@ -906,6 +906,7 @@ VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
 }
 
 
+
 /*
  * Modify the contents of an NMatrix in the given cell
  *

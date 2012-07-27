@@ -185,7 +185,7 @@ void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
     ns->offset     = calloc(sizeof(size_t),ns->rank);
     ns->strides    = dense_storage_stride(ns->shape, ns->rank);
     ns->count      = 1;
-    ns->src        = NULL;
+    ns->src        = ns;
 
     count         = s->count;
     ns->elements = ALLOC_N(char, DTYPE_SIZES[ns->dtype]*count);
