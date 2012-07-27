@@ -76,6 +76,7 @@
 #define UnwrapNMatrix(obj,var)  Data_Get_Struct(obj, NMATRIX, var)
 
 #define NM_STORAGE(val)         (((struct NMATRIX*)DATA_PTR(val))->storage)
+#define NM_DENSE_STORAGE(val)   (DENSE_STORAGE*)(((struct NMATRIX*)DATA_PTR(val))->storage)
 //#define NM_PTR(a, p)            ((a)->ptr+(p)*nm_sizeof[(a)->type])
 #define NM_STRUCT(val)          ((struct NMATRIX*)DATA_PTR(val))
 //#define NM_PTR_TYPE(val,type)   (type)(((struct numeric_matrix*)DATA_PTR(val))->ptr)
@@ -83,14 +84,21 @@
 #define NM_DTYPE(val)           (((STORAGE*)(NM_STORAGE(val)))->dtype)
 #define NM_STYPE(val)           (((struct NMATRIX*)DATA_PTR(val))->stype)
 #define NM_SHAPE(val,i)         (((STORAGE*)(NM_STORAGE(val)))->shape[(i)])
-#define NM_SHAPE0(val)          (((struct NMATRIX*)DATA_PTR(val))->shape[0])
-#define NM_SHAPE1(val)          (((struct NMATRIX*)DATA_PTR(val))->shape[1])
+#define NM_SHAPE0(val)          (((STORAGE*)(NM_STORAGE(val)))->shape[0])
+#define NM_SHAPE1(val)          (((STORAGE*)(NM_STORAGE(val)))->shape[1])
+#define NM_DENSE_COUNT(val)     (((NM_DENSE_STORAGE(val)))->count)
 #define NM_SIZEOF_DTYPE(val)    (nm_sizeof[NM_DTYPE(val)])
 #define NM_REF(val,slice)      (RefFuncs[NM_STYPE(val)]( NM_STORAGE(val), slice, NM_SIZEOF_DTYPE(val) ))
     
 #define NM_MAX(a,b) (((a)>(b))?(a):(b))
 #define NM_MIN(a,b) (((a)>(b))?(b):(a))
 #define NM_SWAP(a,b,tmp) {(tmp)=(a);(a)=(b);(b)=(tmp);}
+
+#define NM_IsNMatrix(obj) \
+  (rb_obj_is_kind_of(obj, cNMatrix) == Qtrue)
+
+#define NM_IsNVector(obj) \
+  (rb_obj_is_kind_of(obj, cNVector) == Qtrue)
 
 // FIXME: What should this actually be?
 //#define NM_INDEX_TYPES  NM_FLOAT32
