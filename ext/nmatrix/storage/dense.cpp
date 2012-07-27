@@ -90,6 +90,7 @@ DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, v
   s->shape      = shape;
   s->dtype      = dtype;
   s->offset     = (size_t*) calloc(sizeof(size_t), rank);
+  s->stride     = dense_storage_stride(shape, rank);
   s->count      = 1;
   s->src        = s;
 	
@@ -129,6 +130,7 @@ void dense_storage_delete(DENSE_STORAGE* s) {
     if(s->count <= 1) {
       free(s->shape);
       free(s->offset);
+      free(s->stride);
       free(s->elements);
       free(s);
     }
@@ -171,16 +173,17 @@ void dense_storage_mark(DENSE_STORAGE* storage) {
 void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
   DENSE_STORAGE *ns;
 
-  if (slice->is_one_el) {
-    return (char*)(s->elements) + dense_storage_pos(s, slice) * DTYPE_SIZES[s->dtype];
+  if (slice->is_one_el)
+    return (char*)(s->elements) + dense_storage_pos(s, slice->coords) * DTYPE_SIZES[s->dtype];
     
-  } else {
+  else {
     ns = ALLOC( DENSE_STORAGE );
 
     ns->rank       = s->rank;
     ns->shape      = slice->lens;
     ns->dtype      = s->dtype;
     ns->offset     = slice->coords;
+    ns->stride     = s->stride;
     ns->elements   = s->elements;
     
     s->count++;
@@ -195,7 +198,7 @@ void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
  * Does not free passed-in value! Different from list_storage_insert.
  */
 void dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val) {
-  memcpy((char*)(s->elements) + dense_storage_pos(s, slice) * DTYPE_SIZES[s->dtype], val, DTYPE_SIZES[s->dtype]);
+  memcpy((char*)(s->elements) + dense_storage_pos(s, slice->coords) * DTYPE_SIZES[s->dtype], val, DTYPE_SIZES[s->dtype]);
 }
 
 ///////////
@@ -245,24 +248,38 @@ bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
 /////////////
 
 /*
- * Documentation goes here.
+ * Determine the linear array position (in elements of s) of some set of coordinates
+ * (given by slice).
  */
-size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice) {
-  size_t k, l;
-  size_t inner, outer = 0;
-  
-  for (k = s->rank; k-- > 0;) {
-  	inner = slice->coords[k] + s->offset[k];
-    
-    for (l = k+1; l < s->rank; ++l) {
-      inner *= ((DENSE_STORAGE*)s->src)->shape[l];
-    }
-    
-    outer += inner;
-  }
-  
-  return outer;
+size_t dense_storage_pos(DENSE_STORAGE* s, const size_t* coords) {
+  size_t index, pos = 0;
+
+  for (index = 0; index < s->rank; ++index)
+    pos += (coords[i] + s->offset[i]) * s->stride[i];
+
+  return pos;
 }
+
+
+/*
+ * Determine the stride length.
+ */
+size_t* dense_storage_stride(size_t* shape, size_t rank) {
+  size_t i, j;
+  size_t* stride = calloc(sizeof(*shape), rank);
+
+  if (!stride) rb_raise(rb_eNoMemError, "memory error");
+
+  for (i = 0; i < rank; ++i) {
+    stride[i] = 1;
+    for (j = i+1; j < rank; ++j) {
+      stride[i] *= shape[j];
+    }
+  }
+
+  return stride;
+}
+
 
 /////////////////////////
 // Copying and Casting //

@@ -58,6 +58,7 @@ typedef struct {
 	size_t	rank;
 	size_t*	shape;
 	size_t*	offset;
+	size_t* stride;
 
 	// Dense storage specific elements.
 	int       count;
@@ -102,7 +103,7 @@ bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda);
 // Utility //
 /////////////
 
-size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice);
+size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
 
 /////////////////////////
 // Copying and Casting //
