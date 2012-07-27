@@ -151,7 +151,7 @@ char yale_storage_vector_insert(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void
 // Copying and Casting //
 /////////////////////////
 
-YALE_STORAGE* yale_storage_cast_copy(YALE_STORAGE* rhs, dtype_t new_dtype);
+YALE_STORAGE* yale_storage_cast_copy(const YALE_STORAGE* rhs, dtype_t new_dtype);
 YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs);
 
 #endif

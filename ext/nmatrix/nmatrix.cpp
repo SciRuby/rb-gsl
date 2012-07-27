@@ -565,7 +565,7 @@ static VALUE nm_each(VALUE nmatrix) {
  */
 VALUE nm_is_ref(VALUE self) {
   if (NM_STYPE(self) == DENSE_STORE) // refs only allowed for dense matrices.
-    return (NM_DENSE_STORAGE(self)->src == NM_STORAGE(self)) ? Qfalse : Qtrue;
+    return (NM_STORAGE(self)->src == NM_STORAGE(self)) ? Qfalse : Qtrue;
 
   return Qfalse;
 }

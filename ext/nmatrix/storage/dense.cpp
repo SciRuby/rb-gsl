@@ -190,7 +190,7 @@ void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
     count         = s->count;
     ns->elements = ALLOC_N(char, DTYPE_SIZES[ns->dtype]*count);
 
-    dense_storage_slice_recursive(s, ns, slice->lengths, dense_storage_pos(s, slice->coords), 0, 0);
+    dense_storage_slice_copy(s, ns, slice->lengths, dense_storage_pos(s, slice->coords), 0, 0);
     return ns;
   }
 }
@@ -313,7 +313,7 @@ size_t* dense_storage_stride(size_t* shape, size_t rank) {
 /*
  * Recursive slicing for N-dimensional matrix.
  */
-void dense_storage_slice_recursive(
+void dense_storage_slice_copy(
     DENSE_STORAGE *src, DENSE_STORAGE *dest,
     size_t* lengths,
     size_t psrc, size_t pdest,
@@ -323,7 +323,7 @@ void dense_storage_slice_recursive(
 
   if (src->rank - n > 2) {
     for (index = 0; index < lengths[n]; ++index) {
-      dense_storage_slice_recursive(src, dest, lengths,
+      dense_storage_slice_copy(src, dest, lengths,
                                     psrc + src->stride[n]*i, pdest + dest->stride[n]*i,
                                     n + 1);
     }
@@ -351,7 +351,7 @@ DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dty
 /*
  * Documentation goes here.
  */
-DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs) {
+DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
   DENSE_STORAGE* lhs;
   
   size_t  count = storage_count_max_elements(rhs->rank, rhs->shape), p;
@@ -370,7 +370,8 @@ DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs) {
 
 	// Ensure that allocation worked before copying.
   if (lhs && count) {
-    memcpy(lhs->elements, rhs->elements, DTYPE_SIZES[rhs->dtype] * count);
+    if (rhs == rhs->ref) memcpy(lhs->elements, rhs->elements, DTYPE_SIZES[rhs->dtype] * count); // not a reference
+    else dense_storage_slice_copy(lhs, rhs->src, rhs->shape, 0, 0, 0); // slice whole matrix
   }
 
   return lhs;
@@ -388,7 +389,7 @@ DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_
   DType*		rhs_els = (DType*)rhs->elements;
   NewDType* lhs_els;
   
-  DENSE_STORAGE* lhs;
+  DENSE_STORAGE *lhs, *tmp;
   
   if (!shape) {
   	return NULL;
@@ -404,13 +405,12 @@ DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_
 
 	// Ensure that allocation worked before copying.
   if (lhs && count) {
-    if (lhs->dtype == rhs->dtype) {
-      memcpy(lhs->elements, rhs->elements, DTYPE_SIZES[rhs->dtype] * count);
-      
+    if (NM_STORAGE(self)->src != NM_STORAGE(self)) {
+      tmp = dense_storage_copy(rhs);
+      while (count-- > 0)         lhs_els[count] = tmp->elements[count];
+      dense_storage_delete(tmp);
     } else {
-    	while (count-- > 0) {
-    		lhs_els[count] = rhs_els[count];
-      }
+    	while (count-- > 0)     		lhs_els[count] = rhs_els[count];
     }
   }
 	
@@ -420,17 +420,27 @@ DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_
 template <typename LDType, typename RDType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
 	int index;
-	
-	LDType* left_els	= (LDType*)left->elements;
-	RDType* right_els	= (RDType*)right->elements;
+	bool result = true;
+
+	DENSE_STORAGE *l_copy, *r_copy;
+
+	l_copy = (dense_is_ref(left)  ? dense_storage_copy(left)  : left);
+	r_copy = (dense_is_ref(right) ? dense_storage_copy(right) : right);
+
+	LDType* left_elements	  = (LDType*)l_copy->elements;
+	RDType* right_elements	= (RDType*)r_copy->elements;
 	
 	for (index = storage_count_max_elements(left->rank, left->shape); index-- > 0;) {
-		if (left_els[index] != right_els[index]) {
-			return false;
+		if (left_elements[index] != right_elements[index]) {
+		  result = false;
+		  break;
 		}
 	}
+
+	if (l_copy != left)  free(left);
+	if (r_copy != right) free(right);
 	
-	return true;
+	return result;
 }
 
 template <typename DType>
