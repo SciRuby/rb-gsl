@@ -127,7 +127,7 @@ DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, v
 void dense_storage_delete(DENSE_STORAGE* s) {
   // Sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure).
   if (s) {
-    if(s->count <= 1) {
+    if(s->count-- == 1) {
       free(s->shape);
       free(s->offset);
       free(s->stride);
@@ -143,7 +143,10 @@ void dense_storage_delete(DENSE_STORAGE* s) {
 void dense_storage_delete_ref(DENSE_STORAGE* s) {
   // Sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure).
   if (s) {
-    ((DENSE_STORAGE*)s->src)->count--;
+
+    if (s->src->count == 1)
+      dense_storage_delete(s->src);
+
     free(s->shape);
     free(s->offset);
     free(s);
@@ -425,30 +428,18 @@ DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_
 template <typename LDType, typename RDType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
 	int index;
-	bool result = true;
-
-	DENSE_STORAGE *l_copy, *r_copy;
 
   /* FIXME: Very strange behavior! The GC calls the method directly with non-initialized data. */
   if (left->rank != right->rank) return false;
 
-	l_copy = (dense_is_ref(left)  ? dense_storage_copy(left)  : left);
-	r_copy = (dense_is_ref(right) ? dense_storage_copy(right) : right);
-
-	LDType* left_elements	  = (LDType*)l_copy->elements;
-	RDType* right_elements	= (RDType*)r_copy->elements;
+	LDType* left_elements	  = (LDType*)left->elements;
+	RDType* right_elements	= (RDType*)right->elements;
 	
 	for (index = storage_count_max_elements(left->rank, left->shape); index-- > 0;) {
-		if (left_elements[index] != right_elements[index]) {
-		  result = false;
-		  break;
-		}
+		if (left_elements[index] != right_elements[index]) return false;
 	}
 
-	if (l_copy != left)  free(left);
-	if (r_copy != right) free(right);
-	
-	return result;
+	return true;
 }
 
 template <typename DType>

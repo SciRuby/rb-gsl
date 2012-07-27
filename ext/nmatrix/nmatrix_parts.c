@@ -497,8 +497,10 @@ static VALUE nm_scast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_s
 
 // Cast a single matrix to a new dtype (unless it's already casted, then just return it). Helper for binary_storage_cast_alloc.
 static inline STORAGE* storage_cast_alloc(NMATRIX* matrix, int8_t new_dtype) {
-  if (matrix->storage->dtype == new_dtype) return matrix->storage;
-  else                                     return CastCopyFuncs[matrix->stype](matrix->storage, new_dtype);
+  if (matrix->storage->dtype == new_dtype && !IsRefFuncs[matrix->stype](matrix->storage))
+    return matrix->storage;
+  else
+    return CastCopyFuncs[matrix->stype](matrix->storage, new_dtype);
 }
 
 
