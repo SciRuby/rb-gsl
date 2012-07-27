@@ -88,6 +88,7 @@ void					list_storage_mark(LIST_STORAGE* storage);
 // Accessors //
 ///////////////
 
+void* list_storage_ref(LIST_STORAGE* s, SLICE* slice);
 void* list_storage_get(LIST_STORAGE* s, SLICE* slice);
 void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val);
 void* list_storage_remove(LIST_STORAGE* s, SLICE* slice);

@@ -312,9 +312,16 @@ nm_scast_copy_storage_t ScastCopyFuncs = {
 };
 
 
-nm_stype_ref_t RefFuncs = {
+nm_stype_slice_t GetFuncs = {
   dense_storage_get,
   list_storage_get,
+  yale_storage_get
+};
+
+
+nm_stype_slice_t RefFuncs = {
+  dense_storage_ref,
+  list_storage_ref,
   yale_storage_ref
 };
 
@@ -837,12 +844,9 @@ static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
 
 
 /*
- * Access the contents of an NMatrix at given coordinates.
- *
- *     n[3,3]  # => 5.0
- *
+ * Get a slice of an NMatrix.
  */
-static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
+static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLICE*), void (*delete_func)(NMATRIX*), VALUE self) {
   NMATRIX* mat;
   SLICE* slice;
   void* v;
@@ -850,17 +854,21 @@ static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
   if (NM_RANK(self) == (size_t)(argc)) {
     slice = get_slice((size_t)(argc), argv, self);
     // TODO: Slice for List, Yale types
-    if (NM_STYPE(self) == S_DENSE && slice->is_one_el == 0) {
+    if (slice->is_one_el == 0) {
 
-      mat = ALLOC(NMATRIX);
-      mat->stype = S_DENSE;
-      mat->storage = RefFuncs[NM_STYPE(self)](NM_STORAGE(self), slice);
-      return Data_Wrap_Struct(cNMatrix, MarkFuncs[mat->stype], nm_delete_ref, mat);
-    }
-    else {
+      if (NM_STYPE(self) == DENSE_STORE) {
+        mat = ALLOC(NMATRIX);
+        mat->stype = NM_STYPE(self);
+        mat->storage = (*slice_func)(NM_STORAGE(self), slice);
+        return Data_Wrap_Struct(cNMatrix, MarkFuncs[mat->stype], delete_func, mat);
+      } else {
+        rb_raise(rb_eNotImpError, "slicing only implemented for dense so far");
+      }
+
+    } else {
       v = ALLOC(VALUE);
       SetFuncs[NM_ROBJ][NM_DTYPE(self)](1, v, 0,
-                RefFuncs[NM_STYPE(self)](NM_STORAGE(self), slice), 0);
+                (*slice_func)(NM_STORAGE(self), slice), 0);
       return *(VALUE*)v;
     }
 
@@ -870,6 +878,31 @@ static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
     rb_raise(rb_eNotImpError, "This type slicing not supported yet");
   }
   return Qnil;
+}
+
+
+/*
+ * Access the contents of an NMatrix at given coordinates, using copying.
+ *
+ *     n.slice(3,3)  # => 5.0
+ *     n.slice(0..1,0..1) #=> matrix [2,2]
+ *
+ */
+VALUE nm_mget(int argc, VALUE* argv, VALUE self) {
+  return nm_xslice(argc, argv, RefFuncs[NM_STYPE(self)], nm_delete, self);
+}
+
+
+
+/*
+ * Access the contents of an NMatrix at given coordinates by reference.
+ *
+ *     n[3,3]  # => 5.0
+ *     n[0..1,0..1] #=> matrix [2,2]
+ *
+ */
+VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
+  return nm_xslice(argc, argv, RefFuncs[NM_STYPE(self)], nm_delete, self);
 }
 
 

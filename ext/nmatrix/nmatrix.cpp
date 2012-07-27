@@ -152,6 +152,7 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, "cast",  (METHOD)nm_scast_copy, 2);
 
 	rb_define_method(cNMatrix, "[]", (METHOD)nm_mref, -1);
+	rb_define_method(cNMatrix, "slice", (METHOD)nm_mget, -1);
 	rb_define_method(cNMatrix, "[]=", (METHOD)nm_mset, -1);
 	rb_define_method(cNMatrix, "rank", (METHOD)nm_rank, 0);
 	rb_define_method(cNMatrix, "shape", (METHOD)nm_shape, 0);

@@ -328,6 +328,15 @@ static YALE_STORAGE* yale_storage_alloc(dtype_t dtype, size_t* shape, size_t ran
 // Accessors //
 ///////////////
 
+
+/*
+ * Documentation goes here.
+ */
+void yale_storage_get(YALE_STORAGE* s, SLICE* slice) {
+  rb_raise(rb_eNotImpError, "This type of yale slicing not supported yet");
+}
+
+
 /*
  * Documentation goes here.
  */

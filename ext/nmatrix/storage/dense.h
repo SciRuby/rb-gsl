@@ -89,6 +89,7 @@ void						dense_storage_mark(DENSE_STORAGE* storage);
 ///////////////
 
 void*	dense_storage_get(DENSE_STORAGE* s, SLICE* slice);
+void*	dense_storage_ref(DENSE_STORAGE* s, SLICE* slice);
 void	dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val);
 
 ///////////

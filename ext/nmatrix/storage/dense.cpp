@@ -171,6 +171,14 @@ void dense_storage_mark(DENSE_STORAGE* storage) {
  * Documentation goes here.
  */
 void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
+  rb_raise(rb_eNotImpError, "This type of dense slicing not supported yet");
+}
+
+
+/*
+ * Documentation goes here.
+ */
+void* dense_storage_ref(DENSE_STORAGE* s, SLICE* slice) {
   DENSE_STORAGE *ns;
 
   if (slice->is_one_el)

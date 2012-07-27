@@ -125,7 +125,7 @@ typedef struct NMATRIX {
 // These have to come after enumerators
 typedef void     (*nm_setfunc_t[NUM_DTYPES][NUM_DTYPES])();								// copy functions
 typedef void     (*nm_incfunc_t[NUM_DTYPES])();														// increment functions
-typedef void*    (*nm_stype_ref_t[NUM_STYPES])(STORAGE*, SLICE*);					// get/ref
+typedef void*    (*nm_stype_slice_t[NUM_STYPES])(STORAGE*, SLICE*);				// get/ref
 typedef VALUE    (*nm_stype_ins_t[NUM_STYPES])(STORAGE*, SLICE*, VALUE);	// insert
 typedef STORAGE* (*nm_create_storage_t[NUM_STYPES])();
 typedef STORAGE* (*nm_cast_copy_storage_t[NUM_STYPES])();
