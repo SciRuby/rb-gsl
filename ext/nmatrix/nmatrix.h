@@ -76,9 +76,10 @@
 #define UnwrapNMatrix(obj,var)  Data_Get_Struct(obj, NMATRIX, var)
 
 #define NM_STORAGE(val)         (((struct NMATRIX*)DATA_PTR(val))->storage)
-#define NM_LIST_STORAGE(val)    (LIST_STORAGE*)(((struct NMATRIX*)DATA_PTR(val))->storage)
-#define NM_YALE_STORAGE(val)    (YALE_STORAGE*)(((struct NMATRIX*)DATA_PTR(val))->storage)
-#define NM_DENSE_STORAGE(val)   (DENSE_STORAGE*)(((struct NMATRIX*)DATA_PTR(val))->storage)
+#define NM_LIST_STORAGE(val)    ((LIST_STORAGE*)(((struct NMATRIX*)DATA_PTR(val))->storage))
+#define NM_YALE_STORAGE(val)    ((YALE_STORAGE*)(((struct NMATRIX*)DATA_PTR(val))->storage))
+#define NM_DENSE_STORAGE(val)   ((DENSE_STORAGE*)(((struct NMATRIX*)DATA_PTR(val))->storage))
+#define NM_DENSE_SRC(val)       (NM_DENSE_STORAGE(val)->src)
 //#define NM_PTR(a, p)            ((a)->ptr+(p)*nm_sizeof[(a)->type])
 #define NM_STRUCT(val)          ((struct NMATRIX*)DATA_PTR(val))
 //#define NM_PTR_TYPE(val,type)   (type)(((struct numeric_matrix*)DATA_PTR(val))->ptr)
@@ -95,6 +96,8 @@
 #define NM_MAX(a,b) (((a)>(b))?(a):(b))
 #define NM_MIN(a,b) (((a)>(b))?(b):(a))
 #define NM_SWAP(a,b,tmp) {(tmp)=(a);(a)=(b);(b)=(tmp);}
+
+#define NM_CHECK_ALLOC(x) if (!x) rb_raise(rb_eNoMemError, "insufficient memory");
 
 #define NM_IsNMatrix(obj) \
   (rb_obj_is_kind_of(obj, cNMatrix) == Qtrue)

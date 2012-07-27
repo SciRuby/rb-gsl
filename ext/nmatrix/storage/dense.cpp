@@ -143,10 +143,7 @@ void dense_storage_delete(DENSE_STORAGE* s) {
 void dense_storage_delete_ref(DENSE_STORAGE* s) {
   // Sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure).
   if (s) {
-
-    if (s->src->count == 1)
-      dense_storage_delete(s->src);
-
+    dense_storage_delete(s->src);
     free(s->shape);
     free(s->offset);
     free(s);
@@ -182,16 +179,23 @@ void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
   else { // Make references
     ns = ALLOC( DENSE_STORAGE );
 
+    NM_CHECK_ALLOC(ns);
+
     ns->rank       = s->rank;
     ns->shape      = slice->lengths;
     ns->dtype      = s->dtype;
+
     ns->offset     = calloc(sizeof(size_t),ns->rank);
+    NM_CHECK_ALLOC(ns->offset);
+
     ns->strides    = dense_storage_stride(ns->shape, ns->rank);
     ns->count      = 1;
     ns->src        = ns;
 
     count          = storage_count_max_elements( s->rank, s->shape );
+
     ns->elements   = ALLOC_N(char, DTYPE_SIZES[ns->dtype] * count);
+    NM_CHECK_ALLOC(ns->elements);
 
     dense_storage_slice_copy(s, ns, slice->lengths, dense_storage_pos(s, slice->coords), 0, 0);
     return ns;
@@ -210,12 +214,16 @@ void* dense_storage_ref(DENSE_STORAGE* s, SLICE* slice) {
     
   else {
     ns = ALLOC( DENSE_STORAGE );
+    NM_CHECK_ALLOC(ns);
 
     ns->rank       = s->rank;
     ns->dtype      = s->dtype;
 
     ns->offset     = calloc(sizeof(*ns->offset), ns->rank);
+    NM_CHECK_ALLOC(ns->offset);
+
     ns->shape      = calloc(sizeof(*ns->offset), ns->rank);
+    NM_CHECK_ALLOC(ns->shape);
 
     for (index = 0; index < ns->rank; ++index) {
       ns->offset[i] = slice->coords[i] + s->offset[i];
@@ -307,7 +315,7 @@ size_t* dense_storage_stride(size_t* shape, size_t rank) {
   size_t i, j;
   size_t* stride = calloc(sizeof(*shape), rank);
 
-  if (!stride) rb_raise(rb_eNoMemError, "memory error");
+  NM_CHECK_ALLOC(stride);
 
   for (i = 0; i < rank; ++i) {
     stride[i] = 1;
@@ -363,18 +371,11 @@ DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dty
  */
 DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
   DENSE_STORAGE* lhs;
-  
-  size_t  count = storage_count_max_elements(rhs->rank, rhs->shape), p;
-  size_t* shape = ALLOC_N(size_t, rhs->rank);
-  
-  if (!shape) {
-  	return NULL;
-  }
 
-  // copy shape array
-  for (p = rhs->rank; p-- > 0;) {
-    shape[p] = rhs->shape[p];
-  }
+  size_t  count = storage_count_max_elements(rhs->rank, rhs->shape);
+  size_t* shape = ALLOC_N(size_t, rhs->rank);
+  NM_CHECK_ALLOC(shape);
+  memcpy(shape, rhs->shape, sizeof(*shape) * rhs->rank);
 
   lhs = dense_storage_create(rhs->dtype, shape, rhs->rank, NULL, 0);
 
@@ -395,22 +396,15 @@ DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
 
 template <typename DType, typename NewDType>
 DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
-  size_t  count = storage_count_max_elements(rhs->rank, rhs->shape), p;
+  size_t  count = storage_count_max_elements(rhs->rank, rhs->shape);
   size_t* shape = ALLOC_N(size_t, rhs->rank);
+  NM_CHECK_ALLOC(shape);
+  memcpy(shape, rhs->shape, sizeof(*shape) * rhs->rank);
   
   DType*		rhs_els = (DType*)rhs->elements;
   NewDType* lhs_els;
   
   DENSE_STORAGE *lhs, *tmp;
-  
-  if (!shape) {
-  	return NULL;
-  }
-	
-  // Copy shape array.
-  for (p = rhs->rank; p-- > 0;) {
-  	shape[p] = rhs->shape[p];
-  }
 	
   lhs			= dense_storage_create(new_dtype, shape, rhs->rank, NULL, 0);
   lhs_els	= (NewDType*)lhs->elements;

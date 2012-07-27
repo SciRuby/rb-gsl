@@ -423,7 +423,7 @@ static VALUE nm_capacity(VALUE self) {
     break;
 
   case DENSE_STORE:
-    cap = UINT2NUM(count_dense_storage_elements( NM_DENSE_STORAGE(self) ));
+    cap = UINT2NUM(storage_count_max_elements( NM_DENSE_STORAGE(self)->rank, NM_DENSE_STORAGE(self)->shape ));
     break;
 
   case LIST_STORE:
@@ -565,7 +565,7 @@ static VALUE nm_each(VALUE nmatrix) {
  */
 VALUE nm_is_ref(VALUE self) {
   if (NM_STYPE(self) == DENSE_STORE) // refs only allowed for dense matrices.
-    return (NM_STORAGE(self)->src == NM_STORAGE(self)) ? Qfalse : Qtrue;
+    return (NM_DENSE_SRC(self) == NM_STORAGE(self)) ? Qfalse : Qtrue;
 
   return Qfalse;
 }

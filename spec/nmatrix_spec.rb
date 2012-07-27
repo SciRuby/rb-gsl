@@ -24,17 +24,11 @@
 #
 # Basic tests for NMatrix.
 #
-require "./lib/nmatrix"
+
+# Can we use require_relative here instead?
+require File.join(File.dirname(__FILE__), "spec_helper.rb")
 
 describe NMatrix do
-  MATRIX43A_ARRAY = [14.0, 9.0, 3.0, 2.0, 11.0, 15.0, 0.0, 12.0, 17.0, 5.0, 2.0, 3.0]
-  MATRIX32A_ARRAY = [12.0, 25.0, 9.0, 10.0, 8.0, 5.0]
-
-  COMPLEX_MATRIX43A_ARRAY = MATRIX43A_ARRAY.zip(MATRIX43A_ARRAY.reverse).collect { |ary| Complex(ary[0], ary[1]) }
-  COMPLEX_MATRIX32A_ARRAY = MATRIX32A_ARRAY.zip(MATRIX32A_ARRAY.reverse).collect { |ary| Complex(ary[0], -ary[1]) }
-
-  RATIONAL_MATRIX43A_ARRAY = MATRIX43A_ARRAY.collect { |x| x.to_r }
-  RATIONAL_MATRIX32A_ARRAY = MATRIX32A_ARRAY.collect { |x| x.to_r }
 
   it "calculates exact determinants on small square matrices" do
     a = NMatrix.new(:dense, 2, [1,2,3,4], :int64)
