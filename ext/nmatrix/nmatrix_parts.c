@@ -889,7 +889,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
  *
  */
 VALUE nm_mget(int argc, VALUE* argv, VALUE self) {
-  return nm_xslice(argc, argv, RefFuncs[NM_STYPE(self)], nm_delete, self);
+  return nm_xslice(argc, argv, GetFuncs[NM_STYPE(self)], nm_delete, self);
 }
 
 

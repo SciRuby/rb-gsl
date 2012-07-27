@@ -59,12 +59,9 @@ typedef struct {
 } STORAGE_PAIR;
 
 typedef struct {
-	// Coordinate of first element
-	size_t*	coords;
-	// Lenght of slice
-	size_t*	lens;
-	// 1 - if all lens eql 1
-	uint8_t	is_one_el;
+	size_t*	coords; // Coordinate of first element
+	size_t*	lengths; // Lengths of slice
+	uint8_t	is_one_el; // 1 - if all lens eql 1
 } SLICE;
 
 /*

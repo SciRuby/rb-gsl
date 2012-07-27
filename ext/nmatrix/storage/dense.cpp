@@ -168,10 +168,31 @@ void dense_storage_mark(DENSE_STORAGE* storage) {
 ///////////////
 
 /*
- * Documentation goes here.
+ * Get a slice or one element, using copying.
  */
 void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
-  rb_raise(rb_eNotImpError, "This type of dense slicing not supported yet");
+  DENSE_STORAGE *ns;
+  size_t count;
+
+  if (slice->is_one_el)
+    return (char*)(s->elements) + dense_storage_pos(s, slice->coords) * DTYPE_SIZES[s->dtype];
+  else { // Make references
+    ns = ALLOC( DENSE_STORAGE );
+
+    ns->rank       = s->rank;
+    ns->shape      = slice->lengths;
+    ns->dtype      = s->dtype;
+    ns->offset     = calloc(sizeof(size_t),ns->rank);
+    ns->strides    = dense_storage_stride(ns->shape, ns->rank);
+    ns->count      = 1;
+    ns->src        = NULL;
+
+    count         = s->count;
+    ns->elements = ALLOC_N(char, DTYPE_SIZES[ns->dtype]*count);
+
+    dense_storage_slice_recursive(s, ns, slice->lengths, dense_storage_pos(s, slice->coords), 0, 0);
+    return ns;
+  }
 }
 
 
@@ -188,7 +209,7 @@ void* dense_storage_ref(DENSE_STORAGE* s, SLICE* slice) {
     ns = ALLOC( DENSE_STORAGE );
 
     ns->rank       = s->rank;
-    ns->shape      = slice->lens;
+    ns->shape      = slice->lengths;
     ns->dtype      = s->dtype;
     ns->offset     = slice->coords;
     ns->stride     = s->stride;
@@ -270,7 +291,7 @@ size_t dense_storage_pos(DENSE_STORAGE* s, const size_t* coords) {
 
 
 /*
- * Determine the stride length.
+ * Calculate the stride length.
  */
 size_t* dense_storage_stride(size_t* shape, size_t rank) {
   size_t i, j;
@@ -288,6 +309,31 @@ size_t* dense_storage_stride(size_t* shape, size_t rank) {
   return stride;
 }
 
+
+/*
+ * Recursive slicing for N-dimensional matrix.
+ */
+void dense_storage_slice_recursive(
+    DENSE_STORAGE *src, DENSE_STORAGE *dest,
+    size_t* lengths,
+    size_t psrc, size_t pdest,
+    size_t n)
+{
+  size_t index;
+
+  if (src->rank - n > 2) {
+    for (index = 0; index < lengths[n]; ++index) {
+      dense_storage_slice_recursive(src, dest, lengths,
+                                    psrc + src->stride[n]*i, pdest + dest->stride[n]*i,
+                                    n + 1);
+    }
+  } else {
+    memcpy((char*)dest->elements + pdest*DTYPE_SIZES[dest->dtype],
+        (char*)src->elements + psrc*DTYPE_SIZES[src->dtype],
+        src->shape[n]*DTYPE_SIZES[dest->dtype]);
+  }
+
+}
 
 /////////////////////////
 // Copying and Casting //
