@@ -190,8 +190,8 @@ void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
     ns->count      = 1;
     ns->src        = ns;
 
-    count         = s->count;
-    ns->elements = ALLOC_N(char, DTYPE_SIZES[ns->dtype]*count);
+    count          = storage_count_max_elements( s->rank, s->shape );
+    ns->elements   = ALLOC_N(char, DTYPE_SIZES[ns->dtype] * count);
 
     dense_storage_slice_copy(s, ns, slice->lengths, dense_storage_pos(s, slice->coords), 0, 0);
     return ns;
@@ -217,14 +217,16 @@ void* dense_storage_ref(DENSE_STORAGE* s, SLICE* slice) {
     ns->offset     = calloc(sizeof(*ns->offset), ns->rank);
     ns->shape      = calloc(sizeof(*ns->offset), ns->rank);
 
-    memcpy(ns->offset, slice->coords, sizeof(*ns->offset) * ns->rank);
-    memcpy(ns->shape, slice->lengths, sizeof(*ns->shape) * ns->rank);
+    for (index = 0; index < ns->rank; ++index) {
+      ns->offset[i] = slice->coords[i] + s->offset[i];
+      ns->shape[i]  = slice->lengths[i];
+    }
 
     ns->stride     = s->stride;
     ns->elements   = s->elements;
     
-    s->count++;
-    ns->src = (void*)s;
+    ((DENSE_STORAGE*)s->src)->count++;
+    ns->src = s->src;
 
     return ns;
   }
