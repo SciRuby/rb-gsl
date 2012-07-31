@@ -58,6 +58,7 @@ typedef struct {
 	size_t	rank;
 	size_t*	shape;
 	size_t*	offset;
+	size_t* stride;
 
 	// Dense storage specific elements.
 	int       count;
@@ -88,6 +89,7 @@ void						dense_storage_mark(DENSE_STORAGE* storage);
 ///////////////
 
 void*	dense_storage_get(DENSE_STORAGE* s, SLICE* slice);
+void*	dense_storage_ref(DENSE_STORAGE* s, SLICE* slice);
 void	dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val);
 
 ///////////
@@ -96,18 +98,19 @@ void	dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val);
 
 bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
 bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda);
+bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda);
 
 /////////////
 // Utility //
 /////////////
 
-size_t dense_storage_pos(DENSE_STORAGE* s, SLICE* slice);
+size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
 
 /////////////////////////
 // Copying and Casting //
 /////////////////////////
 
-DENSE_STORAGE* dense_storage_copy(DENSE_STORAGE* rhs);
-DENSE_STORAGE* dense_storage_cast_copy(DENSE_STORAGE* rhs, dtype_t new_dtype);
+DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs);
+DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype);
 
 #endif

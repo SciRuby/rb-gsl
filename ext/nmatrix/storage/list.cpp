@@ -124,11 +124,20 @@ void list_storage_mark(LIST_STORAGE* storage) {
 // Accessors //
 ///////////////
 
+
+/*
+ * Documentation goes here.
+ */
+void* list_storage_get(LIST_STORAGE* s, SLICE* slice) {
+  rb_raise(rb_eNotImpError, "This type of slicing not supported yet");
+}
+
+
 /*
  * Get the contents of some set of coordinates. Note: Does not make a copy!
  * Don't free!
  */
-void* list_storage_get(LIST_STORAGE* s, SLICE* slice) {
+void* list_storage_ref(LIST_STORAGE* s, SLICE* slice) {
   //LIST_STORAGE* s = (LIST_STORAGE*)(t);
   size_t r;
   NODE*  n;
@@ -361,7 +370,7 @@ LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
  *
  * FIXME: Template this.
  */
-LIST_STORAGE* list_storage_cast_copy(LIST_STORAGE* rhs, dtype_t new_dtype) {
+LIST_STORAGE* list_storage_cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
   LIST_STORAGE* lhs;
   size_t* shape;
   void* default_val = ALLOC_N(char, DTYPE_SIZES[rhs->dtype]);

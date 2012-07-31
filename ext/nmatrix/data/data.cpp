@@ -48,19 +48,19 @@
  */
 
 const char* const DTYPE_NAMES[NUM_DTYPES] = {
-	"Byte",
-	"Int8",
-	"Int16",
-	"Int32",
-	"Int64",
-	"Float32",
-	"Float64",
-	"Complex64",
-	"Complex128",
-	"Rational32",
-	"Rational64",
-	"Rational128",
-	"RubyObject"
+	"byte",
+	"int8",
+	"int16",
+	"int32",
+	"int64",
+	"float32",
+	"float64",
+	"complex64",
+	"complex128",
+	"rational32",
+	"rational64",
+	"rational128",
+	"object"
 };
 
 const size_t DTYPE_SIZES[NUM_DTYPES] = {
@@ -90,7 +90,7 @@ const size_t DTYPE_SIZES[NUM_DTYPES] = {
 /*
  * Converts a RubyObject
  */
-void rubyval_to_dtype(VALUE val, dtype_t dtype, void* loc) {
+void rubyval_to_cval(VALUE val, dtype_t dtype, void* loc) {
 	switch (dtype) {
 		case BYTE:
 			*reinterpret_cast<uint8_t*>(loc)			= static_cast<uint8_t>(RubyObject(val));
@@ -144,5 +144,66 @@ void rubyval_to_dtype(VALUE val, dtype_t dtype, void* loc) {
 			rb_raise(rb_eTypeError, "Attempting a bad conversion from a Ruby value.");
 			break;
 	}
+}
+
+/*
+ * Documentation goes here.
+ *
+ * FIXME: The actual constructors still need to be defined.
+ */
+RubyObject rubyobj_from_cval(void* val, dtype_t dtype) {
+	switch (dtype) {
+		case BYTE:
+			return RubyObject(static_cast<uint8_t>(*val));
+			
+		case INT8:
+			return RubyObject(static_cast<int8_t>(*val));
+			
+		case INT16:
+			return RubyObject(static_cast<int16_t>(*val));
+			
+		case INT32:
+			return RubyObject(static_cast<int32_t>(*val));
+			
+		case INT64:
+			return RubyObject(static_cast<int64_t>(*val));
+			
+		case FLOAT32:
+			return RubyObject(static_cast<float32_t>(*val));
+			
+		case FLOAT64:
+			return RubyObject(static_cast<float64_t>(*val));
+			
+		case COMPLEX64:
+			return RubyObject(static_cast<Complex64>(*val));
+			
+		case COMPLEX128:
+			return RubyObject(static_cast<Complex128>(*val));
+			
+		case RATIONAL32:
+			return RubyObject(static_cast<Rational32>(*val));
+			
+		case RATIONAL64:
+			return RubyObject(static_cast<Rational64>(*val));
+			
+		case RATIONAL128:
+			return RubyObject(static_cast<Rational128>(*val));
+			
+		case RUBYOBJ:
+			rb_raise(rb_eTypeError, "Attempting a bad conversion from a Ruby value.");
+	}
+}
+
+
+/*
+ * Allocate and return a piece of data of the correct dtype, converted from a
+ * given RubyObject.
+ */
+void* rubyobj_to_cval(VALUE val, dtype_t dtype) {
+  void* ret_val = malloc(DTYPE_SIZES[dtype]);
+
+  rubyobj_to_cval_noalloc(val, dtype, ret_val);
+
+  return ret_val;
 }
 

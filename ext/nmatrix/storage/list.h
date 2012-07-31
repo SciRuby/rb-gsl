@@ -88,6 +88,7 @@ void					list_storage_mark(LIST_STORAGE* storage);
 // Accessors //
 ///////////////
 
+void* list_storage_ref(LIST_STORAGE* s, SLICE* slice);
 void* list_storage_get(LIST_STORAGE* s, SLICE* slice);
 void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val);
 void* list_storage_remove(LIST_STORAGE* s, SLICE* slice);
@@ -117,6 +118,6 @@ inline size_t list_storage_count_elements(const LIST_STORAGE* s) {
 /////////////////////////
 
 LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs);
-LIST_STORAGE* list_storage_cast_copy(LIST_STORAGE* rhs, dtype_t new_dtype);
+LIST_STORAGE* list_storage_cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype);
 
 #endif

@@ -328,6 +328,15 @@ static YALE_STORAGE* yale_storage_alloc(dtype_t dtype, size_t* shape, size_t ran
 // Accessors //
 ///////////////
 
+
+/*
+ * Documentation goes here.
+ */
+void yale_storage_get(YALE_STORAGE* s, SLICE* slice) {
+  rb_raise(rb_eNotImpError, "This type of yale slicing not supported yet");
+}
+
+
 /*
  * Documentation goes here.
  */
@@ -877,7 +886,7 @@ static char yale_storage_vector_replace_j(YALE_STORAGE* s, y_size_t pos, y_size_
 /*
  * Copy constructor.
  */
-YALE_STORAGE* cast_copy_yale_storage(YALE_STORAGE* rhs, dtype_t new_dtype) {
+YALE_STORAGE* yale_storage_cast_copy(const YALE_STORAGE* rhs, dtype_t new_dtype) {
   y_size_t size;
   YALE_STORAGE* lhs;
 

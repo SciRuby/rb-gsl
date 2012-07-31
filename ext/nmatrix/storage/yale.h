@@ -122,6 +122,7 @@ void					yale_storage_mark(YALE_STORAGE* storage);
 // Accessors //
 ///////////////
 
+void* yale_storage_get(YALE_STORAGE* s, SLICE* slice);
 void*	yale_storage_ref(YALE_STORAGE* s, SLICE* slice);
 char	yale_storage_set(YALE_STORAGE* s, SLICE* slice, void* v);
 
@@ -150,7 +151,7 @@ char yale_storage_vector_insert(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void
 // Copying and Casting //
 /////////////////////////
 
-YALE_STORAGE* yale_storage_cast_copy(YALE_STORAGE* rhs, dtype_t new_dtype);
+YALE_STORAGE* yale_storage_cast_copy(const YALE_STORAGE* rhs, dtype_t new_dtype);
 YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs);
 
 #endif

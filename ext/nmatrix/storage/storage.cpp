@@ -51,6 +51,8 @@ const char* const STYPE_NAMES[NUM_STYPES] = {
 	"yale"
 };
 
+
+
 /*
  * Forward Declarations
  */
@@ -70,6 +72,7 @@ const char* const STYPE_NAMES[NUM_STYPES] = {
 /////////////////////////
 // Templated Functions //
 /////////////////////////
+
 
 #if false
 

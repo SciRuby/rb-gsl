@@ -49,7 +49,7 @@
 #define NUM_DTYPES 13
 
 /*
- * Defines a static array named ttables that hold function pointers to
+ * Defines a static array named ttable that hold function pointers to
  * dtype templated versions of the specified function.
  */
 #define DTYPE_TEMPLATE_TABLE(fun, ret, ...)					\
@@ -181,6 +181,8 @@ extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
  * Functions
  */
 
-void rubyval_to_dtype(VALUE val, dtype_t dtype, void* loc);
+void*				rubyobj_to_cval(VALUE val, dtype_t dtype);
+void				rubyval_to_cval(VALUE val, dtype_t dtype, void* loc);
+RubyObject	rubyobj_from_cval(void* val, dtype_t dtype);
 
 #endif

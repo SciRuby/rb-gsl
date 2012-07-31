@@ -90,7 +90,7 @@ if /cygwin|mingw/ =~ RUBY_PLATFORM
 end
 
 $DEBUG = true
-$CFLAGS = ["-Wall ",$CFLAGS].join(" ") #-BENCHMARK for comparing transp
+$CFLAGS = ["-Wall ",$CFLAGS].join(" ")
 
 srcs = %w(
 nmatrix
@@ -143,6 +143,10 @@ $libs += " -lcblas -latlas "
 $objs = srcs.collect{|i| i+".o" }
 
 $CFLAGS += " -O0"
+$CPPFLAGS += " -O0 -std=c++0x"
+
+CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
+CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
 
 create_conf_h("nmatrix_config.h")
 create_makefile("nmatrix")
