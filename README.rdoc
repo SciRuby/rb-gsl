@@ -8,7 +8,7 @@ http://sciruby.com
 
 == Description
 
-NMatrix is an experimental linear algebra library for Ruby, written mostly in C. It can be used with or without SciRuby, but is part of the SciRuby project.
+NMatrix is an experimental linear algebra library for Ruby, written mostly in C and C++. It can be used with or without SciRuby, but is part of the SciRuby project.
 
 NMatrix was inspired by and based heavily upon {NArray}[http://narray.rubyforge.org], by Masahiro Tanaka.
 
@@ -18,6 +18,8 @@ NMatrix was inspired by and based heavily upon {NArray}[http://narray.rubyforge.
 
 Please be aware that SciRuby and NMatrix are in *PRE-ALPHA* status. If you're thinking of using SciRuby/NMatrix to write mission critical code, such as for driving a car or flying a space shuttle, you may wish to choose other software (for now).
 
+You should also be aware that NMatrix and NArray are incompatible with one another; you should not try to require both at the same time. Unfortunately, that causes problems with Ruby/GSL, which currently depends upon NMatrix. As such, we are working on an {NMatrix-specific fork of Ruby/GSL}[https://github.com/SciRuby/rb-gsl].
+
 == Features
 
 * Matrix storage containers: dense, yale, list (more to come)
@@ -26,15 +28,11 @@ Please be aware that SciRuby and NMatrix are in *PRE-ALPHA* status. If you're th
 
 == SYNOPSIS:
 
-From the command line,
+For full instructions, please see sciruby.com/nmatrix. Generally, you should be able to do
 
-    git clone https://github.com/SciRuby/nmatrix.git
-    cd nmatrix
-    bundle
-    rake compile
-    rake console
+    gem install nmatrix
 
-Gem coming later.
+However, you will need to install ATLAS with CBLAS first. Those directions can be found at our website.
 
 == REQUIREMENTS:
 
@@ -49,6 +47,10 @@ See Synopsis (above) for now. Gem coming later.
 More detailed installation instructions are available at {here}[http://sciruby.com/docs#installation]
 
 == DEVELOPERS:
+
+Note that the code in the SciRuby/nmatrix repository is "as stable as possible." If you want to get involved, you should probably clone/fork from mohawkjohn/nmatrix or chriswailes/nmatrix:
+
+    git clone https://github.com/mohawkjohn/nmatrix.git
 
 Before commiting any code, you *MUST* read our {Contributor Agreement}[http://github.com/SciRuby/sciruby/wiki/Contributor-Agreement].
 
