@@ -63,6 +63,13 @@ const char* const DTYPE_NAMES[NUM_DTYPES] = {
 	"object"
 };
 
+const char* const ITYPE_NAMES[NUM_ITYPES] = {
+	"uint8",
+	"uint16",
+	"uint32",
+	"uint64"
+};
+
 const size_t DTYPE_SIZES[NUM_DTYPES] = {
 	sizeof(uint8_t),
 	sizeof(int8_t),
@@ -77,6 +84,13 @@ const size_t DTYPE_SIZES[NUM_DTYPES] = {
 	sizeof(Rational64),
 	sizeof(Rational128),
 	sizeof(RubyObject)
+};
+
+const size_t ITYPE_SIZES[NUM_ITYPES] = {
+	sizeof(uint8_t),
+	sizeof(uint16_t),
+	sizeof(uint32_t),
+	sizeof(uint64_t),
 };
 
 /*
