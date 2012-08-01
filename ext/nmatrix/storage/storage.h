@@ -61,6 +61,7 @@
 #define NMATRIX_DTYPE_IS_RATIONAL(s)	((s->dtype == RATIONAL32) or (s->dtype == RATIONAL64) or (s->dtype == RATIONAL128))
 #define NMATRIX_DTYPE_IS_RUBYOBJ(s)		(s->dtype == RUBYOBJ)
 
+
 /*
  * Defines a static array named stable that hold function pointers to
  * stype templated versions of the specified function.

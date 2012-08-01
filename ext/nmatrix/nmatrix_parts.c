@@ -376,13 +376,6 @@ nm_stype_ins_t InsFuncs = {
   nm_yale_set,
 };
 
-// Used for scasting (changing stype)
-inline void cast_copy_value_single(void* to, const void* from, int8_t l_dtype, int8_t r_dtype) {
-  if (l_dtype == r_dtype) memcpy(to, from, nm_sizeof[l_dtype]);
-  else                    SetFuncs[l_dtype][r_dtype](1, to, 0, from, 0);
-}
-
-
 
 static VALUE nm_alloc(VALUE klass) {
   NMATRIX* mat = ALLOC(NMATRIX);
