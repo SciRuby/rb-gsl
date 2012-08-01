@@ -285,8 +285,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   // If there are 7 arguments and Yale, refer to a different init function with fewer sanity checks.
   if (argc == 8) {
     if (stype == YALE_STORE) {
-    	// FIXME: Un-comment this when we include nm_init_yale_from_old_yale.
-    	//return nm_init_yale_from_old_yale(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], nm);
+    	return nm_init_yale_from_old_yale(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], nm);
     	
 		} else {
 		  rb_raise(rb_eArgError, "Expected 2-4 arguments (or 7 for internal Yale creation)");
@@ -382,13 +381,13 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
  */
 static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_index_dtype, VALUE nm) {
   size_t rank     = 2;
-  size_t* shape_  = nm_interpret_shape_arg(shape, &rank);
-  dtype_t dtype_   = nm_dtypesymbol_to_dtype(dtype);
+  size_t* shape_  = interpret_shape(shape, &rank);
+  dtype_t dtype_  = dtype_from_rbsymbol(dtype);
   char *ia_       = RSTRING_PTR(ia),
        *ja_       = RSTRING_PTR(ja),
        *a_        = RSTRING_PTR(a);
-  dtype_t from_dtype_ = nm_dtypesymbol_to_dtype(from_dtype);
-  dtype_t from_index_dtype_ = nm_dtypesymbol_to_dtype(from_index_dtype);
+  dtype_t from_dtype_ = dtype_from_rbsymbol(from_dtype);
+  dtype_t from_index_dtype_ = dtype_from_rbsymbol(from_index_dtype);
   NMATRIX* nmatrix;
 
   UnwrapNMatrix( nm, nmatrix );
@@ -458,7 +457,7 @@ static VALUE nm_capacity(VALUE self) {
  * act as if they're rank 1.
  */
 static VALUE nm_rank(VALUE self) {
-  return rubyobj_from_val(&(NM_STORAGE(self)->rank), INT64).rval;
+  return rubyobj_from_cval(&(NM_STORAGE(self)->rank), INT64).rval;
 }
 
 
@@ -472,7 +471,7 @@ static VALUE nm_shape(VALUE self) {
   // Copy elements into a VALUE array and then use those to create a Ruby array with rb_ary_new4.
   VALUE* shape = ALLOCA_N(VALUE, s->rank);
   for (index = 0; index < s->rank; ++index)
-    shape[index] = rubyobj_from_val( s->shape + sizeof(size_t)*index, SIZE_T ).rval;
+    shape[index] = rubyobj_from_cval( s->shape + sizeof(size_t)*index, SIZE_T ).rval;
   //SetFuncs[NM_ROBJ][NM_SIZE_T]( s->rank, shape, sizeof(VALUE), s->shape, sizeof(size_t));
 
   return rb_ary_new4(s->rank, shape);
@@ -543,7 +542,7 @@ static VALUE nm_dense_each(VALUE nmatrix) {
     //copy = SetFuncs[NM_ROBJ][NM_DTYPE(nmatrix)];
 
     for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i) {
-      v = rubyobj_from_val((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)], NM_DTYPE(nmatrix)).rval;
+      v = rubyobj_from_cval((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)], NM_DTYPE(nmatrix)).rval;
       // (*copy)(1, &v, 0, (char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)], 0);
       rb_yield(v); // yield to the copy we made
     }
@@ -597,7 +596,7 @@ dtype_t dtype_from_rbstring(VALUE str) {
   	}
   }
   
-  rb_raise(rb_eArgError, "Invalid data type speicified.");
+  rb_raise(rb_eArgError, "Invalid data type specified.");
 }
 
 /*
@@ -612,7 +611,7 @@ dtype_t dtype_from_rbsymbol(VALUE sym) {
     }
   }
   
-  rb_raise(rb_eArgError, "Invalid data type speicified.");
+  rb_raise(rb_eArgError, "Invalid data type specified.");
 }
 
 /*
@@ -747,22 +746,21 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
  * Convert an Ruby value or an array of Ruby values into initial C values.
  */
 static void* interpret_initial_value(VALUE arg, dtype_t dtype) {
-<<<<<<< HEAD
   unsigned int index;
-  int8_t* init_val;
+  void* init_val;
   
   if (RUBYVAL_IS_ARRAY(arg)) {
   	// Array
     
     init_val = ALLOC_N(int8_t, DTYPE_SIZES[dtype] * RARRAY_LEN(arg));
     for (index = 0; index < RARRAY_LEN(arg); ++index) {
-    	rubyval_to_cval(RARRAY_PTR(arg)[index], dtype, init_val + (index * DTYPE_SIZES[dtype]));
+    	rubyval_to_cval(RARRAY_PTR(arg)[index], dtype, (char*)init_val + (index * DTYPE_SIZES[dtype]));
     }
     
   } else {
   	// Single value
   	
-    init_val = rubyval_to_cval(arg, dtype)
+    init_val = rubyobj_to_cval(arg, dtype);
   }
 
   return init_val;
