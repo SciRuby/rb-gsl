@@ -377,14 +377,6 @@ nm_stype_ins_t InsFuncs = {
 };
 
 
-static VALUE nm_alloc(VALUE klass) {
-  NMATRIX* mat = ALLOC(NMATRIX);
-  mat->storage = NULL;
-  mat->stype   = S_TYPES;
-  return Data_Wrap_Struct(klass, MarkFuncs[mat->stype], nm_delete, mat);
-}
-
-
 // This is the "back-door initializer," for when Ruby needs to create the object in an atypical way.
 //
 // Note that objects created this way will have NULL storage.

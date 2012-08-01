@@ -130,7 +130,7 @@ void Init_nmatrix() {
 	// Class Methods //
 	///////////////////
 	
-//	rb_define_alloc_func(cNMatrix, nm_alloc);
+	rb_define_alloc_func(cNMatrix, nm_alloc);
 	
 	/*
 	 * FIXME: These need to be bound in a better way.
@@ -220,6 +220,120 @@ void Init_nmatrix() {
 /*
  * End of the Ruby binding functions in the `extern "C" {}` block.
  */
+}
+
+//////////////////
+// Ruby Methods //
+//////////////////
+
+/*
+ * Documentation goes here.
+ */
+static VALUE nm_alloc(VALUE klass) {
+	NMATRIX* mat = ALLOC(NMATRIX);
+	mat->storage = NULL;
+	mat->stype   = S_TYPES;
+	
+	return Data_Wrap_Struct(klass, STYPE_MARK[mat->stype], nm_delete, mat);
+}
+
+/*
+ * Find the capacity of an NMatrix. The capacity only differs from the size for Yale matrices, which occasionally
+ * allocate more space than they need. For list and dense, capacity gives the number of elements in the matrix.
+ */
+static VALUE nm_capacity(VALUE self) {
+  VALUE cap;
+
+  switch(NM_STYPE(self)) {
+  case YALE_STORE:
+    cap = UINT2NUM(((YALE_STORAGE*)(NM_STORAGE(self)))->capacity);
+    break;
+
+  case DENSE_STORE:
+    cap = UINT2NUM(storage_count_max_elements( NM_DENSE_STORAGE(self)->rank, NM_DENSE_STORAGE(self)->shape ));
+    break;
+
+  case LIST_STORE:
+    cap = UINT2NUM(list_storage_count_elements( NM_LIST_STORAGE(self) ));
+    break;
+
+  default:
+    rb_raise(nm_eStorageTypeError, "unrecognized stype in nm_capacity()");
+  }
+
+  return cap;
+}
+
+/*
+ * Get the data type (dtype) of a matrix, e.g., :byte, :int8, :int16, :int32,
+ * :int64, :float32, :float64, :complex64, :complex128, :rational32,
+ * :rational64, :rational128, or :object (the last is a Ruby object).
+ */
+static VALUE nm_dtype(VALUE self) {
+  ID dtype = rb_intern(DTYPE_NAMES[NM_DTYPE(self)]);
+  return ID2SYM(dtype);
+}
+
+/*
+ * Iterate over the matrix as you would an Enumerable (e.g., Array).
+ *
+ * Currently only works for dense.
+ */
+static VALUE nm_each(VALUE nmatrix) {
+  volatile VALUE nm = nmatrix; // not sure why we do this, but it gets done in ruby's array.c.
+
+  switch(NM_STYPE(nm)) {
+  case DENSE_STORE:
+    return nm_each_dense(nm);
+  default:
+    rb_raise(rb_eNotImpError, "only dense matrix's each method works right now");
+  }
+}
+
+/*
+ * Borrowed this function from NArray. Handles 'each' iteration on a dense
+ * matrix.
+ *
+ * Additionally, handles separately matrices containing VALUEs and matrices
+ * containing other types of data.
+ */
+static VALUE nm_each_dense(VALUE nmatrix) {
+  DENSE_STORAGE* s = (DENSE_STORAGE*)(NM_STORAGE(nmatrix));
+  VALUE v;
+  size_t i;
+
+  //void (*copy)();
+
+  if (NM_DTYPE(nmatrix) == RUBYOBJ) {
+
+    // matrix of Ruby objects -- yield those objects directly
+    for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i)
+      rb_yield( *((VALUE*)((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)])) );
+
+  } else {
+    // We're going to copy the matrix element into a Ruby VALUE and then operate on it. This way user can't accidentally
+    // modify it and cause a seg fault.
+    //copy = SetFuncs[NM_ROBJ][NM_DTYPE(nmatrix)];
+
+    for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i) {
+      v = rubyobj_from_cval((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)], NM_DTYPE(nmatrix)).rval;
+      // (*copy)(1, &v, 0, (char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)], 0);
+      rb_yield(v); // yield to the copy we made
+    }
+  }
+
+  return nmatrix;
+}
+
+/*
+ * Is this matrix hermitian?
+ *
+ * Definition: http://en.wikipedia.org/wiki/Hermitian_matrix
+ *
+ * For non-complex matrices, this function should return the same result as symmetric?.
+ */
+static VALUE nm_hermitian(VALUE self) {
+  return is_symmetric(self, true);
 }
 
 /*
@@ -374,6 +488,16 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
 }
 
 /*
+ * Check to determine whether matrix is a reference to another matrix.
+ */
+VALUE nm_is_ref(VALUE self) {
+  if (NM_STYPE(self) == DENSE_STORE) // refs only allowed for dense matrices.
+    return (NM_DENSE_SRC(self) == NM_STORAGE(self)) ? Qfalse : Qtrue;
+
+  return Qfalse;
+}
+
+/*
  * Create a new NMatrix helper for handling internal ia, ja, and a arguments.
  *
  * This constructor is only called by Ruby code, so we can skip most of the
@@ -398,55 +522,6 @@ static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALU
   return nm;
 }
 
-
-/*
- * Get the data type (dtype) of a matrix, e.g., :byte, :int8, :int16, :int32,
- * :int64, :float32, :float64, :complex64, :complex128, :rational32,
- * :rational64, :rational128, or :object (the last is a Ruby object).
- */
-static VALUE nm_dtype(VALUE self) {
-  ID dtype = rb_intern(DTYPE_NAMES[NM_DTYPE(self)]);
-  return ID2SYM(dtype);
-}
-
-
-/*
- * Get the storage type (stype) of a matrix, e.g., :yale, :dense, or :list.
- */
-static VALUE nm_stype(VALUE self) {
-  ID stype = rb_intern(STYPE_NAMES[NM_STYPE(self)]);
-  return ID2SYM(stype);
-}
-
-
-/*
- * Find the capacity of an NMatrix. The capacity only differs from the size for Yale matrices, which occasionally
- * allocate more space than they need. For list and dense, capacity gives the number of elements in the matrix.
- */
-static VALUE nm_capacity(VALUE self) {
-  VALUE cap;
-
-  switch(NM_STYPE(self)) {
-  case YALE_STORE:
-    cap = UINT2NUM(((YALE_STORAGE*)(NM_STORAGE(self)))->capacity);
-    break;
-
-  case DENSE_STORE:
-    cap = UINT2NUM(storage_count_max_elements( NM_DENSE_STORAGE(self)->rank, NM_DENSE_STORAGE(self)->shape ));
-    break;
-
-  case LIST_STORE:
-    cap = UINT2NUM(list_storage_count_elements( NM_LIST_STORAGE(self) ));
-    break;
-
-  default:
-    rb_raise(nm_eStorageTypeError, "unrecognized stype in nm_capacity()");
-  }
-
-  return cap;
-}
-
-
 /*
  * Get the rank of an NMatrix (the number of dimensions).
  *
@@ -459,7 +534,6 @@ static VALUE nm_capacity(VALUE self) {
 static VALUE nm_rank(VALUE self) {
   return rubyobj_from_cval(&(NM_STORAGE(self)->rank), INT64).rval;
 }
-
 
 /*
  * Get the shape (dimensions) of a matrix.
@@ -477,8 +551,28 @@ static VALUE nm_shape(VALUE self) {
   return rb_ary_new4(s->rank, shape);
 }
 
+/*
+ * Get the storage type (stype) of a matrix, e.g., :yale, :dense, or :list.
+ */
+static VALUE nm_stype(VALUE self) {
+  ID stype = rb_intern(STYPE_NAMES[NM_STYPE(self)]);
+  return ID2SYM(stype);
+}
 
-// Helper function for nm_symmetric and nm_hermitian.
+/*
+ * Is this matrix symmetric?
+ */
+static VALUE nm_symmetric(VALUE self) {
+  return is_symmetric(self, false);
+}
+
+//////////////////////
+// Helper Functions //
+//////////////////////
+
+/*
+ * Helper function for nm_symmetric and nm_hermitian.
+ */
 static VALUE is_symmetric(VALUE self, bool hermitian) {
   NMATRIX* m;
   UnwrapNMatrix(self, m);
@@ -486,9 +580,13 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
   if (m->storage->shape[0] == m->storage->shape[1] && m->storage->rank == 2) {
 
     if (NM_STYPE(self) == DENSE_STORE) {
-      if (!hermitian) {
-        if (dense_storage_is_symmetric((DENSE_STORAGE*)(m->storage), m->storage->shape[0])) return Qtrue;
-      } else if (dense_storage_is_hermitian((DENSE_STORAGE*)(m->storage), m->storage->shape[0])) return Qtrue;
+      if (!hermitian and (dense_storage_is_symmetric((DENSE_STORAGE*)(m->storage), m->storage->shape[0]))) {
+        	return Qtrue;
+        	
+      } else if (dense_storage_is_hermitian((DENSE_STORAGE*)(m->storage), m->storage->shape[0])) {
+      	return Qtrue;
+      }
+      
     } else {
       // TODO: Implement, at the very least, yale_is_symmetric. Model it after yale/transp.template.c.
       rb_raise(rb_eNotImpError, "symmetric? and hermitian? only implemented for dense currently");
@@ -498,91 +596,6 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
 
   return Qfalse;
 }
-
-
-/*
- * Is this matrix symmetric?
- */
-static VALUE nm_symmetric(VALUE self) {
-  return is_symmetric(self, false);
-}
-
-/*
- * Is this matrix hermitian?
- *
- * Definition: http://en.wikipedia.org/wiki/Hermitian_matrix
- *
- * For non-complex matrices, this function should return the same result as symmetric?.
- */
-static VALUE nm_hermitian(VALUE self) {
-  return is_symmetric(self, true);
-}
-
-
-// Borrowed this function from NArray. Handles 'each' iteration on a dense matrix.
-//
-// Additionally, handles separately matrices containing VALUEs and matrices containing
-// other types of data.
-static VALUE nm_dense_each(VALUE nmatrix) {
-  DENSE_STORAGE* s = (DENSE_STORAGE*)(NM_STORAGE(nmatrix));
-  VALUE v;
-  size_t i;
-
-  //void (*copy)();
-
-  if (NM_DTYPE(nmatrix) == RUBYOBJ) {
-
-    // matrix of Ruby objects -- yield those objects directly
-    for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i)
-      rb_yield( *((VALUE*)((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)])) );
-
-  } else {
-    // We're going to copy the matrix element into a Ruby VALUE and then operate on it. This way user can't accidentally
-    // modify it and cause a seg fault.
-    //copy = SetFuncs[NM_ROBJ][NM_DTYPE(nmatrix)];
-
-    for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i) {
-      v = rubyobj_from_cval((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)], NM_DTYPE(nmatrix)).rval;
-      // (*copy)(1, &v, 0, (char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)], 0);
-      rb_yield(v); // yield to the copy we made
-    }
-  }
-
-  return nmatrix;
-}
-
-
-/*
- * Iterate over the matrix as you would an Enumerable (e.g., Array).
- *
- * Currently only works for dense.
- */
-static VALUE nm_each(VALUE nmatrix) {
-  volatile VALUE nm = nmatrix; // not sure why we do this, but it gets done in ruby's array.c.
-
-  switch(NM_STYPE(nm)) {
-  case DENSE_STORE:
-    return nm_dense_each(nm);
-  default:
-    rb_raise(rb_eNotImpError, "only dense matrix's each method works right now");
-  }
-}
-
-
-/*
- * Check to determine whether matrix is a reference to another matrix.
- */
-VALUE nm_is_ref(VALUE self) {
-  if (NM_STYPE(self) == DENSE_STORE) // refs only allowed for dense matrices.
-    return (NM_DENSE_SRC(self) == NM_STORAGE(self)) ? Qfalse : Qtrue;
-
-  return Qfalse;
-}
-
-///////////////////////
-// Utility Functions //
-///////////////////////
-
 
 /*
  * Converts a string to a data type.

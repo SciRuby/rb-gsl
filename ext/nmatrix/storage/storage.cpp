@@ -51,7 +51,11 @@ const char* const STYPE_NAMES[NUM_STYPES] = {
 	"yale"
 };
 
-
+const void (*STYPE_MARK[NUM_STYPES])(void*) = {
+	dense_storage_mark,
+	list_storage_mark,
+	yale_storage_mark
+}
 
 /*
  * Forward Declarations
