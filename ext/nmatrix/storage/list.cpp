@@ -241,7 +241,7 @@ bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
 
   // in certain cases, we need to keep track of the number of elements checked.
   size_t num_checked  = 0,
-         max_elements = storage_count_max_elements(left->rank, left->shape);
+         max_elements = storage_count_max_elements(left);
   
   bool (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[left->dtype][0];
 

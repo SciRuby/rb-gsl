@@ -96,7 +96,7 @@ YALE_STORAGE* yale_storage_create(dtype_t dtype, size_t* shape, size_t rank, siz
 //}
 
   s = yale_storage_alloc(dtype, shape, rank);
-  max_capacity = storage_count_max_elements(s->rank, s->shape) - s->shape[0] + 1;
+  max_capacity = storage_count_max_elements(s) - s->shape[0] + 1;
 
   // Set matrix capacity (and ensure its validity)
   if (init_capacity < YALE_MINIMUM(s)) {

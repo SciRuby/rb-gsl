@@ -55,17 +55,11 @@
  * Types
  */
 
-typedef struct {
-	// Common elements found in all storage types.  Must not be re-arranged.
-	dtype_t	dtype;
-	size_t	rank;
-	size_t*	shape;
-	size_t*	offset;
-	
+struct LIST_STORAGE : STORAGE {
 	// List storage specific elements.
 	void* default_val;
 	LIST* rows;
-} LIST_STORAGE;
+};
 
 /*
  * Data

@@ -80,13 +80,7 @@
  * Types
  */
 
-typedef struct {
-	// Common elements found in all storage types.  Must not be re-arranged.
-	dtype_t	dtype;
-	size_t	rank;
-	size_t*	shape;
-	size_t*	offset;
-	
+struct YALE_STORAGE : STORAGE {
 	// Yale storage specific elements.
 	void* a;
 
@@ -96,7 +90,7 @@ typedef struct {
 	size_t	capacity;
 	int8_t	index_dtype;
 	void*		ija;
-} YALE_STORAGE;
+};
 
 /*
  * Data

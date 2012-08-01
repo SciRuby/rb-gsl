@@ -246,15 +246,15 @@ static VALUE nm_capacity(VALUE self) {
 
   switch(NM_STYPE(self)) {
   case YALE_STORE:
-    cap = UINT2NUM(((YALE_STORAGE*)(NM_STORAGE(self)))->capacity);
+  	cap = UINT2NUM(NM_YALE_STORAGE(self)->capacity);
     break;
 
   case DENSE_STORE:
-    cap = UINT2NUM(storage_count_max_elements( NM_DENSE_STORAGE(self)->rank, NM_DENSE_STORAGE(self)->shape ));
+    cap = UINT2NUM(storage_count_max_elements(NM_DENSE_STORAGE(self));
     break;
 
   case LIST_STORE:
-    cap = UINT2NUM(list_storage_count_elements( NM_LIST_STORAGE(self) ));
+    cap = UINT2NUM(list_storage_count_elements(NM_LIST_STORAGE(self)));
     break;
 
   default:
@@ -298,26 +298,22 @@ static VALUE nm_each(VALUE nmatrix) {
  * containing other types of data.
  */
 static VALUE nm_each_dense(VALUE nmatrix) {
-  DENSE_STORAGE* s = (DENSE_STORAGE*)(NM_STORAGE(nmatrix));
+  DENSE_STORAGE* s = NM_DENSE_STORAGE(nmatrix);
   VALUE v;
   size_t i;
-
-  //void (*copy)();
 
   if (NM_DTYPE(nmatrix) == RUBYOBJ) {
 
     // matrix of Ruby objects -- yield those objects directly
-    for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i)
+    for (i = 0; i < storage_count_max_elements(s); ++i)
       rb_yield( *((VALUE*)((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)])) );
 
   } else {
     // We're going to copy the matrix element into a Ruby VALUE and then operate on it. This way user can't accidentally
     // modify it and cause a seg fault.
-    //copy = SetFuncs[NM_ROBJ][NM_DTYPE(nmatrix)];
 
-    for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i) {
+    for (i = 0; i < storage_count_max_elements(s); ++i) {
       v = rubyobj_from_cval((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)], NM_DTYPE(nmatrix)).rval;
-      // (*copy)(1, &v, 0, (char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)], 0);
       rb_yield(v); // yield to the copy we made
     }
   }

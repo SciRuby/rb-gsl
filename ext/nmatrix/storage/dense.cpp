@@ -94,7 +94,7 @@ DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, v
   s->count      = 1;
   s->src        = s;
 	
-	count         = storage_count_max_elements(s->rank, s->shape);
+	count         = storage_count_max_elements(s);
 
   if (elements_length == count) {
   	s->elements = elements;
@@ -159,7 +159,7 @@ void dense_storage_mark(DENSE_STORAGE* storage) {
 	VALUE* els = (VALUE*)storage->elements;
 	
   if (storage && storage->dtype == RUBYOBJ) {
-  	for (index = storage_count_max_elements(storage->rank, storage->shape); index-- > 0;) {
+  	for (index = storage_count_max_elements(storage); index-- > 0;) {
       rb_gc_mark(els[index]);
     }
   }
@@ -194,7 +194,7 @@ void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
     ns->count      = 1;
     ns->src        = ns;
 
-    count          = storage_count_max_elements( s->rank, s->shape );
+    count          = storage_count_max_elements(s);
 
     ns->elements   = ALLOC_N(char, DTYPE_SIZES[ns->dtype] * count);
     NM_CHECK_ALLOC(ns->elements);
@@ -374,7 +374,7 @@ DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dty
 DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
   DENSE_STORAGE* lhs;
 
-  size_t  count = storage_count_max_elements(rhs->rank, rhs->shape);
+  size_t  count = storage_count_max_elements(rhs);
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   NM_CHECK_ALLOC(shape);
   memcpy(shape, rhs->shape, sizeof(*shape) * rhs->rank);
@@ -398,7 +398,7 @@ DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
 
 template <typename DType, typename NewDType>
 DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
-  size_t  count = storage_count_max_elements(rhs->rank, rhs->shape);
+  size_t  count = storage_count_max_elements(rhs);
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   NM_CHECK_ALLOC(shape);
   memcpy(shape, rhs->shape, sizeof(*shape) * rhs->rank);
@@ -435,7 +435,7 @@ bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE*
 	LDType* left_elements	  = (LDType*)left->elements;
 	RDType* right_elements	= (RDType*)right->elements;
 	
-	for (index = storage_count_max_elements(left->rank, left->shape); index-- > 0;) {
+	for (index = storage_count_max_elements(left); index-- > 0;) {
 		if (left_elements[index] != right_elements[index]) return false;
 	}
 

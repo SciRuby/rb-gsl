@@ -44,13 +44,13 @@
  * Types
  */
 
-typedef struct {
+struct STORAGE {
 	// Common elements found in all storage types.  Must not be re-arranged.
 	dtype_t	dtype;
 	size_t	rank;
 	size_t*	shape;
 	size_t*	offset;
-} STORAGE;
+};
 
 // For binary operations involving matrices that need to be casted.
 typedef struct {
@@ -72,19 +72,6 @@ typedef struct {
  * Functions
  */
 
-/*
- * Calculate the number of elements in the dense storage structure, based on
- * shape and rank.
- */
-inline size_t storage_count_max_elements(size_t rank, const size_t* shape) {
-  unsigned int i;
-  size_t count = 1;
-  
-  for (i = rank; i-- > 0;) {
-  	count *= shape[i];
-  }
-  
-  return count;
-}
+size_t storage_count_max_elements(STORAGE* storage);
 
 #endif
