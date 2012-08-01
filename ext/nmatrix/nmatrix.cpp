@@ -79,7 +79,7 @@ typedef VALUE (*METHOD)(...);
  */
 
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm);
-static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_index_dtype, VALUE nm);
+static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_itype, VALUE nm);
 static VALUE nm_dtype(VALUE self);
 static VALUE nm_stype(VALUE self);
 static VALUE nm_rank(VALUE self);
@@ -379,7 +379,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
  * This constructor is only called by Ruby code, so we can skip most of the
  * checks.
  */
-static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_index_dtype, VALUE nm) {
+static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_itype, VALUE nm) {
   size_t rank     = 2;
   size_t* shape_  = interpret_shape(shape, &rank);
   dtype_t dtype_  = dtype_from_rbsymbol(dtype);
@@ -387,13 +387,13 @@ static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALU
        *ja_       = RSTRING_PTR(ja),
        *a_        = RSTRING_PTR(a);
   dtype_t from_dtype_ = dtype_from_rbsymbol(from_dtype);
-  dtype_t from_index_dtype_ = dtype_from_rbsymbol(from_index_dtype);
+  itype_t from_itype_ = itype_from_rbsymbol(from_itype);
   NMATRIX* nmatrix;
 
   UnwrapNMatrix( nm, nmatrix );
 
   nmatrix->stype   = YALE_STORE;
-  nmatrix->storage = (STORAGE*)yale_storage_create_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_, from_index_dtype_);
+  nmatrix->storage = (STORAGE*)yale_storage_create_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_, from_itype_);
 
   return nm;
 }

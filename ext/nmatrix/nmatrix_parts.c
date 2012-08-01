@@ -131,11 +131,11 @@ static NMATRIX* multiply_matrix_yale_casted(STORAGE_PAIR casted_storage, size_t*
   init_yale_storage(result);
 
   // Do the multiplication
-  Symbmm[left->index_dtype](result->shape[0], result->shape[1], left->ija, left->ija, true, right->ija, right->ija, true, result->ija, true);
-  Numbmm[left->dtype][left->index_dtype](result->shape[0], result->shape[1], left->ija, left->ija, left->a, true, right->ija, right->ija, right->a, true, result->ija, result->ija, result->a, true);
+  Symbmm[left->itype](result->shape[0], result->shape[1], left->ija, left->ija, true, right->ija, right->ija, true, result->ija, true);
+  Numbmm[left->dtype][left->itype](result->shape[0], result->shape[1], left->ija, left->ija, left->a, true, right->ija, right->ija, right->a, true, result->ija, result->ija, result->a, true);
 
   // Sort the columns
-  SmmpSortColumns[left->dtype][left->index_dtype](result->shape[0], result->ija, result->ija, result->a);
+  SmmpSortColumns[left->dtype][left->itype](result->shape[0], result->ija, result->ija, result->a);
 
   return nm_create(S_YALE, result);
 }
@@ -192,9 +192,9 @@ static NMATRIX* ew_hom_yale_casted(STORAGE_PAIR casted_storage, enum MathHomOps 
                *right = (YALE_STORAGE*)(casted_storage.right);
   YALE_STORAGE *result = create_merged_yale_storage(left, right);
 
-  fprintf(stderr, "result: %d, %d\n", result->dtype, result->index_dtype);
+  fprintf(stderr, "result: %d, %d\n", result->dtype, result->itype);
 
-  EwYaleHom[result->dtype][result->index_dtype](left->a, right->a, result->a, left->ija, right->ija, result->ija, result->shape[0], result->shape[1], op);
+  EwYaleHom[result->dtype][result->itype](left->a, right->a, result->a, left->ija, right->ija, result->ija, result->shape[0], result->shape[1], op);
 
   return nm_create(S_YALE, result);
 }
@@ -1055,7 +1055,7 @@ static VALUE nm_yale_size(VALUE self) {
 
   if (NM_STYPE(self) != S_YALE) rb_raise(nm_eStorageTypeError, "wrong storage type");
 
-  SetFuncs[NM_ROBJ][s->index_dtype](1, &sz, 0, (YALE_SIZE_PTR((s), nm_sizeof[s->index_dtype])), 0);
+  SetFuncs[NM_ROBJ][s->itype](1, &sz, 0, (YALE_SIZE_PTR((s), nm_sizeof[s->itype])), 0);
   return sz;
 }
 
@@ -1144,7 +1144,7 @@ static VALUE nm_yale_ia(VALUE self) {
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*(s->shape[0]+1));
 
-  SetFuncs[NM_ROBJ][s->index_dtype](s->shape[0]+1, vals, nm_sizeof[NM_ROBJ], s->ija, nm_sizeof[s->index_dtype]);
+  SetFuncs[NM_ROBJ][s->itype](s->shape[0]+1, vals, nm_sizeof[NM_ROBJ], s->ija, nm_sizeof[s->itype]);
   ary = rb_ary_new4(s->shape[0]+1, vals);
 
   return ary;
@@ -1166,7 +1166,7 @@ static VALUE nm_yale_ja(VALUE self) {
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*(s->capacity - s->shape[0]));
 
-  SetFuncs[NM_ROBJ][s->index_dtype](sz - s->shape[0] - 1, vals, nm_sizeof[NM_ROBJ], (char*)(s->ija) + (s->shape[0] + 1)*nm_sizeof[s->index_dtype], nm_sizeof[s->index_dtype]);
+  SetFuncs[NM_ROBJ][s->itype](sz - s->shape[0] - 1, vals, nm_sizeof[NM_ROBJ], (char*)(s->ija) + (s->shape[0] + 1)*nm_sizeof[s->itype], nm_sizeof[s->itype]);
   ary = rb_ary_new4(sz - s->shape[0] - 1, vals);
 
   for (i = sz; i < s->capacity; ++i)
@@ -1190,7 +1190,7 @@ static VALUE nm_yale_ija(VALUE self) {
   YaleGetSize(sz, s);
   vals = ALLOC_N(char, nm_sizeof[NM_ROBJ]*s->capacity);
 
-  SetFuncs[NM_ROBJ][s->index_dtype](sz, vals, nm_sizeof[NM_ROBJ], s->ija, nm_sizeof[s->index_dtype]);
+  SetFuncs[NM_ROBJ][s->itype](sz, vals, nm_sizeof[NM_ROBJ], s->ija, nm_sizeof[s->itype]);
   ary = rb_ary_new4(sz, vals);
 
   for (i = sz; i < s->capacity; ++i)
@@ -1271,7 +1271,7 @@ static NMATRIX* transpose_new_yale(NMATRIX* self_m, size_t* shape) {
   A.diag = true;
 
   // call the appropriate function pointer
-  Transp[ self_m->storage->dtype ][ ((YALE_STORAGE*)(self_m->storage))->index_dtype ](shape[0], shape[1], A.ia, A.ja, A.a, A.diag, B.ia, B.ja, B.a, true);
+  Transp[ self_m->storage->dtype ][ ((YALE_STORAGE*)(self_m->storage))->itype ](shape[0], shape[1], A.ia, A.ja, A.a, A.diag, B.ia, B.ja, B.a, true);
 
   return result;
 }
