@@ -127,7 +127,8 @@ void list_storage_mark(void* storage_base) {
 /*
  * Documentation goes here.
  */
-void* list_storage_get(LIST_STORAGE* s, SLICE* slice) {
+void* list_storage_get(LIST_STORAGE* storage, SLICE* slice) {
+  LIST_STORAGE* s = (LIST_STORAGE*)storage;
   rb_raise(rb_eNotImpError, "This type of slicing not supported yet");
 }
 
@@ -136,8 +137,8 @@ void* list_storage_get(LIST_STORAGE* s, SLICE* slice) {
  * Get the contents of some set of coordinates. Note: Does not make a copy!
  * Don't free!
  */
-void* list_storage_ref(LIST_STORAGE* s, SLICE* slice) {
-  //LIST_STORAGE* s = (LIST_STORAGE*)(t);
+void* list_storage_ref(STORAGE* storage, SLICE* slice) {
+  LIST_STORAGE* s = (LIST_STORAGE*)(storage);
   size_t r;
   NODE*  n;
   LIST*  l = s->rows;
@@ -158,7 +159,8 @@ void* list_storage_ref(LIST_STORAGE* s, SLICE* slice) {
  *
  * TODO: Allow this function to accept an entire row and not just one value -- for slicing
  */
-void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val) {
+void* list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
+  LIST_STORAGE* s = (LIST_STORAGE*)storage;
   // Pretend ranks = 2
   // Then coords is going to be size 2
   // So we need to find out if some key already exists
@@ -181,7 +183,8 @@ void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val) {
  *
  * TODO: Speed up removal.
  */
-void* list_storage_remove(LIST_STORAGE* s, SLICE* slice) {
+void* list_storage_remove(STORAGE* storage, SLICE* slice) {
+  LIST_STORAGE* s = (LIST_STORAGE*)storage;
   int r;
   NODE  *n = NULL;
   LIST*  l = s->rows;

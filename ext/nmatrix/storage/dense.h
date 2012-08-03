@@ -88,9 +88,9 @@ void						dense_storage_mark(void*);
 // Accessors //
 ///////////////
 
-void*	dense_storage_get(DENSE_STORAGE* s, SLICE* slice);
-void*	dense_storage_ref(DENSE_STORAGE* s, SLICE* slice);
-void	dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val);
+void*	dense_storage_get(STORAGE* s, SLICE* slice);
+void*	dense_storage_ref(STORAGE* s, SLICE* slice);
+void	dense_storage_set(STORAGE* s, SLICE* slice, void* val);
 
 ///////////
 // Tests //

@@ -334,7 +334,8 @@ static YALE_STORAGE* yale_storage_alloc(dtype_t dtype, size_t* shape, size_t ran
 /*
  * Documentation goes here.
  */
-void yale_storage_get(YALE_STORAGE* s, SLICE* slice) {
+void yale_storage_get(STORAGE* storage, SLICE* slice) {
+  YALE_STORAGE* s = (YALE_STORAGE*)storage;
   rb_raise(rb_eNotImpError, "This type of yale slicing not supported yet");
 }
 
@@ -342,7 +343,8 @@ void yale_storage_get(YALE_STORAGE* s, SLICE* slice) {
 /*
  * Documentation goes here.
  */
-void* yale_storage_ref(YALE_STORAGE* s, SLICE* slice) {
+void* yale_storage_ref(STORAGE* storage, SLICE* slice) {
+  YALE_STORAGE* s = (YALE_STORAGE*)storage;
   size_t* coords = slice->coords;
 
   y_size_t l, r, i_plus_one = coords[0] + 1, test_j;
@@ -378,7 +380,8 @@ void* yale_storage_ref(YALE_STORAGE* s, SLICE* slice) {
 /*
  * Documentation goes here.
  */
-char yale_storage_set(YALE_STORAGE* s, SLICE* slice, void* v) {
+char yale_storage_set(STORAGE* storage, SLICE* slice, void* v) {
+  YALE_STORAGE* s = (YALE_STORAGE*)storage;
   size_t* coords = slice->coords;
 
   y_size_t i_next = coords[0] + 1;

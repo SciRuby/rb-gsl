@@ -90,6 +90,14 @@ static VALUE nm_rank(VALUE self);
 static VALUE nm_shape(VALUE self);
 static VALUE nm_capacity(VALUE self);
 static VALUE nm_each(VALUE nmatrix);
+
+static SLICE* get_slice(size_t rank, VALUE* c, VALUE self);
+static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLICE*), void (*delete_func)(NMATRIX*), VALUE self);
+static VALUE nm_mset(int argc, VALUE* argv, VALUE self);
+static VALUE nm_mget(int argc, VALUE* argv, VALUE self);
+static VALUE nm_mref(int argc, VALUE* argv, VALUE self);
+static VALUE nm_is_ref(VALUE self);
+
 static VALUE nm_symmetric(VALUE self);
 static VALUE nm_hermitian(VALUE self);
 
@@ -554,6 +562,140 @@ static VALUE nm_shape(VALUE self) {
 }
 
 
+
+/*
+ * Access the contents of an NMatrix at given coordinates, using copying.
+ *
+ *     n.slice(3,3)  # => 5.0
+ *     n.slice(0..1,0..1) #=> matrix [2,2]
+ *
+ */
+static VALUE nm_mget(int argc, VALUE* argv, VALUE self) {
+  static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
+    dense_storage_get,
+    list_storage_get,
+    yale_storage_get
+  };
+  return nm_xslice(argc, argv, ttable[NM_STYPE(self)], nm_delete, self);
+}
+
+
+
+/*
+ * Access the contents of an NMatrix at given coordinates by reference.
+ *
+ *     n[3,3]  # => 5.0
+ *     n[0..1,0..1] #=> matrix [2,2]
+ *
+ */
+static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
+  static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
+    dense_storage_ref,
+    list_storage_ref,
+    yale_storage_ref
+  };
+  return nm_xslice(argc, argv, ttable[NM_STYPE(self)], nm_delete, self);
+}
+
+
+
+/*
+ * Modify the contents of an NMatrix in the given cell
+ *
+ *     n[3,3] = 5.0
+ *
+ * Also returns the new contents, so you can chain:
+ *
+ *     n[3,3] = n[2,3] = 5.0
+ */
+static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
+  size_t rank = argc - 1; // last arg is the value
+
+  if (argc <= 1) {
+    rb_raise(rb_eArgError, "Expected coordinates and r-value");
+
+  } else if (NM_RANK(self) == rank) {
+
+    SLICE* slice = get_slice(rank, argv, self);
+
+    void* value = rubyobj_to_cval(argv[rank], NM_DTYPE(self));
+
+    // FIXME: Can't use a function pointer table here currently because these functions have different
+    // signatures (namely the return type).
+    switch(NM_STYPE(self)) {
+    case DENSE_STORE:
+      dense_storage_set(NM_STORAGE(self), slice, value);
+      break;
+    case LIST_STORE:
+      // Remove if it's a zero, insert otherwise
+      if (!memcmp(value, NM_LIST_STORAGE(self)->default_val, DTYPE_SIZES[NM_DTYPE(self)])) {
+        free(value);
+        value = list_storage_remove(NM_STORAGE(self), slice);
+        free(value);
+      } else {
+        list_storage_insert(NM_STORAGE(self), slice, value);
+      }
+      break;
+    case YALE_STORE:
+      yale_storage_set(NM_STORAGE(self), slice, value);
+      break;
+    }
+
+    return argv[rank];
+
+  } else if (NM_RANK(self) < rank) {
+    rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");
+  } else {
+    rb_raise(rb_eNotImpError, "Slicing not supported yet");
+  }
+  return Qnil;
+}
+
+
+/*
+ * Get a slice of an NMatrix.
+ */
+static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLICE*), void (*delete_func)(NMATRIX*), VALUE self) {
+  VALUE result = Qnil;
+
+  if (NM_RANK(self) == (size_t)(argc)) {
+    SLICE* slice = get_slice((size_t)(argc), argv, self);
+    // TODO: Slice for List, Yale types
+    if (slice->is_one_el == 0) {
+
+      if (NM_STYPE(self) == DENSE_STORE) {
+        STYPE_MARK_TABLE(mark_table);
+
+        NMATRIX* mat = ALLOC(NMATRIX);
+        mat->stype = NM_STYPE(self);
+        mat->storage = (STORAGE*)((*slice_func)( (STORAGE*)NM_STORAGE(self), slice ));
+        result = Data_Wrap_Struct(cNMatrix, mark_table[mat->stype], delete_func, mat);
+      } else {
+        rb_raise(rb_eNotImpError, "slicing only implemented for dense so far");
+      }
+
+    } else {
+      static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
+        dense_storage_ref,
+        list_storage_ref,
+        yale_storage_ref
+      };
+      result = rubyobj_from_cval( ttable[NM_STYPE(self)]((STORAGE*)NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
+    }
+
+    free(slice);
+
+  } else if (NM_RANK(self) < (size_t)(argc)) {
+    rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");
+  } else {
+    rb_raise(rb_eNotImpError, "This type slicing not supported yet");
+  }
+
+  return result;
+}
+
+
+
 // Helper function for nm_symmetric and nm_hermitian.
 static VALUE is_symmetric(VALUE self, bool hermitian) {
   NMATRIX* m;
@@ -648,7 +790,7 @@ static VALUE nm_each(VALUE nmatrix) {
 /*
  * Check to determine whether matrix is a reference to another matrix.
  */
-VALUE nm_is_ref(VALUE self) {
+static VALUE nm_is_ref(VALUE self) {
   if (NM_STYPE(self) == DENSE_STORE) // refs only allowed for dense matrices.
     return (NM_DENSE_SRC(self) == NM_STORAGE(self)) ? Qfalse : Qtrue;
 
@@ -658,6 +800,43 @@ VALUE nm_is_ref(VALUE self) {
 ///////////////////////
 // Utility Functions //
 ///////////////////////
+
+/*
+ * Documentation goes here.
+ */
+static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
+  size_t r;
+  VALUE beg, end;
+  int i;
+
+  SLICE* slice = ALLOC(SLICE);
+  slice->coords = ALLOC_N(size_t,rank);
+  slice->lengths = ALLOC_N(size_t, rank);
+  slice->is_one_el = 1;
+
+  for (r = 0; r < rank; ++r) {
+
+    if (FIXNUM_P(c[r])) { // this used CLASS_OF before, which is inefficient for fixnum
+
+      slice->coords[r] = FIX2UINT(c[r]);
+      slice->lengths[r] = 1;
+
+    } else if (CLASS_OF(c[r]) == rb_cRange) {
+        rb_range_values(c[r], &beg, &end, &i);
+        slice->coords[r] = FIX2UINT(beg);
+        slice->lengths[r] = FIX2UINT(end) - slice->coords[r] + 1;
+        slice->is_one_el = 0;
+
+    } else {
+      rb_raise(rb_eArgError, "cannot slice using class %s, needs a number or range or something", rb_obj_classname(c[r]));
+    }
+
+    if (slice->coords[r] + slice->lengths[r] > NM_SHAPE(self,r))
+      rb_raise(rb_eArgError, "out of range");
+  }
+
+  return slice;
+}
 
 
 /*

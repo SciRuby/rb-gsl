@@ -174,9 +174,12 @@ void dense_storage_mark(void* storage_base) {
 
 /*
  * Get a slice or one element, using copying.
+ *
+ * FIXME: Template the first condition.
  */
-void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
-  DENSE_STORAGE *ns;
+void* dense_storage_get(STORAGE* storage, SLICE* slice) {
+  DENSE_STORAGE* s = (DENSE_STORAGE*)storage;
+  DENSE_STORAGE* ns;
   size_t count;
 
   if (slice->is_one_el)
@@ -209,16 +212,18 @@ void* dense_storage_get(DENSE_STORAGE* s, SLICE* slice) {
 
 
 /*
- * Documentation goes here.
+ * Get a slice or one element by reference (no copy).
+ *
+ * FIXME: Template the first condition.
  */
-void* dense_storage_ref(DENSE_STORAGE* s, SLICE* slice) {
-  DENSE_STORAGE *ns;
+void* dense_storage_ref(STORAGE* storage, SLICE* slice) {
+  DENSE_STORAGE* s = (DENSE_STORAGE*)storage;
 
   if (slice->is_one_el)
     return (char*)(s->elements) + dense_storage_pos(s, slice->coords) * DTYPE_SIZES[s->dtype];
     
   else {
-    ns = ALLOC( DENSE_STORAGE );
+    DENSE_STORAGE* ns = ALLOC( DENSE_STORAGE );
     NM_CHECK_ALLOC(ns);
 
     ns->rank       = s->rank;
@@ -249,7 +254,8 @@ void* dense_storage_ref(DENSE_STORAGE* s, SLICE* slice) {
 /*
  * Does not free passed-in value! Different from list_storage_insert.
  */
-void dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val) {
+void dense_storage_set(STORAGE* storage, SLICE* slice, void* val) {
+  DENSE_STORAGE* s = (DENSE_STORAGE*)storage;
   memcpy((char*)(s->elements) + dense_storage_pos(s, slice->coords) * DTYPE_SIZES[s->dtype], val, DTYPE_SIZES[s->dtype]);
 }
 

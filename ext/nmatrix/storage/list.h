@@ -88,10 +88,10 @@ void					list_storage_mark(void*);
 // Accessors //
 ///////////////
 
-void* list_storage_ref(LIST_STORAGE* s, SLICE* slice);
-void* list_storage_get(LIST_STORAGE* s, SLICE* slice);
-void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val);
-void* list_storage_remove(LIST_STORAGE* s, SLICE* slice);
+void* list_storage_ref(STORAGE* s, SLICE* slice);
+void* list_storage_get(STORAGE* s, SLICE* slice);
+void* list_storage_insert(STORAGE* s, SLICE* slice, void* val);
+void* list_storage_remove(STORAGE* s, SLICE* slice);
 
 ///////////
 // Tests //

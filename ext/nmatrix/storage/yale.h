@@ -122,9 +122,9 @@ void					yale_storage_mark(void*);
 // Accessors //
 ///////////////
 
-void* yale_storage_get(YALE_STORAGE* s, SLICE* slice);
-void*	yale_storage_ref(YALE_STORAGE* s, SLICE* slice);
-char	yale_storage_set(YALE_STORAGE* s, SLICE* slice, void* v);
+void* yale_storage_get(STORAGE* s, SLICE* slice);
+void*	yale_storage_ref(STORAGE* s, SLICE* slice);
+char	yale_storage_set(STORAGE* s, SLICE* slice, void* v);
 
 ///////////
 // Tests //
