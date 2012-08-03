@@ -297,7 +297,8 @@ void yale_storage_init(YALE_STORAGE* s) {
 /*
  * Documentation goes here.
  */
-void yale_storage_mark(YALE_STORAGE* storage) {
+void yale_storage_mark(STORAGE* storage_base) {
+  YALE_STORAGE* storage = reinterpret_cast<YALE_STORAGE*>(storage_base);
   size_t i;
   
   if (storage && storage->dtype == RUBYOBJ) {
@@ -886,10 +887,10 @@ static char yale_storage_vector_replace_j(YALE_STORAGE* s, y_size_t pos, y_size_
 /*
  * Copy constructor for changing dtypes.
  */
-YALE_STORAGE* yale_storage_cast_copy(const YALE_STORAGE* rhs, dtype_t new_dtype) {
+STORAGE* yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
   LR_DTYPE_TEMPLATE_TABLE(yale_storage_cast_copy_template, YALE_STORAGE*, const YALE_STORAGE*, dtype_t);
 
-  return ttable[new_dtype][rhs->dtype](rhs, new_dtype);
+  return (STORAGE*)ttable[new_dtype][rhs->dtype]((YALE_STORAGE*)rhs, new_dtype);
 }
 
 

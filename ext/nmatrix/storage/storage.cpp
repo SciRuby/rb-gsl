@@ -74,10 +74,10 @@ static void dense_storage_cast_copy_list_default_template(LDType* lhs, RDType* d
 /////////////////////////
 
 
-DENSE_STORAGE* dense_storage_from_list(const LIST_STORAGE* right, dtype_t l_dtype) {
+STORAGE* dense_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
 	LR_DTYPE_TEMPLATE_TABLE(dense_storage_from_list_template, DENSE_STORAGE*, const LIST_STORAGE*, dtype_t);
 
-	return ttable[l_dtype][right->dtype](right, l_dtype);
+	return (STORAGE*)ttable[l_dtype][right->dtype]((LIST_STORAGE*)right, l_dtype);
 }
 
 
@@ -104,10 +104,10 @@ DENSE_STORAGE* dense_storage_from_list_template(const LIST_STORAGE* rhs, dtype_t
 }
 
 
-DENSE_STORAGE* dense_storage_from_yale(const YALE_STORAGE* right, dtype_t l_dtype) {
+STORAGE* dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
 	LRI_DTYPE_TEMPLATE_TABLE(dense_storage_from_yale_template, DENSE_STORAGE*, const YALE_STORAGE*, dtype_t);
 
-	return ttable[l_dtype][right->dtype][right->itype](right, l_dtype);
+	return (STORAGE*)ttable[l_dtype][right->dtype][right->itype]((const YALE_STORAGE*)right, l_dtype);
 }
 
 /*

@@ -98,11 +98,11 @@ extern const char* const STYPE_NAMES[NUM_STYPES];
 // Copying and Casting //
 /////////////////////////
 
-DENSE_STORAGE*	dense_storage_from_list(const LIST_STORAGE* rhs, dtype_t l_dtype);
-DENSE_STORAGE*	dense_storage_from_yale(const YALE_STORAGE* rhs, dtype_t l_dtype);
-LIST_STORAGE*		list_storage_from_dense(const DENSE_STORAGE* rhs, dtype_t l_dtype);
-LIST_STORAGE*		list_storage_from_yale(const YALE_STORAGE* rhs, dtype_t l_dtype);
-YALE_STORAGE*		yale_storage_from_list(const LIST_STORAGE* rhs, dtype_t l_dtype);
-YALE_STORAGE*		yale_storage_from_dense(const DENSE_STORAGE* rhs, dtype_t l_dtype);
+STORAGE*	dense_storage_from_list(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*	dense_storage_from_yale(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*		list_storage_from_dense(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*		list_storage_from_yale(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*		yale_storage_from_list(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*		yale_storage_from_dense(const STORAGE* rhs, dtype_t l_dtype);
 
 #endif

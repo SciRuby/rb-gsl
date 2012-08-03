@@ -153,7 +153,8 @@ void dense_storage_delete_ref(DENSE_STORAGE* s) {
 /*
  * Mark values in a dense matrix for garbage collection. This may not be necessary -- further testing required.
  */
-void dense_storage_mark(DENSE_STORAGE* storage) {
+void dense_storage_mark(STORAGE* storage_base) {
+  DENSE_STORAGE* storage = reinterpret_cast<DENSE_STORAGE*>(storage_base);
   size_t index;
 	
 	VALUE* els = (VALUE*)storage->elements;
@@ -362,10 +363,12 @@ void dense_storage_slice_copy(
 /*
  * Copy dense storage, changing dtype if necessary.
  */
-DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
+STORAGE* dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
 	LR_DTYPE_TEMPLATE_TABLE(dense_storage_cast_copy_template, DENSE_STORAGE*, const DENSE_STORAGE*, dtype_t);
 	
-	return ttable[new_dtype][rhs->dtype](rhs, new_dtype);
+	return reinterpret_cast<STORAGE*>(
+	          ttable[new_dtype][rhs->dtype]( reinterpret_cast<DENSE_STORAGE*>(rhs), new_dtype )
+	       );
 }
 
 /*

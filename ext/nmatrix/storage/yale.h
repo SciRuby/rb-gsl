@@ -116,7 +116,7 @@ YALE_STORAGE* yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, ch
 YALE_STORAGE*	yale_storage_create_merged(const YALE_STORAGE* merge_template, const YALE_STORAGE* other);
 void					yale_storage_delete(YALE_STORAGE* s);
 void					yale_storage_init(YALE_STORAGE* s);
-void					yale_storage_mark(YALE_STORAGE* storage);
+void					yale_storage_mark(STORAGE* storage);
 
 ///////////////
 // Accessors //

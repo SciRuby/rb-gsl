@@ -81,7 +81,7 @@
   };
 
 #define STYPE_MARK_TABLE(name)\
-  static void (*(name)[NUM_STYPES])(void*) = {  \
+  static void (*(name)[NUM_STYPES])(STORAGE*) = {  \
     dense_storage_mark, \
     list_storage_mark,  \
     yale_storage_mark \

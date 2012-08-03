@@ -82,7 +82,7 @@ typedef struct {
 DENSE_STORAGE*	dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
 void						dense_storage_delete(DENSE_STORAGE* s);
 void						dense_storage_delete_ref(DENSE_STORAGE* s);
-void						dense_storage_mark(DENSE_STORAGE* storage);
+void						dense_storage_mark(STORAGE* storage);
 
 ///////////////
 // Accessors //
@@ -111,6 +111,6 @@ size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
 /////////////////////////
 
 DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs);
-DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype);
+STORAGE* dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 
 #endif

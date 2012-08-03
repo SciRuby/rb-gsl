@@ -112,7 +112,8 @@ void list_storage_delete(LIST_STORAGE* s) {
 /*
  * Documentation goes here.
  */
-void list_storage_mark(LIST_STORAGE* storage) {
+void list_storage_mark(STORAGE* storage_base) {
+  LIST_STORAGE* storage = reinterpret_cast<LIST_STORAGE*>(storage_base);
 
   if (storage && storage->dtype == RUBYOBJ) {
     rb_gc_mark(*((VALUE*)(storage->default_val)));
@@ -368,10 +369,10 @@ LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
 /*
  * List storage copy constructor C access.
  */
-LIST_STORAGE* list_storage_cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
+STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
   LR_DTYPE_TEMPLATE_TABLE(list_storage_cast_copy_template, LIST_STORAGE*, const LIST_STORAGE*, dtype_t);
 
-  return ttable[new_dtype][rhs->dtype](rhs, new_dtype);
+  return (LIST_STORAGE*)ttable[new_dtype][rhs->dtype]((LIST_STORAGE*)rhs, new_dtype);
 }
 
 

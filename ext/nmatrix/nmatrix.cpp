@@ -427,7 +427,7 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbo
     { yale_storage_from_dense,  yale_storage_from_list,   yale_storage_cast_copy  }
   };
 
-  lhs->storage = ttable[new_stype][rhs->stype](rhs, new_dtype);
+  lhs->storage = ttable[new_stype][rhs->stype](rhs->storage, new_dtype);
 
   STYPE_MARK_TABLE(mark_table);
 
@@ -441,7 +441,7 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbo
 static VALUE nm_alloc(VALUE klass) {
   NMATRIX* mat = ALLOC(NMATRIX);
   mat->storage = NULL;
-  mat->stype   = NUM_STYPES;
+  mat->stype   = reinterpret_cast<stype_t>(NUM_STYPES);
 
   STYPE_MARK_TABLE(mark_table);
 
