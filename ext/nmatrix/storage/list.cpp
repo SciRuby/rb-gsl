@@ -95,16 +95,14 @@ LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, voi
 /*
  * Documentation goes here.
  */
-void list_storage_delete(LIST_STORAGE* s) {
+void list_storage_delete(STORAGE* s) {
   if (s) {
-    //fprintf(stderr, "* Deleting list storage rows at %p\n", s->rows);
-    list_delete( s->rows, s->rank - 1 );
+    LIST_STORAGE* storage = reinterpret_cast<LIST_STORAGE*>(s);
 
-    //fprintf(stderr, "  Deleting list storage shape at %p\n", s->shape);
-    free(s->shape);
-    //fprintf(stderr, "  Deleting list storage default_val at %p\n", s->default_val);
-    free(s->default_val);
-    //fprintf(stderr, "  Deleting list storage at %p\n", s);
+    list_delete( storage->rows, storage->rank - 1 );
+
+    free(storage->shape);
+    free(storage->default_val);
     free(s);
   }
 }
@@ -112,7 +110,7 @@ void list_storage_delete(LIST_STORAGE* s) {
 /*
  * Documentation goes here.
  */
-void list_storage_mark(STORAGE* storage_base) {
+void list_storage_mark(void* storage_base) {
   LIST_STORAGE* storage = reinterpret_cast<LIST_STORAGE*>(storage_base);
 
   if (storage && storage->dtype == RUBYOBJ) {
@@ -372,7 +370,7 @@ LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
 STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
   LR_DTYPE_TEMPLATE_TABLE(list_storage_cast_copy_template, LIST_STORAGE*, const LIST_STORAGE*, dtype_t);
 
-  return (LIST_STORAGE*)ttable[new_dtype][rhs->dtype]((LIST_STORAGE*)rhs, new_dtype);
+  return (STORAGE*)ttable[new_dtype][rhs->dtype]((LIST_STORAGE*)rhs, new_dtype);
 }
 
 

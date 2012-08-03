@@ -81,6 +81,9 @@ typedef VALUE (*METHOD)(...);
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm);
 static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype, VALUE new_dtype);
 static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_itype, VALUE nm);
+static VALUE nm_alloc(VALUE klass);
+static void  nm_delete(NMATRIX* mat);
+static void  nm_delete_ref(NMATRIX* mat);
 static VALUE nm_dtype(VALUE self);
 static VALUE nm_stype(VALUE self);
 static VALUE nm_rank(VALUE self);
@@ -429,9 +432,9 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbo
 
   lhs->storage = ttable[new_stype][rhs->stype](rhs->storage, new_dtype);
 
-  STYPE_MARK_TABLE(mark_table);
+  //STYPE_MARK_TABLE(mark_table);
 
-  return Data_Wrap_Struct(cNMatrix, mark_table[new_stype], nm_delete, copy);
+  return copy; //Data_Wrap_Struct(cNMatrix, mark_table[new_stype], nm_delete, copy);
 }
 
 
@@ -441,13 +444,36 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbo
 static VALUE nm_alloc(VALUE klass) {
   NMATRIX* mat = ALLOC(NMATRIX);
   mat->storage = NULL;
-  mat->stype   = reinterpret_cast<stype_t>(NUM_STYPES);
+  // mat->stype   = NUM_STYPES;
 
   STYPE_MARK_TABLE(mark_table);
 
   return Data_Wrap_Struct(klass, mark_table[mat->stype], nm_delete, mat);
 }
 
+/*
+ * Destructor.
+ */
+static void nm_delete(NMATRIX* mat) {
+  static void (*ttable[NUM_STYPES])(STORAGE*) = {
+    dense_storage_delete,
+    list_storage_delete,
+    yale_storage_delete
+  };
+  ttable[mat->stype](mat->storage);
+}
+
+/*
+ * Slicing destructor.
+ */
+static void nm_delete_ref(NMATRIX* mat) {
+  static void (*ttable[NUM_STYPES])(STORAGE*) = {
+    dense_storage_delete_ref,
+    list_storage_delete,  // FIXME: Should these be _ref?
+    yale_storage_delete
+  };
+  ttable[mat->stype](mat->storage);
+}
 
 /*
  * Get the data type (dtype) of a matrix, e.g., :byte, :int8, :int16, :int32,

@@ -185,10 +185,10 @@ DENSE_STORAGE* dense_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t
 }
 
 
-LIST_STORAGE* list_storage_from_dense(const DENSE_STORAGE* right, dtype_t l_dtype) {
+STORAGE* list_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
 	LR_DTYPE_TEMPLATE_TABLE(list_storage_from_dense_template, LIST_STORAGE*, const DENSE_STORAGE*, dtype_t);
 
-	return ttable[l_dtype][right->dtype](right, l_dtype);
+	return (STORAGE*)ttable[l_dtype][right->dtype]((DENSE_STORAGE*)right, l_dtype);
 }
 
 /*
@@ -226,10 +226,10 @@ LIST_STORAGE* list_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t
 }
 
 
-LIST_STORAGE* list_storage_from_yale(const YALE_STORAGE* right, dtype_t l_dtype) {
+STORAGE* list_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
 	LRI_DTYPE_TEMPLATE_TABLE(list_storage_from_yale_template, LIST_STORAGE*, const YALE_STORAGE*, dtype_t);
 
-	return ttable[l_dtype][right->dtype][right->itype](right, l_dtype);
+	return (STORAGE*)ttable[l_dtype][right->dtype][right->itype]((const YALE_STORAGE*)right, l_dtype);
 }
 
 
@@ -321,12 +321,12 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
 }
 
 
-YALE_STORAGE* yale_storage_from_dense(const DENSE_STORAGE* right, dtype_t l_dtype) {
+STORAGE* yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
 	LRI_DTYPE_TEMPLATE_TABLE(yale_storage_from_dense_template, YALE_STORAGE*, const DENSE_STORAGE*, dtype_t);
 
-  itype_t itype = yale_storage_itype(reinterpret_cast<YALE_STORAGE*>(right));
+  itype_t itype = yale_storage_itype((YALE_STORAGE*)right);
 
-	return ttable[l_dtype][right->dtype][itype](right, l_dtype);
+	return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const DENSE_STORAGE*)right, l_dtype);
 }
 
 /*
@@ -398,12 +398,12 @@ YALE_STORAGE* yale_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t
 }
 
 
-YALE_STORAGE* yale_storage_from_list(const LIST_STORAGE* right, dtype_t l_dtype) {
+STORAGE* yale_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
 	LRI_DTYPE_TEMPLATE_TABLE(yale_storage_from_list_template, YALE_STORAGE*, const LIST_STORAGE*, dtype_t);
 
-  itype_t itype = yale_storage_itype(reinterpret_cast<YALE_STORAGE*>(right));
+  itype_t itype = yale_storage_itype((YALE_STORAGE*)right);
 
-	return ttable[l_dtype][right->dtype][itype](right, l_dtype);
+	return (YALE_STORAGE*)ttable[l_dtype][right->dtype][itype]((LIST_STORAGE*)right, l_dtype);
 }
 
 

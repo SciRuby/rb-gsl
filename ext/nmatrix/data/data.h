@@ -80,8 +80,8 @@
     fun<uint64_t>  \
   };
 
-#define STYPE_MARK_TABLE(name)\
-  static void (*(name)[NUM_STYPES])(STORAGE*) = {  \
+#define STYPE_MARK_TABLE(name) \
+  static void (*(name)[NUM_STYPES])(void*) = {  \
     dense_storage_mark, \
     list_storage_mark,  \
     yale_storage_mark \

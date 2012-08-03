@@ -267,14 +267,15 @@ YALE_STORAGE* yale_storage_create_merged(const YALE_STORAGE* template, const YAL
 }
 
 /*
- * Documentation goes here.
+ * Destructor for yale storage
  */
 void yale_storage_delete(YALE_STORAGE* s) {
   if (s) {
-    free(s->shape);
-    free(s->ija);
-    free(s->a);
-    free(s);
+    YALE_STORAGE* storage = reinterpret_cast<YALE_STORAGE*>(s);
+    free(storage->shape);
+    free(storage->ija);
+    free(storage->a);
+    free(storage);
   }
 }
 
@@ -297,7 +298,7 @@ void yale_storage_init(YALE_STORAGE* s) {
 /*
  * Documentation goes here.
  */
-void yale_storage_mark(STORAGE* storage_base) {
+void yale_storage_mark(void* storage_base) {
   YALE_STORAGE* storage = reinterpret_cast<YALE_STORAGE*>(storage_base);
   size_t i;
   

@@ -81,8 +81,8 @@ typedef struct {
 ///////////////
 
 LIST_STORAGE*	list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val);
-void					list_storage_delete(LIST_STORAGE* s);
-void					list_storage_mark(STORAGE* storage);
+void					list_storage_delete(STORAGE* s);
+void					list_storage_mark(void*);
 
 ///////////////
 // Accessors //
@@ -118,6 +118,6 @@ inline size_t list_storage_count_elements(const LIST_STORAGE* s) {
 /////////////////////////
 
 LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs);
-LIST_STORAGE* list_storage_cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype);
+STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 
 #endif

@@ -122,38 +122,40 @@ DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, v
 }
 
 /*
- * Documentation goes here.
+ * Destructor for dense storage
  */
-void dense_storage_delete(DENSE_STORAGE* s) {
+void dense_storage_delete(STORAGE* s) {
   // Sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure).
   if (s) {
-    if(s->count-- == 1) {
-      free(s->shape);
-      free(s->offset);
-      free(s->stride);
-      free(s->elements);
-      free(s);
+    DENSE_STORAGE* storage = reinterpret_cast<DENSE_STORAGE*>(s);
+    if(storage->count-- == 1) {
+      free(storage->shape);
+      free(storage->offset);
+      free(storage->stride);
+      free(storage->elements);
+      free(storage);
     }
   }
 }
 
 /*
- * Documentation goes here.
+ * Destructor for dense storage references (slicing).
  */
-void dense_storage_delete_ref(DENSE_STORAGE* s) {
+void dense_storage_delete_ref(STORAGE* s) {
   // Sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure).
   if (s) {
-    dense_storage_delete(s->src);
-    free(s->shape);
-    free(s->offset);
-    free(s);
+    DENSE_STORAGE* storage = reinterpret_cast<DENSE_STORAGE*>(s);
+    dense_storage_delete(storage->src);
+    free(storage->shape);
+    free(storage->offset);
+    free(storage);
   }
 }
 
 /*
  * Mark values in a dense matrix for garbage collection. This may not be necessary -- further testing required.
  */
-void dense_storage_mark(STORAGE* storage_base) {
+void dense_storage_mark(void* storage_base) {
   DENSE_STORAGE* storage = reinterpret_cast<DENSE_STORAGE*>(storage_base);
   size_t index;
 	
@@ -366,9 +368,7 @@ void dense_storage_slice_copy(
 STORAGE* dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
 	LR_DTYPE_TEMPLATE_TABLE(dense_storage_cast_copy_template, DENSE_STORAGE*, const DENSE_STORAGE*, dtype_t);
 	
-	return reinterpret_cast<STORAGE*>(
-	          ttable[new_dtype][rhs->dtype]( reinterpret_cast<DENSE_STORAGE*>(rhs), new_dtype )
-	       );
+	return (STORAGE*)ttable[new_dtype][rhs->dtype]( (DENSE_STORAGE*)rhs, new_dtype );
 }
 
 /*

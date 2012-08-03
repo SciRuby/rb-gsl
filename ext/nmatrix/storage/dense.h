@@ -80,9 +80,9 @@ typedef struct {
 ///////////////
 
 DENSE_STORAGE*	dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
-void						dense_storage_delete(DENSE_STORAGE* s);
-void						dense_storage_delete_ref(DENSE_STORAGE* s);
-void						dense_storage_mark(STORAGE* storage);
+void						dense_storage_delete(STORAGE* s);
+void						dense_storage_delete_ref(STORAGE* s);
+void						dense_storage_mark(void*);
 
 ///////////////
 // Accessors //

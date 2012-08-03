@@ -243,15 +243,6 @@ bool (*ElemEqEq[NM_TYPES][2])(const void*, const void*, const int, const int) = 
 };
 
 
-static void nm_delete(NMATRIX* mat) {
-  DeleteFuncs[mat->stype](mat->storage);
-}
-
-static void nm_delete_ref(NMATRIX* mat) {
-  DeleteFuncsRef[mat->stype](mat->storage);
-}
-
-
 static STORAGE* nm_dense_new(size_t* shape, size_t rank, int8_t dtype, void* init_val, size_t init_val_len, VALUE self) {
   return (STORAGE*)(create_dense_storage(dtype, shape, rank, init_val, init_val_len));
 }
