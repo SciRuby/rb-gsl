@@ -96,6 +96,8 @@
 
 #define NM_CHECK_ALLOC(x) if (!x) rb_raise(rb_eNoMemError, "insufficient memory");
 
+#define CheckNMatrixType(v)   if (TYPE(v) != T_DATA || (RDATA(v)->dfree != (RUBY_DATA_FUNC)nm_delete && RDATA(v)->dfree != (RUBY_DATA_FUNC)nm_delete_ref)) rb_raise(rb_eTypeError, "expected NMatrix on left-hand side of operation");
+
 #define NM_IsNMatrix(obj) \
   (rb_obj_is_kind_of(obj, cNMatrix) == Qtrue)
 

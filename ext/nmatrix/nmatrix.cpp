@@ -79,6 +79,7 @@ typedef VALUE (*METHOD)(...);
  */
 
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm);
+static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype, VALUE new_dtype);
 static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_itype, VALUE nm);
 static VALUE nm_dtype(VALUE self);
 static VALUE nm_stype(VALUE self);
@@ -91,6 +92,7 @@ static VALUE nm_hermitian(VALUE self);
 
 static dtype_t	dtype_from_rbstring(VALUE str);
 static dtype_t	dtype_from_rbsymbol(VALUE sym);
+static itype_t  itype_from_rbsymbol(VALUE sym);
 static dtype_t	dtype_guess(VALUE v);
 static dtype_t	interpret_dtype(int argc, VALUE* argv, stype_t stype);
 static void*		interpret_initial_value(VALUE arg, dtype_t dtype);
@@ -147,13 +149,13 @@ void Init_nmatrix() {
 	
 	rb_define_method(cNMatrix, "initialize", (METHOD)nm_init, -1);
 	
-	rb_define_method(cNMatrix, "initialize_copy", (METHOD)nm_init_copy, 1);
-	rb_define_method(cNMatrix, "initialize_cast_copy", (METHOD)nm_init_cast_copy, 2);
-	rb_define_method(cNMatrix, "as_dtype", (METHOD)nm_cast_copy, 1);
+	//rb_define_method(cNMatrix, "initialize_copy", (METHOD)nm_init_copy, 1);
+	//rb_define_method(cNMatrix, "initialize_cast_copy", (METHOD)nm_init_cast_copy, 2);
+	//rb_define_method(cNMatrix, "as_dtype", (METHOD)nm_cast_copy, 1);
 	
 	rb_define_method(cNMatrix, "dtype", (METHOD)nm_dtype, 0);
 	rb_define_method(cNMatrix, "stype", (METHOD)nm_stype, 0);
-	rb_define_method(cNMatrix, "cast",  (METHOD)nm_scast_copy, 2);
+	rb_define_method(cNMatrix, "cast",  (METHOD)nm_init_cast_copy, 2);
 
 	rb_define_method(cNMatrix, "[]", (METHOD)nm_mref, -1);
 	rb_define_method(cNMatrix, "slice", (METHOD)nm_mget, -1);
@@ -399,6 +401,54 @@ static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALU
 }
 
 
+
+/*
+ * Copy constructor for changing dtypes and stypes.
+ */
+static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbol, VALUE new_dtype_symbol) {
+  NMATRIX *lhs, *rhs;
+
+  dtype_t new_dtype = dtype_from_rbsymbol(new_dtype_symbol);
+  stype_t new_stype = stype_from_rbsymbol(new_stype_symbol);
+
+  CheckNMatrixType(original);
+
+  if (copy == original) return copy;
+
+  UnwrapNMatrix( original, rhs );
+  UnwrapNMatrix( copy,     lhs );
+  //lhs = ALLOC(NMATRIX); // FIXME: If this fn doesn't work, try switching comments between this line and the above.
+  lhs->stype = new_stype;
+
+  // Copy the storage
+  static STORAGE* (*ttable[NUM_STYPES][NUM_STYPES])(const STORAGE*, dtype_t) = {
+    { dense_storage_cast_copy,  dense_storage_from_list,  dense_storage_from_yale },
+    { list_storage_from_dense,  list_storage_cast_copy,   list_storage_from_yale  },
+    { yale_storage_from_dense,  yale_storage_from_list,   yale_storage_cast_copy  }
+  };
+
+  lhs->storage = ttable[new_stype][rhs->stype](rhs, new_dtype);
+
+  STYPE_MARK_TABLE(mark_table);
+
+  return Data_Wrap_Struct(cNMatrix, mark_table[new_stype], nm_delete, copy);
+}
+
+
+/*
+ * Allocator.
+ */
+static VALUE nm_alloc(VALUE klass) {
+  NMATRIX* mat = ALLOC(NMATRIX);
+  mat->storage = NULL;
+  mat->stype   = NUM_STYPES;
+
+  STYPE_MARK_TABLE(mark_table);
+
+  return Data_Wrap_Struct(klass, mark_table[mat->stype], nm_delete, mat);
+}
+
+
 /*
  * Get the data type (dtype) of a matrix, e.g., :byte, :int8, :int16, :int32,
  * :int64, :float32, :float64, :complex64, :complex128, :rational32,
@@ -602,7 +652,7 @@ dtype_t dtype_from_rbstring(VALUE str) {
 /*
  * Converts a symbol to a data type.
  */
-dtype_t dtype_from_rbsymbol(VALUE sym) {
+static dtype_t dtype_from_rbsymbol(VALUE sym) {
   size_t index;
   
   for (index = 0; index < NUM_DTYPES; ++index) {
@@ -614,12 +664,29 @@ dtype_t dtype_from_rbsymbol(VALUE sym) {
   rb_raise(rb_eArgError, "Invalid data type specified.");
 }
 
+
+/*
+ * Converts a symbol to an index type.
+ */
+static itype_t itype_from_rbsymbol(VALUE sym) {
+  size_t index;
+
+  for (index = 0; index < NUM_ITYPES; ++index) {
+    if (SYM2ID(sym) == rb_intern(ITYPE_NAMES[index])) {
+    	return static_cast<itype_t>(index);
+    }
+  }
+
+  rb_raise(rb_eArgError, "Invalid index type specified.");
+}
+
+
 /*
  * Guess the data type given a value.
  *
  * TODO: Probably needs some work for Bignum.
  */
-dtype_t dtype_guess(VALUE v) {
+static dtype_t dtype_guess(VALUE v) {
   switch(TYPE(v)) {
   case T_TRUE:
   case T_FALSE:

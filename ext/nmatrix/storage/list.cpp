@@ -366,33 +366,33 @@ LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
 }
 
 /*
- * Documentation goes here.
- *
- * FIXME: Template this.
+ * List storage copy constructor C access.
  */
 LIST_STORAGE* list_storage_cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
-  LIST_STORAGE* lhs;
-  size_t* shape;
-  void* default_val = ALLOC_N(char, DTYPE_SIZES[rhs->dtype]);
+  LR_DTYPE_TEMPLATE_TABLE(list_storage_cast_copy_template, LIST_STORAGE*, const LIST_STORAGE*, dtype_t);
 
-  //fprintf(stderr, "copy_list_storage\n");
+  return ttable[new_dtype][rhs->dtype](rhs, new_dtype);
+}
+
+
+/*
+ * List storage copy constructor for changing dtypes.
+ */
+template <typename LDType, typename RDType>
+LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t new_dtype) {
+
+  NewDType* default_val = ALLOC_N(LDType, 1);
 
   // allocate and copy shape
-  shape = ALLOC_N(size_t, rhs->rank);
+  size_t* shape = ALLOC_N(size_t, rhs->rank);
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
 
   // copy default value
-  if (new_dtype == rhs->dtype) {
-  	memcpy(default_val, rhs->default_val, DTYPE_SIZES[rhs->dtype]);
-  	
-  } else {
-  	//SetFuncs[new_dtype][rhs->dtype](1, default_val, 0, rhs->default_val, 0);
-  }
+  *default_val = static_cast<LDType>(*reinterpret_cast<RDType*>(rhs->default_val));
 
-  lhs = list_storage_create(new_dtype, shape, rhs->rank, default_val);
-
-  lhs->rows = list_create();
-  list_cast_copy_contents(lhs->rows, rhs->rows, new_dtype, rhs->dtype, rhs->rank - 1);
+  LIST_STORAGE* lhs = list_storage_create(new_dtype, shape, rhs->rank, default_val);
+  lhs->rows         = list_create();
+  list_cast_copy_contents_template<LDType, RDType>(lhs->rows, rhs->rows, rhs->rank - 1);
 
   return lhs;
 }
@@ -400,8 +400,7 @@ LIST_STORAGE* list_storage_cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype)
 
 /* Copy dense into lists recursively
  *
- * TODO: This works, but could probably be cleaner (do we really need to pass
- * 	coords around?)
+ * FIXME: This works, but could probably be cleaner (do we really need to pass coords around?)
  */
 template <typename LDType, typename RDType>
 static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {

@@ -884,25 +884,63 @@ static char yale_storage_vector_replace_j(YALE_STORAGE* s, y_size_t pos, y_size_
 /////////////////////////
 
 /*
- * Copy constructor.
+ * Copy constructor for changing dtypes.
  */
 YALE_STORAGE* yale_storage_cast_copy(const YALE_STORAGE* rhs, dtype_t new_dtype) {
-  y_size_t size;
-  YALE_STORAGE* lhs;
+  LR_DTYPE_TEMPLATE_TABLE(yale_storage_cast_copy_template, YALE_STORAGE*, const YALE_STORAGE*, dtype_t);
 
-  YaleGetSize(size, rhs);
-  lhs = copy_alloc_yale_storage_struct(rhs, new_dtype, rhs->capacity, size);
+  return ttable[new_dtype][rhs->dtype](rhs, new_dtype);
+}
 
-  // Copy contents (not structure)
-  if (lhs->dtype == rhs->dtype) {
-  	memcpy(lhs->a, rhs->a, size * DTYPE_SIZES[lhs->dtype]);
-  	
+
+/*
+ * Templated copy constructor for changing dtypes.
+ */
+template <typename LDType, typename RDType>
+YALE_STORAGE* yale_storage_cast_copy_template(const YALE_STORAGE* rhs, dtype_t new_dtype) {
+
+  // Allocate a new structure
+  size_t size = yale_storage_get_size(rhs);
+  YALE_STORAGE* lhs = yale_storage_copy_alloc_struct(rhs, new_dtype, rhs->capacity, size);
+
+  if (rhs->dtype == new_dtype) {  // FIXME: Test if this condition is actually faster; second condition should work just as well.
+
+    memcpy(lhs->a, rhs->a, size * DTYPE_SIZES[new_dtype]);
+
   } else {
-  	SetFuncs[new_dtype][rhs->dtype](size, lhs->a, DTYPE_SIZES[lhs->dtype], rhs->a, DTYPE_SIZES[rhs->dtype]);
+
+    DType*    la = reinterpret_cast<LDType*>(lhs->a);
+    NewDType* ra = reinterpret_cast<RDType*>(rhs->a);
+
+    for (size_t index = 0; index < size; ++index) {
+      la[index] = static_cast<LDType>(ra[index]);
+    }
+
   }
 
   return lhs;
 }
+
+
+/*
+ * Returns size of Yale storage as a size_t (no matter what the itype is).
+ */
+static inline size_t yale_storage_get_size(const YALE_STORAGE* storage) {
+  ITYPE_TEMPLATE_TABLE(yale_storage_get_size_template, size_t, const YALE_STORAGE*);
+
+  return ttable[storage->itype](storage);
+}
+
+
+/*
+ * Template access for getting the size of Yale storage.
+ */
+template <typename IType>
+static inline size_t yale_storage_get_size_template(const YALE_STORAGE* storage) {
+  return static_cast<size_t>(reinterpret_cast<IType*>(storage->ija)[ storage->shape[0] ]);
+}
+
+
 
 /*
  * Copy constructor.
@@ -912,7 +950,7 @@ YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs) {
   YALE_STORAGE* lhs;
 
   YaleGetSize(size, rhs);
-  lhs = copy_alloc_yale_storage_struct(rhs, rhs->dtype, rhs->capacity, size);
+  lhs = yale_storage_copy_alloc_struct(rhs, rhs->dtype, rhs->capacity, size);
 
   // Now copy the contents -- but only within the boundaries set by the size. Leave
   // the rest uninitialized.
@@ -940,8 +978,7 @@ static YALE_STORAGE* yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, con
 
   // Now copy the contents -- but only within the boundaries set by the size. Leave
   // the rest uninitialized.
-  YaleGetSize(new_size, rhs);
-  memcpy(lhs->ija, rhs->ija, new_size * ITYPE_SIZES[lhs->itype]); // indices
+  memcpy(lhs->ija, rhs->ija, yale_storage_get_size(rhs) * ITYPE_SIZES[lhs->itype]); // indices
 
   return lhs;
 }

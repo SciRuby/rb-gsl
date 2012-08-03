@@ -360,7 +360,7 @@ void dense_storage_slice_copy(
 /////////////////////////
 
 /*
- * Documentation goes here.
+ * Copy dense storage, changing dtype if necessary.
  */
 DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
 	LR_DTYPE_TEMPLATE_TABLE(dense_storage_cast_copy_template, DENSE_STORAGE*, const DENSE_STORAGE*, dtype_t);
@@ -369,7 +369,7 @@ DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dty
 }
 
 /*
- * Documentation goes here.
+ * Copy dense storage without a change in dtype.
  */
 DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
   DENSE_STORAGE* lhs;
@@ -396,25 +396,21 @@ DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
 // Templated Functions //
 /////////////////////////
 
-template <typename DType, typename NewDType>
+template <typename LDType, typename RDType>
 DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
   size_t  count = storage_count_max_elements(rhs->rank, rhs->shape);
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   NM_CHECK_ALLOC(shape);
   memcpy(shape, rhs->shape, sizeof(*shape) * rhs->rank);
-  
-  DType*		rhs_els = (DType*)rhs->elements;
-  NewDType* lhs_els;
-  
-  DENSE_STORAGE *lhs, *tmp;
-	
-  lhs			= dense_storage_create(new_dtype, shape, rhs->rank, NULL, 0);
-  lhs_els	= (NewDType*)lhs->elements;
+
+  DENSE_STORAGE* lhs			= dense_storage_create(new_dtype, shape, rhs->rank, NULL, 0);
+  RDType*	rhs_els = reinterpret_cast<RDType*>(rhs->elements);
+  LDType* lhs_els	= reinterpret_cast<LDType*>(lhs->elements);
 
 	// Ensure that allocation worked before copying.
   if (lhs && count) {
     if (NM_STORAGE(self)->src != NM_STORAGE(self)) {
-      tmp = dense_storage_copy(rhs);
+      DENSE_STORAGE* tmp = dense_storage_copy(rhs);
       while (count-- > 0)         lhs_els[count] = tmp->elements[count];
       dense_storage_delete(tmp);
     } else {

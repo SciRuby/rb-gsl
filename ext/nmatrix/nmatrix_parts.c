@@ -31,11 +31,6 @@ nm_delete_t DeleteFuncsRef = {
 
 
 
-nm_mark_t MarkFuncs = {
-  mark_dense_storage,
-  mark_list_storage,
-  mark_yale_storage
-};
 
 
 
@@ -377,114 +372,7 @@ nm_stype_ins_t InsFuncs = {
 };
 
 
-static VALUE nm_alloc(VALUE klass) {
-  NMATRIX* mat = ALLOC(NMATRIX);
-  mat->storage = NULL;
-  mat->stype   = S_TYPES;
-  return Data_Wrap_Struct(klass, MarkFuncs[mat->stype], nm_delete, mat);
-}
 
-
-// This is the "back-door initializer," for when Ruby needs to create the object in an atypical way.
-//
-// Note that objects created this way will have NULL storage.
-/*static VALUE nm_initialize(VALUE self, VALUE stype, VALUE dtype) {
-  NMATRIX* matrix;
-  UnwrapNMatrix(self, matrix);
-
-  matrix->stype   = nm_interpret_stype(stype);
-  matrix->dtype   = nm_interpret_dtype(1, &dtype, stype);
-  matrix->storage = NULL;
-
-  return self;
-}*/
-
-
-static VALUE nm_init_copy(VALUE copy, VALUE original) {
-  NMATRIX *lhs, *rhs;
-
-  CheckNMatrixType(original);
-
-  if (copy == original) return copy;
-
-  UnwrapNMatrix( original, rhs );
-  UnwrapNMatrix( copy,     lhs );
-
-  lhs->stype = rhs->stype;
-
-  // Copy the storage
-  lhs->storage = CastCopyFuncs[rhs->stype](rhs->storage, rhs->storage->dtype);
-
-  return copy;
-}
-
-
-static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_dtype_symbol) {
-  NMATRIX *lhs, *rhs;
-  int8_t new_dtype = nm_dtypesymbol_to_dtype(new_dtype_symbol);
-  //fprintf(stderr,"In copy constructor\n");
-
-  CheckNMatrixType(original);
-
-  if (copy == original) return copy;
-
-  UnwrapNMatrix( original, rhs );
-  UnwrapNMatrix( copy,     lhs );
-
-  lhs->stype = rhs->stype;
-
-  // Copy the storage
-  lhs->storage = CastCopyFuncs[rhs->stype](rhs->storage, new_dtype);
-
-  return copy;
-}
-
-
-/*
- * Create a copy of an NMatrix with a different dtype. See also cast.
- */
- // TODO: Deprecate this function and farm it out to scast_copy. as_dtype will still work, but it'll be in pure Ruby and
- // just use ::cast instead.
-static VALUE nm_cast_copy(VALUE self, VALUE new_dtype_symbol) {
-  NMATRIX *original, *copy;
-  int8_t new_dtype = nm_dtypesymbol_to_dtype(new_dtype_symbol);
-
-  CheckNMatrixType(self);
-
-  UnwrapNMatrix(self, original);
-
-  copy = ALLOC(NMATRIX);
-  copy->stype = original->stype;
-  copy->storage = CastCopyFuncs[original->stype](original->storage, new_dtype);
-
-  return Data_Wrap_Struct(cNMatrix, MarkFuncs[copy->stype], nm_delete, copy);
-}
-
-
-/*
- * Create a copy of an NMatrix with a different stype and dtype. See also cast.
- *
- *     m.cast(:dense, :int64)
- *
- */
-static VALUE nm_scast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_symbol) {
-  NMATRIX* original, *copy;
-  int8_t new_dtype = nm_dtypesymbol_to_dtype(new_dtype_symbol);
-  int8_t new_stype = nm_stypesymbol_to_stype(new_stype_symbol);
-
-  CheckNMatrixType(self);
-
-  UnwrapNMatrix(self, original);
-
-  copy = ALLOC(NMATRIX);
-  copy->stype = new_stype;
-
-  // Copy and scast the storage.
-  if (new_stype == original->stype) copy->storage = CastCopyFuncs[original->stype](original->storage, new_dtype);
-  else                              copy->storage = ScastCopyFuncs[copy->stype][original->stype](original->storage, new_dtype);
-
-  return Data_Wrap_Struct(cNMatrix, MarkFuncs[copy->stype], nm_delete, copy);
-}
 
 
 

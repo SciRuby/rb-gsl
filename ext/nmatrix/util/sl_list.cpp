@@ -451,18 +451,29 @@ NODE* list_find_nearest_from(NODE* prev, size_t key) {
 // Copying and Casting //
 /////////////////////////
 
+
 /*
- * Documentation goes here.
+ * C access for copying the contents of a list.
  *
- * FIXME: Add templating.
+ * FIXME: Is this actually necessary? This function may only be called from other templated functions.
  */
-void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
+void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
+  LR_DTYPE_TEMPLATE_TABLE(list_cast_copy_contents_template, void, LIST*, const LIST*, size_t);
+
+  return ttable[lhs_dtype][rhs_dtype];
+}
+
+/*
+ * Copy the contents of a list.
+ */
+template <typename LDType, typename RDType>
+void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) {
   NODE *lcurr, *rcurr;
 
   if (rhs->first) {
     // copy head node
     rcurr = rhs->first;
-    lcurr = lhs->first = ALLOC( NODE );
+    lcurr = lhs->first = calloc(1, NODE);
 
     while (rcurr) {
       lcurr->key = rcurr->key;
@@ -470,24 +481,20 @@ void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rh
       if (recursions == 0) {
       	// contents is some kind of value
       	
-        lcurr->val = ALLOC_N(char, DTYPE_SIZES[lhs_dtype]);
-        //fprintf(stderr, "    create_val: %p\n", lcurr->val);
+        lcurr->val = ALLOC( LDType );
 
-        if (lhs_dtype == rhs_dtype) {
-        	memcpy(lcurr->val, rcurr->val, DTYPE_SIZES[lhs_dtype]);
-        	
-        } else {
-        	// FIXME: Replace this with templating.  Removed now to sort out this header nonsense.
-        	//SetFuncs[lhs_dtype][rhs_dtype](1, lcurr->val, 0, rcurr->val, 0);
-        }
+        *reinterpret_cast<LDType*>(lcurr->val) = static_cast<LDType>(reinterpret_cast<RDType*>( rcurr->val ));
 
       } else {
       	// contents is a list
       	
         lcurr->val = ALLOC( LIST );
-        //fprintf(stderr, "    create_list: %p\n", lcurr->val);
 
-        list_cast_copy_contents((LIST*)lcurr->val, (LIST*)rcurr->val, lhs_dtype, rhs_dtype, recursions-1);
+        list_cast_copy_contents_template<LDType, RDType>(
+          reinterpret_cast<LIST*>(lcurr->val),
+          reinterpret_cast<LIST*>(rcurr->val),
+          recursions-1
+        );
       }
       
       if (rcurr->next) {
