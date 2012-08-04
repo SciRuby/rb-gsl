@@ -270,10 +270,10 @@ void dense_storage_set(STORAGE* storage, SLICE* slice, void* val) {
  * TODO: See if using memcmp is faster when the left- and right-hand matrices
  *				have the same dtype.
  */
-bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
+bool dense_storage_eqeq(const STORAGE* left, const STORAGE* right) {
 	LR_DTYPE_TEMPLATE_TABLE(dense_storage_eqeq_template, bool, const DENSE_STORAGE*, const DENSE_STORAGE*);
 	
-	return ttable[left->dtype][right->dtype](left, right);
+	return ttable[left->dtype][right->dtype]((const DENSE_STORAGE*)left, (const DENSE_STORAGE*)right);
 }
 
 /*
@@ -432,15 +432,13 @@ DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_
 
 template <typename LDType, typename RDType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
-	int index;
-
   /* FIXME: Very strange behavior! The GC calls the method directly with non-initialized data. */
   if (left->rank != right->rank) return false;
 
 	LDType* left_elements	  = (LDType*)left->elements;
 	RDType* right_elements	= (RDType*)right->elements;
 	
-	for (index = storage_count_max_elements(left->rank, left->shape); index-- > 0;) {
+	for (size_t index = storage_count_max_elements(left->rank, left->shape); index-- > 0;) {
 		if (left_elements[index] != right_elements[index]) return false;
 	}
 

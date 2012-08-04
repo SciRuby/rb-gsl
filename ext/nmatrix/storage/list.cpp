@@ -233,54 +233,60 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
 // Tests //
 ///////////
 
+
+bool list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
+	LR_DTYPE_TEMPLATE_TABLE(list_storage_eqeq_template, bool, const LIST_STORAGE*, const LIST_STORAGE*);
+
+	return ttable[left->dtype][right->dtype]((const LIST_STORAGE*)left, (const LIST_STORAGE*)right);
+}
+
+
 /*
  * Do these two dense matrices of the same dtype have exactly the same
  * contents?
  *
  * FIXME: Add templating.
  */
-bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
+template <typename LDType, typename RDType>
+bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* right) {
 
   // in certain cases, we need to keep track of the number of elements checked.
   size_t num_checked  = 0,
          max_elements = storage_count_max_elements(left->rank, left->shape);
-  
-  bool (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[left->dtype][0];
 
   if (!left->rows->first) {
-    // fprintf(stderr, "!left->rows true\n");
     // Easy: both lists empty -- just compare default values
     if (!right->rows->first) {
-    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
+    	return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     	
-    } else if (!list_eqeq_value(right->rows, left->default_val, left->dtype, left->rank-1, &num_checked)) {
+    } else if (!list_eqeq_value_template<LDType,RDType>(right->rows, left->default_val, left->rank-1, &num_checked)) {
     	// Left empty, right not empty. Do all values in right == left->default_val?
     	return false;
     	
     } else if (num_checked < max_elements) {
     	// If the matrix isn't full, we also need to compare default values.
-    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
+    	return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     }
 
   } else if (!right->rows->first) {
     // fprintf(stderr, "!right->rows true\n");
     // Right empty, left not empty. Do all values in left == right->default_val?
-    if (!list_eqeq_value(left->rows, right->default_val, left->dtype, left->rank-1, &num_checked)) {
+    if (!list_eqeq_value_template<LDType,RDType>(left->rows, right->default_val, left->rank-1, &num_checked)) {
     	return false;
     	
     } else if (num_checked < max_elements) {
    		// If the matrix isn't full, we also need to compare default values.
-    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
+    	return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     }
 
   } else {
     // fprintf(stderr, "both matrices have entries\n");
     // Hardest case. Compare lists node by node. Let's make it simpler by requiring that both have the same default value
-    if (!list_eqeq_list(left->rows, right->rows, left->default_val, right->default_val, left->dtype, left->rank-1, &num_checked)) {
+    if (!list_eqeq_list_template<LDType,RDType>(left->rows, right->rows, left->default_val, right->default_val, left->rank-1, &num_checked)) {
     	return false;
     	
     } else if (num_checked < max_elements) {
-    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
+      return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     }
   }
 

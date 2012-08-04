@@ -130,7 +130,7 @@ char	yale_storage_set(STORAGE* s, SLICE* slice, void* v);
 // Tests //
 ///////////
 
-bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right);
+bool yale_storage_eqeq(const STORAGE* left, const STORAGE* right);
 
 /////////////
 // Utility //

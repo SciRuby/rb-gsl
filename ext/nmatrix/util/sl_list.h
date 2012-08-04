@@ -95,8 +95,11 @@ void* list_remove(LIST* list, size_t key);
 // Tests //
 ///////////
 
-bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, const void* right_val, dtype_t dtype, size_t recursions, size_t* checked);
-bool list_eqeq_value(const LIST* l, const void* v, dtype_t dtype, size_t recursions, size_t* checked);
+template <typename LDType, typename RDType>
+bool list_eqeq_list_template(const LIST* left, const LIST* right, const void* left_val, const void* right_val, size_t recursions, size_t* checked);
+
+template <typename LDType, typename RDType>
+bool list_eqeq_value_template(const LIST* l, const void* v, size_t recursions, size_t* checked);
 
 /////////////
 // Utility //

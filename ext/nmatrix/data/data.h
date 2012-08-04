@@ -87,6 +87,13 @@
     yale_storage_mark \
   };
 
+#define STYPE_CAST_COPY_TABLE(name)                                                   \
+  static STORAGE* (*ttable[NUM_STYPES][NUM_STYPES])(const STORAGE*, dtype_t) = {      \
+    { dense_storage_cast_copy,  dense_storage_from_list,  dense_storage_from_yale },  \
+    { list_storage_from_dense,  list_storage_cast_copy,   list_storage_from_yale  },  \
+    { yale_storage_from_dense,  yale_storage_from_list,   yale_storage_cast_copy  }   \
+  };
+
 
 /*
  * Same as DTYPE_TEMPLATE_TABLE but for functions that have two template

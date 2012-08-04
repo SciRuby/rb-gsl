@@ -66,8 +66,15 @@ extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, cons
  * Forward Declarations
  */
 
-static bool						ndrow_is_empty(const YALE_STORAGE* s, y_size_t ija, const y_size_t ija_next, const void* ZERO);
-static bool						ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_size_t l_ija, const y_size_t l_ija_next, y_size_t r_ija, const y_size_t r_ija_next, const void* ZERO);
+template <typename DType, typename IType>
+static bool						ndrow_is_empty_template(const YALE_STORAGE* s, y_size_t ija, const y_size_t ija_next);
+
+template <typename LDType, typename RDType, typename IType>
+static bool						ndrow_eqeq_ndrow_template(const YALE_STORAGE* l, const YALE_STORAGE* r, y_size_t l_ija, const y_size_t l_ija_next, y_size_t r_ija, const y_size_t r_ija_next);
+
+template <typename LDType, typename RDType, typename IType>
+static bool yale_storage_eqeq_template(const YALE_STORAGE* left, const YALE_STORAGE* right);
+
 static char						yale_storage_vector_replace_j(YALE_STORAGE* s, y_size_t pos, y_size_t* j);
 static YALE_STORAGE*	yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const y_size_t new_capacity, const y_size_t new_size);
 static void						clear_diagonal_and_zero(YALE_STORAGE* s);
@@ -430,57 +437,51 @@ char yale_storage_set(STORAGE* storage, SLICE* slice, void* v) {
 // Tests //
 ///////////
 
+bool yale_storage_eqeq(const STORAGE* left, const STORAGE* right) {
+  LRI_DTYPE_TEMPLATE_TABLE(yale_storage_eqeq_template, bool, const YALE_STORAGE*, const YALE_STORAGE*);
+
+  return ttable[left->dtype][right->dtype][left->itype]((const YALE_STORAGE*)left, (const YALE_STORAGE*)right);
+}
+
 /*
- * Documentation goes here.
+ * Yale eql? -- for whole-matrix comparison returning a single value.
  */
-bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right) {
-  y_size_t l_ija, l_ija_next, r_ija, r_ija_next;
-  y_size_t i = 0;
-
-  // Need to know zero.
-  void* ZERO = alloca(DTYPE_SIZES[left->dtype]);
-  
-  if (left->dtype == RUBYOBJ) {
-  	*(VALUE*)ZERO = INT2FIX(0);
-  	
-  } else {
-  	memset(ZERO, 0, DTYPE_SIZES[left->dtype]);
-  }
-
-  // Easy comparison: Do the IJA and A vectors match exactly?
-  //if (!memcmp(left->ija, right->ija, DTYPE_SIZES[left->itype]) && !memcmp(left->a, right->a, DTYPE_SIZES[left->dtype])) return true;
-  //fprintf(stderr, "yale_storage_eqeq\n");
+template <typename LDType, typename RDType, typename IType>
+static bool yale_storage_eqeq_template(const YALE_STORAGE* left, const YALE_STORAGE* right) {
+  LDType* la = reinterpret_cast<LDType*>(left->a);
+  RDType* ra = reinterpret_cast<RDType*>(right->a);
 
   // Compare the diagonals first.
-  if (!ElemEqEq[left->dtype][0](left->a, right->a, left->shape[0], DTYPE_SIZES[left->dtype])) {
-  	return false;
+  for (size_t index = 0; index < left->shape[0]; ++index) {
+    if (la[index] != ra[index]) return false;
   }
 
-  while (i < left->shape[0]) {
-    // Get start and end positions of row
-    YaleGetIJA(l_ija,      left,  i);
-    YaleGetIJA(l_ija_next, left,  i+1);
-    YaleGetIJA(r_ija,      right, i);
-    YaleGetIJA(r_ija_next, right, i+1);
+  IType* lij = reinterpret_cast<IType*>(left->ija);
+  IType* rij = reinterpret_cast<IType*>(right->ija);
 
-    //fprintf(stderr, "yale_storage_eqeq: l_ija=%d, l_ija_next=%d, r_ija=%d, r_ija_next=%d, i=%d\n", (size_t)(l_ija), (size_t)(l_ija_next), (size_t)(r_ija), (size_t)(r_ija_next), (size_t)(i));
+  for (size_t i = 0; i < left->shape[0]; ++i) {
+
+  // Get start and end positions of row
+    IType l_ija = lij[i],
+          l_ija_next = lij[i+1],
+          r_ija = rij[i],
+          r_ija_next = rij[i+1];
 
     // Check to see if one row is empty and the other isn't.
-    if (ndrow_is_empty(left, l_ija, l_ija_next, ZERO)) {
-      if (!ndrow_is_empty(right, r_ija, r_ija_next, ZERO)) {
+    if (ndrow_is_empty_template<LDType,IType>(left, l_ija, l_ija_next)) {
+      if (!ndrow_is_empty_template<RDType,IType>(right, r_ija, r_ija_next)) {
       	return false;
       }
 
-    } else if (ndrow_is_empty(right, r_ija, r_ija_next, ZERO)) {
+    } else if (ndrow_is_empty_template<RDType,IType>(right, r_ija, r_ija_next)) {
     	// one is empty but the other isn't
       return false;
       
-    } else if (!ndrow_eqeq_ndrow(left, right, l_ija, l_ija_next, r_ija, r_ija_next, ZERO)) {
+    } else if (!ndrow_eqeq_ndrow_template<LDType,RDType,IType>(left, right, l_ija, l_ija_next, r_ija, r_ija_next)) {
     	// Neither row is empty. Must compare the rows directly.
       return false;
     }
 
-    ++i;
   }
 
   return true;
@@ -491,34 +492,37 @@ bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right) {
  *
  * FIXME: Add templating.
  */
-static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_size_t l_ija, const y_size_t l_ija_next, y_size_t r_ija, const y_size_t r_ija_next, const void* ZERO) {
-  y_size_t l_ja, r_ja, ja;
+template <typename LDType, typename RDType, typename IType>
+static bool ndrow_eqeq_ndrow_template(const YALE_STORAGE* l, const YALE_STORAGE* r, y_size_t l_ija, const y_size_t l_ija_next, y_size_t r_ija, const y_size_t r_ija_next) {
   bool l_no_more = false, r_no_more = false;
 
-  YaleGetIJA(l_ja,   l,   l_ija);
-  YaleGetIJA(r_ja,   r,   r_ija);
-/*  ja = SMMP_MIN(l_ja, r_ja);*/
+  IType *lij = reinterpret_cast<IType*>(l->ija),
+        *rij = reinterpret_cast<IType*>(r->ija);
 
-  //fprintf(stderr, "ndrow_eqeq_ndrow\n");
+  LDType* la = reinterpret_cast<LDType*>(l->a);
+  RDType* ra = reinterpret_cast<RDType*>(r->a);
+
+  IType l_ja = lij[l_ija],
+        r_ja = rij[r_ija],
+        ja;
+
   while (!(l_no_more && r_no_more)) {
-    //fprintf(stderr, "ndrow_eqeq_ndrow(loop): l_ija=%d, l_ija_next=%d, r_ija=%d, r_ija_next=%d\n", (size_t)(l_ija), (size_t)(l_ija_next), (size_t)(r_ija), (size_t)(r_ija_next));
     if (l_ja == r_ja) {
-      if (!ElemEqEq[r->dtype][0]((char*)r->a + DTYPE_SIZES[r->dtype]*r_ija, (char*)l->a + DTYPE_SIZES[l->dtype]*l_ija, 1, DTYPE_SIZES[l->dtype])) {
-      	return false;
-      }
+
+      if (ra[r_ija] != la[l_ija]) return false; // Direct comparison
 
       ++l_ija;
       ++r_ija;
 
       if (l_ija < l_ija_next) {
-      	YaleGetIJA(l_ja, l, l_ija);
+      	l_ja = lij[l_ija];
       	
       } else {
       	l_no_more = true;
       }
 
       if (r_ija < r_ija_next) {
-      	YaleGetIJA(r_ja, r, r_ija);
+      	r_ja = rij[r_ija];
       	
       } else {
       	r_no_more = true;
@@ -527,14 +531,13 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
       ja = SMMP_MIN(l_ja, r_ja);
       
     } else if (l_no_more || ja < l_ja) {
-      if (!ElemEqEq[r->dtype][0]((char*)r->a + DTYPE_SIZES[r->dtype]*r_ija, ZERO, 1, DTYPE_SIZES[r->dtype])) {
-      	return false;
-      }
+
+      if (ra[r_ija] != 0) return false;
 
       ++r_ija;
       if (r_ija < r_ija_next) {
       	// get next column
-        YaleGetIJA(r_ja,  r,  r_ija);
+      	r_ja = rij[r_ija];
         ja = SMMP_MIN(l_ja, r_ja);
         
       } else {
@@ -542,14 +545,13 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
       }
 
     } else if (r_no_more || ja < r_ja) {
-      if (!ElemEqEq[l->dtype][0]((char*)l->a + DTYPE_SIZES[l->dtype]*l_ija, ZERO, 1, DTYPE_SIZES[l->dtype])) {
-      	return false;
-      }
+
+      if (la[l_ija] != 0) return false;
 
       ++l_ija;
       if (l_ija < l_ija_next) {
       	// get next column
-        YaleGetIJA(l_ja,  l,   l_ija);
+        l_ja = lij[l_ija];
         ja = SMMP_MIN(l_ja, r_ja);
       } else {
       	l_no_more = true;
@@ -566,23 +568,16 @@ static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, y_siz
 
 /*
  * Is the non-diagonal portion of the row empty?
- *
- * FIXME: Add templating.
  */
-static bool ndrow_is_empty(const YALE_STORAGE* s, y_size_t ija, const y_size_t ija_next, const void* ZERO) {
-  //fprintf(stderr, "ndrow_is_empty: ija=%d, ija_next=%d\n", (size_t)(ija), (size_t)(ija_next));
-  if (ija == ija_next) {
-  	return true;
-  }
-  
-  while (ija < ija_next) {
-  	// do all the entries = zero?
-  	
-    if (!ElemEqEq[s->dtype][0]((char*)s->a + DTYPE_SIZES[s->dtype]*ija, ZERO, 1, DTYPE_SIZES[s->dtype])) {
-    	return false;
-    }
-    
-    ++ija;
+template <typename DType, typename IType>
+static bool ndrow_is_empty_template(const YALE_STORAGE* s, IType ija, const IType ija_next) {
+  if (ija == ija_next) return true;
+
+  DType* a = reinterpret_cast<DType*>(s->a);
+
+	// do all the entries = zero?
+  for (; ija < ija_next; ++ija) {
+    if (a[ija] != 0) return false;
   }
   
   return true;

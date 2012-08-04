@@ -72,6 +72,8 @@ typedef struct {
  * Functions
  */
 
+
+
 /*
  * Calculate the number of elements in the dense storage structure, based on
  * shape and rank.

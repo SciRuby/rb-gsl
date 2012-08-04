@@ -30,7 +30,26 @@ nm_delete_t DeleteFuncsRef = {
 };
 
 
+// FIXME: Deprecated
+STORAGE* storage_cast_alloc(NMATRIX* matrix, dtype_t new_dtype) {
+  if (matrix->storage->dtype == new_dtype && !is_ref(matrix))
+    return matrix->storage;
 
+  STYPE_CAST_COPY_TABLE(cast_copy_funcs);
+  return cast_copy_funcs[matrix->stype](matrix->storage, new_dtype);
+}
+
+
+// FIXME: Deprecated
+STORAGE_PAIR binary_storage_cast_alloc(NMATRIX* left_matrix, NMATRIX* right_matrix) {
+  STORAGE_PAIR casted;
+  dtype_t new_dtype = Upcast[left_matrix->storage->dtype][right_matrix->storage->dtype];
+
+  casted.left  = storage_cast_alloc(left_matrix, new_dtype);
+  casted.right = storage_cast_alloc(right_matrix, new_dtype);
+
+  return casted;
+}
 
 
 
@@ -364,30 +383,6 @@ nm_stype_ins_t InsFuncs = {
 
 
 
-
-
-
-// Cast a single matrix to a new dtype (unless it's already casted, then just return it). Helper for binary_storage_cast_alloc.
-static inline STORAGE* storage_cast_alloc(NMATRIX* matrix, int8_t new_dtype) {
-  if (matrix->storage->dtype == new_dtype && !IsRefFuncs[matrix->stype](matrix->storage))
-    return matrix->storage;
-  else
-    return CastCopyFuncs[matrix->stype](matrix->storage, new_dtype);
-}
-
-
-// Cast a pair of matrices for a binary operation to a new dtype (which this function determines). Technically, only
-// does an actual cast on matrices that are the wrong dtype; otherwise returns a reference to the original. Bear this in
-// mind when freeing memory!
-static inline STORAGE_PAIR binary_storage_cast_alloc(NMATRIX* left_matrix, NMATRIX* right_matrix) {
-  STORAGE_PAIR casted;
-  int8_t new_dtype = Upcast[left_matrix->storage->dtype][right_matrix->storage->dtype];
-
-  casted.left  = storage_cast_alloc(left_matrix, new_dtype);
-  casted.right = storage_cast_alloc(right_matrix, new_dtype);
-
-  return casted;
-}
 
 /*
  * Equality operator. Returns a single true or false value indicating whether the matrices are equivalent.

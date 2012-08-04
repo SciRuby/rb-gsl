@@ -97,7 +97,7 @@ void* list_storage_remove(STORAGE* s, SLICE* slice);
 // Tests //
 ///////////
 
-bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right);
+bool list_storage_eqeq(const STORAGE* left, const STORAGE* right);
 
 /////////////
 // Utility //

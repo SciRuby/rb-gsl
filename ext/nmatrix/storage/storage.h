@@ -63,17 +63,6 @@
 
 
 /*
- * Defines a static array named stable that hold function pointers to
- * stype templated versions of the specified function.
- */
-//#define STYPE_TEMPLATE_TABLE(fun, ret, ...)         \
-//  static ret (*stable[NUM_STYPES])(__VA_ARGS__) = { \
-//    fun<DENSE_STORE>,                               \
-//    fun<LIST_STORE>,                                \
-//    fun<YALE_STORE>                                 \
-//  }
-
-/*
  * Types
  */
 

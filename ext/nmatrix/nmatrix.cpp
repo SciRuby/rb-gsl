@@ -101,6 +101,8 @@ static VALUE nm_is_ref(VALUE self);
 static VALUE nm_symmetric(VALUE self);
 static VALUE nm_hermitian(VALUE self);
 
+static VALUE nm_eqeq(VALUE left, VALUE right);
+
 static dtype_t	dtype_from_rbstring(VALUE str);
 static dtype_t	dtype_from_rbsymbol(VALUE sym);
 static itype_t  itype_from_rbsymbol(VALUE sym);
@@ -432,12 +434,7 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbo
   lhs->stype = new_stype;
 
   // Copy the storage
-  static STORAGE* (*ttable[NUM_STYPES][NUM_STYPES])(const STORAGE*, dtype_t) = {
-    { dense_storage_cast_copy,  dense_storage_from_list,  dense_storage_from_yale },
-    { list_storage_from_dense,  list_storage_cast_copy,   list_storage_from_yale  },
-    { yale_storage_from_dense,  yale_storage_from_list,   yale_storage_cast_copy  }
-  };
-
+  STYPE_CAST_COPY_TABLE(ttable);
   lhs->storage = ttable[new_stype][rhs->stype](rhs->storage, new_dtype);
 
   //STYPE_MARK_TABLE(mark_table);
@@ -719,6 +716,44 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
 
 
 /*
+ * Equality operator. Returns a single true or false value indicating whether the matrices are equivalent.
+ *
+ * For elementwise, use == instead.
+ *
+ * This method will raise an exception if dimensions do not match.
+ */
+static VALUE nm_eqeq(VALUE left, VALUE right) {
+  NMATRIX *l, *r;
+
+  CheckNMatrixType(left);
+  CheckNMatrixType(right);
+
+  UnwrapNMatrix(left, l);
+  UnwrapNMatrix(right, r);
+
+  if (l->stype != r->stype)
+    rb_raise(rb_eNotImpError, "comparison between different matrix stypes not yet implemented");
+
+  bool result = false;
+
+  switch(l->stype) {
+  case DENSE_STORE:
+    result = dense_storage_eqeq(l->storage, r->storage);
+    break;
+  case LIST_STORE:
+    result = list_storage_eqeq(l->storage, r->storage);
+    break;
+  case YALE_STORE:
+    result = yale_storage_eqeq(l->storage, r->storage);
+    break;
+  }
+
+  return result ? Qtrue : Qfalse;
+}
+
+
+
+/*
  * Is this matrix symmetric?
  */
 static VALUE nm_symmetric(VALUE self) {
@@ -796,6 +831,17 @@ static VALUE nm_is_ref(VALUE self) {
 
   return Qfalse;
 }
+
+
+/*
+ * Check to determine whether matrix is a reference to another matrix.
+ */
+bool is_ref(const NMATRIX* matrix) {
+  if (matrix->stype != DENSE_STORE) // FIXME: Needs to work for other types
+    return false;
+  return ((DENSE_STORAGE*)(matrix->storage))->src == matrix->storage;
+}
+
 
 ///////////////////////
 // Utility Functions //
