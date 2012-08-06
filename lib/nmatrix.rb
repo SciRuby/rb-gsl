@@ -364,16 +364,16 @@ end
 #     
 # Examples:
 #   
-#   zeros(3) =>  0.0   0.0   0.0
+#   zeros(3) # =>  0.0   0.0   0.0
 #
-#   zeros(2,3,:int32) =>  0  0  0
-#                         0  0  0
+#   zeros(2,3,:int32) # =>  0  0  0
+#                           0  0  0
 #   
-#   zeros(:list, 5, :int32) =>  0  0  0  0  0
+#   zeros(:list, 5, :int32) # =>  0  0  0  0  0
 #
 
 def zeros(*params)
-	dtype = params.last.is_a?( Symbol) ? params.pop   : :float64
+	dtype = params.last.is_a?(Symbol) ? params.pop   : :float64
 	store = params.first.is_a?(Symbol) ? params.shift : :dense
 	
 	NMatrix.new(store, params, 0, dtype)
@@ -389,14 +389,14 @@ alias :zeroes :zeros
 #     
 # Examples:
 #   
-#   ones(3) =>  1.0   1.0   1.0
+#   ones(3) # =>  1.0   1.0   1.0
 #
-#   ones(2,3,:int32) =>  1  1  1
-#                        1  1  1
+#   ones(2,3,:int32) # =>  1  1  1
+#                          1  1  1
 #
 
 def ones(*params)
-    dtype = params.last.is_a?( Symbol) ? params.pop   : :float64
+    dtype = params.last.is_a?(Symbol) ? params.pop   : :float64
     
     NMatrix.new(params, 1, dtype)
 end
@@ -411,20 +411,20 @@ end
 #
 # Examples:
 #      
-#    eye(3) =>   1.0   0.0   0.0
-#                0.0   1.0   0.0
-#                0.0   0.0   1.0
+#    eye(3) # =>   1.0   0.0   0.0
+#                  0.0   1.0   0.0
+#                  0.0   0.0   1.0
 #    
-#    eye(3, :int32) =>   1   0   0
-#                        0   1   0
-#                        0   0   1
+#    eye(3, :int32) # =>   1   0   0
+#                          0   1   0
+#                          0   0   1
 #    
-#    eye(:yale, 2, :int32) =>   1   0
-#                               0   1
+#    eye(:yale, 2, :int32) # =>   1   0
+#                                 0   1
 #
 
 def eye(*params)
-	dtype = params.last.is_a?( Symbol) ? params.pop   : :float64
+	dtype = params.last.is_a?(Symbol) ? params.pop   : :float64
 	store = params.first.is_a?(Symbol) ? params.shift : :dense
 	
 	n = params[0]
@@ -438,26 +438,50 @@ alias :identity :eye
 # seq()
 #      
 #     Creates a :dense NMatrix with a sequence of integers starting at
-#     zero until the matrix is filled. The parameters to the function
+#     zero until the matrix is filled. The parameters to the method
 #     are the dimensions of the matrix. Optionaly, one can specify a
 #     dtype as the last parameter (default is :float64).
 #     
 # Examples:
 # 
-#   seq(4) =>   0.0   1.0   2.0   3.0
+#   seq(4) # =>   0.0   1.0   2.0   3.0
 #
-#   seq(3,3, :int32) =>  0  1  2
-#                        3  4  5
-#                        6  7  8
+#   seq(3,3, :int32) # =>  0  1  2
+#                          3  4  5
+#                          6  7  8
 #
 
 def seq(*params)
-	dtype = params.last.is_a?( Symbol) ? params.pop   : :float64
+	dtype = params.last.is_a?(Symbol) ? params.pop   : :float64
 	
-	prod = 1
-	params.each { |i| prod *= i }
-	
+  product = params.reduce(1) { |prod, n| prod *= n }
+  	
 	NMatrix.new(params,  (0..prod-1).to_a, dtype )
+end
+
+# rand()
+#      
+#     Creates a :dense NMatrix with random numbers between 0 and 1 generated
+#     by Random::rand. The parameters to the method are the dimensions of the
+#     matrix.
+#     
+#     by Carlos Agarie <carlos@onox.com.br>
+#
+# Examples:
+# 
+#   rand(3,3) # => 0.4859439730644226   0.1783195585012436
+#                  0.23193766176700592  0.4503345191478729
+#
+
+def rand(*params)
+  rng = Random.new
+  
+  product = params.reduce(1) { |prod, n| prod *= n }
+  
+  random_values = []
+  product.times { |i| random_values << rng.rand }
+  
+  NMatrix.new params, random_values, :float32
 end
 
 ######################################
