@@ -482,3 +482,39 @@ bool dense_storage_is_symmetric_template(const DENSE_STORAGE* mat, int lda) {
 	return true;
 }
 
+
+STORAGE* dense_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
+  DTYPE_TEMPLATE_TABLE(dense_storage_matrix_multiply_template, NMATRIX*, STORAGE_PAIR, size_t*, bool);
+
+  return ttable[reinterpret_cast<DENSE_STORAGE*>(casted_storage.left)->dtype](casted_storage, resulting_shape, vector);
+}
+
+
+template <typename DType>
+static STORAGE* dense_storage_matrix_multiply_template(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
+  DENSE_STORAGE *left  = (DENSE_STORAGE*)(casted_storage.left),
+                *right = (DENSE_STORAGE*)(casted_storage.right);
+
+  // We can safely get dtype from the casted matrices; post-condition of binary_storage_cast_alloc is that dtype is the
+  // same for left and right.
+
+  // int8_t dtype = left->dtype;
+
+  DType *pAlpha = ALLOCA_N(char, DTYPE_SIZES[left->dtype]),
+        *pBeta  = ALLOCA_N(char, DTYPE_SIZES[left->dtype]);
+
+  // Create result storage.
+  DENSE_STORAGE* result = dense_storage_create(left->dtype, resulting_shape, 2, NULL, 0);
+
+  *pAlpha = 1;
+  *pBeta  = 0;
+
+  BLAS_TEMPLATE_TABLE(gemm_table, gemm, bool, const enum CBLAS_TRANSPOSE, const enum CBLAS_TRANSPOSE, const int, const int, const int, const DType*, const DType*, const int, const DType*, const int, const DType*, DType*, const int);
+  BLAS_TEMPLATE_TABLE(gemv_table, gemv, bool, const enum CBLAS_TRANSPOSE, const int, const int, const DType*, const DType*, const int, const DType*, const int, const DType*, DType*, const int);
+
+  // Do the multiplication
+  if (vector) gemv_table[left->dtype](CblasNoTrans, left->shape[0], left->shape[1], pAlpha, left->elements, left->shape[1], right->elements, 1, pBeta, result->elements, 1);
+  else        gemm_table[left->dtype](CblasNoTrans, CblasNoTrans, right->shape[1], left->shape[0], left->shape[1], pAlpha, right->elements, right->shape[1], left->elements, left->shape[1], pBeta, result->elements, result->shape[1]);
+
+  return reinterpret_cast<STORAGE*>(result);
+}

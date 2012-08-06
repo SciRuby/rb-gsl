@@ -132,6 +132,12 @@ char	yale_storage_set(STORAGE* s, SLICE* slice, void* v);
 
 bool yale_storage_eqeq(const STORAGE* left, const STORAGE* right);
 
+//////////
+// Math //
+//////////
+
+STORAGE* yale_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
+
 /////////////
 // Utility //
 /////////////

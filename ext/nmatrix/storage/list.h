@@ -99,6 +99,12 @@ void* list_storage_remove(STORAGE* s, SLICE* slice);
 
 bool list_storage_eqeq(const STORAGE* left, const STORAGE* right);
 
+//////////
+// Math //
+//////////
+
+STORAGE* list_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
+
 /////////////
 // Utility //
 /////////////

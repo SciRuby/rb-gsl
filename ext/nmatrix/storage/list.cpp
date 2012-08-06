@@ -458,3 +458,12 @@ static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDTy
   return added;
 }
 
+
+STORAGE* list_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
+  free(resulting_shape);
+  rb_raise(rb_eNotImpError, "multiplication not implemented for list-of-list matrices");
+  return NULL;
+  //DTYPE_TEMPLATE_TABLE(dense_storage_matrix_multiply_template, NMATRIX*, STORAGE_PAIR, size_t*, bool);
+
+  //return ttable[reinterpret_cast<DENSE_STORAGE*>(casted_storage.left)->dtype](casted_storage, resulting_shape, vector);
+}

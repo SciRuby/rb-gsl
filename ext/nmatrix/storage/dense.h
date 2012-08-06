@@ -100,6 +100,12 @@ bool dense_storage_eqeq(const STORAGE* left, const STORAGE* right);
 bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda);
 bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda);
 
+//////////
+// Math //
+//////////
+
+STORAGE* dense_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
+
 /////////////
 // Utility //
 /////////////

@@ -50,12 +50,9 @@
 #define NUM_ITYPES 4
 
 
-/*
- * Defines a static array named ttable that hold function pointers to
- * dtype templated versions of the specified function.
- */
-#define DTYPE_TEMPLATE_TABLE(fun, ret, ...)					\
-	static ret (*ttable[NUM_DTYPES])(__VA_ARGS__) =	{	\
+
+#define NAMED_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)					\
+	static ret (*(name)[NUM_DTYPES])(__VA_ARGS__) =	{	\
 		fun<uint8_t>,																		\
 		fun<int8_t>,																		\
 		fun<int16_t>,																		\
@@ -72,13 +69,21 @@
 	};
 
 
-#define ITYPE_TEMPLATE_TABLE(fun, ret, ...) \
-  static ret (*ttable[NUM_ITYPES])(__VA_ARGS__) = { \
+/*
+ * Defines a static array named ttable that hold function pointers to
+ * dtype templated versions of the specified function.
+ */
+#define DTYPE_TEMPLATE_TABLE(fun, ret, ...)					NAMED_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
+
+#define NAMED_ITYPE_TEMPLATE_TABLE(name, fun, ret, ...) \
+  static ret (*(name)[NUM_ITYPES])(__VA_ARGS__) = { \
     fun<uint8_t>, \
     fun<uint16_t>,  \
     fun<uint32_t>,  \
     fun<uint64_t>  \
   };
+
+#define ITYPE_TEMPLATE_TABLE(fun, ret, ...)   NAMED_ITYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
 #define STYPE_MARK_TABLE(name) \
   static void (*(name)[NUM_STYPES])(void*) = {  \
@@ -88,11 +93,28 @@
   };
 
 #define STYPE_CAST_COPY_TABLE(name)                                                   \
-  static STORAGE* (*ttable[NUM_STYPES][NUM_STYPES])(const STORAGE*, dtype_t) = {      \
+  static STORAGE* (*(name)[NUM_STYPES][NUM_STYPES])(const STORAGE*, dtype_t) = {      \
     { dense_storage_cast_copy,  dense_storage_from_list,  dense_storage_from_yale },  \
     { list_storage_from_dense,  list_storage_cast_copy,   list_storage_from_yale  },  \
     { yale_storage_from_dense,  yale_storage_from_list,   yale_storage_cast_copy  }   \
   };
+
+// First template argument is the temp variable type (e.g., long int for T = int)
+#define BLAS_TEMPLATE_TABLE(table_name, fun, ret, ...) \
+  static ret (*(table_name)[NUM_DTYPES])(__VA_ARGS__) = { \
+    fun<int16_t,uint8_t>, \
+    fun<int16_t, int8_t>, \
+    fun<int32_t,int16_t>, \
+    fun<int64_t,int32_t>, \
+    fun<int64_t,int64_t>, \
+    fun<float64_t,float32_t>, \
+    fun<float64_t,float64_t>, \
+    fun<Complex128,Complex64>,  \
+    fun<Complex128,Complex128>, \
+    fun<Rational128,Rational32>,  \
+    fun<Rational128,Rational64>,  \
+    fun<Rational128,Rational128>  \
+  }
 
 
 /*
@@ -103,8 +125,8 @@
  * the second index.  Not all left- and right-hand side combinations are valid,
  * and an invalid combination will result in a NULL pointer.
  */
-#define LR_DTYPE_TEMPLATE_TABLE(fun, ret, ...)																																																														\
-	static ret (*ttable[NUM_DTYPES][NUM_DTYPES])(__VA_ARGS__) = {																																																						\
+#define NAMED_LR_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)																																																														\
+	static ret (*(name)[NUM_DTYPES][NUM_DTYPES])(__VA_ARGS__) = {																																																						\
 		{fun<uint8_t, uint8_t>, fun<uint8_t, int8_t>, fun<uint8_t, int16_t>, fun<uint8_t, int32_t>, fun<uint8_t, int64_t>, fun<uint8_t, float32_t>, fun<uint8_t, float64_t>,	\
 			fun<uint8_t, Complex64>, fun<uint8_t, Complex128>, fun<uint8_t, Rational32>, fun<uint8_t, Rational64>, fun<uint8_t, Rational128>, NULL},														\
 																																																																																					\
@@ -143,10 +165,12 @@
 																																																																																					\
 		{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, fun<RubyObject, RubyObject>}																																	\
 	};
+
+
+#define LR_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)    NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 	
-	
-#define LRI_DTYPE_TEMPLATE_TABLE(fun, ret, ...) \
-static ret (*ttable[NUM_DTYPES][NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
+#define NAMED_LRI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...) \
+static ret (*(name)[NUM_DTYPES][NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
   {{fun<uint8_t,uint8_t,uint8_t>,fun<uint8_t,uint8_t,uint16_t>,fun<uint8_t,uint8_t,uint32_t>,fun<uint8_t,uint8_t,uint64_t>},{fun<uint8_t,int8_t,uint8_t>,fun<uint8_t,int8_t,uint16_t>,fun<uint8_t,int8_t,uint32_t>,fun<uint8_t,int8_t,uint64_t>},{fun<uint8_t,int16_t,uint8_t>,fun<uint8_t,int16_t,uint16_t>,fun<uint8_t,int16_t,uint32_t>,fun<uint8_t,int16_t,uint64_t>},{fun<uint8_t,int32_t,uint8_t>,fun<uint8_t,int32_t,uint16_t>,fun<uint8_t,int32_t,uint32_t>,fun<uint8_t,int32_t,uint64_t>},{fun<uint8_t,int64_t,uint8_t>,fun<uint8_t,int64_t,uint16_t>,fun<uint8_t,int64_t,uint32_t>,fun<uint8_t,int64_t,uint64_t>},{fun<uint8_t,float32_t,uint8_t>,fun<uint8_t,float32_t,uint16_t>,fun<uint8_t,float32_t,uint32_t>,fun<uint8_t,float32_t,uint64_t>},{fun<uint8_t,float64_t,uint8_t>,fun<uint8_t,float64_t,uint16_t>,fun<uint8_t,float64_t,uint32_t>,fun<uint8_t,float64_t,uint64_t>},{fun<uint8_t,Complex64,uint8_t>,fun<uint8_t,Complex64,uint16_t>,fun<uint8_t,Complex64,uint32_t>,fun<uint8_t,Complex64,uint64_t>},{fun<uint8_t,Complex128,uint8_t>,fun<uint8_t,Complex128,uint16_t>,fun<uint8_t,Complex128,uint32_t>,fun<uint8_t,Complex128,uint64_t>},{fun<uint8_t,Rational32,uint8_t>,fun<uint8_t,Rational32,uint16_t>,fun<uint8_t,Rational32,uint32_t>,fun<uint8_t,Rational32,uint64_t>},{fun<uint8_t,Rational64,uint8_t>,fun<uint8_t,Rational64,uint16_t>,fun<uint8_t,Rational64,uint32_t>,fun<uint8_t,Rational64,uint64_t>},{fun<uint8_t,Rational128,uint8_t>,fun<uint8_t,Rational128,uint16_t>,fun<uint8_t,Rational128,uint32_t>,fun<uint8_t,Rational128,uint64_t>},{fun<uint8_t,RubyObject,uint8_t>,fun<uint8_t,RubyObject,uint16_t>,fun<uint8_t,RubyObject,uint32_t>,fun<uint8_t,RubyObject,uint64_t>}}, \
   {{fun<uint8_t,uint8_t,uint8_t>,fun<uint8_t,uint8_t,uint16_t>,fun<uint8_t,uint8_t,uint32_t>,fun<uint8_t,uint8_t,uint64_t>},{fun<uint8_t,int8_t,uint8_t>,fun<uint8_t,int8_t,uint16_t>,fun<uint8_t,int8_t,uint32_t>,fun<uint8_t,int8_t,uint64_t>},{fun<uint8_t,int16_t,uint8_t>,fun<uint8_t,int16_t,uint16_t>,fun<uint8_t,int16_t,uint32_t>,fun<uint8_t,int16_t,uint64_t>},{fun<uint8_t,int32_t,uint8_t>,fun<uint8_t,int32_t,uint16_t>,fun<uint8_t,int32_t,uint32_t>,fun<uint8_t,int32_t,uint64_t>},{fun<uint8_t,int64_t,uint8_t>,fun<uint8_t,int64_t,uint16_t>,fun<uint8_t,int64_t,uint32_t>,fun<uint8_t,int64_t,uint64_t>},{fun<uint8_t,float32_t,uint8_t>,fun<uint8_t,float32_t,uint16_t>,fun<uint8_t,float32_t,uint32_t>,fun<uint8_t,float32_t,uint64_t>},{fun<uint8_t,float64_t,uint8_t>,fun<uint8_t,float64_t,uint16_t>,fun<uint8_t,float64_t,uint32_t>,fun<uint8_t,float64_t,uint64_t>},{fun<uint8_t,Complex64,uint8_t>,fun<uint8_t,Complex64,uint16_t>,fun<uint8_t,Complex64,uint32_t>,fun<uint8_t,Complex64,uint64_t>},{fun<uint8_t,Complex128,uint8_t>,fun<uint8_t,Complex128,uint16_t>,fun<uint8_t,Complex128,uint32_t>,fun<uint8_t,Complex128,uint64_t>},{fun<uint8_t,Rational32,uint8_t>,fun<uint8_t,Rational32,uint16_t>,fun<uint8_t,Rational32,uint32_t>,fun<uint8_t,Rational32,uint64_t>},{fun<uint8_t,Rational64,uint8_t>,fun<uint8_t,Rational64,uint16_t>,fun<uint8_t,Rational64,uint32_t>,fun<uint8_t,Rational64,uint64_t>},{fun<uint8_t,Rational128,uint8_t>,fun<uint8_t,Rational128,uint16_t>,fun<uint8_t,Rational128,uint32_t>,fun<uint8_t,Rational128,uint64_t>},{fun<uint8_t,RubyObject,uint8_t>,fun<uint8_t,RubyObject,uint16_t>,fun<uint8_t,RubyObject,uint32_t>,fun<uint8_t,RubyObject,uint64_t>}}, \
   {{fun<int8_t,uint8_t,uint8_t>,fun<int8_t,uint8_t,uint16_t>,fun<int8_t,uint8_t,uint32_t>,fun<int8_t,uint8_t,uint64_t>},{fun<int8_t,int8_t,uint8_t>,fun<int8_t,int8_t,uint16_t>,fun<int8_t,int8_t,uint32_t>,fun<int8_t,int8_t,uint64_t>},{fun<int8_t,int16_t,uint8_t>,fun<int8_t,int16_t,uint16_t>,fun<int8_t,int16_t,uint32_t>,fun<int8_t,int16_t,uint64_t>},{fun<int8_t,int32_t,uint8_t>,fun<int8_t,int32_t,uint16_t>,fun<int8_t,int32_t,uint32_t>,fun<int8_t,int32_t,uint64_t>},{fun<int8_t,int64_t,uint8_t>,fun<int8_t,int64_t,uint16_t>,fun<int8_t,int64_t,uint32_t>,fun<int8_t,int64_t,uint64_t>},{fun<int8_t,float32_t,uint8_t>,fun<int8_t,float32_t,uint16_t>,fun<int8_t,float32_t,uint32_t>,fun<int8_t,float32_t,uint64_t>},{fun<int8_t,float64_t,uint8_t>,fun<int8_t,float64_t,uint16_t>,fun<int8_t,float64_t,uint32_t>,fun<int8_t,float64_t,uint64_t>},{fun<int8_t,Complex64,uint8_t>,fun<int8_t,Complex64,uint16_t>,fun<int8_t,Complex64,uint32_t>,fun<int8_t,Complex64,uint64_t>},{fun<int8_t,Complex128,uint8_t>,fun<int8_t,Complex128,uint16_t>,fun<int8_t,Complex128,uint32_t>,fun<int8_t,Complex128,uint64_t>},{fun<int8_t,Rational32,uint8_t>,fun<int8_t,Rational32,uint16_t>,fun<int8_t,Rational32,uint32_t>,fun<int8_t,Rational32,uint64_t>},{fun<int8_t,Rational64,uint8_t>,fun<int8_t,Rational64,uint16_t>,fun<int8_t,Rational64,uint32_t>,fun<int8_t,Rational64,uint64_t>},{fun<int8_t,Rational128,uint8_t>,fun<int8_t,Rational128,uint16_t>,fun<int8_t,Rational128,uint32_t>,fun<int8_t,Rational128,uint64_t>},{fun<int8_t,RubyObject,uint8_t>,fun<int8_t,RubyObject,uint16_t>,fun<int8_t,RubyObject,uint32_t>,fun<int8_t,RubyObject,uint64_t>}}, \
@@ -174,7 +198,27 @@ static ret (*ttable[NUM_DTYPES][NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
   {{fun<RubyObject,uint8_t,uint8_t>,fun<RubyObject,uint8_t,uint16_t>,fun<RubyObject,uint8_t,uint32_t>,fun<RubyObject,uint8_t,uint64_t>},{fun<RubyObject,int8_t,uint8_t>,fun<RubyObject,int8_t,uint16_t>,fun<RubyObject,int8_t,uint32_t>,fun<RubyObject,int8_t,uint64_t>},{fun<RubyObject,int16_t,uint8_t>,fun<RubyObject,int16_t,uint16_t>,fun<RubyObject,int16_t,uint32_t>,fun<RubyObject,int16_t,uint64_t>},{fun<RubyObject,int32_t,uint8_t>,fun<RubyObject,int32_t,uint16_t>,fun<RubyObject,int32_t,uint32_t>,fun<RubyObject,int32_t,uint64_t>},{fun<RubyObject,int64_t,uint8_t>,fun<RubyObject,int64_t,uint16_t>,fun<RubyObject,int64_t,uint32_t>,fun<RubyObject,int64_t,uint64_t>},{fun<RubyObject,float32_t,uint8_t>,fun<RubyObject,float32_t,uint16_t>,fun<RubyObject,float32_t,uint32_t>,fun<RubyObject,float32_t,uint64_t>},{fun<RubyObject,float64_t,uint8_t>,fun<RubyObject,float64_t,uint16_t>,fun<RubyObject,float64_t,uint32_t>,fun<RubyObject,float64_t,uint64_t>},{fun<RubyObject,Complex64,uint8_t>,fun<RubyObject,Complex64,uint16_t>,fun<RubyObject,Complex64,uint32_t>,fun<RubyObject,Complex64,uint64_t>},{fun<RubyObject,Complex128,uint8_t>,fun<RubyObject,Complex128,uint16_t>,fun<RubyObject,Complex128,uint32_t>,fun<RubyObject,Complex128,uint64_t>},{fun<RubyObject,Rational32,uint8_t>,fun<RubyObject,Rational32,uint16_t>,fun<RubyObject,Rational32,uint32_t>,fun<RubyObject,Rational32,uint64_t>},{fun<RubyObject,Rational64,uint8_t>,fun<RubyObject,Rational64,uint16_t>,fun<RubyObject,Rational64,uint32_t>,fun<RubyObject,Rational64,uint64_t>},{fun<RubyObject,Rational128,uint8_t>,fun<RubyObject,Rational128,uint16_t>,fun<RubyObject,Rational128,uint32_t>,fun<RubyObject,Rational128,uint64_t>},{fun<RubyObject,RubyObject,uint8_t>,fun<RubyObject,RubyObject,uint16_t>,fun<RubyObject,RubyObject,uint32_t>,fun<RubyObject,RubyObject,uint64_t>}} \
 };
 
+#define LRI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
+
+#define NAMED_LI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)\
+static ret (*(name)[NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = {\
+  { fun<uint8_t,uint8_t>,fun<uint8_t,uint16_t>,fun<uint8_t,uint32_t>,fun<uint8_t,uint64_t>},\
+  { fun<int8_t,uint8_t>,fun<int8_t,uint16_t>,fun<int8_t,uint32_t>,fun<int8_t,uint64_t>},\
+  { fun<int16_t,uint8_t>,fun<int16_t,uint16_t>,fun<int16_t,uint32_t>,fun<int16_t,uint64_t>},\
+  { fun<int32_t,uint8_t>,fun<int32_t,uint16_t>,fun<int32_t,uint32_t>,fun<int32_t,uint64_t>},\
+  { fun<int64_t,uint8_t>,fun<int64_t,uint16_t>,fun<int64_t,uint32_t>,fun<int64_t,uint64_t>},\
+  { fun<float32_t,uint8_t>,fun<float32_t,uint16_t>,fun<float32_t,uint32_t>,fun<float32_t,uint64_t>},\
+  { fun<float64_t,uint8_t>,fun<float64_t,uint16_t>,fun<float64_t,uint32_t>,fun<float64_t,uint64_t>},\
+  { fun<Complex64,uint8_t>,fun<Complex64,uint16_t>,fun<Complex64,uint32_t>,fun<Complex64,uint64_t>},\
+  { fun<Complex128,uint8_t>,fun<Complex128,uint16_t>,fun<Complex128,uint32_t>,fun<Complex128,uint64_t>},\
+  { fun<Rational32,uint8_t>,fun<Rational32,uint16_t>,fun<Rational32,uint32_t>,fun<Rational32,uint64_t>},\
+  { fun<Rational64,uint8_t>,fun<Rational64,uint16_t>,fun<Rational64,uint32_t>,fun<Rational64,uint64_t>},\
+  { fun<Rational128,uint8_t>,fun<Rational128,uint16_t>,fun<Rational128,uint32_t>,fun<Rational128,uint64_t>},\
+  { fun<RubyObject,uint8_t>,fun<RubyObject,uint16_t>,fun<RubyObject,uint32_t>,fun<RubyObject,uint64_t>} \
+};
+
+#define LI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)    NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
 /*
  * Types
@@ -238,6 +282,22 @@ typedef enum {
 //  Rational128 rat;
 //  VALUE      v[2];
 //} nm_size128_t;
+
+const dtype_t Upcast[15][15] = {
+  { BYTE, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { INT8, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { INT16, INT16, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { INT32, INT32, INT32, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { INT64, INT64, INT64, INT64, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { FLOAT32, FLOAT32, FLOAT32, FLOAT32, FLOAT32, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, FLOAT64, FLOAT64, FLOAT64, RUBYOBJ},
+  { FLOAT64, FLOAT64, FLOAT64, FLOAT64, FLOAT64, FLOAT64, FLOAT64, COMPLEX128, COMPLEX128, FLOAT64, FLOAT64, FLOAT64, RUBYOBJ},
+  { COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX128, COMPLEX64, COMPLEX128, COMPLEX64, COMPLEX64, COMPLEX64, RUBYOBJ},
+  { COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, RUBYOBJ},
+  { RATIONAL32, RATIONAL32, RATIONAL32, RATIONAL32, RATIONAL32, FLOAT64, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { RATIONAL64, RATIONAL64, RATIONAL64, RATIONAL64, RATIONAL64, FLOAT64, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL64, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { RATIONAL128, RATIONAL128, RATIONAL128, RATIONAL128, RATIONAL128, FLOAT64, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL128, RATIONAL128, RATIONAL128, RUBYOBJ},
+  { RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ}
+};
 
 /*
  * Data

@@ -103,6 +103,10 @@ static VALUE nm_hermitian(VALUE self);
 
 static VALUE nm_eqeq(VALUE left, VALUE right);
 
+static VALUE matrix_multiply_scalar(NMATRIX* left, VALUE scalar);
+static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right);
+static VALUE nm_multiply(VALUE left_v, VALUE right_v);
+
 static dtype_t	dtype_from_rbstring(VALUE str);
 static dtype_t	dtype_from_rbsymbol(VALUE sym);
 static itype_t  itype_from_rbsymbol(VALUE sym);
@@ -772,6 +776,45 @@ static VALUE nm_hermitian(VALUE self) {
 }
 
 
+/*
+ * Matrix multiply (dot product): against another matrix or a vector.
+ *
+ * For elementwise, use * instead.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ */
+static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
+  NMATRIX *left, *right;
+
+  // left has to be of type NMatrix.
+  CheckNMatrixType(left_v);
+
+  UnwrapNMatrix( left_v, left );
+
+  if (RUBYVAL_IS_NUMERIC(right_v))
+    return matrix_multiply_scalar(left, right_v);
+
+  else if (TYPE(right_v) == T_ARRAY)
+    rb_raise(rb_eNotImpError, "for matrix-vector multiplication, please use an NVector instead of an Array for now");
+
+  //if (RDATA(right_v)->dfree != (RUBY_DATA_FUNC)nm_delete) {
+  else if (TYPE(right_v) == T_DATA && RDATA(right_v)->dfree == (RUBY_DATA_FUNC)nm_delete) { // both are matrices
+    UnwrapNMatrix( right_v, right );
+
+    if (left->storage->shape[1] != right->storage->shape[0])
+      rb_raise(rb_eArgError, "incompatible dimensions");
+
+    if (left->stype != right->stype)
+      rb_raise(rb_eNotImpError, "matrices must have same stype");
+
+    return matrix_multiply(left, right);
+
+  } else rb_raise(rb_eTypeError, "expected right operand to be NMatrix, NVector, or single numeric value");
+
+  return Qnil;
+}
+
+
 // Borrowed this function from NArray. Handles 'each' iteration on a dense matrix.
 //
 // Additionally, handles separately matrices containing VALUEs and matrices containing
@@ -1160,6 +1203,80 @@ static stype_t stype_from_rbsymbol(VALUE sym) {
   }
   
   return DENSE_STORE;
+}
+
+
+//////////////////
+// Math Helpers //
+//////////////////
+
+
+STORAGE* storage_cast_alloc(NMATRIX* matrix, dtype_t new_dtype) {
+  if (matrix->storage->dtype == new_dtype && !is_ref(matrix))
+    return matrix->storage;
+
+  STYPE_CAST_COPY_TABLE(cast_copy_funcs);
+  return cast_copy_funcs[new_dtype][matrix->stype](matrix->storage, new_dtype);
+}
+
+
+STORAGE_PAIR binary_storage_cast_alloc(NMATRIX* left_matrix, NMATRIX* right_matrix) {
+  STORAGE_PAIR casted;
+  dtype_t new_dtype = Upcast[left_matrix->storage->dtype][right_matrix->storage->dtype];
+
+  casted.left  = storage_cast_alloc(left_matrix, new_dtype);
+  casted.right = storage_cast_alloc(right_matrix, new_dtype);
+
+  return casted;
+}
+
+
+static VALUE matrix_multiply_scalar(NMATRIX* left, VALUE scalar) {
+  rb_raise(rb_eNotImpError, "matrix-scalar multiplication not implemented yet");
+  return Qnil;
+}
+
+static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
+  ///TODO: multiplication for non-dense and/or non-decimal matrices
+
+  // Make sure both of our matrices are of the correct type.
+  STORAGE_PAIR casted = binary_storage_cast_alloc(left, right);
+
+  size_t*  resulting_shape   = ALLOC_N(size_t, 2);
+  resulting_shape[0] = left->storage->shape[0];
+  resulting_shape[1] = right->storage->shape[1];
+
+  // Sometimes we only need to use matrix-vector multiplication (e.g., GEMM versus GEMV). Find out.
+  bool vector = false;
+  if (resulting_shape[1] == 1) vector = true;
+
+  static STORAGE* (*multiply_table[NUM_STYPES])(STORAGE_PAIR, size_t*, bool) = {
+    dense_storage_matrix_multiply,
+    list_storage_matrix_multiply,
+    yale_storage_matrix_multiply
+  };
+
+  STORAGE* resulting_storage = multiply_table[left->stype](casted, resulting_shape, vector);
+  NMATRIX* result = nm_create(left->stype, resulting_storage);
+
+  // Free any casted-storage we created for the multiplication.
+  // TODO: Can we make the Ruby GC take care of this stuff now that we're using it?
+  // If we did that, we night not have to re-create these every time, right? Or wrong? Need to do
+  // more research.
+  static void (*free_storage[NUM_STYPES])(STORAGE*) = {
+    dense_storage_delete,
+    list_storage_delete,
+    yale_storage_delete
+  };
+
+  if (left->storage != casted.left)   free_storage[result->stype](casted.left);
+  if (right->storage != casted.right) free_storage[result->stype](casted.right);
+
+
+  STYPE_MARK_TABLE(mark_table);
+
+  if (result) return Data_Wrap_Struct(cNMatrix, mark_table[result->stype], nm_delete, result);
+  return Qnil; // Only if we try to multiply list matrices should we return Qnil.
 }
 
 
