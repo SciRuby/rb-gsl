@@ -39,7 +39,6 @@
  * Global Variables
  */
  
-extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, const int);
 
 /*
  * Forward Declarations
@@ -48,6 +47,9 @@ extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, cons
 /*
  * Functions
  */
+
+template <typename LDType, typename RDType>
+static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions);
 
 ////////////////
 // Lifecycle //
@@ -452,7 +454,7 @@ void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtyp
  * Copy the contents of a list.
  */
 template <typename LDType, typename RDType>
-void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) {
+static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) {
   NODE *lcurr, *rcurr;
 
   if (rhs->first) {

@@ -29,12 +29,16 @@
  * Standard Includes
  */
 
+#include <ruby.h>
+#include <cblas.h>
 #include <limits> // for numeric_limits<T>::max()
 
 /*
  * Project Includes
  */
 
+#include "data/complex.h"
+#include "data/rational.h"
 #include "types.h"
 
 #include "math.h"
@@ -42,6 +46,10 @@
 /*
  * Macros
  */
+#ifndef NM_MAX
+# define NM_MAX(a,b) (((a)>(b))?(a):(b))
+# define NM_MIN(a,b) (((a)>(b))?(b):(a))
+#endif
 
 /*
  * Global Variables
@@ -50,6 +58,9 @@
 /*
  * Forward Declarations
  */
+
+
+
 
 /*
  * Functions
@@ -221,28 +232,28 @@ bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, 
 }
 
 template <>
-bool gemm<>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm<double, float>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const float* alpha, const float* A, const int lda, const float* B, const int ldb, const float* beta, float* C, const int ldc) {
   cblas_sgemm(CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
   return true;
 }
 
 template <>
-bool gemm<>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm<double, double>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const double* alpha, const double* A, const int lda, const double* B, const int ldb, const double* beta, double* C, const int ldc) {
   cblas_dgemm(CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
   return true;
 }
 
 template <>
-bool gemm<>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm<Complex128, Complex64>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const Complex64* alpha, const Complex64* A, const int lda, const Complex64* B, const int ldb, const Complex64* beta, Complex64* C, const int ldc) {
   cblas_cgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
   return true;
 }
 
 template <>
-bool gemm<>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm<Complex128, Complex128>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const Complex128* alpha, const Complex128* A, const int lda, const Complex128* B, const int ldb, const Complex128* beta, Complex128* C, const int ldc) {
   cblas_zgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
   return true;
@@ -386,27 +397,31 @@ bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const T* a
 }  // end of GEMV
 
 template <>
-bool gemv<>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const float* alpha, const float* A, const int lda,
+bool gemv<double, float>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const float* alpha, const float* A, const int lda,
           const float* X, const int incX, const float* beta, float* Y, const int incY) {
   cblas_sgemv(CblasRowMajor, Trans, M, N, *alpha, A, lda, X, incX, *beta, Y, incY);
+  return true;
 }
 
 template <>
-bool gemv<>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const double* alpha, const double* A, const int lda,
+bool gemv<double, double>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const double* alpha, const double* A, const int lda,
           const double* X, const int incX, const double* beta, double* Y, const int incY) {
-  cblas_sgemv(CblasRowMajor, Trans, M, N, *alpha, A, lda, X, incX, *beta, Y, incY);
+  cblas_dgemv(CblasRowMajor, Trans, M, N, *alpha, A, lda, X, incX, *beta, Y, incY);
+  return true;
 }
 
 template <>
-bool gemv<>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex64* alpha, const Complex64* A, const int lda,
+bool gemv<Complex128, Complex64>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex64* alpha, const Complex64* A, const int lda,
           const Complex64* X, const int incX, const Complex64* beta, Complex64* Y, const int incY) {
   cblas_cgemv(CblasRowMajor, Trans, M, N, alpha, A, lda, X, incX, beta, Y, incY);
+  return true;
 }
 
 template <>
-bool gemv<>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex128* alpha, const Complex128* A, const int lda,
+bool gemv<Complex128, Complex128>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex128* alpha, const Complex128* A, const int lda,
           const Complex128* X, const int incX, const Complex128* beta, Complex128* Y, const int incY) {
   cblas_zgemv(CblasRowMajor, Trans, M, N, alpha, A, lda, X, incX, beta, Y, incY);
+  return true;
 }
 
 
@@ -497,7 +512,7 @@ template <typename IType>
 void symbmm(const unsigned int n, const unsigned int m, const IType* ia, const IType* ja, const bool diaga,
             const IType* ib, const IType* jb, const bool diagb, IType* ic, const bool diagc) {
   IType mask[m];
-  IType i, j, k, kk, jj, minmn, ndnz = n; /* Local variables */
+  IType j, k, ndnz = n; /* Local variables */
 
 
   for (j = 0; j < m; ++j)
@@ -508,9 +523,9 @@ void symbmm(const unsigned int n, const unsigned int m, const IType* ia, const I
 
   IType minmn = NM_MIN(m,n);
 
-  for (i = 0; i < n; ++i) { // MAIN LOOP: through rows
+  for (IType i = 0; i < n; ++i) { // MAIN LOOP: through rows
 
-    for (jj = ia[i]; jj <= ia[i+1]; ++jj) { // merge row lists, walking through columns in each row
+    for (IType jj = ia[i]; jj <= ia[i+1]; ++jj) { // merge row lists, walking through columns in each row
 
       // j <- column index given by JA[jj], or handle diagonal.
       if (jj == ia[i+1]) { // Don't really do it the last time -- just handle diagonals in a new yale matrix.
@@ -518,7 +533,7 @@ void symbmm(const unsigned int n, const unsigned int m, const IType* ia, const I
         j = i;
       } else j = ja[jj];
 
-      for (kk = ib[j]; kk <= ib[j+1]; ++kk) { // Now walk through columns of row J in matrix B.
+      for (IType kk = ib[j]; kk <= ib[j+1]; ++kk) { // Now walk through columns of row J in matrix B.
         if (kk == ib[j+1]) {
           if (!diagb || j >= minmn) continue;
           k = j;

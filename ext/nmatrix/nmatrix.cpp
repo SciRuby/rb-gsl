@@ -180,18 +180,19 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, "is_ref?", (METHOD)nm_is_ref, 0);
 	rb_define_method(cNMatrix, "rank", (METHOD)nm_rank, 0);
 	rb_define_method(cNMatrix, "shape", (METHOD)nm_shape, 0);
-	rb_define_method(cNMatrix, "transpose", (METHOD)nm_transpose_new, 0);
-	rb_define_method(cNMatrix, "det_exact", (METHOD)nm_det_exact, 0);
-	rb_define_method(cNMatrix, "transpose!", (METHOD)nm_transpose_self, 0);
-	rb_define_method(cNMatrix, "complex_conjugate!", (METHOD)nm_complex_conjugate_bang, 0);
+	//rb_define_method(cNMatrix, "transpose", (METHOD)nm_transpose_new, 0);   // FIXME 0.0.2
+	//rb_define_method(cNMatrix, "det_exact", (METHOD)nm_det_exact, 0);       // FIXME 0.0.2
+	//rb_define_method(cNMatrix, "transpose!", (METHOD)nm_transpose_self, 0); // FIXME 0.0.2
+	//rb_define_method(cNMatrix, "complex_conjugate!", (METHOD)nm_complex_conjugate_bang, 0); // FIXME 0.0.2
 
 	rb_define_method(cNMatrix, "each", (METHOD)nm_each, 0);
 
-	rb_define_method(cNMatrix, "*", (METHOD)nm_ew_multiply, 1);
-	rb_define_method(cNMatrix, "/", (METHOD)nm_ew_divide, 1);
-	rb_define_method(cNMatrix, "+", (METHOD)nm_ew_add, 1);
-	rb_define_method(cNMatrix, "-", (METHOD)nm_ew_subtract, 1);
-	rb_define_method(cNMatrix, "%", (METHOD)nm_ew_mod, 1);
+  // FIXME 0.0.2
+	//rb_define_method(cNMatrix, "*", (METHOD)nm_ew_multiply, 1);
+	//rb_define_method(cNMatrix, "/", (METHOD)nm_ew_divide, 1);
+	//rb_define_method(cNMatrix, "+", (METHOD)nm_ew_add, 1);
+	//rb_define_method(cNMatrix, "-", (METHOD)nm_ew_subtract, 1);
+	//rb_define_method(cNMatrix, "%", (METHOD)nm_ew_mod, 1);
 	rb_define_method(cNMatrix, "eql?", (METHOD)nm_eqeq, 1);
 	rb_define_method(cNMatrix, "dot", (METHOD)nm_multiply, 1);
 	
