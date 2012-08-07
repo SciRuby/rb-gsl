@@ -116,4 +116,4 @@ NODE* list_find_nearest_from(NODE* prev, size_t key);
 
 void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
 
-#endif
+#endif // SL_LIST_H

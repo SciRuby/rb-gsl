@@ -25,8 +25,8 @@
 //
 // Header file for dealing with data types.
 
-#ifndef RUBY_SYMBOLS_H
-#define RUBY_SYMBOLS_H
+#ifndef RUBY_CONSTANTS_H
+#define RUBY_CONSTANTS_H
 
 /*
  * Standard Includes
@@ -87,6 +87,6 @@ extern VALUE	cNMatrix,
  * Functions
  */
 
-void ruby_symbols_init(void);
+void ruby_constants_init(void);
 
-#endif
+#endif // RUBY_CONSTANTS_H

@@ -94,4 +94,4 @@ STORAGE*		list_storage_from_yale(const STORAGE* rhs, dtype_t l_dtype);
 STORAGE*		yale_storage_from_list(const STORAGE* rhs, dtype_t l_dtype);
 STORAGE*		yale_storage_from_dense(const STORAGE* rhs, dtype_t l_dtype);
 
-#endif
+#endif // STORAGE_H

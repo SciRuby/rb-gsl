@@ -49,16 +49,23 @@ module NMatrix::IO::Matlab
 		}
 
 		DTYPE_PACK_ARGS = {
-			:byte				=> [Integer,	{:signed		=> true,		:bytes => 1}],
-			:int8				=> [Integer,	{:signed		=> false,		:bytes => 1}],
-			:int16			=> [Integer,	{:signed		=> false,		:bytes => 2}],
-			:int32			=> [Integer,	{:signed		=> false,		:bytes => 4}],
-			:int64			=> [Integer,	{:signed		=> false,		:bytes => 8}],
+			:byte				=> [Integer,	{:signed		=> false,		:bytes => 1}],
+			:int8				=> [Integer,	{:signed		=> true,		:bytes => 1}],
+			:int16			=> [Integer,	{:signed		=> true,		:bytes => 2}],
+			:int32			=> [Integer,	{:signed		=> true,		:bytes => 4}],
+			:int64			=> [Integer,	{:signed		=> true,		:bytes => 8}],
 			:float32		=> [Float,		{:precision	=> :single,	:bytes => 4}],
 			:float64		=> [Float,		{:precision	=> :double,	:bytes => 8}],
 			:complex64	=> [Float,		{:precision	=> :single,	:bytes => 4}], #2x
 			:complex128	=> [Float,		{:precision	=> :double,	:bytes => 8}]
 		}
+
+    ITYPE_PACK_ARGS = {
+      :uint8			=> [Integer,	{:signed		=> false,		:bytes => 1}],
+     	:uint16			=> [Integer,	{:signed		=> false,		:bytes => 2}],
+     	:uint32			=> [Integer,	{:signed		=> false,		:bytes => 4}],
+     	:uint64			=> [Integer,	{:signed		=> false,		:bytes => 8}],
+    }
 
 		NO_REPACK = [:miINT8, :miUINT8, :miINT16, :miINT32, :miSINGLE, :miDOUBLE, :miINT64]
 
@@ -75,6 +82,18 @@ module NMatrix::IO::Matlab
 			:miSINGLE	=> :float32,
 			:miDOUBLE	=> :float64
 		}
+
+    MDTYPE_TO_ITYPE = {
+      :miUINT8 => :uint8,
+      :miINT8 => :uint8,
+      :miINT16	=> :uint16,
+      :miUINT16	=> :uint16,
+      :miINT32	=> :uint32,
+      :miUINT32	=> :uint32,
+      :miINT64	=> :uint64,
+      :miUINT64	=> :uint64
+   		}
+    }
 
 		# Before release v7.1 (release 14) matlab (TM) used the system
 		# default character encoding scheme padded out to 16-bits. Release 14

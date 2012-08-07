@@ -447,7 +447,7 @@ NODE* list_find_nearest_from(NODE* prev, size_t key) {
 void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
   LR_DTYPE_TEMPLATE_TABLE(list_cast_copy_contents_template, void, LIST*, const LIST*, size_t);
 
-  return ttable[lhs_dtype][rhs_dtype];
+  ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
 }
 
 /*
@@ -460,7 +460,7 @@ static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t 
   if (rhs->first) {
     // copy head node
     rcurr = rhs->first;
-    lcurr = lhs->first = calloc(1, NODE);
+    lcurr = lhs->first = ALLOC( NODE );
 
     while (rcurr) {
       lcurr->key = rcurr->key;
@@ -470,7 +470,7 @@ static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t 
       	
         lcurr->val = ALLOC( LDType );
 
-        *reinterpret_cast<LDType*>(lcurr->val) = static_cast<LDType>(reinterpret_cast<RDType*>( rcurr->val ));
+        *reinterpret_cast<LDType*>(lcurr->val) = *reinterpret_cast<RDType*>( rcurr->val );
 
       } else {
       	// contents is a list

@@ -89,4 +89,4 @@ inline size_t storage_count_max_elements(size_t rank, const size_t* shape) {
   return count;
 }
 
-#endif
+#endif // STORAGE_COMMON_H

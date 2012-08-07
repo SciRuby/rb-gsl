@@ -29,13 +29,6 @@ nm_delete_t DeleteFuncsRef = {
   delete_yale_storage
 };
 
-
-
-
-
-
-
-
 nm_matrix_multiply_op_t CastedMultiplyFuncs = {
   multiply_matrix_dense_casted,
   multiply_matrix_list_casted,

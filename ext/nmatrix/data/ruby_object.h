@@ -194,4 +194,4 @@ class RubyObject {
 	}
 };
 
-#endif
+#endif // RUBY_OBJECT_H

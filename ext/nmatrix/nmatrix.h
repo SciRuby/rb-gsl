@@ -187,7 +187,7 @@ typedef struct NMATRIX {
  */
 
 // FIXME: Does this belong here?
-void transp(y_size_t n, y_size_t m, void* ia, void* ja, bool diaga, void* a, void* ib, void* jb, void* b, bool move, int8_t itype, dtype_t dtype);
+void transp(size_t n, size_t m, void* ia, void* ja, bool diaga, void* a, void* ib, void* jb, void* b, bool move, int8_t itype, dtype_t dtype);
 
 void cast_copy_value_single(void* to, const void* from, dtype_t l_dtype, dtype_t r_dtype);
 NMATRIX* nm_create(int8_t stype, void* storage);
@@ -200,4 +200,4 @@ extern "C" {
 	VALUE rb_nvector_dense_create(dtype_t dtype, void* elements, size_t length);
 }
 
-#endif
+#endif // NMATRIX_H

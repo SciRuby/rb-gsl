@@ -80,7 +80,7 @@ typedef VALUE (*METHOD)(...);
 
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm);
 static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype, VALUE new_dtype);
-static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_itype, VALUE nm);
+static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm);
 static VALUE nm_alloc(VALUE klass);
 static void  nm_delete(NMATRIX* mat);
 static void  nm_delete_ref(NMATRIX* mat);
@@ -234,7 +234,7 @@ void Init_nmatrix() {
 	// Symbol Generation //
 	///////////////////////
 	
-	ruby_symbols_init();
+	ruby_constants_init();
 }
 
 /*
@@ -289,7 +289,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
    */
 
   if (argc < 2) {
-  	rb_raise(rb_eArgError, "Expected 2-4 arguments (or 8 for internal Yale creation)");
+  	rb_raise(rb_eArgError, "Expected 2-4 arguments (or 7 for internal Yale creation)");
   	return Qnil;
   }
 
@@ -303,9 +303,9 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   }
 
   // If there are 7 arguments and Yale, refer to a different init function with fewer sanity checks.
-  if (argc == 8) {
+  if (argc == 7) {
     if (stype == YALE_STORE) {
-    	return nm_init_yale_from_old_yale(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], nm);
+    	return nm_init_yale_from_old_yale(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], nm);
     	
 		} else {
 		  rb_raise(rb_eArgError, "Expected 2-4 arguments (or 7 for internal Yale creation)");
@@ -399,7 +399,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
  * This constructor is only called by Ruby code, so we can skip most of the
  * checks.
  */
-static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE from_itype, VALUE nm) {
+static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm) {
   size_t rank     = 2;
   size_t* shape_  = interpret_shape(shape, &rank);
   dtype_t dtype_  = dtype_from_rbsymbol(dtype);
@@ -407,13 +407,12 @@ static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALU
        *ja_       = RSTRING_PTR(ja),
        *a_        = RSTRING_PTR(a);
   dtype_t from_dtype_ = dtype_from_rbsymbol(from_dtype);
-  itype_t from_itype_ = itype_from_rbsymbol(from_itype);
   NMATRIX* nmatrix;
 
   UnwrapNMatrix( nm, nmatrix );
 
   nmatrix->stype   = YALE_STORE;
-  nmatrix->storage = (STORAGE*)yale_storage_create_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_, from_itype_);
+  nmatrix->storage = (STORAGE*)yale_storage_create_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_);
 
   return nm;
 }

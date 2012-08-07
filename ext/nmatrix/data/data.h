@@ -25,8 +25,8 @@
 //
 // Header file for dealing with data types.
 
-#ifndef DATA_TYPES_H
-#define DATA_TYPES_H
+#ifndef DATA_H
+#define DATA_H
 
 /*
  * Standard Includes
@@ -220,6 +220,8 @@ static ret (*(name)[NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = {\
 
 #define LI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)    NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
+
+
 /*
  * Types
  */
@@ -296,6 +298,8 @@ extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
 extern const char* const  ITYPE_NAMES[NUM_ITYPES];
 extern const size_t 			ITYPE_SIZES[NUM_ITYPES];
 
+extern const dtype_t      Upcast[NUM_DTYPES][NUM_DTYPES];
+
 /*
  * Functions
  */
@@ -304,4 +308,4 @@ void*				rubyobj_to_cval(VALUE val, dtype_t dtype);
 void				rubyval_to_cval(VALUE val, dtype_t dtype, void* loc);
 RubyObject	rubyobj_from_cval(void* val, dtype_t dtype);
 
-#endif
+#endif // DATA_H

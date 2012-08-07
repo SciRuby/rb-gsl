@@ -207,6 +207,7 @@ class Complex {
 	}
 };
 
+
 ///////////////////////////////
 // Native-Complex Operations //
 ///////////////////////////////
@@ -261,4 +262,4 @@ inline bool operator>=(const NativeType left, const Complex<ComplexType>& right)
 	return Complex<ComplexType>(left) >= right;
 }
 
-#endif
+#endif // COMPLEX_H

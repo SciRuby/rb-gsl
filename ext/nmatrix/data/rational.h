@@ -295,4 +295,4 @@ inline bool operator>=(const IntType left, const Rational<RationalType>& right) 
 	return Rational<RationalType>(left) >= right;
 }
 
-#endif
+#endif // RATIONAL_H

@@ -55,7 +55,7 @@ typedef double	float64_t;
 
 
 #ifndef HAVE_SIZE_T /// If you modify this, make sure to modify the definition of y_size_t and Y_SIZE_T!
-typedef u_int64_t    size_t;
+  typedef u_int64_t    size_t;
 # define SIZE_T   INT64
 #else
 # if SIZEOF_SIZE_T == 8
@@ -69,8 +69,6 @@ typedef u_int64_t    size_t;
 # endif
 #endif
 
-
-typedef uint32_t y_size_t;
 
 /*
  * Data
