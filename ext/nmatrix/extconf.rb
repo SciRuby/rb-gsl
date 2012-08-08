@@ -59,12 +59,21 @@ end
 
 def create_conf_h(file)
   print "creating #{file}\n"
-  hfile = open(file, "w")
-  for line in $defs
-    line =~ /^-D(.*)/
-    hfile.printf "#define %s 1\n", $1
+  File.open(file, 'w') do |hfile|
+  	header_guard = file.upcase.sub(/\s|\./, '_')
+		
+		hfile.puts "#ifndef #{header_guard}"
+		hfile.puts "#define #{header_guard}"
+		hfile.puts
+		
+		for line in $defs
+		  line =~ /^-D(.*)/
+		  hfile.printf "#define %s 1\n", $1
+		end
+		
+		hfile.puts
+		hfile.puts "#endif"
   end
-  hfile.close
 end
 
 if RUBY_VERSION < '1.9'
@@ -81,20 +90,21 @@ if /cygwin|mingw/ =~ RUBY_PLATFORM
 end
 
 $DEBUG = true
-$CFLAGS = ["-Wall ",$CFLAGS].join(" ") #-BENCHMARK for comparing transp
+$CFLAGS = ["-Wall ",$CFLAGS].join(" ")
 
-srcs = %w(
-nmatrix
-list
-dense
-yale
-dfuncs
-smmp1
-smmp2
-cblas
-blas
-rational
-)
+$srcs = [
+	'nmatrix.cpp',
+	'ruby_constants.cpp',
+
+	'data/data.cpp',
+	'util/math.cpp',
+  'util/sl_list.cpp',
+  'util/util.cpp',
+	'storage/storage.cpp',
+	'storage/dense.cpp',
+  'storage/yale.cpp',
+  'storage/list.cpp'
+]
 # add smmp in to get generic transp; remove smmp2 to eliminate funcptr transp
 
 header = "stdint.h"
@@ -134,10 +144,24 @@ have_header("f2c.h")
 
 $libs += " -lcblas -latlas "
 
-$objs = srcs.collect{|i| i+".o" }
+$objs = %w{nmatrix ruby_constants data/data util/math util/sl_list util/util storage/storage storage/dense storage/yale storage/list}.map { |i| i + ".o" }
 
 $CFLAGS += " -O0"
+$CPPFLAGS += " -O0 -std=c++0x"
+
+CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
+CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
 
 create_conf_h("nmatrix_config.h")
 create_makefile("nmatrix")
 
+Dir.mkdir("data") unless Dir.exists?("data")
+Dir.mkdir("util") unless Dir.exists?("util")
+Dir.mkdir("storage") unless Dir.exists?("storage")
+
+# to clean up object files in subdirectories:
+open('Makefile', 'a') do |f|
+  f.write <<EOS
+CLEANOBJS := $(CLEANOBJS) data/*.#{CONFIG["OBJEXT"]} storage/*.#{CONFIG["OBJEXT"]} util/*.#{CONFIG["OBJEXT"]}
+EOS
+end
