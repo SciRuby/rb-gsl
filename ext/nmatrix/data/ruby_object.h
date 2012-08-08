@@ -85,12 +85,18 @@ class RubyObject {
 	/*
 	 * Default constructor.
 	 */
-	inline RubyObject(VALUE ref) : rval(ref) {}
+	inline RubyObject(VALUE ref = Qnil) : rval(ref) {}
 	
 	/*
 	 * Copy constructors.
 	 */
 	inline RubyObject(const RubyObject& other) : rval(other.rval) {}
+
+  template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+	inline RubyObject(const Complex<FloatType>& other) : rval(rb_complex_new(rb_float_new(other.r), rb_float_new(other.i))) {}
+
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline RubyObject(const Rational<IntType>& other) : rval(rb_rational_new(INT2FIX(other.n), INT2FIX(other.d))) {}
 	
 	/*
 	 * Binary operator definitions.

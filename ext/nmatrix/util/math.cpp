@@ -73,13 +73,14 @@
  *
  * Template parameters: LT -- long version of type T. Type T is the matrix dtype.
  */
-template <typename LT, typename T>
+template <typename DType>
 bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-          const T* alpha, const T* A, const int lda, const T* B, const int ldb, const T* beta, T* C, const int ldc) {
+          const DType* alpha, const DType* A, const int lda, const DType* B, const int ldb, const DType* beta, DType* C, const int ldc) {
   int num_rows_a, /*num_cols_a,*/ num_rows_b; // nrowa, ncola, nrowb
 
-  // use longest possible type for intermediate value storage:
-  LT temp;
+  // FIXME: Increase precision of temp
+  DType temp;
+
   // %%= if [:rational,:complex,:value].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1, temp2;"; end%%
   int i, j, l;
 
@@ -165,7 +166,7 @@ bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, 
 
     } else {
 
-      // C = alpha*A**T*B + beta*C
+      // C = alpha*A**DType*B + beta*C
       for (j = 0; j < N; ++j) {
         for (i = 0; i < M; ++i) {
           temp = 0;
@@ -210,7 +211,7 @@ bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, 
 
   } else {
 
-    // C = alpha*A**T*B**T + beta*C
+    // C = alpha*A**DType*B**T + beta*C
     for (j = 0; j < N; ++j) {
       for (i = 0; i < M; ++i) {
         temp = 0;
@@ -232,28 +233,28 @@ bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, 
 }
 
 template <>
-bool gemm<double, float>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm<float>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const float* alpha, const float* A, const int lda, const float* B, const int ldb, const float* beta, float* C, const int ldc) {
   cblas_sgemm(CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
   return true;
 }
 
 template <>
-bool gemm<double, double>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm<double>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const double* alpha, const double* A, const int lda, const double* B, const int ldb, const double* beta, double* C, const int ldc) {
   cblas_dgemm(CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
   return true;
 }
 
 template <>
-bool gemm<Complex128, Complex64>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm<Complex64>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const Complex64* alpha, const Complex64* A, const int lda, const Complex64* B, const int ldb, const Complex64* beta, Complex64* C, const int ldc) {
   cblas_cgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
   return true;
 }
 
 template <>
-bool gemm<Complex128, Complex128>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm<Complex128>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const Complex128* alpha, const Complex128* A, const int lda, const Complex128* B, const int ldb, const Complex128* beta, Complex128* C, const int ldc) {
   cblas_zgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
   return true;
@@ -266,12 +267,14 @@ bool gemm<Complex128, Complex128>(const enum CBLAS_TRANSPOSE TransA, const enum 
  *
  * Template parameters: LT -- long version of type T. Type T is the matrix dtype.
  */
-template <typename LT, typename T>
-bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const T* alpha, const T* A, const int lda,
-          const T* X, const int incX, const T* beta, T* Y, const int incY) {
+template <typename DType>
+bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const DType* alpha, const DType* A, const int lda,
+          const DType* X, const int incX, const DType* beta, DType* Y, const int incY) {
   int lenX, lenY, i, j;
   int kx, ky, iy, jx, jy, ix;
-  LT temp;
+
+  // FIXME: Increase precision of temp
+  DType temp;
 
   // Test the input parameters
   if (Trans < 111 || Trans > 113) {
@@ -366,7 +369,7 @@ bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const T* a
 
   } else { // TODO: Check that indices are correct! They're switched for C.
 
-    // Form  y := alpha*A**T*x + y.
+    // Form  y := alpha*A**DType*x + y.
     jy = ky;
 
     if (incX == 1) {
@@ -397,28 +400,28 @@ bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const T* a
 }  // end of GEMV
 
 template <>
-bool gemv<double, float>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const float* alpha, const float* A, const int lda,
+bool gemv<float>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const float* alpha, const float* A, const int lda,
           const float* X, const int incX, const float* beta, float* Y, const int incY) {
   cblas_sgemv(CblasRowMajor, Trans, M, N, *alpha, A, lda, X, incX, *beta, Y, incY);
   return true;
 }
 
 template <>
-bool gemv<double, double>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const double* alpha, const double* A, const int lda,
+bool gemv<double>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const double* alpha, const double* A, const int lda,
           const double* X, const int incX, const double* beta, double* Y, const int incY) {
   cblas_dgemv(CblasRowMajor, Trans, M, N, *alpha, A, lda, X, incX, *beta, Y, incY);
   return true;
 }
 
 template <>
-bool gemv<Complex128, Complex64>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex64* alpha, const Complex64* A, const int lda,
+bool gemv<Complex64>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex64* alpha, const Complex64* A, const int lda,
           const Complex64* X, const int incX, const Complex64* beta, Complex64* Y, const int incY) {
   cblas_cgemv(CblasRowMajor, Trans, M, N, alpha, A, lda, X, incX, beta, Y, incY);
   return true;
 }
 
 template <>
-bool gemv<Complex128, Complex128>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex128* alpha, const Complex128* A, const int lda,
+bool gemv<Complex128>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex128* alpha, const Complex128* A, const int lda,
           const Complex128* X, const int incX, const Complex128* beta, Complex128* Y, const int incY) {
   cblas_zgemv(CblasRowMajor, Trans, M, N, alpha, A, lda, X, incX, beta, Y, incY);
   return true;

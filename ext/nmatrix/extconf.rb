@@ -147,7 +147,7 @@ $libs += " -lcblas -latlas "
 $objs = %w{nmatrix ruby_constants data/data util/math util/sl_list util/util storage/storage storage/dense storage/yale storage/list}.map { |i| i + ".o" }
 
 $CFLAGS += " -O0"
-$CPPFLAGS += " -O0 -std=c++0x -fmax-errors=10 -save-temps"
+$CPPFLAGS += " -O0 -std=c++0x " #-fmax-errors=10 -save-temps
 
 CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
 CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')

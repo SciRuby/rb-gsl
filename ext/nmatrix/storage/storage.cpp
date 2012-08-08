@@ -244,7 +244,7 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
 
   // copy default value from the zero location in the Yale matrix
   LDType* default_val = ALLOC_N(LDType, 1);
-  *default_val        = static_cast<LDType>( R_ZERO );
+  *default_val        = R_ZERO;
 
   LIST_STORAGE* lhs = list_storage_create(l_dtype, shape, rhs->rank, default_val);
 
@@ -272,13 +272,13 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
       LDType* insert_val;
 
       while (ija < ija_next) {
-        RDType jj = rhs_ija[ija]; // what column number is this?
+        RIType jj = rhs_ija[ija]; // what column number is this?
 
         // Is there a nonzero diagonal item between the previously added item and the current one?
         if (jj > i && add_diag) {
           // Allocate and copy insertion value
           insert_val = ALLOC_N(LDType, 1);
-          *insert_val        = static_cast<LDType>(rhs_a[i]);
+          *insert_val        = rhs_a[i];
 
           // insert the item in the list at the appropriate location
           if (last_added) 	last_added = list_insert_after(last_added, i, insert_val);
@@ -290,7 +290,7 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
 
         // now allocate and add the current item
         insert_val  = ALLOC_N(LDType, 1);
-        *insert_val = static_cast<LDType>(rhs_a[ija]);
+        *insert_val = rhs_a[ija];
 
         if (last_added)    	last_added = list_insert_after(last_added, jj, insert_val);
         else              	last_added = list_insert(curr_row, false, jj, insert_val);
@@ -301,7 +301,7 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
       if (add_diag) {
       	// still haven't added the diagonal.
         insert_val = ALLOC_N(LDType, 1);
-        *insert_val        = static_cast<LDType>(rhs_a[i]);
+        *insert_val        = rhs_a[i];
 
         // insert the item in the list at the appropriate location
         if (last_added)    	last_added = list_insert_after(last_added, i, insert_val);
@@ -364,7 +364,7 @@ YALE_STORAGE* yale_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t
   LIType* lhs_ija   = reinterpret_cast<LIType*>(lhs->ija);
 
   // Set the zero position in the yale matrix
-  lhs_a[ shape[0] ] = static_cast<LDType>(R_ZERO);
+  lhs_a[ shape[0] ] = R_ZERO;
 
   // Start just after the zero position.
   LIType ija = lhs->shape[0]+1;
@@ -379,11 +379,11 @@ YALE_STORAGE* yale_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t
     for (LIType j = 0; j < rhs->shape[1]; ++j) {
 
       if (i == j) { // copy to diagonal
-        lhs_a[i] = static_cast<LDType>(rhs_elements[pos]);
-      } else if (rhs->elements[pos] != R_ZERO) { // copy nonzero to LU
+        lhs_a[i] = rhs_elements[pos];
+      } else if (rhs_elements[pos] != R_ZERO) { // copy nonzero to LU
         lhs_ija[ija] = j; // write column index
 
-        lhs_a[ija] = static_cast<LDType>(rhs->elements[pos]);
+        lhs_a[ija] = rhs_elements[pos];
 
         ++ija;
       }
@@ -416,9 +416,10 @@ YALE_STORAGE* yale_storage_from_list_template(const LIST_STORAGE* rhs, dtype_t l
 
   if (rhs->rank != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
 
-  if ((rhs->dtype == RUBYOBJ && *(VALUE*)(rhs->default_val) == INT2FIX(0)) || strncmp(rhs->default_val, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", DTYPE_SIZES[rhs->dtype])) {
+  if ((rhs->dtype == RUBYOBJ && *reinterpret_cast<RubyObject*>(rhs->default_val) == INT2FIX(0))
+      || strncmp(reinterpret_cast<const char*>(rhs->default_val), "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", DTYPE_SIZES[rhs->dtype]))
     rb_raise(nm_eStorageTypeError, "list matrix must have default value of 0 to convert to yale");
-  }
+
 
   // Copy shape for yale construction
   size_t* shape = ALLOC_N(size_t, 2);
@@ -438,13 +439,13 @@ YALE_STORAGE* yale_storage_from_list_template(const LIST_STORAGE* rhs, dtype_t l
     lhs_ija[i_curr->key] = ija;
 
     for (j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
-      LDType cast_jcurr_val = static_cast<LDType>(*reinterpret_cast<RDType*>(j_curr->val));
+      LDType cast_jcurr_val = *reinterpret_cast<RDType*>(j_curr->val);
 
       if (i_curr->key == j_curr->key)
         lhs_a[i_curr->key] = cast_jcurr_val; // set diagonal
       else {
 
-        lhs_ija[ija] = static_cast<LIType>(j_curr->key);    // set column value
+        lhs_ija[ija] = j_curr->key;    // set column value
         lhs_a[ija]   = cast_jcurr_val;                      // set cell value
 
         ++ija;

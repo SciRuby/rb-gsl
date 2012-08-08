@@ -38,7 +38,8 @@
  * Project Includes
  */
 
-#include "types.h"
+//#include "types.h"
+#include "util/math.h"
 
 #include "data/data.h"
 
@@ -57,13 +58,15 @@ typedef struct {
 	dtype_t	dtype;
 	size_t	rank;
 	size_t*	shape;
+
+  // Slicing elements
 	size_t*	offset;
 	size_t* stride;
+	int     count;
+	void*   src;
 
 	// Dense storage specific elements.
-	int       count;
-	void*     src;
-	void*     elements;
+	void*   elements;
 } DENSE_STORAGE;
 
 /*
@@ -110,7 +113,7 @@ STORAGE* dense_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resu
 // Utility //
 /////////////
 
-size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
+size_t dense_storage_pos(const DENSE_STORAGE* s, const size_t* coords);
 
 /////////////////////////
 // Copying and Casting //
