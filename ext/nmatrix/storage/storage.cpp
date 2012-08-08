@@ -72,16 +72,6 @@ static void dense_storage_cast_copy_list_default_template(LDType* lhs, RDType* d
 /////////////////////////
 // Templated Functions //
 /////////////////////////
-
-
-STORAGE* dense_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
-	LR_DTYPE_TEMPLATE_TABLE(dense_storage_from_list_template, DENSE_STORAGE*, const LIST_STORAGE*, dtype_t);
-
-	return (STORAGE*)ttable[l_dtype][right->dtype]((LIST_STORAGE*)right, l_dtype);
-}
-
-
-
 /*
  * Convert (by creating a copy) from list storage to dense storage.
  */
@@ -96,19 +86,24 @@ DENSE_STORAGE* dense_storage_from_list_template(const LIST_STORAGE* rhs, dtype_t
 
   // Position in lhs->elements.
   size_t pos = 0;
+  size_t max_elements = storage_count_max_elements(rhs->rank, rhs->shape);
 
+//static void dense_storage_cast_copy_list_contents_template(LDType* lhs, const LIST* rhs, RDType* default_val, size_t& pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions)
   // recursively copy the contents
-  dense_storage_cast_copy_list_contents_template<LDType,RDType>(lhs->elements, rhs->rows, rhs->default_val, pos, shape, lhs->rank, count_storage_max_elements((STORAGE*)rhs), rhs->rank-1);
+  dense_storage_cast_copy_list_contents_template<LDType,RDType>(reinterpret_cast<LDType*>(lhs->elements),
+                                                                rhs->rows,
+                                                                reinterpret_cast<RDType*>(rhs->default_val),
+                                                                pos, shape, lhs->rank, max_elements, rhs->rank-1);
 
   return lhs;
 }
 
+STORAGE* dense_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
+	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, dense_storage_from_list_template, DENSE_STORAGE*, const LIST_STORAGE* rhs, dtype_t l_dtype);
 
-STORAGE* dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
-	LRI_DTYPE_TEMPLATE_TABLE(dense_storage_from_yale_template, DENSE_STORAGE*, const YALE_STORAGE*, dtype_t);
-
-	return (STORAGE*)ttable[l_dtype][right->dtype][right->itype]((const YALE_STORAGE*)right, l_dtype);
+	return (STORAGE*)ttable[l_dtype][right->dtype]((const LIST_STORAGE*)right, l_dtype);
 }
+
 
 /*
  * Create/allocate dense storage, copying into it the contents of a Yale matrix.
@@ -127,25 +122,24 @@ DENSE_STORAGE* dense_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t
   DENSE_STORAGE* lhs = dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
   LDType* lhs_elements = reinterpret_cast<LDType*>(lhs->elements);
 
-  // Position in yale array
-  RIType ija      = rhs_ija[i],
-         ija_next = rhs_ija[i+1];
-
   // Position in dense to write to.
   size_t pos = 0;
 
-  LDType LCAST_ZERO = static_cast<LDType>(rhs_a[rhs->shape[0]]);
+  LDType LCAST_ZERO = rhs_a[rhs->shape[0]];
 
   // Walk through rows. For each entry we set in dense, increment pos.
-  for (size_t i = rhs->shape[0]; i-- > 0;) {
+  for (RIType i = 0; i < rhs->shape[0]; ++i) {
 
-    if (ija == ija_next) { // Check boundaries of row: is row empty?
+    // Position in yale array
+    RIType ija = rhs_ija[i];
+
+    if (ija == rhs_ija[i+1]) { // Check boundaries of row: is row empty?
 
 			// Write zeros in each column.
-			for (size_t j = rhs->shape[1]; j-- > 0;) { // Move to next dense position.
+			for (RIType j = 0; j < rhs->shape[1]; ++j) { // Move to next dense position.
 
         // Fill in zeros (except for diagonal)
-        if (i == j) lhs_elements[pos] = static_cast<LDType>(rhs_a[i]);
+        if (i == j) lhs_elements[pos] = rhs_a[i];
 				else        lhs_elements[pos] = LCAST_ZERO;
 
 				++pos;
@@ -155,19 +149,19 @@ DENSE_STORAGE* dense_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t
       // Row contains entries: write those in each column, interspersed with zeros.
       RIType jj = rhs_ija[ija];
 
-			for (size_t j = rhs->shape[1]; j-- > 0;) {
+			for (size_t j = 0; j < rhs->shape[1]; ++j) {
         if (i == j) {
-          lhs_elements[pos] = static_cast<LDType>(rhs_a[i]);
+          lhs_elements[pos] = rhs_a[i];
 
         } else if (j == jj) {
-          lhs_elements[pos] = static_cast<LDType>(rhs_a[ija]); // Copy from rhs.
+          lhs_elements[pos] = rhs_a[ija]; // Copy from rhs.
 
           // Get next.
           ++ija;
 
           // Increment to next column ID (or go off the end).
-          if (ija < ija_next) jj = rhs_ija[ija];
-          else               	jj = rhs->shape[1];
+          if (ija < rhs_ija[i+1]) jj = rhs_ija[ija];
+          else               	    jj = rhs->shape[1];
           
         } else { // j < jj
 
@@ -184,12 +178,13 @@ DENSE_STORAGE* dense_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t
   return lhs;
 }
 
+STORAGE* dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
+	NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, dense_storage_from_yale_template, DENSE_STORAGE*, const YALE_STORAGE* rhs, dtype_t l_dtype);
 
-STORAGE* list_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
-	LR_DTYPE_TEMPLATE_TABLE(list_storage_from_dense_template, LIST_STORAGE*, const DENSE_STORAGE*, dtype_t);
-
-	return (STORAGE*)ttable[l_dtype][right->dtype]((DENSE_STORAGE*)right, l_dtype);
+  const YALE_STORAGE* casted_right = reinterpret_cast<const YALE_STORAGE*>(right);
+	return reinterpret_cast<STORAGE*>(ttable[l_dtype][right->dtype][casted_right->itype](casted_right, l_dtype));
 }
+
 
 /*
  * Creation of list storage from dense storage.
@@ -198,7 +193,7 @@ template <typename LDType, typename RDType>
 LIST_STORAGE* list_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t l_dtype) {
 
   LDType* l_default_val = ALLOC_N(LDType, 1);
-  RDType  r_default_val = ALLOCA_N(RDType, 1); // clean up when finished with this function
+  RDType* r_default_val = ALLOCA_N(RDType, 1); // clean up when finished with this function
 
   // allocate and copy shape and coords
   size_t *shape  = ALLOC_N(size_t, rhs->rank),
@@ -212,24 +207,26 @@ LIST_STORAGE* list_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t
   else    	                *l_default_val = 0;
 
   // need test default value for comparing to elements in dense matrix
-  if (rhs->dtype == l_dtype)  	  r_default_val = *l_default_val;
-  else if (rhs->dtype == NM_ROBJ) r_default_val = INT2FIX(0);
-  else  	                        r_default_val = 0;
+  if (rhs->dtype == l_dtype)  	  *r_default_val = *l_default_val;
+  else if (rhs->dtype == RUBYOBJ) *r_default_val = INT2FIX(0);
+  else  	                        *r_default_val = 0;
 
-  LIST_STORAGE* lhs = create_list_storage(l_dtype, shape, rhs->rank, l_default_val);
+  LIST_STORAGE* lhs = list_storage_create(l_dtype, shape, rhs->rank, l_default_val);
 
-  lhs->rows = create_list();
+  //lhs->rows = list_create();
   size_t pos = 0;
-  list_storage_cast_copy_contents_dense_template<LDType,RDType>(lhs->rows, rhs->elements, &r_default_val, pos, coords, rhs->shape, rhs->rank, rhs->rank - 1);
+  list_storage_cast_copy_contents_dense_template<LDType,RDType>(lhs->rows,
+                                                                reinterpret_cast<const RDType*>(rhs->elements),
+                                                                r_default_val,
+                                                                pos, coords, rhs->shape, rhs->rank, rhs->rank - 1);
 
   return lhs;
 }
 
+STORAGE* list_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
+	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, list_storage_from_dense_template, LIST_STORAGE*, const DENSE_STORAGE*, dtype_t);
 
-STORAGE* list_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
-	LRI_DTYPE_TEMPLATE_TABLE(list_storage_from_yale_template, LIST_STORAGE*, const YALE_STORAGE*, dtype_t);
-
-	return (STORAGE*)ttable[l_dtype][right->dtype][right->itype]((const YALE_STORAGE*)right, l_dtype);
+	return (STORAGE*)ttable[l_dtype][right->dtype]((DENSE_STORAGE*)right, l_dtype);
 }
 
 
@@ -249,7 +246,7 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
   LDType* default_val = ALLOC_N(LDType, 1);
   *default_val        = static_cast<LDType>( R_ZERO );
 
-  LIST_STORAGE* lhs = create_list_storage(l_dtype, shape, rhs->rank, default_val);
+  LIST_STORAGE* lhs = list_storage_create(l_dtype, shape, rhs->rank, default_val);
 
   if (rhs->rank != 2)    rb_raise(nm_eStorageTypeError, "Can only convert matrices of rank 2 from yale.");
 
@@ -258,7 +255,7 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
   NODE *last_added, *last_row_added = NULL;
 
   // Walk through rows and columns as if RHS were a dense matrix
-  for (RIType i = rhs->shape[0]; i-- > 0;) {
+  for (RIType i = 0; i < rhs->shape[0]; ++i) {
 
     // Get boundaries of beginning and end of row
     RIType ija      = rhs_ija[i],
@@ -270,7 +267,9 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
 		
     if (ija < ija_next || add_diag) {
 
-      LIST* curr_row = create_list();
+      LIST* curr_row = list_create();
+
+      LDType* insert_val;
 
       while (ija < ija_next) {
         RDType jj = rhs_ija[ija]; // what column number is this?
@@ -278,7 +277,7 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
         // Is there a nonzero diagonal item between the previously added item and the current one?
         if (jj > i && add_diag) {
           // Allocate and copy insertion value
-          LDType* insert_val = ALLOC_N(LDType, 1);
+          insert_val = ALLOC_N(LDType, 1);
           *insert_val        = static_cast<LDType>(rhs_a[i]);
 
           // insert the item in the list at the appropriate location
@@ -301,7 +300,7 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
 
       if (add_diag) {
       	// still haven't added the diagonal.
-        LDType* insert_val = ALLOC_N(LDType, 1);
+        insert_val = ALLOC_N(LDType, 1);
         *insert_val        = static_cast<LDType>(rhs_a[i]);
 
         // insert the item in the list at the appropriate location
@@ -320,14 +319,14 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
   return lhs;
 }
 
+STORAGE* list_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
+	NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, list_storage_from_yale_template, LIST_STORAGE*, const YALE_STORAGE* rhs, dtype_t l_dtype);
 
-STORAGE* yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
-	LRI_DTYPE_TEMPLATE_TABLE(yale_storage_from_dense_template, YALE_STORAGE*, const DENSE_STORAGE*, dtype_t);
+  const YALE_STORAGE* casted_right = reinterpret_cast<const YALE_STORAGE*>(right);
 
-  itype_t itype = yale_storage_itype((YALE_STORAGE*)right);
-
-	return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const DENSE_STORAGE*)right, l_dtype);
+	return (STORAGE*)ttable[l_dtype][right->dtype][casted_right->itype](casted_right, l_dtype);
 }
+
 
 /*
  * Creation of yale storage from dense storage.
@@ -369,10 +368,11 @@ YALE_STORAGE* yale_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t
 
   // Start just after the zero position.
   LIType ija = lhs->shape[0]+1;
+  LIType i;
   pos        = 0;
 
   // Copy contents
-  for (LIType i = 0; i < rhs->shape[0]; ++i) {
+  for (i = 0; i < rhs->shape[0]; ++i) {
     // indicate the beginning of a row in the IJA array
     lhs_ija[i] = ija;
 
@@ -397,13 +397,12 @@ YALE_STORAGE* yale_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t
   return lhs;
 }
 
+STORAGE* yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
+	NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_from_dense_template, YALE_STORAGE*, const DENSE_STORAGE* rhs, dtype_t l_dtype);
 
-STORAGE* yale_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
-	LRI_DTYPE_TEMPLATE_TABLE(yale_storage_from_list_template, YALE_STORAGE*, const LIST_STORAGE*, dtype_t);
+  itype_t itype = yale_storage_itype((const YALE_STORAGE*)right);
 
-  itype_t itype = yale_storage_itype((YALE_STORAGE*)right);
-
-	return (YALE_STORAGE*)ttable[l_dtype][right->dtype][itype]((LIST_STORAGE*)right, l_dtype);
+	return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const DENSE_STORAGE*)right, l_dtype);
 }
 
 
@@ -413,7 +412,7 @@ STORAGE* yale_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
 template <typename LDType, typename RDType, typename LIType>
 YALE_STORAGE* yale_storage_from_list_template(const LIST_STORAGE* rhs, dtype_t l_dtype) {
   NODE *i_curr, *j_curr;
-  size_t ndnz = count_list_storage_nd_elements(rhs);
+  size_t ndnz = list_storage_count_nd_elements(rhs);
 
   if (rhs->rank != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
 
@@ -427,7 +426,7 @@ YALE_STORAGE* yale_storage_from_list_template(const LIST_STORAGE* rhs, dtype_t l
   shape[1] = rhs->shape[1];
 
   YALE_STORAGE* lhs = yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
-  clear_diagonal_and_zero(lhs); // clear the diagonal and the zero location.
+  yale_storage_clear_diagonal_and_zero_template<LIType>(lhs); // clear the diagonal and the zero location.
   LIType* lhs_ija = reinterpret_cast<LIType*>(lhs->ija);
   LDType* lhs_a   = reinterpret_cast<LDType*>(lhs->a);
 
@@ -459,6 +458,14 @@ YALE_STORAGE* yale_storage_from_list_template(const LIST_STORAGE* rhs, dtype_t l
   return lhs;
 }
 
+STORAGE* yale_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
+	NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_from_list_template, YALE_STORAGE*, const LIST_STORAGE* rhs, dtype_t l_dtype);
+
+  itype_t itype = yale_storage_itype((const YALE_STORAGE*)right);
+
+	return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const LIST_STORAGE*)right, l_dtype);
+}
+
 //////////////////////
 // Helper Functions //
 //////////////////////
@@ -472,25 +479,20 @@ static void dense_storage_cast_copy_list_contents_template(LDType* lhs, const LI
   NODE *curr = rhs->first;
   int last_key = -1;
 
-	for (size_t i = shape[rank - 1 - recursions]; i-- > 0; ++pos {
+	for (size_t i = 0; i < shape[rank - 1 - recursions]; ++i, ++pos) {
 
     if (!curr || (curr->key > (size_t)(last_key+1))) {
       
-      if (recursions == 0) {
-        lhs[pos] = static_cast<LDType>(*default_val);
-      } else {
-     		dense_storage_cast_copy_list_default_template<LDType,RDType>(lhs, default_val, pos, shape, rank, max_elements, recursions-1);
-			}
+      if (recursions == 0)  lhs[pos] = *default_val;
+      else               		dense_storage_cast_copy_list_default_template<LDType,RDType>(lhs, default_val, pos, shape, rank, max_elements, recursions-1);
 
       ++last_key;
       
     } else {
 
-      if (recursions == 0) {
-        lhs[pos] = static_cast<LDType>(*reinterpret_cast<RDType*>(curr->val));
-      } else {
-      	dense_storage_cast_copy_list_default_template<LDType,RDType>(lhs, curr->val, default_val, pos, shape, rank, max_elements, recursions-1);
-      }
+      if (recursions == 0)  lhs[pos] = *reinterpret_cast<RDType*>(curr->val);
+      else                	dense_storage_cast_copy_list_contents_template<LDType,RDType>(lhs, (const LIST*)(curr->val),
+                                                                                         default_val, pos, shape, rank, max_elements, recursions-1);
 
       last_key = curr->key;
       curr     = curr->next;
@@ -505,12 +507,10 @@ static void dense_storage_cast_copy_list_contents_template(LDType* lhs, const LI
  */
 template <typename LDType,typename RDType>
 static void dense_storage_cast_copy_list_default_template(LDType* lhs, RDType* default_val, size_t& pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
-	for (size_t i = shape[rank - 1 - recursions]; i-- > 0; ++pos) {
+	for (size_t i = 0; i < shape[rank - 1 - recursions]; ++i, ++pos) {
 
-    if (recursions == 0)
-      lhs[pos] = static_cast<LDType>(*default_val);
-    else
-    	dense_storage_cast_copy_list_default_template<LDType,RDType>(lhs, default_val, pos, shape, rank, max_elements, recursions-1);
+    if (recursions == 0)    lhs[pos] = *default_val;
+    else                  	dense_storage_cast_copy_list_default_template<LDType,RDType>(lhs, default_val, pos, shape, rank, max_elements, recursions-1);
 
   }
   

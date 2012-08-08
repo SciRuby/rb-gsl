@@ -47,7 +47,8 @@
 /*
  * Types
  */
- 
+
+template <typename IntType> class Rational;
 template <typename Type> class Complex;
 
 typedef Complex<float32_t> Complex64;
@@ -77,6 +78,9 @@ class Complex {
 	 * Copy constructors.
 	 */
 	inline Complex(const Complex<Type>& other) : r(other.r), i(other.i) {}
+
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline Complex(const Rational<IntType>& other) : r(Type(other.n) / Type(other.d)), i(0) {}
 	
 	/*
 	 * Binary operator definitions for varous types.

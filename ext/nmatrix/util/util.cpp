@@ -49,9 +49,6 @@
  * Forward Declarations
  */
 
-template int16_t gcf<int16_t>(int16_t, int16_t);
-template int32_t gcf<int32_t>(int32_t, int32_t);
-template int64_t gcf<int64_t>(int64_t, int64_t);
 
 /*
  * Functions
@@ -76,3 +73,9 @@ Type gcf(Type x, Type y) {
 	return y;
 }
 
+template <> int16_t
+gcf<int16_t>(int16_t, int16_t);
+template <> int32_t
+gcf<int32_t>(int32_t, int32_t);
+template <> int64_t
+gcf<int64_t>(int64_t, int64_t);

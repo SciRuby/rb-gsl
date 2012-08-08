@@ -323,7 +323,7 @@ size_t list_storage_count_elements_r(const LIST* l, size_t recursions) {
 /*
  * Count non-diagonal non-zero elements.
  */
-size_t count_list_storage_nd_elements(const LIST_STORAGE* s) {
+size_t list_storage_count_nd_elements(const LIST_STORAGE* s) {
   NODE *i_curr, *j_curr;
   size_t count = 0;
   
@@ -411,7 +411,7 @@ LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t n
  * FIXME: This works, but could probably be cleaner (do we really need to pass coords around?)
  */
 template <typename LDType, typename RDType>
-static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
+bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
   NODE *prev;
   LIST *sub_list;
   bool added = false, added_list = false;

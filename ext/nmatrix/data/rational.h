@@ -80,7 +80,7 @@ class Rational {
 	 */
 	template <typename OtherType>
 	inline Rational(const Rational<OtherType>& other) : n(other.n), d(other.d) {}
-	
+
 	/*
 	 * Binary operator definitions for varous types.
 	 */
@@ -235,10 +235,11 @@ class Rational {
 		return *this >= Rational<Type>(other);
 	}
 	
-	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
-	inline operator IntType () {
-		return (IntType)this->n / (IntType)this->d;
+	template <typename NumType, typename = typename std::enable_if<std::is_arithmetic<NumType>::value>::type>
+	inline operator NumType () {
+		return (NumType)this->n / (NumType)this->d;
 	}
+
 };
 
 ////////////////////////////////

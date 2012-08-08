@@ -143,7 +143,7 @@ STORAGE* yale_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resul
 /////////////
 
 inline itype_t  yale_storage_itype_by_shape(const size_t* shape);
-inline itype_t	yale_storage_itype(YALE_STORAGE* s);
+inline itype_t	yale_storage_itype(const YALE_STORAGE* s);
 void		yale_storage_print_vectors(YALE_STORAGE* s);
 
 template <typename IType>
@@ -167,5 +167,8 @@ char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, IType* j, D
 
 STORAGE* yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs);
+
+template <typename IType>
+static void						yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s);
 
 #endif // YALE_H

@@ -79,9 +79,6 @@ template <typename IType>
 static YALE_STORAGE*	yale_storage_copy_alloc_struct_template(const YALE_STORAGE* rhs, const dtype_t new_dtype, const IType new_capacity, const IType new_size);
 
 template <typename IType>
-static void						clear_diagonal_and_zero_template(YALE_STORAGE* s);
-
-template <typename IType>
 static void						yale_storage_increment_ia_after_template(YALE_STORAGE* s, IType ija_size, IType i, IType n);
 
 template <typename IType>
@@ -162,7 +159,7 @@ YALE_STORAGE* yale_storage_create_from_old_yale_template(dtype_t dtype, size_t* 
   // Read through ia and ja and figure out the ndnz (non-diagonal non-zeros) count.
   size_t ndnz = 0;
   IType i;
-  for (i = shape[0]; i-- > 0;) { // Walk down rows
+  for (i = 0; i < shape[0]; ++i) { // Walk down rows
     for (IType p = ir[i], p_next = ir[i+1]; p < p_next; ++p) { // Now walk through columns
       if (i != jr[p]) {
       	// entry is non-diagonal and probably nonzero
@@ -218,13 +215,10 @@ YALE_STORAGE* yale_storage_create_from_old_yale_template(dtype_t dtype, size_t* 
  */
 template <typename IType>
 YALE_STORAGE* yale_storage_create_merged(const YALE_STORAGE* template, const YALE_STORAGE* other) {
-  YALE_STORAGE* s;
-  bool found;
   char ins_type;
-  size_t i;
 
   IType size = yale_storage_get_size_template<IType>(template);
-  s = yale_storage_copy_alloc_struct_template<DType,IType>(template, template->dtype, NM_MAX(template->capacity, other->capacity), size);
+  YALE_STORAGE* s = yale_storage_copy_alloc_struct_template<DType,IType>(template, template->dtype, NM_MAX(template->capacity, other->capacity), size);
   DType* sa = reinterpret_cast<DType*>(s->a);
   IType* sija = reinterpret_cast<IType*>(s->ija);
 
@@ -239,7 +233,7 @@ YALE_STORAGE* yale_storage_create_merged(const YALE_STORAGE* template, const YAL
   if (other && other != template) {
   	// some operations are unary and don't need this; others are x+x and don't need this
 
-  	for (i = s->shape[0]; i-- > 0;) {
+  	for (IType i = 0; i < s->shape[0]; ++i) {
 
       IType ija       = sija[i];
       IType ija_next  = sija[i+1]
@@ -260,6 +254,8 @@ YALE_STORAGE* yale_storage_create_merged(const YALE_STORAGE* template, const YAL
           if (ins_type == 'i') ++ija_next;
 
         } else {
+          bool found;
+
         	// merge positions into destination row
           IType pos = yale_storage_insert_search_template<IType>(s, ija, ija_next-1, ja, &found);
 
@@ -307,15 +303,15 @@ void yale_storage_init(YALE_STORAGE* s) {
 
 template <typename IType>
 void yale_storage_init_template(YALE_STORAGE* s) {
-  IType IA_INIT = YALE_IA_SIZE(s)+1;
+  IType IA_INIT = s->shape[0] + 1;
 
   IType* ija = reinterpret_cast<IType*>(s->ija);
   // clear out IJA vector
-  for (IType i = YALE_IA_SIZE(s) + 1; i-- > 0;) {
+  for (IType i = 0; i < IA_INIT; ++i) {
     ija[i] = IA_INIT; // set initial values for IJA
   }
 
-  clear_diagonal_and_zero_template<IType>(s);
+  yale_storage_clear_diagonal_and_zero_template<IType>(s);
 }
 
 /*
@@ -472,7 +468,7 @@ static bool yale_storage_eqeq_template(const YALE_STORAGE* left, const YALE_STOR
   IType* lij = reinterpret_cast<IType*>(left->ija);
   IType* rij = reinterpret_cast<IType*>(right->ija);
 
-  for (size_t i = 0; i < left->shape[0]; ++i) {
+  for (IType i = 0; i < left->shape[0]; ++i) {
 
   // Get start and end positions of row
     IType l_ija = lij[i],
@@ -623,7 +619,7 @@ inline itype_t yale_storage_itype_by_shape(const size_t* shape) {
  *
  * FIXME: Needs a default case.
  */
-inline itype_t yale_storage_itype(YALE_STORAGE* s) {
+inline itype_t yale_storage_itype(const YALE_STORAGE* s) {
   return yale_storage_itype_by_shape(s->shape);
 }
 
@@ -850,7 +846,7 @@ char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, IType* j, D
  * it'll actually be INT2FIX(0) instead of a string of NULLs.
  */
 template <typename IType>
-static void clear_diagonal_and_zero_template(YALE_STORAGE* s) {
+void yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s) {
   IType* a = reinterpret_cast<IType*>(s->a);
 
   // Clear out the diagonal + one extra entry

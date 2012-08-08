@@ -57,8 +57,11 @@
 template <typename Type>
 Type gcf(Type x, Type y);
 
-extern template int16_t gcf<int16_t>(int16_t, int16_t);
-extern template int32_t gcf<int32_t>(int32_t, int32_t);
-extern template int64_t gcf<int64_t>(int64_t, int64_t);
+/*extern template <>
+int16_t gcf<int16_t>(int16_t, int16_t);
+extern template <>
+int32_t gcf<int32_t>(int32_t, int32_t);
+extern template <>
+int64_t gcf<int64_t>(int64_t, int64_t); */
 
 #endif // UTIL_H
