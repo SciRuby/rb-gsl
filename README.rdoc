@@ -48,7 +48,7 @@ More detailed installation instructions are available at {here}[http://sciruby.c
 
 == DEVELOPERS:
 
-Note that the code in the SciRuby/nmatrix repository is "as stable as possible." If you want to get involved, you should probably clone/fork from mohawkjohn/nmatrix or chriswailes/nmatrix:
+Code in the master branch of SciRuby/nmatrix on github should compile and link, but is not necessarily stable. You might also check out the dev branch if master hasn't been updated in some time.
 
     git clone https://github.com/mohawkjohn/nmatrix.git
 
