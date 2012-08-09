@@ -71,7 +71,7 @@ static NMATRIX* ew_hom_list_casted(STORAGE_PAIR casted_storage, char op) {
 static NMATRIX* ew_hom_yale_casted(STORAGE_PAIR casted_storage, enum MathHomOps op) {
   YALE_STORAGE *left  = (YALE_STORAGE*)(casted_storage.left),
                *right = (YALE_STORAGE*)(casted_storage.right);
-  YALE_STORAGE *result = create_merged_yale_storage(left, right);
+  YALE_STORAGE *result = yale_storage_create_merged(left, right);
 
   fprintf(stderr, "result: %d, %d\n", result->dtype, result->itype);
 

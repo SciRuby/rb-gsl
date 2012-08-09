@@ -145,7 +145,49 @@ class RubyObject {
 	inline bool operator<=(const RubyObject& other) const {
 		return rb_funcall(this->rval, rbsym_lte, 1, other.rval) == Qtrue;
 	}
-	
+
+	////////////////////////////
+	// RUBY-NATIVE OPERATIONS //
+	////////////////////////////
+
+	template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+	inline bool operator==(const NativeType& other) const {
+		return *this == RubyObject(other);
+	}
+
+  template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+	inline bool operator!=(const NativeType& other) const {
+		return *this != RubyObject(other);
+	}
+
+	//////////////////////////////
+	// RUBY-RATIONAL OPERATIONS //
+	//////////////////////////////
+
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline bool operator==(const Rational<IntType>& other) const {
+		return *this == RubyObject(other);
+	}
+
+  template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline bool operator!=(const Rational<IntType>& other) const {
+		return *this != RubyObject(other);
+	}
+
+	//////////////////////////////
+	// RUBY-COMPLEX OPERATIONS //
+	//////////////////////////////
+
+	template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+	inline bool operator==(const Complex<FloatType>& other) const {
+		return *this == RubyObject(other);
+	}
+
+  template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+	inline bool operator!=(const Complex<FloatType>& other) const {
+		return *this != RubyObject(other);
+	}
+
 	/*
 	 * Convert a Ruby object to an integer.
 	 */
@@ -199,5 +241,60 @@ class RubyObject {
 		return to<OtherType>();
 	}
 };
+
+
+////////////////////////////
+// NATIVE-RUBY OPERATIONS //
+////////////////////////////
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator==(const IntType left, const RubyObject& right) {
+  return left == FIX2INT(right.rval);
+}
+
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator!=(const IntType left, const RubyObject& right) {
+  return left != FIX2INT(right.rval);
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator==(const FloatType left, const RubyObject& right) {
+  return left == NUM2DBL(right.rval);
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator!=(const FloatType left, const RubyObject& right) {
+  return left != NUM2DBL(right.rval);
+}
+
+/////////////////////////////
+// COMPLEX-RUBY OPERATIONS //
+/////////////////////////////
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator==(const Complex<FloatType>& left, const RubyObject& right) {
+	return RubyObject(left) == right;
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator!=(const Complex<FloatType>& left, const RubyObject& right) {
+	return RubyObject(left) != right;
+}
+
+
+
+//////////////////////////////
+// RATIONAL-RUBY OPERATIONS //
+//////////////////////////////
+
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator==(const Rational<IntType>& left, const RubyObject& right) {
+	return RubyObject(left) == right;
+}
+
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator!=(const Rational<IntType>& left, const RubyObject& right) {
+	return RubyObject(left) != right;
+}
+
 
 #endif // RUBY_OBJECT_H

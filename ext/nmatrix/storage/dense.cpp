@@ -499,19 +499,17 @@ static DENSE_STORAGE* dense_storage_matrix_multiply_template(STORAGE_PAIR casted
   DType *pAlpha = new DType(1),
         *pBeta  = new DType(0);
 
-  NAMED_DTYPE_TEMPLATE_TABLE(gemm_table, gemm, bool, const CBLAS_TRANSPOSE TransA, const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K, const DType* alpha, const DType* A, const int lda, const DType* B, const int ldb, const DType* beta, DType* C, const int ldc);
-  NAMED_DTYPE_TEMPLATE_TABLE(gemv_table, gemv, bool, const CBLAS_TRANSPOSE Trans, const int M, const int N, const DType* alpha, const DType* A, const int lda, const DType* X, const int incX, const DType* beta, DType* Y, const int incY);
-
   // Do the multiplication
   bool succ;
-  if (vector) succ = gemv_table[left->dtype](CblasNoTrans, left->shape[0], left->shape[1], pAlpha,
-                                             reinterpret_cast<DType*>(left->elements), left->shape[1],
-                                             reinterpret_cast<DType*>(right->elements), 1, pBeta,
-                                             reinterpret_cast<DType*>(result->elements), 1);
-  else        succ = gemm_table[left->dtype](CblasNoTrans, CblasNoTrans, right->shape[1], left->shape[0], left->shape[1], pAlpha,
-                                             reinterpret_cast<DType*>(right->elements), right->shape[1],
-                                             reinterpret_cast<DType*>(left->elements), left->shape[1], pBeta,
-                                             reinterpret_cast<DType*>(result->elements), result->shape[1]);
+
+  if (vector) succ = gemv<DType>(CblasNoTrans, left->shape[0], left->shape[1], pAlpha,
+                                 reinterpret_cast<DType*>(left->elements), left->shape[1],
+                                 reinterpret_cast<DType*>(right->elements), 1, pBeta,
+                                 reinterpret_cast<DType*>(result->elements), 1);
+  else        succ = gemm<DType>(CblasNoTrans, CblasNoTrans, right->shape[1], left->shape[0], left->shape[1], pAlpha,
+                                 reinterpret_cast<DType*>(right->elements), right->shape[1],
+                                 reinterpret_cast<DType*>(left->elements), left->shape[1], pBeta,
+                                 reinterpret_cast<DType*>(result->elements), result->shape[1]);
 
   delete pAlpha;
   delete pBeta;

@@ -39,6 +39,7 @@
 
 #include "data/complex.h"
 #include "data/rational.h"
+#include "data/ruby_object.h"
 #include "types.h"
 
 #include "math.h"
@@ -54,6 +55,22 @@
 /*
  * Global Variables
  */
+
+// These allow an increase in precision for intermediate values of gemm and gemv.
+// See also: http://stackoverflow.com/questions/11873694/how-does-one-increase-precision-in-c-templates-in-a-template-typename-dependen
+template <typename DType> struct LongDType;
+template <> struct LongDType<int8_t> { typedef int16_t type; };
+template <> struct LongDType<int16_t> { typedef int32_t type; };
+template <> struct LongDType<int32_t> { typedef int64_t type; };
+template <> struct LongDType<int64_t> { typedef int64_t type; };
+template <> struct LongDType<float> { typedef double type; };
+template <> struct LongDType<double> { typedef double type; };
+template <> struct LongDType<Complex64> { typedef Complex128 type; };
+template <> struct LongDType<Complex128> { typedef Complex128 type; };
+template <> struct LongDType<Rational32> { typedef Rational128 type; };
+template <> struct LongDType<Rational64> { typedef Rational128 type; };
+template <> struct LongDType<Rational128> { typedef Rational128 type; };
+template <> struct LongDType<RubyObject> { typedef RubyObject type; };
 
 /*
  * Forward Declarations
@@ -78,8 +95,7 @@ bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, 
           const DType* alpha, const DType* A, const int lda, const DType* B, const int ldb, const DType* beta, DType* C, const int ldc) {
   int num_rows_a, /*num_cols_a,*/ num_rows_b; // nrowa, ncola, nrowb
 
-  // FIXME: Increase precision of temp
-  DType temp;
+  typename LongDType<DType>::type temp;
 
   // %%= if [:rational,:complex,:value].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1, temp2;"; end%%
   int i, j, l;
@@ -233,28 +249,28 @@ bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, 
 }
 
 template <>
-bool gemm<float>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const float* alpha, const float* A, const int lda, const float* B, const int ldb, const float* beta, float* C, const int ldc) {
   cblas_sgemm(CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
   return true;
 }
 
 template <>
-bool gemm<double>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const double* alpha, const double* A, const int lda, const double* B, const int ldb, const double* beta, double* C, const int ldc) {
   cblas_dgemm(CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
   return true;
 }
 
 template <>
-bool gemm<Complex64>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const Complex64* alpha, const Complex64* A, const int lda, const Complex64* B, const int ldb, const Complex64* beta, Complex64* C, const int ldc) {
   cblas_cgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
   return true;
 }
 
 template <>
-bool gemm<Complex128>(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const Complex128* alpha, const Complex128* A, const int lda, const Complex128* B, const int ldb, const Complex128* beta, Complex128* C, const int ldc) {
   cblas_zgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
   return true;
@@ -273,8 +289,7 @@ bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const DTyp
   int lenX, lenY, i, j;
   int kx, ky, iy, jx, jy, ix;
 
-  // FIXME: Increase precision of temp
-  DType temp;
+  typename LongDType<DType>::type temp;
 
   // Test the input parameters
   if (Trans < 111 || Trans > 113) {
@@ -400,28 +415,28 @@ bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const DTyp
 }  // end of GEMV
 
 template <>
-bool gemv<float>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const float* alpha, const float* A, const int lda,
+bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const float* alpha, const float* A, const int lda,
           const float* X, const int incX, const float* beta, float* Y, const int incY) {
   cblas_sgemv(CblasRowMajor, Trans, M, N, *alpha, A, lda, X, incX, *beta, Y, incY);
   return true;
 }
 
 template <>
-bool gemv<double>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const double* alpha, const double* A, const int lda,
+bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const double* alpha, const double* A, const int lda,
           const double* X, const int incX, const double* beta, double* Y, const int incY) {
   cblas_dgemv(CblasRowMajor, Trans, M, N, *alpha, A, lda, X, incX, *beta, Y, incY);
   return true;
 }
 
 template <>
-bool gemv<Complex64>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex64* alpha, const Complex64* A, const int lda,
+bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex64* alpha, const Complex64* A, const int lda,
           const Complex64* X, const int incX, const Complex64* beta, Complex64* Y, const int incY) {
   cblas_cgemv(CblasRowMajor, Trans, M, N, alpha, A, lda, X, incX, beta, Y, incY);
   return true;
 }
 
 template <>
-bool gemv<Complex128>(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex128* alpha, const Complex128* A, const int lda,
+bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex128* alpha, const Complex128* A, const int lda,
           const Complex128* X, const int incX, const Complex128* beta, Complex128* Y, const int incY) {
   cblas_zgemv(CblasRowMajor, Trans, M, N, alpha, A, lda, X, incX, beta, Y, incY);
   return true;

@@ -73,6 +73,7 @@
  * Defines a static array named ttable that hold function pointers to
  * dtype templated versions of the specified function.
  */
+ /* Does not work. */
 #define DTYPE_TEMPLATE_TABLE(fun, ret, ...)					NAMED_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
 #define NAMED_ITYPE_TEMPLATE_TABLE(name, fun, ret, ...) \
@@ -83,6 +84,7 @@
     fun<uint64_t>  \
   };
 
+/* Does not work. */
 #define ITYPE_TEMPLATE_TABLE(fun, ret, ...)   NAMED_ITYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
 #define STYPE_MARK_TABLE(name) \
@@ -151,6 +153,7 @@
 	};
 
 
+/* Does not work. */
 #define LR_DTYPE_TEMPLATE_TABLE(fun, ret, ...)    NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 	
 #define NAMED_LRI_DTYPE_TEMPLATE_TABLE(name,  fun,  ret,  ...) \
@@ -198,26 +201,28 @@ static ret (*(name)[NUM_DTYPES][NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
   {{fun<RubyObject, uint8_t, uint8_t>, fun<RubyObject, uint8_t, uint16_t>, fun<RubyObject, uint8_t, uint32_t>, fun<RubyObject, uint8_t, uint64_t> }, {fun<RubyObject, int8_t, uint8_t>, fun<RubyObject, int8_t, uint16_t>, fun<RubyObject, int8_t, uint32_t>, fun<RubyObject, int8_t, uint64_t> }, {fun<RubyObject, int16_t, uint8_t>, fun<RubyObject, int16_t, uint16_t>, fun<RubyObject, int16_t, uint32_t>, fun<RubyObject, int16_t, uint64_t> }, {fun<RubyObject, int32_t, uint8_t>, fun<RubyObject, int32_t, uint16_t>, fun<RubyObject, int32_t, uint32_t>, fun<RubyObject, int32_t, uint64_t> }, {fun<RubyObject, int64_t, uint8_t>, fun<RubyObject, int64_t, uint16_t>, fun<RubyObject, int64_t, uint32_t>, fun<RubyObject, int64_t, uint64_t> }, {fun<RubyObject, float32_t, uint8_t>, fun<RubyObject, float32_t, uint16_t>, fun<RubyObject, float32_t, uint32_t>, fun<RubyObject, float32_t, uint64_t> }, {fun<RubyObject, float64_t, uint8_t>, fun<RubyObject, float64_t, uint16_t>, fun<RubyObject, float64_t, uint32_t>, fun<RubyObject, float64_t, uint64_t> }, {fun<RubyObject, Complex64, uint8_t>, fun<RubyObject, Complex64, uint16_t>, fun<RubyObject, Complex64, uint32_t>, fun<RubyObject, Complex64, uint64_t> }, {fun<RubyObject, Complex128, uint8_t>, fun<RubyObject, Complex128, uint16_t>, fun<RubyObject, Complex128, uint32_t>, fun<RubyObject, Complex128, uint64_t> }, {fun<RubyObject, Rational32, uint8_t>, fun<RubyObject, Rational32, uint16_t>, fun<RubyObject, Rational32, uint32_t>, fun<RubyObject, Rational32, uint64_t> }, {fun<RubyObject, Rational64, uint8_t>, fun<RubyObject, Rational64, uint16_t>, fun<RubyObject, Rational64, uint32_t>, fun<RubyObject, Rational64, uint64_t> }, {fun<RubyObject, Rational128, uint8_t>, fun<RubyObject, Rational128, uint16_t>, fun<RubyObject, Rational128, uint32_t>, fun<RubyObject, Rational128, uint64_t> }, {fun<RubyObject, RubyObject, uint8_t>, fun<RubyObject, RubyObject, uint16_t>, fun<RubyObject, RubyObject, uint32_t>, fun<RubyObject, RubyObject, uint64_t>}} \
 };
 
+/* Does not work. */
 #define LRI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
 
-#define NAMED_LI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)\
-static ret (*(name)[NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = {\
-  { fun<uint8_t,uint8_t>,fun<uint8_t,uint16_t>,fun<uint8_t,uint32_t>,fun<uint8_t,uint64_t> },\
-  { fun<int8_t,uint8_t>,fun<int8_t,uint16_t>,fun<int8_t,uint32_t>,fun<int8_t,uint64_t> },\
-  { fun<int16_t,uint8_t>,fun<int16_t,uint16_t>,fun<int16_t,uint32_t>,fun<int16_t,uint64_t> },\
-  { fun<int32_t,uint8_t>,fun<int32_t,uint16_t>,fun<int32_t,uint32_t>,fun<int32_t,uint64_t> },\
-  { fun<int64_t,uint8_t>,fun<int64_t,uint16_t>,fun<int64_t,uint32_t>,fun<int64_t,uint64_t> },\
-  { fun<float32_t,uint8_t>,fun<float32_t,uint16_t>,fun<float32_t,uint32_t>,fun<float32_t,uint64_t> },\
-  { fun<float64_t,uint8_t>,fun<float64_t,uint16_t>,fun<float64_t,uint32_t>,fun<float64_t,uint64_t> },\
-  { fun<Complex64,uint8_t>,fun<Complex64,uint16_t>,fun<Complex64,uint32_t>,fun<Complex64,uint64_t> },\
-  { fun<Complex128,uint8_t>,fun<Complex128,uint16_t>,fun<Complex128,uint32_t>,fun<Complex128,uint64_t> },\
-  { fun<Rational32,uint8_t>,fun<Rational32,uint16_t>,fun<Rational32,uint32_t>,fun<Rational32,uint64_t> },\
-  { fun<Rational64,uint8_t>,fun<Rational64,uint16_t>,fun<Rational64,uint32_t>,fun<Rational64,uint64_t> },\
-  { fun<Rational128,uint8_t>,fun<Rational128,uint16_t>,fun<Rational128,uint32_t>,fun<Rational128,uint64_t> },\
+#define NAMED_LI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)  \
+static ret (*(name)[NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
+  { fun<uint8_t,uint8_t>,fun<uint8_t,uint16_t>,fun<uint8_t,uint32_t>,fun<uint8_t,uint64_t> }, \
+  { fun<int8_t,uint8_t>,fun<int8_t,uint16_t>,fun<int8_t,uint32_t>,fun<int8_t,uint64_t> }, \
+  { fun<int16_t,uint8_t>,fun<int16_t,uint16_t>,fun<int16_t,uint32_t>,fun<int16_t,uint64_t> }, \
+  { fun<int32_t,uint8_t>,fun<int32_t,uint16_t>,fun<int32_t,uint32_t>,fun<int32_t,uint64_t> }, \
+  { fun<int64_t,uint8_t>,fun<int64_t,uint16_t>,fun<int64_t,uint32_t>,fun<int64_t,uint64_t> }, \
+  { fun<float32_t,uint8_t>,fun<float32_t,uint16_t>,fun<float32_t,uint32_t>,fun<float32_t,uint64_t> }, \
+  { fun<float64_t,uint8_t>,fun<float64_t,uint16_t>,fun<float64_t,uint32_t>,fun<float64_t,uint64_t> }, \
+  { fun<Complex64,uint8_t>,fun<Complex64,uint16_t>,fun<Complex64,uint32_t>,fun<Complex64,uint64_t> }, \
+  { fun<Complex128,uint8_t>,fun<Complex128,uint16_t>,fun<Complex128,uint32_t>,fun<Complex128,uint64_t> }, \
+  { fun<Rational32,uint8_t>,fun<Rational32,uint16_t>,fun<Rational32,uint32_t>,fun<Rational32,uint64_t> }, \
+  { fun<Rational64,uint8_t>,fun<Rational64,uint16_t>,fun<Rational64,uint32_t>,fun<Rational64,uint64_t> }, \
+  { fun<Rational128,uint8_t>,fun<Rational128,uint16_t>,fun<Rational128,uint32_t>,fun<Rational128,uint64_t> }, \
   { fun<RubyObject,uint8_t>,fun<RubyObject,uint16_t>,fun<RubyObject,uint32_t>,fun<RubyObject,uint64_t>} \
 };
 
+/* Does not work. */
 #define LI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)    NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
 

@@ -40,12 +40,14 @@
  */
 
 #include <ruby.h>
+#include <limits> // for std::numeric_limits<T>::max()
 
 /*
  * Project Includes
  */
 
-#include "types.h"
+// #include "types.h"
+#include "util/math.h"
 
 #include "data/data.h"
 
@@ -55,6 +57,10 @@
 /*
  * Macros
  */
+#ifndef NM_MAX
+#define NM_MAX(a,b) (((a)>(b))?(a):(b))
+#define NM_MIN(a,b) (((a)<(b))?(a):(b))
+#endif
 
 /*
  * Global Variables
@@ -76,14 +82,19 @@ template <typename LDType, typename RDType, typename IType>
 static bool yale_storage_eqeq_template(const YALE_STORAGE* left, const YALE_STORAGE* right);
 
 template <typename IType>
-static YALE_STORAGE*	yale_storage_copy_alloc_struct_template(const YALE_STORAGE* rhs, const dtype_t new_dtype, const IType new_capacity, const IType new_size);
+static YALE_STORAGE*	yale_storage_copy_alloc_struct_template(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
+static YALE_STORAGE*  yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
 
 template <typename IType>
 static void						yale_storage_increment_ia_after_template(YALE_STORAGE* s, IType ija_size, IType i, IType n);
 
 template <typename IType>
-static IType				yale_storage_insert_search_template(YALE_STORAGE* s, IType left, IType right, IType key, bool* found);
+static IType				  yale_storage_insert_search_template(YALE_STORAGE* s, IType left, IType right, IType key, bool* found);
 static YALE_STORAGE*	yale_storage_alloc(dtype_t dtype, size_t* shape, size_t rank);
+
+template <typename IType>
+static inline size_t  yale_storage_get_size_template(const YALE_STORAGE* storage);
+static inline size_t  yale_storage_get_size(const YALE_STORAGE* storage);
 
 /*
  * Functions
@@ -135,21 +146,6 @@ YALE_STORAGE* yale_storage_create(dtype_t dtype, size_t* shape, size_t rank, siz
  *
  * This function is needed for Matlab .MAT v5 IO.
  */
-YALE_STORAGE* yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, dtype_t from_dtype) {
-
-  LRI_DTYPE_TEMPLATE_TABLE(yale_storage_create_from_old_yale_template, YALE_STORAGE*, dtype_t, size_t*, void*, void*, void*);
-
-  // With C++ templates, we don't want to have a 4-parameter template. That would be LDType, RDType, LIType, RIType.
-  // We can prevent that by copying ia and ja into the correct itype (if necessary) before passing them to the yale
-  // copy constructor.
-  itype_t to_itype = yale_storage_itype_by_shape(shape);
-
-  return ttable[dtype][from_dtype][to_itype](dtype, shape, ia, ja, a);
-
-}
-
-
-
 template <typename LDType, typename RDType, typename IType>
 YALE_STORAGE* yale_storage_create_from_old_yale_template(dtype_t dtype, size_t* shape, void* r_ia, void* r_ja, void* r_a) {
   IType*  ir = reinterpret_cast<IType*>(r_ia);
@@ -182,9 +178,6 @@ YALE_STORAGE* yale_storage_create_from_old_yale_template(dtype_t dtype, size_t* 
   // Figure out where to start writing JA in IJA:
   IType pp = s->shape[0]+1;
 
-  // Find beginning of first row
-  IType p = ia[0];
-
   // Now fill the arrays
   for (i = 0; i < s->shape[0]; ++i) {
 
@@ -210,43 +203,55 @@ YALE_STORAGE* yale_storage_create_from_old_yale_template(dtype_t dtype, size_t* 
   return s;
 }
 
+
+YALE_STORAGE* yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, dtype_t from_dtype) {
+
+  NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_create_from_old_yale_template, YALE_STORAGE*, dtype_t dtype, size_t* shape, void* r_ia, void* r_ja, void* r_a);
+
+  // With C++ templates, we don't want to have a 4-parameter template. That would be LDType, RDType, LIType, RIType.
+  // We can prevent that by copying ia and ja into the correct itype (if necessary) before passing them to the yale
+  // copy constructor.
+  itype_t to_itype = yale_storage_itype_by_shape(shape);
+
+  return ttable[dtype][from_dtype][to_itype](dtype, shape, ia, ja, a);
+
+}
+
+
 /*
- * Template here has two different meanings. The variable 'template' is that of which we are copying the structure.
+ * Take two Yale storages and merge them into a new Yale storage.
+ *
+ * Uses the left as a template for the creation of a new one.
  */
-template <typename IType>
-YALE_STORAGE* yale_storage_create_merged(const YALE_STORAGE* template, const YALE_STORAGE* other) {
+template <typename DType, typename IType>
+YALE_STORAGE* yale_storage_create_merged_template(const YALE_STORAGE* left, const YALE_STORAGE* right) {
   char ins_type;
 
-  IType size = yale_storage_get_size_template<IType>(template);
-  YALE_STORAGE* s = yale_storage_copy_alloc_struct_template<DType,IType>(template, template->dtype, NM_MAX(template->capacity, other->capacity), size);
-  DType* sa = reinterpret_cast<DType*>(s->a);
+  IType size = yale_storage_get_size_template<IType>(left);
+
+  // s represents the resulting storage
+  YALE_STORAGE* s = yale_storage_copy_alloc_struct_template<IType>(left, left->dtype, NM_MAX(left->capacity, right->capacity), size);
+
   IType* sija = reinterpret_cast<IType*>(s->ija);
-
-  DType* ta = reinterpret_cast<DType*>(template->a);
-
-  DType* oa = reinterpret_cast<DType*>(other->a);
-  IType* oija = reinterpret_cast<IType*>(other->ija);
+  IType* rija = reinterpret_cast<IType*>(right->ija);
 
   // set the element between D and LU (the boundary in A), which should be 0.
-  sa[s->shape[0]] = ta[template->shape[0]];
+  reinterpret_cast<DType*>(s->a)[s->shape[0]] = reinterpret_cast<DType*>(left->a)[left->shape[0]];
 
-  if (other && other != template) {
+  if (right && right != left) {
   	// some operations are unary and don't need this; others are x+x and don't need this
 
   	for (IType i = 0; i < s->shape[0]; ++i) {
 
       IType ija       = sija[i];
-      IType ija_next  = sija[i+1]
+      IType ija_next  = sija[i+1];
 
-      for (IType o_ija = oija[i]; o_ija < oija[i+1]; ++o_ija) {
-
-        YaleGetIJA(o_ja,     other, o_ija);
-        YaleGetIJA(ja,       s,     ija);
+      for (IType r_ija = rija[i]; r_ija < rija[i+1]; ++r_ija) {
 
         if (ija == ija_next) {
         	// destination row is empty
 
-          ins_type = yale_storage_vector_insert_template<DType,IType>(s, ija, &ja, NULL, 1, true);
+          ins_type = yale_storage_vector_insert_template<DType,IType>(s, ija, &(sija[ija]), NULL, 1, true);
           yale_storage_increment_ia_after_template<IType>(s, s->shape[0], i, 1);
           ++(s->ndnz);
           ++ija;
@@ -257,10 +262,10 @@ YALE_STORAGE* yale_storage_create_merged(const YALE_STORAGE* template, const YAL
           bool found;
 
         	// merge positions into destination row
-          IType pos = yale_storage_insert_search_template<IType>(s, ija, ija_next-1, ja, &found);
+          IType pos = yale_storage_insert_search_template<IType>(s, ija, ija_next-1, sija[ija], &found);
 
           if (!found) {
-            yale_storage_vector_insert_template<DType,IType>(s, pos, &ja, NULL, 1, true);
+            yale_storage_vector_insert_template<DType,IType>(s, pos, &(sija[ija]), NULL, 1, true);
             yale_storage_increment_ia_after_template<IType>(s, s->shape[0], i, 1);
             ++(s->ndnz);
 
@@ -292,15 +297,7 @@ void yale_storage_delete(YALE_STORAGE* s) {
 
 /*
  * Empty the matrix.
- *
- * FIXME: Add templating.
  */
-void yale_storage_init(YALE_STORAGE* s) {
-  ITYPE_TEMPLATE_TABLE(yale_storage_init_template, void, YALE_STORAGE*);
-
-  ttable[s->itype](s);
-}
-
 template <typename IType>
 void yale_storage_init_template(YALE_STORAGE* s) {
   IType IA_INIT = s->shape[0] + 1;
@@ -312,6 +309,12 @@ void yale_storage_init_template(YALE_STORAGE* s) {
   }
 
   yale_storage_clear_diagonal_and_zero_template<IType>(s);
+}
+
+void yale_storage_init(YALE_STORAGE* s) {
+  NAMED_ITYPE_TEMPLATE_TABLE(ttable, yale_storage_init_template, void, YALE_STORAGE* s);
+
+  ttable[s->itype](s);
 }
 
 /*
@@ -353,8 +356,8 @@ static YALE_STORAGE* yale_storage_alloc(dtype_t dtype, size_t* shape, size_t ran
 /*
  * Documentation goes here.
  */
-void yale_storage_get(STORAGE* storage, SLICE* slice) {
-  YALE_STORAGE* s = (YALE_STORAGE*)storage;
+void* yale_storage_get(STORAGE* storage, SLICE* slice) {
+  //YALE_STORAGE* s = (YALE_STORAGE*)storage;
   rb_raise(rb_eNotImpError, "This type of yale slicing not supported yet");
 }
 
@@ -362,34 +365,36 @@ void yale_storage_get(STORAGE* storage, SLICE* slice) {
 /*
  * Documentation goes here.
  */
-void* yale_storage_ref(STORAGE* storage, SLICE* slice) {
-  LI_DTYPE_TEMPLATE_TABLE(yale_storage_ref_template, DTYPE*, YALE_STORAGE*, SLICE*);
-
-  return reinterpret_cast<void*>(ttable[storage->dtype]((YALE_STORAGE*)storage, slice));
-}
-
-
 template <typename DType,typename IType>
-DType* yale_storage_ref_template(YALE_STORAGE* storage, SLICE* slice) {
+void* yale_storage_ref_template(YALE_STORAGE* storage, SLICE* slice) {
   size_t* coords = slice->coords;
 
-  DType* a = reinterpret_cast<DType*>(storage->a);
-  IType* ija = reinterpret_cast<IType*>(storage->ija);
+  DType* a    = reinterpret_cast<DType*>(storage->a);
+  IType* ija  = reinterpret_cast<IType*>(storage->ija);
 
   if (coords[0] == coords[1])
-    return a[coords[0]]; // return diagonal entry
+    return &(a[coords[0]]); // return diagonal entry
 
   if (a[coords[0]] == a[coords[0]+1])
-    return a[storage->shape[0]]; // return zero pointer
+    return &(a[storage->shape[0]]); // return zero pointer
 
 	// binary search for the column's location
   int pos = yale_storage_binary_search_template<IType>(storage, ija[coords[0]], ija[coords[0]+1]-1, coords[1]);
 
   if (pos != -1 && ija[pos] == coords[1])
-    return a[pos]; // found exact value
+    return &(a[pos]); // found exact value
 
-  return a[storage->shape[0]]; // return a pointer that happens to be zero
+  return &(a[storage->shape[0]]); // return a pointer that happens to be zero
 }
+
+
+void* yale_storage_ref(STORAGE* storage, SLICE* slice) {
+  NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_ref_template, void*, YALE_STORAGE* storage, SLICE* slice);
+
+  YALE_STORAGE* casted_storage = reinterpret_cast<YALE_STORAGE*>(storage);
+  return ttable[casted_storage->dtype][casted_storage->itype](casted_storage, slice);
+}
+
 
 /*
  * Documentation goes here.
@@ -436,8 +441,8 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, DType* v) {
   }
 
   ins_type = yale_storage_vector_insert_template<DType,IType>(storage, pos, &(coords[1]), v, 1, false);
-  yale_storage_increment_ia_after_template<IType>(s, YALE_IA_SIZE(s), coords[0], 1);
-  s->ndnz++;
+  yale_storage_increment_ia_after_template<IType>(storage, storage->shape[0], coords[0], 1);
+  storage->ndnz++;
 
   return ins_type;
 }
@@ -446,11 +451,6 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, DType* v) {
 // Tests //
 ///////////
 
-bool yale_storage_eqeq(const STORAGE* left, const STORAGE* right) {
-  LRI_DTYPE_TEMPLATE_TABLE(yale_storage_eqeq_template, bool, const YALE_STORAGE*, const YALE_STORAGE*);
-
-  return ttable[left->dtype][right->dtype][left->itype]((const YALE_STORAGE*)left, (const YALE_STORAGE*)right);
-}
 
 /*
  * Yale eql? -- for whole-matrix comparison returning a single value.
@@ -496,6 +496,14 @@ static bool yale_storage_eqeq_template(const YALE_STORAGE* left, const YALE_STOR
   return true;
 }
 
+bool yale_storage_eqeq(const STORAGE* left, const STORAGE* right) {
+  NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_eqeq_template, bool, const YALE_STORAGE* left, const YALE_STORAGE* right);
+
+  const YALE_STORAGE* casted_left = reinterpret_cast<const YALE_STORAGE*>(left);
+
+  return ttable[casted_left->dtype][right->dtype][casted_left->itype](casted_left, (const YALE_STORAGE*)right);
+}
+
 /*
  * Are two non-diagonal rows the same? We already know.
  *
@@ -537,7 +545,7 @@ static bool ndrow_eqeq_ndrow_template(const YALE_STORAGE* l, const YALE_STORAGE*
       	r_no_more = true;
       }
 
-      ja = SMMP_MIN(l_ja, r_ja);
+      ja = NM_MIN(l_ja, r_ja);
 
     } else if (l_no_more || ja < l_ja) {
 
@@ -547,7 +555,7 @@ static bool ndrow_eqeq_ndrow_template(const YALE_STORAGE* l, const YALE_STORAGE*
       if (r_ija < r_ija_next) {
       	// get next column
       	r_ja = rij[r_ija];
-        ja = SMMP_MIN(l_ja, r_ja);
+        ja = NM_MIN(l_ja, r_ja);
 
       } else {
       	l_no_more = true;
@@ -561,7 +569,7 @@ static bool ndrow_eqeq_ndrow_template(const YALE_STORAGE* l, const YALE_STORAGE*
       if (l_ija < l_ija_next) {
       	// get next column
         l_ja = lij[l_ija];
-        ja = SMMP_MIN(l_ja, r_ja);
+        ja = NM_MIN(l_ja, r_ja);
       } else {
       	l_no_more = true;
       }
@@ -598,13 +606,13 @@ static bool ndrow_is_empty_template(const YALE_STORAGE* s, IType ija, const ITyp
 
 // (((YALE_STORAGE*)(sptr))->shape[0] * ((YALE_STORAGE*)(sptr))->shape[1] + 1)
 inline itype_t yale_storage_itype_by_shape(const size_t* shape) {
-  long long unsigned int yale_max_size = shape[0] * (shape[1]+1);
+  uint64_t yale_max_size = shape[0] * (shape[1]+1);
 
-  if (yale_max_size < UINT8_MAX - 2) {
+  if (yale_max_size < std::numeric_limits<uint8_t>::max() - 2) {
     return UINT8;
-  } else if (yale_max_size < UINT16_MAX - 2) {
+  } else if (yale_max_size < std::numeric_limits<uint16_t>::max() - 2) {
     return UINT16;
-  } else if (yale_max_size < UINT32_MAX - 2) {
+  } else if (yale_max_size < std::numeric_limits<uint32_t>::max() - 2) {
     return UINT32;
   } else {
     return UINT64;
@@ -624,42 +632,42 @@ inline itype_t yale_storage_itype(const YALE_STORAGE* s) {
 }
 
 
-/*
- * Documentation goes here.
- */
-void yale_storage_print_vectors(YALE_STORAGE* s) {
-  size_t i;
-  fprintf(stderr, "------------------------------\n");
-  fprintf(stderr, "dtype:%s\tshape:%dx%d\tndnz:%d\tcapacity:%d\titype:%s\n",
-  	DTYPE_NAMES[s->dtype], s->shape[0], s->shape[1], s->ndnz, s->capacity, nm_itypestring[s->itype]);
-
-
-	// This needs to be handled somewhere else.
-  //if (s->capacity > 60) rb_raise(rb_eArgError, "overflow in print_vectors; cannot handle that large of a vector");
-  // print indices
-
-  fprintf(stderr, "i:\t");
-  for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5lu ", (unsigned long)i);
-
-  fprintf(stderr, "\nija:\t");
-  if (YALE_MAX_SIZE(s) < UINT8_MAX)
-    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(uint8_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
-  else if (YALE_MAX_SIZE(s) < UINT16_MAX)
-    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int16_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
-  else if (YALE_MAX_SIZE(s) < UINT32_MAX)
-    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int32_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
-  else
-    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5llu ", *(u_int64_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
-  fprintf(stderr, "\n");
-
-  // print values
-  fprintf(stderr, "a:\t");
-  for (i = 0; i < s->capacity; ++i)
-    fprintf(stderr, "%-*.3g ", 5, *(double*)((char*)(s->a) + ITYPE_SIZES[FLOAT64]*i));
-  fprintf(stderr, "\n");
-
-  fprintf(stderr, "------------------------------\n");
-}
+///*
+// * Documentation goes here.
+// */
+//void yale_storage_print_vectors(YALE_STORAGE* s) {
+//  size_t i;
+//  fprintf(stderr, "------------------------------\n");
+//  fprintf(stderr, "dtype:%s\tshape:%dx%d\tndnz:%d\tcapacity:%d\titype:%s\n",
+//  	DTYPE_NAMES[s->dtype], s->shape[0], s->shape[1], s->ndnz, s->capacity, nm_itypestring[s->itype]);
+//
+//
+//	// This needs to be handled somewhere else.
+//  //if (s->capacity > 60) rb_raise(rb_eArgError, "overflow in print_vectors; cannot handle that large of a vector");
+//  // print indices
+//
+//  fprintf(stderr, "i:\t");
+//  for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5lu ", (unsigned long)i);
+//
+//  fprintf(stderr, "\nija:\t");
+//  if (YALE_MAX_SIZE(s) < std::numeric_limits<uint8_t>::max())
+//    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(uint8_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
+//  else if (YALE_MAX_SIZE(s) < UINT16_MAX)
+//    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int16_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
+//  else if (YALE_MAX_SIZE(s) < UINT32_MAX)
+//    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int32_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
+//  else
+//    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5llu ", *(u_int64_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
+//  fprintf(stderr, "\n");
+//
+//  // print values
+//  fprintf(stderr, "a:\t");
+//  for (i = 0; i < s->capacity; ++i)
+//    fprintf(stderr, "%-*.3g ", 5, *(double*)((char*)(s->a) + ITYPE_SIZES[FLOAT64]*i));
+//  fprintf(stderr, "\n");
+//
+//  fprintf(stderr, "------------------------------\n");
+//}
 
 /*
  * Binary search for returning stored values. Returns a non-negative position, or -1 for not found.
@@ -804,6 +812,9 @@ char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, IType* j, D
 
   IType sz = yale_storage_get_size_template<IType>(s);
 
+  IType* ija = reinterpret_cast<IType*>(s->ija);
+  DType* a   = reinterpret_cast<DType*>(s->a);
+
   if (sz + n > s->capacity) {
   	yale_storage_vector_insert_resize_template<DType,IType>(s, sz, pos, j, n, struct_only);
 
@@ -817,8 +828,6 @@ char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, IType* j, D
      * TODO: This can be made slightly more efficient, but only after the tests
      *	are written.
      */
-    IType* ija = reinterpret_cast<IType*>(s->ija);
-    DType* a   = reinterpret_cast<DType*>(s->a);
 
     for (IType i = 0; i < sz - pos; ++i) {
 
@@ -851,7 +860,7 @@ void yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s) {
 
   // Clear out the diagonal + one extra entry
   for (IType i = 0; i < YALE_IA_SIZE(s)+1; ++i) // insert Ruby zeros
-    a[i] = static_cast<IType>(0);
+    a[i] = 0;
 }
 
 /*
@@ -916,24 +925,15 @@ static char yale_storage_vector_replace_j(YALE_STORAGE* s, IType pos, IType* j) 
 // Copying and Casting //
 /////////////////////////
 
-/*
- * Copy constructor for changing dtypes.
- */
-STORAGE* yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
-  LR_DTYPE_TEMPLATE_TABLE(yale_storage_cast_copy_template, YALE_STORAGE*, const YALE_STORAGE*, dtype_t);
-
-  return (STORAGE*)ttable[new_dtype][rhs->dtype]((YALE_STORAGE*)rhs, new_dtype);
-}
-
 
 /*
  * Templated copy constructor for changing dtypes.
  */
-template <typename LDType, typename RDType>
+template <typename LDType, typename RDType, typename IType>
 YALE_STORAGE* yale_storage_cast_copy_template(const YALE_STORAGE* rhs, dtype_t new_dtype) {
 
   // Allocate a new structure
-  size_t size = yale_storage_get_size(rhs);
+  size_t size = yale_storage_get_size_template<IType>(rhs);
   YALE_STORAGE* lhs = yale_storage_copy_alloc_struct_template<IType>(rhs, new_dtype, rhs->capacity, size);
 
   if (rhs->dtype == new_dtype) {  // FIXME: Test if this condition is actually faster; second condition should work just as well.
@@ -942,11 +942,11 @@ YALE_STORAGE* yale_storage_cast_copy_template(const YALE_STORAGE* rhs, dtype_t n
 
   } else {
 
-    DType*  la = reinterpret_cast<LDType*>(lhs->a);
+    LDType* la = reinterpret_cast<LDType*>(lhs->a);
     RDType* ra = reinterpret_cast<RDType*>(rhs->a);
 
     for (size_t index = 0; index < size; ++index) {
-      la[index] = static_cast<LDType>(ra[index]);
+      la[index] = ra[index];
     }
 
   }
@@ -954,14 +954,15 @@ YALE_STORAGE* yale_storage_cast_copy_template(const YALE_STORAGE* rhs, dtype_t n
   return lhs;
 }
 
-
 /*
- * Returns size of Yale storage as a size_t (no matter what the itype is).
+ * Copy constructor for changing dtypes.
  */
-static inline size_t yale_storage_get_size(const YALE_STORAGE* storage) {
-  ITYPE_TEMPLATE_TABLE(yale_storage_get_size_template, size_t, const YALE_STORAGE*);
+STORAGE* yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
+  NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_cast_copy_template, YALE_STORAGE*, const YALE_STORAGE* rhs, dtype_t new_dtype);
 
-  return ttable[storage->itype](storage);
+  const YALE_STORAGE* casted_rhs = reinterpret_cast<const YALE_STORAGE*>(rhs);
+
+  return (STORAGE*)ttable[new_dtype][casted_rhs->dtype][casted_rhs->itype](casted_rhs, new_dtype);
 }
 
 
@@ -976,16 +977,26 @@ static inline size_t yale_storage_get_size_template(const YALE_STORAGE* storage)
 
 
 /*
+ * Returns size of Yale storage as a size_t (no matter what the itype is).
+ */
+static inline size_t yale_storage_get_size(const YALE_STORAGE* storage) {
+  NAMED_ITYPE_TEMPLATE_TABLE(ttable, yale_storage_get_size_template, size_t, const YALE_STORAGE* storage);
+
+  return ttable[storage->itype](storage);
+}
+
+
+/*
  * Copy constructor.
  */
 YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs) {
-  size_t sz = yale_storage_get_size(rhs);
+  size_t size = yale_storage_get_size(rhs);
 
   YALE_STORAGE* lhs = yale_storage_copy_alloc_struct(rhs, rhs->dtype, rhs->capacity, size);
 
   // Now copy the contents -- but only within the boundaries set by the size. Leave
   // the rest uninitialized.
-  memcpy(lhs->a, rhs->a, sz * DTYPE_SIZES[lhs->dtype]);
+  memcpy(lhs->a, rhs->a, size * DTYPE_SIZES[lhs->dtype]);
 
   return lhs;
 }
@@ -995,7 +1006,7 @@ YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs) {
  * matrix (the structure).
  */
 template <typename IType>
-static YALE_STORAGE* yale_storage_copy_alloc_struct_template(const YALE_STORAGE* rhs, const dtype_t new_dtype, const IType new_capacity, const IType new_size) {
+static YALE_STORAGE* yale_storage_copy_alloc_struct_template(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size) {
   YALE_STORAGE* lhs = ALLOC( YALE_STORAGE );
   lhs->rank         = rhs->rank;
   lhs->shape        = ALLOC_N( size_t, lhs->rank );
@@ -1010,21 +1021,17 @@ static YALE_STORAGE* yale_storage_copy_alloc_struct_template(const YALE_STORAGE*
 
   // Now copy the contents -- but only within the boundaries set by the size. Leave
   // the rest uninitialized.
-  IType* lija       = reinterpret_cast<IType*>(lhs->ija);
-  IType* rija       = reinterpret_cast<IType*>(rhs->ija);
   for (size_t i = 0; i < yale_storage_get_size_template<IType>(rhs); ++i)
-    lija[i] = rija[i]; // copy indices
+    reinterpret_cast<IType*>(lhs->ija)[i] = reinterpret_cast<IType*>(rhs->ija)[i]; // copy indices
 
   return lhs;
 }
 
 
-STORAGE* yale_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
-  LI_DTYPE_TEMPLATE_TABLE(yale_storage_matrix_multiply_template, NMATRIX*, STORAGE_PAIR, size_t*, bool);
+static YALE_STORAGE* yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size) {
+  NAMED_ITYPE_TEMPLATE_TABLE(ttable, yale_storage_copy_alloc_struct_template, YALE_STORAGE*, const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
 
-  YALE_STORAGE* storage_access = reinterpret_cast<YALE_STORAGE*>(casted_storage.left);
-
-  return ttable[storage_access->dtype][storage_access->itype](casted_storage, resulting_shape, vector);
+  return ttable[rhs->itype](rhs, new_dtype, new_capacity, new_size);
 }
 
 
@@ -1038,19 +1045,33 @@ static STORAGE* yale_storage_matrix_multiply_template(STORAGE_PAIR casted_storag
   // int8_t dtype = left->dtype;
 
   // Create result storage.
-  YALE_STORAGE* result = create_yale_storage(left->dtype, resulting_shape, 2, left->capacity + right->capacity);
-  init_yale_storage(result);
+  YALE_STORAGE* result = yale_storage_create(left->dtype, resulting_shape, 2, left->capacity + right->capacity);
+  yale_storage_init_template<IType>(result);
 
-  NAMED_ITYPE_TEMPLATE_TABLE(symbmm_table, symbmm, void, const unsigned int, const unsigned int, const IType*, const IType*, const bool, const IType*, const IType*, const bool, IType*, const bool);
-  NAMED_LI_DTYPE_TEMPLATE_TABLE(numbmm_table, numbmm, void, const unsigned int, const unsigned int, const IType*, const IType*, const DType*, const bool, const IType* ib, const IType* jb, const DType* b, const bool diagb, IType* ic, IType* jc, DType* c, const bool);
-  NAMED_LI_DTYPE_TEMPLATE_TABLE(smmp_sort_columns_table, smmp_sort_columns, const unsigned int n, const IType* ia, IType* ja, DType* a);
+  IType* ijl = reinterpret_cast<IType*>(left->ija);
+  IType* ijr = reinterpret_cast<IType*>(right->ija);
+  IType* ija = reinterpret_cast<IType*>(result->ija);
 
-  // Do the multiplication
-  symbmm_table[left->itype](result->shape[0], result->shape[1], left->ija, left->ija, true, right->ija, right->ija, true, result->ija, true);
-  nubmm_table[left->dtype][left->itype](result->shape[0], result->shape[1], left->ija, left->ija, left->a, true, right->ija, right->ija, right->a, true, result->ija, result->ija, result->a, true);
+  // Symbolic multiplication step (build the structure)
+  symbmm<IType>(result->shape[0], result->shape[1], ijl, ijl, true, ijr, ijr, true, ija, true);
+
+  // Numeric multiplication step (fill in the elements)
+  numbmm<DType,IType>(result->shape[0], result->shape[1],
+                      ijl, ijl, reinterpret_cast<DType*>(left->a), true,
+                      ijr, ijr, reinterpret_cast<DType*>(right->a), true,
+                      ija, ija, reinterpret_cast<DType*>(result->a), true);
 
   // Sort the columns
-  smmp_sort_columns_table[left->dtype][left->itype](result->shape[0], result->ija, result->ija, result->a);
+  smmp_sort_columns<DType,IType>(result->shape[0], ija, ija, reinterpret_cast<DType*>(result->a));
 
   return reinterpret_cast<STORAGE*>(result);
 }
+
+STORAGE* yale_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
+  NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_matrix_multiply_template, STORAGE*, STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
+
+  YALE_STORAGE* storage_access = reinterpret_cast<YALE_STORAGE*>(casted_storage.left);
+
+  return ttable[storage_access->dtype][storage_access->itype](casted_storage, resulting_shape, vector);
+}
+
