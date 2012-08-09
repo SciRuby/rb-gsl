@@ -59,8 +59,6 @@ extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, cons
  * Forward Declarations
  */
 
-static bool list_storage_cast_copy_contents_dense(LIST* lhs, const char* rhs, void* zero, int8_t l_dtype, int8_t r_dtype, size_t* pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions);
-
 /*
  * Functions
  */
@@ -128,7 +126,7 @@ void list_storage_mark(void* storage_base) {
  * Documentation goes here.
  */
 void* list_storage_get(LIST_STORAGE* storage, SLICE* slice) {
-  LIST_STORAGE* s = (LIST_STORAGE*)storage;
+  //LIST_STORAGE* s = (LIST_STORAGE*)storage;
   rb_raise(rb_eNotImpError, "This type of slicing not supported yet");
 }
 
@@ -145,7 +143,7 @@ void* list_storage_ref(STORAGE* storage, SLICE* slice) {
 
   for (r = s->rank; r > 1; --r) {
     n = list_find(l, slice->coords[s->rank - r]);
-    if (n)  l = n->val;
+    if (n)  l = reinterpret_cast<LIST*>(n->val);
     else return s->default_val;
   }
 
@@ -171,7 +169,7 @@ void* list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
   // drill down into the structure
   for (r = s->rank; r > 1; --r) {
     n = list_insert(l, false, slice->coords[s->rank - r], list_create());
-    l = n->val;
+    l = reinterpret_cast<LIST*>(n->val);
   }
 
   n = list_insert(l, true, slice->coords[s->rank - r], val);
@@ -205,7 +203,7 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
     } else {
     	// found
       stack[s->rank - r]    = n;
-      l                     = n->val;
+      l                     = reinterpret_cast<LIST*>(n->val);
     }
   }
 
@@ -216,13 +214,10 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
     for (r = (int)(s->rank) - 2; r >= 0; --r) {
     	// walk back down the stack
       
-      if (((LIST*)(stack[r]->val))->first == NULL) {
-        free(list_remove(stack[r]->val, slice->coords[r]));
-        
-      } else {
-      	// no need to continue unless we just deleted one.
-        break;
-      }
+      if (((LIST*)(stack[r]->val))->first == NULL)
+        free(list_remove(reinterpret_cast<LIST*>(stack[r]->val), slice->coords[r]));
+      else break; // no need to continue unless we just deleted one.
+
     }
   }
 
@@ -234,18 +229,9 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
 ///////////
 
 
-bool list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(list_storage_eqeq_template, bool, const LIST_STORAGE*, const LIST_STORAGE*);
-
-	return ttable[left->dtype][right->dtype]((const LIST_STORAGE*)left, (const LIST_STORAGE*)right);
-}
-
-
 /*
  * Do these two dense matrices of the same dtype have exactly the same
  * contents?
- *
- * FIXME: Add templating.
  */
 template <typename LDType, typename RDType>
 bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* right) {
@@ -293,6 +279,13 @@ bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* ri
   return true;
 }
 
+bool list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
+	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, list_storage_eqeq_template, bool, const LIST_STORAGE* left, const LIST_STORAGE* right);
+
+	return ttable[left->dtype][right->dtype]((const LIST_STORAGE*)left, (const LIST_STORAGE*)right);
+}
+
+
 /////////////
 // Utility //
 /////////////
@@ -306,7 +299,7 @@ size_t list_storage_count_elements_r(const LIST* l, size_t recursions) {
   
   if (recursions) {
     while (curr) {
-      count += list_storage_count_elements_r(curr->val, recursions - 1);
+      count += list_storage_count_elements_r(reinterpret_cast<const LIST*>(curr->val), recursions - 1);
       curr   = curr->next;
     }
     
@@ -373,15 +366,6 @@ LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
   return lhs;
 }
 
-/*
- * List storage copy constructor C access.
- */
-STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
-  LR_DTYPE_TEMPLATE_TABLE(list_storage_cast_copy_template, LIST_STORAGE*, const LIST_STORAGE*, dtype_t);
-
-  return (STORAGE*)ttable[new_dtype][rhs->dtype]((LIST_STORAGE*)rhs, new_dtype);
-}
-
 
 /*
  * List storage copy constructor for changing dtypes.
@@ -389,20 +373,29 @@ STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
 template <typename LDType, typename RDType>
 LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t new_dtype) {
 
-  NewDType* default_val = ALLOC_N(LDType, 1);
-
   // allocate and copy shape
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
 
   // copy default value
-  *default_val = static_cast<LDType>(*reinterpret_cast<RDType*>(rhs->default_val));
+  LDType* default_val = ALLOC_N(LDType, 1);
+  *default_val = *reinterpret_cast<RDType*>(rhs->default_val);
 
   LIST_STORAGE* lhs = list_storage_create(new_dtype, shape, rhs->rank, default_val);
   lhs->rows         = list_create();
   list_cast_copy_contents_template<LDType, RDType>(lhs->rows, rhs->rows, rhs->rank - 1);
 
   return lhs;
+}
+
+
+/*
+ * List storage copy constructor C access.
+ */
+STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
+  NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, list_storage_cast_copy_template, LIST_STORAGE*, const LIST_STORAGE* rhs, dtype_t new_dtype);
+
+  return (STORAGE*)ttable[new_dtype][rhs->dtype]((LIST_STORAGE*)rhs, new_dtype);
 }
 
 

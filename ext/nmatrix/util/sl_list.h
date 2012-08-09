@@ -114,6 +114,8 @@ NODE* list_find_nearest_from(NODE* prev, size_t key);
 // Copying and Casting //
 /////////////////////////
 
-void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
+template <typename LDType, typename RDType>
+static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions);
+void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
 
 #endif // SL_LIST_H

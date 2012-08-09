@@ -222,7 +222,11 @@ RubyObject rubyobj_from_cval(void* val, dtype_t dtype) {
 			
 		case RUBYOBJ:
 			rb_raise(rb_eTypeError, "Attempting a bad conversion from a Ruby value.");
+
+	  default:
+	    rb_raise(nm_eDataTypeError, "Conversion to RubyObject requested from unknown data type");
 	}
+	return Qnil;
 }
 
 

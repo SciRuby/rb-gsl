@@ -514,6 +514,9 @@ static DENSE_STORAGE* dense_storage_matrix_multiply_template(STORAGE_PAIR casted
   delete pAlpha;
   delete pBeta;
 
+  if (!succ)
+    rb_raise(rb_eStandardError, "gemm/gemv failed for an unknown reason");
+
   return result;
 }
 

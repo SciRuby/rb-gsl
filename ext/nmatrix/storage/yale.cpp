@@ -575,7 +575,7 @@ static bool ndrow_eqeq_ndrow_template(const YALE_STORAGE* l, const YALE_STORAGE*
       }
 
     } else {
-      fprintf(stderr, "Unhandled in eqeq: l_ja=%d, r_ja=%d\n", l_ja, r_ja);
+      fprintf(stderr, "Unhandled in eqeq: l_ja=%d, r_ja=%d\n", (int)l_ja, (int)r_ja);
     }
   }
 

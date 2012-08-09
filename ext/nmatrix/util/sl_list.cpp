@@ -48,9 +48,6 @@
  * Functions
  */
 
-template <typename LDType, typename RDType>
-static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions);
-
 ////////////////
 // Lifecycle //
 ///////////////
@@ -441,8 +438,6 @@ NODE* list_find_nearest_from(NODE* prev, size_t key) {
 
 /*
  * C access for copying the contents of a list.
- *
- * FIXME: Is this actually necessary? This function may only be called from other templated functions.
  */
 void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
   LR_DTYPE_TEMPLATE_TABLE(list_cast_copy_contents_template, void, LIST*, const LIST*, size_t);
