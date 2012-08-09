@@ -285,7 +285,7 @@ YALE_STORAGE* yale_storage_create_merged_template(const YALE_STORAGE* left, cons
 /*
  * Destructor for yale storage
  */
-void yale_storage_delete(YALE_STORAGE* s) {
+void yale_storage_delete(STORAGE* s) {
   if (s) {
     YALE_STORAGE* storage = reinterpret_cast<YALE_STORAGE*>(s);
     free(storage->shape);
@@ -862,6 +862,7 @@ void yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s) {
   for (IType i = 0; i < YALE_IA_SIZE(s)+1; ++i) // insert Ruby zeros
     a[i] = 0;
 }
+
 
 /*
  * If we add n items to row i, we need to increment ija[i+1] and onward.

@@ -125,7 +125,7 @@ void list_storage_mark(void* storage_base) {
 /*
  * Documentation goes here.
  */
-void* list_storage_get(LIST_STORAGE* storage, SLICE* slice) {
+void* list_storage_get(STORAGE* storage, SLICE* slice) {
   //LIST_STORAGE* s = (LIST_STORAGE*)storage;
   rb_raise(rb_eNotImpError, "This type of slicing not supported yet");
 }

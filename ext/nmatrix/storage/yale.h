@@ -114,7 +114,7 @@ typedef struct {
 YALE_STORAGE* yale_storage_create(dtype_t dtype, size_t* shape, size_t rank, size_t init_capacity);
 YALE_STORAGE* yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, dtype_t from_dtype);
 YALE_STORAGE*	yale_storage_create_merged(const YALE_STORAGE* merge_template, const YALE_STORAGE* other);
-void					yale_storage_delete(STORAGE* s);
+void          yale_storage_delete(STORAGE* s);
 void					yale_storage_init(YALE_STORAGE* s);
 void					yale_storage_mark(void*);
 
@@ -169,6 +169,9 @@ STORAGE* yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs);
 
 template <typename IType>
-static void						yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s);
+void						yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s);
+
+/*template <typename IType>
+void yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s);*/
 
 #endif // YALE_H

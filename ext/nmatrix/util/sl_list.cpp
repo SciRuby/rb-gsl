@@ -437,19 +437,10 @@ NODE* list_find_nearest_from(NODE* prev, size_t key) {
 
 
 /*
- * C access for copying the contents of a list.
- */
-void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
-  LR_DTYPE_TEMPLATE_TABLE(list_cast_copy_contents_template, void, LIST*, const LIST*, size_t);
-
-  ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
-}
-
-/*
  * Copy the contents of a list.
  */
 template <typename LDType, typename RDType>
-static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) {
+void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) {
   NODE *lcurr, *rcurr;
 
   if (rhs->first) {
@@ -462,14 +453,14 @@ static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t 
 
       if (recursions == 0) {
       	// contents is some kind of value
-      	
+
         lcurr->val = ALLOC( LDType );
 
         *reinterpret_cast<LDType*>(lcurr->val) = *reinterpret_cast<RDType*>( rcurr->val );
 
       } else {
       	// contents is a list
-      	
+
         lcurr->val = ALLOC( LIST );
 
         list_cast_copy_contents_template<LDType, RDType>(
@@ -478,10 +469,10 @@ static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t 
           recursions-1
         );
       }
-      
+
       if (rcurr->next) {
       	lcurr->next = ALLOC( NODE );
-      	
+
       } else {
       	lcurr->next = NULL;
       }
@@ -489,9 +480,20 @@ static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t 
       lcurr = lcurr->next;
       rcurr = rcurr->next;
     }
-    
+
   } else {
     lhs->first = NULL;
   }
 }
+
+/*
+ * C access for copying the contents of a list.
+ */
+void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
+  LR_DTYPE_TEMPLATE_TABLE(list_cast_copy_contents_template, void, LIST*, const LIST*, size_t);
+
+  ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
+}
+
+
 
