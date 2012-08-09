@@ -248,10 +248,11 @@ YALE_STORAGE* yale_storage_create_merged_template(const YALE_STORAGE* left, cons
 
       for (IType r_ija = rija[i]; r_ija < rija[i+1]; ++r_ija) {
 
+        size_t ja = sija[ija]; // insert expects a size_t
+
         if (ija == ija_next) {
         	// destination row is empty
-
-          ins_type = yale_storage_vector_insert_template<DType,IType>(s, ija, &(sija[ija]), NULL, 1, true);
+          ins_type = yale_storage_vector_insert_template<DType,IType>(s, ija, &ja, NULL, 1, true);
           yale_storage_increment_ia_after_template<IType>(s, s->shape[0], i, 1);
           ++(s->ndnz);
           ++ija;
@@ -265,7 +266,7 @@ YALE_STORAGE* yale_storage_create_merged_template(const YALE_STORAGE* left, cons
           IType pos = yale_storage_insert_search_template<IType>(s, ija, ija_next-1, sija[ija], &found);
 
           if (!found) {
-            yale_storage_vector_insert_template<DType,IType>(s, pos, &(sija[ija]), NULL, 1, true);
+            yale_storage_vector_insert_template<DType,IType>(s, pos, &ja, NULL, 1, true);
             yale_storage_increment_ia_after_template<IType>(s, s->shape[0], i, 1);
             ++(s->ndnz);
 
@@ -400,7 +401,8 @@ void* yale_storage_ref(STORAGE* storage, SLICE* slice) {
  * Documentation goes here.
  */
 template <typename DType, typename IType>
-char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, DType* v) {
+char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, void* value) {
+  DType* v = reinterpret_cast<DType*>(value);
   size_t* coords = slice->coords;
 
   DType* a = reinterpret_cast<DType*>(storage->a);
@@ -409,15 +411,11 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, DType* v) {
   bool found = false;
   char ins_type;
 
-  if (coords[0] == coords[1]) {
+  if (coords[0] == coords[1])
     a[coords[0]] = *v; // set diagonal
-  }
 
 
   // Get IJA positions of the beginning and end of the row
-  YaleGetIJA(ija,      s, coords[0]);
-  YaleGetIJA(ija_next, s, i_next);
-
   if (ija[coords[0]] == ija[coords[0]+1]) {
   	// empty row
     ins_type = yale_storage_vector_insert_template<DType,IType>(storage, ija[coords[0]], &(coords[1]), v, 1, false);
@@ -445,6 +443,15 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, DType* v) {
   storage->ndnz++;
 
   return ins_type;
+}
+
+
+char yale_storage_set(STORAGE* storage, SLICE* slice, void* v) {
+  NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_set_template, char, YALE_STORAGE* storage, SLICE* slice, void* value);
+
+  YALE_STORAGE* casted_storage = reinterpret_cast<YALE_STORAGE*>(storage);
+
+  return ttable[casted_storage->dtype][casted_storage->itype](casted_storage, slice, v);
 }
 
 ///////////
@@ -694,41 +701,13 @@ int yale_storage_binary_search_template(YALE_STORAGE* s, IType left, IType right
   	return yale_storage_binary_search_template<IType>(s, mid + 1, right, key);
 }
 
-/*
- * Documentation goes here.
- */
-template <typename IType, typename DType>
-char yale_storage_set_diagonal_template(YALE_STORAGE* s, IType i, DType* v) {
-  reinterpret_cast<DType*>(s->a)[i] = *v;
-
-  return 'r';
-}
-
-/*
- * Documentation goes here.
- */
-template <typename IType, typename DType>
-char yale_storage_vector_replace_template(YALE_STORAGE* s, IType pos, IType* j, DType* val, IType n) {
-
-  IType* ija = reinterpret_cast<IType*>(s->ija);
-  DType* a   = reinterpret_cast<DType*>(s->a);
-
-  // Now insert the new values
-
-  for (IType i = pos; i < pos + n; ++i) {
-    ija[i] = j[i];
-    a[i]   = val[i];
-  }
-
-  return 'r';
-}
 
 
 /*
  * Documentation goes here.
  */
 template <typename DType, typename IType>
-char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, IType current_size, IType pos, IType* j, IType n, bool struct_only) {
+char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, IType current_size, IType pos, size_t* j, size_t n, bool struct_only) {
   // Determine the new capacity for the IJA and A vectors.
   size_t new_capacity = s->capacity * YALE_GROWTH_CONSTANT;
 
@@ -805,7 +784,7 @@ char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, IType current_s
  *	question.)
  */
 template <typename DType, typename IType>
-char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, IType* j, DType* val, IType n, bool struct_only) {
+char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, size_t* j, DType* val, size_t n, bool struct_only) {
   if (pos < s->shape[0]) {
     rb_raise(rb_eArgError, "vector insert pos is before beginning of ja; this should not happen");
   }
@@ -839,7 +818,7 @@ char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, IType* j, D
   }
 
   // Now insert the new values.
-  ija[pos] = j;
+  ija[pos] = *j;
 
   if (!struct_only)
     a[pos] = *val;
@@ -892,7 +871,7 @@ static IType yale_storage_insert_search_template(YALE_STORAGE* s, IType left, IT
 
   IType* ija = reinterpret_cast<IType*>(s->ija);
   IType mid = (left + right)/2;
-  IType mid_j = s[mid];
+  IType mid_j = ija[mid];
 
   if (mid_j == key) {
     *found = true;
@@ -905,22 +884,6 @@ static IType yale_storage_insert_search_template(YALE_STORAGE* s, IType left, IT
   	return yale_storage_insert_search_template<IType>(s, mid+1, right, key, found);
   }
 }
-
-/*
- * Just like yale_storage_vector_replace, but doesn't replace the contents of the cell,
- * only the column index.
- */
-/*template <typename IType>
-static char yale_storage_vector_replace_j(YALE_STORAGE* s, IType pos, IType* j) {
-
-  SetFuncs[s->itype][Y_SIZE_T](1,
-                                     pos*ITYPE_SIZES[s->itype] + (char*)(s->ija),
-                                     ITYPE_SIZES[s->itype],
-                                     j,
-                                     sizeof(y_size_t));
-
-  return 'r';
-}*/
 
 /////////////////////////
 // Copying and Casting //

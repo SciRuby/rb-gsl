@@ -149,7 +149,7 @@ void Init_nmatrix() {
 	// Class Methods //
 	///////////////////
 	
-//	rb_define_alloc_func(cNMatrix, nm_alloc);
+	rb_define_alloc_func(cNMatrix, nm_alloc);
 	
 	/*
 	 * FIXME: These need to be bound in a better way.
@@ -161,9 +161,7 @@ void Init_nmatrix() {
 	//////////////////////
 	// Instance Methods //
 	//////////////////////
-	
-	rb_define_method(cNMatrix, "initialize", (VALUE(*)(...))nm_init, -1);
-	
+
 	rb_define_method(cNMatrix, "initialize", (METHOD)nm_init, -1);
 	
 	//rb_define_method(cNMatrix, "initialize_copy", (METHOD)nm_init_copy, 1);
@@ -275,7 +273,6 @@ void Init_nmatrix() {
  * Just be careful! There are no overflow warnings in NMatrix.
  */
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
-  VALUE   QNIL = Qnil;
   dtype_t dtype;
   stype_t stype;
   size_t  rank, offset = 0;
@@ -347,7 +344,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
       if (dtype == RUBYOBJ) {
       	// Pretend [nil] was passed for RUBYOBJ.
       	init_val = ALLOC(VALUE);
-        *(VALUE*)init_val = QNIL;
+        *(VALUE*)init_val = Qnil;
         
         init_val_len = 1;
         
@@ -453,11 +450,12 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbo
 static VALUE nm_alloc(VALUE klass) {
   NMATRIX* mat = ALLOC(NMATRIX);
   mat->storage = NULL;
+  // FIXME: mark_table[mat->stype] should be passed to Data_Wrap_Struct, but can't be done without stype. Also, nm_delete depends on this.
   // mat->stype   = NUM_STYPES;
 
-  STYPE_MARK_TABLE(mark_table);
+  //STYPE_MARK_TABLE(mark_table);
 
-  return Data_Wrap_Struct(klass, mark_table[mat->stype], nm_delete, mat);
+  return Data_Wrap_Struct(klass, NULL, nm_delete, mat);
 }
 
 /*
