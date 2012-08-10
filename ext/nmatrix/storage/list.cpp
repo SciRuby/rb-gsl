@@ -238,7 +238,8 @@ bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* ri
 
   // in certain cases, we need to keep track of the number of elements checked.
   size_t num_checked  = 0,
-         max_elements = storage_count_max_elements(left->rank, left->shape);
+
+	max_elements = storage_count_max_elements(left);
 
   if (!left->rows->first) {
     // Easy: both lists empty -- just compare default values

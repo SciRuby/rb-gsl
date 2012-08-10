@@ -53,21 +53,12 @@
  * Types
  */
 
-typedef struct {
-	// Common elements found in all storage types.  Must not be re-arranged.
-	dtype_t	dtype;
-	size_t	rank;
-	size_t*	shape;
-
-  // Slicing elements
-	size_t*	offset;
-	size_t* stride;
-	int     count;
-	void*   src;
-
-	// Dense storage specific elements.
-	void*   elements;
-} DENSE_STORAGE;
+struct DENSE_STORAGE : STORAGE {
+	size_t*	stride;
+	int			count;
+	void*		src;
+	void*		elements;
+};
 
 /*
  * Data

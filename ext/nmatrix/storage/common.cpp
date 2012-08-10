@@ -21,12 +21,9 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == common.h
+// == common.cpp
 //
-// Header file for code common to all storage types.
-
-#ifndef STORAGE_COMMON_H
-#define STORAGE_COMMON_H
+// Code for the STORAGE struct that is common to all storage types.
 
 /*
  * Standard Includes
@@ -36,42 +33,36 @@
  * Project Includes
  */
 
+#include "common.h"
+
 /*
  * Macros
  */
 
 /*
- * Types
+ * Global Variables
  */
 
-struct STORAGE {
-	// Common elements found in all storage types.  Must not be re-arranged.
-	dtype_t	dtype;
-	size_t	rank;
-	size_t*	shape;
-	size_t*	offset;
-};
-
-// For binary operations involving matrices that need to be casted.
-typedef struct {
-	STORAGE* left;
-	STORAGE* right;
-} STORAGE_PAIR;
-
-typedef struct {
-	size_t*	coords; // Coordinate of first element
-	size_t*	lengths; // Lengths of slice
-	uint8_t	is_one_el; // 1 - if all lens eql 1
-} SLICE;
-
 /*
- * Data
+ * Forward Declarations
  */
 
 /*
  * Functions
  */
 
-size_t storage_count_max_elements(STORAGE* storage);
+/*
+ * Calculate the number of elements in the dense storage structure, based on
+ * shape and rank.
+ */
+size_t storage_count_max_elements(STORAGE* storage) {
+  unsigned int i;
+  size_t count = 1;
+  
+  for (i = storage->rank; i-- > 0;) {
+  	count *= storage->shape[i];
+  }
+  
+  return count;
+}
 
-#endif // STORAGE_COMMON_H

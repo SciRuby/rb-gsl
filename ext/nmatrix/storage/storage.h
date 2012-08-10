@@ -77,7 +77,7 @@ typedef enum {
  */
 
 extern const char* const STYPE_NAMES[NUM_STYPES];
-
+extern const void (*STYPE_MARK[NUM_STYPES])(void*)
 
 /*
  * Functions
@@ -87,11 +87,11 @@ extern const char* const STYPE_NAMES[NUM_STYPES];
 // Copying and Casting //
 /////////////////////////
 
-STORAGE*	dense_storage_from_list(const STORAGE* rhs, dtype_t l_dtype);
-STORAGE*	dense_storage_from_yale(const STORAGE* rhs, dtype_t l_dtype);
-STORAGE*		list_storage_from_dense(const STORAGE* rhs, dtype_t l_dtype);
-STORAGE*		list_storage_from_yale(const STORAGE* rhs, dtype_t l_dtype);
-STORAGE*		yale_storage_from_list(const STORAGE* rhs, dtype_t l_dtype);
-STORAGE*		yale_storage_from_dense(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*	  dense_storage_from_list(const STORAGE* right, dtype_t l_dtype);
+STORAGE*	  dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
+STORAGE*		list_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
+STORAGE*		list_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
+STORAGE*		yale_storage_from_list(const STORAGE* right, dtype_t l_dtype);
+STORAGE*		yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
 
 #endif // STORAGE_H

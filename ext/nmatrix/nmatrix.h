@@ -92,21 +92,25 @@
 
 #define UnwrapNMatrix(obj,var)  Data_Get_Struct(obj, NMATRIX, var)
 
-#define NM_STORAGE(val)         (((struct NMATRIX*)DATA_PTR(val))->storage)
-#define NM_LIST_STORAGE(val)    ((LIST_STORAGE*)(((struct NMATRIX*)DATA_PTR(val))->storage))
-#define NM_YALE_STORAGE(val)    ((YALE_STORAGE*)(((struct NMATRIX*)DATA_PTR(val))->storage))
-#define NM_DENSE_STORAGE(val)   ((DENSE_STORAGE*)(((struct NMATRIX*)DATA_PTR(val))->storage))
-#define NM_DENSE_SRC(val)       (NM_DENSE_STORAGE(val)->src)
+#define NM_STORAGE(val)         (NM_STRUCT(val)->storage)
+#define NM_LIST_STORAGE(val)    (dynamic_cast<LIST_STORAGE*>(NM_STORAGE(val)))
+#define NM_YALE_STORAGE(val)    (dynamic_cast<YALE_STORAGE*>(NM_STORAGE(val)))
+#define NM_DENSE_STORAGE(val)   (dynamic_cast<DENSE_STORAGE*>(NM_STORAGE(val)))
+
+
 //#define NM_PTR(a, p)            ((a)->ptr+(p)*nm_sizeof[(a)->type])
-#define NM_STRUCT(val)          ((struct NMATRIX*)DATA_PTR(val))
 //#define NM_PTR_TYPE(val,type)   (type)(((struct numeric_matrix*)DATA_PTR(val))->ptr)
-#define NM_RANK(val)            (((STORAGE*)(NM_STORAGE(val)))->rank)
-#define NM_DTYPE(val)           (((STORAGE*)(NM_STORAGE(val)))->dtype)
-#define NM_STYPE(val)           (((struct NMATRIX*)DATA_PTR(val))->stype)
-#define NM_SHAPE(val,i)         (((STORAGE*)(NM_STORAGE(val)))->shape[(i)])
-#define NM_SHAPE0(val)          (((STORAGE*)(NM_STORAGE(val)))->shape[0])
-#define NM_SHAPE1(val)          (((STORAGE*)(NM_STORAGE(val)))->shape[1])
-#define NM_DENSE_COUNT(val)     (storage_count_max_elements( NM_DENSE_STORAGE(val)->rank, NM_DENSE_STORAGE(val)->shape ))
+
+#define NM_DENSE_SRC(val)       (NM_DENSE_STORAGE(val)->src)
+#define NM_STRUCT(val)          (reinterpret_cast<NMATRIX*>(DATA_PTR(val)))
+#define NM_RANK(val)            (NM_STORAGE(val)->rank)
+#define NM_DTYPE(val)           (NM_STORAGE(val)->dtype)
+#define NM_STYPE(val)           (NM_STRUCT(val)->stype)
+#define NM_SHAPE(val,i)         (NM_STORAGE(val)->shape[(i)])
+#define NM_SHAPE0(val)          (NM_STORAGE(val)->shape[0])
+#define NM_SHAPE1(val)          (NM_STORAGE(val)->shape[1])
+
+#define NM_DENSE_COUNT(val)     (storage_count_max_elements(NM_DENSE_STORAGE(val)))
 #define NM_SIZEOF_DTYPE(val)    (nm_sizeof[NM_DTYPE(val)])
 #define NM_REF(val,slice)      (RefFuncs[NM_STYPE(val)]( NM_STORAGE(val), slice, NM_SIZEOF_DTYPE(val) ))
     

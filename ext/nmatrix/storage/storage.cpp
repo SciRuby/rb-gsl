@@ -51,7 +51,11 @@ const char* const STYPE_NAMES[NUM_STYPES] = {
 	"yale"
 };
 
-
+const void (*STYPE_MARK[NUM_STYPES])(void*) = {
+	dense_storage_mark,
+	list_storage_mark,
+	yale_storage_mark
+}
 
 /*
  * Forward Declarations
@@ -86,7 +90,7 @@ DENSE_STORAGE* dense_storage_from_list_template(const LIST_STORAGE* rhs, dtype_t
 
   // Position in lhs->elements.
   size_t pos = 0;
-  size_t max_elements = storage_count_max_elements(rhs->rank, rhs->shape);
+  size_t max_elements = storage_count_max_elements(rhs);
 
 //static void dense_storage_cast_copy_list_contents_template(LDType* lhs, const LIST* rhs, RDType* default_val, size_t& pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions)
   // recursively copy the contents

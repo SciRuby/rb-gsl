@@ -62,6 +62,7 @@
  */
 
 #include "nmatrix.h"
+#include "storage/storage.h"
 #include "ruby_constants.h"
 
 /*
@@ -97,6 +98,8 @@ static VALUE nm_mset(int argc, VALUE* argv, VALUE self);
 static VALUE nm_mget(int argc, VALUE* argv, VALUE self);
 static VALUE nm_mref(int argc, VALUE* argv, VALUE self);
 static VALUE nm_is_ref(VALUE self);
+
+static VALUE is_symmetric(VALUE self, bool hermitian);
 
 static VALUE nm_symmetric(VALUE self);
 static VALUE nm_hermitian(VALUE self);
@@ -250,6 +253,185 @@ void Init_nmatrix() {
  */
 }
 
+//////////////////
+// Ruby Methods //
+//////////////////
+
+/*
+ * Allocator.
+ */
+static VALUE nm_alloc(VALUE klass) {
+  NMATRIX* mat = ALLOC(NMATRIX);
+  mat->storage = NULL;
+  // FIXME: mark_table[mat->stype] should be passed to Data_Wrap_Struct, but can't be done without stype. Also, nm_delete depends on this.
+  // mat->stype   = NUM_STYPES;
+
+  //STYPE_MARK_TABLE(mark_table);
+
+  return Data_Wrap_Struct(klass, NULL, nm_delete, mat);
+}
+
+/*
+ * Find the capacity of an NMatrix. The capacity only differs from the size for
+ * Yale matrices, which occasionally allocate more space than they need. For
+ * list and dense, capacity gives the number of elements in the matrix.
+ */
+static VALUE nm_capacity(VALUE self) {
+  VALUE cap;
+
+  switch(NM_STYPE(self)) {
+  case YALE_STORE:
+    cap = UINT2NUM(((YALE_STORAGE*)(NM_STORAGE(self)))->capacity);
+    break;
+
+  case DENSE_STORE:
+    cap = UINT2NUM(storage_count_max_elements( NM_DENSE_STORAGE(self) ));
+    break;
+
+  case LIST_STORE:
+    cap = UINT2NUM(list_storage_count_elements( NM_LIST_STORAGE(self) ));
+    break;
+
+  default:
+    rb_raise(nm_eStorageTypeError, "unrecognized stype in nm_capacity()");
+  }
+
+  return cap;
+}
+
+/*
+ * Destructor.
+ */
+static void nm_delete(NMATRIX* mat) {
+  static void (*ttable[NUM_STYPES])(STORAGE*) = {
+    dense_storage_delete,
+    list_storage_delete,
+    yale_storage_delete
+  };
+  ttable[mat->stype](mat->storage);
+}
+
+/*
+ * Slicing destructor.
+ */
+static void nm_delete_ref(NMATRIX* mat) {
+  static void (*ttable[NUM_STYPES])(STORAGE*) = {
+    dense_storage_delete_ref,
+    list_storage_delete,  // FIXME: Should these be _ref?
+    yale_storage_delete
+  };
+  ttable[mat->stype](mat->storage);
+}
+
+/*
+ * Get the data type (dtype) of a matrix, e.g., :byte, :int8, :int16, :int32,
+ * :int64, :float32, :float64, :complex64, :complex128, :rational32,
+ * :rational64, :rational128, or :object (the last is a Ruby object).
+ */
+static VALUE nm_dtype(VALUE self) {
+  ID dtype = rb_intern(DTYPE_NAMES[NM_DTYPE(self)]);
+  return ID2SYM(dtype);
+}
+
+
+/*
+ * Borrowed this function from NArray. Handles 'each' iteration on a dense
+ * matrix.
+ *
+ * Additionally, handles separately matrices containing VALUEs and matrices
+ * containing other types of data.
+ */
+static VALUE nm_each_dense(VALUE nmatrix) {
+  DENSE_STORAGE* s = NM_DENSE_STORAGE(nmatrix);
+  VALUE v;
+  size_t i;
+
+  if (NM_DTYPE(nmatrix) == RUBYOBJ) {
+
+    // matrix of Ruby objects -- yield those objects directly
+    for (i = 0; i < storage_count_max_elements(s); ++i)
+      rb_yield( *((VALUE*)((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)])) );
+
+  } else {
+    // We're going to copy the matrix element into a Ruby VALUE and then operate on it. This way user can't accidentally
+    // modify it and cause a seg fault.
+
+    for (i = 0; i < storage_count_max_elements(s); ++i) {
+      v = rubyobj_from_cval((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)], NM_DTYPE(nmatrix)).rval;
+      rb_yield(v); // yield to the copy we made
+    }
+  }
+
+  return nmatrix;
+}
+
+
+/*
+ * Iterate over the matrix as you would an Enumerable (e.g., Array).
+ *
+ * Currently only works for dense.
+ */
+static VALUE nm_each(VALUE nmatrix) {
+  volatile VALUE nm = nmatrix; // not sure why we do this, but it gets done in ruby's array.c.
+
+  switch(NM_STYPE(nm)) {
+  case DENSE_STORE:
+    return nm_each_dense(nm);
+  default:
+    rb_raise(rb_eNotImpError, "only dense matrix's each method works right now");
+  }
+}
+
+
+
+/*
+ * Equality operator. Returns a single true or false value indicating whether
+ * the matrices are equivalent.
+ *
+ * For elementwise, use == instead.
+ *
+ * This method will raise an exception if dimensions do not match.
+ */
+static VALUE nm_eqeq(VALUE left, VALUE right) {
+  NMATRIX *l, *r;
+
+  CheckNMatrixType(left);
+  CheckNMatrixType(right);
+
+  UnwrapNMatrix(left, l);
+  UnwrapNMatrix(right, r);
+
+  if (l->stype != r->stype)
+    rb_raise(rb_eNotImpError, "comparison between different matrix stypes not yet implemented");
+
+  bool result = false;
+
+  switch(l->stype) {
+  case DENSE_STORE:
+    result = dense_storage_eqeq(l->storage, r->storage);
+    break;
+  case LIST_STORE:
+    result = list_storage_eqeq(l->storage, r->storage);
+    break;
+  case YALE_STORE:
+    result = yale_storage_eqeq(l->storage, r->storage);
+    break;
+  }
+
+  return result ? Qtrue : Qfalse;
+}
+
+/*
+ * Is this matrix hermitian?
+ *
+ * Definition: http://en.wikipedia.org/wiki/Hermitian_matrix
+ *
+ * For non-complex matrices, this function should return the same result as symmetric?.
+ */
+static VALUE nm_hermitian(VALUE self) {
+  return is_symmetric(self, true);
+}
+
 /*
  * Create a new NMatrix.
  *
@@ -401,32 +583,6 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
 }
 
 /*
- * Create a new NMatrix helper for handling internal ia, ja, and a arguments.
- *
- * This constructor is only called by Ruby code, so we can skip most of the
- * checks.
- */
-static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm) {
-  size_t rank     = 2;
-  size_t* shape_  = interpret_shape(shape, &rank);
-  dtype_t dtype_  = dtype_from_rbsymbol(dtype);
-  char *ia_       = RSTRING_PTR(ia),
-       *ja_       = RSTRING_PTR(ja),
-       *a_        = RSTRING_PTR(a);
-  dtype_t from_dtype_ = dtype_from_rbsymbol(from_dtype);
-  NMATRIX* nmatrix;
-
-  UnwrapNMatrix( nm, nmatrix );
-
-  nmatrix->stype   = YALE_STORE;
-  nmatrix->storage = (STORAGE*)yale_storage_create_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_);
-
-  return nm;
-}
-
-
-
-/*
  * Copy constructor for changing dtypes and stypes.
  */
 static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbol, VALUE new_dtype_symbol) {
@@ -453,121 +609,40 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbo
   return copy; //Data_Wrap_Struct(cNMatrix, mark_table[new_stype], nm_delete, copy);
 }
 
-
 /*
- * Allocator.
+ * Create a new NMatrix helper for handling internal ia, ja, and a arguments.
+ *
+ * This constructor is only called by Ruby code, so we can skip most of the
+ * checks.
  */
-static VALUE nm_alloc(VALUE klass) {
-  NMATRIX* mat = ALLOC(NMATRIX);
-  mat->storage = NULL;
-  // FIXME: mark_table[mat->stype] should be passed to Data_Wrap_Struct, but can't be done without stype. Also, nm_delete depends on this.
-  // mat->stype   = NUM_STYPES;
+static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm) {
+  size_t rank     = 2;
+  size_t* shape_  = interpret_shape(shape, &rank);
+  dtype_t dtype_  = dtype_from_rbsymbol(dtype);
+  char *ia_       = RSTRING_PTR(ia),
+       *ja_       = RSTRING_PTR(ja),
+       *a_        = RSTRING_PTR(a);
+  dtype_t from_dtype_ = dtype_from_rbsymbol(from_dtype);
+  NMATRIX* nmatrix;
 
-  //STYPE_MARK_TABLE(mark_table);
+  UnwrapNMatrix( nm, nmatrix );
 
-  return Data_Wrap_Struct(klass, NULL, nm_delete, mat);
+  nmatrix->stype   = YALE_STORE;
+  nmatrix->storage = (STORAGE*)yale_storage_create_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_);
+
+  return nm;
 }
 
 /*
- * Destructor.
+ * Check to determine whether matrix is a reference to another matrix.
  */
-static void nm_delete(NMATRIX* mat) {
-  static void (*ttable[NUM_STYPES])(STORAGE*) = {
-    dense_storage_delete,
-    list_storage_delete,
-    yale_storage_delete
-  };
-  ttable[mat->stype](mat->storage);
-}
-
-/*
- * Slicing destructor.
- */
-static void nm_delete_ref(NMATRIX* mat) {
-  static void (*ttable[NUM_STYPES])(STORAGE*) = {
-    dense_storage_delete_ref,
-    list_storage_delete,  // FIXME: Should these be _ref?
-    yale_storage_delete
-  };
-  ttable[mat->stype](mat->storage);
-}
-
-/*
- * Get the data type (dtype) of a matrix, e.g., :byte, :int8, :int16, :int32,
- * :int64, :float32, :float64, :complex64, :complex128, :rational32,
- * :rational64, :rational128, or :object (the last is a Ruby object).
- */
-static VALUE nm_dtype(VALUE self) {
-  ID dtype = rb_intern(DTYPE_NAMES[NM_DTYPE(self)]);
-  return ID2SYM(dtype);
-}
-
-
-/*
- * Get the storage type (stype) of a matrix, e.g., :yale, :dense, or :list.
- */
-static VALUE nm_stype(VALUE self) {
-  ID stype = rb_intern(STYPE_NAMES[NM_STYPE(self)]);
-  return ID2SYM(stype);
-}
-
-
-/*
- * Find the capacity of an NMatrix. The capacity only differs from the size for Yale matrices, which occasionally
- * allocate more space than they need. For list and dense, capacity gives the number of elements in the matrix.
- */
-static VALUE nm_capacity(VALUE self) {
-  VALUE cap;
-
-  switch(NM_STYPE(self)) {
-  case YALE_STORE:
-    cap = UINT2NUM(((YALE_STORAGE*)(NM_STORAGE(self)))->capacity);
-    break;
-
-  case DENSE_STORE:
-    cap = UINT2NUM(storage_count_max_elements( NM_DENSE_STORAGE(self)->rank, NM_DENSE_STORAGE(self)->shape ));
-    break;
-
-  case LIST_STORE:
-    cap = UINT2NUM(list_storage_count_elements( NM_LIST_STORAGE(self) ));
-    break;
-
-  default:
-    rb_raise(nm_eStorageTypeError, "unrecognized stype in nm_capacity()");
+static VALUE nm_is_ref(VALUE self) {
+	// Refs only allowed for dense matrices.
+  if (NM_STYPE(self) == DENSE_STORE) {
+    return (NM_DENSE_SRC(self) == NM_STORAGE(self)) ? Qfalse : Qtrue;
   }
 
-  return cap;
-}
-
-
-/*
- * Get the rank of an NMatrix (the number of dimensions).
- *
- * In other words, if you set your matrix to be 3x4, the rank is 2. If the matrix was initialized as 3x4x3, the rank
- * is 3.
- *
- * This function may lie slightly for NVectors, which are internally stored as rank 2 (and have an orientation), but
- * act as if they're rank 1.
- */
-static VALUE nm_rank(VALUE self) {
-  return rubyobj_from_cval(&(NM_STORAGE(self)->rank), INT64).rval;
-}
-
-
-/*
- * Get the shape (dimensions) of a matrix.
- */
-static VALUE nm_shape(VALUE self) {
-  STORAGE* s   = NM_STORAGE(self);
-  size_t index;
-
-  // Copy elements into a VALUE array and then use those to create a Ruby array with rb_ary_new4.
-  VALUE* shape = ALLOCA_N(VALUE, s->rank);
-  for (index = 0; index < s->rank; ++index)
-    shape[index] = rubyobj_from_cval( &(s->shape[index]), SIZE_T ).rval;
-  //SetFuncs[NM_ROBJ][NM_SIZE_T]( s->rank, shape, sizeof(VALUE), s->shape, sizeof(size_t));
-
-  return rb_ary_new4(s->rank, shape);
+  return Qfalse;
 }
 
 
@@ -585,10 +660,9 @@ static VALUE nm_mget(int argc, VALUE* argv, VALUE self) {
     list_storage_get,
     yale_storage_get
   };
+  
   return nm_xslice(argc, argv, ttable[NM_STYPE(self)], nm_delete, self);
 }
-
-
 
 /*
  * Access the contents of an NMatrix at given coordinates by reference.
@@ -605,8 +679,6 @@ static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
   };
   return nm_xslice(argc, argv, ttable[NM_STYPE(self)], nm_delete, self);
 }
-
-
 
 /*
  * Modify the contents of an NMatrix in the given cell
@@ -660,6 +732,87 @@ static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
   return Qnil;
 }
 
+/*
+ * Matrix multiply (dot product): against another matrix or a vector.
+ *
+ * For elementwise, use * instead.
+ *
+ * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
+ */
+static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
+  NMATRIX *left, *right;
+
+  // left has to be of type NMatrix.
+  CheckNMatrixType(left_v);
+
+  UnwrapNMatrix( left_v, left );
+
+  if (RUBYVAL_IS_NUMERIC(right_v))
+    return matrix_multiply_scalar(left, right_v);
+
+  else if (TYPE(right_v) == T_ARRAY)
+    rb_raise(rb_eNotImpError, "for matrix-vector multiplication, please use an NVector instead of an Array for now");
+
+  //if (RDATA(right_v)->dfree != (RUBY_DATA_FUNC)nm_delete) {
+  else if (TYPE(right_v) == T_DATA && RDATA(right_v)->dfree == (RUBY_DATA_FUNC)nm_delete) { // both are matrices
+    UnwrapNMatrix( right_v, right );
+
+    if (left->storage->shape[1] != right->storage->shape[0])
+      rb_raise(rb_eArgError, "incompatible dimensions");
+
+    if (left->stype != right->stype)
+      rb_raise(rb_eNotImpError, "matrices must have same stype");
+
+    return matrix_multiply(left, right);
+
+  } else rb_raise(rb_eTypeError, "expected right operand to be NMatrix, NVector, or single numeric value");
+
+  return Qnil;
+}
+
+/*
+ * Get the rank of an NMatrix (the number of dimensions).
+ *
+ * In other words, if you set your matrix to be 3x4, the rank is 2. If the
+ * matrix was initialized as 3x4x3, the rank is 3.
+ *
+ * This function may lie slightly for NVectors, which are internally stored as
+ * rank 2 (and have an orientation), but act as if they're rank 1.
+ */
+static VALUE nm_rank(VALUE self) {
+  return rubyobj_from_cval(&(NM_STORAGE(self)->rank), INT64).rval;
+}
+
+/*
+ * Get the shape (dimensions) of a matrix.
+ */
+static VALUE nm_shape(VALUE self) {
+  STORAGE* s   = NM_STORAGE(self);
+  size_t index;
+
+  // Copy elements into a VALUE array and then use those to create a Ruby array with rb_ary_new4.
+  VALUE* shape = ALLOCA_N(VALUE, s->rank);
+  for (index = 0; index < s->rank; ++index)
+    shape[index] = rubyobj_from_cval( s->shape + sizeof(size_t)*index, SIZE_T ).rval;
+  //SetFuncs[NM_ROBJ][NM_SIZE_T]( s->rank, shape, sizeof(VALUE), s->shape, sizeof(size_t));
+
+  return rb_ary_new4(s->rank, shape);
+}
+
+/*
+ * Get the storage type (stype) of a matrix, e.g., :yale, :dense, or :list.
+ */
+static VALUE nm_stype(VALUE self) {
+  ID stype = rb_intern(STYPE_NAMES[NM_STYPE(self)]);
+  return ID2SYM(stype);
+}
+
+/*
+ * Is this matrix symmetric?
+ */
+static VALUE nm_symmetric(VALUE self) {
+  return is_symmetric(self, false);
+}
 
 /*
  * Get a slice of an NMatrix.
@@ -703,19 +856,38 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
   return result;
 }
 
+//////////////////////
+// Helper Functions //
+//////////////////////
 
+/*
+ * Check to determine whether matrix is a reference to another matrix.
+ */
+bool is_ref(const NMATRIX* matrix) {
+  // FIXME: Needs to work for other types
+  if (matrix->stype != DENSE_STORE) {
+    return false;
+  }
+  
+  return ((DENSE_STORAGE*)(matrix->storage))->src == matrix->storage;
+}
 
-// Helper function for nm_symmetric and nm_hermitian.
+/*
+ * Helper function for nm_symmetric and nm_hermitian.
+ */
 static VALUE is_symmetric(VALUE self, bool hermitian) {
   NMATRIX* m;
   UnwrapNMatrix(self, m);
 
-  if (m->storage->shape[0] == m->storage->shape[1] && m->storage->rank == 2) {
-
-    if (NM_STYPE(self) == DENSE_STORE) {
-      if (!hermitian) {
-        if (dense_storage_is_symmetric((DENSE_STORAGE*)(m->storage), m->storage->shape[0])) return Qtrue;
-      } else if (dense_storage_is_hermitian((DENSE_STORAGE*)(m->storage), m->storage->shape[0])) return Qtrue;
+  if (m->storage->shape[0] == m->storage->shape[1] and m->storage->rank == 2) {
+		if (NM_STYPE(self) == DENSE_STORE) {
+      if (hermitian) {
+        dense_storage_is_hermitian((DENSE_STORAGE*)(m->storage), m->storage->shape[0]);
+        
+      } else {
+      	dense_storage_is_symmetric((DENSE_STORAGE*)(m->storage), m->storage->shape[0]);
+      }
+      
     } else {
       // TODO: Implement, at the very least, yale_is_symmetric. Model it after yale/transp.template.c.
       rb_raise(rb_eNotImpError, "symmetric? and hermitian? only implemented for dense currently");
@@ -727,214 +899,9 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
 }
 
 
-/*
- * Equality operator. Returns a single true or false value indicating whether the matrices are equivalent.
- *
- * For elementwise, use == instead.
- *
- * This method will raise an exception if dimensions do not match.
- */
-static VALUE nm_eqeq(VALUE left, VALUE right) {
-  NMATRIX *l, *r;
-
-  CheckNMatrixType(left);
-  CheckNMatrixType(right);
-
-  UnwrapNMatrix(left, l);
-  UnwrapNMatrix(right, r);
-
-  if (l->stype != r->stype)
-    rb_raise(rb_eNotImpError, "comparison between different matrix stypes not yet implemented");
-
-  bool result = false;
-
-  switch(l->stype) {
-  case DENSE_STORE:
-    result = dense_storage_eqeq(l->storage, r->storage);
-    break;
-  case LIST_STORE:
-    result = list_storage_eqeq(l->storage, r->storage);
-    break;
-  case YALE_STORE:
-    result = yale_storage_eqeq(l->storage, r->storage);
-    break;
-  }
-
-  return result ? Qtrue : Qfalse;
-}
-
-
-
-/*
- * Is this matrix symmetric?
- */
-static VALUE nm_symmetric(VALUE self) {
-  return is_symmetric(self, false);
-}
-
-/*
- * Is this matrix hermitian?
- *
- * Definition: http://en.wikipedia.org/wiki/Hermitian_matrix
- *
- * For non-complex matrices, this function should return the same result as symmetric?.
- */
-static VALUE nm_hermitian(VALUE self) {
-  return is_symmetric(self, true);
-}
-
-
-/*
- * Matrix multiply (dot product): against another matrix or a vector.
- *
- * For elementwise, use * instead.
- *
- * The two matrices must be of the same stype (for now). If dtype differs, an upcast will occur.
- */
-static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
-  NMATRIX *left, *right;
-
-  // left has to be of type NMatrix.
-  CheckNMatrixType(left_v);
-
-  UnwrapNMatrix( left_v, left );
-
-  if (RUBYVAL_IS_NUMERIC(right_v))
-    return matrix_multiply_scalar(left, right_v);
-
-  else if (TYPE(right_v) == T_ARRAY)
-    rb_raise(rb_eNotImpError, "for matrix-vector multiplication, please use an NVector instead of an Array for now");
-
-  //if (RDATA(right_v)->dfree != (RUBY_DATA_FUNC)nm_delete) {
-  else if (TYPE(right_v) == T_DATA && RDATA(right_v)->dfree == (RUBY_DATA_FUNC)nm_delete) { // both are matrices
-    UnwrapNMatrix( right_v, right );
-
-    if (left->storage->shape[1] != right->storage->shape[0])
-      rb_raise(rb_eArgError, "incompatible dimensions");
-
-    if (left->stype != right->stype)
-      rb_raise(rb_eNotImpError, "matrices must have same stype");
-
-    return matrix_multiply(left, right);
-
-  } else rb_raise(rb_eTypeError, "expected right operand to be NMatrix, NVector, or single numeric value");
-
-  return Qnil;
-}
-
-
-// Borrowed this function from NArray. Handles 'each' iteration on a dense matrix.
-//
-// Additionally, handles separately matrices containing VALUEs and matrices containing
-// other types of data.
-static VALUE nm_dense_each(VALUE nmatrix) {
-  DENSE_STORAGE* s = (DENSE_STORAGE*)(NM_STORAGE(nmatrix));
-  VALUE v;
-  size_t i;
-
-  //void (*copy)();
-
-  if (NM_DTYPE(nmatrix) == RUBYOBJ) {
-
-    // matrix of Ruby objects -- yield those objects directly
-    for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i)
-      rb_yield( *((VALUE*)((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)])) );
-
-  } else {
-    // We're going to copy the matrix element into a Ruby VALUE and then operate on it. This way user can't accidentally
-    // modify it and cause a seg fault.
-    //copy = SetFuncs[NM_ROBJ][NM_DTYPE(nmatrix)];
-
-    for (i = 0; i < storage_count_max_elements(s->rank, s->shape); ++i) {
-      v = rubyobj_from_cval((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)], NM_DTYPE(nmatrix)).rval;
-      // (*copy)(1, &v, 0, (char*)(s->elements) + i*nm_sizeof[NM_DTYPE(nmatrix)], 0);
-      rb_yield(v); // yield to the copy we made
-    }
-  }
-
-  return nmatrix;
-}
-
-
-/*
- * Iterate over the matrix as you would an Enumerable (e.g., Array).
- *
- * Currently only works for dense.
- */
-static VALUE nm_each(VALUE nmatrix) {
-  volatile VALUE nm = nmatrix; // not sure why we do this, but it gets done in ruby's array.c.
-
-  switch(NM_STYPE(nm)) {
-  case DENSE_STORE:
-    return nm_dense_each(nm);
-  default:
-    rb_raise(rb_eNotImpError, "only dense matrix's each method works right now");
-  }
-}
-
-
-/*
- * Check to determine whether matrix is a reference to another matrix.
- */
-static VALUE nm_is_ref(VALUE self) {
-  if (NM_STYPE(self) == DENSE_STORE) // refs only allowed for dense matrices.
-    return (NM_DENSE_SRC(self) == NM_STORAGE(self)) ? Qfalse : Qtrue;
-
-  return Qfalse;
-}
-
-
-/*
- * Check to determine whether matrix is a reference to another matrix.
- */
-bool is_ref(const NMATRIX* matrix) {
-  if (matrix->stype != DENSE_STORE) // FIXME: Needs to work for other types
-    return false;
-  return ((DENSE_STORAGE*)(matrix->storage))->src == matrix->storage;
-}
-
-
 ///////////////////////
 // Utility Functions //
 ///////////////////////
-
-/*
- * Documentation goes here.
- */
-static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
-  size_t r;
-  VALUE beg, end;
-  int i;
-
-  SLICE* slice = ALLOC(SLICE);
-  slice->coords = ALLOC_N(size_t,rank);
-  slice->lengths = ALLOC_N(size_t, rank);
-  slice->is_one_el = 1;
-
-  for (r = 0; r < rank; ++r) {
-
-    if (FIXNUM_P(c[r])) { // this used CLASS_OF before, which is inefficient for fixnum
-
-      slice->coords[r] = FIX2UINT(c[r]);
-      slice->lengths[r] = 1;
-
-    } else if (CLASS_OF(c[r]) == rb_cRange) {
-        rb_range_values(c[r], &beg, &end, &i);
-        slice->coords[r] = FIX2UINT(beg);
-        slice->lengths[r] = FIX2UINT(end) - slice->coords[r] + 1;
-        slice->is_one_el = 0;
-
-    } else {
-      rb_raise(rb_eArgError, "cannot slice using class %s, needs a number or range or something", rb_obj_classname(c[r]));
-    }
-
-    if (slice->coords[r] + slice->lengths[r] > NM_SHAPE(self,r))
-      rb_raise(rb_eArgError, "out of range");
-  }
-
-  return slice;
-}
-
 
 /*
  * Converts a string to a data type.
@@ -965,23 +932,6 @@ static dtype_t dtype_from_rbsymbol(VALUE sym) {
   
   rb_raise(rb_eArgError, "Invalid data type specified.");
 }
-
-
-/*
- * Converts a symbol to an index type.
- */
-static itype_t itype_from_rbsymbol(VALUE sym) {
-  size_t index;
-
-  for (index = 0; index < NUM_ITYPES; ++index) {
-    if (SYM2ID(sym) == rb_intern(ITYPE_NAMES[index])) {
-    	return static_cast<itype_t>(index);
-    }
-  }
-
-  rb_raise(rb_eArgError, "Invalid index type specified.");
-}
-
 
 /*
  * Guess the data type given a value.
@@ -1059,6 +1009,43 @@ static dtype_t dtype_guess(VALUE v) {
   default:
     rb_raise(rb_eArgError, "Unable to guess a data type from provided parameters; data type must be specified manually.");
   }
+}
+
+/*
+ * Documentation goes here.
+ */
+static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
+  size_t r;
+  VALUE beg, end;
+  int i;
+
+  SLICE* slice = ALLOC(SLICE);
+  slice->coords = ALLOC_N(size_t,rank);
+  slice->lengths = ALLOC_N(size_t, rank);
+  slice->is_one_el = 1;
+
+  for (r = 0; r < rank; ++r) {
+
+    if (FIXNUM_P(c[r])) { // this used CLASS_OF before, which is inefficient for fixnum
+
+      slice->coords[r] = FIX2UINT(c[r]);
+      slice->lengths[r] = 1;
+
+    } else if (CLASS_OF(c[r]) == rb_cRange) {
+        rb_range_values(c[r], &beg, &end, &i);
+        slice->coords[r] = FIX2UINT(beg);
+        slice->lengths[r] = FIX2UINT(end) - slice->coords[r] + 1;
+        slice->is_one_el = 0;
+
+    } else {
+      rb_raise(rb_eArgError, "cannot slice using class %s, needs a number or range or something", rb_obj_classname(c[r]));
+    }
+
+    if (slice->coords[r] + slice->lengths[r] > NM_SHAPE(self,r))
+      rb_raise(rb_eArgError, "out of range");
+  }
+
+  return slice;
 }
 
 #ifdef BENCHMARK
@@ -1180,6 +1167,21 @@ static stype_t interpret_stype(VALUE arg) {
   } else {
   	rb_raise(rb_eArgError, "Expected storage type");
   }
+}
+
+/*
+ * Converts a symbol to an index type.
+ */
+static itype_t itype_from_rbsymbol(VALUE sym) {
+  size_t index;
+
+  for (index = 0; index < NUM_ITYPES; ++index) {
+    if (SYM2ID(sym) == rb_intern(ITYPE_NAMES[index])) {
+    	return static_cast<itype_t>(index);
+    }
+  }
+
+  rb_raise(rb_eArgError, "Invalid index type specified.");
 }
 
 /*
