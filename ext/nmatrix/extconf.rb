@@ -92,15 +92,19 @@ end
 $DEBUG = true
 $CFLAGS = ["-Wall ",$CFLAGS].join(" ")
 
-srcs = %w(
-nmatrix
-list
-dense
-yale
-dfuncs
-rational
-csquare
-)
+$srcs = [
+	'nmatrix.cpp',
+	'ruby_constants.cpp',
+
+	'data/data.cpp',
+	'util/math.cpp',
+  'util/sl_list.cpp',
+  'util/util.cpp',
+	'storage/storage.cpp',
+	'storage/dense.cpp',
+  'storage/yale.cpp',
+  'storage/list.cpp'
+]
 # add smmp in to get generic transp; remove smmp2 to eliminate funcptr transp
 
 header = "stdint.h"
@@ -140,10 +144,10 @@ have_header("f2c.h")
 
 $libs += " -lcblas -latlas "
 
-$objs = srcs.collect{|i| i+".o" }
+$objs = %w{nmatrix ruby_constants data/data util/math util/sl_list util/util storage/storage storage/dense storage/yale storage/list}.map { |i| i + ".o" }
 
 $CFLAGS += " -O0"
-$CPPFLAGS += " -O0 -std=c++0x"
+$CPPFLAGS += " -O0 -std=c++0x " #-fmax-errors=10 -save-temps
 
 CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
 CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
@@ -151,3 +155,13 @@ CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
 create_conf_h("nmatrix_config.h")
 create_makefile("nmatrix")
 
+Dir.mkdir("data") unless Dir.exists?("data")
+Dir.mkdir("util") unless Dir.exists?("util")
+Dir.mkdir("storage") unless Dir.exists?("storage")
+
+# to clean up object files in subdirectories:
+open('Makefile', 'a') do |f|
+  f.write <<EOS
+CLEANOBJS := $(CLEANOBJS) data/*.#{CONFIG["OBJEXT"]} storage/*.#{CONFIG["OBJEXT"]} util/*.#{CONFIG["OBJEXT"]}
+EOS
+end

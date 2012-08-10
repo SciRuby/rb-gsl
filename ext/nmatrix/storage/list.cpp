@@ -59,8 +59,6 @@ extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, cons
  * Forward Declarations
  */
 
-static bool list_storage_cast_copy_contents_dense(LIST* lhs, const char* rhs, void* zero, int8_t l_dtype, int8_t r_dtype, size_t* pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions);
-
 /*
  * Functions
  */
@@ -95,16 +93,14 @@ LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, voi
 /*
  * Documentation goes here.
  */
-void list_storage_delete(LIST_STORAGE* s) {
+void list_storage_delete(STORAGE* s) {
   if (s) {
-    //fprintf(stderr, "* Deleting list storage rows at %p\n", s->rows);
-    list_delete( s->rows, s->rank - 1 );
+    LIST_STORAGE* storage = reinterpret_cast<LIST_STORAGE*>(s);
 
-    //fprintf(stderr, "  Deleting list storage shape at %p\n", s->shape);
-    free(s->shape);
-    //fprintf(stderr, "  Deleting list storage default_val at %p\n", s->default_val);
-    free(s->default_val);
-    //fprintf(stderr, "  Deleting list storage at %p\n", s);
+    list_delete( storage->rows, storage->rank - 1 );
+
+    free(storage->shape);
+    free(storage->default_val);
     free(s);
   }
 }
@@ -112,7 +108,8 @@ void list_storage_delete(LIST_STORAGE* s) {
 /*
  * Documentation goes here.
  */
-void list_storage_mark(LIST_STORAGE* storage) {
+void list_storage_mark(void* storage_base) {
+  LIST_STORAGE* storage = reinterpret_cast<LIST_STORAGE*>(storage_base);
 
   if (storage && storage->dtype == RUBYOBJ) {
     rb_gc_mark(*((VALUE*)(storage->default_val)));
@@ -128,7 +125,8 @@ void list_storage_mark(LIST_STORAGE* storage) {
 /*
  * Documentation goes here.
  */
-void* list_storage_get(LIST_STORAGE* s, SLICE* slice) {
+void* list_storage_get(STORAGE* storage, SLICE* slice) {
+  //LIST_STORAGE* s = (LIST_STORAGE*)storage;
   rb_raise(rb_eNotImpError, "This type of slicing not supported yet");
 }
 
@@ -137,15 +135,15 @@ void* list_storage_get(LIST_STORAGE* s, SLICE* slice) {
  * Get the contents of some set of coordinates. Note: Does not make a copy!
  * Don't free!
  */
-void* list_storage_ref(LIST_STORAGE* s, SLICE* slice) {
-  //LIST_STORAGE* s = (LIST_STORAGE*)(t);
+void* list_storage_ref(STORAGE* storage, SLICE* slice) {
+  LIST_STORAGE* s = (LIST_STORAGE*)(storage);
   size_t r;
   NODE*  n;
   LIST*  l = s->rows;
 
   for (r = s->rank; r > 1; --r) {
     n = list_find(l, slice->coords[s->rank - r]);
-    if (n)  l = n->val;
+    if (n)  l = reinterpret_cast<LIST*>(n->val);
     else return s->default_val;
   }
 
@@ -159,7 +157,8 @@ void* list_storage_ref(LIST_STORAGE* s, SLICE* slice) {
  *
  * TODO: Allow this function to accept an entire row and not just one value -- for slicing
  */
-void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val) {
+void* list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
+  LIST_STORAGE* s = (LIST_STORAGE*)storage;
   // Pretend ranks = 2
   // Then coords is going to be size 2
   // So we need to find out if some key already exists
@@ -170,7 +169,7 @@ void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val) {
   // drill down into the structure
   for (r = s->rank; r > 1; --r) {
     n = list_insert(l, false, slice->coords[s->rank - r], list_create());
-    l = n->val;
+    l = reinterpret_cast<LIST*>(n->val);
   }
 
   n = list_insert(l, true, slice->coords[s->rank - r], val);
@@ -182,7 +181,8 @@ void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val) {
  *
  * TODO: Speed up removal.
  */
-void* list_storage_remove(LIST_STORAGE* s, SLICE* slice) {
+void* list_storage_remove(STORAGE* storage, SLICE* slice) {
+  LIST_STORAGE* s = (LIST_STORAGE*)storage;
   int r;
   NODE  *n = NULL;
   LIST*  l = s->rows;
@@ -203,7 +203,7 @@ void* list_storage_remove(LIST_STORAGE* s, SLICE* slice) {
     } else {
     	// found
       stack[s->rank - r]    = n;
-      l                     = n->val;
+      l                     = reinterpret_cast<LIST*>(n->val);
     }
   }
 
@@ -214,13 +214,10 @@ void* list_storage_remove(LIST_STORAGE* s, SLICE* slice) {
     for (r = (int)(s->rank) - 2; r >= 0; --r) {
     	// walk back down the stack
       
-      if (((LIST*)(stack[r]->val))->first == NULL) {
-        free(list_remove(stack[r]->val, slice->coords[r]));
-        
-      } else {
-      	// no need to continue unless we just deleted one.
-        break;
-      }
+      if (((LIST*)(stack[r]->val))->first == NULL)
+        free(list_remove(reinterpret_cast<LIST*>(stack[r]->val), slice->coords[r]));
+      else break; // no need to continue unless we just deleted one.
+
     }
   }
 
@@ -231,59 +228,64 @@ void* list_storage_remove(LIST_STORAGE* s, SLICE* slice) {
 // Tests //
 ///////////
 
+
 /*
  * Do these two dense matrices of the same dtype have exactly the same
  * contents?
- *
- * FIXME: Add templating.
  */
-bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
+template <typename LDType, typename RDType>
+bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* right) {
 
   // in certain cases, we need to keep track of the number of elements checked.
   size_t num_checked  = 0,
-         max_elements = storage_count_max_elements(left);
-  
-  bool (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[left->dtype][0];
+
+	max_elements = storage_count_max_elements(left);
 
   if (!left->rows->first) {
-    // fprintf(stderr, "!left->rows true\n");
     // Easy: both lists empty -- just compare default values
     if (!right->rows->first) {
-    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
+    	return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     	
-    } else if (!list_eqeq_value(right->rows, left->default_val, left->dtype, left->rank-1, &num_checked)) {
+    } else if (!list_eqeq_value_template<LDType,RDType>(right->rows, left->default_val, left->rank-1, &num_checked)) {
     	// Left empty, right not empty. Do all values in right == left->default_val?
     	return false;
     	
     } else if (num_checked < max_elements) {
     	// If the matrix isn't full, we also need to compare default values.
-    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
+    	return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     }
 
   } else if (!right->rows->first) {
     // fprintf(stderr, "!right->rows true\n");
     // Right empty, left not empty. Do all values in left == right->default_val?
-    if (!list_eqeq_value(left->rows, right->default_val, left->dtype, left->rank-1, &num_checked)) {
+    if (!list_eqeq_value_template<LDType,RDType>(left->rows, right->default_val, left->rank-1, &num_checked)) {
     	return false;
     	
     } else if (num_checked < max_elements) {
    		// If the matrix isn't full, we also need to compare default values.
-    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
+    	return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     }
 
   } else {
     // fprintf(stderr, "both matrices have entries\n");
     // Hardest case. Compare lists node by node. Let's make it simpler by requiring that both have the same default value
-    if (!list_eqeq_list(left->rows, right->rows, left->default_val, right->default_val, left->dtype, left->rank-1, &num_checked)) {
+    if (!list_eqeq_list_template<LDType,RDType>(left->rows, right->rows, left->default_val, right->default_val, left->rank-1, &num_checked)) {
     	return false;
     	
     } else if (num_checked < max_elements) {
-    	return eqeq(left->default_val, right->default_val, 1, DTYPE_SIZES[left->dtype]);
+      return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     }
   }
 
   return true;
 }
+
+bool list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
+	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, list_storage_eqeq_template, bool, const LIST_STORAGE* left, const LIST_STORAGE* right);
+
+	return ttable[left->dtype][right->dtype]((const LIST_STORAGE*)left, (const LIST_STORAGE*)right);
+}
+
 
 /////////////
 // Utility //
@@ -298,7 +300,7 @@ size_t list_storage_count_elements_r(const LIST* l, size_t recursions) {
   
   if (recursions) {
     while (curr) {
-      count += list_storage_count_elements_r(curr->val, recursions - 1);
+      count += list_storage_count_elements_r(reinterpret_cast<const LIST*>(curr->val), recursions - 1);
       curr   = curr->next;
     }
     
@@ -315,7 +317,7 @@ size_t list_storage_count_elements_r(const LIST* l, size_t recursions) {
 /*
  * Count non-diagonal non-zero elements.
  */
-size_t count_list_storage_nd_elements(const LIST_STORAGE* s) {
+size_t list_storage_count_nd_elements(const LIST_STORAGE* s) {
   NODE *i_curr, *j_curr;
   size_t count = 0;
   
@@ -365,46 +367,45 @@ LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
   return lhs;
 }
 
-/*
- * Documentation goes here.
- *
- * FIXME: Template this.
- */
-LIST_STORAGE* list_storage_cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
-  LIST_STORAGE* lhs;
-  size_t* shape;
-  void* default_val = ALLOC_N(char, DTYPE_SIZES[rhs->dtype]);
 
-  //fprintf(stderr, "copy_list_storage\n");
+/*
+ * List storage copy constructor for changing dtypes.
+ */
+template <typename LDType, typename RDType>
+LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t new_dtype) {
 
   // allocate and copy shape
-  shape = ALLOC_N(size_t, rhs->rank);
+  size_t* shape = ALLOC_N(size_t, rhs->rank);
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
 
   // copy default value
-  if (new_dtype == rhs->dtype) {
-  	memcpy(default_val, rhs->default_val, DTYPE_SIZES[rhs->dtype]);
-  	
-  } else {
-  	//SetFuncs[new_dtype][rhs->dtype](1, default_val, 0, rhs->default_val, 0);
-  }
+  LDType* default_val = ALLOC_N(LDType, 1);
+  *default_val = *reinterpret_cast<RDType*>(rhs->default_val);
 
-  lhs = list_storage_create(new_dtype, shape, rhs->rank, default_val);
-
-  lhs->rows = list_create();
-  list_cast_copy_contents(lhs->rows, rhs->rows, new_dtype, rhs->dtype, rhs->rank - 1);
+  LIST_STORAGE* lhs = list_storage_create(new_dtype, shape, rhs->rank, default_val);
+  lhs->rows         = list_create();
+  list_cast_copy_contents_template<LDType, RDType>(lhs->rows, rhs->rows, rhs->rank - 1);
 
   return lhs;
 }
 
 
+/*
+ * List storage copy constructor C access.
+ */
+STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
+  NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, list_storage_cast_copy_template, LIST_STORAGE*, const LIST_STORAGE* rhs, dtype_t new_dtype);
+
+  return (STORAGE*)ttable[new_dtype][rhs->dtype]((LIST_STORAGE*)rhs, new_dtype);
+}
+
+
 /* Copy dense into lists recursively
  *
- * TODO: This works, but could probably be cleaner (do we really need to pass
- * 	coords around?)
+ * FIXME: This works, but could probably be cleaner (do we really need to pass coords around?)
  */
 template <typename LDType, typename RDType>
-static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
+bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
   NODE *prev;
   LIST *sub_list;
   bool added = false, added_list = false;
@@ -451,3 +452,12 @@ static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDTy
   return added;
 }
 
+
+STORAGE* list_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
+  free(resulting_shape);
+  rb_raise(rb_eNotImpError, "multiplication not implemented for list-of-list matrices");
+  return NULL;
+  //DTYPE_TEMPLATE_TABLE(dense_storage_matrix_multiply_template, NMATRIX*, STORAGE_PAIR, size_t*, bool);
+
+  //return ttable[reinterpret_cast<DENSE_STORAGE*>(casted_storage.left)->dtype](casted_storage, resulting_shape, vector);
+}

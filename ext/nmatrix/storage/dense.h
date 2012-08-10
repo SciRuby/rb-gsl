@@ -38,7 +38,8 @@
  * Project Includes
  */
 
-#include "types.h"
+//#include "types.h"
+#include "util/math.h"
 
 #include "data/data.h"
 
@@ -53,12 +54,10 @@
  */
 
 struct DENSE_STORAGE : STORAGE {
-	size_t* stride;
-
-	// Dense storage specific elements.
-	int       count;
-	void*     src;
-	void*     elements;
+	size_t*	stride;
+	int			count;
+	void*		src;
+	void*		elements;
 };
 
 /*
@@ -75,37 +74,43 @@ struct DENSE_STORAGE : STORAGE {
 ///////////////
 
 DENSE_STORAGE*	dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
-void						dense_storage_delete(DENSE_STORAGE* s);
-void						dense_storage_delete_ref(DENSE_STORAGE* s);
-void						dense_storage_mark(DENSE_STORAGE* storage);
+void						dense_storage_delete(STORAGE* s);
+void						dense_storage_delete_ref(STORAGE* s);
+void						dense_storage_mark(void*);
 
 ///////////////
 // Accessors //
 ///////////////
 
-void*	dense_storage_get(DENSE_STORAGE* s, SLICE* slice);
-void*	dense_storage_ref(DENSE_STORAGE* s, SLICE* slice);
-void	dense_storage_set(DENSE_STORAGE* s, SLICE* slice, void* val);
+void*	dense_storage_get(STORAGE* s, SLICE* slice);
+void*	dense_storage_ref(STORAGE* s, SLICE* slice);
+void	dense_storage_set(STORAGE* s, SLICE* slice, void* val);
 
 ///////////
 // Tests //
 ///////////
 
-bool dense_storage_eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
+bool dense_storage_eqeq(const STORAGE* left, const STORAGE* right);
 bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda);
 bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda);
+
+//////////
+// Math //
+//////////
+
+STORAGE* dense_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
 
 /////////////
 // Utility //
 /////////////
 
-size_t dense_storage_pos(DENSE_STORAGE* s, size_t* coords);
+size_t dense_storage_pos(const DENSE_STORAGE* s, const size_t* coords);
 
 /////////////////////////
 // Copying and Casting //
 /////////////////////////
 
 DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs);
-DENSE_STORAGE* dense_storage_cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype);
+STORAGE* dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 
-#endif
+#endif // DENSE_H

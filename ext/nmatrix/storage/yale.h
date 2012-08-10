@@ -106,46 +106,60 @@ struct YALE_STORAGE : STORAGE {
 ///////////////
 
 YALE_STORAGE* yale_storage_create(dtype_t dtype, size_t* shape, size_t rank, size_t init_capacity);
-YALE_STORAGE* yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, char* ia, char* ja, char* a, dtype_t from_dtype, dtype_t from_itype);
+YALE_STORAGE* yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, dtype_t from_dtype);
 YALE_STORAGE*	yale_storage_create_merged(const YALE_STORAGE* merge_template, const YALE_STORAGE* other);
-void					yale_storage_delete(YALE_STORAGE* s);
+void          yale_storage_delete(STORAGE* s);
 void					yale_storage_init(YALE_STORAGE* s);
-void					yale_storage_mark(YALE_STORAGE* storage);
+void					yale_storage_mark(void*);
 
 ///////////////
 // Accessors //
 ///////////////
 
-void* yale_storage_get(YALE_STORAGE* s, SLICE* slice);
-void*	yale_storage_ref(YALE_STORAGE* s, SLICE* slice);
-char	yale_storage_set(YALE_STORAGE* s, SLICE* slice, void* v);
+void* yale_storage_get(STORAGE* s, SLICE* slice);
+void*	yale_storage_ref(STORAGE* s, SLICE* slice);
+char  yale_storage_set(STORAGE* storage, SLICE* slice, void* v);
 
 ///////////
 // Tests //
 ///////////
 
-bool yale_storage_eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right);
+bool yale_storage_eqeq(const STORAGE* left, const STORAGE* right);
+
+//////////
+// Math //
+//////////
+
+STORAGE* yale_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
 
 /////////////
 // Utility //
 /////////////
 
-dtype_t	yale_storage_itype(YALE_STORAGE* s);
+inline itype_t  yale_storage_itype_by_shape(const size_t* shape);
+inline itype_t	yale_storage_itype(const YALE_STORAGE* s);
 void		yale_storage_print_vectors(YALE_STORAGE* s);
 
-int yale_storage_binary_search(YALE_STORAGE* s, y_size_t left, y_size_t right, y_size_t key);
+template <typename IType>
+int yale_storage_binary_search_template(YALE_STORAGE* s, IType left, IType right, IType key);
 
-char yale_storage_set_diagonal(YALE_STORAGE* s, y_size_t i, void* v);
+template <typename DType, typename IType>
+char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, IType current_size, IType pos, size_t* j, size_t n, bool struct_only);
 
-char yale_storage_vector_replace(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void* val, y_size_t n);
-char yale_storage_vector_insert_resize(YALE_STORAGE* s, y_size_t current_size, y_size_t pos, y_size_t* j, void* val, y_size_t n, bool struct_only);
-char yale_storage_vector_insert(YALE_STORAGE* s, y_size_t pos, y_size_t* j, void* val, y_size_t n, bool struct_only);
+template <typename DType, typename IType>
+char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, size_t* j, DType* val, size_t n, bool struct_only);
 
 /////////////////////////
 // Copying and Casting //
 /////////////////////////
 
-YALE_STORAGE* yale_storage_cast_copy(const YALE_STORAGE* rhs, dtype_t new_dtype);
+STORAGE* yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs);
 
-#endif
+template <typename IType>
+void						yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s);
+
+/*template <typename IType>
+void yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s);*/
+
+#endif // YALE_H

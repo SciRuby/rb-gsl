@@ -47,7 +47,8 @@
 /*
  * Types
  */
- 
+
+template <typename IntType> class Rational;
 template <typename Type> class Complex;
 
 typedef Complex<float32_t> Complex64;
@@ -77,6 +78,9 @@ class Complex {
 	 * Copy constructors.
 	 */
 	inline Complex(const Complex<Type>& other) : r(other.r), i(other.i) {}
+
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline Complex(const Rational<IntType>& other) : r(Type(other.n) / Type(other.d)), i(0) {}
 	
 	/*
 	 * Binary operator definitions for varous types.
@@ -146,7 +150,21 @@ class Complex {
 	inline operator Complex<OtherType> () {
 		return Complex<OtherType>((OtherType)this->r, (OtherType)this->i);
 	}
-	
+
+	/////////////////////////////////
+	// Complex-Rational Operations //
+	/////////////////////////////////
+
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline bool operator!=(const Rational<IntType>& other) const {
+	  return *this != Complex<Type>(other);
+	}
+
+  template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline bool operator==(const Rational<IntType>& other) const {
+	  return *this == Complex<Type>(other);
+	}
+
 	///////////////////////////////
 	// Complex-Native Operations //
 	///////////////////////////////
@@ -207,6 +225,23 @@ class Complex {
 	}
 };
 
+
+/////////////////////////////////
+// Rational-Complex Operations //
+/////////////////////////////////
+
+
+template <typename IntType, typename ComplexType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator==(const Rational<IntType>& left, const Complex<ComplexType>& right) {
+	return Complex<ComplexType>(left) == right;
+}
+
+template <typename IntType, typename ComplexType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator!=(const Rational<IntType>& left, const Complex<ComplexType>& right) {
+	return Complex<ComplexType>(left) != right;
+}
+
+
 ///////////////////////////////
 // Native-Complex Operations //
 ///////////////////////////////
@@ -261,4 +296,4 @@ inline bool operator>=(const NativeType left, const Complex<ComplexType>& right)
 	return Complex<ComplexType>(left) >= right;
 }
 
-#endif
+#endif // COMPLEX_H

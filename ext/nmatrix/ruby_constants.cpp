@@ -84,7 +84,7 @@ VALUE cNMatrix,
  * Functions
  */
 
-void ruby_symbols_init(void) {
+void ruby_constants_init(void) {
 
 	rbsym_real							= rb_intern("real");
 	rbsym_imag							= rb_intern("imag");

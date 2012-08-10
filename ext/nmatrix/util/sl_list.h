@@ -95,8 +95,11 @@ void* list_remove(LIST* list, size_t key);
 // Tests //
 ///////////
 
-bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, const void* right_val, dtype_t dtype, size_t recursions, size_t* checked);
-bool list_eqeq_value(const LIST* l, const void* v, dtype_t dtype, size_t recursions, size_t* checked);
+template <typename LDType, typename RDType>
+bool list_eqeq_list_template(const LIST* left, const LIST* right, const void* left_val, const void* right_val, size_t recursions, size_t* checked);
+
+template <typename LDType, typename RDType>
+bool list_eqeq_value_template(const LIST* l, const void* v, size_t recursions, size_t* checked);
 
 /////////////
 // Utility //
@@ -111,6 +114,8 @@ NODE* list_find_nearest_from(NODE* prev, size_t key);
 // Copying and Casting //
 /////////////////////////
 
-void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
+template <typename LDType, typename RDType>
+void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions);
+void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
 
-#endif
+#endif // SL_LIST_H

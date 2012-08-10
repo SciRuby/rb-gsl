@@ -44,7 +44,7 @@ $srcs = [
 	'ruby_constants.cpp',
 	
 	'data/data.cpp',
-	
+	'math.cpp',
 	'storage/storage.cpp',
 	'storage/dense.cpp'
 ]

@@ -74,4 +74,4 @@ typedef struct {
 
 size_t storage_count_max_elements(STORAGE* storage);
 
-#endif
+#endif // STORAGE_COMMON_H

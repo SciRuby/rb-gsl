@@ -93,6 +93,23 @@ const size_t ITYPE_SIZES[NUM_ITYPES] = {
 	sizeof(uint64_t),
 };
 
+const dtype_t Upcast[NUM_DTYPES][NUM_DTYPES] = {
+  { BYTE, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { INT8, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { INT16, INT16, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { INT32, INT32, INT32, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { INT64, INT64, INT64, INT64, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { FLOAT32, FLOAT32, FLOAT32, FLOAT32, FLOAT32, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, FLOAT64, FLOAT64, FLOAT64, RUBYOBJ},
+  { FLOAT64, FLOAT64, FLOAT64, FLOAT64, FLOAT64, FLOAT64, FLOAT64, COMPLEX128, COMPLEX128, FLOAT64, FLOAT64, FLOAT64, RUBYOBJ},
+  { COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX128, COMPLEX64, COMPLEX128, COMPLEX64, COMPLEX64, COMPLEX64, RUBYOBJ},
+  { COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, RUBYOBJ},
+  { RATIONAL32, RATIONAL32, RATIONAL32, RATIONAL32, RATIONAL32, FLOAT64, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { RATIONAL64, RATIONAL64, RATIONAL64, RATIONAL64, RATIONAL64, FLOAT64, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL64, RATIONAL64, RATIONAL128, RUBYOBJ},
+  { RATIONAL128, RATIONAL128, RATIONAL128, RATIONAL128, RATIONAL128, FLOAT64, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL128, RATIONAL128, RATIONAL128, RUBYOBJ},
+  { RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ}
+};
+
+
 /*
  * Forward Declarations
  */
@@ -168,44 +185,48 @@ void rubyval_to_cval(VALUE val, dtype_t dtype, void* loc) {
 RubyObject rubyobj_from_cval(void* val, dtype_t dtype) {
 	switch (dtype) {
 		case BYTE:
-			return RubyObject(static_cast<uint8_t>(*val));
+			return RubyObject(*reinterpret_cast<uint8_t*>(val));
 			
 		case INT8:
-			return RubyObject(static_cast<int8_t>(*val));
+			return RubyObject(*reinterpret_cast<int8_t*>(val));
 			
 		case INT16:
-			return RubyObject(static_cast<int16_t>(*val));
+			return RubyObject(*reinterpret_cast<int16_t*>(val));
 			
 		case INT32:
-			return RubyObject(static_cast<int32_t>(*val));
+			return RubyObject(*reinterpret_cast<int32_t*>(val));
 			
 		case INT64:
-			return RubyObject(static_cast<int64_t>(*val));
+			return RubyObject(*reinterpret_cast<int64_t*>(val));
 			
 		case FLOAT32:
-			return RubyObject(static_cast<float32_t>(*val));
+			return RubyObject(*reinterpret_cast<float32_t*>(val));
 			
 		case FLOAT64:
-			return RubyObject(static_cast<float64_t>(*val));
+			return RubyObject(*reinterpret_cast<float64_t*>(val));
 			
 		case COMPLEX64:
-			return RubyObject(static_cast<Complex64>(*val));
+			return RubyObject(*reinterpret_cast<Complex64*>(val));
 			
 		case COMPLEX128:
-			return RubyObject(static_cast<Complex128>(*val));
+			return RubyObject(*reinterpret_cast<Complex128*>(val));
 			
 		case RATIONAL32:
-			return RubyObject(static_cast<Rational32>(*val));
+			return RubyObject(*reinterpret_cast<Rational32*>(val));
 			
 		case RATIONAL64:
-			return RubyObject(static_cast<Rational64>(*val));
+			return RubyObject(*reinterpret_cast<Rational64*>(val));
 			
 		case RATIONAL128:
-			return RubyObject(static_cast<Rational128>(*val));
+			return RubyObject(*reinterpret_cast<Rational128*>(val));
 			
 		case RUBYOBJ:
 			rb_raise(rb_eTypeError, "Attempting a bad conversion from a Ruby value.");
+
+	  default:
+	    rb_raise(nm_eDataTypeError, "Conversion to RubyObject requested from unknown data type");
 	}
+	return Qnil;
 }
 
 

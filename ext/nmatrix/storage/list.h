@@ -75,23 +75,29 @@ struct LIST_STORAGE : STORAGE {
 ///////////////
 
 LIST_STORAGE*	list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val);
-void					list_storage_delete(LIST_STORAGE* s);
-void					list_storage_mark(LIST_STORAGE* storage);
+void					list_storage_delete(STORAGE* s);
+void					list_storage_mark(void*);
 
 ///////////////
 // Accessors //
 ///////////////
 
-void* list_storage_ref(LIST_STORAGE* s, SLICE* slice);
-void* list_storage_get(LIST_STORAGE* s, SLICE* slice);
-void* list_storage_insert(LIST_STORAGE* s, SLICE* slice, void* val);
-void* list_storage_remove(LIST_STORAGE* s, SLICE* slice);
+void* list_storage_ref(STORAGE* s, SLICE* slice);
+void* list_storage_get(STORAGE* s, SLICE* slice);
+void* list_storage_insert(STORAGE* s, SLICE* slice, void* val);
+void* list_storage_remove(STORAGE* s, SLICE* slice);
 
 ///////////
 // Tests //
 ///////////
 
-bool list_storage_eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right);
+bool list_storage_eqeq(const STORAGE* left, const STORAGE* right);
+
+//////////
+// Math //
+//////////
+
+STORAGE* list_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
 
 /////////////
 // Utility //
@@ -112,6 +118,9 @@ inline size_t list_storage_count_elements(const LIST_STORAGE* s) {
 /////////////////////////
 
 LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs);
-LIST_STORAGE* list_storage_cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype);
+STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 
-#endif
+template <typename LDType, typename RDType>
+bool list_storage_cast_copy_contents_dense_template(LIST*, const RDType*, RDType*, size_t&, size_t*, const size_t*, size_t, size_t);
+
+#endif // LIST_H

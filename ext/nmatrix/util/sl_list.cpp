@@ -39,7 +39,6 @@
  * Global Variables
  */
  
-extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, const int);
 
 /*
  * Forward Declarations
@@ -249,13 +248,9 @@ void* list_remove(LIST* list, size_t key) {
  *
  * FIXME: Add templating.
  */
-bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, const void* right_val, dtype_t dtype, size_t recursions, size_t* checked) {
+template <typename LDType, typename RDType>
+bool list_eqeq_list_template(const LIST* left, const LIST* right, const void* left_val, const void* right_val, size_t recursions, size_t* checked) {
   NODE *lnext = NULL, *lcurr = left->first, *rnext = NULL, *rcurr = right->first;
-	
-	// Select the appropriate equality tester.
-  bool (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[dtype][0];
-	
-  //fprintf(stderr, "list_eqeq_list: recursions=%d\n", recursions);
 
   if (lcurr) lnext = lcurr->next;
   if (rcurr) rnext = rcurr->next;
@@ -267,12 +262,10 @@ bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, c
     	
       if (recursions == 0) {
         ++(*checked);
-        
-        if (!eqeq(lcurr->val, rcurr->val, 1, DTYPE_SIZES[dtype])) {
-        	return false;
-        }
-        
-      } else if (!list_eqeq_list((LIST*)lcurr->val, (LIST*)rcurr->val, left_val, right_val, dtype, recursions - 1, checked)) {
+
+        if (*reinterpret_cast<LDType*>(lcurr->val) != *reinterpret_cast<RDType*>(rcurr->val)) return false;
+
+      } else if (!list_eqeq_list_template<LDType,RDType>((LIST*)lcurr->val, (LIST*)rcurr->val, left_val, right_val, recursions - 1, checked)) {
         return false;
       }
 
@@ -288,12 +281,10 @@ bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, c
       if (recursions == 0) {
         // compare left entry to right default value
         ++(*checked);
+
+        if (*reinterpret_cast<LDType*>(lcurr->val) != *reinterpret_cast<RDType*>(right_val)) return false;
         
-        if (!eqeq(lcurr->val, right_val, 1, DTYPE_SIZES[dtype])) {
-        	return false;
-        }
-        
-      } else if (!list_eqeq_value((LIST*)lcurr->val, right_val, dtype, recursions - 1, checked)) {
+      } else if (!list_eqeq_value_template<LDType,RDType>((LIST*)lcurr->val, right_val, recursions - 1, checked)) {
         return false;
       }
 
@@ -307,11 +298,10 @@ bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, c
       if (recursions == 0) {
         // compare right entry to left default value
         ++(*checked);
-        if (!eqeq(rcurr->val, left_val, 1, DTYPE_SIZES[dtype])) {
-        	return false;
-        }
+
+        if (*reinterpret_cast<RDType*>(rcurr->val) != *reinterpret_cast<LDType*>(left_val)) return false;
         
-      } else if (!list_eqeq_value((LIST*)rcurr->val, left_val, dtype, recursions - 1, checked)) {
+      } else if (!list_eqeq_value_template<RDType,LDType>((LIST*)rcurr->val, left_val, recursions - 1, checked)) {
         return false;
       }
 
@@ -328,15 +318,12 @@ bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, c
    */
   if (lcurr) {
   	// nothing left in right-hand list
-    if (!eqeq(lcurr->val, right_val, 1, DTYPE_SIZES[dtype])) {
-    	return false;
-    }
-    
+  	if (*reinterpret_cast<LDType*>(lcurr->val) != *reinterpret_cast<RDType*>(right_val)) return false;
+
   } else if (rcurr) {
   	// nothing left in left-hand list
-    if (!eqeq(rcurr->val, left_val, 1, DTYPE_SIZES[dtype])) {
-    	return false;
-    }
+  	if (*reinterpret_cast<RDType*>(rcurr->val) != *reinterpret_cast<LDType*>(left_val)) return false;
+
   }
 
   /*
@@ -352,22 +339,19 @@ bool list_eqeq_list(const LIST* left, const LIST* right, const void* left_val, c
  *
  * FIXME: Add templating.
  */
-bool list_eqeq_value(const LIST* l, const void* v, dtype_t dtype, size_t recursions, size_t* checked) {
+template <typename LDType, typename RDType>
+bool list_eqeq_value_template(const LIST* l, const void* v, size_t recursions, size_t* checked) {
   NODE *next, *curr = l->first;
-  
-  // Select the appropriate equality tester.
-  bool (*eqeq)(const void*, const void*, const int, const int) = ElemEqEq[dtype][0];
 
   while (curr) {
     next = curr->next;
 
     if (recursions == 0) {
       ++(*checked);
-      if (!eqeq(curr->val, v, 1, DTYPE_SIZES[dtype])) {
-      	return false;
-      }
-      
-    } else if (!list_eqeq_value((LIST*)curr->val, v, dtype, recursions - 1, checked)) {
+
+      if (*reinterpret_cast<LDType*>(curr->val) != *reinterpret_cast<RDType*>(v)) return false;
+
+    } else if (!list_eqeq_value_template<LDType,RDType>((LIST*)curr->val, v, recursions - 1, checked)) {
       return false;
     }
 
@@ -451,12 +435,12 @@ NODE* list_find_nearest_from(NODE* prev, size_t key) {
 // Copying and Casting //
 /////////////////////////
 
+
 /*
- * Documentation goes here.
- *
- * FIXME: Add templating.
+ * Copy the contents of a list.
  */
-void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
+template <typename LDType, typename RDType>
+void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) {
   NODE *lcurr, *rcurr;
 
   if (rhs->first) {
@@ -469,30 +453,26 @@ void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rh
 
       if (recursions == 0) {
       	// contents is some kind of value
-      	
-        lcurr->val = ALLOC_N(char, DTYPE_SIZES[lhs_dtype]);
-        //fprintf(stderr, "    create_val: %p\n", lcurr->val);
 
-        if (lhs_dtype == rhs_dtype) {
-        	memcpy(lcurr->val, rcurr->val, DTYPE_SIZES[lhs_dtype]);
-        	
-        } else {
-        	// FIXME: Replace this with templating.  Removed now to sort out this header nonsense.
-        	//SetFuncs[lhs_dtype][rhs_dtype](1, lcurr->val, 0, rcurr->val, 0);
-        }
+        lcurr->val = ALLOC( LDType );
+
+        *reinterpret_cast<LDType*>(lcurr->val) = *reinterpret_cast<RDType*>( rcurr->val );
 
       } else {
       	// contents is a list
-      	
-        lcurr->val = ALLOC( LIST );
-        //fprintf(stderr, "    create_list: %p\n", lcurr->val);
 
-        list_cast_copy_contents((LIST*)lcurr->val, (LIST*)rcurr->val, lhs_dtype, rhs_dtype, recursions-1);
+        lcurr->val = ALLOC( LIST );
+
+        list_cast_copy_contents_template<LDType, RDType>(
+          reinterpret_cast<LIST*>(lcurr->val),
+          reinterpret_cast<LIST*>(rcurr->val),
+          recursions-1
+        );
       }
-      
+
       if (rcurr->next) {
       	lcurr->next = ALLOC( NODE );
-      	
+
       } else {
       	lcurr->next = NULL;
       }
@@ -500,9 +480,20 @@ void list_cast_copy_contents(LIST* lhs, LIST* rhs, dtype_t lhs_dtype, dtype_t rh
       lcurr = lcurr->next;
       rcurr = rcurr->next;
     }
-    
+
   } else {
     lhs->first = NULL;
   }
 }
+
+/*
+ * C access for copying the contents of a list.
+ */
+void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
+  LR_DTYPE_TEMPLATE_TABLE(list_cast_copy_contents_template, void, LIST*, const LIST*, size_t);
+
+  ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
+}
+
+
 

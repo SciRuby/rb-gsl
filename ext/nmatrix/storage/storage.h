@@ -63,17 +63,6 @@
 
 
 /*
- * Defines a static array named stable that hold function pointers to
- * stype templated versions of the specified function.
- */
-//#define STYPE_TEMPLATE_TABLE(fun, ret, ...)         \
-//  static ret (*stable[NUM_STYPES])(__VA_ARGS__) = { \
-//    fun<DENSE_STORE>,                               \
-//    fun<LIST_STORE>,                                \
-//    fun<YALE_STORE>                                 \
-//  }
-
-/*
  * Types
  */
 
@@ -98,11 +87,11 @@ extern const void (*STYPE_MARK[NUM_STYPES])(void*)
 // Copying and Casting //
 /////////////////////////
 
-DENSE_STORAGE*	dense_storage_from_list(const LIST_STORAGE* rhs, dtype_t l_dtype);
-DENSE_STORAGE*	dense_storage_from_yale(const YALE_STORAGE* rhs, dtype_t l_dtype);
-LIST_STORAGE*		list_storage_from_dense(const DENSE_STORAGE* rhs, dtype_t l_dtype);
-LIST_STORAGE*		list_storage_from_yale(const YALE_STORAGE* rhs, dtype_t l_dtype);
-YALE_STORAGE*		yale_storage_from_list(const LIST_STORAGE* rhs, dtype_t l_dtype);
-YALE_STORAGE*		yale_storage_from_dense(const DENSE_STORAGE* rhs, dtype_t l_dtype);
+STORAGE*	dense_storage_from_list(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*	dense_storage_from_yale(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*		list_storage_from_dense(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*		list_storage_from_yale(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*		yale_storage_from_list(const STORAGE* rhs, dtype_t l_dtype);
+STORAGE*		yale_storage_from_dense(const STORAGE* rhs, dtype_t l_dtype);
 
-#endif
+#endif // STORAGE_H

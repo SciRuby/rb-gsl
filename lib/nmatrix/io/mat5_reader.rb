@@ -269,7 +269,22 @@ module NMatrix::IO
 				else
 					self.real_part.data.unpack(real_unpack_args)
 				end
-			end
+      end
+
+
+			# Unpacks and repacks index data into the appropriate format for NMatrix.
+			#
+			# If data is already in the appropriate format, does not unpack or repack, just returns directly.
+			def repacked_indices(to_itype)
+        return [row_index.data, column_index.data] if to_itype == :uint32 # No need to re-pack -- already correct
+
+        unpack_args = MatReader::MDTYPE_UNPACK_ARGS[:miINT32]
+        repack_args = MatReader::ITYPE_PACK_ARGS[to_itype]
+
+        [self.row_index.data.unpack(unpack_args).pack(repack_args),
+            self.column_index.data.unpack(unpack_args).pack(repack_args)]
+      end
+
 
 			# Create an NMatrix from a MATLAB .mat (v5) matrix.
 			#
@@ -286,6 +301,7 @@ module NMatrix::IO
 				# Hardest part is figuring out from_dtype, from_index_dtype, and dtype.
 				dtype			||= guess_dtype_from_mdtype
 				from_dtype	= MatReader::MDTYPE_TO_DTYPE[self.real_part.tag.data_type]
+        to_itype    = NMatrix.yale_itype_by_shape(dimensions)
 				
 				# Create the same kind of matrix that MATLAB saved.
 				case matlab_class
@@ -294,7 +310,7 @@ module NMatrix::IO
 					raise(NotImplementedError, "expected .mat column indices to be of type :miINT32") unless column_index.tag.data_type == :miINT32
 
 					# MATLAB always uses :miINT32 for indices according to the spec
-					NMatrix.new(:yale, dimensions, dtype, row_index.data, column_index.data, repacked_data(dtype), from_dtype, :int32)
+					NMatrix.new(:yale, dimensions, dtype, *repacked_indices(to_itype), repacked_data(dtype), from_dtype)
 					
 				else
 					# Call regular dense constructor.

@@ -50,6 +50,8 @@
 
 #include "data/data.h"
 
+#include "math.h"
+
 #include "storage/storage.h"
 
 /*
@@ -100,6 +102,8 @@
 
 #define NM_CHECK_ALLOC(x) if (!x) rb_raise(rb_eNoMemError, "insufficient memory");
 
+#define CheckNMatrixType(v)   if (TYPE(v) != T_DATA || (RDATA(v)->dfree != (RUBY_DATA_FUNC)nm_delete && RDATA(v)->dfree != (RUBY_DATA_FUNC)nm_delete_ref)) rb_raise(rb_eTypeError, "expected NMatrix on left-hand side of operation");
+
 #define NM_IsNMatrix(obj) \
   (rb_obj_is_kind_of(obj, cNMatrix) == Qtrue)
 
@@ -128,25 +132,25 @@ typedef struct NMATRIX {
 	STORAGE*	storage;
 } NMATRIX;
 
-// These have to come after enumerators
-typedef void     (*nm_setfunc_t[NUM_DTYPES][NUM_DTYPES])();								// copy functions
-typedef void     (*nm_incfunc_t[NUM_DTYPES])();														// increment functions
-typedef void*    (*nm_stype_slice_t[NUM_STYPES])(STORAGE*, SLICE*);				// get/ref
-typedef VALUE    (*nm_stype_ins_t[NUM_STYPES])(STORAGE*, SLICE*, VALUE);	// insert
-typedef STORAGE* (*nm_create_storage_t[NUM_STYPES])();
-typedef STORAGE* (*nm_cast_copy_storage_t[NUM_STYPES])();
-typedef STORAGE* (*nm_scast_copy_storage_t[NUM_STYPES][NUM_STYPES])();
-typedef NMATRIX* (*nm_matrix_multiply_op_t[NUM_STYPES])();
-typedef NMATRIX* (*nm_elementwise_binary_op_casted_t[NUM_STYPES])();
-typedef int      (*nm_d_elementwise_binary_op_t[NUM_DTYPES])();
-typedef int      (*nm_y_elementwise_binary_op_t[NUM_DTYPES][NM_INDEX_TYPES])();
-typedef bool     (*nm_compare_t[NUM_STYPES])();
-typedef void     (*nm_delete_t[NUM_STYPES])();
-typedef void     (*nm_mark_t[NUM_STYPES])(void*);
-typedef void     (*nm_gemm_t[NUM_DTYPES])();																																						// general matrix/matrix multiply
-typedef void     (*nm_det_t[NUM_DTYPES])(const int, const void*, const int, void*);																			// determinant
-typedef NMATRIX* (*nm_transpose_t[NUM_STYPES])();
-typedef void     (*nm_dense_transpose_t[NUM_DTYPES])();
+//// These have to come after enumerators
+//typedef void     (*nm_setfunc_t[NUM_DTYPES][NUM_DTYPES])();								// copy functions
+//typedef void     (*nm_incfunc_t[NUM_DTYPES])();														// increment functions
+//typedef void*    (*nm_stype_slice_t[NUM_STYPES])(STORAGE*, SLICE*);				// get/ref
+//typedef VALUE    (*nm_stype_ins_t[NUM_STYPES])(STORAGE*, SLICE*, VALUE);	// insert
+//typedef STORAGE* (*nm_create_storage_t[NUM_STYPES])();
+//typedef STORAGE* (*nm_cast_copy_storage_t[NUM_STYPES])();
+//typedef STORAGE* (*nm_scast_copy_storage_t[NUM_STYPES][NUM_STYPES])();
+//typedef NMATRIX* (*nm_matrix_multiply_op_t[NUM_STYPES])();
+//typedef NMATRIX* (*nm_elementwise_binary_op_casted_t[NUM_STYPES])();
+//typedef int      (*nm_d_elementwise_binary_op_t[NUM_DTYPES])();
+//typedef int      (*nm_y_elementwise_binary_op_t[NUM_DTYPES][NM_INDEX_TYPES])();
+//typedef bool     (*nm_compare_t[NUM_STYPES])();
+//typedef void     (*nm_delete_t[NUM_STYPES])();
+//typedef void     (*nm_mark_t[NUM_STYPES])(void*);
+//typedef void     (*nm_gemm_t[NUM_DTYPES])();																																						// general matrix/matrix multiply
+//typedef void     (*nm_det_t[NUM_DTYPES])(const int, const void*, const int, void*);																			// determinant
+//typedef NMATRIX* (*nm_transpose_t[NUM_STYPES])();
+//typedef void     (*nm_dense_transpose_t[NUM_DTYPES])();
 
 /*
  * Data
@@ -187,7 +191,7 @@ typedef void     (*nm_dense_transpose_t[NUM_DTYPES])();
  */
 
 // FIXME: Does this belong here?
-void transp(y_size_t n, y_size_t m, void* ia, void* ja, bool diaga, void* a, void* ib, void* jb, void* b, bool move, int8_t itype, dtype_t dtype);
+void transp(size_t n, size_t m, void* ia, void* ja, bool diaga, void* a, void* ib, void* jb, void* b, bool move, int8_t itype, dtype_t dtype);
 
 void cast_copy_value_single(void* to, const void* from, dtype_t l_dtype, dtype_t r_dtype);
 NMATRIX* nm_create(int8_t stype, void* storage);
@@ -200,4 +204,4 @@ extern "C" {
 	VALUE rb_nvector_dense_create(dtype_t dtype, void* elements, size_t length);
 }
 
-#endif
+#endif // NMATRIX_H
