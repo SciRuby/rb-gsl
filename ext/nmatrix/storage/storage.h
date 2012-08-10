@@ -77,7 +77,7 @@ typedef enum {
  */
 
 extern const char* const STYPE_NAMES[NUM_STYPES];
-extern const void (*STYPE_MARK[NUM_STYPES])(void*)
+extern void (* const STYPE_MARK[NUM_STYPES])(void*);
 
 /*
  * Functions

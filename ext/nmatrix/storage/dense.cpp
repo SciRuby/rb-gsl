@@ -437,6 +437,8 @@ DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_
 
 template <typename LDType, typename RDType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
+  size_t index;
+  
   /* FIXME: Very strange behavior! The GC calls the method directly with non-initialized data. */
   if (left->rank != right->rank) return false;
 

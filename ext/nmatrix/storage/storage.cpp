@@ -37,6 +37,8 @@
 
 #include "storage.h"
 
+#include "common.h"
+
 /*
  * Macros
  */
@@ -51,11 +53,11 @@ const char* const STYPE_NAMES[NUM_STYPES] = {
 	"yale"
 };
 
-const void (*STYPE_MARK[NUM_STYPES])(void*) = {
+void (* const STYPE_MARK[NUM_STYPES])(void*) = {
 	dense_storage_mark,
 	list_storage_mark,
 	yale_storage_mark
-}
+};
 
 /*
  * Forward Declarations
@@ -420,7 +422,7 @@ YALE_STORAGE* yale_storage_from_list_template(const LIST_STORAGE* rhs, dtype_t l
 
   if (rhs->rank != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
 
-  if ((rhs->dtype == RUBYOBJ && *reinterpret_cast<RubyObject*>(rhs->default_val) == INT2FIX(0))
+  if ((rhs->dtype == RUBYOBJ and (*reinterpret_cast<RubyObject*>(rhs->default_val)) == RubyObject(INT2FIX(0)))
       || strncmp(reinterpret_cast<const char*>(rhs->default_val), "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", DTYPE_SIZES[rhs->dtype]))
     rb_raise(nm_eStorageTypeError, "list matrix must have default value of 0 to convert to yale");
 

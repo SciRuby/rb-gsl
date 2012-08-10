@@ -50,6 +50,8 @@ struct STORAGE {
 	size_t	rank;
 	size_t*	shape;
 	size_t*	offset;
+	
+	virtual void empty(void) = 0;
 };
 
 // For binary operations involving matrices that need to be casted.
@@ -72,6 +74,6 @@ typedef struct {
  * Functions
  */
 
-size_t storage_count_max_elements(STORAGE* storage);
+size_t storage_count_max_elements(const STORAGE* storage);
 
 #endif // STORAGE_COMMON_H
