@@ -126,6 +126,10 @@ void* yale_storage_get(STORAGE* s, SLICE* slice);
 void*	yale_storage_ref(STORAGE* s, SLICE* slice);
 char  yale_storage_set(STORAGE* storage, SLICE* slice, void* v);
 
+#ifdef DEBUG_YALE
+inline size_t yale_storage_get_size(const YALE_STORAGE* storage);
+#endif
+
 ///////////
 // Tests //
 ///////////

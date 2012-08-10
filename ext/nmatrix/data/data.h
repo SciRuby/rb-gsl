@@ -312,5 +312,6 @@ extern const dtype_t      Upcast[NUM_DTYPES][NUM_DTYPES];
 void*				rubyobj_to_cval(VALUE val, dtype_t dtype);
 void				rubyval_to_cval(VALUE val, dtype_t dtype, void* loc);
 RubyObject	rubyobj_from_cval(void* val, dtype_t dtype);
+RubyObject  rubyobj_from_cval_by_itype(void* val, itype_t itype);
 
 #endif // DATA_H

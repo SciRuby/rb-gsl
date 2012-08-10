@@ -94,7 +94,10 @@ static YALE_STORAGE*	yale_storage_alloc(dtype_t dtype, size_t* shape, size_t ran
 
 template <typename IType>
 static inline size_t  yale_storage_get_size_template(const YALE_STORAGE* storage);
+
+#ifndef DEBUG_YALE
 static inline size_t  yale_storage_get_size(const YALE_STORAGE* storage);
+#endif
 
 /*
  * Functions
@@ -943,7 +946,10 @@ static inline size_t yale_storage_get_size_template(const YALE_STORAGE* storage)
 /*
  * Returns size of Yale storage as a size_t (no matter what the itype is).
  */
-static inline size_t yale_storage_get_size(const YALE_STORAGE* storage) {
+#ifndef DEBUG_YALE
+static
+#endif
+inline size_t yale_storage_get_size(const YALE_STORAGE* storage) {
   NAMED_ITYPE_TEMPLATE_TABLE(ttable, yale_storage_get_size_template, size_t, const YALE_STORAGE* storage);
 
   return ttable[storage->itype](storage);

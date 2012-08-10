@@ -221,7 +221,7 @@ RubyObject rubyobj_from_cval(void* val, dtype_t dtype) {
 			return RubyObject(*reinterpret_cast<Rational128*>(val));
 			
 		case RUBYOBJ:
-			rb_raise(rb_eTypeError, "Attempting a bad conversion from a Ruby value.");
+			return RubyObject(*reinterpret_cast<VALUE*>(val));
 
 	  default:
 	    rb_raise(nm_eDataTypeError, "Conversion to RubyObject requested from unknown data type");
@@ -229,6 +229,29 @@ RubyObject rubyobj_from_cval(void* val, dtype_t dtype) {
 	return Qnil;
 }
 
+
+/*
+ * Convert from itype instead of dtype
+ */
+RubyObject rubyobj_from_cval_by_itype(void* val, itype_t itype) {
+	switch (itype) {
+		case UINT8:
+			return RubyObject(*reinterpret_cast<uint8_t*>(val));
+
+		case UINT16:
+			return RubyObject((int16_t)(*reinterpret_cast<uint16_t*>(val)));
+
+		case UINT32:
+			return RubyObject((int32_t)(*reinterpret_cast<uint32_t*>(val)));
+
+		case UINT64:
+			return RubyObject((int64_t)(*reinterpret_cast<uint64_t*>(val)));
+
+	  default:
+	    rb_raise(nm_eDataTypeError, "Conversion to RubyObject requested from unknown data type");
+	}
+	return Qnil;
+}
 
 /*
  * Allocate and return a piece of data of the correct dtype, converted from a
