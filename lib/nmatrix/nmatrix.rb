@@ -42,20 +42,26 @@ class NMatrix
 
 	# TODO: Make this actually pretty.
 	def pretty_print(q = nil)
-		raise NotImplementedError, 'Can only print rank 2 matrices.' unless rank == 2
+		raise(NotImplementedError, 'Can only print rank 2 matrices.') unless rank == 2
 
     arr = []
 
 		(0...shape[0]).each do |i|
-			arr << (0...shape[1]).inject(Array.new) { |a, j| a << if o = self[i, j] then o else 'nil' end }
+			arr << (0...shape[1]).inject(Array.new) do |a, j|
+        if o = self[i, j]
+          a << o
+        else
+          a << 'nil'
+        end
+      end
     end
 
-    if q
+    if q.nil?
+      puts arr.join("  ")
+    else
       q.group(1, "", "\n") do
         q.seplist(arr, lambda { q.text "  " }, :each)  { |v| q.text v.to_s }
       end
-    else
-      puts arr.join("  ")
     end
 
 	end

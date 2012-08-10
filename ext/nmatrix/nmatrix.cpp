@@ -554,7 +554,7 @@ static VALUE nm_shape(VALUE self) {
   // Copy elements into a VALUE array and then use those to create a Ruby array with rb_ary_new4.
   VALUE* shape = ALLOCA_N(VALUE, s->rank);
   for (index = 0; index < s->rank; ++index)
-    shape[index] = rubyobj_from_cval( s->shape + sizeof(size_t)*index, SIZE_T ).rval;
+    shape[index] = rubyobj_from_cval( &(s->shape[index]), SIZE_T ).rval;
   //SetFuncs[NM_ROBJ][NM_SIZE_T]( s->rank, shape, sizeof(VALUE), s->shape, sizeof(size_t));
 
   return rb_ary_new4(s->rank, shape);
