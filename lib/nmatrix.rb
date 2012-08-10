@@ -29,13 +29,13 @@
 #############
 # Autoloads #
 #############
-def method_missing m
-  if m.to_s == 'NVector'
-    require 'nmatrix/nvector.rb'
-  else
-    super m
-  end
-end
+#def method_missing *args
+#  if args.first.to_s == 'NVector'
+#    require 'nmatrix/nvector.rb'
+#  else
+#    super m
+#  end
+#end
 
 ############
 # Requires #
@@ -58,3 +58,4 @@ end
 require 'nmatrix/monkeys'
 
 
+autoload :NVector, 'nmatrix/nvector'
