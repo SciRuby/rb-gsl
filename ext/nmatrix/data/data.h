@@ -51,21 +51,21 @@
 
 
 
-#define NAMED_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)					\
-	static ret (*(name)[NUM_DTYPES])(__VA_ARGS__) =	{	\
-		fun<uint8_t>,																		\
-		fun<int8_t>,																		\
-		fun<int16_t>,																		\
-		fun<int32_t>,																		\
-		fun<int64_t>,																		\
-		fun<float32_t>,																	\
-		fun<float64_t>,																	\
-		fun<Complex64>,																	\
-		fun<Complex128>,																\
-		fun<Rational32>,																\
-		fun<Rational64>,																\
-		fun<Rational128>,																\
-		fun<RubyObject>																	\
+#define NAMED_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...) \
+	static ret (*(name)[NUM_DTYPES])(__VA_ARGS__) =	{			\
+		fun<uint8_t>,																				\
+		fun<int8_t>,																				\
+		fun<int16_t>,																				\
+		fun<int32_t>,																				\
+		fun<int64_t>,																				\
+		fun<float32_t>,																			\
+		fun<float64_t>,																			\
+		fun<Complex64>,																			\
+		fun<Complex128>,																		\
+		fun<Rational32>,																		\
+		fun<Rational64>,																		\
+		fun<Rational128>,																		\
+		fun<RubyObject>																			\
 	};
 
 
@@ -74,24 +74,24 @@
  * dtype templated versions of the specified function.
  */
  /* Does not work. */
-#define DTYPE_TEMPLATE_TABLE(fun, ret, ...)					NAMED_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
+#define DTYPE_TEMPLATE_TABLE(fun, ret, ...) NAMED_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
-#define NAMED_ITYPE_TEMPLATE_TABLE(name, fun, ret, ...) \
-  static ret (*(name)[NUM_ITYPES])(__VA_ARGS__) = { \
-    fun<uint8_t>, \
-    fun<uint16_t>,  \
-    fun<uint32_t>,  \
-    fun<uint64_t>  \
+#define NAMED_ITYPE_TEMPLATE_TABLE(name, fun, ret, ...)	\
+  static ret (*(name)[NUM_ITYPES])(__VA_ARGS__) = {			\
+    fun<uint8_t>,																				\
+    fun<uint16_t>,																			\
+    fun<uint32_t>,																			\
+    fun<uint64_t>																				\
   };
 
 /* Does not work. */
 #define ITYPE_TEMPLATE_TABLE(fun, ret, ...)   NAMED_ITYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
-#define STYPE_MARK_TABLE(name) \
-  static void (*(name)[NUM_STYPES])(void*) = {  \
-    dense_storage_mark, \
-    list_storage_mark,  \
-    yale_storage_mark \
+#define STYPE_MARK_TABLE(name)									\
+  static void (*(name)[NUM_STYPES])(void*) = {	\
+    dense_storage_mark,													\
+    list_storage_mark,													\
+    yale_storage_mark														\
   };
 
 #define STYPE_CAST_COPY_TABLE(name)                                                   \
