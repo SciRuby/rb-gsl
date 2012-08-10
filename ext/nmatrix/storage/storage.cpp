@@ -258,7 +258,7 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
 
   RIType* rhs_ija  = reinterpret_cast<RIType*>(rhs->ija);
 
-  NODE *last_added, *last_row_added = NULL;
+  NODE *last_added = NULL, *last_row_added = NULL;
 
   // Walk through rows and columns as if RHS were a dense matrix
   for (RIType i = 0; i < rhs->shape[0]; ++i) {

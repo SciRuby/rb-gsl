@@ -111,43 +111,43 @@
  * the second index.  Not all left- and right-hand side combinations are valid,
  * and an invalid combination will result in a NULL pointer.
  */
-#define NAMED_LR_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)																																																														\
+#define NAMED_LR_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)																																																								\
 	static ret (*(name)[NUM_DTYPES][NUM_DTYPES])(__VA_ARGS__) = {																																																						\
 		{fun<uint8_t, uint8_t>, fun<uint8_t, int8_t>, fun<uint8_t, int16_t>, fun<uint8_t, int32_t>, fun<uint8_t, int64_t>, fun<uint8_t, float32_t>, fun<uint8_t, float64_t>,	\
-			fun<uint8_t, Complex64>, fun<uint8_t, Complex128>, fun<uint8_t, Rational32>, fun<uint8_t, Rational64>, fun<uint8_t, Rational128> },														\
+			fun<uint8_t, Complex64>, fun<uint8_t, Complex128>, fun<uint8_t, Rational32>, fun<uint8_t, Rational64>, fun<uint8_t, Rational128> },																	\
 																																																																																					\
 		{fun<int8_t, uint8_t>, fun<int8_t, int8_t>, fun<int8_t, int16_t>, fun<int8_t, int32_t>, fun<int8_t, int64_t>, fun<int8_t, float32_t>, fun<int8_t, float64_t>,					\
-			fun<int8_t, Complex64>, fun<int8_t, Complex128>, fun<int8_t, Rational32>, fun<int8_t, Rational64>, fun<int8_t, Rational128> },																	\
+			fun<int8_t, Complex64>, fun<int8_t, Complex128>, fun<int8_t, Rational32>, fun<int8_t, Rational64>, fun<int8_t, Rational128> },																			\
 																																																																																					\
 		{fun<int16_t, uint8_t>, fun<int16_t, int8_t>, fun<int16_t, int16_t>, fun<int16_t, int32_t>, fun<int16_t, int64_t>, fun<int16_t, float32_t>, fun<int16_t, float64_t>,	\
-			fun<int16_t, Complex64>, fun<int16_t, Complex128>, fun<int16_t, Rational32>, fun<int16_t, Rational64>, fun<int16_t, Rational128> },														\
+			fun<int16_t, Complex64>, fun<int16_t, Complex128>, fun<int16_t, Rational32>, fun<int16_t, Rational64>, fun<int16_t, Rational128> },																	\
 																																																																																					\
 		{fun<int32_t, uint8_t>, fun<int32_t, int8_t>, fun<int32_t, int16_t>, fun<int32_t, int32_t>, fun<int32_t, int64_t>, fun<int32_t, float32_t>, fun<int32_t, float64_t>,	\
-			fun<int32_t, Complex64>, fun<int32_t, Complex128>, fun<int32_t, Rational32>, fun<int32_t, Rational64>, fun<int32_t, Rational128> },														\
+			fun<int32_t, Complex64>, fun<int32_t, Complex128>, fun<int32_t, Rational32>, fun<int32_t, Rational64>, fun<int32_t, Rational128> },																	\
 																																																																																					\
 		{fun<int64_t, uint8_t>, fun<int64_t, int8_t>, fun<int64_t, int16_t>, fun<int64_t, int32_t>, fun<int64_t, int64_t>, fun<int64_t, float32_t>, fun<int64_t, float64_t>,	\
-			fun<int64_t, Complex64>, fun<int64_t, Complex128>, fun<int64_t, Rational32>, fun<int64_t, Rational64>, fun<int64_t, Rational128> },														\
+			fun<int64_t, Complex64>, fun<int64_t, Complex128>, fun<int64_t, Rational32>, fun<int64_t, Rational64>, fun<int64_t, Rational128> },																	\
 																																																																																					\
 		{fun<float32_t, uint8_t>, fun<float32_t, int8_t>, fun<float32_t, int16_t>, fun<float32_t, int32_t>, fun<float32_t, int64_t>,																					\
-			fun<float32_t, float32_t>, fun<float32_t, float64_t>, fun<float32_t, Complex64>, fun<float32_t, Complex128>,  NULL, NULL, NULL },															\
+			fun<float32_t, float32_t>, fun<float32_t, float64_t>, fun<float32_t, Complex64>, fun<float32_t, Complex128>,  NULL, NULL, NULL },																		\
 																																																																																					\
 		{fun<float64_t, uint8_t>, fun<float64_t, int8_t>, fun<float64_t, int16_t>, fun<float64_t, int32_t>, fun<float64_t, int64_t>,																					\
-			fun<float64_t, float32_t>, fun<float64_t, float64_t>, fun<float64_t, Complex64>, fun<float64_t, Complex128>, NULL, NULL, NULL },																\
+			fun<float64_t, float32_t>, fun<float64_t, float64_t>, fun<float64_t, Complex64>, fun<float64_t, Complex128>, NULL, NULL, NULL },																		\
 																																																																																					\
 		{fun<Complex64, uint8_t>, fun<Complex64, int8_t>, fun<Complex64, int16_t>, fun<Complex64, int32_t>, fun<Complex64, int64_t>,																					\
-			fun<Complex64, float32_t>, fun<Complex64, float64_t>, fun<Complex64, Complex64>, fun<Complex64, Complex128>, NULL, NULL, NULL },																\
+			fun<Complex64, float32_t>, fun<Complex64, float64_t>, fun<Complex64, Complex64>, fun<Complex64, Complex128>, NULL, NULL, NULL },																		\
 																																																																																					\
 		{fun<Complex128, uint8_t>, fun<Complex128, int8_t>, fun<Complex128, int16_t>, fun<Complex128, int32_t>, fun<Complex128, int64_t>,																			\
-			fun<Complex128, float32_t>, fun<Complex128, float64_t>, fun<Complex128, Complex64>, fun<Complex128, Complex128>, NULL, NULL, NULL },														\
+			fun<Complex128, float32_t>, fun<Complex128, float64_t>, fun<Complex128, Complex64>, fun<Complex128, Complex128>, NULL, NULL, NULL },																\
 																																																																																					\
 		{fun<Rational32, uint8_t>, fun<Rational32, int8_t>, fun<Rational32, int16_t>, fun<Rational32, int32_t>, fun<Rational32, int64_t>, NULL, NULL,													\
-			NULL, NULL, fun<Rational32, Rational32>, fun<Rational32, Rational64>, fun<Rational32, Rational128> },																													\
+			NULL, NULL, fun<Rational32, Rational32>, fun<Rational32, Rational64>, fun<Rational32, Rational128> },																																\
 																																																																																					\
 		{fun<Rational64, uint8_t>, fun<Rational64, int8_t>, fun<Rational64, int16_t>, fun<Rational64, int32_t>, fun<Rational64, int64_t>, NULL, NULL,													\
-			NULL, NULL, fun<Rational64, Rational32>, fun<Rational64, Rational64>, fun<Rational64, Rational128> },																													\
+			NULL, NULL, fun<Rational64, Rational32>, fun<Rational64, Rational64>, fun<Rational64, Rational128> },																																\
 																																																																																					\
 		{fun<Rational128, uint8_t>, fun<Rational128, int8_t>, fun<Rational128, int16_t>, fun<Rational128, int32_t>, fun<Rational128, int64_t>, NULL, NULL,										\
-			NULL, NULL, fun<Rational128, Rational32>, fun<Rational128, Rational64>, fun<Rational128, Rational128> },																												\
+			NULL, NULL, fun<Rational128, Rational32>, fun<Rational128, Rational64>, fun<Rational128, Rational128> },																														\
 																																																																																					\
 		{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, fun<RubyObject, RubyObject>}																																	\
 	};
@@ -202,8 +202,7 @@ static ret (*(name)[NUM_DTYPES][NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
 };
 
 /* Does not work. */
-#define LRI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
-
+#define LRI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...) NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
 #define NAMED_LI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)  \
 static ret (*(name)[NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
@@ -223,9 +222,7 @@ static ret (*(name)[NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
 };
 
 /* Does not work. */
-#define LI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...)    NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
-
-
+#define LI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...) NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
 /*
  * Types
