@@ -60,14 +60,32 @@
 
 #define RUBY_ZERO INT2FIX(0)
 
-#if SIZEOF_INT == 8
-	#define DEFAULT_DTYPE  NM_INT64
+
+#ifndef SIZEOF_INT
+ #error SIZEOF_INT undefined
 #else
+ #if SIZEOF_INT == 8
+	#define DEFAULT_DTYPE  INT64
+	#define SIZE_T         INT64
+ #else
 	#if SIZEOF_INT == 4
-		#define DEFAULT_DTYPE NM_INT32
+		#define DEFAULT_DTYPE INT32
+		#define SIZE_T        INT32
 	#else
-		#define DEFAULT_DTYPE NM_INT16
+	 #if SIZEOF_INT == 2
+		#define DEFAULT_DTYPE INT16
+		#define SIZE_T        INT16
+	 #else
+	  #error Unhandled SIZEOF_INT -- please #define SIZE_T and DEFAULT_DTYPE manually.
+	 #endif
 	#endif
+ #endif
+#endif
+
+// The definition above is partially overridden by the definition below when size_t is undefined.
+#ifndef HAVE_SIZE_T
+ typedef u_int64_t  size_t;
+ #define SIZE_T     INT64
 #endif
 
 #define NM_MAX_RANK 15
@@ -128,26 +146,6 @@ typedef struct NMATRIX {
 	STORAGE*	storage;
 } NMATRIX;
 
-//// These have to come after enumerators
-//typedef void     (*nm_setfunc_t[NUM_DTYPES][NUM_DTYPES])();								// copy functions
-//typedef void     (*nm_incfunc_t[NUM_DTYPES])();														// increment functions
-//typedef void*    (*nm_stype_slice_t[NUM_STYPES])(STORAGE*, SLICE*);				// get/ref
-//typedef VALUE    (*nm_stype_ins_t[NUM_STYPES])(STORAGE*, SLICE*, VALUE);	// insert
-//typedef STORAGE* (*nm_create_storage_t[NUM_STYPES])();
-//typedef STORAGE* (*nm_cast_copy_storage_t[NUM_STYPES])();
-//typedef STORAGE* (*nm_scast_copy_storage_t[NUM_STYPES][NUM_STYPES])();
-//typedef NMATRIX* (*nm_matrix_multiply_op_t[NUM_STYPES])();
-//typedef NMATRIX* (*nm_elementwise_binary_op_casted_t[NUM_STYPES])();
-//typedef int      (*nm_d_elementwise_binary_op_t[NUM_DTYPES])();
-//typedef int      (*nm_y_elementwise_binary_op_t[NUM_DTYPES][NM_INDEX_TYPES])();
-//typedef bool     (*nm_compare_t[NUM_STYPES])();
-//typedef void     (*nm_delete_t[NUM_STYPES])();
-//typedef void     (*nm_mark_t[NUM_STYPES])(void*);
-//typedef void     (*nm_gemm_t[NUM_DTYPES])();																																						// general matrix/matrix multiply
-//typedef void     (*nm_det_t[NUM_DTYPES])(const int, const void*, const int, void*);																			// determinant
-//typedef NMATRIX* (*nm_transpose_t[NUM_STYPES])();
-//typedef void     (*nm_dense_transpose_t[NUM_DTYPES])();
-
 /*
  * Data
  */
@@ -156,7 +154,6 @@ typedef struct NMATRIX {
 	extern VALUE cNMatrix;
 #endif
 
-// TODO: Make these automatic
 //extern uint8_t (*MathHomOps_b[5])(const uint8_t, const uint8_t);
 //extern int64_t (*MathHomOps_i64[5])(const int64_t, const int64_t);
 //extern int32_t (*MathHomOps_i32[5])(const int32_t, const int32_t);
@@ -174,7 +171,6 @@ typedef struct NMATRIX {
 //extern void (*Transp[15][7])(const unsigned int, const unsigned int, const void *, const void *, const void *, const bool, void *, void *, void *, const bool);
 //extern void (*DetExact[15])(const int, const void *, const int, void *);
 
-//TODO: Auto-generate this
 //extern int (*EwDenseHom[15])(const void *, const void *, void *, const int, enum MathHomOps);
 //extern int (*EwDenseBool[15])(const void *, const void *, void *, const int, const enum MathBoolOps);
 //extern int (*EwDenseBit[15])(const void *, const void *, void *, const int, const enum MathBitOps);
