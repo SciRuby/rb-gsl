@@ -35,6 +35,7 @@
 /*
  * Project Includes
  */
+#include "data/data.h"
 
 /*
  * Macros
@@ -45,7 +46,7 @@
  */
 
 struct STORAGE {
-	// Common elements found in all storage types.  Must not be re-arranged.
+	// Common elements found in all storage types. Should not be re-arranged.
 	dtype_t	dtype;
 	size_t	rank;
 	size_t*	shape;

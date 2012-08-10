@@ -302,7 +302,7 @@ void yale_storage_delete(STORAGE* s) {
 /*
  * Empty the matrix.
  */
-template <typename IType>
+template <typename DType, typename IType>
 void yale_storage_init_template(YALE_STORAGE* s) {
   IType IA_INIT = s->shape[0] + 1;
 
@@ -312,13 +312,13 @@ void yale_storage_init_template(YALE_STORAGE* s) {
     ija[i] = IA_INIT; // set initial values for IJA
   }
 
-  yale_storage_clear_diagonal_and_zero_template<IType>(s);
+  yale_storage_clear_diagonal_and_zero_template<DType>(s);
 }
 
 void yale_storage_init(YALE_STORAGE* s) {
-  NAMED_ITYPE_TEMPLATE_TABLE(ttable, yale_storage_init_template, void, YALE_STORAGE* s);
+  NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_init_template, void, YALE_STORAGE* s);
 
-  ttable[s->itype](s);
+  ttable[s->dtype][s->itype](s);
 }
 
 /*
@@ -842,12 +842,12 @@ char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, size_t* j, 
  * Note: This sets a literal 0 value. If your dtype is RUBYOBJ (a Ruby object),
  * it'll actually be INT2FIX(0) instead of a string of NULLs.
  */
-template <typename IType>
+template <typename DType>
 void yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s) {
-  IType* a = reinterpret_cast<IType*>(s->a);
+  DType* a = reinterpret_cast<DType*>(s->a);
 
   // Clear out the diagonal + one extra entry
-  for (IType i = 0; i < YALE_IA_SIZE(s)+1; ++i) // insert Ruby zeros
+  for (size_t i = 0; i < s->shape[0]+1; ++i) // insert Ruby zeros
     a[i] = 0;
 }
 
@@ -1022,7 +1022,7 @@ static STORAGE* yale_storage_matrix_multiply_template(STORAGE_PAIR casted_storag
 
   // Create result storage.
   YALE_STORAGE* result = yale_storage_create(left->dtype, resulting_shape, 2, left->capacity + right->capacity);
-  yale_storage_init_template<IType>(result);
+  yale_storage_init_template<DType,IType>(result);
 
   IType* ijl = reinterpret_cast<IType*>(left->ija);
   IType* ijr = reinterpret_cast<IType*>(right->ija);

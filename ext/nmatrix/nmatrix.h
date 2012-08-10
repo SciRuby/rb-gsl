@@ -93,9 +93,9 @@
 #define UnwrapNMatrix(obj,var)  Data_Get_Struct(obj, NMATRIX, var)
 
 #define NM_STORAGE(val)         (NM_STRUCT(val)->storage)
-#define NM_LIST_STORAGE(val)    (dynamic_cast<LIST_STORAGE*>(NM_STORAGE(val)))
-#define NM_YALE_STORAGE(val)    (dynamic_cast<YALE_STORAGE*>(NM_STORAGE(val)))
-#define NM_DENSE_STORAGE(val)   (dynamic_cast<DENSE_STORAGE*>(NM_STORAGE(val)))
+#define NM_LIST_STORAGE(val)    ((LIST_STORAGE*)(NM_STORAGE(val)))
+#define NM_YALE_STORAGE(val)    ((YALE_STORAGE*)(NM_STORAGE(val)))
+#define NM_DENSE_STORAGE(val)   ((DENSE_STORAGE*)(NM_STORAGE(val)))
 
 
 //#define NM_PTR(a, p)            ((a)->ptr+(p)*nm_sizeof[(a)->type])
@@ -105,6 +105,7 @@
 #define NM_STRUCT(val)          (reinterpret_cast<NMATRIX*>(DATA_PTR(val)))
 #define NM_RANK(val)            (NM_STORAGE(val)->rank)
 #define NM_DTYPE(val)           (NM_STORAGE(val)->dtype)
+#define NM_ITYPE(val)           (NM_YALE_STORAGE(val)->itype)
 #define NM_STYPE(val)           (NM_STRUCT(val)->stype)
 #define NM_SHAPE(val,i)         (NM_STORAGE(val)->shape[(i)])
 #define NM_SHAPE0(val)          (NM_STORAGE(val)->shape[0])

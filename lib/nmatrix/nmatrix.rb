@@ -48,11 +48,12 @@ class NMatrix
 
 		(0...shape[0]).each do |i|
 			arr << (0...shape[1]).inject(Array.new) do |a, j|
-        if o = self[i, j]
-          a << o
-        else
-          a << 'nil'
+        o = begin
+          self[i, j]
+        rescue ArgumentError
+          nil
         end
+        a << (o.nil? ? 'nil' : o)
       end
     end
 
@@ -234,9 +235,15 @@ class NMatrix
 		ary << "shape:[#{shape.join(',')}]" << "dtype:#{dtype}" << "stype:#{stype}"
 
 		if stype == :yale
-			ary <<	"capacity:#{capacity}" << "ija:#{__yale_ary__to_s(:ija)}" << "ia:#{__yale_ary__to_s(:ia)}" <<
-							"ja:#{__yale_ary__to_s(:ja)}" << "a:#{__yale_ary__to_s(:a)}" << "d:#{__yale_ary__to_s(:d)}" <<
-							"lu:#{__yale_ary__to_s(:lu)}" << "yale_size:#{__yale_size__}"
+			ary <<	"capacity:#{capacity}"
+
+      # These are enabled by the DEBUG_YALE compiler flag in extconf.rb.
+      if respond_to?(:__yale_a__)
+        ary << "ija:#{__yale_ary__to_s(:ija)}" << "ia:#{__yale_ary__to_s(:ia)}" <<
+				  			"ja:#{__yale_ary__to_s(:ja)}" << "a:#{__yale_ary__to_s(:a)}" << "d:#{__yale_ary__to_s(:d)}" <<
+					  		"lu:#{__yale_ary__to_s(:lu)}" << "yale_size:#{__yale_size__}"
+      end
+
 		end
 
 		ary
