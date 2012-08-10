@@ -148,10 +148,10 @@ template <typename IType>
 int yale_storage_binary_search_template(YALE_STORAGE* s, IType left, IType right, IType key);
 
 template <typename DType, typename IType>
-char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, IType current_size, IType pos, size_t* j, size_t n, bool struct_only);
+char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, size_t current_size, size_t pos, size_t* j, size_t n, bool struct_only);
 
 template <typename DType, typename IType>
-char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, size_t* j, DType* val, size_t n, bool struct_only);
+char yale_storage_vector_insert_template(YALE_STORAGE* s, size_t pos, size_t* j, DType* val, size_t n, bool struct_only);
 
 /////////////////////////
 // Copying and Casting //

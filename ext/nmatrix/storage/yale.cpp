@@ -230,7 +230,7 @@ template <typename DType, typename IType>
 YALE_STORAGE* yale_storage_create_merged_template(const YALE_STORAGE* left, const YALE_STORAGE* right) {
   char ins_type;
 
-  IType size = yale_storage_get_size_template<IType>(left);
+  size_t size = yale_storage_get_size_template<IType>(left);
 
   // s represents the resulting storage
   YALE_STORAGE* s = yale_storage_copy_alloc_struct_template<IType>(left, left->dtype, NM_MAX(left->capacity, right->capacity), size);
@@ -433,7 +433,7 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, void* value)
   //ija_size = yale_storage_get_size_template<IType>(storage);
 
   // Do a binary search for the column
-  IType pos = yale_storage_insert_search_template<IType>(storage, ija[coords[0]], ija[coords[0]+1]-1, coords[1], &found);
+  size_t pos = yale_storage_insert_search_template<IType>(storage, ija[coords[0]], ija[coords[0]+1]-1, coords[1], &found);
 
   if (found) { // replace
     ija[pos] = coords[1];
@@ -452,7 +452,7 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, void* value)
 char yale_storage_set(STORAGE* storage, SLICE* slice, void* v) {
   NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_set_template, char, YALE_STORAGE* storage, SLICE* slice, void* value);
 
-  YALE_STORAGE* casted_storage = reinterpret_cast<YALE_STORAGE*>(storage);
+  YALE_STORAGE* casted_storage = (YALE_STORAGE*)storage;
 
   return ttable[casted_storage->dtype][casted_storage->itype](casted_storage, slice, v);
 }
@@ -713,10 +713,10 @@ int yale_storage_binary_search_template(YALE_STORAGE* s, IType left, IType right
 
 
 /*
- * Documentation goes here.
+ * Resize yale storage vectors A and IJA in preparation for an insertion.
  */
 template <typename DType, typename IType>
-char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, IType current_size, IType pos, size_t* j, size_t n, bool struct_only) {
+char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, size_t current_size, size_t pos, size_t* j, size_t n, bool struct_only) {
   // Determine the new capacity for the IJA and A vectors.
   size_t new_capacity = s->capacity * YALE_GROWTH_CONSTANT;
 
@@ -743,35 +743,30 @@ char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, IType current_s
     return (char)false;
   }
 
-    //SetFuncs[s->itype][s->itype](pos, new_ija, ITYPE_SIZES[s->itype], s->ija, ITYPE_SIZES[s->itype]);
-  //if (!struct_only) {
-  //  SetFuncs[s->dtype][s->dtype](pos, new_a, DTYPE_SIZES[s->dtype], s->a, DTYPE_SIZES[s->dtype]);
-  //}
-
   // Copy all values prior to the insertion site to the new IJA and new A
-  for (IType i = 0; i < pos; ++i)
-    new_ija[i] = old_ija[i];
-
-  if (!struct_only)
-    for (IType i = 0; i < pos; ++i)
-      new_a[i] = old_a[i];
+  if (struct_only) {
+    for (size_t i = 0; i < pos; ++i) {
+      new_ija[i] = old_ija[i];
+    }
+  } else {
+    for (size_t i = 0; i < pos; ++i) {
+      new_ija[i] = old_ija[i];
+      new_a[i]   = old_a[i];
+    }
+  }
 
 
   // Copy all values subsequent to the insertion site to the new IJA and new A, leaving room (size n) for insertion.
-  for (IType i = pos; i < current_size - pos + n - 1; ++i)
-    new_ija[i+n] = old_ija[i];
-
-  if (!struct_only) {
-    for (IType i = pos; i < current_size - pos + n - 1; ++i)
-      new_a[i+n] = old_a[i];
+  if (struct_only) {
+    for (IType i = 0; i < current_size - pos + n - 1; ++i) {
+      new_ija[pos+i+n] = old_ija[pos+i];
+    }
+  } else {
+    for (IType i = 0; i < current_size - pos + n - 1; ++i) {
+      new_ija[pos+i+n] = old_ija[pos+i];
+      new_a[pos+i+n] = old_a[pos+i];
+    }
   }
-
-  //SetFuncs[s->itype][s->itype](current_size-pos+n-1, (char*)new_ija + ITYPE_SIZES[s->itype]*(pos+n), ITYPE_SIZES[s->itype],
-  //	(char*)(s->ija) + ITYPE_SIZES[s->itype]*pos, ITYPE_SIZES[s->itype]);
-
-  //if (!struct_only) {
-  //  SetFuncs[s->dtype][s->dtype](current_size-pos+n-1, (char*)new_a + DTYPE_SIZES[s->dtype]*(pos+n), DTYPE_SIZES[s->dtype], (char*)(s->a) + DTYPE_SIZES[s->dtype]*pos, DTYPE_SIZES[s->dtype]);
-  //}
 
   s->capacity = new_capacity;
 
@@ -793,18 +788,18 @@ char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, IType current_s
  *	question.)
  */
 template <typename DType, typename IType>
-char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, size_t* j, DType* val, size_t n, bool struct_only) {
+char yale_storage_vector_insert_template(YALE_STORAGE* s, size_t pos, size_t* j, DType* val, size_t n, bool struct_only) {
   if (pos < s->shape[0]) {
     rb_raise(rb_eArgError, "vector insert pos is before beginning of ja; this should not happen");
   }
 
-  IType sz = yale_storage_get_size_template<IType>(s);
+  size_t size = yale_storage_get_size_template<IType>(s);
 
   IType* ija = reinterpret_cast<IType*>(s->ija);
   DType* a   = reinterpret_cast<DType*>(s->a);
 
-  if (sz + n > s->capacity) {
-  	yale_storage_vector_insert_resize_template<DType,IType>(s, sz, pos, j, n, struct_only);
+  if (size + n > s->capacity) {
+  	yale_storage_vector_insert_resize_template<DType,IType>(s, size, pos, j, n, struct_only);
 
   } else {
 
@@ -817,20 +812,29 @@ char yale_storage_vector_insert_template(YALE_STORAGE* s, IType pos, size_t* j, 
      *	are written.
      */
 
-    for (IType i = 0; i < sz - pos; ++i) {
-
-      ija[sz+n-1-i] = ija[sz-1-i];
-
-      if (!struct_only)
-        a[sz+n-1-i]   = a[sz-1-i];
+    if (struct_only) {
+      for (size_t i = 0; i < size - pos; ++i) {
+        ija[size+n-1-i] = ija[size-1-i];
+      }
+    } else {
+      for (size_t i = 0; i < size - pos; ++i) {
+        ija[size+n-1-i] = ija[size-1-i];
+        a[size+n-1-i]   = a[size-1-i];
+      }
     }
   }
 
   // Now insert the new values.
-  ija[pos] = *j;
-
-  if (!struct_only)
-    a[pos] = *val;
+  if (struct_only) {
+    for (size_t i = 0; i < n; ++i) {
+      ija[pos+i]  = j[i];
+    }
+  } else {
+    for (size_t i = 0; i < n; ++i) {
+      ija[pos+i]  = j[i];
+      a[pos+i]    = val[i];
+    }
+  }
 
   return 'i';
 }

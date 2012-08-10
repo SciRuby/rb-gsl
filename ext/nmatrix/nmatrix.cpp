@@ -1041,14 +1041,14 @@ static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
 
     if (FIXNUM_P(c[r])) { // this used CLASS_OF before, which is inefficient for fixnum
 
-      slice->coords[r] = FIX2UINT(c[r]);
+      slice->coords[r]  = FIX2UINT(c[r]);
       slice->lengths[r] = 1;
 
     } else if (CLASS_OF(c[r]) == rb_cRange) {
         rb_range_values(c[r], &beg, &end, &i);
-        slice->coords[r] = FIX2UINT(beg);
+        slice->coords[r]  = FIX2UINT(beg);
         slice->lengths[r] = FIX2UINT(end) - slice->coords[r] + 1;
-        slice->is_one_el = 0;
+        slice->is_one_el  = 0;
 
     } else {
       rb_raise(rb_eArgError, "cannot slice using class %s, needs a number or range or something", rb_obj_classname(c[r]));
