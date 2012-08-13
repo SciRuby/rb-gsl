@@ -530,8 +530,9 @@ static bool ndrow_eqeq_ndrow_template(const YALE_STORAGE* l, const YALE_STORAGE*
   RDType* ra = reinterpret_cast<RDType*>(r->a);
 
   IType l_ja = lij[l_ija],
-        r_ja = rij[r_ija],
-        ja   = NM_MIN(l_ja, r_ja);
+        r_ja = rij[r_ija];
+        
+  IType ja = NM_MIN(l_ja, r_ja);
 
   while (!(l_no_more && r_no_more)) {
     if (l_ja == r_ja) {

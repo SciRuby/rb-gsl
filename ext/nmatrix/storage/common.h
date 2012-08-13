@@ -52,7 +52,7 @@ struct STORAGE {
 	size_t*	shape;
 	size_t*	offset;
 	
-	virtual void empty(void) = 0;
+	//virtual void empty(void) = 0;
 };
 
 // For binary operations involving matrices that need to be casted.

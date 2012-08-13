@@ -101,15 +101,22 @@ class RubyObject {
 	
 	/*
 	 * Integer constructor.
+	 *
+	 * Does not work as a template.
 	 */
-	template <typename IntType>
-	inline RubyObject(const typename std::enable_if<std::is_integral<IntType>::value, IntType>::type other) : rval(INT2FIX(other)) {}
+	inline RubyObject(uint8_t other) : rval(INT2FIX(other)) {}
+	inline RubyObject(int8_t other)  : rval(INT2FIX(other)) {}
+	inline RubyObject(int16_t other) : rval(INT2FIX(other)) {}
+	inline RubyObject(int32_t other) : rval(INT2FIX(other)) {}
+	inline RubyObject(int64_t other) : rval(INT2FIX(other)) {}
 	
 	/*
 	 * Float constructor.
+	 *
+	 * Does not work as a template.
 	 */
-	template <typename FloatType>
-	inline RubyObject(const typename std::enable_if<std::is_floating_point<FloatType>::value, FloatType>::type other) : rval(rb_float_new(other)) {}
+	inline RubyObject(float other)   : rval(rb_float_new(other)) {}
+	inline RubyObject(double other)  : rval(rb_float_new(other)) {}
 	
   /*
 	 * Copy constructors.

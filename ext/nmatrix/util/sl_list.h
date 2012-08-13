@@ -32,7 +32,7 @@
  * Standard Includes
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 /*
  * Project Includes
@@ -95,11 +95,126 @@ void* list_remove(LIST* list, size_t key);
 // Tests //
 ///////////
 
-template <typename LDType, typename RDType>
-bool list_eqeq_list_template(const LIST* left, const LIST* right, const void* left_val, const void* right_val, size_t recursions, size_t* checked);
+/*
+ * Do all values in a list == some value?
+ *
+ * Note that the template parameters should line up with the first two function parameters. This differs from most
+ * other eqeq functions, which use left and right dtypes.
+ */
+template <typename ListDType, typename ValueDType>
+bool list_eqeq_value_template(const LIST* l, const ValueDType* v, size_t recursions, size_t& checked) {
+  NODE *next, *curr = l->first;
 
+  while (curr) {
+    next = curr->next;
+
+    if (recursions == 0) {
+      ++checked;
+
+      if (*reinterpret_cast<ListDType*>(curr->val) != *v) return false;
+
+    } else if (!list_eqeq_value_template<ListDType,ValueDType>((LIST*)curr->val, v, recursions - 1, checked)) {
+      return false;
+    }
+
+    curr = next;
+  }
+
+  return true;
+}
+
+
+/*
+ * Are all values in the two lists equal? If one is missing a value, but the
+ * other isn't, does the value in the list match the default value?
+ */
 template <typename LDType, typename RDType>
-bool list_eqeq_value_template(const LIST* l, const void* v, size_t recursions, size_t* checked);
+bool list_eqeq_list_template(const LIST* left, const LIST* right, const LDType* left_val, const RDType* right_val, size_t recursions, size_t& checked) {
+  NODE *lnext = NULL, *lcurr = left->first, *rnext = NULL, *rcurr = right->first;
+
+  if (lcurr) lnext = lcurr->next;
+  if (rcurr) rnext = rcurr->next;
+
+  while (lcurr && rcurr) {
+
+    if (lcurr->key == rcurr->key) {
+    	// MATCHING KEYS
+
+      if (recursions == 0) {
+        ++checked;
+
+        if (*reinterpret_cast<LDType*>(lcurr->val) != *reinterpret_cast<RDType*>(rcurr->val)) return false;
+
+      } else if (!list_eqeq_list_template<LDType,RDType>(reinterpret_cast<LIST*>(lcurr->val), (LIST*)rcurr->val, left_val, right_val, recursions - 1, checked)) {
+        return false;
+      }
+
+      // increment both iterators
+      rcurr = rnext;
+      if (rcurr) rnext = rcurr->next;
+      lcurr = lnext;
+      if (lcurr) lnext = lcurr->next;
+
+    } else if (lcurr->key < rcurr->key) {
+    	// NON-MATCHING KEYS
+
+      if (recursions == 0) {
+        // compare left entry to right default value
+        ++checked;
+
+        if (*reinterpret_cast<LDType*>(lcurr->val) != *right_val) return false;
+
+      } else if (!list_eqeq_value_template<LDType,RDType>(reinterpret_cast<LIST*>(lcurr->val), right_val, recursions - 1, checked)) {
+        return false;
+      }
+
+      // increment left iterator
+      lcurr = lnext;
+      if (lcurr) lnext = lcurr->next;
+
+    } else {
+			// if (rcurr->key < lcurr->key)
+
+      if (recursions == 0) {
+        // compare right entry to left default value
+        ++checked;
+
+        if (*reinterpret_cast<RDType*>(rcurr->val) != *left_val) return false;
+
+      } else if (!list_eqeq_value_template<RDType,LDType>(reinterpret_cast<LIST*>(rcurr->val), left_val, recursions - 1, checked)) {
+        return false;
+      }
+
+      // increment right iterator
+      rcurr = rnext;
+      if (rcurr) rnext = rcurr->next;
+    }
+
+  }
+
+  /*
+   * One final check, in case we get to the end of one list but not the other
+   * one.
+   */
+  if (lcurr) {
+  	// nothing left in right-hand list
+  	if (*reinterpret_cast<LDType*>(lcurr->val) != *right_val) return false;
+
+  } else if (rcurr) {
+  	// nothing left in left-hand list
+  	if (*reinterpret_cast<RDType*>(rcurr->val) != *left_val) return false;
+
+  }
+
+  /*
+   * Nothing different between the two lists -- but make sure after this return
+   * that you compare the default values themselves, if we haven't visited
+   * every value in the two matrices.
+   */
+  return true;
+}
+
+
 
 /////////////
 // Utility //

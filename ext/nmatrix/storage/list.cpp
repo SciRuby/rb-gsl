@@ -246,7 +246,7 @@ bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* ri
     if (!right->rows->first) {
     	return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     	
-    } else if (!list_eqeq_value_template<LDType,RDType>(right->rows, left->default_val, left->rank-1, &num_checked)) {
+    } else if (!list_eqeq_value_template<RDType,LDType>(right->rows, reinterpret_cast<LDType*>(left->default_val), left->rank-1, num_checked)) {
     	// Left empty, right not empty. Do all values in right == left->default_val?
     	return false;
     	
@@ -258,7 +258,7 @@ bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* ri
   } else if (!right->rows->first) {
     // fprintf(stderr, "!right->rows true\n");
     // Right empty, left not empty. Do all values in left == right->default_val?
-    if (!list_eqeq_value_template<LDType,RDType>(left->rows, right->default_val, left->rank-1, &num_checked)) {
+    if (!list_eqeq_value_template<LDType,RDType>(left->rows, reinterpret_cast<RDType*>(right->default_val), left->rank-1, num_checked)) {
     	return false;
     	
     } else if (num_checked < max_elements) {
@@ -269,7 +269,7 @@ bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* ri
   } else {
     // fprintf(stderr, "both matrices have entries\n");
     // Hardest case. Compare lists node by node. Let's make it simpler by requiring that both have the same default value
-    if (!list_eqeq_list_template<LDType,RDType>(left->rows, right->rows, left->default_val, right->default_val, left->rank-1, &num_checked)) {
+    if (!list_eqeq_list_template<LDType,RDType>(left->rows, right->rows, reinterpret_cast<LDType*>(left->default_val), reinterpret_cast<RDType*>(right->default_val), left->rank-1, num_checked)) {
     	return false;
     	
     } else if (num_checked < max_elements) {

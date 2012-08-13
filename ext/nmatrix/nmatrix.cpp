@@ -479,22 +479,15 @@ static VALUE nm_hermitian(VALUE self) {
  * Just be careful! There are no overflow warnings in NMatrix.
  */
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
-  dtype_t dtype;
-  stype_t stype;
-  size_t  rank, offset = 0;
-  size_t* shape;
-  size_t  init_cap = 0, init_val_len = 0;
-  void*   init_val = NULL;
-  NMATRIX* nmatrix;
-
-  /*
-   * READ ARGUMENTS
-   */
 
   if (argc < 2) {
   	rb_raise(rb_eArgError, "Expected 2-4 arguments (or 7 for internal Yale creation)");
   	return Qnil;
   }
+
+  /* First, determine stype (dense by default) */
+  stype_t stype;
+  size_t  offset = 0;
 
   if (!SYMBOL_P(argv[0]) && !RUBYVAL_IS_STRING(argv[0])) {
     stype = DENSE_STORE;
@@ -517,11 +510,15 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   }
 	
 	// 1: Array or Fixnum
-  shape = interpret_shape(argv[offset], &rank);
-  // 2-3: dtype
-  dtype = interpret_dtype(argc-1-offset, argv+offset+1, stype);
+	size_t rank;
+  size_t* shape = interpret_shape(argv[offset], &rank);
 
-  if (RUBYVAL_IS_NUMERIC(argv[1+offset]) || RUBYVAL_IS_ARRAY(argv[1+offset])) {
+  // 2-3: dtype
+  dtype_t dtype = interpret_dtype(argc-1-offset, argv+offset+1, stype);
+
+  size_t init_cap = 0, init_val_len = 0;
+  void* init_val  = NULL;
+  if (RUBYVAL_IS_NUMERIC(argv[1+offset]) || TYPE(argv[1+offset]) == T_ARRAY) {
   	// Initial value provided (could also be initial capacity, if yale).
   	
     if (stype == YALE_STORE) {
@@ -531,12 +528,8 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
     	// 4: initial value / dtype
       init_val = interpret_initial_value(argv[1+offset], dtype);
       
-      if (RUBYVAL_IS_ARRAY(argv[1+offset])) {
-      	init_val_len = RARRAY_LEN(argv[1+offset]);
-      	
-      } else {
-      	init_val_len = 1;
-      }
+      if (TYPE(argv[1+offset]) == T_ARRAY) 	init_val_len = RARRAY_LEN(argv[1+offset]);
+      else                                  init_val_len = 1;
     }
     
   } else {
@@ -557,15 +550,14 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
       } else {
       	init_val = NULL;
       }
-      
     } else if (stype == LIST_STORE) {
-    	init_val = ALLOC_N(int8_t, DTYPE_SIZES[dtype]);
+    	init_val = ALLOC_N(char, DTYPE_SIZES[dtype]);
       memset(init_val, 0, DTYPE_SIZES[dtype]);
     }
   }
 	
   // TODO: Update to allow an array as the initial value.
-	
+	NMATRIX* nmatrix;
   UnwrapNMatrix(nm, nmatrix);
 
   nmatrix->stype = stype;
@@ -582,14 +574,6 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   	case YALE_STORE:
   		nmatrix->storage = (STORAGE*)yale_storage_create(dtype, shape, rank, init_cap);
   		yale_storage_init((YALE_STORAGE*)(nmatrix->storage));
-  		
-  		// init_val is not used, so free it.
-  		free(init_val);
-  		
-  		if (!nmatrix->storage) {
-  			rb_raise(rb_eNoMemError, "Yale allocation failed.");
-  		}
-  		
   		break;
   }
 
@@ -794,7 +778,7 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
  * rank 2 (and have an orientation), but act as if they're rank 1.
  */
 static VALUE nm_rank(VALUE self) {
-  return rubyobj_from_cval(&(NM_STORAGE(self)->rank), INT64).rval;
+  return INT2FIX(NM_STORAGE(self)->rank);
 }
 
 /*
@@ -807,7 +791,7 @@ static VALUE nm_shape(VALUE self) {
   // Copy elements into a VALUE array and then use those to create a Ruby array with rb_ary_new4.
   VALUE* shape = ALLOCA_N(VALUE, s->rank);
   for (index = 0; index < s->rank; ++index)
-    shape[index] = rubyobj_from_cval( &(s->shape[index]), SIZE_T ).rval;
+    shape[index] = INT2FIX(s->shape[index]);
 
   return rb_ary_new4(s->rank, shape);
 }
@@ -843,7 +827,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 
         NMATRIX* mat = ALLOC(NMATRIX);
         mat->stype = NM_STYPE(self);
-        mat->storage = (STORAGE*)((*slice_func)( (STORAGE*)NM_STORAGE(self), slice ));
+        mat->storage = (STORAGE*)((*slice_func)( NM_STORAGE(self), slice ));
         result = Data_Wrap_Struct(cNMatrix, mark_table[mat->stype], delete_func, mat);
       } else {
         rb_raise(rb_eNotImpError, "slicing only implemented for dense so far");
@@ -855,7 +839,14 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
         list_storage_ref,
         yale_storage_ref
       };
-      result = rubyobj_from_cval( ttable[NM_STYPE(self)]((STORAGE*)NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
+
+      dtype_t dtype = NM_DTYPE(self);
+      STORAGE* s    = NM_STORAGE(self);
+
+      void* v = ttable[NM_STYPE(self)](NM_STORAGE(self), slice);
+
+      if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>(v);
+      else                            result = rubyobj_from_cval(v, NM_DTYPE(self) ).rval;
     }
 
     free(slice);
@@ -1142,28 +1133,27 @@ static void* interpret_initial_value(VALUE arg, dtype_t dtype) {
  * describing the shape, which must be freed manually.
  */
 static size_t* interpret_shape(VALUE arg, size_t* rank) {
-  size_t index;
   size_t* shape;
 
-  if (RUBYVAL_IS_ARRAY(arg)) {
+  if (TYPE(arg) == T_ARRAY) {
     *rank = RARRAY_LEN(arg);
     shape = ALLOC_N(size_t, *rank);
     
-    for (index = *rank; index-- > 0;) {
-      shape[index] = (size_t)(FIX2UINT(RARRAY_PTR(arg)[index]));
+    for (size_t index = 0; index < *rank; ++index) {
+      shape[index] = FIX2UINT( RARRAY_PTR(arg)[index] );
     }
     
   } else if (FIXNUM_P(arg)) {
     *rank = 2;
     shape = ALLOC_N(size_t, *rank);
     
-    shape[0] = (size_t)FIX2UINT(arg);
-    shape[1] = (size_t)FIX2UINT(arg);
+    shape[0] = FIX2UINT(arg);
+    shape[1] = FIX2UINT(arg);
     
   } else {
-    rb_raise(rb_eArgError, "Expected an array of numbers or a single fixnum for matrix shape");
+    rb_raise(rb_eArgError, "Expected an array of numbers or a single Fixnum for matrix shape");
   }
-	
+
   return shape;
 }
 
