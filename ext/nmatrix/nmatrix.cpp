@@ -1126,7 +1126,6 @@ static void* interpret_initial_value(VALUE arg, dtype_t dtype) {
  * describing the shape, which must be freed manually.
  */
 static size_t* interpret_shape(VALUE arg, size_t* rank) {
-  size_t index;
   size_t* shape;
 
   if (TYPE(arg) == T_ARRAY) {
