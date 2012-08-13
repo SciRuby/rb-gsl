@@ -840,13 +840,8 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
         yale_storage_ref
       };
 
-      dtype_t dtype = NM_DTYPE(self);
-      STORAGE* s    = NM_STORAGE(self);
-
-      void* v = ttable[NM_STYPE(self)](NM_STORAGE(self), slice);
-
-      if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>(v);
-      else                            result = rubyobj_from_cval(v, NM_DTYPE(self) ).rval;
+      if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>(ttable[NM_STYPE(self)](NM_STORAGE(self), slice));
+      else                            result = rubyobj_from_cval(ttable[NM_STYPE(self)](NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
     }
 
     free(slice);
@@ -1263,13 +1258,13 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
   bool vector = false;
   if (resulting_shape[1] == 1) vector = true;
 
-  static STORAGE* (*multiply_table[NUM_STYPES])(STORAGE_PAIR, size_t*, bool) = {
+  static STORAGE* (*multiply[NUM_STYPES])(const STORAGE_PAIR&, size_t*, bool) = {
     dense_storage_matrix_multiply,
     list_storage_matrix_multiply,
     yale_storage_matrix_multiply
   };
 
-  STORAGE* resulting_storage = multiply_table[left->stype](casted, resulting_shape, vector);
+  STORAGE* resulting_storage = multiply[left->stype](casted, resulting_shape, vector);
   NMATRIX* result = nm_create(left->stype, resulting_storage);
 
   // Free any casted-storage we created for the multiplication.

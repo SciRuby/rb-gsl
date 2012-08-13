@@ -134,7 +134,7 @@ DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, v
 void dense_storage_delete(STORAGE* s) {
   // Sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure).
   if (s) {
-    DENSE_STORAGE* storage = reinterpret_cast<DENSE_STORAGE*>(s);
+    DENSE_STORAGE* storage = (DENSE_STORAGE*)s;
     if(storage->count-- == 1) {
       free(storage->shape);
       free(storage->offset);
@@ -151,7 +151,7 @@ void dense_storage_delete(STORAGE* s) {
 void dense_storage_delete_ref(STORAGE* s) {
   // Sometimes Ruby passes in NULL storage for some reason (probably on copy construction failure).
   if (s) {
-    DENSE_STORAGE* storage = reinterpret_cast<DENSE_STORAGE*>(s);
+    DENSE_STORAGE* storage = (DENSE_STORAGE*)s;
     dense_storage_delete( reinterpret_cast<STORAGE*>(storage->src) );
     free(storage->shape);
     free(storage->offset);
@@ -163,7 +163,7 @@ void dense_storage_delete_ref(STORAGE* s) {
  * Mark values in a dense matrix for garbage collection. This may not be necessary -- further testing required.
  */
 void dense_storage_mark(void* storage_base) {
-  DENSE_STORAGE* storage = reinterpret_cast<DENSE_STORAGE*>(storage_base);
+  DENSE_STORAGE* storage = (DENSE_STORAGE*)storage_base;
   size_t index;
 	
 	VALUE* els = (VALUE*)storage->elements;
@@ -251,7 +251,7 @@ void* dense_storage_ref(STORAGE* storage, SLICE* slice) {
     ns->stride     = s->stride;
     ns->elements   = s->elements;
     
-    reinterpret_cast<DENSE_STORAGE*>((DENSE_STORAGE*)s->src)->count++;
+    ((DENSE_STORAGE*)((DENSE_STORAGE*)s->src))->count++;
     ns->src = s->src;
 
     return ns;
@@ -430,6 +430,8 @@ DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_
   if (lhs && count) {
     if (rhs->src != rhs) {
       DENSE_STORAGE* tmp = dense_storage_copy(rhs);
+      NM_CHECK_ALLOC(tmp);
+
       RDType* tmp_els    = reinterpret_cast<RDType*>(tmp->elements);
       while (count-- > 0)         lhs_els[count] = tmp_els[count];
       dense_storage_delete(reinterpret_cast<STORAGE*>(tmp));
@@ -497,7 +499,7 @@ bool dense_storage_is_symmetric_template(const DENSE_STORAGE* mat, int lda) {
 
 
 template <typename DType>
-static DENSE_STORAGE* dense_storage_matrix_multiply_template(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
+static DENSE_STORAGE* dense_storage_matrix_multiply_template(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
   DENSE_STORAGE *left  = (DENSE_STORAGE*)(casted_storage.left),
                 *right = (DENSE_STORAGE*)(casted_storage.right);
 
@@ -528,8 +530,8 @@ static DENSE_STORAGE* dense_storage_matrix_multiply_template(STORAGE_PAIR casted
   return result;
 }
 
-STORAGE* dense_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
-  NAMED_DTYPE_TEMPLATE_TABLE(ttable, dense_storage_matrix_multiply_template, DENSE_STORAGE*, STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
+STORAGE* dense_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, dense_storage_matrix_multiply_template, DENSE_STORAGE*, const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
-  return (STORAGE*)ttable[reinterpret_cast<DENSE_STORAGE*>(casted_storage.left)->dtype](casted_storage, resulting_shape, vector);
+  return (STORAGE*)ttable[((DENSE_STORAGE*)(casted_storage.left))->dtype](casted_storage, resulting_shape, vector);
 }

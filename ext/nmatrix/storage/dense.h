@@ -38,8 +38,8 @@
  * Project Includes
  */
 
-//#include "types.h"
-#include "util/math.h"
+#include "types.h"
+//#include "util/math.h"
 
 #include "data/data.h"
 
@@ -98,7 +98,7 @@ bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda);
 // Math //
 //////////
 
-STORAGE* dense_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
+STORAGE* dense_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
 /////////////
 // Utility //

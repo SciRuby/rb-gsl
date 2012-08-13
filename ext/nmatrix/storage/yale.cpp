@@ -40,7 +40,6 @@
  */
 
 #include <ruby.h>
-#include <limits> // for std::numeric_limits<T>::max()
 
 /*
  * Project Includes
@@ -291,7 +290,7 @@ YALE_STORAGE* yale_storage_create_merged_template(const YALE_STORAGE* left, cons
  */
 void yale_storage_delete(STORAGE* s) {
   if (s) {
-    YALE_STORAGE* storage = reinterpret_cast<YALE_STORAGE*>(s);
+    YALE_STORAGE* storage = (YALE_STORAGE*)s;
     free(storage->shape);
     free(storage->ija);
     free(storage->a);
@@ -325,7 +324,7 @@ void yale_storage_init(YALE_STORAGE* s) {
  * Documentation goes here.
  */
 void yale_storage_mark(void* storage_base) {
-  YALE_STORAGE* storage = reinterpret_cast<YALE_STORAGE*>(storage_base);
+  YALE_STORAGE* storage = (YALE_STORAGE*)storage_base;
   size_t i;
 
   if (storage && storage->dtype == RUBYOBJ) {
@@ -395,7 +394,7 @@ void* yale_storage_ref_template(YALE_STORAGE* storage, SLICE* slice) {
 void* yale_storage_ref(STORAGE* storage, SLICE* slice) {
   NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_ref_template, void*, YALE_STORAGE* storage, SLICE* slice);
 
-  YALE_STORAGE* casted_storage = reinterpret_cast<YALE_STORAGE*>(storage);
+  YALE_STORAGE* casted_storage = (YALE_STORAGE*)storage;
   return ttable[casted_storage->dtype][casted_storage->itype](casted_storage, slice);
 }
 
@@ -614,39 +613,6 @@ static bool ndrow_is_empty_template(const YALE_STORAGE* s, IType ija, const ITyp
 /////////////
 // Utility //
 /////////////
-
-/*
- * Documentation goes here.
- */
-// (((YALE_STORAGE*)(sptr))->shape[0] * ((YALE_STORAGE*)(sptr))->shape[1] + 1)
-inline itype_t yale_storage_itype_by_shape(const size_t* shape) {
-  uint64_t yale_max_size = shape[0] * (shape[1]+1);
-
-  if (yale_max_size < static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()) - 2) {
-    return UINT8;
-    
-  } else if (yale_max_size < static_cast<uint64_t>(std::numeric_limits<uint16_t>::max()) - 2) {
-    return UINT16;
-    
-  } else if (yale_max_size < std::numeric_limits<uint32_t>::max() - 2) {
-    return UINT32;
-    
-  } else {
-    return UINT64;
-  }
-}
-
-/*
- * Determine the index dtype (which will be used for the ija vector). This is
- * determined by matrix shape, not IJA/A vector capacity. Note that it's MAX-2
- * because UINTX_MAX and UINTX_MAX-1 are both reserved for sparse matrix
- * multiplication.
- *
- * FIXME: Needs a default case.
- */
-inline itype_t yale_storage_itype(const YALE_STORAGE* s) {
-  return yale_storage_itype_by_shape(s->shape);
-}
 
 
 ///*
@@ -1017,7 +983,7 @@ static YALE_STORAGE* yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, con
 
 
 template <typename DType, typename IType>
-static STORAGE* yale_storage_matrix_multiply_template(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
+static STORAGE* yale_storage_matrix_multiply_template(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
   YALE_STORAGE *left  = (YALE_STORAGE*)(casted_storage.left),
                *right = (YALE_STORAGE*)(casted_storage.right);
 
@@ -1048,10 +1014,10 @@ static STORAGE* yale_storage_matrix_multiply_template(STORAGE_PAIR casted_storag
   return reinterpret_cast<STORAGE*>(result);
 }
 
-STORAGE* yale_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
-  NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_matrix_multiply_template, STORAGE*, STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
+STORAGE* yale_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
+  NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_matrix_multiply_template, STORAGE*, const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
-  YALE_STORAGE* storage_access = reinterpret_cast<YALE_STORAGE*>(casted_storage.left);
+  YALE_STORAGE* storage_access = (YALE_STORAGE*)(casted_storage.left);
 
   return ttable[storage_access->dtype][storage_access->itype](casted_storage, resulting_shape, vector);
 }

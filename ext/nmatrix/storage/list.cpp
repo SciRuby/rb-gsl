@@ -95,7 +95,7 @@ LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, voi
  */
 void list_storage_delete(STORAGE* s) {
   if (s) {
-    LIST_STORAGE* storage = reinterpret_cast<LIST_STORAGE*>(s);
+    LIST_STORAGE* storage = (LIST_STORAGE*)s;
 
     list_delete( storage->rows, storage->rank - 1 );
 
@@ -109,7 +109,7 @@ void list_storage_delete(STORAGE* s) {
  * Documentation goes here.
  */
 void list_storage_mark(void* storage_base) {
-  LIST_STORAGE* storage = reinterpret_cast<LIST_STORAGE*>(storage_base);
+  LIST_STORAGE* storage = (LIST_STORAGE*)storage_base;
 
   if (storage && storage->dtype == RUBYOBJ) {
     rb_gc_mark(*((VALUE*)(storage->default_val)));
@@ -136,7 +136,7 @@ void* list_storage_get(STORAGE* storage, SLICE* slice) {
  * Don't free!
  */
 void* list_storage_ref(STORAGE* storage, SLICE* slice) {
-  LIST_STORAGE* s = (LIST_STORAGE*)(storage);
+  LIST_STORAGE* s = (LIST_STORAGE*)storage;
   size_t r;
   NODE*  n;
   LIST*  l = s->rows;
@@ -453,7 +453,7 @@ bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs
 }
 
 
-STORAGE* list_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector) {
+STORAGE* list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
   free(resulting_shape);
   rb_raise(rb_eNotImpError, "multiplication not implemented for list-of-list matrices");
   return NULL;

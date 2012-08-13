@@ -102,6 +102,21 @@ class Rational {
 		
 		return result;
 	}
+
+	template <typename OtherType>
+	inline Rational<Type>& operator+=(const Rational<OtherType>& other) {
+    long simplify;
+
+    this->n = (this->n * other.d) + (other.n * this->d);
+    this->d = this->d * other.d;
+
+    simplify = gcf<Type>(this->n, this->d);
+
+    this->n /= simplify;
+    this->d /= simplify;
+
+    return *this;
+	}
 	
 	template <typename OtherType>
 	inline Rational<Type> operator-(const Rational<OtherType>& other) const {
@@ -124,6 +139,19 @@ class Rational {
 		
 		return Rational<Type>((this->n / g1) * (other.n / g2), (this->d / g2) * (other.d / g1));
 	}
+
+
+	template <typename OtherType>
+	inline Rational<Type>& operator*=(const Rational<OtherType>& other) {
+    int g1 = gcf<Type>(this->n, other.d);
+    int g2 = gcf<Type>(this->d, other.n);
+
+    this->n = (this->n / g1) * (other.n / g2);
+    this->d = (this->d / g2) * (other.d / g1);
+
+    return *this;
+	}
+
 	
 	template <typename OtherType>
 	inline Rational<Type> operator/(const Rational<OtherType>& other) const {
