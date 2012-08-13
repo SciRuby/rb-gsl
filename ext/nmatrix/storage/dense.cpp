@@ -87,31 +87,29 @@ static void dense_storage_slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *s
  * elements is NULL, the new elements array will not be initialized.
  */
 DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length) {
-  DENSE_STORAGE* s;
-  size_t count, i, copy_length = elements_length;
-
-  s = ALLOC( DENSE_STORAGE );
+  DENSE_STORAGE* s = ALLOC( DENSE_STORAGE );
 
   s->rank       = rank;
   s->shape      = shape;
   s->dtype      = dtype;
-  s->offset     = (size_t*) calloc(sizeof(size_t), rank);
+  s->offset     = ALLOC_N(size_t, rank);
   s->stride     = dense_storage_stride(shape, rank);
   s->count      = 1;
   s->src        = s;
 	
-	count         = storage_count_max_elements(s);
+	size_t count  = storage_count_max_elements(s);
 
   if (elements_length == count) {
   	s->elements = elements;
   	
   } else {
     s->elements = ALLOC_N(char, DTYPE_SIZES[dtype]*count);
+    size_t copy_length = elements_length;
 
     if (elements_length > 0) {
       // Repeat elements over and over again until the end of the matrix.
-      for (i = 0; i < count; i += elements_length) {
-        
+      for (size_t i = 0; i < count; i += elements_length) {
+
         if (i + elements_length > count) {
         	copy_length = count - i;
         }
@@ -385,7 +383,10 @@ DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
   size_t  count = storage_count_max_elements(rhs);
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   NM_CHECK_ALLOC(shape);
-  memcpy(shape, rhs->shape, sizeof(*shape) * rhs->rank);
+
+  // copy shape
+  for (size_t i = 0; i < rhs->rank; ++i)
+    shape[i] = rhs->shape[i];
 
   lhs = dense_storage_create(rhs->dtype, shape, rhs->rank, NULL, 0);
 
@@ -414,6 +415,7 @@ DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_
   size_t  count = storage_count_max_elements(rhs);
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   NM_CHECK_ALLOC(shape);
+
   memcpy(shape, rhs->shape, sizeof(*shape) * rhs->rank);
 
   DENSE_STORAGE* lhs			= dense_storage_create(new_dtype, shape, rhs->rank, NULL, 0);

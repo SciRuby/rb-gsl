@@ -172,8 +172,13 @@ void rubyval_to_cval(VALUE val, dtype_t dtype, void* loc) {
 			break;
 			
 		case RUBYOBJ:
-			rb_raise(rb_eTypeError, "Attempting a bad conversion from a Ruby value.");
+		  *reinterpret_cast<VALUE*>(loc)        = RubyObject(val).rval;
+			//rb_raise(rb_eTypeError, "Attempting a bad conversion from a Ruby value.");
 			break;
+
+	  default:
+	    rb_raise(rb_eTypeError, "Attempting a bad conversion from a Ruby value.");
+	    break;
 	}
 }
 
