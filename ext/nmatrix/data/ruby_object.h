@@ -130,13 +130,23 @@ class RubyObject {
 	inline RubyObject operator+(const RubyObject& other) const {
 		return RubyObject(rb_funcall(this->rval, rbsym_add, 1, other.rval));
 	}
-	
+
+	inline RubyObject& operator+=(const RubyObject& other) {
+    this->rval = rb_funcall(this->rval, rbsym_add, 1, other.rval);
+    return *this;
+	}
+
 	inline RubyObject operator-(const RubyObject& other) const {
 		return RubyObject(rb_funcall(this->rval, rbsym_sub, 1, other.rval));
 	}
 	
 	inline RubyObject operator*(const RubyObject& other) const {
 		return RubyObject(rb_funcall(this->rval, rbsym_mul, 1, other.rval));
+	}
+
+	inline RubyObject& operator*=(const RubyObject& other) {
+    this->rval = rb_funcall(this->rval, rbsym_mul, 1, other.rval);
+    return *this;
 	}
 	
 	inline RubyObject operator/(const RubyObject& other) const {

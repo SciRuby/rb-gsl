@@ -42,6 +42,8 @@
  * Standard Includes
  */
 
+#include <limits> // for std::numeric_limits<T>::max()
+
 /*
  * Project Includes
  */
@@ -134,14 +136,43 @@ bool yale_storage_eqeq(const STORAGE* left, const STORAGE* right);
 // Math //
 //////////
 
-STORAGE* yale_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
+STORAGE* yale_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
 /////////////
 // Utility //
 /////////////
 
-inline itype_t  yale_storage_itype_by_shape(const size_t* shape);
-inline itype_t	yale_storage_itype(const YALE_STORAGE* s);
+/*
+ * Documentation goes here.
+ */
+// (((YALE_STORAGE*)(sptr))->shape[0] * ((YALE_STORAGE*)(sptr))->shape[1] + 1)
+inline itype_t yale_storage_itype_by_shape(const size_t* shape) {
+  uint64_t yale_max_size = shape[0] * (shape[1]+1);
+
+  if (yale_max_size < static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()) - 2) {
+    return UINT8;
+
+  } else if (yale_max_size < static_cast<uint64_t>(std::numeric_limits<uint16_t>::max()) - 2) {
+    return UINT16;
+
+  } else if (yale_max_size < std::numeric_limits<uint32_t>::max() - 2) {
+    return UINT32;
+
+  } else {
+    return UINT64;
+  }
+}
+
+/*
+ * Determine the index dtype (which will be used for the ija vector). This is
+ * determined by matrix shape, not IJA/A vector capacity. Note that it's MAX-2
+ * because UINTX_MAX and UINTX_MAX-1 are both reserved for sparse matrix
+ * multiplication.
+ */
+inline itype_t yale_storage_itype(const YALE_STORAGE* s) {
+  return yale_storage_itype_by_shape(s->shape);
+}
+
 void		yale_storage_print_vectors(YALE_STORAGE* s);
 
 template <typename IType>

@@ -56,16 +56,16 @@ struct STORAGE {
 };
 
 // For binary operations involving matrices that need to be casted.
-typedef struct {
+struct STORAGE_PAIR {
 	STORAGE* left;
 	STORAGE* right;
-} STORAGE_PAIR;
+};
 
-typedef struct {
+struct SLICE {
 	size_t*	coords; // Coordinate of first element
 	size_t*	lengths; // Lengths of slice
 	uint8_t	is_one_el; // 1 - if all lens eql 1
-} SLICE;
+};
 
 /*
  * Data
