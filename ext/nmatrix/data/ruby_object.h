@@ -83,34 +83,38 @@ class RubyObject {
 	VALUE rval;
 	
 	/*
-	 * Default constructor.
+	 * Value constructor.
 	 */
 	inline RubyObject(VALUE ref = Qnil) : rval(ref) {}
-
-  /*
-   * Constructors for converting from other types. Should not conflict with the default since long unsigned int is not
-   * one of our dtypes.
-   */
-	inline RubyObject(float other)   : rval(rb_float_new(other)) {}
-	inline RubyObject(double other)  : rval(rb_float_new(other)) {}
-	inline RubyObject(uint8_t other) : rval(INT2FIX(other)) {}
-	inline RubyObject(int8_t other)  : rval(INT2FIX(other)) {}
-	inline RubyObject(int16_t other) : rval(INT2FIX(other)) {}
-	inline RubyObject(int32_t other) : rval(INT2FIX(other)) {}
-	inline RubyObject(int64_t other) : rval(INT2FIX(other)) {}
-
+	
 	/*
+	 * Complex number constructor.
+	 */
+	template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+	inline RubyObject(const Complex<FloatType>& other) : rval(rb_complex_new(rb_float_new(other.r), rb_float_new(other.i))) {}
+	
+	/*
+	 * Rational number constructor.
+	 */
+	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+	inline RubyObject(const Rational<IntType>& other) : rval(rb_rational_new(INT2FIX(other.n), INT2FIX(other.d))) {}
+	
+	/*
+	 * Integer constructor.
+	 */
+	template <typename IntType>
+	inline RubyObject(const typename std::enable_if<std::is_integral<IntType>::value, IntType>::type other) : rval(INT2FIX(other)) {}
+	
+	/*
+	 * Float constructor.
+	 */
+	template <typename FloatType>
+	inline RubyObject(const typename std::enable_if<std::is_floating_point<FloatType>::value, FloatType>::type other) : rval(rb_float_new(other)) {}
+	
+  /*
 	 * Copy constructors.
 	 */
 	inline RubyObject(const RubyObject& other) : rval(other.rval) {}
-
-  template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
-	inline RubyObject(const Complex<FloatType>& other) : rval(rb_complex_new(rb_float_new(other.r), rb_float_new(other.i))) {}
-
-	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
-	inline RubyObject(const Rational<IntType>& other) : rval(rb_rational_new(INT2FIX(other.n), INT2FIX(other.d))) {}
-
-
 	
 	/*
 	 * Binary operator definitions.
