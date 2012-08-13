@@ -827,7 +827,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 
         NMATRIX* mat = ALLOC(NMATRIX);
         mat->stype = NM_STYPE(self);
-        mat->storage = (STORAGE*)((*slice_func)( (STORAGE*)NM_STORAGE(self), slice ));
+        mat->storage = (STORAGE*)((*slice_func)( NM_STORAGE(self), slice ));
         result = Data_Wrap_Struct(cNMatrix, mark_table[mat->stype], delete_func, mat);
       } else {
         rb_raise(rb_eNotImpError, "slicing only implemented for dense so far");
@@ -839,7 +839,14 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
         list_storage_ref,
         yale_storage_ref
       };
-      result = rubyobj_from_cval( ttable[NM_STYPE(self)]((STORAGE*)NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
+
+      dtype_t dtype = NM_DTYPE(self);
+      STORAGE* s    = NM_STORAGE(self);
+
+      void* v = ttable[NM_STYPE(self)](NM_STORAGE(self), slice);
+
+      if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>(v);
+      else                            result = rubyobj_from_cval(v, NM_DTYPE(self) ).rval;
     }
 
     free(slice);

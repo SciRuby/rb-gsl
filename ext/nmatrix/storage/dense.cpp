@@ -93,6 +93,9 @@ DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, v
   s->shape      = shape;
   s->dtype      = dtype;
   s->offset     = ALLOC_N(size_t, rank);
+
+  memset(s->offset, 0, sizeof(size_t)*rank);
+
   s->stride     = dense_storage_stride(shape, rank);
   s->count      = 1;
   s->src        = s;
@@ -213,6 +216,7 @@ void* dense_storage_get(STORAGE* storage, SLICE* slice) {
     return ns;
   }
 }
+
 
 
 /*
