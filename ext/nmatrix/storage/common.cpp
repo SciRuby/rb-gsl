@@ -60,7 +60,7 @@ size_t storage_count_max_elements(const STORAGE* storage) {
   size_t count = 1;
   
   for (i = storage->rank; i-- > 0;) {
-  	count *= storage->shape[i];
+		count *= storage->shape[i];
   }
   
   return count;
