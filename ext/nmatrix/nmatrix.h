@@ -191,7 +191,6 @@ typedef struct NMATRIX {
 void transp(size_t n, size_t m, void* ia, void* ja, bool diaga, void* a, void* ib, void* jb, void* b, bool move, int8_t itype, dtype_t dtype);
 
 void cast_copy_value_single(void* to, const void* from, dtype_t l_dtype, dtype_t r_dtype);
-NMATRIX* nm_create(int8_t stype, void* storage);
 
 extern "C" {
 	void Init_nmatrix();

@@ -446,6 +446,20 @@ static VALUE nm_hermitian(VALUE self) {
   return is_symmetric(self, true);
 }
 
+
+/*
+ * Helper function for creating a matrix. You have to create the storage and pass it in, but you don't
+ * need to worry about deleting it.
+ */
+NMATRIX* nm_create(stype_t stype, STORAGE* storage) {
+  NMATRIX* mat = ALLOC(NMATRIX);
+
+  mat->stype   = stype;
+  mat->storage = storage;
+
+  return mat;
+}
+
 /*
  * Create a new NMatrix.
  *
@@ -1219,12 +1233,12 @@ static stype_t stype_from_rbsymbol(VALUE sym) {
 //////////////////
 
 
-STORAGE* storage_cast_alloc(NMATRIX* matrix, dtype_t new_dtype) {
+STORAGE* matrix_storage_cast_alloc(NMATRIX* matrix, dtype_t new_dtype) {
   if (matrix->storage->dtype == new_dtype && !is_ref(matrix))
     return matrix->storage;
 
-  STYPE_CAST_COPY_TABLE(cast_copy_funcs);
-  return cast_copy_funcs[new_dtype][matrix->stype](matrix->storage, new_dtype);
+  STYPE_CAST_COPY_TABLE(cast_copy_storage);
+  return cast_copy_storage[matrix->stype][matrix->stype](matrix->storage, new_dtype);
 }
 
 
@@ -1232,8 +1246,8 @@ STORAGE_PAIR binary_storage_cast_alloc(NMATRIX* left_matrix, NMATRIX* right_matr
   STORAGE_PAIR casted;
   dtype_t new_dtype = Upcast[left_matrix->storage->dtype][right_matrix->storage->dtype];
 
-  casted.left  = storage_cast_alloc(left_matrix, new_dtype);
-  casted.right = storage_cast_alloc(right_matrix, new_dtype);
+  casted.left  = matrix_storage_cast_alloc(left_matrix, new_dtype);
+  casted.right = matrix_storage_cast_alloc(right_matrix, new_dtype);
 
   return casted;
 }
@@ -1258,13 +1272,13 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
   bool vector = false;
   if (resulting_shape[1] == 1) vector = true;
 
-  static STORAGE* (*multiply[NUM_STYPES])(const STORAGE_PAIR&, size_t*, bool) = {
+  static STORAGE* (*storage_matrix_multiply[NUM_STYPES])(const STORAGE_PAIR&, size_t*, bool) = {
     dense_storage_matrix_multiply,
     list_storage_matrix_multiply,
     yale_storage_matrix_multiply
   };
 
-  STORAGE* resulting_storage = multiply[left->stype](casted, resulting_shape, vector);
+  STORAGE* resulting_storage = storage_matrix_multiply[left->stype](casted, resulting_shape, vector);
   NMATRIX* result = nm_create(left->stype, resulting_storage);
 
   // Free any casted-storage we created for the multiplication.
