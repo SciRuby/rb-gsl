@@ -273,7 +273,15 @@ class Rational {
 	inline operator NumType () {
 		return (NumType)this->n / (NumType)this->d;
 	}
-
+	
+	
+	/*
+	 * Special casting operator for Complex numbers.
+	 */
+	template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+	inline operator Rational<FloatType> () {
+		return Rational<FloatType>(((FloatType)this->n) / ((FloatType)this->d));
+	}
 };
 
 ////////////////////////////////
