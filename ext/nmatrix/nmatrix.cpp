@@ -868,7 +868,7 @@ bool is_ref(const NMATRIX* matrix) {
     return false;
   }
   
-  return ((DENSE_STORAGE*)(matrix->storage))->src == matrix->storage;
+  return ((DENSE_STORAGE*)(matrix->storage))->src != matrix->storage;
 }
 
 /*
