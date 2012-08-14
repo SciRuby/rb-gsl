@@ -97,10 +97,6 @@
 #define NM_YALE_STORAGE(val)    ((YALE_STORAGE*)(NM_STORAGE(val)))
 #define NM_DENSE_STORAGE(val)   ((DENSE_STORAGE*)(NM_STORAGE(val)))
 
-
-//#define NM_PTR(a, p)            ((a)->ptr+(p)*nm_sizeof[(a)->type])
-//#define NM_PTR_TYPE(val,type)   (type)(((struct numeric_matrix*)DATA_PTR(val))->ptr)
-
 #define NM_DENSE_SRC(val)       (NM_DENSE_STORAGE(val)->src)
 #define NM_STRUCT(val)          (reinterpret_cast<NMATRIX*>(DATA_PTR(val)))
 #define NM_RANK(val)            (NM_STORAGE(val)->rank)
@@ -129,10 +125,6 @@
 #define NM_IsNVector(obj) \
   (rb_obj_is_kind_of(obj, cNVector) == Qtrue)
 
-// FIXME: What should this actually be?
-//#define NM_INDEX_TYPES  NM_FLOAT32
-#define NM_INDEX_TYPES  5
-
 /*
  * Types
  */
@@ -158,30 +150,6 @@ typedef struct NMATRIX {
 #ifndef NMATRIX_C
 	extern VALUE cNMatrix;
 #endif
-
-//extern uint8_t (*MathHomOps_b[5])(const uint8_t, const uint8_t);
-//extern int64_t (*MathHomOps_i64[5])(const int64_t, const int64_t);
-//extern int32_t (*MathHomOps_i32[5])(const int32_t, const int32_t);
-//extern int16_t (*MathHomOps_i16[5])(const int16_t, const int16_t);
-//extern int8_t (*MathHomOps_i8[5])(const int8_t, const int8_t);
-//extern float (*MathHomOps_f32[5])(const float, const float);
-//extern double (*MathHomOps_f64[5])(const double, const double);
-//extern complex64 (*MathHomOps_c64[5])(const complex64, const complex64);
-//extern complex128 (*MathHomOps_c128[5])(const complex128, const complex128);
-//extern rational32 (*MathHomOps_r32[5])(rational32, rational32);
-//extern rational64 (*MathHomOps_r64[5])(rational64, rational64);
-//extern rational128 (*MathHomOps_r128[5])(rational128, rational128);
-//extern VALUE (*MathHomOps_v[5])(const VALUE, const VALUE);
-//extern void (*SmmpSortColumns[15][7])(const unsigned int, const void *, void *, void *);
-//extern void (*Transp[15][7])(const unsigned int, const unsigned int, const void *, const void *, const void *, const bool, void *, void *, void *, const bool);
-//extern void (*DetExact[15])(const int, const void *, const int, void *);
-
-//extern int (*EwDenseHom[15])(const void *, const void *, void *, const int, enum MathHomOps);
-//extern int (*EwDenseBool[15])(const void *, const void *, void *, const int, const enum MathBoolOps);
-//extern int (*EwDenseBit[15])(const void *, const void *, void *, const int, const enum MathBitOps);
-//extern int (*EwYaleHom[15][7])(const void *, const void *, void *, const void *, const void *, void *, const unsigned int, const unsigned int, const enum MathHomOps);
-//extern int (*EwYaleBool[15][7])(const void *, const void *, void *, const void *, const void *, void *, const unsigned int, const unsigned int, const enum MathBoolOps);
-//extern int (*EwYaleBit[15][7])(const void *, const void *, void *, const void *, const void *, void *, const unsigned int, const unsigned int, const enum MathBitOps);
 
 /*
  * Functions
