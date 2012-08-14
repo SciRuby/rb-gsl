@@ -28,8 +28,6 @@
 # Requires #
 ############
 
-# NMatrix
-require 'nmatrix'
 
 #######################
 # Classes and Modules #
@@ -69,15 +67,15 @@ class NVector < NMatrix
 
 	def [](i)
 		case @orientation
-		when :row			super(0, i)
-		when :column	super(i, 0)
+		when :row;		super(0, i)
+		when :column;	super(i, 0)
 		end
 	end
 
 	def []=(i, val)
 		case @orientation
-		when :row			super(0, i, val)
-		when :column	super(i, 0, val)
+		when :row;		super(0, i, val)
+		when :column;	super(i, 0, val)
 		end
 	end
 
@@ -90,7 +88,7 @@ class NVector < NMatrix
 		puts (0...shape[dim]).inject(Array.new) { |a, i| a << self[i] }.join('  ')
 	end
 
-	protected
+protected
 	def inspect_helper
 		super() << "orientation:#{self.orientation}"
 	end

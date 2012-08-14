@@ -229,7 +229,7 @@ class NMatrix
 		end
 	end
 
-	protected
+protected
 	def inspect_helper
 		ary = []
 		ary << "shape:[#{shape.join(',')}]" << "dtype:#{dtype}" << "stype:#{stype}"
