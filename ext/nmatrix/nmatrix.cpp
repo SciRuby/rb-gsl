@@ -856,8 +856,29 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 
   if (NM_RANK(self) == (size_t)(argc)) {
     SLICE* slice = get_slice((size_t)(argc), argv, self);
+
     // TODO: Slice for List, Yale types
-    if (slice->is_one_el == 0) {
+
+    if (slice->single) {
+
+      static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
+        dense_storage_ref,
+        list_storage_ref,
+        yale_storage_ref
+      };
+
+      fprintf(stderr, "single: ");
+      for (size_t i = 0; i < NM_RANK(self); ++i) {
+        fprintf(stderr, "%u(%u) ", slice->coords[i], slice->lengths[i]);
+      }
+      fprintf(stderr, "\n");
+
+      DENSE_STORAGE* s = NM_DENSE_STORAGE(self);
+
+      if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>( ttable[NM_STYPE(self)](NM_STORAGE(self), slice) );
+      else                            result = rubyobj_from_cval( ttable[NM_STYPE(self)](NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
+
+    } else {
 
       if (NM_STYPE(self) == DENSE_STORE) {
         STYPE_MARK_TABLE(mark_table);
@@ -869,16 +890,6 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
       } else {
         rb_raise(rb_eNotImpError, "slicing only implemented for dense so far");
       }
-
-    } else {
-      static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
-        dense_storage_ref,
-        list_storage_ref,
-        yale_storage_ref
-      };
-
-      if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>(ttable[NM_STYPE(self)](NM_STORAGE(self), slice));
-      else                            result = rubyobj_from_cval(ttable[NM_STYPE(self)](NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
     }
 
     free(slice);
@@ -1058,7 +1069,7 @@ static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
   SLICE* slice = ALLOC(SLICE);
   slice->coords = ALLOC_N(size_t,rank);
   slice->lengths = ALLOC_N(size_t, rank);
-  slice->is_one_el = 1;
+  slice->single = true;
 
   for (r = 0; r < rank; ++r) {
 
@@ -1071,7 +1082,7 @@ static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
         rb_range_values(c[r], &beg, &end, &i);
         slice->coords[r]  = FIX2UINT(beg);
         slice->lengths[r] = FIX2UINT(end) - slice->coords[r] + 1;
-        slice->is_one_el  = 0;
+        slice->single     = false;
 
     } else {
       rb_raise(rb_eArgError, "cannot slice using class %s, needs a number or range or something", rb_obj_classname(c[r]));
