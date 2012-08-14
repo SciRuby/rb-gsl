@@ -1372,8 +1372,8 @@ static VALUE nm_yale_lu(VALUE self) {
 
   VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
 
-  for (size_t i = s->shape[0] + 1; i < size - s->shape[0] - 1; ++i) {
-    vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*i, s->dtype).rval;
+  for (size_t i = 0; i < size - s->shape[0] - 1; ++i) {
+    vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*(s->shape[0] + 1 + i), s->dtype).rval;
   }
 
   VALUE ary = rb_ary_new4(size - s->shape[0] - 1, vals);
@@ -1417,8 +1417,8 @@ static VALUE nm_yale_ja(VALUE self) {
 
   VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
 
-  for (size_t i = s->shape[0] + 1; i < size - s->shape[0] - 1; ++i) {
-    vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*i, s->itype).rval;
+  for (size_t i = 0; i < size - s->shape[0] - 1; ++i) {
+    vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*(s->shape[0] + 1 + i), s->itype).rval;
   }
 
   VALUE ary = rb_ary_new4(size - s->shape[0] - 1, vals);
