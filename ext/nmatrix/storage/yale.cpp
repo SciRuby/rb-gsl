@@ -413,9 +413,10 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, void* value)
   bool found = false;
   char ins_type;
 
-  if (coords[0] == coords[1])
+  if (coords[0] == coords[1]) {
     a[coords[0]] = *v; // set diagonal
-
+    return 'r';
+  }
 
   // Get IJA positions of the beginning and end of the row
   if (ija[coords[0]] == ija[coords[0]+1]) {
@@ -443,6 +444,8 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, void* value)
   ins_type = yale_storage_vector_insert_template<DType,IType>(storage, pos, &(coords[1]), v, 1, false);
   yale_storage_increment_ia_after_template<IType>(storage, storage->shape[0], coords[0], 1);
   storage->ndnz++;
+
+  fprintf(stderr, "ysst: G\n");
 
   return ins_type;
 }
@@ -698,17 +701,13 @@ char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, size_t current_
 
   // Allocate the new vectors.
   IType* new_ija     = ALLOC_N( IType, new_capacity );
+  NM_CHECK_ALLOC(new_ija);
+
   DType* new_a       = ALLOC_N( DType, new_capacity );
+  NM_CHECK_ALLOC(new_a);
 
   IType* old_ija     = reinterpret_cast<IType*>(s->ija);
   DType* old_a       = reinterpret_cast<DType*>(s->a);
-
-  // Check that allocation succeeded.
-  if (!new_ija || !new_a) {
-    free(new_a); free(new_ija);
-    rb_raise(rb_eNoMemError, "yale sparse vectors are full and there is insufficient memory for growing them");
-    return (char)false;
-  }
 
   // Copy all values prior to the insertion site to the new IJA and new A
   if (struct_only) {
@@ -725,13 +724,13 @@ char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, size_t current_
 
   // Copy all values subsequent to the insertion site to the new IJA and new A, leaving room (size n) for insertion.
   if (struct_only) {
-    for (IType i = 0; i < current_size - pos + n - 1; ++i) {
-      new_ija[pos+i+n] = old_ija[pos+i];
+    for (size_t i = pos; i < current_size - pos + n - 1; ++i) {
+      new_ija[i+n] = old_ija[i];
     }
   } else {
-    for (IType i = 0; i < current_size - pos + n - 1; ++i) {
-      new_ija[pos+i+n] = old_ija[pos+i];
-      new_a[pos+i+n] = old_a[pos+i];
+    for (size_t i = pos; i < current_size - pos + n - 1; ++i) {
+      new_ija[i+n] = old_ija[i];
+      new_a[i+n] = old_a[i];
     }
   }
 
@@ -768,8 +767,11 @@ char yale_storage_vector_insert_template(YALE_STORAGE* s, size_t pos, size_t* j,
   if (size + n > s->capacity) {
   	yale_storage_vector_insert_resize_template<DType,IType>(s, size, pos, j, n, struct_only);
 
-  } else {
+    // Need to get the new locations for ija and a.
+  	ija = reinterpret_cast<IType*>(s->ija);
+    a   = reinterpret_cast<DType*>(s->a);
 
+  } else {
     /*
      * No resize required:
      * easy (but somewhat slow), just copy elements to the tail, starting at
