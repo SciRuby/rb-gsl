@@ -618,43 +618,6 @@ static bool ndrow_is_empty_template(const YALE_STORAGE* s, IType ija, const ITyp
 /////////////
 
 
-///*
-// * Documentation goes here.
-// */
-//void yale_storage_print_vectors(YALE_STORAGE* s) {
-//  size_t i;
-//  fprintf(stderr, "------------------------------\n");
-//  fprintf(stderr, "dtype:%s\tshape:%dx%d\tndnz:%d\tcapacity:%d\titype:%s\n",
-//  	DTYPE_NAMES[s->dtype], s->shape[0], s->shape[1], s->ndnz, s->capacity, nm_itypestring[s->itype]);
-//
-//
-//	// This needs to be handled somewhere else.
-//  //if (s->capacity > 60) rb_raise(rb_eArgError, "overflow in print_vectors; cannot handle that large of a vector");
-//  // print indices
-//
-//  fprintf(stderr, "i:\t");
-//  for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5lu ", (unsigned long)i);
-//
-//  fprintf(stderr, "\nija:\t");
-//  if (YALE_MAX_SIZE(s) < std::numeric_limits<uint8_t>::max())
-//    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(uint8_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
-//  else if (YALE_MAX_SIZE(s) < UINT16_MAX)
-//    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int16_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
-//  else if (YALE_MAX_SIZE(s) < UINT32_MAX)
-//    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5u ", *(u_int32_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
-//  else
-//    for (i = 0; i < s->capacity; ++i) fprintf(stderr, "%-5llu ", *(u_int64_t*)YALE_IJA(s,ITYPE_SIZES[s->itype],i));
-//  fprintf(stderr, "\n");
-//
-//  // print values
-//  fprintf(stderr, "a:\t");
-//  for (i = 0; i < s->capacity; ++i)
-//    fprintf(stderr, "%-*.3g ", 5, *(double*)((char*)(s->a) + ITYPE_SIZES[FLOAT64]*i));
-//  fprintf(stderr, "\n");
-//
-//  fprintf(stderr, "------------------------------\n");
-//}
-
 /*
  * Binary search for returning stored values. Returns a non-negative position, or -1 for not found.
  *

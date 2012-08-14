@@ -80,6 +80,7 @@ typedef VALUE (*METHOD)(...);
  */
 
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm);
+static VALUE nm_init_copy(VALUE copy, VALUE original);
 static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype, VALUE new_dtype);
 static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm);
 static VALUE nm_alloc(VALUE klass);
@@ -178,8 +179,8 @@ void Init_nmatrix() {
 	//////////////////////
 
 	rb_define_method(cNMatrix, "initialize", (METHOD)nm_init, -1);
-	
-	//rb_define_method(cNMatrix, "initialize_copy", (METHOD)nm_init_copy, 1);
+	rb_define_method(cNMatrix, "initialize_copy", (METHOD)nm_init_copy, 1);
+
 	//rb_define_method(cNMatrix, "initialize_cast_copy", (METHOD)nm_init_cast_copy, 2);
 	//rb_define_method(cNMatrix, "as_dtype", (METHOD)nm_cast_copy, 1);
 	
@@ -609,17 +610,39 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbo
 
   UnwrapNMatrix( original, rhs );
   UnwrapNMatrix( copy,     lhs );
-  //lhs = ALLOC(NMATRIX); // FIXME: If this fn doesn't work, try switching comments between this line and the above.
+
   lhs->stype = new_stype;
 
   // Copy the storage
   STYPE_CAST_COPY_TABLE(ttable);
   lhs->storage = ttable[new_stype][rhs->stype](rhs->storage, new_dtype);
 
-  //STYPE_MARK_TABLE(mark_table);
-
-  return copy; //Data_Wrap_Struct(cNMatrix, mark_table[new_stype], nm_delete, copy);
+  return copy;
 }
+
+
+/*
+ * Copy constructor for no change of dtype or stype (used for #initialize_copy hook).
+ */
+static VALUE nm_init_copy(VALUE copy, VALUE original) {
+  NMATRIX *lhs, *rhs;
+
+  CheckNMatrixType(original);
+
+  if (copy == original) return copy;
+
+  UnwrapNMatrix( original, rhs );
+  UnwrapNMatrix( copy,     lhs );
+
+  lhs->stype = rhs->stype;
+
+  // Copy the storage
+  STYPE_CAST_COPY_TABLE(ttable);
+  lhs->storage = ttable[lhs->stype][rhs->stype](rhs->storage, rhs->storage->dtype);
+
+  return copy;
+}
+
 
 /*
  * Create a new NMatrix helper for handling internal ia, ja, and a arguments.
