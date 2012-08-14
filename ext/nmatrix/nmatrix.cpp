@@ -954,15 +954,13 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
  * Converts a string to a data type.
  */
 dtype_t dtype_from_rbstring(VALUE str) {
-  size_t index;
-  
-  for (index = 0; index < NUM_DTYPES; ++index) {
+  for (size_t index = 0; index < NUM_DTYPES; ++index) {
   	if (!strncmp(RSTRING_PTR(str), DTYPE_NAMES[index], RSTRING_LEN(str))) {
   		return static_cast<dtype_t>(index);
   	}
   }
-  
-  rb_raise(rb_eArgError, "Invalid data type specified.");
+
+  rb_raise(rb_eArgError, "Invalid data type string specified.");
 }
 
 /*
@@ -977,7 +975,7 @@ static dtype_t dtype_from_rbsymbol(VALUE sym) {
     }
   }
   
-  rb_raise(rb_eArgError, "Invalid data type specified.");
+  rb_raise(rb_eArgError, "Invalid data type symbol specified.");
 }
 
 /*
@@ -1242,7 +1240,8 @@ static stype_t stype_from_rbstring(VALUE str) {
     	return static_cast<stype_t>(index);
     }
   }
-  
+
+  rb_raise(rb_eArgError, "Invalid storage type string specified");
   return DENSE_STORE;
 }
 
@@ -1257,7 +1256,8 @@ static stype_t stype_from_rbsymbol(VALUE sym) {
     	return static_cast<stype_t>(index);
     }
   }
-  
+
+  rb_raise(rb_eArgError, "Invalid storage type symbol specified");
   return DENSE_STORE;
 }
 
