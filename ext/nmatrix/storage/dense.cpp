@@ -193,14 +193,18 @@ void* dense_storage_get(STORAGE* storage, SLICE* slice) {
     NM_CHECK_ALLOC(ns);
 
     ns->rank       = s->rank;
-    ns->shape      = slice->lengths; /* FIXME: Not sure slice is being freed properly. */
     ns->dtype      = s->dtype;
 
     ns->offset     = ALLOC_N(size_t, ns->rank);
     NM_CHECK_ALLOC(ns->offset);
 
-    for (size_t i = 0; i < ns->rank; ++i) /* FIXME: Is this the proper initialization? */
-      ns->offset[i] = slice->coords[i] + s->offset[i];
+    ns->shape      = ALLOC_N(size_t, ns->rank);
+    NM_CHECK_ALLOC(ns->shape);
+
+    for (size_t i = 0; i < ns->rank; ++i) {
+      ns->offset[i] = 0;
+      ns->shape[i]  = slice->lengths[i];
+    }
 
     ns->stride     = dense_storage_stride(ns->shape, ns->rank);
     ns->count      = 1;

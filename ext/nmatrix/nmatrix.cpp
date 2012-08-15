@@ -712,7 +712,7 @@ static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
     list_storage_ref,
     yale_storage_ref
   };
-  return nm_xslice(argc, argv, ttable[NM_STYPE(self)], nm_delete, self);
+  return nm_xslice(argc, argv, ttable[NM_STYPE(self)], nm_delete_ref, self);
 }
 
 /*
