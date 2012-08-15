@@ -260,7 +260,8 @@ RubyObject rubyobj_from_cval_by_itype(void* val, itype_t itype) {
  * given RubyObject.
  */
 void* rubyobj_to_cval(VALUE val, dtype_t dtype) {
-  void* ret_val = malloc(DTYPE_SIZES[dtype]);
+  size_t size =  DTYPE_SIZES[dtype];
+  void* ret_val = ALLOC_N(char, size);
 
   rubyval_to_cval(val, dtype, ret_val);
 
