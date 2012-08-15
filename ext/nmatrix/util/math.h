@@ -140,7 +140,7 @@ inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE T
   }
 
   // Quick return if possible
-  if (!M || !N || (*alpha == 0 || !K) && *beta == 1) return true;
+  if (!M or !N or ((*alpha == 0 or !K) and *beta == 1)) return true;
 
   // For alpha = 0
   if (*alpha == 0) {
@@ -313,7 +313,7 @@ inline bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, con
   }
 
   // Quick return if possible
-  if (!M || !N || *alpha == 0 && *beta == 1) return true;
+  if (!M or !N or (*alpha == 0 and *beta == 1)) return true;
 
   if (Trans == CblasNoTrans) {
     lenX = N;
