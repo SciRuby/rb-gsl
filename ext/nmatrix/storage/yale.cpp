@@ -383,22 +383,25 @@ template <typename DType,typename IType>
 void* yale_storage_ref_template(YALE_STORAGE* storage, SLICE* slice) {
   size_t* coords = slice->coords;
 
-  DType* a    = reinterpret_cast<DType*>(storage->a);
-  IType* ija  = reinterpret_cast<IType*>(storage->ija);
+  DType* a = reinterpret_cast<DType*>(storage->a);
+  IType* ija = reinterpret_cast<IType*>(storage->ija);
 
   if (coords[0] == coords[1])
-    return &(a[coords[0]]); // return diagonal entry
+    return &(a[ coords[0] ]); // return diagonal entry
 
-  if (a[coords[0]] == a[coords[0]+1])
-    return &(a[storage->shape[0]]); // return zero pointer
+  if (ija[coords[0]] == ija[coords[0]+1])
+    return &(a[ storage->shape[0] ]); // return zero pointer
 
 	// binary search for the column's location
-  int pos = yale_storage_binary_search_template<IType>(storage, ija[coords[0]], ija[coords[0]+1]-1, coords[1]);
+  int pos = yale_storage_binary_search_template<IType>(storage,
+                                                       ija[coords[0]],
+                                                       ija[coords[0]+1]-1,
+                                                       coords[1]);
 
   if (pos != -1 && ija[pos] == coords[1])
     return &(a[pos]); // found exact value
 
-  return &(a[storage->shape[0]]); // return a pointer that happens to be zero
+  return &(a[ storage->shape[0] ]); // return a pointer that happens to be zero
 }
 
 
@@ -418,21 +421,18 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, void* value)
   DType* v = reinterpret_cast<DType*>(value);
   size_t* coords = slice->coords;
 
-  DType* a = reinterpret_cast<DType*>(storage->a);
-  IType* ija = reinterpret_cast<IType*>(storage->ija);
-
   bool found = false;
   char ins_type;
 
   if (coords[0] == coords[1]) {
-    a[coords[0]] = *v; // set diagonal
+    reinterpret_cast<DType*>(storage->a)[coords[0]] = *v; // set diagonal
     return 'r';
   }
 
   // Get IJA positions of the beginning and end of the row
-  if (ija[coords[0]] == ija[coords[0]+1]) {
+  if (reinterpret_cast<IType*>(storage->ija)[coords[0]] == reinterpret_cast<IType*>(storage->ija)[coords[0]+1]) {
   	// empty row
-    ins_type = yale_storage_vector_insert_template<DType,IType>(storage, ija[coords[0]], &(coords[1]), v, 1, false);
+    ins_type = yale_storage_vector_insert_template<DType,IType>(storage, reinterpret_cast<IType*>(storage->ija)[coords[0]], &(coords[1]), v, 1, false);
     yale_storage_increment_ia_after_template<IType>(storage, storage->shape[0], coords[0], 1);
     storage->ndnz++;
 
@@ -444,11 +444,14 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, void* value)
   //ija_size = yale_storage_get_size_template<IType>(storage);
 
   // Do a binary search for the column
-  size_t pos = yale_storage_insert_search_template<IType>(storage, ija[coords[0]], ija[coords[0]+1]-1, coords[1], &found);
+  size_t pos = yale_storage_insert_search_template<IType>(storage,
+                                                          reinterpret_cast<IType*>(storage->ija)[coords[0]],
+                                                          reinterpret_cast<IType*>(storage->ija)[coords[0]+1]-1,
+                                                          coords[1], &found);
 
   if (found) { // replace
-    ija[pos] = coords[1];
-    a[pos]   = *v;
+    reinterpret_cast<IType*>(storage->ija)[pos] = coords[1];
+    reinterpret_cast<DType*>(storage->a)[pos]   = *v;
   	return 'r';
   }
 

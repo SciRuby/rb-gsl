@@ -80,6 +80,7 @@ extern ID rbsym_real,
 extern VALUE	cNMatrix,
 							cNVector,
 							cYaleFunctions,
+							cBLAS,
 			
 							nm_eDataTypeError,
 							nm_eStorageTypeError;

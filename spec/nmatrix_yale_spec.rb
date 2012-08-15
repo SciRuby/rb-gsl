@@ -214,7 +214,7 @@ describe NMatrix do
     #c[3,1].should == 0.0
     #c[3,2].should == 8.0
     #c[3,3].should == 0.0 # this is the positive and negative partial sum cancel
-    
+
     c.extend(NMatrix::YaleFunctions)
 
     c.yale_ija.reject { |i| i.nil? }.should == [5,8,9,9,11,1,2,3,3,1,2]

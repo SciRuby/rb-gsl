@@ -73,6 +73,7 @@ ID	rbsym_real,
 VALUE cNMatrix,
 			cNVector,
 			cYaleFunctions,
+			cBLAS,
 			
 			nm_eDataTypeError,
 			nm_eStorageTypeError;

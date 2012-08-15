@@ -62,6 +62,7 @@
  */
 
 #include "nmatrix.h"
+#include "util/math.h"
 #include "storage/storage.h"
 #include "ruby_constants.h"
 
@@ -156,9 +157,7 @@ void Init_nmatrix() {
 	rb_define_alloc_func(cNMatrix, nm_alloc);
 	
 	/*
-	 * FIXME: These need to be bound in a better way.
-	rb_define_singleton_method(cNMatrix, "__cblas_gemm__", nm_cblas_gemm, 13);
-	rb_define_singleton_method(cNMatrix, "__cblas_gemv__", nm_cblas_gemv, 11);
+	 * FIXME: This needs to be bound in a better way.
 	rb_define_singleton_method(cNMatrix, "upcast", nm_upcast, 2);
 	 */
 	
@@ -232,6 +231,12 @@ void Init_nmatrix() {
 	//////////////////////////
 
 	Init_yale_functions();
+
+	/////////////////
+	// BLAS module //
+	/////////////////
+
+	Init_blas();
 }
 
 /*
@@ -850,11 +855,13 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
         yale_storage_ref
       };
 
+      /* // Debugging for slice
       fprintf(stderr, "single: ");
       for (size_t i = 0; i < NM_RANK(self); ++i) {
         fprintf(stderr, "%u(%u) ", slice->coords[i], slice->lengths[i]);
       }
       fprintf(stderr, "\n");
+      */
 
       DENSE_STORAGE* s = NM_DENSE_STORAGE(self);
 
