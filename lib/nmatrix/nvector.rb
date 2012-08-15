@@ -40,6 +40,7 @@
 class NVector < NMatrix
 	def initialize(length, *args)
 		super(:dense, [length, 1], *args)
+    orientation
 	end
 
 	# Orientation defaults to column (e.g., [3,1] is a column of length 3). It
@@ -67,15 +68,15 @@ class NVector < NMatrix
 
 	def [](i)
 		case @orientation
-		when :row;		super(0, i)
-		when :column;	super(i, 0)
+		when :row;		super(i, 0)
+		when :column;	super(0, i)
 		end
-	end
+  end
 
 	def []=(i, val)
 		case @orientation
-		when :row;		super(0, i, val)
-		when :column;	super(i, 0, val)
+		when :row;		super(i, 0, val)
+		when :column;	super(0, i, val)
 		end
 	end
 
