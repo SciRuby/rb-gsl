@@ -29,13 +29,7 @@
 #############
 # Autoloads #
 #############
-#def method_missing *args
-#  if args.first.to_s == 'NVector'
-#    require 'nmatrix/nvector.rb'
-#  else
-#    super m
-#  end
-#end
+
 
 ############
 # Requires #
@@ -44,6 +38,7 @@
 # NMatrix
 
 require 'nmatrix/nmatrix.rb'
+require 'nmatrix/nvector.rb'
 
 # For some reason nmatrix.so ends up in a different place during gem build.
 if File.exist? 'lib/nmatrix/nmatrix.so'
@@ -56,6 +51,3 @@ end
 
 # Monkey patches.
 require 'nmatrix/monkeys'
-
-
-autoload :NVector, 'nmatrix/nvector'

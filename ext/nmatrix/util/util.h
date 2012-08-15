@@ -55,7 +55,24 @@
  */
 
 template <typename Type>
-Type gcf(Type x, Type y);
+inline Type gcf(Type x, Type y) {
+	Type t;
+
+	if (x < 0) x = -x;
+	if (y < 0) y = -y;
+
+	if (x == 0) return y;
+	if (y == 0) return x;
+
+	while (x > 0) {
+		t = x;
+		x = y % x;
+		y = t;
+	}
+
+	return y;
+}
+
 
 /*extern template <>
 int16_t gcf<int16_t>(int16_t, int16_t);

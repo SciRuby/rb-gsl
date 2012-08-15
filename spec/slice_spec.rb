@@ -41,11 +41,11 @@ describe "Slice operation" do
     b.is_ref?.should be_false
   end
 
-  it "reference should compare with non-refernce" do
+  it "reference should compare with non-reference" do
     @m.slice(1..2,0..1).should == @m[1..2, 0..1]
   end
 
-  context "with copping" do
+  context "with copying" do
     it 'should return an NMatrix' do
       n = @m.slice(0..1,0..1)
       n.should eql( NMatrix.new(:dense, [2,2], [0,1,3,4], :int32))

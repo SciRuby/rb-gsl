@@ -64,7 +64,7 @@ struct STORAGE_PAIR {
 struct SLICE {
 	size_t*	coords; // Coordinate of first element
 	size_t*	lengths; // Lengths of slice
-	uint8_t	is_one_el; // 1 - if all lens eql 1
+	bool  	single; // true if all lengths equal to 1 (represents single matrix element)
 };
 
 /*

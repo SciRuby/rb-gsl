@@ -80,6 +80,7 @@ typedef VALUE (*METHOD)(...);
  */
 
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm);
+static VALUE nm_init_copy(VALUE copy, VALUE original);
 static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype, VALUE new_dtype);
 static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm);
 static VALUE nm_alloc(VALUE klass);
@@ -178,8 +179,8 @@ void Init_nmatrix() {
 	//////////////////////
 
 	rb_define_method(cNMatrix, "initialize", (METHOD)nm_init, -1);
-	
-	//rb_define_method(cNMatrix, "initialize_copy", (METHOD)nm_init_copy, 1);
+	rb_define_method(cNMatrix, "initialize_copy", (METHOD)nm_init_copy, 1);
+
 	//rb_define_method(cNMatrix, "initialize_cast_copy", (METHOD)nm_init_cast_copy, 2);
 	//rb_define_method(cNMatrix, "as_dtype", (METHOD)nm_cast_copy, 1);
 	
@@ -446,6 +447,20 @@ static VALUE nm_hermitian(VALUE self) {
   return is_symmetric(self, true);
 }
 
+
+/*
+ * Helper function for creating a matrix. You have to create the storage and pass it in, but you don't
+ * need to worry about deleting it.
+ */
+NMATRIX* nm_create(stype_t stype, STORAGE* storage) {
+  NMATRIX* mat = ALLOC(NMATRIX);
+
+  mat->stype   = stype;
+  mat->storage = storage;
+
+  return mat;
+}
+
 /*
  * Create a new NMatrix.
  *
@@ -595,17 +610,39 @@ static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbo
 
   UnwrapNMatrix( original, rhs );
   UnwrapNMatrix( copy,     lhs );
-  //lhs = ALLOC(NMATRIX); // FIXME: If this fn doesn't work, try switching comments between this line and the above.
+
   lhs->stype = new_stype;
 
   // Copy the storage
   STYPE_CAST_COPY_TABLE(ttable);
   lhs->storage = ttable[new_stype][rhs->stype](rhs->storage, new_dtype);
 
-  //STYPE_MARK_TABLE(mark_table);
-
-  return copy; //Data_Wrap_Struct(cNMatrix, mark_table[new_stype], nm_delete, copy);
+  return copy;
 }
+
+
+/*
+ * Copy constructor for no change of dtype or stype (used for #initialize_copy hook).
+ */
+static VALUE nm_init_copy(VALUE copy, VALUE original) {
+  NMATRIX *lhs, *rhs;
+
+  CheckNMatrixType(original);
+
+  if (copy == original) return copy;
+
+  UnwrapNMatrix( original, rhs );
+  UnwrapNMatrix( copy,     lhs );
+
+  lhs->stype = rhs->stype;
+
+  // Copy the storage
+  STYPE_CAST_COPY_TABLE(ttable);
+  lhs->storage = ttable[lhs->stype][rhs->stype](rhs->storage, rhs->storage->dtype);
+
+  return copy;
+}
+
 
 /*
  * Create a new NMatrix helper for handling internal ia, ja, and a arguments.
@@ -819,8 +856,29 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 
   if (NM_RANK(self) == (size_t)(argc)) {
     SLICE* slice = get_slice((size_t)(argc), argv, self);
+
     // TODO: Slice for List, Yale types
-    if (slice->is_one_el == 0) {
+
+    if (slice->single) {
+
+      static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
+        dense_storage_ref,
+        list_storage_ref,
+        yale_storage_ref
+      };
+
+      fprintf(stderr, "single: ");
+      for (size_t i = 0; i < NM_RANK(self); ++i) {
+        fprintf(stderr, "%u(%u) ", slice->coords[i], slice->lengths[i]);
+      }
+      fprintf(stderr, "\n");
+
+      DENSE_STORAGE* s = NM_DENSE_STORAGE(self);
+
+      if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>( ttable[NM_STYPE(self)](NM_STORAGE(self), slice) );
+      else                            result = rubyobj_from_cval( ttable[NM_STYPE(self)](NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
+
+    } else {
 
       if (NM_STYPE(self) == DENSE_STORE) {
         STYPE_MARK_TABLE(mark_table);
@@ -832,16 +890,6 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
       } else {
         rb_raise(rb_eNotImpError, "slicing only implemented for dense so far");
       }
-
-    } else {
-      static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
-        dense_storage_ref,
-        list_storage_ref,
-        yale_storage_ref
-      };
-
-      if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>(ttable[NM_STYPE(self)](NM_STORAGE(self), slice));
-      else                            result = rubyobj_from_cval(ttable[NM_STYPE(self)](NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
     }
 
     free(slice);
@@ -906,15 +954,13 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
  * Converts a string to a data type.
  */
 dtype_t dtype_from_rbstring(VALUE str) {
-  size_t index;
-  
-  for (index = 0; index < NUM_DTYPES; ++index) {
+  for (size_t index = 0; index < NUM_DTYPES; ++index) {
   	if (!strncmp(RSTRING_PTR(str), DTYPE_NAMES[index], RSTRING_LEN(str))) {
   		return static_cast<dtype_t>(index);
   	}
   }
-  
-  rb_raise(rb_eArgError, "Invalid data type specified.");
+
+  rb_raise(rb_eArgError, "Invalid data type string specified.");
 }
 
 /*
@@ -929,7 +975,7 @@ static dtype_t dtype_from_rbsymbol(VALUE sym) {
     }
   }
   
-  rb_raise(rb_eArgError, "Invalid data type specified.");
+  rb_raise(rb_eArgError, "Invalid data type symbol specified.");
 }
 
 /*
@@ -1021,7 +1067,7 @@ static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
   SLICE* slice = ALLOC(SLICE);
   slice->coords = ALLOC_N(size_t,rank);
   slice->lengths = ALLOC_N(size_t, rank);
-  slice->is_one_el = 1;
+  slice->single = true;
 
   for (r = 0; r < rank; ++r) {
 
@@ -1034,7 +1080,7 @@ static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
         rb_range_values(c[r], &beg, &end, &i);
         slice->coords[r]  = FIX2UINT(beg);
         slice->lengths[r] = FIX2UINT(end) - slice->coords[r] + 1;
-        slice->is_one_el  = 0;
+        slice->single     = false;
 
     } else {
       rb_raise(rb_eArgError, "cannot slice using class %s, needs a number or range or something", rb_obj_classname(c[r]));
@@ -1194,7 +1240,8 @@ static stype_t stype_from_rbstring(VALUE str) {
     	return static_cast<stype_t>(index);
     }
   }
-  
+
+  rb_raise(rb_eArgError, "Invalid storage type string specified");
   return DENSE_STORE;
 }
 
@@ -1209,7 +1256,8 @@ static stype_t stype_from_rbsymbol(VALUE sym) {
     	return static_cast<stype_t>(index);
     }
   }
-  
+
+  rb_raise(rb_eArgError, "Invalid storage type symbol specified");
   return DENSE_STORE;
 }
 
@@ -1219,12 +1267,12 @@ static stype_t stype_from_rbsymbol(VALUE sym) {
 //////////////////
 
 
-STORAGE* storage_cast_alloc(NMATRIX* matrix, dtype_t new_dtype) {
+STORAGE* matrix_storage_cast_alloc(NMATRIX* matrix, dtype_t new_dtype) {
   if (matrix->storage->dtype == new_dtype && !is_ref(matrix))
     return matrix->storage;
 
-  STYPE_CAST_COPY_TABLE(cast_copy_funcs);
-  return cast_copy_funcs[new_dtype][matrix->stype](matrix->storage, new_dtype);
+  STYPE_CAST_COPY_TABLE(cast_copy_storage);
+  return cast_copy_storage[matrix->stype][matrix->stype](matrix->storage, new_dtype);
 }
 
 
@@ -1232,8 +1280,8 @@ STORAGE_PAIR binary_storage_cast_alloc(NMATRIX* left_matrix, NMATRIX* right_matr
   STORAGE_PAIR casted;
   dtype_t new_dtype = Upcast[left_matrix->storage->dtype][right_matrix->storage->dtype];
 
-  casted.left  = storage_cast_alloc(left_matrix, new_dtype);
-  casted.right = storage_cast_alloc(right_matrix, new_dtype);
+  casted.left  = matrix_storage_cast_alloc(left_matrix, new_dtype);
+  casted.right = matrix_storage_cast_alloc(right_matrix, new_dtype);
 
   return casted;
 }
@@ -1258,13 +1306,13 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
   bool vector = false;
   if (resulting_shape[1] == 1) vector = true;
 
-  static STORAGE* (*multiply[NUM_STYPES])(const STORAGE_PAIR&, size_t*, bool) = {
+  static STORAGE* (*storage_matrix_multiply[NUM_STYPES])(const STORAGE_PAIR&, size_t*, bool) = {
     dense_storage_matrix_multiply,
     list_storage_matrix_multiply,
     yale_storage_matrix_multiply
   };
 
-  STORAGE* resulting_storage = multiply[left->stype](casted, resulting_shape, vector);
+  STORAGE* resulting_storage = storage_matrix_multiply[left->stype](casted, resulting_shape, vector);
   NMATRIX* result = nm_create(left->stype, resulting_storage);
 
   // Free any casted-storage we created for the multiplication.
@@ -1358,8 +1406,8 @@ static VALUE nm_yale_lu(VALUE self) {
 
   VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
 
-  for (size_t i = s->shape[0] + 1; i < size - s->shape[0] - 1; ++i) {
-    vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*i, s->dtype).rval;
+  for (size_t i = 0; i < size - s->shape[0] - 1; ++i) {
+    vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*(s->shape[0] + 1 + i), s->dtype).rval;
   }
 
   VALUE ary = rb_ary_new4(size - s->shape[0] - 1, vals);
@@ -1403,8 +1451,8 @@ static VALUE nm_yale_ja(VALUE self) {
 
   VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
 
-  for (size_t i = s->shape[0] + 1; i < size - s->shape[0] - 1; ++i) {
-    vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*i, s->itype).rval;
+  for (size_t i = 0; i < size - s->shape[0] - 1; ++i) {
+    vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*(s->shape[0] + 1 + i), s->itype).rval;
   }
 
   VALUE ary = rb_ary_new4(size - s->shape[0] - 1, vals);

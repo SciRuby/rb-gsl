@@ -78,6 +78,9 @@
 #define YaleGetSize(sz,s)                   //(SetFuncs[Y_SIZE_T][((YALE_STORAGE*)s)->itype](1, &sz, 0, (YALE_SIZE_PTR(((YALE_STORAGE*)s), DTYPE_SIZES[((YALE_STORAGE*)s)->itype])), 0))
 //#define YALE_FIRST_NZ_ROW_ENTRY(sptr,elem_size,i)
 
+#ifndef NM_CHECK_ALLOC
+ #define NM_CHECK_ALLOC(x) if (!x) rb_raise(rb_eNoMemError, "insufficient memory");
+#endif
 /*
  * Types
  */

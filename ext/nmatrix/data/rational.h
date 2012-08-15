@@ -33,6 +33,7 @@
  */
 
 #include <type_traits>
+#include <ruby.h>
 
 /*
  * Project Includes
@@ -80,6 +81,11 @@ class Rational {
 	 */
 	template <typename OtherType>
 	inline Rational(const Rational<OtherType>& other) : n(other.n), d(other.d) {}
+
+  template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+	inline Rational(const Complex<FloatType>& other) : n(0), d(1) {
+	  rb_raise(rb_eNotImpError, "cannot convert from complex to rational");
+	}
 
 	/*
 	 * Binary operator definitions for varous types.

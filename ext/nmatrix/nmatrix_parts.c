@@ -462,18 +462,6 @@ static VALUE nm_ew_neq(VALUE left, VALUE right) {
 
 
 
-// You must create the storage manually. NMatrix will clean it up when the matrix itself is destroyed.
-NMATRIX* nm_create(int8_t stype, void* storage) {
-  NMATRIX* mat = ALLOC(NMATRIX);
-
-  mat->stype   = stype;
-  mat->storage = storage;
-
-  return mat;
-}
-
-
-
 /* Interprets cblas argument which could be any of false/:no_transpose, :transpose, or :complex_conjugate,
  * into an enum recognized by cblas.
  *

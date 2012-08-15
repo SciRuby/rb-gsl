@@ -57,9 +57,6 @@
  * Forward Declarations
  */
 
-template <typename DType, typename NewDType>
-DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_t new_dtype);
-
 template <typename LDType, typename RDType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
 
@@ -164,12 +161,11 @@ void dense_storage_delete_ref(STORAGE* s) {
  */
 void dense_storage_mark(void* storage_base) {
   DENSE_STORAGE* storage = (DENSE_STORAGE*)storage_base;
-  size_t index;
-	
-	VALUE* els = (VALUE*)storage->elements;
-	
+
   if (storage && storage->dtype == RUBYOBJ) {
-  	for (index = storage_count_max_elements(storage); index-- > 0;) {
+    VALUE* els = reinterpret_cast<VALUE*>(storage->elements);
+
+  	for (size_t index = storage_count_max_elements(storage); index-- > 0;) {
       rb_gc_mark(els[index]);
     }
   }
@@ -189,7 +185,7 @@ void* dense_storage_get(STORAGE* storage, SLICE* slice) {
   DENSE_STORAGE* ns;
   size_t count;
 
-  if (slice->is_one_el)
+  if (slice->single)
     return (char*)(s->elements) + dense_storage_pos(s, slice->coords) * DTYPE_SIZES[s->dtype];
   else { // Make references
     ns = ALLOC( DENSE_STORAGE );
@@ -197,11 +193,14 @@ void* dense_storage_get(STORAGE* storage, SLICE* slice) {
     NM_CHECK_ALLOC(ns);
 
     ns->rank       = s->rank;
-    ns->shape      = slice->lengths;
+    ns->shape      = slice->lengths; /* FIXME: Not sure slice is being freed properly. */
     ns->dtype      = s->dtype;
 
     ns->offset     = ALLOC_N(size_t, ns->rank);
     NM_CHECK_ALLOC(ns->offset);
+
+    for (size_t i = 0; i < ns->rank; ++i) /* FIXME: Is this the proper initialization? */
+      ns->offset[i] = slice->coords[i] + s->offset[i];
 
     ns->stride     = dense_storage_stride(ns->shape, ns->rank);
     ns->count      = 1;
@@ -227,7 +226,7 @@ void* dense_storage_get(STORAGE* storage, SLICE* slice) {
 void* dense_storage_ref(STORAGE* storage, SLICE* slice) {
   DENSE_STORAGE* s = (DENSE_STORAGE*)storage;
 
-  if (slice->is_one_el)
+  if (slice->single)
     return (char*)(s->elements) + dense_storage_pos(s, slice->coords) * DTYPE_SIZES[s->dtype];
     
   else {
@@ -370,29 +369,22 @@ static void dense_storage_slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *s
 /////////////////////////
 
 /*
- * Copy dense storage, changing dtype if necessary.
- */
-STORAGE* dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
-	LR_DTYPE_TEMPLATE_TABLE(dense_storage_cast_copy_template, DENSE_STORAGE*, const DENSE_STORAGE*, dtype_t);
-	
-	return (STORAGE*)ttable[new_dtype][rhs->dtype]( (DENSE_STORAGE*)rhs, new_dtype );
-}
-
-/*
  * Copy dense storage without a change in dtype.
  */
 DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
-  DENSE_STORAGE* lhs;
-
   size_t  count = storage_count_max_elements(rhs);
-  size_t* shape = ALLOC_N(size_t, rhs->rank);
-  NM_CHECK_ALLOC(shape);
+  size_t *shape  = ALLOC_N(size_t, rhs->rank),
+         *offset = ALLOC_N(size_t, rhs->rank);
 
-  // copy shape
-  for (size_t i = 0; i < rhs->rank; ++i)
-    shape[i] = rhs->shape[i];
+  NM_CHECK_ALLOC(offset);
 
-  lhs = dense_storage_create(rhs->dtype, shape, rhs->rank, NULL, 0);
+  // copy shape and offset
+  for (size_t i = 0; i < rhs->rank; ++i) {
+    shape[i]  = rhs->shape[i];
+    offset[i] = rhs->offset[i];
+  }
+
+  DENSE_STORAGE* lhs = dense_storage_create(rhs->dtype, shape, rhs->rank, NULL, 0);
 
 	// Ensure that allocation worked before copying.
   if (lhs && count) {
@@ -417,31 +409,49 @@ DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
 template <typename LDType, typename RDType>
 DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
   size_t  count = storage_count_max_elements(rhs);
-  size_t* shape = ALLOC_N(size_t, rhs->rank);
-  NM_CHECK_ALLOC(shape);
 
-  memcpy(shape, rhs->shape, sizeof(*shape) * rhs->rank);
+  size_t *shape = ALLOC_N(size_t, rhs->rank),
+         *offset = ALLOC_N(size_t, rhs->rank);
+
+  NM_CHECK_ALLOC(offset); // presumably we couldn't allocate offset if shape allocation failed.
+
+  memcpy(shape, rhs->shape, sizeof(size_t) * rhs->rank);
+  memcpy(offset, rhs->offset, sizeof(size_t) * rhs->rank);
 
   DENSE_STORAGE* lhs			= dense_storage_create(new_dtype, shape, rhs->rank, NULL, 0);
-  RDType*	rhs_els = reinterpret_cast<RDType*>(rhs->elements);
-  LDType* lhs_els	= reinterpret_cast<LDType*>(lhs->elements);
+  RDType*	rhs_els         = reinterpret_cast<RDType*>(rhs->elements);
+  LDType* lhs_els	        = reinterpret_cast<LDType*>(lhs->elements);
 
 	// Ensure that allocation worked before copying.
   if (lhs && count) {
     if (rhs->src != rhs) {
+      /* Make a copy of a ref to a matrix. */
+
       DENSE_STORAGE* tmp = dense_storage_copy(rhs);
       NM_CHECK_ALLOC(tmp);
 
       RDType* tmp_els    = reinterpret_cast<RDType*>(tmp->elements);
       while (count-- > 0)         lhs_els[count] = tmp_els[count];
-      dense_storage_delete(reinterpret_cast<STORAGE*>(tmp));
+      dense_storage_delete(tmp);
     } else {
+      /* Make a regular copy. */
+
     	while (count-- > 0)     		lhs_els[count] = rhs_els[count];
     }
   }
 	
   return lhs;
 }
+
+/*
+ * Copy dense storage, changing dtype if necessary.
+ */
+STORAGE* dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
+	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, dense_storage_cast_copy_template, DENSE_STORAGE*, const DENSE_STORAGE* rhs, dtype_t new_dtype);
+
+	return (STORAGE*)ttable[new_dtype][rhs->dtype]( (DENSE_STORAGE*)rhs, new_dtype );
+}
+
 
 template <typename LDType, typename RDType>
 bool dense_storage_eqeq_template(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
