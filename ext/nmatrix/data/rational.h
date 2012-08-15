@@ -82,7 +82,7 @@ class Rational {
 	template <typename OtherType>
 	inline Rational(const Rational<OtherType>& other) : n(other.n), d(other.d) {}
 
-  template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+	template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
 	inline Rational(const Complex<FloatType>& other) : n(0), d(1) {
 	  rb_raise(rb_eNotImpError, "cannot convert from complex to rational");
 	}
@@ -206,7 +206,7 @@ class Rational {
 	}
 	
 	template <typename OtherType>
-	inline operator Rational<OtherType> () {
+	inline operator Rational<OtherType> () const {
 		return Rational<OtherType>((OtherType)this->n, (OtherType)this->d);
 	}
 	
@@ -270,16 +270,15 @@ class Rational {
 	}
 	
 	template <typename NumType, typename = typename std::enable_if<std::is_arithmetic<NumType>::value>::type>
-	inline operator NumType () {
+	inline operator NumType () const {
 		return (NumType)this->n / (NumType)this->d;
 	}
-	
 	
 	/*
 	 * Special casting operator for Complex numbers.
 	 */
 	template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
-	inline operator Rational<FloatType> () {
+	inline operator Rational<FloatType> () const {
 		return Rational<FloatType>(((FloatType)this->n) / ((FloatType)this->d));
 	}
 };
@@ -287,6 +286,10 @@ class Rational {
 ////////////////////////////////
 // Native-Rational Operations //
 ////////////////////////////////
+
+/*
+ * Integer Math
+ */
 
 template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
 inline Rational<RationalType> operator+(const IntType& left, const Rational<RationalType>& right) {
@@ -308,34 +311,74 @@ inline Rational<RationalType> operator/(const IntType& left, const Rational<Rati
 	return Rational<RationalType>(left) / right;
 }
 
-template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
-inline bool operator<(const IntType left, const Rational<RationalType>& right) {
-	return Rational<RationalType>(left) < right;
+/*
+ * Floating Point Math
+ */
+
+template <typename FloatType, typename RationalType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline FloatType operator+(const FloatType& left, const Rational<RationalType>& right) {
+	return left + (FloatType)right;
 }
 
-template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
-inline bool operator>(const IntType left, const Rational<RationalType>& right) {
-	return Rational<RationalType>(left) > right;
+template <typename FloatType, typename RationalType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline FloatType operator-(const FloatType& left, const Rational<RationalType>& right) {
+	return left - (FloatType)right;
 }
 
-template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
-inline bool operator==(const IntType left, const Rational<RationalType>& right) {
-	return Rational<RationalType>(left) == right;
+template <typename FloatType, typename RationalType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline FloatType operator*(const FloatType& left, const Rational<RationalType>& right) {
+	return left * (FloatType)right;
 }
 
-template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
-inline bool operator!=(const IntType left, const Rational<RationalType>& right) {
-	return Rational<RationalType>(left) != right;
+template <typename FloatType, typename RationalType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline FloatType operator/(const FloatType& left, const Rational<RationalType>& right) {
+	return left / (FloatType)right;
 }
 
-template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
-inline bool operator<=(const IntType left, const Rational<RationalType>& right) {
-	return Rational<RationalType>(left) <= right;
+/*
+ * Comparisons
+ */
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator<(const NativeType left, const Rational<RationalType>& right) {
+	//return Rational<RationalType>(left) < right;
+	return (left * right.d) < right.n;
 }
 
-template <typename IntType, typename RationalType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
-inline bool operator>=(const IntType left, const Rational<RationalType>& right) {
-	return Rational<RationalType>(left) >= right;
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator>(const NativeType left, const Rational<RationalType>& right) {
+	//return Rational<RationalType>(left) > right;
+	return (left * right.d) > right.n;
+}
+
+template <typename IntType, typename RationalType>
+inline bool operator==(const typename std::enable_if<std::is_integral<IntType>::value, IntType>::type left, const Rational<RationalType>& right) {
+	//return Rational<RationalType>(left) == right;
+	return (left * right.d) == right.n;
+}
+
+template <typename FloatType, typename RationalType>
+inline bool operator==(const typename std::enable_if<std::is_floating_point<FloatType>::value, FloatType>::type left, const Rational<RationalType>& right) {
+	//return Rational<RationalType>(left) == right;
+	return FP_EQUAL(left, ((FloatType)right));
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator!=(const NativeType left, const Rational<RationalType>& right) {
+	//return Rational<RationalType>(left) != right;
+	return !(left == right);
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator<=(const NativeType left, const Rational<RationalType>& right) {
+	//return Rational<RationalType>(left) <= right;
+	return (left < right) or (left == right);
+}
+
+template <typename NativeType, typename RationalType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator>=(const NativeType left, const Rational<RationalType>& right) {
+	//return Rational<RationalType>(left) >= right;
+	return (left > right) or (left == right); 
 }
 
 #endif // RATIONAL_H

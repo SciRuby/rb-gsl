@@ -168,14 +168,34 @@ class Complex {
 	/////////////////////////////////
 	// Complex-Rational Operations //
 	/////////////////////////////////
-
-	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
-	inline bool operator!=(const Rational<IntType>& other) const {
+	
+	template <typename RationalType>
+	inline Complex<Type> operator+(const Rational<RationalType>& other) const {
+		return *this + Complex<Type>(other);
+	}
+	
+	template <typename RationalType>
+	inline Complex<Type> operator-(const Rational<RationalType>& other) const {
+		return *this * Complex<Type>(other);
+	}
+	
+	template <typename RationalType>
+	inline Complex<Type> operator*(const Rational<RationalType>& other) const {
+		return *this * Complex<Type>(other);
+	}
+	
+	template <typename RationalType>
+	inline Complex<Type> operator/(const Rational<RationalType>& other) const {
+		return *this / Complex<Type>(other);
+	}
+	
+	template <typename RationalType, typename = typename std::enable_if<std::is_integral<RationalType>::value>::type>
+	inline bool operator!=(const Rational<RationalType>& other) const {
 	  return *this != Complex<Type>(other);
 	}
 
-  template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
-	inline bool operator==(const Rational<IntType>& other) const {
+  template <typename RationalType, typename = typename std::enable_if<std::is_integral<RationalType>::value>::type>
+	inline bool operator==(const Rational<RationalType>& other) const {
 	  return *this == Complex<Type>(other);
 	}
 

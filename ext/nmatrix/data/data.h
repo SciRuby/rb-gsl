@@ -85,7 +85,7 @@
   };
 
 /* Does not work. */
-#define ITYPE_TEMPLATE_TABLE(fun, ret, ...)   NAMED_ITYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
+#define ITYPE_TEMPLATE_TABLE(fun, ret, ...) NAMED_ITYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
 #define STYPE_MARK_TABLE(name)									\
   static void (*(name)[NUM_STYPES])(void*) = {	\
@@ -158,7 +158,7 @@
 
 
 /* Does not work. */
-#define LR_DTYPE_TEMPLATE_TABLE(fun, ret, ...)    NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
+#define LR_DTYPE_TEMPLATE_TABLE(fun, ret, ...) NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 	
 #define NAMED_LRI_DTYPE_TEMPLATE_TABLE(name,  fun,  ret,  ...) \
 static ret (*(name)[NUM_DTYPES][NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
