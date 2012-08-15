@@ -36,8 +36,16 @@
 class NMatrix
 	# Read and write extensions for NMatrix. These are only loaded when needed.
 	module IO
-		autoload :MatReader, 'nmatrix/io/mat_reader'
-		autoload :Mat5Reader, 'nmatrix/io/mat5_reader'
+    module Matlab
+      class << self
+        def load_mat file_path
+          NMatrix::IO::Matlab::Mat5Reader.new(File.open(file_path, "rb+")).to_ruby
+        end
+      end
+
+      autoload :MatReader, 'nmatrix/io/mat_reader'
+      autoload :Mat5Reader, 'nmatrix/io/mat5_reader'
+    end
 	end
 
 	# TODO: Make this actually pretty.

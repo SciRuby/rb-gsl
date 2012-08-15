@@ -87,6 +87,7 @@ static void  nm_delete(NMATRIX* mat);
 static void  nm_delete_ref(NMATRIX* mat);
 static VALUE nm_dtype(VALUE self);
 static VALUE nm_itype(VALUE self);
+static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg);
 static VALUE nm_stype(VALUE self);
 static VALUE nm_rank(VALUE self);
 static VALUE nm_shape(VALUE self);
@@ -170,7 +171,9 @@ void Init_nmatrix() {
 
 	//rb_define_method(cNMatrix, "initialize_cast_copy", (METHOD)nm_init_cast_copy, 2);
 	//rb_define_method(cNMatrix, "as_dtype", (METHOD)nm_cast_copy, 1);
-	
+
+	rb_define_singleton_method(cNMatrix, "itype_by_shape", (METHOD)nm_itype_by_shape, 1);
+
 	rb_define_method(cNMatrix, "dtype", (METHOD)nm_dtype, 0);
 	rb_define_method(cNMatrix, "itype", (METHOD)nm_itype, 0);
 	rb_define_method(cNMatrix, "stype", (METHOD)nm_stype, 0);
@@ -335,6 +338,22 @@ static VALUE nm_itype(VALUE self) {
   }
   return Qnil;
 }
+
+
+/*
+ * Get the index data type (dtype) of a matrix. Defined only for yale; others return nil.
+ */
+static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg) {
+
+  size_t rank;
+  size_t* shape = interpret_shape(shape_arg, &rank);
+
+  itype_t itype = yale_storage_itype_by_shape(shape);
+  ID itype_id   = rb_intern(ITYPE_NAMES[itype]);
+
+  return ID2SYM(itype_id);
+}
+
 
 
 /*
