@@ -42,7 +42,7 @@ describe "Slice operation" do
   end
 
   it "reference should compare with non-reference" do
-    @m.slice(1..2,0..1).should == @m[1..2, 0..1]
+    @m.slice(1..2,0..1).should.eql? @m[1..2, 0..1]
   end
 
   context "with copying" do
@@ -73,7 +73,7 @@ describe "Slice operation" do
       n = @m.slice(0..1,1)
       n.shape.should eql([2,1])
 
-      n[0,0].should == @m[0,1]
+      n[0,0].should.eql? @m[0,1]
       n[0,0] = -9
       @m[0,1].should eql(1)
     end
@@ -84,7 +84,7 @@ describe "Slice operation" do
   context "be reference" do
     it 'should return an NMatrix' do
       n = @m[0..1,0..1]
-      n.should eql( NMatrix.new(:dense, [2,2], [0,1,3,4], :int32))
+      n.should.eql? NMatrix.new(:dense, [2,2], [0,1,3,4], :int32)
     end
 
     it 'should return a 2x2 matrix with refs to self elements' do
@@ -119,8 +119,8 @@ describe "Slice operation" do
     it 'should slice again' do
       n = @m[1..2, 1..2]
 
-      n[1,0..1].should == NMatrix.new([1,2], [7,8])
-      n.slice(1,0..1).should eql(NMatrix.new([1,2], [7,8]))
+      n[1,0..1].should.eql? NMatrix.new([1,2], [7,8])
+      n.slice(1,0..1).should.eql? NMatrix.new([1,2], [7,8])
     end
 
   # [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |left_dtype|
