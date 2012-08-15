@@ -71,13 +71,6 @@ template <> struct LongDType<Rational64> { typedef Rational128 type; };
 template <> struct LongDType<Rational128> { typedef Rational128 type; };
 template <> struct LongDType<RubyObject> { typedef RubyObject type; };
 
-/*
-#ifndef CBLAS_ENUM_DEFINED_H
-# define CBLAS_ENUM_DEFINED_H
-enum CBLAS_TRANSPOSE { CblasNoTrans=111, CblasTrans=112, CblasConjTrans=113, AtlasConj=114 };
-enum CBLAS_ORDER { CblasRowMajor=101, CblasColMajor=102 };
-#endif
-*/
 
 /*
  * Data
@@ -86,6 +79,8 @@ enum CBLAS_ORDER { CblasRowMajor=101, CblasColMajor=102 };
 /*
  * Functions
  */
+void Init_blas(void);
+
 /*
  * GEneral Matrix Multiplication: based on dgemm.f from Netlib.
  *

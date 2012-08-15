@@ -108,7 +108,7 @@
 #define NM_SHAPE1(val)          (NM_STORAGE(val)->shape[1])
 
 #define NM_DENSE_COUNT(val)     (storage_count_max_elements(NM_DENSE_STORAGE(val)))
-#define NM_SIZEOF_DTYPE(val)    (nm_sizeof[NM_DTYPE(val)])
+#define NM_SIZEOF_DTYPE(val)    (DTYPE_SIZES[NM_DTYPE(val)])
 #define NM_REF(val,slice)      (RefFuncs[NM_STYPE(val)]( NM_STORAGE(val), slice, NM_SIZEOF_DTYPE(val) ))
     
 #define NM_MAX(a,b) (((a)>(b))?(a):(b))
@@ -129,27 +129,18 @@
  * Types
  */
 
-// Two vectors and a capacity.
-typedef struct {
-  void*  ija;
-  void*  a;
-  size_t capacity;
-} VECTOR;
-
-typedef struct NMATRIX {
+struct NMATRIX {
 	// Method of storage (csc, dense, etc).
 	stype_t		stype;
 	// Pointer to storage struct.
 	STORAGE*	storage;
-} NMATRIX;
+};
+
+typedef VALUE (*METHOD)(...);
 
 /*
  * Data
  */
-
-#ifndef NMATRIX_C
-	extern VALUE cNMatrix;
-#endif
 
 /*
  * Functions

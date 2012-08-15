@@ -97,9 +97,8 @@ $srcs = [
 	'ruby_constants.cpp',
 
 	'data/data.cpp',
-	#'util/math.cpp',
+	'util/math.cpp',
   'util/sl_list.cpp',
-  #'util/util.cpp',
   'storage/common.cpp',
 	'storage/storage.cpp',
 	'storage/dense.cpp',
@@ -145,7 +144,7 @@ have_header("f2c.h")
 
 $libs += " -lcblas -latlas "
 
-$objs = %w{nmatrix ruby_constants data/data util/sl_list storage/common storage/storage storage/dense storage/yale storage/list}.map { |i| i + ".o" }
+$objs = %w{nmatrix ruby_constants data/data util/math util/sl_list storage/common storage/storage storage/dense storage/yale storage/list}.map { |i| i + ".o" }
 
 #CONFIG['CXX'] = 'clang++'
 

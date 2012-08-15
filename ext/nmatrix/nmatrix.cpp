@@ -62,14 +62,13 @@
  */
 
 #include "nmatrix.h"
+#include "util/math.h"
 #include "storage/storage.h"
 #include "ruby_constants.h"
 
 /*
  * Macros
  */
-
-typedef VALUE (*METHOD)(...);
 
 /*
  * Global Variables
@@ -88,6 +87,7 @@ static void  nm_delete(NMATRIX* mat);
 static void  nm_delete_ref(NMATRIX* mat);
 static VALUE nm_dtype(VALUE self);
 static VALUE nm_itype(VALUE self);
+static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg);
 static VALUE nm_stype(VALUE self);
 static VALUE nm_rank(VALUE self);
 static VALUE nm_shape(VALUE self);
@@ -123,16 +123,6 @@ static stype_t	interpret_stype(VALUE arg);
 static stype_t	stype_from_rbstring(VALUE str);
 static stype_t	stype_from_rbsymbol(VALUE sym);
 
-#ifdef DEBUG_YALE
-/* Yale-specific functions */
-static VALUE nm_yale_size(VALUE self);
-static VALUE nm_yale_a(VALUE self);
-static VALUE nm_yale_d(VALUE self);
-static VALUE nm_yale_lu(VALUE self);
-static VALUE nm_yale_ia(VALUE self);
-static VALUE nm_yale_ja(VALUE self);
-static VALUE nm_yale_ija(VALUE self);
-#endif
 
 #ifdef BENCHMARK
 static double get_time(void);
@@ -168,9 +158,7 @@ void Init_nmatrix() {
 	rb_define_alloc_func(cNMatrix, nm_alloc);
 	
 	/*
-	 * FIXME: These need to be bound in a better way.
-	rb_define_singleton_method(cNMatrix, "__cblas_gemm__", nm_cblas_gemm, 13);
-	rb_define_singleton_method(cNMatrix, "__cblas_gemv__", nm_cblas_gemv, 11);
+	 * FIXME: This needs to be bound in a better way.
 	rb_define_singleton_method(cNMatrix, "upcast", nm_upcast, 2);
 	 */
 	
@@ -183,7 +171,9 @@ void Init_nmatrix() {
 
 	//rb_define_method(cNMatrix, "initialize_cast_copy", (METHOD)nm_init_cast_copy, 2);
 	//rb_define_method(cNMatrix, "as_dtype", (METHOD)nm_cast_copy, 1);
-	
+
+	rb_define_singleton_method(cNMatrix, "itype_by_shape", (METHOD)nm_itype_by_shape, 1);
+
 	rb_define_method(cNMatrix, "dtype", (METHOD)nm_dtype, 0);
 	rb_define_method(cNMatrix, "itype", (METHOD)nm_itype, 0);
 	rb_define_method(cNMatrix, "stype", (METHOD)nm_stype, 0);
@@ -225,17 +215,6 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, "hermitian?", (METHOD)nm_hermitian, 0);
 
 	rb_define_method(cNMatrix, "capacity", (METHOD)nm_capacity, 0);
-
-#ifdef DEBUG_YALE
-	rb_define_method(cNMatrix, "__yale_ija__", (METHOD)nm_yale_ija, 0);
-	rb_define_method(cNMatrix, "__yale_a__", (METHOD)nm_yale_a, 0);
-	rb_define_method(cNMatrix, "__yale_size__", (METHOD)nm_yale_size, 0);
-	rb_define_method(cNMatrix, "__yale_ia__", (METHOD)nm_yale_ia, 0);
-	rb_define_method(cNMatrix, "__yale_ja__", (METHOD)nm_yale_ja, 0);
-	rb_define_method(cNMatrix, "__yale_d__", (METHOD)nm_yale_d, 0);
-	rb_define_method(cNMatrix, "__yale_lu__", (METHOD)nm_yale_lu, 0);
-	//rb_define_const(cNMatrix, "YALE_GROWTH_CONSTANT", rb_float_new(YALE_GROWTH_CONSTANT));
-#endif
 	
 	/////////////
 	// Aliases //
@@ -248,7 +227,19 @@ void Init_nmatrix() {
 	// Symbol Generation //
 	///////////////////////
 	
-	ruby_constants_init();
+	Init_ruby_constants();
+
+	//////////////////////////
+	// YaleFunctions module //
+	//////////////////////////
+
+	Init_yale_functions();
+
+	/////////////////
+	// BLAS module //
+	/////////////////
+
+	Init_blas();
 }
 
 /*
@@ -347,6 +338,22 @@ static VALUE nm_itype(VALUE self) {
   }
   return Qnil;
 }
+
+
+/*
+ * Get the index data type (dtype) of a matrix. Defined only for yale; others return nil.
+ */
+static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg) {
+
+  size_t rank;
+  size_t* shape = interpret_shape(shape_arg, &rank);
+
+  itype_t itype = yale_storage_itype_by_shape(shape);
+  ID itype_id   = rb_intern(ITYPE_NAMES[itype]);
+
+  return ID2SYM(itype_id);
+}
+
 
 
 /*
@@ -755,7 +762,7 @@ static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
     list_storage_ref,
     yale_storage_ref
   };
-  return nm_xslice(argc, argv, ttable[NM_STYPE(self)], nm_delete, self);
+  return nm_xslice(argc, argv, ttable[NM_STYPE(self)], nm_delete_ref, self);
 }
 
 /*
@@ -910,11 +917,13 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
         yale_storage_ref
       };
 
+      /* // Debugging for slice
       fprintf(stderr, "single: ");
       for (size_t i = 0; i < NM_RANK(self); ++i) {
         fprintf(stderr, "%u(%u) ", slice->coords[i], slice->lengths[i]);
       }
       fprintf(stderr, "\n");
+      */
 
       DENSE_STORAGE* s = NM_DENSE_STORAGE(self);
 
@@ -959,7 +968,7 @@ bool is_ref(const NMATRIX* matrix) {
     return false;
   }
   
-  return ((DENSE_STORAGE*)(matrix->storage))->src == matrix->storage;
+  return ((DENSE_STORAGE*)(matrix->storage))->src != matrix->storage;
 }
 
 /*
@@ -1378,159 +1387,6 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
   return Qnil; // Only if we try to multiply list matrices should we return Qnil.
 }
 
-/////////////////////////////
-// YALE-SPECIFIC FUNCTIONS //
-/////////////////////////////
-#ifdef DEBUG_YALE
-
-/*
- * Get the size of a Yale matrix (the number of elements actually stored).
- *
- * For capacity (the maximum number of elements that can be stored without a resize), use capacity instead.
- */
-static VALUE nm_yale_size(VALUE self) {
-  if (NM_STYPE(self) != YALE_STORE) rb_raise(nm_eStorageTypeError, "wrong storage type");
-
-  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
-
-  return rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*(s->shape[0]), s->itype).rval;
-}
-
-
-/*
- * Get the A array of a Yale matrix (which stores the diagonal and the LU portions of the matrix).
- */
-static VALUE nm_yale_a(VALUE self) {
-  if (NM_STYPE(self) != YALE_STORE) rb_raise(nm_eStorageTypeError, "wrong storage type");
-
-  YALE_STORAGE* s = NM_YALE_STORAGE(self);
-
-  size_t size = yale_storage_get_size(s);
-  VALUE* vals = ALLOCA_N(VALUE, size);
-
-  for (size_t i = 0; i < size; ++i) {
-    vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*i, s->dtype).rval;
-  }
-  VALUE ary = rb_ary_new4(size, vals);
-
-  for (size_t i = size; i < s->capacity; ++i)
-    rb_ary_push(ary, Qnil);
-
-  return ary;
-}
-
-
-/*
- * Get the diagonal ("D") portion of the A array of a Yale matrix.
- */
-static VALUE nm_yale_d(VALUE self) {
-  if (NM_STYPE(self) != YALE_STORE) rb_raise(nm_eStorageTypeError, "wrong storage type");
-
-  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
-
-  VALUE* vals = ALLOCA_N(VALUE, s->shape[0]);
-
-  for (size_t i = 0; i < s->shape[0]; ++i) {
-    vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*i, s->dtype).rval;
-  }
-  return rb_ary_new4(s->shape[0], vals);
-}
-
-
-/*
- * Get the non-diagonal ("LU") portion of the A array of a Yale matrix.
- */
-static VALUE nm_yale_lu(VALUE self) {
-  if (NM_STYPE(self) != YALE_STORE) rb_raise(nm_eStorageTypeError, "wrong storage type");
-
-  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
-
-  size_t size = yale_storage_get_size(s);
-
-  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
-
-  for (size_t i = 0; i < size - s->shape[0] - 1; ++i) {
-    vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*(s->shape[0] + 1 + i), s->dtype).rval;
-  }
-
-  VALUE ary = rb_ary_new4(size - s->shape[0] - 1, vals);
-
-  for (size_t i = size; i < s->capacity; ++i)
-    rb_ary_push(ary, Qnil);
-
-  return ary;
-}
-
-
-/*
- * Get the IA portion of the IJA array of a Yale matrix. This gives the start and end positions of rows in the
- * JA and LU portions of the IJA and A arrays, respectively.
- */
-static VALUE nm_yale_ia(VALUE self) {
-  if (NM_STYPE(self) != YALE_STORE) rb_raise(nm_eStorageTypeError, "wrong storage type");
-
-  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
-
-  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
-
-  for (size_t i = 0; i < s->shape[0] + 1; ++i) {
-    vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*i, s->itype).rval;
-  }
-
-  return rb_ary_new4(s->shape[0]+1, vals);
-}
-
-
-/*
- * Get the JA portion of the IJA array of a Yale matrix. This gives the column indices for entries in corresponding
- * positions in the LU portion of the A array.
- */
-static VALUE nm_yale_ja(VALUE self) {
-  if (NM_STYPE(self) != YALE_STORE) rb_raise(nm_eStorageTypeError, "wrong storage type");
-
-  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
-
-  size_t size = yale_storage_get_size(s);
-
-  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
-
-  for (size_t i = 0; i < size - s->shape[0] - 1; ++i) {
-    vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*(s->shape[0] + 1 + i), s->itype).rval;
-  }
-
-  VALUE ary = rb_ary_new4(size - s->shape[0] - 1, vals);
-
-  for (size_t i = size; i < s->capacity; ++i)
-    rb_ary_push(ary, Qnil);
-
-  return ary;
-}
-
-
-/*
- * Get the IJA array of a Yale matrix.
- */
-static VALUE nm_yale_ija(VALUE self) {
-  if (NM_STYPE(self) != YALE_STORE) rb_raise(nm_eStorageTypeError, "wrong storage type");
-
-  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
-
-  size_t size = yale_storage_get_size(s);
-
-  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
-
-  for (size_t i = 0; i < size; ++i) {
-    vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*i, s->itype).rval;
-  }
-
- VALUE ary = rb_ary_new4(size, vals);
-
-  for (size_t i = size; i < s->capacity; ++i)
-    rb_ary_push(ary, Qnil);
-
-  return ary;
-}
-#endif // DEBUG_YALE
 
 /////////////////
 // Exposed API //

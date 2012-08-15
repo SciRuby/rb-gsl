@@ -27,6 +27,12 @@
 require "./lib/nmatrix"
 
 describe NMatrix do
+  it "calculates itype" do
+    NMatrix.itype_by_shape([4,4]).should == :uint8
+    NMatrix.itype_by_shape(4).should == :uint8
+    ## FIXME: Check larger shapes for correct itype
+  end
+
   it "correctly compares two empty yale matrices" do
     n = NMatrix.new(:yale, [4,4], :float64)
     m = NMatrix.new(:yale, [4,4], :float64)
@@ -57,52 +63,57 @@ describe NMatrix do
 
   it "correctly sets diagonal values in yale" do
     n = NMatrix.new(:yale, [2,3], :float64)
+    n.extend(NMatrix::YaleFunctions)
     n[1,1] = 0.1
     n[0,0] = 0.2
-    n.__yale_d__.should == [0.2, 0.1]
+    n.yale_d.should == [0.2, 0.1]
   end
 
   it "does not resize yale until necessary" do
     n = NMatrix.new(:yale, [2,3], :float64)
-    n.__yale_size__.should == 3
+    n.extend(NMatrix::YaleFunctions)
+    n.yale_size.should == 3
     n.capacity.should == 5
     n[0,0] = 0.1
     n[0,1] = 0.2
     n[1,0] = 0.3
-    n.__yale_size__.should == 5
+    n.yale_size.should == 5
     n.capacity.should == 5
   end
 
 
   it "correctly sets when not resizing (yale)" do
     n = NMatrix.new(:yale, [2,3], :float64)
+    n.extend(NMatrix::YaleFunctions)
     n[0,0] = 0.1
     n[0,1] = 0.2
     n[1,0] = 0.3
-    n.__yale_a__ == [0.1, 0.0, 0.0, 0.2, 0.3]
-    n.__yale_ija__ == [3,4,5,1,0]
+    n.yale_a == [0.1, 0.0, 0.0, 0.2, 0.3]
+    n.yale_ija == [3,4,5,1,0]
   end
 
   it "correctly sets when resizing (yale)" do
     n = NMatrix.new(:yale, [2,3], :float64)
+    n.extend(NMatrix::YaleFunctions)
     n[0,0] = 0.01
     n[1,1] = 0.1
     n[0,1] = 0.2
     n[1,0] = 0.3
     n[1,2] = 0.4
-    n.__yale_d__.should == [0.01, 0.1]
-    n.__yale_ia__.should == [3,4,6]
-    n.__yale_ja__.should == [1,0,2,nil]
-    n.__yale_lu__.should == [0.2, 0.3, 0.4, nil]
+    n.yale_d.should == [0.01, 0.1]
+    n.yale_ia.should == [3,4,6]
+    n.yale_ja.should == [1,0,2,nil]
+    n.yale_lu.should == [0.2, 0.3, 0.4, nil]
   end
 
   it "correctly sets values within rows of yale" do
     n = NMatrix.new(:yale, [3,20], :float64)
+    n.extend(NMatrix::YaleFunctions)
     n[2,1]   = 1.0
     n[2,0]   = 1.5
     n[2,15]  = 2.0
-    n.__yale_lu__.should == [1.5, 1.0, 2.0]
-    n.__yale_ja__.should == [0, 1, 15]
+    n.yale_lu.should == [1.5, 1.0, 2.0]
+    n.yale_ja.should == [0, 1, 15]
   end
 
   it "correctly gets values within rows of yale" do
@@ -117,6 +128,7 @@ describe NMatrix do
 
   it "correctly sets values within large rows of yale" do
     n = NMatrix.new(:yale, [10,300], :float64)
+    n.extend(NMatrix::YaleFunctions)
     n[5,1]   = 1.0
     n[5,0]   = 1.5
     n[5,15]  = 2.0
@@ -127,12 +139,13 @@ describe NMatrix do
     n[5,293] = 2.0
     n[5,299] = 7.0
     n[5,100] = 8.0
-    n.__yale_lu__.should == [1.5, 1.0, 2.0, 8.0, 5.0, 6.0, 3.0, 4.0, 2.0, 7.0]
-    n.__yale_ja__.should == [0,   1,   15,  100, 289, 290, 291, 292, 293, 299]
+    n.yale_lu.should == [1.5, 1.0, 2.0, 8.0, 5.0, 6.0, 3.0, 4.0, 2.0, 7.0]
+    n.yale_ja.should == [0,   1,   15,  100, 289, 290, 291, 292, 293, 299]
   end
 
   it "correctly gets values within large rows of yale" do
     n = NMatrix.new(:yale, [10,300], :float64)
+    n.extend(NMatrix::YaleFunctions)
     n[5,1]   = 1.0
     n[5,0]   = 1.5
     n[5,15]  = 2.0
@@ -144,9 +157,9 @@ describe NMatrix do
     n[5,299] = 7.0
     n[5,100] = 8.0
 
-    n.__yale_ja__.each_index do |idx|
-      j = n.__yale_ja__[idx]
-      n[5,j].should == n.__yale_lu__[idx]
+    n.yale_ja.each_index do |idx|
+      j = n.yale_ja[idx]
+      n[5,j].should == n.yale_lu[idx]
     end
   end
 
@@ -180,6 +193,7 @@ describe NMatrix do
 
   it "correctly dots two identical yale matrices where a positive and negative partial sum cancel on the diagonal" do
     a = NMatrix.new(:yale, 4, :float64)
+
     a[0,0] = 1.0
     a[0,1] = 4.0
     a[1,2] = 2.0
@@ -207,8 +221,10 @@ describe NMatrix do
     #c[3,2].should == 8.0
     #c[3,3].should == 0.0 # this is the positive and negative partial sum cancel
 
-    c.__yale_ija__.reject { |i| i.nil? }.should == [5,8,9,9,11,1,2,3,3,1,2]
-    c.__yale_a__.reject { |i| i.nil? }.should == [1.0, -16.0, 0.0, 0.0, 0.0, 4.0, 8.0, -16.0, -16.0, 16.0, 8.0]
+    c.extend(NMatrix::YaleFunctions)
+
+    c.yale_ija.reject { |i| i.nil? }.should == [5,8,9,9,11,1,2,3,3,1,2]
+    c.yale_a.reject { |i| i.nil? }.should == [1.0, -16.0, 0.0, 0.0, 0.0, 4.0, 8.0, -16.0, -16.0, 16.0, 8.0]
 
   end
 

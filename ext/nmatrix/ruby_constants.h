@@ -79,6 +79,8 @@ extern ID rbsym_real,
 
 extern VALUE	cNMatrix,
 							cNVector,
+							cYaleFunctions,
+							cBLAS,
 			
 							nm_eDataTypeError,
 							nm_eStorageTypeError;
@@ -87,6 +89,6 @@ extern VALUE	cNMatrix,
  * Functions
  */
 
-void ruby_constants_init(void);
+void Init_ruby_constants(void);
 
 #endif // RUBY_CONSTANTS_H

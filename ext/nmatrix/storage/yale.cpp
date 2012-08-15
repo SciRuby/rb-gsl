@@ -53,6 +53,9 @@
 #include "common.h"
 #include "yale.h"
 
+#include "nmatrix.h"
+#include "ruby_constants.h"
+
 /*
  * Macros
  */
@@ -60,6 +63,7 @@
 #define NM_MAX(a,b) (((a)>(b))?(a):(b))
 #define NM_MIN(a,b) (((a)<(b))?(a):(b))
 #endif
+
 
 /*
  * Global Variables
@@ -94,9 +98,16 @@ static YALE_STORAGE*	yale_storage_alloc(dtype_t dtype, size_t* shape, size_t ran
 template <typename IType>
 static inline size_t  yale_storage_get_size_template(const YALE_STORAGE* storage);
 
-#ifndef DEBUG_YALE
 static inline size_t  yale_storage_get_size(const YALE_STORAGE* storage);
-#endif
+
+/* Ruby-accessible functions */
+static VALUE nm_yale_size(VALUE self);
+static VALUE nm_yale_a(VALUE self);
+static VALUE nm_yale_d(VALUE self);
+static VALUE nm_yale_lu(VALUE self);
+static VALUE nm_yale_ia(VALUE self);
+static VALUE nm_yale_ja(VALUE self);
+static VALUE nm_yale_ija(VALUE self);
 
 /*
  * Functions
@@ -372,22 +383,25 @@ template <typename DType,typename IType>
 void* yale_storage_ref_template(YALE_STORAGE* storage, SLICE* slice) {
   size_t* coords = slice->coords;
 
-  DType* a    = reinterpret_cast<DType*>(storage->a);
-  IType* ija  = reinterpret_cast<IType*>(storage->ija);
+  DType* a = reinterpret_cast<DType*>(storage->a);
+  IType* ija = reinterpret_cast<IType*>(storage->ija);
 
   if (coords[0] == coords[1])
-    return &(a[coords[0]]); // return diagonal entry
+    return &(a[ coords[0] ]); // return diagonal entry
 
-  if (a[coords[0]] == a[coords[0]+1])
-    return &(a[storage->shape[0]]); // return zero pointer
+  if (ija[coords[0]] == ija[coords[0]+1])
+    return &(a[ storage->shape[0] ]); // return zero pointer
 
 	// binary search for the column's location
-  int pos = yale_storage_binary_search_template<IType>(storage, ija[coords[0]], ija[coords[0]+1]-1, coords[1]);
+  int pos = yale_storage_binary_search_template<IType>(storage,
+                                                       ija[coords[0]],
+                                                       ija[coords[0]+1]-1,
+                                                       coords[1]);
 
   if (pos != -1 && ija[pos] == coords[1])
     return &(a[pos]); // found exact value
 
-  return &(a[storage->shape[0]]); // return a pointer that happens to be zero
+  return &(a[ storage->shape[0] ]); // return a pointer that happens to be zero
 }
 
 
@@ -407,21 +421,18 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, void* value)
   DType* v = reinterpret_cast<DType*>(value);
   size_t* coords = slice->coords;
 
-  DType* a = reinterpret_cast<DType*>(storage->a);
-  IType* ija = reinterpret_cast<IType*>(storage->ija);
-
   bool found = false;
   char ins_type;
 
   if (coords[0] == coords[1]) {
-    a[coords[0]] = *v; // set diagonal
+    reinterpret_cast<DType*>(storage->a)[coords[0]] = *v; // set diagonal
     return 'r';
   }
 
   // Get IJA positions of the beginning and end of the row
-  if (ija[coords[0]] == ija[coords[0]+1]) {
+  if (reinterpret_cast<IType*>(storage->ija)[coords[0]] == reinterpret_cast<IType*>(storage->ija)[coords[0]+1]) {
   	// empty row
-    ins_type = yale_storage_vector_insert_template<DType,IType>(storage, ija[coords[0]], &(coords[1]), v, 1, false);
+    ins_type = yale_storage_vector_insert_template<DType,IType>(storage, reinterpret_cast<IType*>(storage->ija)[coords[0]], &(coords[1]), v, 1, false);
     yale_storage_increment_ia_after_template<IType>(storage, storage->shape[0], coords[0], 1);
     storage->ndnz++;
 
@@ -433,11 +444,14 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, void* value)
   //ija_size = yale_storage_get_size_template<IType>(storage);
 
   // Do a binary search for the column
-  size_t pos = yale_storage_insert_search_template<IType>(storage, ija[coords[0]], ija[coords[0]+1]-1, coords[1], &found);
+  size_t pos = yale_storage_insert_search_template<IType>(storage,
+                                                          reinterpret_cast<IType*>(storage->ija)[coords[0]],
+                                                          reinterpret_cast<IType*>(storage->ija)[coords[0]+1]-1,
+                                                          coords[1], &found);
 
   if (found) { // replace
-    ija[pos] = coords[1];
-    a[pos]   = *v;
+    reinterpret_cast<IType*>(storage->ija)[pos] = coords[1];
+    reinterpret_cast<DType*>(storage->a)[pos]   = *v;
   	return 'r';
   }
 
@@ -985,5 +999,163 @@ STORAGE* yale_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t
   YALE_STORAGE* storage_access = (YALE_STORAGE*)(casted_storage.left);
 
   return ttable[storage_access->dtype][storage_access->itype](casted_storage, resulting_shape, vector);
+}
+
+///////////////////
+// Ruby Bindings //
+///////////////////
+
+/* These bindings are mostly only for debugging Yale. They are called from Init_nmatrix. */
+
+void Init_yale_functions() {
+  cYaleFunctions = rb_define_module_under(cNMatrix, "YaleFunctions");
+
+	rb_define_method(cYaleFunctions, "yale_ija", (METHOD)nm_yale_ija, 0);
+	rb_define_method(cYaleFunctions, "yale_a", (METHOD)nm_yale_a, 0);
+	rb_define_method(cYaleFunctions, "yale_size", (METHOD)nm_yale_size, 0);
+	rb_define_method(cYaleFunctions, "yale_ia", (METHOD)nm_yale_ia, 0);
+	rb_define_method(cYaleFunctions, "yale_ja", (METHOD)nm_yale_ja, 0);
+	rb_define_method(cYaleFunctions, "yale_d", (METHOD)nm_yale_d, 0);
+	rb_define_method(cYaleFunctions, "yale_lu", (METHOD)nm_yale_lu, 0);
+	//rb_define_const(cYaleFunctions, "YALE_GROWTH_CONSTANT", rb_float_new(YALE_GROWTH_CONSTANT));
+}
+
+
+/////////////////////////////
+// YALE-SPECIFIC FUNCTIONS //
+/////////////////////////////
+
+/*
+ * Get the size of a Yale matrix (the number of elements actually stored).
+ *
+ * For capacity (the maximum number of elements that can be stored without a resize), use capacity instead.
+ */
+static VALUE nm_yale_size(VALUE self) {
+  YALE_STORAGE* s = (YALE_STORAGE*)NM_STORAGE(self);
+
+  return rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*(s->shape[0]), s->itype).rval;
+}
+
+
+/*
+ * Get the A array of a Yale matrix (which stores the diagonal and the LU portions of the matrix).
+ */
+static VALUE nm_yale_a(VALUE self) {
+  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+
+  size_t size = yale_storage_get_size(s);
+  VALUE* vals = ALLOCA_N(VALUE, size);
+
+  for (size_t i = 0; i < size; ++i) {
+    vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*i, s->dtype).rval;
+  }
+  VALUE ary = rb_ary_new4(size, vals);
+
+  for (size_t i = size; i < s->capacity; ++i)
+    rb_ary_push(ary, Qnil);
+
+  return ary;
+}
+
+
+/*
+ * Get the diagonal ("D") portion of the A array of a Yale matrix.
+ */
+static VALUE nm_yale_d(VALUE self) {
+  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+
+  VALUE* vals = ALLOCA_N(VALUE, s->shape[0]);
+
+  for (size_t i = 0; i < s->shape[0]; ++i) {
+    vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*i, s->dtype).rval;
+  }
+  return rb_ary_new4(s->shape[0], vals);
+}
+
+
+/*
+ * Get the non-diagonal ("LU") portion of the A array of a Yale matrix.
+ */
+static VALUE nm_yale_lu(VALUE self) {
+  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+
+  size_t size = yale_storage_get_size(s);
+
+  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
+
+  for (size_t i = 0; i < size - s->shape[0] - 1; ++i) {
+    vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*(s->shape[0] + 1 + i), s->dtype).rval;
+  }
+
+  VALUE ary = rb_ary_new4(size - s->shape[0] - 1, vals);
+
+  for (size_t i = size; i < s->capacity; ++i)
+    rb_ary_push(ary, Qnil);
+
+  return ary;
+}
+
+
+/*
+ * Get the IA portion of the IJA array of a Yale matrix. This gives the start and end positions of rows in the
+ * JA and LU portions of the IJA and A arrays, respectively.
+ */
+static VALUE nm_yale_ia(VALUE self) {
+  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+
+  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
+
+  for (size_t i = 0; i < s->shape[0] + 1; ++i) {
+    vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*i, s->itype).rval;
+  }
+
+  return rb_ary_new4(s->shape[0]+1, vals);
+}
+
+
+/*
+ * Get the JA portion of the IJA array of a Yale matrix. This gives the column indices for entries in corresponding
+ * positions in the LU portion of the A array.
+ */
+static VALUE nm_yale_ja(VALUE self) {
+  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+
+  size_t size = yale_storage_get_size(s);
+
+  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
+
+  for (size_t i = 0; i < size - s->shape[0] - 1; ++i) {
+    vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*(s->shape[0] + 1 + i), s->itype).rval;
+  }
+
+  VALUE ary = rb_ary_new4(size - s->shape[0] - 1, vals);
+
+  for (size_t i = size; i < s->capacity; ++i)
+    rb_ary_push(ary, Qnil);
+
+  return ary;
+}
+
+
+/*
+ * Get the IJA array of a Yale matrix.
+ */
+static VALUE nm_yale_ija(VALUE self) {
+  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+
+  size_t size = yale_storage_get_size(s);
+
+  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
+
+  for (size_t i = 0; i < size; ++i) {
+    vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*i, s->itype).rval;
+  }
+
+ VALUE ary = rb_ary_new4(size, vals);
+
+  for (size_t i = size; i < s->capacity; ++i)
+    rb_ary_push(ary, Qnil);
+
+  return ary;
 }
 
