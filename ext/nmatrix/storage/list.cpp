@@ -59,6 +59,15 @@ extern bool (*ElemEqEq[NUM_DTYPES][2])(const void*, const void*, const int, cons
  * Forward Declarations
  */
 
+template <typename LDType, typename RDType>
+static LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t new_dtype);
+
+template <typename LDType, typename RDType>
+static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions);
+
+template <typename LDType, typename RDType>
+static LIST_STORAGE* list_storage_ew_multiply_template(LIST_STORAGE* left, LIST_STORAGE* right);
+
 /*
  * Functions
  */
@@ -228,7 +237,6 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
 // Tests //
 ///////////
 
-
 /*
  * Do these two dense matrices of the same dtype have exactly the same
  * contents?
@@ -286,6 +294,30 @@ bool list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
 	return ttable[left->dtype][right->dtype]((const LIST_STORAGE*)left, (const LIST_STORAGE*)right);
 }
 
+//////////
+// Math //
+//////////
+
+/*
+ * Documentation goes here.
+ */
+STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
+	LR_DTYPE_TEMPLATE_TABLE(list_storage_ew_multiply_template, LIST_STORAGE*, LIST_STORAGE*, LIST_STORAGE*);
+	
+	return ttable[left->dtype][right->dtype]((LIST_STORAGE*)left, (LIST_STORAGE*)right);
+}
+
+/*
+ * Documentation goes here.
+ */
+STORAGE* list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
+  free(resulting_shape);
+  rb_raise(rb_eNotImpError, "multiplication not implemented for list-of-list matrices");
+  return NULL;
+  //DTYPE_TEMPLATE_TABLE(dense_storage_matrix_multiply_template, NMATRIX*, STORAGE_PAIR, size_t*, bool);
+
+  //return ttable[reinterpret_cast<DENSE_STORAGE*>(casted_storage.left)->dtype](casted_storage, resulting_shape, vector);
+}
 
 /////////////
 // Utility //
@@ -341,6 +373,15 @@ size_t list_storage_count_nd_elements(const LIST_STORAGE* s) {
 /////////////////////////
 
 /*
+ * List storage copy constructor C access.
+ */
+STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
+  NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, list_storage_cast_copy_template, LIST_STORAGE*, const LIST_STORAGE* rhs, dtype_t new_dtype);
+
+  return (STORAGE*)ttable[new_dtype][rhs->dtype]((LIST_STORAGE*)rhs, new_dtype);
+}
+
+/*
  * Documentation goes here.
  */
 LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
@@ -367,12 +408,15 @@ LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
   return lhs;
 }
 
+/////////////////////////
+// Templated Functions //
+/////////////////////////
 
 /*
  * List storage copy constructor for changing dtypes.
  */
 template <typename LDType, typename RDType>
-LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t new_dtype) {
+static LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t new_dtype) {
 
   // allocate and copy shape
   size_t* shape = ALLOC_N(size_t, rhs->rank);
@@ -389,23 +433,12 @@ LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t n
   return lhs;
 }
 
-
-/*
- * List storage copy constructor C access.
- */
-STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
-  NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, list_storage_cast_copy_template, LIST_STORAGE*, const LIST_STORAGE* rhs, dtype_t new_dtype);
-
-  return (STORAGE*)ttable[new_dtype][rhs->dtype]((LIST_STORAGE*)rhs, new_dtype);
-}
-
-
 /* Copy dense into lists recursively
  *
  * FIXME: This works, but could probably be cleaner (do we really need to pass coords around?)
  */
 template <typename LDType, typename RDType>
-bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
+static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
   NODE *prev;
   LIST *sub_list;
   bool added = false, added_list = false;
@@ -452,12 +485,20 @@ bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs
   return added;
 }
 
-
-STORAGE* list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
-  free(resulting_shape);
-  rb_raise(rb_eNotImpError, "multiplication not implemented for list-of-list matrices");
-  return NULL;
-  //DTYPE_TEMPLATE_TABLE(dense_storage_matrix_multiply_template, NMATRIX*, STORAGE_PAIR, size_t*, bool);
-
-  //return ttable[reinterpret_cast<DENSE_STORAGE*>(casted_storage.left)->dtype](casted_storage, resulting_shape, vector);
+/*
+ * Documentation goes here.
+ */
+template <typename LDType, typename RDType>
+static LIST_STORAGE* list_storage_ew_multiply_template(LIST_STORAGE* left, LIST_STORAGE* right) {
+	unsigned int count;
+	
+	size_t* new_shape = (size_t*)calloc(left->rank, sizeof(size_t));
+	memcpy(new_shape, left->shape, sizeof(size_t) * left->rank);
+	
+	LIST_STORAGE* result = dense_storage_create(left->dtype, new_shape, left->rank, NULL);
+	
+	// FIXME: Add the actual ew-multiply code.
+	
+	return result;
 }
+

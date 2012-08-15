@@ -97,6 +97,7 @@ bool list_storage_eqeq(const STORAGE* left, const STORAGE* right);
 // Math //
 //////////
 
+STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right);
 STORAGE* list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
 /////////////
@@ -119,8 +120,5 @@ inline size_t list_storage_count_elements(const LIST_STORAGE* s) {
 
 LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs);
 STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
-
-template <typename LDType, typename RDType>
-bool list_storage_cast_copy_contents_dense_template(LIST*, const RDType*, RDType*, size_t&, size_t*, const size_t*, size_t, size_t);
 
 #endif // LIST_H
