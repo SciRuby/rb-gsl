@@ -72,6 +72,7 @@ ID	rbsym_real,
 
 VALUE cNMatrix,
 			cNVector,
+			cYaleFunctions,
 			
 			nm_eDataTypeError,
 			nm_eStorageTypeError;
@@ -84,7 +85,7 @@ VALUE cNMatrix,
  * Functions
  */
 
-void ruby_constants_init(void) {
+void Init_ruby_constants(void) {
 
 	rbsym_real							= rb_intern("real");
 	rbsym_imag							= rb_intern("imag");

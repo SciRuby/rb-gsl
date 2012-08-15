@@ -129,27 +129,18 @@
  * Types
  */
 
-// Two vectors and a capacity.
-typedef struct {
-  void*  ija;
-  void*  a;
-  size_t capacity;
-} VECTOR;
-
-typedef struct NMATRIX {
+struct NMATRIX {
 	// Method of storage (csc, dense, etc).
 	stype_t		stype;
 	// Pointer to storage struct.
 	STORAGE*	storage;
-} NMATRIX;
+};
+
+typedef VALUE (*METHOD)(...);
 
 /*
  * Data
  */
-
-#ifndef NMATRIX_C
-	extern VALUE cNMatrix;
-#endif
 
 /*
  * Functions
