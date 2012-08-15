@@ -203,7 +203,7 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, "each", (METHOD)nm_each, 0);
 
   // FIXME 0.0.2
-	//rb_define_method(cNMatrix, "*", (METHOD)nm_ew_multiply, 1);
+	rb_define_method(cNMatrix, "*", (METHOD)nm_ew_multiply, 1);
 	//rb_define_method(cNMatrix, "/", (METHOD)nm_ew_divide, 1);
 	//rb_define_method(cNMatrix, "+", (METHOD)nm_ew_add, 1);
 	//rb_define_method(cNMatrix, "-", (METHOD)nm_ew_subtract, 1);
@@ -434,6 +434,47 @@ static VALUE nm_eqeq(VALUE left, VALUE right) {
   }
 
   return result ? Qtrue : Qfalse;
+}
+
+/*
+ * Simple n-dimensional matrix-matrix multiplication.
+ */
+static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
+	NMATRIX* left, * right;
+	
+	NMATRIX* result = ALLOC(NMATRIX);
+	
+	static STORAGE* (*ew_multiply[NUM_STYPES])(STORAGE*, STORAGE*) = {
+		dense_storage_ew_multiply,
+		NULL,
+		NULL
+	};
+	
+	CheckNMatrixType(left_val);
+	CheckNMatrixType(right_val);
+	
+	UnwrapNMatrix(left_val, left);
+	UnwrapNMatrix(right_val, right);
+	
+	// Check that the left- and right-hand sides have the same rank.
+	if (NM_RANK(left) != NM_RANK(right)) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same rank.");
+	}
+	
+	// Check that the left- and right-hand sides have the same shape.
+	if (memcmp(NM_STORAGE(left)->shape, NM_STORAGE(right)->shape, sizeof(size_t) * NM_RANK(left)) != 0) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
+	}
+	
+	if (left->stype == right->stype) {
+		result->storage	= ew_multiply[left->stype](NM_STORAGE(left), NM_STORAGE(right));
+		result->stype		= left->stype;
+		
+	} else {
+		rb_raise(rb_eArgError, "Element-wise multiplication is not currently supported between matrices with differing stypes.");
+	}
+	
+	return Data_Wrap_Struct(cNMatrix, NULL, nm_delete, result);
 }
 
 /*

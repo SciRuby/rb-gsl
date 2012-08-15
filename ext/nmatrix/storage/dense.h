@@ -98,6 +98,7 @@ bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda);
 // Math //
 //////////
 
+STORAGE* dense_storage_ew_multiply(const STORAGE* left, const STORAGE* right);
 STORAGE* dense_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
 /////////////
