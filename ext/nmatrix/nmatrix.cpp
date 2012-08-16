@@ -455,7 +455,7 @@ static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
 	
 	static STORAGE* (*ew_multiply[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
 		dense_storage_ew_multiply,
-		NULL,
+		list_storage_ew_multiply,
 		NULL
 	};
 	
