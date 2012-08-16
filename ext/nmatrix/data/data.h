@@ -232,7 +232,7 @@ static ret (*(name)[NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
  * Types
  */
 
-typedef enum {
+enum dtype_t {
 	BYTE				=  0, // unsigned char
 	INT8				=  1, // char
 	INT16				=  2, // short
@@ -246,18 +246,18 @@ typedef enum {
 	RATIONAL64	= 10, // Rational64 class
 	RATIONAL128	= 11, // Rational128 class
 	RUBYOBJ			= 12  // Ruby VALUE type
-} dtype_t;
+};
 
 /*
  * Index Types
  */
 
-typedef enum {
+enum itype_t {
   UINT8 = 0,
   UINT16 = 1,
   UINT32 = 2,
   UINT64 = 3
-} itype_t;
+};
 
 //typedef union {
 //  uint8_t b[2];

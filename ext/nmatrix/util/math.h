@@ -41,10 +41,7 @@ extern "C" {
 /*
  * Project Includes
  */
-#include "data/complex.h"
-#include "data/rational.h"
-#include "data/ruby_object.h"
-#include "types.h"
+#include "data/data.h"
 
 /*
  * Macros
@@ -625,5 +622,93 @@ inline void smmp_sort_columns(const unsigned int n, const IType* ia, IType* ja, 
     }
   }
 }
+
+
+/*
+ * Transposes a generic Yale matrix (old or new). Specify new by setting diaga = true.
+ *
+ * Based on transp from SMMP (same as symbmm and numbmm).
+ *
+ * This is not named in the same way as most yale_storage functions because it does not act on a YALE_STORAGE
+ * object.
+ */
+template <typename DType, typename IType>
+void transpose_yale_template(const size_t n, const size_t m, const void* ia_, const void* ja_, const void* a_,
+                             const bool diaga, void* ib_, void* jb_, void* b_, const bool move)
+{
+  const IType *ia = reinterpret_cast<const IType*>(ia_),
+              *ja = reinterpret_cast<const IType*>(ja_);
+  const DType *a  = reinterpret_cast<const DType*>(a_);
+
+  IType *ib = reinterpret_cast<IType*>(ib_),
+        *jb = reinterpret_cast<IType*>(jb_);
+  DType *b  = reinterpret_cast<DType*>(b_);
+
+
+
+  size_t index;
+
+  // Clear B
+  for (size_t i = 0; i < m+1; ++i) ib[i] = 0;
+
+  if (move)
+    for (size_t i = 0; i < m+1; ++i) b[i] = 0;
+
+  if (diaga) ib[0] = m + 1;
+  else       ib[0] = 0;
+
+  /* count indices for each column */
+
+  for (size_t i = 0; i < n; ++i) {
+    for (size_t j = ia[i]; j < ia[i+1]; ++j) {
+      ++(ib[ja[j]+1]);
+    }
+  }
+
+  for (size_t i = 0; i < m; ++i) {
+    ib[i+1] = ib[i] + ib[i+1];
+  }
+
+  /* now make jb */
+
+  for (size_t i = 0; i < n; ++i) {
+
+    for (size_t j = ia[i]; j < ia[i+1]; ++j) {
+      index = ja[j];
+      jb[ib[index]] = i;
+
+      if (move)
+        b[ib[index]] = a[j];
+
+      ++(ib[index]);
+    }
+  }
+
+  /* now fixup ib */
+
+  for (size_t i = m; i >= 1; --i) {
+    ib[i] = ib[i-1];
+  }
+
+
+  if (diaga) {
+    if (move) {
+      size_t j = NM_MIN(n,m);
+
+      for (size_t i = 0; i < j; ++i) {
+        b[i] = a[i];
+      }
+    }
+    ib[0] = m + 1;
+
+  } else {
+    ib[0] = 0;
+  }
+}
+
+
+
+void det_exact(const int M, const void* elements, const int lda, dtype_t dtype, void* result);
+void transpose_generic(const size_t M, const size_t N, const void* A, const int lda, void* B, const int ldb, size_t element_size);
 
 #endif // MATH_H

@@ -388,6 +388,16 @@ static LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dt
   return lhs;
 }
 
+
+/*
+ * List storage copy constructor for transposing.
+ */
+STORAGE* list_storage_copy_transposed(const STORAGE* rhs_base) {
+  rb_raise(rb_eNotImpError, "list storage transpose not yet implemented");
+  return NULL;
+}
+
+
 /*
  * Do these two dense matrices of the same dtype have exactly the same
  * contents?

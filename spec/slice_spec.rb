@@ -131,7 +131,7 @@ describe "Slice operation" do
 
       # For now, don't bother testing int-int mult.
       #next if [:int8,:int16,:int32,:int64].include?(left_dtype) && [:int8,:int16,:int32,:int64].include?(right_dtype)
-      it "correctly handles #{left_dtype.to_s} dot #{right_dtype.to_s} matrix multiplication" do
+      it "handles #{left_dtype.to_s} dot #{right_dtype.to_s} matrix multiplication" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "2"
 

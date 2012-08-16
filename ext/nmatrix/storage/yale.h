@@ -125,6 +125,8 @@ void* yale_storage_get(STORAGE* s, SLICE* slice);
 void*	yale_storage_ref(STORAGE* s, SLICE* slice);
 char  yale_storage_set(STORAGE* storage, SLICE* slice, void* v);
 
+inline size_t  yale_storage_get_size(const YALE_STORAGE* storage);
+
 ///////////
 // Tests //
 ///////////
@@ -204,8 +206,9 @@ inline void yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s) {
 // Copying and Casting //
 /////////////////////////
 
-STORAGE* yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
+STORAGE*      yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs);
+STORAGE*      yale_storage_copy_transposed(const STORAGE* rhs_base);
 
 template <typename IType>
 void						yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s);
