@@ -148,9 +148,22 @@ $objs = %w{nmatrix ruby_constants data/data util/math util/sl_list storage/commo
 
 #CONFIG['CXX'] = 'clang++'
 
+if CONFIG['CXX'] == 'clang++'
+	$CPP_STANDARD = 'c++11'
+
+else
+	version = `g++ -v 2>&1`.lines.to_a.last.match(/gcc\sversion\s(\d\.\d.\d)/).captures.first
+	
+	if version < '4.7.0'
+		$CPP_STANDARD = 'c++0x'
+	else
+		$CPP_STANDARD = 'c++11'
+	end
+end
+
 $CFLAGS += " -O0 "
 # -std=c++11 only works with G++ 4.7 and higher.
-$CPPFLAGS += " -O0 -std=c++0x " #-fmax-errors=10 -save-temps
+$CPPFLAGS += " -O0 -std=#{$CPP_STANDARD} " #-fmax-errors=10 -save-temps
 
 CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
 CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
