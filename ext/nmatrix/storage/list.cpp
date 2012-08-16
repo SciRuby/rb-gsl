@@ -387,6 +387,7 @@ static LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dt
 
   return lhs;
 }
+
 /*
  * Do these two dense matrices of the same dtype have exactly the same
  * contents?
