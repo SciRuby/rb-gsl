@@ -61,10 +61,20 @@ template <typename LDType, typename RDType>
 static LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t new_dtype);
 
 template <typename LDType, typename RDType>
+<<<<<<< Updated upstream
 static bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* right);
 
 template <typename LDType, typename RDType>
 static void list_storage_ew_multiply_template(LIST* dest, const LIST* left, const LIST* right, size_t rank, const size_t* shape, size_t level);
+=======
+static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions);
+
+template <typename LDType, typename RDType>
+bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* right);
+
+template <typename LDType, typename RDType>
+static void list_storage_ew_multiply_template(LIST* dest, LIST* left, LIST* right, size_t rank, size_t* shape, size_t level = 1)
+>>>>>>> Stashed changes
 
 /*
  * Functions
@@ -249,16 +259,26 @@ bool list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
  * Documentation goes here.
  */
 STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
+<<<<<<< Updated upstream
 	LR_DTYPE_TEMPLATE_TABLE(list_storage_ew_multiply_template, void, LIST*, const LIST*, const LIST*, size_t, const size_t*, size_t);
+=======
+	LR_DTYPE_TEMPLATE_TABLE(list_storage_ew_multiply_template, void, LIST*, LIST*, LIST*, size_t, size_t);
+>>>>>>> Stashed changes
 	
 	size_t* new_shape = (size_t*)calloc(left->rank, sizeof(size_t));
 	memcpy(new_shape, left->shape, sizeof(size_t) * left->rank);
 	
+<<<<<<< Updated upstream
 	LIST_STORAGE* result = list_storage_create(left->dtype, new_shape, left->rank, NULL); 
 	
 	ttable[left->dtype][right->dtype](result->rows, ((LIST_STORAGE*)left)->rows, ((LIST_STORAGE*)right)->rows, result->rank, result->shape, 1);
 	
 	return result;
+=======
+	LIST_STORAGE* result = dense_storage_create(left->dtype, new_shape, left->rank, NULL); 
+	
+	return ttable[left->dtype][right->dtype](result->rows, (LIST_STORAGE*)left->rows, (LIST_STORAGE*)right->rows, result->rank, result->shape);
+>>>>>>> Stashed changes
 }
 
 /*
