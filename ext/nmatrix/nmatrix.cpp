@@ -839,7 +839,8 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
     rb_raise(rb_eNotImpError, "for matrix-vector multiplication, please use an NVector instead of an Array for now");
 
   //if (RDATA(right_v)->dfree != (RUBY_DATA_FUNC)nm_delete) {
-  else if (TYPE(right_v) == T_DATA && RDATA(right_v)->dfree == (RUBY_DATA_FUNC)nm_delete) { // both are matrices
+  else { // both are matrices
+    CheckNMatrixType(right_v);
     UnwrapNMatrix( right_v, right );
 
     if (left->storage->shape[1] != right->storage->shape[0])
@@ -850,7 +851,7 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 
     return matrix_multiply(left, right);
 
-  } else rb_raise(rb_eTypeError, "expected right operand to be NMatrix, NVector, or single numeric value");
+  } 
 
   return Qnil;
 }
