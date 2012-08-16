@@ -103,6 +103,8 @@ static VALUE nm_is_ref(VALUE self);
 
 static VALUE is_symmetric(VALUE self, bool hermitian);
 
+static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val);
+
 static VALUE nm_symmetric(VALUE self);
 static VALUE nm_hermitian(VALUE self);
 
@@ -451,7 +453,7 @@ static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
 	
 	NMATRIX* result = ALLOC(NMATRIX);
 	
-	static STORAGE* (*ew_multiply[NUM_STYPES])(STORAGE*, STORAGE*) = {
+	static STORAGE* (*ew_multiply[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
 		dense_storage_ew_multiply,
 		NULL,
 		NULL
@@ -567,11 +569,13 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   }
 
   // If there are 7 arguments and Yale, refer to a different init function with fewer sanity checks.
-  if ((argc == 7) and (stype == YALE_STORE)) {
-  	return nm_init_yale_from_old_yale(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], nm);
-  	
-	} else {
-	  rb_raise(rb_eArgError, "Expected 2-4 arguments (or 7 for internal Yale creation)");
+  if (argc == 7) {
+  	if (stype == YALE_STORE) {
+			return nm_init_yale_from_old_yale(argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], nm);
+			
+		} else {
+			rb_raise(rb_eArgError, "Expected 2-4 arguments (or 7 for internal Yale creation)");
+		}
   }
 	
 	// 1: Array or Fixnum
