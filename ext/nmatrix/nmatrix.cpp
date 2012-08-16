@@ -446,8 +446,6 @@ static VALUE nm_eqeq(VALUE left, VALUE right) {
  * Simple n-dimensional matrix-matrix multiplication.
  */
 static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
-	NMATRIX* left, * right;
-	
 	NMATRIX* result = ALLOC(NMATRIX);
 	
 	static STORAGE* (*ew_multiply[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
@@ -458,19 +456,20 @@ static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
 	
 	CheckNMatrixType(left_val);
 	CheckNMatrixType(right_val);
-	
-	UnwrapNMatrix(left_val, left);
-	UnwrapNMatrix(right_val, right);
-	
+
 	// Check that the left- and right-hand sides have the same rank.
-	if (NM_RANK(left) != NM_RANK(right)) {
+	if (NM_RANK(left_val) != NM_RANK(right_val)) {
 		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same rank.");
 	}
 	
 	// Check that the left- and right-hand sides have the same shape.
-	if (memcmp(NM_STORAGE(left)->shape, NM_STORAGE(right)->shape, sizeof(size_t) * NM_RANK(left)) != 0) {
+	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
 		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
 	}
+
+	NMATRIX* left, * right;
+	UnwrapNMatrix(left_val, left);
+	UnwrapNMatrix(right_val, right);
 	
 	if (left->stype == right->stype) {
 		
@@ -478,14 +477,15 @@ static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
 			rb_raise(rb_eArgError, "Element-wise multiplication is not supported for the given storage type.");
 		}
 		
-		result->storage	= ew_multiply[left->stype](NM_STORAGE(left), NM_STORAGE(right));
+		result->storage	= ew_multiply[left->stype](reinterpret_cast<STORAGE*>(left->storage), reinterpret_cast<STORAGE*>(right->storage));
 		result->stype		= left->stype;
 		
 	} else {
 		rb_raise(rb_eArgError, "Element-wise multiplication is not currently supported between matrices with differing stypes.");
 	}
-	
-	return Data_Wrap_Struct(cNMatrix, NULL, nm_delete, result);
+
+	STYPE_MARK_TABLE(mark);
+	return Data_Wrap_Struct(cNMatrix, mark[result->stype], nm_delete, result);
 }
 
 /*

@@ -176,14 +176,6 @@ describe NMatrix do
     n.pretty_print
   end
 
-  it "dense correctly handles elementwise addition" do
-    n = NMatrix.new(:dense, [2,2], [1,2,3,4], :int64)
-    m = NMatrix.new(:dense, [2,2], [-4,-1,0,66], :int64)
-    rcorrect = NMatrix.new(:dense, [2,2], [-3, 1, 3, 70], :int64)
-    r = n+m
-    r.should.eql? rcorrect
-  end
-
    # TODO: Get it working with ROBJ too
   [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |left_dtype|
     [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |right_dtype|
@@ -317,6 +309,22 @@ describe NMatrix do
         n = NMatrix.new(storage_type, 2, storage_type == :yale ? :int8 : 0)
         (n[0,1] = 1).should == 1
         n[0,1].should == 1
+      end
+
+      it "dense correctly handles elementwise addition" do
+        n = NMatrix.new(storage_type, [2,2], [1,2,3,4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4,-1,0,66], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [-3, 1, 3, 70], :int64)
+        r = n+m
+        r.should.eql? rcorrect
+      end
+
+      it "dense correctly handles elementwise multiplication" do
+        n = NMatrix.new(storage_type, [2,2], [1,2,3,4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4,-1,0,66], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [-8, -2, 0, 264], :int64)
+        r = n*m
+        r.should.eql? rcorrect
       end
     end
 
