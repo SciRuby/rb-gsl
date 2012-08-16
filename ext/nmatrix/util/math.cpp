@@ -44,6 +44,62 @@ static VALUE nm_cblas_gemm(VALUE self, VALUE trans_a, VALUE trans_b, VALUE m, VA
 static VALUE nm_cblas_gemv(VALUE self, VALUE trans_a, VALUE m, VALUE n, VALUE vAlpha, VALUE a, VALUE lda,
                            VALUE x, VALUE incx, VALUE vBeta, VALUE y, VALUE incy);
 
+
+////////////////////
+// Math Functions //
+////////////////////
+
+/*
+ * Calculate the determinant for a dense matrix (A [elements]) of size 2 or 3. Return the result.
+ */
+template <typename DType>
+void det_exact_template(const int M, const void* A_elements, const int lda, void* result_arg) {
+  DType* result  = reinterpret_cast<DType*>(result_arg);
+  const DType* A = reinterpret_cast<const DType*>(A_elements);
+
+  typename LongDType<DType>::type x, y;
+
+  if (M == 2) {
+    *result = A[0] * A[lda+1] - A[1] * A[lda];
+
+  } else if (M == 3) {
+    x = A[lda+1] * A[2*lda+2] - A[lda+2] * A[2*lda+1]; // ei - fh
+    y = A[lda] * A[2*lda+2] -   A[lda+2] * A[2*lda];   // fg - di
+    x = A[0]*x - A[1]*y ; // a*(ei-fh) - b*(fg-di)
+
+    y = A[lda] * A[2*lda+1] - A[lda+1] * A[2*lda];    // dh - eg
+    *result = A[2]*y + x; // c*(dh-eg) + _
+  } else if (M < 2) {
+    rb_raise(rb_eArgError, "can only calculate exact determinant of a square matrix of size 2 or larger");
+  } else {
+    rb_raise(rb_eNotImpError, "exact determinant calculation needed for matrices larger than 3x3");
+  }
+}
+
+
+void det_exact(const int M, const void* elements, const int lda, dtype_t dtype, void* result) {
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, det_exact_template, void, const int M, const void* A_elements, const int lda, void* result_arg);
+
+  ttable[dtype](M, elements, lda, result);
+}
+
+
+/*
+ * Transpose an array of elements that represent a row-major dense matrix. Does not allocate anything, only does an memcpy.
+ */
+void transpose_generic(const size_t M, const size_t N, const void* A, const int lda, void* B, const int ldb, size_t element_size) {
+  for (size_t i = 0; i < N; ++i) {
+    for (size_t j = 0; j < M; ++j) {
+
+      memcpy(reinterpret_cast<char*>(B) + (i*ldb+j)*element_size,
+             reinterpret_cast<const char*>(A) + (j*lda+i)*element_size,
+             element_size);
+
+    }
+  }
+}
+
+
 ///////////////////
 // Ruby Bindings //
 ///////////////////
@@ -189,3 +245,6 @@ static VALUE nm_cblas_gemv(VALUE self,
 
   return ttable[dtype](dtype, gemm_op_sym(trans_a), FIX2INT(m), FIX2INT(n), pAlpha, NM_DENSE_STORAGE(a)->elements, FIX2INT(lda), NM_DENSE_STORAGE(x)->elements, FIX2INT(incx), pBeta, NM_DENSE_STORAGE(y)->elements, FIX2INT(incy)) ? Qtrue : Qfalse;
 }
+
+
+

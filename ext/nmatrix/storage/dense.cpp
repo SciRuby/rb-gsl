@@ -446,6 +446,33 @@ DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
   return lhs;
 }
 
+
+/*
+ * Transpose dense storage into a new dense storage object. Basically a copy constructor.
+ *
+ * Not much point in templating this as it's pretty straight-forward.
+ */
+STORAGE* dense_storage_copy_transposed(const STORAGE* rhs_base) {
+  DENSE_STORAGE* rhs = (DENSE_STORAGE*)rhs_base;
+
+  size_t *shape = ALLOC_N(size_t, rhs->rank);
+
+  NM_CHECK_ALLOC(shape);
+
+  // swap shape and offset
+  shape[0] = rhs->shape[1];
+  shape[1] = rhs->shape[0];
+
+  DENSE_STORAGE *lhs = dense_storage_create(rhs->dtype, shape, rhs->rank, NULL, 0);
+  lhs->offset[0] = rhs->offset[1];
+  lhs->offset[1] = rhs->offset[0];
+
+  transpose_generic(rhs->shape[0], rhs->shape[1], rhs->elements, rhs->shape[1], lhs->elements, lhs->shape[1], DTYPE_SIZES[rhs->dtype]);
+
+  return (STORAGE*)lhs;
+}
+
+
 /////////////////////////
 // Templated Functions //
 /////////////////////////
@@ -454,15 +481,15 @@ template <typename LDType, typename RDType>
 DENSE_STORAGE* dense_storage_cast_copy_template(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
   size_t  count = storage_count_max_elements(rhs);
 
-  size_t *shape = ALLOC_N(size_t, rhs->rank),
-         *offset = ALLOC_N(size_t, rhs->rank);
+  size_t *shape = ALLOC_N(size_t, rhs->rank);
 
-  NM_CHECK_ALLOC(offset); // presumably we couldn't allocate offset if shape allocation failed.
+  NM_CHECK_ALLOC(shape); // presumably we couldn't allocate offset if shape allocation failed.
 
   memcpy(shape, rhs->shape, sizeof(size_t) * rhs->rank);
-  memcpy(offset, rhs->offset, sizeof(size_t) * rhs->rank);
 
   DENSE_STORAGE* lhs			= dense_storage_create(new_dtype, shape, rhs->rank, NULL, 0);
+  memcpy(lhs->offset, rhs->offset, sizeof(size_t) * rhs->rank);
+
   RDType*	rhs_els         = reinterpret_cast<RDType*>(rhs->elements);
   LDType* lhs_els	        = reinterpret_cast<LDType*>(lhs->elements);
 

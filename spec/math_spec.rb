@@ -31,7 +31,7 @@ require File.join(File.dirname(__FILE__), "spec_helper.rb")
 describe NMatrix::BLAS do
   [:float32, :float64, :complex64, :complex128].each do |dtype|
     context dtype do
-      it "properly exposes cblas gemm" do
+      it "exposes cblas gemm" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "1"
         n = NMatrix.new([4,3], dtype)
@@ -71,7 +71,7 @@ describe NMatrix::BLAS do
         r[3,1].should == 160.0
       end
 
-      it "properly exposes cblas gemv"
+      it "exposes cblas gemv"
     end
   end
 end

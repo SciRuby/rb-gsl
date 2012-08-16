@@ -98,7 +98,6 @@ static YALE_STORAGE*	yale_storage_alloc(dtype_t dtype, size_t* shape, size_t ran
 template <typename IType>
 static inline size_t  yale_storage_get_size_template(const YALE_STORAGE* storage);
 
-static inline size_t  yale_storage_get_size(const YALE_STORAGE* storage);
 
 /* Ruby-accessible functions */
 static VALUE nm_yale_size(VALUE self);
@@ -900,9 +899,6 @@ static inline size_t yale_storage_get_size_template(const YALE_STORAGE* storage)
 /*
  * Returns size of Yale storage as a size_t (no matter what the itype is).
  */
-#ifndef DEBUG_YALE
-static
-#endif
 inline size_t yale_storage_get_size(const YALE_STORAGE* storage) {
   NAMED_ITYPE_TEMPLATE_TABLE(ttable, yale_storage_get_size_template, size_t, const YALE_STORAGE* storage);
 
@@ -923,6 +919,27 @@ YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs) {
   memcpy(lhs->a, rhs->a, size * DTYPE_SIZES[lhs->dtype]);
 
   return lhs;
+}
+
+
+
+STORAGE* yale_storage_copy_transposed(const STORAGE* rhs_base) {
+  YALE_STORAGE* rhs = (YALE_STORAGE*)rhs_base;
+
+  size_t* shape = ALLOC_N(size_t, 2);
+  shape[0] = rhs->shape[1];
+  shape[1] = rhs->shape[0];
+
+  size_t size   = yale_storage_get_size(rhs);
+
+  YALE_STORAGE* lhs = yale_storage_create(rhs->dtype, shape, 2, size);
+  yale_storage_init(lhs);
+
+  NAMED_LI_DTYPE_TEMPLATE_TABLE(transp, transpose_yale_template, void, const size_t n, const size_t m, const void* ia_, const void* ja_, const void* a_, const bool diaga, void* ib_, void* jb_, void* b_, const bool move);
+
+  transp[lhs->dtype][lhs->itype](rhs->shape[0], rhs->shape[1], rhs->ija, rhs->ija, rhs->a, true, lhs->ija, lhs->ija, lhs->a, true);
+
+  return (STORAGE*)lhs;
 }
 
 /*

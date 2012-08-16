@@ -80,6 +80,7 @@
 
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm);
 static VALUE nm_init_copy(VALUE copy, VALUE original);
+static VALUE nm_init_transposed(VALUE self);
 static VALUE nm_init_cast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_symbol);
 static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm);
 static VALUE nm_alloc(VALUE klass);
@@ -87,7 +88,6 @@ static void  nm_delete(NMATRIX* mat);
 static void  nm_delete_ref(NMATRIX* mat);
 static VALUE nm_dtype(VALUE self);
 static VALUE nm_itype(VALUE self);
-static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg);
 static VALUE nm_stype(VALUE self);
 static VALUE nm_rank(VALUE self);
 static VALUE nm_shape(VALUE self);
@@ -114,6 +114,9 @@ static VALUE matrix_multiply_scalar(NMATRIX* left, VALUE scalar);
 static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right);
 static VALUE nm_multiply(VALUE left_v, VALUE right_v);
 
+static VALUE nm_det_exact(VALUE self);
+static VALUE nm_complex_conjugate_bang(VALUE self);
+
 static dtype_t	dtype_from_rbstring(VALUE str);
 static dtype_t	dtype_from_rbsymbol(VALUE sym);
 static itype_t  itype_from_rbsymbol(VALUE sym);
@@ -124,6 +127,10 @@ static size_t*	interpret_shape(VALUE arg, size_t* rank);
 static stype_t	interpret_stype(VALUE arg);
 static stype_t	stype_from_rbstring(VALUE str);
 static stype_t	stype_from_rbsymbol(VALUE sym);
+
+/* Singleton methods */
+static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg);
+static VALUE nm_upcast(VALUE self, VALUE t1, VALUE t2);
 
 
 #ifdef BENCHMARK
@@ -158,11 +165,13 @@ void Init_nmatrix() {
 	///////////////////
 	
 	rb_define_alloc_func(cNMatrix, nm_alloc);
-	
-	/*
-	 * FIXME: This needs to be bound in a better way.
-	rb_define_singleton_method(cNMatrix, "upcast", nm_upcast, 2);
-	 */
+
+	///////////////////////
+  // Singleton Methods //
+  ///////////////////////
+
+	rb_define_singleton_method(cNMatrix, "upcast", (METHOD)nm_upcast, 2);
+	rb_define_singleton_method(cNMatrix, "itype_by_shape", (METHOD)nm_itype_by_shape, 1);
 	
 	//////////////////////
 	// Instance Methods //
@@ -171,7 +180,8 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, "initialize", (METHOD)nm_init, -1);
 	rb_define_method(cNMatrix, "initialize_copy", (METHOD)nm_init_copy, 1);
 
-	rb_define_singleton_method(cNMatrix, "itype_by_shape", (METHOD)nm_itype_by_shape, 1);
+	// Technically, the following function is a copy constructor.
+	rb_define_method(cNMatrix, "transpose", (METHOD)nm_init_transposed, 0);
 
 	rb_define_method(cNMatrix, "dtype", (METHOD)nm_dtype, 0);
 	rb_define_method(cNMatrix, "itype", (METHOD)nm_itype, 0);
@@ -184,10 +194,9 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, "is_ref?", (METHOD)nm_is_ref, 0);
 	rb_define_method(cNMatrix, "rank", (METHOD)nm_rank, 0);
 	rb_define_method(cNMatrix, "shape", (METHOD)nm_shape, 0);
-	//rb_define_method(cNMatrix, "transpose", (METHOD)nm_transpose_new, 0);   // FIXME 0.0.2
-	//rb_define_method(cNMatrix, "det_exact", (METHOD)nm_det_exact, 0);       // FIXME 0.0.2
-	//rb_define_method(cNMatrix, "transpose!", (METHOD)nm_transpose_self, 0); // FIXME 0.0.2
-	//rb_define_method(cNMatrix, "complex_conjugate!", (METHOD)nm_complex_conjugate_bang, 0); // FIXME 0.0.2
+	rb_define_method(cNMatrix, "det_exact", (METHOD)nm_det_exact, 0);
+	//rb_define_method(cNMatrix, "transpose!", (METHOD)nm_transpose_self, 0);
+	rb_define_method(cNMatrix, "complex_conjugate!", (METHOD)nm_complex_conjugate_bang, 0);
 
 	rb_define_method(cNMatrix, "each", (METHOD)nm_each, 0);
 
@@ -354,6 +363,20 @@ static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg) {
 }
 
 
+/*
+ * Given a binary operation between types t1 and t2, what type will be returned?
+ *
+ * This is a singleton method on NMatrix, e.g., NMatrix.upcast(:int32, :int64)
+ */
+static VALUE nm_upcast(VALUE self, VALUE t1, VALUE t2) {
+
+  dtype_t d1    = dtype_from_rbsymbol(t1),
+          d2    = dtype_from_rbsymbol(t2);
+
+  return ID2SYM(rb_intern( DTYPE_NAMES[ Upcast[d1][d2] ] ));
+}
+
+
 
 /*
  * Borrowed this function from NArray. Handles 'each' iteration on a dense
@@ -497,6 +520,54 @@ static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
  */
 static VALUE nm_hermitian(VALUE self) {
   return is_symmetric(self, true);
+}
+
+
+/*
+ * Transform the matrix (in-place) to its complex conjugate. Only works on complex matrices.
+ *
+ * FIXME: For non-complex matrices, someone needs to implement a non-in-place complex conjugate (which doesn't use a bang).
+ * Bang should imply that no copy is being made, even temporarily.
+ */
+static VALUE nm_complex_conjugate_bang(VALUE self) {
+  NMATRIX* m;
+  void* elem;
+  size_t size, p;
+
+  UnwrapNMatrix(self, m);
+
+  if (m->stype == DENSE_STORE) {
+
+    size = storage_count_max_elements(NM_STORAGE(self));
+    elem = NM_DENSE_STORAGE(self)->elements;
+
+  } else if (m->stype == YALE_STORE) {
+
+    size = yale_storage_get_size(NM_YALE_STORAGE(self));
+    elem = NM_YALE_STORAGE(self)->a;
+
+  } else {
+    rb_raise(rb_eNotImpError, "please cast to yale or dense (complex) first");
+  }
+
+  // Walk through and negate the imaginary component
+  if (NM_DTYPE(self) == COMPLEX64) {
+
+    for (p = 0; p < size; ++p) {
+      reinterpret_cast<Complex64*>(elem)[p].i = -reinterpret_cast<Complex64*>(elem)[p].i;
+    }
+
+  } else if (NM_DTYPE(self) == COMPLEX128) {
+
+    for (p = 0; p < size; ++p) {
+      reinterpret_cast<Complex128*>(elem)[p].i = -reinterpret_cast<Complex128*>(elem)[p].i;
+    }
+
+  } else {
+    rb_raise(nm_eDataTypeError, "can only calculate in-place complex conjugate on matrices of type :complex64 or :complex128");
+  }
+
+  return self;
 }
 
 
@@ -664,6 +735,26 @@ static VALUE nm_init_cast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dty
   // Copy the storage
   STYPE_CAST_COPY_TABLE(cast_copy);
   lhs->storage = cast_copy[lhs->stype][rhs->stype](rhs->storage, new_dtype);
+
+  STYPE_MARK_TABLE(mark);
+
+  return Data_Wrap_Struct(cNMatrix, mark[lhs->stype], nm_delete, lhs);
+}
+
+
+/*
+ * Copy constructor for transposing.
+ */
+static VALUE nm_init_transposed(VALUE self) {
+  static STORAGE* (*storage_copy_transposed[NUM_STYPES])(const STORAGE* rhs_base) = {
+    dense_storage_copy_transposed,
+    list_storage_copy_transposed,
+    yale_storage_copy_transposed
+  };
+
+  NMATRIX* lhs = nm_create( NM_STYPE(self),
+                            storage_copy_transposed[NM_STYPE(self)]( NM_STORAGE(self) )
+                          );
 
   STYPE_MARK_TABLE(mark);
 
@@ -1386,6 +1477,31 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
   if (result) return Data_Wrap_Struct(cNMatrix, mark_table[result->stype], nm_delete, result);
   return Qnil; // Only if we try to multiply list matrices should we return Qnil.
 }
+
+
+
+
+
+/*
+ * Calculate the exact determinant of a dense matrix.
+ *
+ * Returns nil for dense matrices which are not square or rank other than 2.
+ *
+ * Note: Currently only implemented for 2x2 and 3x3 matrices.
+ */
+static VALUE nm_det_exact(VALUE self) {
+  if (NM_STYPE(self) != DENSE_STORE) rb_raise(nm_eStorageTypeError, "can only calculate exact determinant for dense matrices");
+
+  if (NM_RANK(self) != 2 || NM_SHAPE0(self) != NM_SHAPE1(self)) return Qnil;
+
+  // Calculate the determinant and then assign it to the return value
+  void* result = ALLOCA_N(char, DTYPE_SIZES[NM_DTYPE(self)]);
+  det_exact(NM_SHAPE0(self), NM_DENSE_STORAGE(self)->elements, NM_SHAPE0(self), NM_DTYPE(self), result);
+
+  return rubyobj_from_cval(result, NM_DTYPE(self)).rval;
+}
+
+
 
 
 /////////////////

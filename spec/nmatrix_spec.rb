@@ -51,7 +51,7 @@ describe NMatrix do
   end
 
 
-  it "correctly compares two list matrices" do
+  it "compares two list matrices" do
     n = NMatrix.new(:list, [3,3,3], :int64)
     m = NMatrix.new(:list, [3,3,3], :int64)
     n.should.eql? m
@@ -66,12 +66,12 @@ describe NMatrix do
     n.should.eql? m
   end
 
-  it "correctly fills dense Ruby object matrix with nil" do
+  it "fills dense Ruby object matrix with nil" do
     n = NMatrix.new([4,3], :object)
     n[0,0].should == nil
   end
 
-  it "correctly fills dense with individual assignments" do
+  it "fills dense with individual assignments" do
     n = NMatrix.new([4,3], :float64)
     n[0,0] = 14.0
     n[0,1] = 9.0
@@ -100,7 +100,7 @@ describe NMatrix do
     n[3,2].should == 3.0
   end
 
-  it "correctly fills dense with a single mass assignment" do
+  it "fills dense with a single mass assignment" do
     n = NMatrix.new([4,3], [14.0, 9.0, 3.0, 2.0, 11.0, 15.0, 0.0, 12.0, 17.0, 5.0, 2.0, 3.0])
 
     n[0,0].should == 14.0
@@ -117,7 +117,7 @@ describe NMatrix do
     n[3,2].should == 3.0
   end
 
-  it "correctly fills dense with a single mass assignment, with dtype specified" do
+  it "fills dense with a single mass assignment, with dtype specified" do
     m = NMatrix.new([4,3], [14.0, 9.0, 3.0, 2.0, 11.0, 15.0, 0.0, 12.0, 17.0, 5.0, 2.0, 3.0], :float32)
     m[0,0].should == 14.0
     m[0,1].should == 9.0
@@ -134,14 +134,14 @@ describe NMatrix do
   end
 
 
-  it "list correctly handles missing initialization value" do
+  it "list handles missing initialization value" do
     NMatrix.new(:list, 3, :int8)[0,0].should    == 0
     NMatrix.new(:list, 4, :float64)[0,0].should == 0.0
   end
 
 
   ##TODO: Make this test better. It's not nearly exhaustive enough as is.
-  it "list correctly handles recursive removal" do
+  it "list handles recursive removal" do
     n = NMatrix.new(:list, [3,3,3], 0)
     n[0,0,0] = 2
     n[1,1,1] = 1
@@ -161,7 +161,7 @@ describe NMatrix do
   end
 
 
-  it "dense correctly handles missing initialization value" do
+  it "dense handles missing initialization value" do
     n = NMatrix.new(3, :int8)
     n.stype.should == :dense
     n.dtype.should == :int8
@@ -171,7 +171,7 @@ describe NMatrix do
     m.dtype.should == :float64
   end
 
-  it "dense correctly pretty_prints complex values" do
+  it "dense pretty_prints complex values" do
     n = NMatrix.new([4,3], COMPLEX_MATRIX43A_ARRAY, :complex128)
     n.pretty_print
   end
@@ -185,7 +185,7 @@ describe NMatrix do
 
       # For now, don't bother testing int-int mult.
       #next if [:int8,:int16,:int32,:int64].include?(left_dtype) && [:int8,:int16,:int32,:int64].include?(right_dtype)
-      it "dense correctly handles #{left_dtype.to_s} dot #{right_dtype.to_s} matrix multiplication" do
+      it "dense handles #{left_dtype.to_s} dot #{right_dtype.to_s} matrix multiplication" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "2"
 
@@ -240,7 +240,7 @@ describe NMatrix do
       # Won't work if they're both 1-byte, due to overflow.
       next if [:byte,:int8].include?(left_dtype) && [:byte,:int8].include?(right_dtype)
 
-      it "dense correctly handles #{left_dtype.to_s} dot #{right_dtype.to_s} vector multiplication" do
+      it "dense handles #{left_dtype.to_s} dot #{right_dtype.to_s} vector multiplication" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "2"
         n = NMatrix.new([4,3], [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0], left_dtype)
@@ -296,7 +296,7 @@ describe NMatrix do
         lambda { NMatrix.new(storage_type, [1,10], storage_type == :yale ? :int8 : 0)[0,10] }.should raise_error(ArgumentError, "out of range")
       end
 
-      it "correctly sets and gets" do
+      it "sets and gets" do
         n = NMatrix.new(storage_type, 2, storage_type == :yale ? :int8 : 0)
         n[0,1] = 1
         n[0,0].should == 0
@@ -305,13 +305,13 @@ describe NMatrix do
         n[1,1].should == 0
       end
 
-      it "correctly sets and gets references" do
+      it "sets and gets references" do
         n = NMatrix.new(storage_type, 2, storage_type == :yale ? :int8 : 0)
         (n[0,1] = 1).should == 1
         n[0,1].should == 1
       end
 
-      it "dense correctly handles elementwise addition" do
+      it "dense handles elementwise addition" do
         n = NMatrix.new(storage_type, [2,2], [1,2,3,4], :int64)
         m = NMatrix.new(storage_type, [2,2], [-4,-1,0,66], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [-3, 1, 3, 70], :int64)
@@ -319,6 +319,7 @@ describe NMatrix do
         r.should.eql? rcorrect
       end
 
+=begin
       it "dense correctly handles elementwise multiplication" do
         n = NMatrix.new(storage_type, [2,2], [1,2,3,4], :int64)
         m = NMatrix.new(storage_type, [2,2], [-4,-1,0,66], :int64)
@@ -326,17 +327,18 @@ describe NMatrix do
         r = n*m
         r.should.eql? rcorrect
       end
+=end
     end
 
     # dense and list, not yale
     context "(storage: #{storage_type})" do
-      it "correctly gets default value" do
+      it "gets default value" do
         NMatrix.new(storage_type, 3, 0)[1,1].should   == 0
         NMatrix.new(storage_type, 3, 0.1)[1,1].should == 0.1
         NMatrix.new(storage_type, 3, 1)[1,1].should   == 1
       end
 
-      it "returns correct shape and rank" do
+      it "returns shape and rank" do
         NMatrix.new(storage_type, [3,2,8], 0).shape.should == [3,2,8]
         NMatrix.new(storage_type, [3,2,8], 0).rank.should  == 3
       end
@@ -344,23 +346,29 @@ describe NMatrix do
   end
 
 
-  it "correctly handles dense construction" do
+  it "handles dense construction" do
     NMatrix.new(3,0)[1,1].should == 0
     lambda { NMatrix.new(3,:int8)[1,1] }.should_not raise_error
   end
 
-  it "correctly allows iteration of Ruby object matrices" do
+  it "allows iteration of Ruby object matrices" do
     n = NMatrix.new(:dense, [3,3], [1,2,3,4,5,6,7,8,9], :object)
     n.each do |x|
       puts x
     end
   end
 
-  it "correctly allows iteration of non-Ruby object matrices" do
+  it "allows iteration of non-Ruby object matrices" do
     n = NMatrix.new(:dense, [3,3], [1,2,3,4,5,6,7,8,9], :int64)
     n.each do |x|
       puts x
     end
+  end
+
+  it "calculates the complex conjugate in-place" do
+    n = NMatrix.new(:dense, 3, [1,2,3,4,5,6,7,8,9], :complex128)
+    n.complex_conjugate!
+    # FIXME: Actually test that values are correct.
   end
 
 end
