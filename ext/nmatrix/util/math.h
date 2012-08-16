@@ -31,7 +31,11 @@
 /*
  * Standard Includes
  */
+
+extern "C" {
 #include <cblas.h>
+}
+
 #include <limits> // std::numeric_limits
 
 /*
@@ -242,7 +246,6 @@ inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE T
 
   return true;
 }
-
 
 template <>
 inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
