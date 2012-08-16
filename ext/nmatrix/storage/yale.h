@@ -184,6 +184,22 @@ char yale_storage_vector_insert_resize_template(YALE_STORAGE* s, size_t current_
 template <typename DType, typename IType>
 char yale_storage_vector_insert_template(YALE_STORAGE* s, size_t pos, size_t* j, DType* val, size_t n, bool struct_only);
 
+/*
+ * Clear out the D portion of the A vector (clearing the diagonal and setting
+ * the zero value).
+ *
+ * Note: This sets a literal 0 value. If your dtype is RUBYOBJ (a Ruby object),
+ * it'll actually be INT2FIX(0) instead of a string of NULLs.
+ */
+template <typename DType>
+inline void yale_storage_clear_diagonal_and_zero_template(YALE_STORAGE* s) {
+  DType* a = reinterpret_cast<DType*>(s->a);
+
+  // Clear out the diagonal + one extra entry
+  for (size_t i = 0; i < s->shape[0]+1; ++i) // insert Ruby zeros
+    a[i] = 0;
+}
+
 /////////////////////////
 // Copying and Casting //
 /////////////////////////

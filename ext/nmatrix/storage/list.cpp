@@ -256,7 +256,7 @@ STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
 	
 	LIST_STORAGE* result = list_storage_create(left->dtype, new_shape, left->rank, NULL); 
 	
-	ttable[left->dtype][right->dtype](result->rows, ((LIST_STORAGE*)left)->rows, ((LIST_STORAGE*)right)->rows, result->rank, result->shape, 1);
+	ttable[left->dtype][right->dtype](result->rows, ((LIST_STORAGE*)left)->rows, ((LIST_STORAGE*)right)->rows, result->rank, result->shape, 0);
 	
 	return result;
 }
@@ -453,7 +453,7 @@ static void list_storage_ew_multiply_template(LIST* dest, const LIST* left, cons
 			* r_node		= right->first,
 			* dest_node	= NULL;
 	
-	if (rank == level) {
+	if (rank == (level + 1)) {
 		for (index = 0; index < shape[level]; ++index) {
 			new_val = ALLOC(LDType);
 			*new_val = *reinterpret_cast<LDType*>(l_node->val) * *reinterpret_cast<RDType*>(r_node->val);
@@ -471,7 +471,6 @@ static void list_storage_ew_multiply_template(LIST* dest, const LIST* left, cons
 		
 	} else {
 		for (index = 0; index < shape[level]; ++index) {
-		  // FIXME: Needs check for NULL l_node / r_node here.
 			new_level = list_create();
 			list_storage_ew_multiply_template<LDType, RDType>(new_level, reinterpret_cast<LIST*>(l_node->val), reinterpret_cast<LIST*>(r_node->val), rank, shape, level + 1);
 			
