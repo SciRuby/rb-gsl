@@ -224,8 +224,8 @@ module NMatrix::IO::Matlab
 
           to_itype = NMatrix.itype_by_shape(dimensions)
 
-          require 'pry'
-          binding.pry
+          #require 'pry'
+          #binding.pry
 
           # MATLAB always uses :miINT32 for indices according to the spec
           NMatrix.new(:yale, dimensions, dtype, *repacked_indices(to_itype), repacked_data(dtype), from_dtype)

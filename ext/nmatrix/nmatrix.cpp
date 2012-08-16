@@ -80,7 +80,7 @@
 
 static VALUE nm_init(int argc, VALUE* argv, VALUE nm);
 static VALUE nm_init_copy(VALUE copy, VALUE original);
-static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype, VALUE new_dtype);
+static VALUE nm_init_cast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_symbol);
 static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm);
 static VALUE nm_alloc(VALUE klass);
 static void  nm_delete(NMATRIX* mat);
@@ -170,9 +170,6 @@ void Init_nmatrix() {
 
 	rb_define_method(cNMatrix, "initialize", (METHOD)nm_init, -1);
 	rb_define_method(cNMatrix, "initialize_copy", (METHOD)nm_init_copy, 1);
-
-	//rb_define_method(cNMatrix, "initialize_cast_copy", (METHOD)nm_init_cast_copy, 2);
-	//rb_define_method(cNMatrix, "as_dtype", (METHOD)nm_cast_copy, 1);
 
 	rb_define_singleton_method(cNMatrix, "itype_by_shape", (METHOD)nm_itype_by_shape, 1);
 
@@ -652,26 +649,25 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
 /*
  * Copy constructor for changing dtypes and stypes.
  */
-static VALUE nm_init_cast_copy(VALUE copy, VALUE original, VALUE new_stype_symbol, VALUE new_dtype_symbol) {
-  NMATRIX *lhs, *rhs;
-
+static VALUE nm_init_cast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_symbol) {
   dtype_t new_dtype = dtype_from_rbsymbol(new_dtype_symbol);
   stype_t new_stype = stype_from_rbsymbol(new_stype_symbol);
 
-  CheckNMatrixType(original);
+  CheckNMatrixType(self);
 
-  if (copy == original) return copy;
-
-  UnwrapNMatrix( original, rhs );
-  UnwrapNMatrix( copy,     lhs );
-
+  NMATRIX *lhs = ALLOC(NMATRIX),
+          *rhs;
   lhs->stype = new_stype;
 
-  // Copy the storage
-  STYPE_CAST_COPY_TABLE(ttable);
-  lhs->storage = ttable[new_stype][rhs->stype](rhs->storage, new_dtype);
+  UnwrapNMatrix( self, rhs );
 
-  return copy;
+  // Copy the storage
+  STYPE_CAST_COPY_TABLE(cast_copy);
+  lhs->storage = cast_copy[lhs->stype][rhs->stype](rhs->storage, new_dtype);
+
+  STYPE_MARK_TABLE(mark);
+
+  return Data_Wrap_Struct(cNMatrix, mark[lhs->stype], nm_delete, lhs);
 }
 
 
@@ -1023,10 +1019,9 @@ dtype_t dtype_from_rbstring(VALUE str) {
  * Converts a symbol to a data type.
  */
 static dtype_t dtype_from_rbsymbol(VALUE sym) {
-  size_t index;
-  
-  for (index = 0; index < NUM_DTYPES; ++index) {
-    if (SYM2ID(sym) == rb_intern(DTYPE_NAMES[index])) {
+  ID sym_id = SYM2ID(sym);
+  for (size_t index = 0; index < NUM_DTYPES; ++index) {
+    if (sym_id == rb_intern(DTYPE_NAMES[index])) {
     	return static_cast<dtype_t>(index);
     }
   }
