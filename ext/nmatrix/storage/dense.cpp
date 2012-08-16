@@ -89,7 +89,9 @@ DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, v
   s->rank       = rank;
   s->shape      = shape;
   s->dtype      = dtype;
+
   s->offset     = ALLOC_N(size_t, rank);
+  NM_CHECK_ALLOC(s->offset);
 
   memset(s->offset, 0, sizeof(size_t)*rank);
 
@@ -104,6 +106,8 @@ DENSE_STORAGE* dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, v
   	
   } else {
     s->elements = ALLOC_N(char, DTYPE_SIZES[dtype]*count);
+    NM_CHECK_ALLOC(s->elements);
+
     size_t copy_length = elements_length;
 
     if (elements_length > 0) {
@@ -363,7 +367,7 @@ static void dense_storage_slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *s
   } else {
     memcpy((char*)dest->elements + pdest*DTYPE_SIZES[dest->dtype],
         (char*)src->elements + psrc*DTYPE_SIZES[src->dtype],
-        src->shape[n]*DTYPE_SIZES[dest->dtype]);
+        dest->shape[n]*DTYPE_SIZES[dest->dtype]);
   }
 
 }
@@ -377,15 +381,13 @@ static void dense_storage_slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *s
  */
 DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
   size_t  count = storage_count_max_elements(rhs);
-  size_t *shape  = ALLOC_N(size_t, rhs->rank),
-         *offset = ALLOC_N(size_t, rhs->rank);
+  size_t *shape  = ALLOC_N(size_t, rhs->rank);
 
-  NM_CHECK_ALLOC(offset);
+  NM_CHECK_ALLOC(shape);
 
   // copy shape and offset
   for (size_t i = 0; i < rhs->rank; ++i) {
     shape[i]  = rhs->shape[i];
-    offset[i] = rhs->offset[i];
   }
 
   DENSE_STORAGE* lhs = dense_storage_create(rhs->dtype, shape, rhs->rank, NULL, 0);
