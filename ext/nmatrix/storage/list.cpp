@@ -61,7 +61,7 @@ template <typename LDType, typename RDType>
 static LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t new_dtype);
 
 template <typename LDType, typename RDType>
-bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* right);
+static bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* right);
 
 template <typename LDType, typename RDType>
 static void list_storage_ew_multiply_template(LIST* dest, const LIST* left, const LIST* right, size_t rank, const size_t* shape, size_t level);
