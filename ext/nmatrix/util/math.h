@@ -575,16 +575,15 @@ inline void symbmm(const unsigned int n, const unsigned int m, const IType* ia, 
 // Remember, we're dealing with unique keys, which simplifies things.
 // Doesn't have to be in-place, since we probably just multiplied and that wasn't in-place.
 template <typename DType, typename IType>
-inline void smmp_sort_columns(const unsigned int n, const IType* ia, IType* ja, DType* a) {
-  IType i, jj, jj_start, jj_end, min, min_jj;
+inline void smmp_sort_columns(const size_t n, const IType* ia, IType* ja, DType* a) {
+  IType jj, min, min_jj;
   DType temp_val;
 
-  for (i = 0; i < n; ++i) {
+  for (size_t i = 0; i < n; ++i) {
     // No need to sort if there are 0 or 1 entries in the row
     if (ia[i+1] - ia[i] < 2) continue;
 
-    jj_end = ia[i+1];
-    for (jj_start = ia[i]; jj_start < jj_end; ++jj_start) {
+    for (IType jj_start = ia[i]; jj_start < ia[i+1]; ++jj_start) {
 
       // If the previous min is just current-1, this key/value pair is already in sorted order.
       // This follows from the unique condition on our column keys.
@@ -593,10 +592,10 @@ inline void smmp_sort_columns(const unsigned int n, const IType* ia, IType* ja, 
         continue;
       }
 
-      // find the minimum key (column index) between jj_start and jj_end
+      // find the minimum key (column index) between jj_start and ia[i+1]
       min    = ja[jj_start];
       min_jj = jj_start;
-      for (jj = jj_start+1; jj < jj_end; ++jj) {
+      for (jj = jj_start+1; jj < ia[i+1]; ++jj) {
         if (ja[jj] < min) {
           min_jj = jj;
           min    = ja[jj];
@@ -606,7 +605,7 @@ inline void smmp_sort_columns(const unsigned int n, const IType* ia, IType* ja, 
       // if min is already first, skip this iteration
       if (min_jj == jj_start) continue;
 
-      for (jj = jj_start; jj < jj_end; ++jj) {
+      for (jj = jj_start; jj < ia[i+1]; ++jj) {
         // swap minimum key/value pair with key/value pair in the first position.
         if (min_jj != jj) {
           // min already = ja[min_jj], so use this as temp_key

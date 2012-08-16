@@ -533,7 +533,7 @@ static void dense_storage_cast_copy_list_default_template(LDType* lhs, RDType* d
  */
 template <typename LDType, typename RDType>
 static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
-  NODE *prev;
+  NODE *prev = NULL;
   LIST *sub_list;
   bool added = false, added_list = false;
   //void* insert_value;
