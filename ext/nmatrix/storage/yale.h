@@ -135,6 +135,7 @@ bool yale_storage_eqeq(const STORAGE* left, const STORAGE* right);
 // Math //
 //////////
 
+STORAGE* yale_storage_ew_multiply(const STORAGE* left, const STORAGE* right);
 STORAGE* yale_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
 /////////////

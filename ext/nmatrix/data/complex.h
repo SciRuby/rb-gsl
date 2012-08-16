@@ -77,7 +77,8 @@ class Complex {
 	/*
 	 * Copy constructors.
 	 */
-	inline Complex(const Complex<Type>& other) : r(other.r), i(other.i) {}
+	template <typename ComplexType>
+	inline Complex(const Complex<ComplexType>& other) : r(other.r), i(other.i) {}
 
 	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
 	inline Complex(const Rational<IntType>& other) : r(Type(other.n) / Type(other.d)), i(0) {}
@@ -161,7 +162,7 @@ class Complex {
 	}
 	
 	template <typename OtherType>
-	inline operator Complex<OtherType> () {
+	inline operator Complex<OtherType> () const {
 		return Complex<OtherType>((OtherType)this->r, (OtherType)this->i);
 	}
 
@@ -254,7 +255,7 @@ class Complex {
 	}
 
 	template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
-	inline operator NativeType () {
+	inline operator NativeType () const {
 		return (NativeType)this->r;
 	}
 };

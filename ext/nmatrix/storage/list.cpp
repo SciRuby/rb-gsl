@@ -61,9 +61,6 @@ template <typename LDType, typename RDType>
 static LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dtype_t new_dtype);
 
 template <typename LDType, typename RDType>
-static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions);
-
-template <typename LDType, typename RDType>
 bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* right);
 
 template <typename LDType, typename RDType>
@@ -388,58 +385,6 @@ static LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dt
   list_cast_copy_contents_template<LDType, RDType>(lhs->rows, rhs->rows, rhs->rank - 1);
 
   return lhs;
-}
-
-/* Copy dense into lists recursively
- *
- * FIXME: This works, but could probably be cleaner (do we really need to pass coords around?)
- */
-template <typename LDType, typename RDType>
-static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
-  NODE *prev;
-  LIST *sub_list;
-  bool added = false, added_list = false;
-  void* insert_value;
-
-  for (coords[rank-1-recursions] = 0; coords[rank-1-recursions] < shape[rank-1-recursions]; ++coords[rank-1-recursions], ++pos) {
-    //fprintf(stderr, "(%u)\t<%u, %u>: ", recursions, coords[0], coords[1]);
-
-    if (recursions == 0) {
-    	// create nodes
-
-      if (rhs[pos] != zero) {
-      	// is not zero
-        //fprintf(stderr, "inserting value\n");
-
-        // Create a copy of our value that we will insert in the list
-        LDType* insert_value = ALLOC_N(LDType, 1);
-        *insert_value        = static_cast<LDType>(rhs[pos]);
-
-        if (!lhs->first)    prev = list_insert(lhs, false, coords[rank-1-recursions], insert_value);
-        else               	prev = list_insert_after(prev, coords[rank-1-recursions], insert_value);
-        
-        added = true;
-      }
-      // no need to do anything if the element is zero
-      
-    } else { // create lists
-      // create a list as if there's something in the row in question, and then delete it if nothing turns out to be there
-      sub_list = list_create();
-
-      added_list = list_storage_cast_copy_contents_dense_template<LDType,RDType>(sub_list, rhs, zero, pos, coords, shape, rank, recursions-1);
-
-      if (!added_list)      	list_delete(sub_list, recursions-1);
-      else if (!lhs->first)  	prev = list_insert(lhs, false, coords[rank-1-recursions], sub_list);
-      else                  	prev = list_insert_after(prev, coords[rank-1-recursions], sub_list);
-
-      // added = (added || added_list);
-    }
-  }
-
-  coords[rank-1-recursions] = 0;
-  --pos;
-
-  return added;
 }
 
 /*
