@@ -455,8 +455,8 @@ static void list_storage_ew_multiply_template(LIST* dest, const LIST* left, cons
 	
 	if (rank == level) {
 		for (index = 0; index < shape[level]; ++index) {
-			new_val = (LDType*)malloc(sizeof(LDType));
-			*new_val = *(LDType*)(l_node->val) * *(RDType*)(r_node->val);
+			new_val = ALLOC(LDType);
+			*new_val = *reinterpret_cast<LDType*>(l_node->val) * *reinterpret_cast<RDType*>(r_node->val);
 			
 			if (index == 0) {
 				dest_node = list_insert(dest, false, index, new_val);
@@ -471,8 +471,9 @@ static void list_storage_ew_multiply_template(LIST* dest, const LIST* left, cons
 		
 	} else {
 		for (index = 0; index < shape[level]; ++index) {
+		  // FIXME: Needs check for NULL l_node / r_node here.
 			new_level = list_create();
-			list_storage_ew_multiply_template<LDType, RDType>(new_level, (LIST*)l_node->val, (LIST*)r_node->val, rank, shape, level + 1);
+			list_storage_ew_multiply_template<LDType, RDType>(new_level, reinterpret_cast<LIST*>(l_node->val), reinterpret_cast<LIST*>(r_node->val), rank, shape, level + 1);
 			
 			if (index == 0) {
 				dest_node = list_insert(dest, false, index, new_level);

@@ -459,8 +459,6 @@ char yale_storage_set_template(YALE_STORAGE* storage, SLICE* slice, void* value)
   yale_storage_increment_ia_after_template<IType>(storage, storage->shape[0], coords[0], 1);
   storage->ndnz++;
 
-  fprintf(stderr, "ysst: G\n");
-
   return ins_type;
 }
 

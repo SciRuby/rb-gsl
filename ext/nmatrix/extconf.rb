@@ -149,7 +149,8 @@ $objs = %w{nmatrix ruby_constants data/data util/math util/sl_list storage/commo
 #CONFIG['CXX'] = 'clang++'
 
 $CFLAGS += " -O0 "
-$CPPFLAGS += " -O0 -std=c++11 -DDEBUG_YALE " #-fmax-errors=10 -save-temps
+# -std=c++11 only works with G++ 4.7 and higher.
+$CPPFLAGS += " -O0 -std=c++0x " #-fmax-errors=10 -save-temps
 
 CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
 CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')

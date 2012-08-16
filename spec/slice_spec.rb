@@ -123,50 +123,50 @@ describe "Slice operation" do
       n.slice(1,0..1).should.eql? NMatrix.new([1,2], [7,8])
     end
 
-  # [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |left_dtype|
-  #   [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |right_dtype|
+  [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |left_dtype|
+    [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |right_dtype|
 
-  #     # Won't work if they're both 1-byte, due to overflow.
-  #     next if [:byte,:int8].include?(left_dtype) && [:byte,:int8].include?(right_dtype)
+      # Won't work if they're both 1-byte, due to overflow.
+      next if [:byte,:int8].include?(left_dtype) && [:byte,:int8].include?(right_dtype)
 
-  #     # For now, don't bother testing int-int mult.
-  #     #next if [:int8,:int16,:int32,:int64].include?(left_dtype) && [:int8,:int16,:int32,:int64].include?(right_dtype)
-  #     it "correctly handles #{left_dtype.to_s} dot #{right_dtype.to_s} matrix multiplication" do
-  #       #STDERR.puts "dtype=#{dtype.to_s}"
-  #       #STDERR.puts "2"
+      # For now, don't bother testing int-int mult.
+      #next if [:int8,:int16,:int32,:int64].include?(left_dtype) && [:int8,:int16,:int32,:int64].include?(right_dtype)
+      it "correctly handles #{left_dtype.to_s} dot #{right_dtype.to_s} matrix multiplication" do
+        #STDERR.puts "dtype=#{dtype.to_s}"
+        #STDERR.puts "2"
 
-  #       nary = if left_dtype.to_s =~ /complex/
-  #                COMPLEX_MATRIX43A_ARRAY
-  #              elsif left_dtype.to_s =~ /rational/
-  #                RATIONAL_MATRIX43A_ARRAY
-  #              else
-  #                MATRIX43A_ARRAY
-  #              end
+        nary = if left_dtype.to_s =~ /complex/
+                 COMPLEX_MATRIX43A_ARRAY
+               elsif left_dtype.to_s =~ /rational/
+                 RATIONAL_MATRIX43A_ARRAY
+               else
+                 MATRIX43A_ARRAY
+               end
 
-  #       mary = if right_dtype.to_s =~ /complex/
-  #                COMPLEX_MATRIX32A_ARRAY
-  #              elsif right_dtype.to_s =~ /rational/
-  #                RATIONAL_MATRIX32A_ARRAY
-  #              else
-  #                MATRIX32A_ARRAY
-  #              end
+        mary = if right_dtype.to_s =~ /complex/
+                 COMPLEX_MATRIX32A_ARRAY
+               elsif right_dtype.to_s =~ /rational/
+                 RATIONAL_MATRIX32A_ARRAY
+               else
+                 MATRIX32A_ARRAY
+               end
 
-  #       n = NMatrix.new([4,3], nary, left_dtype)[1..3,1..2]
-  #       m = NMatrix.new([3,2], mary, right_dtype)[1..2,0..1]
+        n = NMatrix.new([4,3], nary, left_dtype)[1..3,1..2]
+        m = NMatrix.new([3,2], mary, right_dtype)[1..2,0..1]
 
-  #       r = n.dot m
-  #       r.shape.should eql([3,2])
+        r = n.dot m
+        r.shape.should eql([3,2])
 
-  #       r[0,0].should == 219.0
-  #       r[0,1].should == 185.0
-  #       r[1,0].should == 244.0
-  #       r[1,1].should == 205.0
-  #       r[2,0].should == 42.0
-  #       r[2,1].should == 35.0
+        r[0,0].should == 219.0
+        r[0,1].should == 185.0
+        r[1,0].should == 244.0
+        r[1,1].should == 205.0
+        r[2,0].should == 42.0
+        r[2,1].should == 35.0
 
-  #     end
-  #   end
-  # end
+      end
+    end
+  end
 
     it 'should be cleaned up by garbage collector without errors'  do
       1.times do
