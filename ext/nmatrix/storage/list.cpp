@@ -457,8 +457,8 @@ static void list_storage_ew_multiply_template(LIST* dest, const LIST* left, cons
 	unsigned int index;
 	
 	LDType* new_val;
-	
 	LIST* new_level;
+	
 	NODE* l_node		= left->first,
 			* r_node		= right->first,
 			* dest_node	= NULL;
