@@ -66,11 +66,6 @@
  * Types
  */
 
-typedef enum {
-	DENSE_STORE,
-	LIST_STORE,
-	YALE_STORE
-} stype_t;
 
 /*
  * Data

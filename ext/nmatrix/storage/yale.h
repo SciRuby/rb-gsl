@@ -54,6 +54,8 @@
 
 #include "common.h"
 
+#include "nmatrix.h"
+
 /*
  * Macros
  */
@@ -85,17 +87,6 @@
  * Types
  */
 
-struct YALE_STORAGE : STORAGE {
-	// Yale storage specific elements.
-	void* a;
-
-	// Strictly non-diagonal non-zero count!
-	size_t ndnz;
-
-	size_t	capacity;
-	itype_t	itype;
-	void*		ija;
-};
 
 /*
  * Data

@@ -60,10 +60,13 @@
 /*
  * Project Includes
  */
-
-#include "nmatrix.h"
+#include "types.h"
+#include "data/data.h"
 #include "util/math.h"
 #include "storage/storage.h"
+
+#include "nmatrix.h"
+
 #include "ruby_constants.h"
 
 /*

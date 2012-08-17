@@ -42,6 +42,8 @@
 
 #include "data/data.h"
 
+#include "nmatrix.h"
+
 /*
  * Macros
  */
@@ -49,22 +51,6 @@
 /*
  * Types
  */
-
-/* Singly-linked ordered list
- * - holds keys and values
- * - no duplicate keys
- * - keys are ordered
- * - values may be lists themselves
- */
-typedef struct l_node {
-  size_t key;
-  void*  val;
-  struct l_node* next;
-} NODE;
-
-typedef struct {
-  NODE* first;
-} LIST;
 
 /*
  * Data

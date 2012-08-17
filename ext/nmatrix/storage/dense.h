@@ -45,6 +45,8 @@
 
 #include "common.h"
 
+#include "nmatrix.h"
+
 /*
  * Macros
  */
@@ -52,13 +54,6 @@
 /*
  * Types
  */
-
-struct DENSE_STORAGE : STORAGE {
-	size_t*	stride;
-	int			count;
-	void*		src;
-	void*		elements;
-};
 
 /*
  * Data

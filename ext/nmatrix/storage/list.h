@@ -47,6 +47,8 @@
 
 #include "util/sl_list.h"
 
+#include "nmatrix.h"
+
 /*
  * Macros
  */
@@ -55,11 +57,7 @@
  * Types
  */
 
-struct LIST_STORAGE : STORAGE {
-	// List storage specific elements.
-	void* default_val;
-	LIST* rows;
-};
+
 
 /*
  * Data

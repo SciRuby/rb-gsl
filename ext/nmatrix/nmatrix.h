@@ -46,13 +46,13 @@
  * Project Includes
  */
 
-#include "types.h"
+//#include "types.h"
 
-#include "data/data.h"
+//#include "data/data.h"
 
-#include "math.h"
+//#include "math.h"
 
-#include "storage/storage.h"
+//#include "storage/storage.h"
 
 /*
  * Macros
@@ -87,6 +87,54 @@
  typedef u_int64_t  size_t;
  #define SIZE_T     INT64
 #endif
+
+struct STORAGE {
+	// Common elements found in all storage types. Should not be re-arranged.
+	dtype_t	dtype;
+	size_t	rank;
+	size_t*	shape;
+	size_t*	offset;
+
+	//virtual void empty(void) = 0;
+};
+
+struct DENSE_STORAGE : STORAGE {
+	size_t*	stride;
+	int			count;
+	void*		src;
+	void*		elements;
+};
+
+
+struct YALE_STORAGE : STORAGE {
+	// Yale storage specific elements.
+	void* a;
+
+	// Strictly non-diagonal non-zero count!
+	size_t ndnz;
+
+	size_t	capacity;
+	itype_t	itype;
+	void*		ija;
+};
+
+struct NODE {
+  size_t key;
+  void*  val;
+  NODE* next;
+};
+
+
+struct LIST {
+  NODE* first;
+};
+
+
+struct LIST_STORAGE : STORAGE {
+	// List storage specific elements.
+	void* default_val;
+	LIST* rows;
+};
 
 #define NM_MAX_RANK 15
 
@@ -128,6 +176,12 @@
 /*
  * Types
  */
+enum stype_t {
+	DENSE_STORE = 0,
+	LIST_STORE = 1,
+	YALE_STORE = 2
+};
+
 
 struct NMATRIX {
 	// Method of storage (csc, dense, etc).

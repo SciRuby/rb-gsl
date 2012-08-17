@@ -36,6 +36,7 @@
  * Project Includes
  */
 #include "data/data.h"
+#include "nmatrix.h"
 
 /*
  * Macros
@@ -44,16 +45,6 @@
 /*
  * Types
  */
-
-struct STORAGE {
-	// Common elements found in all storage types. Should not be re-arranged.
-	dtype_t	dtype;
-	size_t	rank;
-	size_t*	shape;
-	size_t*	offset;
-	
-	//virtual void empty(void) = 0;
-};
 
 // For binary operations involving matrices that need to be casted.
 struct STORAGE_PAIR {
