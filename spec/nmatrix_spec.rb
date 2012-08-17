@@ -311,19 +311,43 @@ describe NMatrix do
         n[0,1].should == 1
       end
 
-      it "#{storage_type} handles elementwise addition" do
-        n = NMatrix.new(storage_type, [2,2], [1,2,3,4], :int64)
-        m = NMatrix.new(storage_type, [2,2], [-4,-1,0,66], :int64)
+      it "#{storage_type} correctly handles elementwise addition" do
+        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3,  4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [-3, 1, 3, 70], :int64)
         r = n+m
         r.should.eql? rcorrect
       end
-
+      
+      it "#{storage_type} correctly handles elementwise subtraction" do
+        n = NMatrix.new(storage_type, [2,2],  [1,  2, 3,  4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [5, 3, 3, -62], :int64)
+        r = n-m
+        r.should.eql? rcorrect
+      end
+      
       it "#{storage_type} correctly handles elementwise multiplication" do
-        n = NMatrix.new(storage_type, [2,2], [1,2,3,4], :int64)
-        m = NMatrix.new(storage_type, [2,2], [-4,-1,0,66], :int64)
+        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3,  4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [-8, -2, 0, 264], :int64)
         r = n*m
+        r.should.eql? rcorrect
+      end
+      
+      it "#{storage_type} correctly handles elementwise division" do
+        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3, 4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4, -1, 3, 2], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [-1, -2, 1, 2], :int64)
+        r = n/m
+        r.should.eql? rcorrect
+      end
+      
+      it "#{storage_type} correctly handles elementwise modulo" do
+        n = NMatrix.new(storage_type, [2,2], [10, 11, 12, 13], :int64)
+        m = NMatrix.new(storage_type, [2,2], [ 2, 10,  5, 10], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [0, 1, 2, 3], :int64)
+        r = n%m
         r.should.eql? rcorrect
       end
     end
