@@ -1,4 +1,4 @@
-#ifdef HAVE_NMATRIX_H
+//#ifdef HAVE_NMATRIX_H
 
 #include "nmatrix.h"
 #include "gsl/gsl_vector.h"
@@ -27,4 +27,4 @@ gsl_vector_int* nv_to_gv_int(VALUE nv);
 // from NMatrix:
 extern VALUE cNVector, CNMatrix;
 
-#endif // HAVE_NMATRIX_H
+//#endif // HAVE_NMATRIX_H

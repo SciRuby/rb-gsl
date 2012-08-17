@@ -148,6 +148,8 @@ void Init_rb_gsl()
   Init_gsl_narray(mgsl);
 #endif
 
+  Init_gsl_nmatrix(mgsl);
+
   Init_wavelet(mgsl);
 
   rb_gsl_define_const(mgsl);
@@ -273,8 +275,18 @@ static VALUE rb_gsl_have_narray(VALUE module)
 #endif
 }
 
+static VALUE rb_gsl_have_nmatrix(VALUE module)
+{
+#ifdef HAVE_NMATRIX_H
+  return Qtrue;
+#else
+  return Qfalse;
+#endif
+}
+
 static void rb_gsl_define_methods(VALUE module)
 {
   rb_define_singleton_method(module, "have_tensor?", rb_gsl_have_tensor, 0);
   rb_define_singleton_method(module, "have_narray?", rb_gsl_have_narray, 0);
+  rb_define_singleton_method(module, "have_nmatrix?", rb_gsl_have_narray, 0);
 }
