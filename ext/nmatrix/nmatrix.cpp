@@ -103,7 +103,11 @@ static VALUE nm_is_ref(VALUE self);
 
 static VALUE is_symmetric(VALUE self, bool hermitian);
 
+static VALUE nm_ew_add(VALUE left_val, VALUE right_val);
+static VALUE nm_ew_subtract(VALUE left_val, VALUE right_val);
 static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val);
+static VALUE nm_ew_divide(VALUE left_val, VALUE right_val);
+//static VALUE nm_ew_mod(VALUE left_val, VALUE right_val);
 
 static VALUE nm_symmetric(VALUE self);
 static VALUE nm_hermitian(VALUE self);
@@ -200,14 +204,13 @@ void Init_nmatrix() {
 
 	rb_define_method(cNMatrix, "each", (METHOD)nm_each, 0);
 
-  // FIXME 0.0.2
-	rb_define_method(cNMatrix, "*", (METHOD)nm_ew_multiply, 1);
-	//rb_define_method(cNMatrix, "/", (METHOD)nm_ew_divide, 1);
-	//rb_define_method(cNMatrix, "+", (METHOD)nm_ew_add, 1);
-	//rb_define_method(cNMatrix, "-", (METHOD)nm_ew_subtract, 1);
-	//rb_define_method(cNMatrix, "%", (METHOD)nm_ew_mod, 1);
-	rb_define_method(cNMatrix, "eql?", (METHOD)nm_eqeq, 1);
-	rb_define_method(cNMatrix, "dot", (METHOD)nm_multiply, 1);
+	rb_define_method(cNMatrix, "+",			(METHOD)nm_ew_add,			1);
+	rb_define_method(cNMatrix, "-",			(METHOD)nm_ew_subtract,	1);
+  rb_define_method(cNMatrix, "*",			(METHOD)nm_ew_multiply,	1);
+	rb_define_method(cNMatrix, "/",			(METHOD)nm_ew_divide,		1);
+//rb_define_method(cNMatrix, "%",			(METHOD)nm_ew_mod,			1);
+	rb_define_method(cNMatrix, "eql?",	(METHOD)nm_eqeq,				1);
+	rb_define_method(cNMatrix, "dot",		(METHOD)nm_multiply,		1);
 	
 	/*
 	 * TODO: Write new elementwise code for boolean operations
@@ -466,6 +469,103 @@ static VALUE nm_eqeq(VALUE left, VALUE right) {
 }
 
 /*
+ * TODO: See if we could compress all elementwise operations into a single
+ *	function and do runtime dispatching to select the correct operator.
+ */
+
+/*
+ * Simple n-dimensional matrix-matrix addition.
+ */
+static VALUE nm_ew_add(VALUE left_val, VALUE right_val) {
+	NMATRIX* result = ALLOC(NMATRIX);
+	
+	static STORAGE* (*ew_add[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
+		dense_storage_ew_add,
+		list_storage_ew_add,
+		NULL
+	};
+	
+	CheckNMatrixType(left_val);
+	CheckNMatrixType(right_val);
+
+	// Check that the left- and right-hand sides have the same rank.
+	if (NM_RANK(left_val) != NM_RANK(right_val)) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same rank.");
+	}
+	
+	// Check that the left- and right-hand sides have the same shape.
+	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
+	}
+
+	NMATRIX* left, * right;
+	UnwrapNMatrix(left_val, left);
+	UnwrapNMatrix(right_val, right);
+	
+	if (left->stype == right->stype) {
+		
+		if (ew_add[left->stype] == NULL) {
+			rb_raise(rb_eArgError, "Element-wise addition is not supported for the given storage type.");
+		}
+		
+		result->storage	= ew_add[left->stype](reinterpret_cast<STORAGE*>(left->storage), reinterpret_cast<STORAGE*>(right->storage));
+		result->stype		= left->stype;
+		
+	} else {
+		rb_raise(rb_eArgError, "Element-wise addition is not currently supported between matrices with differing stypes.");
+	}
+
+	STYPE_MARK_TABLE(mark);
+	return Data_Wrap_Struct(cNMatrix, mark[result->stype], nm_delete, result);
+}
+
+/*
+ * Simple n-dimensional matrix-matrix subtraction.
+ */
+static VALUE nm_ew_subtract(VALUE left_val, VALUE right_val) {
+	NMATRIX* result = ALLOC(NMATRIX);
+	
+	static STORAGE* (*ew_subtract[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
+		dense_storage_ew_subtract,
+		list_storage_ew_subtract,
+		NULL
+	};
+	
+	CheckNMatrixType(left_val);
+	CheckNMatrixType(right_val);
+
+	// Check that the left- and right-hand sides have the same rank.
+	if (NM_RANK(left_val) != NM_RANK(right_val)) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same rank.");
+	}
+	
+	// Check that the left- and right-hand sides have the same shape.
+	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
+	}
+
+	NMATRIX* left, * right;
+	UnwrapNMatrix(left_val, left);
+	UnwrapNMatrix(right_val, right);
+	
+	if (left->stype == right->stype) {
+		
+		if (ew_subtract[left->stype] == NULL) {
+			rb_raise(rb_eArgError, "Element-wise subtraction is not supported for the given storage type.");
+		}
+		
+		result->storage	= ew_subtract[left->stype](reinterpret_cast<STORAGE*>(left->storage), reinterpret_cast<STORAGE*>(right->storage));
+		result->stype		= left->stype;
+		
+	} else {
+		rb_raise(rb_eArgError, "Element-wise subtraction is not currently supported between matrices with differing stypes.");
+	}
+
+	STYPE_MARK_TABLE(mark);
+	return Data_Wrap_Struct(cNMatrix, mark[result->stype], nm_delete, result);
+}
+
+/*
  * Simple n-dimensional matrix-matrix multiplication.
  */
 static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
@@ -510,6 +610,100 @@ static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
 	STYPE_MARK_TABLE(mark);
 	return Data_Wrap_Struct(cNMatrix, mark[result->stype], nm_delete, result);
 }
+
+/*
+ * Simple n-dimensional matrix-matrix division.
+ */
+static VALUE nm_ew_divide(VALUE left_val, VALUE right_val) {
+	NMATRIX* result = ALLOC(NMATRIX);
+	
+	static STORAGE* (*ew_divide[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
+		dense_storage_ew_divide,
+		list_storage_ew_divide,
+		NULL
+	};
+	
+	CheckNMatrixType(left_val);
+	CheckNMatrixType(right_val);
+
+	// Check that the left- and right-hand sides have the same rank.
+	if (NM_RANK(left_val) != NM_RANK(right_val)) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same rank.");
+	}
+	
+	// Check that the left- and right-hand sides have the same shape.
+	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
+	}
+
+	NMATRIX* left, * right;
+	UnwrapNMatrix(left_val, left);
+	UnwrapNMatrix(right_val, right);
+	
+	if (left->stype == right->stype) {
+		
+		if (ew_divide[left->stype] == NULL) {
+			rb_raise(rb_eArgError, "Element-wise division is not supported for the given storage type.");
+		}
+		
+		result->storage	= ew_divide[left->stype](reinterpret_cast<STORAGE*>(left->storage), reinterpret_cast<STORAGE*>(right->storage));
+		result->stype		= left->stype;
+		
+	} else {
+		rb_raise(rb_eArgError, "Element-wise division is not currently supported between matrices with differing stypes.");
+	}
+
+	STYPE_MARK_TABLE(mark);
+	return Data_Wrap_Struct(cNMatrix, mark[result->stype], nm_delete, result);
+}
+
+/*
+ * Simple n-dimensional matrix-matrix module.
+ */
+/*
+static VALUE nm_ew_mod(VALUE left_val, VALUE right_val) {
+	NMATRIX* result = ALLOC(NMATRIX);
+	
+	static STORAGE* (*ew_mod[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
+		dense_storage_ew_mod,
+		list_storage_ew_mod,
+		NULL
+	};
+	
+	CheckNMatrixType(left_val);
+	CheckNMatrixType(right_val);
+
+	// Check that the left- and right-hand sides have the same rank.
+	if (NM_RANK(left_val) != NM_RANK(right_val)) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same rank.");
+	}
+	
+	// Check that the left- and right-hand sides have the same shape.
+	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
+	}
+
+	NMATRIX* left, * right;
+	UnwrapNMatrix(left_val, left);
+	UnwrapNMatrix(right_val, right);
+	
+	if (left->stype == right->stype) {
+		
+		if (ew_multiply[left->stype] == NULL) {
+			rb_raise(rb_eArgError, "Element-wise modulo is not supported for the given storage type.");
+		}
+		
+		result->storage	= ew_mod[left->stype](reinterpret_cast<STORAGE*>(left->storage), reinterpret_cast<STORAGE*>(right->storage));
+		result->stype		= left->stype;
+		
+	} else {
+		rb_raise(rb_eArgError, "Element-wise modulo is not currently supported between matrices with differing stypes.");
+	}
+
+	STYPE_MARK_TABLE(mark);
+	return Data_Wrap_Struct(cNMatrix, mark[result->stype], nm_delete, result);
+}
+*/
 
 /*
  * Is this matrix hermitian?
