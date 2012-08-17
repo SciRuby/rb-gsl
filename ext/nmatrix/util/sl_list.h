@@ -91,6 +91,28 @@ NODE* list_insert(LIST* list, bool replace, size_t key, void* val);
 NODE* list_insert_after(NODE* node, size_t key, void* val);
 void* list_remove(LIST* list, size_t key);
 
+template <typename Type>
+inline NODE* list_insert_val_helper(LIST* list, NODE* node, size_t key, Type val) {
+	Type* val_mem = ALLOC(Type);
+	*val_mem = val;
+	
+	if (node == NULL) {
+		return list_insert(list, false, key, val_mem);
+		
+	} else {
+		return list_insert_after(node, key, val_mem);
+	}
+}
+
+inline NODE* list_insert_ptr_helper(LIST* list, NODE* node, size_t key, void* ptr) {
+	if (node == NULL) {
+		return list_insert(list, false, key, ptr);
+		
+	} else {
+		return list_insert_after(node, key, ptr);
+	}
+}
+
 ///////////
 // Tests //
 ///////////
@@ -213,8 +235,6 @@ bool list_eqeq_list_template(const LIST* left, const LIST* right, const LDType* 
    */
   return true;
 }
-
-
 
 /////////////
 // Utility //
