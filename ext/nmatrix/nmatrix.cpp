@@ -1017,7 +1017,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
       fprintf(stderr, "\n");
       */
 
-      DENSE_STORAGE* s = NM_DENSE_STORAGE(self);
+      //DENSE_STORAGE* s = NM_DENSE_STORAGE(self);
 
       if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>( ttable[NM_STYPE(self)](NM_STORAGE(self), slice) );
       else                            result = rubyobj_from_cval( ttable[NM_STYPE(self)](NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
