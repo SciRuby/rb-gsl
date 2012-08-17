@@ -136,17 +136,35 @@ struct LIST_STORAGE : STORAGE {
 	LIST* rows;
 };
 
+
+/*
+ * Types
+ */
+enum stype_t {
+	DENSE_STORE = 0,
+	LIST_STORE = 1,
+	YALE_STORE = 2
+};
+
+
+struct NMATRIX {
+	// Method of storage (csc, dense, etc).
+	stype_t		stype;
+	// Pointer to storage struct.
+	STORAGE*	storage;
+};
+
 #define NM_MAX_RANK 15
 
 #define UnwrapNMatrix(obj,var)  Data_Get_Struct(obj, NMATRIX, var)
 
+#define NM_STRUCT(val)          ((struct NMATRIX*)(DATA_PTR(val)))
 #define NM_STORAGE(val)         (NM_STRUCT(val)->storage)
-#define NM_LIST_STORAGE(val)    ((LIST_STORAGE*)(NM_STORAGE(val)))
-#define NM_YALE_STORAGE(val)    ((YALE_STORAGE*)(NM_STORAGE(val)))
-#define NM_DENSE_STORAGE(val)   ((DENSE_STORAGE*)(NM_STORAGE(val)))
+#define NM_LIST_STORAGE(val)    ((struct LIST_STORAGE*)(NM_STORAGE(val)))
+#define NM_YALE_STORAGE(val)    ((struct YALE_STORAGE*)(NM_STORAGE(val)))
+#define NM_DENSE_STORAGE(val)   ((struct DENSE_STORAGE*)(NM_STORAGE(val)))
 
 #define NM_DENSE_SRC(val)       (NM_DENSE_STORAGE(val)->src)
-#define NM_STRUCT(val)          (reinterpret_cast<NMATRIX*>(DATA_PTR(val)))
 #define NM_RANK(val)            (NM_STORAGE(val)->rank)
 #define NM_DTYPE(val)           (NM_STORAGE(val)->dtype)
 #define NM_ITYPE(val)           (NM_YALE_STORAGE(val)->itype)
@@ -173,22 +191,7 @@ struct LIST_STORAGE : STORAGE {
 #define NM_IsNVector(obj) \
   (rb_obj_is_kind_of(obj, cNVector) == Qtrue)
 
-/*
- * Types
- */
-enum stype_t {
-	DENSE_STORE = 0,
-	LIST_STORE = 1,
-	YALE_STORE = 2
-};
 
-
-struct NMATRIX {
-	// Method of storage (csc, dense, etc).
-	stype_t		stype;
-	// Pointer to storage struct.
-	STORAGE*	storage;
-};
 
 typedef VALUE (*METHOD)(...);
 
