@@ -78,6 +78,9 @@ describe "Slice operation" do
       @m[0,1].should eql(1)
     end
 
+    it 'should be correct slice for range 0..2 and 0...3' do
+      @m.slice(0..2,0..2).should.eql? @m.slice(0...3,0...3)
+    end
   end
 
   
@@ -121,6 +124,10 @@ describe "Slice operation" do
 
       n[1,0..1].should.eql? NMatrix.new([1,2], [7,8])
       n.slice(1,0..1).should.eql? NMatrix.new([1,2], [7,8])
+    end
+
+    it 'should be correct slice for range 0..2 and 0...3' do
+      @m[0..2,0..2].should.eql? @m[0...3,0...3]
     end
 
   [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |left_dtype|

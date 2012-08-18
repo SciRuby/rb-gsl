@@ -1208,7 +1208,7 @@ static dtype_t dtype_guess(VALUE v) {
 static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
   size_t r;
   VALUE beg, end;
-  int i;
+  int exl;
 
   SLICE* slice = ALLOC(SLICE);
   slice->coords = ALLOC_N(size_t,rank);
@@ -1223,9 +1223,14 @@ static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
       slice->lengths[r] = 1;
 
     } else if (CLASS_OF(c[r]) == rb_cRange) {
-        rb_range_values(c[r], &beg, &end, &i);
+        rb_range_values(c[r], &beg, &end, &exl);
         slice->coords[r]  = FIX2UINT(beg);
         slice->lengths[r] = FIX2UINT(end) - slice->coords[r] + 1;
+
+        // Exclude last element for a...b range
+        if (exl)
+          slice->lengths[r] -= 1;
+
         slice->single     = false;
 
     } else {
