@@ -768,12 +768,12 @@ static void list_storage_ew_add_template_prime(LIST* dest, LDType d_default, con
 					tmp_result = l_default + *reinterpret_cast<RDType*>(r_node->val);
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
 					new_level = list_create();
-					dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_add_template_prime<LDType, RDType>(new_level, d_default,
 						&EMPTY_LIST, l_default,
@@ -793,12 +793,12 @@ static void list_storage_ew_add_template_prime(LIST* dest, LDType d_default, con
 					tmp_result = *reinterpret_cast<LDType*>(l_node->val) + r_default;
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
 					new_level = list_create();
-					dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_add_template_prime<LDType, RDType>(new_level, d_default,
 						reinterpret_cast<LIST*>(r_node->val), l_default,
@@ -820,12 +820,12 @@ static void list_storage_ew_add_template_prime(LIST* dest, LDType d_default, con
 						tmp_result = *reinterpret_cast<LDType*>(l_node->val) + *reinterpret_cast<RDType*>(r_node->val);
 						
 						if (tmp_result != d_default) {
-							dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+							dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 						}
 						
 					} else {
 						new_level = list_create();
-						dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+						dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 					
 						list_storage_ew_add_template_prime<LDType, RDType>(new_level, d_default,
 							reinterpret_cast<LIST*>(l_node->val), l_default,
@@ -917,12 +917,12 @@ static void list_storage_ew_subtract_template_prime(LIST* dest, LDType d_default
 					tmp_result = l_default - *reinterpret_cast<RDType*>(r_node->val);
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
 					new_level = list_create();
-					dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_subtract_template_prime<LDType, RDType>(new_level, d_default,
 						&EMPTY_LIST, l_default,
@@ -942,12 +942,12 @@ static void list_storage_ew_subtract_template_prime(LIST* dest, LDType d_default
 					tmp_result = *reinterpret_cast<LDType*>(l_node->val) - r_default;
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
 					new_level = list_create();
-					dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_subtract_template_prime<LDType, RDType>(new_level, d_default,
 						reinterpret_cast<LIST*>(r_node->val), l_default,
@@ -969,12 +969,12 @@ static void list_storage_ew_subtract_template_prime(LIST* dest, LDType d_default
 						tmp_result = *reinterpret_cast<LDType*>(l_node->val) - *reinterpret_cast<RDType*>(r_node->val);
 						
 						if (tmp_result != d_default) {
-							dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+							dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 						}
 						
 					} else {
 						new_level = list_create();
-						dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+						dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 					
 						list_storage_ew_subtract_template_prime<LDType, RDType>(new_level, d_default,
 							reinterpret_cast<LIST*>(l_node->val), l_default,
@@ -1066,12 +1066,12 @@ static void list_storage_ew_multiply_template_prime(LIST* dest, LDType d_default
 					tmp_result = l_default * *reinterpret_cast<RDType*>(r_node->val);
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
 					new_level = list_create();
-					dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_multiply_template_prime<LDType, RDType>(new_level, d_default,
 						&EMPTY_LIST, l_default,
@@ -1091,12 +1091,12 @@ static void list_storage_ew_multiply_template_prime(LIST* dest, LDType d_default
 					tmp_result = *reinterpret_cast<LDType*>(l_node->val) * r_default;
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
 					new_level = list_create();
-					dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_multiply_template_prime<LDType, RDType>(new_level, d_default,
 						reinterpret_cast<LIST*>(r_node->val), l_default,
@@ -1118,12 +1118,12 @@ static void list_storage_ew_multiply_template_prime(LIST* dest, LDType d_default
 						tmp_result = *reinterpret_cast<LDType*>(l_node->val) * *reinterpret_cast<RDType*>(r_node->val);
 						
 						if (tmp_result != d_default) {
-							dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+							dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 						}
 						
 					} else {
 						new_level = list_create();
-						dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+						dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 					
 						list_storage_ew_multiply_template_prime<LDType, RDType>(new_level, d_default,
 							reinterpret_cast<LIST*>(l_node->val), l_default,
@@ -1215,12 +1215,12 @@ static void list_storage_ew_divide_template_prime(LIST* dest, LDType d_default, 
 					tmp_result = l_default / *reinterpret_cast<RDType*>(r_node->val);
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
 					new_level = list_create();
-					dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_divide_template_prime<LDType, RDType>(new_level, d_default,
 						&EMPTY_LIST, l_default,
@@ -1240,12 +1240,12 @@ static void list_storage_ew_divide_template_prime(LIST* dest, LDType d_default, 
 					tmp_result = *reinterpret_cast<LDType*>(l_node->val) / r_default;
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
 					new_level = list_create();
-					dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_divide_template_prime<LDType, RDType>(new_level, d_default,
 						reinterpret_cast<LIST*>(r_node->val), l_default,
@@ -1267,12 +1267,12 @@ static void list_storage_ew_divide_template_prime(LIST* dest, LDType d_default, 
 						tmp_result = *reinterpret_cast<LDType*>(l_node->val) / *reinterpret_cast<RDType*>(r_node->val);
 						
 						if (tmp_result != d_default) {
-							dest_node = list_insert_val_helper<LDType>(dest, dest_node, index, tmp_result);
+							dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
 						}
 						
 					} else {
 						new_level = list_create();
-						dest_node = list_insert_ptr_helper(dest, dest_node, index, new_level);
+						dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
 					
 						list_storage_ew_divide_template_prime<LDType, RDType>(new_level, d_default,
 							reinterpret_cast<LIST*>(l_node->val), l_default,

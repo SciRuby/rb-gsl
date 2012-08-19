@@ -32,6 +32,8 @@
  * Standard Includes
  */
 
+#include <type_traits>
+
 #include <cstdlib>
 
 /*
@@ -78,7 +80,7 @@ NODE* list_insert_after(NODE* node, size_t key, void* val);
 void* list_remove(LIST* list, size_t key);
 
 template <typename Type>
-inline NODE* list_insert_val_helper(LIST* list, NODE* node, size_t key, Type val) {
+inline NODE* list_insert_helper(LIST* list, NODE* node, size_t key, Type val) {
 	Type* val_mem = ALLOC(Type);
 	*val_mem = val;
 	
@@ -90,7 +92,8 @@ inline NODE* list_insert_val_helper(LIST* list, NODE* node, size_t key, Type val
 	}
 }
 
-inline NODE* list_insert_ptr_helper(LIST* list, NODE* node, size_t key, void* ptr) {
+template <typename Type>
+inline NODE* list_insert_helper(LIST* list, NODE* node, size_t key, Type* ptr) {
 	if (node == NULL) {
 		return list_insert(list, false, key, ptr);
 		
