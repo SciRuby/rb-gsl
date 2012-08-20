@@ -222,7 +222,6 @@ LIST_STORAGE* list_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t
 
   LIST_STORAGE* lhs = list_storage_create(l_dtype, shape, rhs->rank, l_default_val);
 
-  //lhs->rows = list_create();
   size_t pos = 0;
   list_storage_cast_copy_contents_dense_template<LDType,RDType>(lhs->rows,
                                                                 reinterpret_cast<const RDType*>(rhs->elements),
@@ -276,7 +275,7 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
 		
     if (ija < ija_next || add_diag) {
 
-      LIST* curr_row = list_create();
+      LIST* curr_row = list::create();
 
       LDType* insert_val;
 
@@ -290,8 +289,8 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
           *insert_val        = rhs_a[i];
 
           // insert the item in the list at the appropriate location
-          if (last_added) 	last_added = list_insert_after(last_added, i, insert_val);
-          else            	last_added = list_insert(curr_row, false, i, insert_val);
+          if (last_added) 	last_added = list::insert_after(last_added, i, insert_val);
+          else            	last_added = list::insert(curr_row, false, i, insert_val);
 					
 					// don't add again!
           add_diag = false;
@@ -301,8 +300,8 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
         insert_val  = ALLOC_N(LDType, 1);
         *insert_val = rhs_a[ija];
 
-        if (last_added)    	last_added = list_insert_after(last_added, jj, insert_val);
-        else              	last_added = list_insert(curr_row, false, jj, insert_val);
+        if (last_added)    	last_added = list::insert_after(last_added, jj, insert_val);
+        else              	last_added = list::insert(curr_row, false, jj, insert_val);
 
         ++ija; // move to next entry in Yale matrix
       }
@@ -313,13 +312,13 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
         *insert_val        = rhs_a[i];
 
         // insert the item in the list at the appropriate location
-        if (last_added)    	last_added = list_insert_after(last_added, i, insert_val);
-        else              	last_added = list_insert(curr_row, false, i, insert_val);
+        if (last_added)    	last_added = list::insert_after(last_added, i, insert_val);
+        else              	last_added = list::insert(curr_row, false, i, insert_val);
       }
 
       // Now add the list at the appropriate location
-      if (last_row_added)  	last_row_added = list_insert_after(last_row_added, i, curr_row);
-      else                 	last_row_added = list_insert(lhs->rows, false, i, curr_row);
+      if (last_row_added)  	last_row_added = list::insert_after(last_row_added, i, curr_row);
+      else                 	last_row_added = list::insert(lhs->rows, false, i, curr_row);
     }
 	
 		// end of walk through rows
@@ -552,8 +551,8 @@ static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDTy
         LDType* insert_value = ALLOC_N(LDType, 1);
         *insert_value        = static_cast<LDType>(rhs[pos]);
 
-        if (!lhs->first)    prev = list_insert(lhs, false, coords[rank-1-recursions], insert_value);
-        else               	prev = list_insert_after(prev, coords[rank-1-recursions], insert_value);
+        if (!lhs->first)    prev = list::insert(lhs, false, coords[rank-1-recursions], insert_value);
+        else               	prev = list::insert_after(prev, coords[rank-1-recursions], insert_value);
         
         added = true;
       }
@@ -561,13 +560,13 @@ static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDTy
       
     } else { // create lists
       // create a list as if there's something in the row in question, and then delete it if nothing turns out to be there
-      sub_list = list_create();
+      sub_list = list::create();
 
       added_list = list_storage_cast_copy_contents_dense_template<LDType,RDType>(sub_list, rhs, zero, pos, coords, shape, rank, recursions-1);
 
-      if (!added_list)      	list_delete(sub_list, recursions-1);
-      else if (!lhs->first)  	prev = list_insert(lhs, false, coords[rank-1-recursions], sub_list);
-      else                  	prev = list_insert_after(prev, coords[rank-1-recursions], sub_list);
+      if (!added_list)      	list::del(sub_list, recursions-1);
+      else if (!lhs->first)  	prev = list::insert(lhs, false, coords[rank-1-recursions], sub_list);
+      else                  	prev = list::insert_after(prev, coords[rank-1-recursions], sub_list);
 
       // added = (added || added_list);
     }

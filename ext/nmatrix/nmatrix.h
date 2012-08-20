@@ -207,12 +207,8 @@ NM_DEF_ENUM(itype_t,  UINT8  = 0,
                       UINT32 = 2,
                       UINT64 = 3);
 
+/* struct STORAGE */
 NM_DEF_STORAGE_STRUCT;
-
-
-//#ifdef __cplusplus
-//namespace nm {
-//#endif
 
 /* Dense Storage */
 NM_DEF_STORAGE_CHILD_STRUCT_PRE(DENSE_STORAGE); // struct DENSE_STORAGE : STORAGE {

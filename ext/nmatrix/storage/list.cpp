@@ -112,7 +112,7 @@ LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, voi
   s->shape = shape;
   s->dtype = dtype;
 
-  s->rows  = list_create();
+  s->rows  = list::create();
 
   s->default_val = init_val;
 
@@ -126,7 +126,7 @@ void list_storage_delete(STORAGE* s) {
   if (s) {
     LIST_STORAGE* storage = (LIST_STORAGE*)s;
 
-    list_delete( storage->rows, storage->rank - 1 );
+    list::del( storage->rows, storage->rank - 1 );
 
     free(storage->shape);
     free(storage->default_val);
@@ -142,7 +142,7 @@ void list_storage_mark(void* storage_base) {
 
   if (storage && storage->dtype == RUBYOBJ) {
     rb_gc_mark(*((VALUE*)(storage->default_val)));
-    list_mark(storage->rows, storage->rank - 1);
+    list::mark(storage->rows, storage->rank - 1);
   }
 }
 
@@ -171,12 +171,12 @@ void* list_storage_ref(STORAGE* storage, SLICE* slice) {
   LIST*  l = s->rows;
 
   for (r = s->rank; r > 1; --r) {
-    n = list_find(l, slice->coords[s->rank - r]);
+    n = list::find(l, slice->coords[s->rank - r]);
     if (n)  l = reinterpret_cast<LIST*>(n->val);
     else return s->default_val;
   }
 
-  n = list_find(l, slice->coords[s->rank - r]);
+  n = list::find(l, slice->coords[s->rank - r]);
   if (n) return n->val;
   else   return s->default_val;
 }
@@ -197,11 +197,11 @@ void* list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
 
   // drill down into the structure
   for (r = s->rank; r > 1; --r) {
-    n = list_insert(l, false, slice->coords[s->rank - r], list_create());
+    n = list::insert(l, false, slice->coords[s->rank - r], list::create());
     l = reinterpret_cast<LIST*>(n->val);
   }
 
-  n = list_insert(l, true, slice->coords[s->rank - r], val);
+  n = list::insert(l, true, slice->coords[s->rank - r], val);
   return n->val;
 }
 
@@ -222,7 +222,7 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
 
   for (r = (int)(s->rank); r > 1; --r) {
   	// does this row exist in the matrix?
-    n = list_find(l, slice->coords[s->rank - r]);
+    n = list::find(l, slice->coords[s->rank - r]);
 
     if (!n) {
     	// not found
@@ -236,7 +236,7 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
     }
   }
 
-  rm = list_remove(l, slice->coords[s->rank - r]);
+  rm = list::remove(l, slice->coords[s->rank - r]);
 
   // if we removed something, we may now need to remove parent lists
   if (rm) {
@@ -244,7 +244,7 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
     	// walk back down the stack
       
       if (((LIST*)(stack[r]->val))->first == NULL)
-        free(list_remove(reinterpret_cast<LIST*>(stack[r]->val), slice->coords[r]));
+        free(list::remove(reinterpret_cast<LIST*>(stack[r]->val), slice->coords[r]));
       else break; // no need to continue unless we just deleted one.
 
     }
@@ -530,8 +530,8 @@ LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs) {
   lhs = list_storage_create(rhs->dtype, shape, rhs->rank, default_val);
 
   if (lhs) {
-    lhs->rows = list_create();
-    list_cast_copy_contents(lhs->rows, rhs->rows, rhs->dtype, rhs->dtype, rhs->rank - 1);
+    lhs->rows = list::create();
+    list::cast_copy_contents(lhs->rows, rhs->rows, rhs->dtype, rhs->dtype, rhs->rank - 1);
   } else {
   	free(shape);
   }
@@ -558,8 +558,8 @@ static LIST_STORAGE* list_storage_cast_copy_template(const LIST_STORAGE* rhs, dt
   *default_val = *reinterpret_cast<RDType*>(rhs->default_val);
 
   LIST_STORAGE* lhs = list_storage_create(new_dtype, shape, rhs->rank, default_val);
-  lhs->rows         = list_create();
-  list_cast_copy_contents_template<LDType, RDType>(lhs->rows, rhs->rows, rhs->rank - 1);
+  lhs->rows         = list::create();
+  list::cast_copy_contents_template<LDType, RDType>(lhs->rows, rhs->rows, rhs->rank - 1);
 
   return lhs;
 }
@@ -591,7 +591,7 @@ bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* ri
     if (!right->rows->first) {
     	return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     	
-    } else if (!list_eqeq_value_template<RDType,LDType>(right->rows, reinterpret_cast<LDType*>(left->default_val), left->rank-1, num_checked)) {
+    } else if (!list::eqeq_value_template<RDType,LDType>(right->rows, reinterpret_cast<LDType*>(left->default_val), left->rank-1, num_checked)) {
     	// Left empty, right not empty. Do all values in right == left->default_val?
     	return false;
     	
@@ -603,7 +603,7 @@ bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* ri
   } else if (!right->rows->first) {
     // fprintf(stderr, "!right->rows true\n");
     // Right empty, left not empty. Do all values in left == right->default_val?
-    if (!list_eqeq_value_template<LDType,RDType>(left->rows, reinterpret_cast<RDType*>(right->default_val), left->rank-1, num_checked)) {
+    if (!list::eqeq_value_template<LDType,RDType>(left->rows, reinterpret_cast<RDType*>(right->default_val), left->rank-1, num_checked)) {
     	return false;
     	
     } else if (num_checked < max_elements) {
@@ -614,7 +614,7 @@ bool list_storage_eqeq_template(const LIST_STORAGE* left, const LIST_STORAGE* ri
   } else {
     // fprintf(stderr, "both matrices have entries\n");
     // Hardest case. Compare lists node by node. Let's make it simpler by requiring that both have the same default value
-    if (!list_eqeq_list_template<LDType,RDType>(left->rows, right->rows, reinterpret_cast<LDType*>(left->default_val), reinterpret_cast<RDType*>(right->default_val), left->rank-1, num_checked)) {
+    if (!list::eqeq_list_template<LDType,RDType>(left->rows, right->rows, reinterpret_cast<LDType*>(left->default_val), reinterpret_cast<RDType*>(right->default_val), left->rank-1, num_checked)) {
     	return false;
     	
     } else if (num_checked < max_elements) {
@@ -768,12 +768,12 @@ static void list_storage_ew_add_template_prime(LIST* dest, LDType d_default, con
 					tmp_result = l_default + *reinterpret_cast<RDType*>(r_node->val);
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
-					new_level = list_create();
-					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+					new_level = list::create();
+					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_add_template_prime<LDType, RDType>(new_level, d_default,
 						&EMPTY_LIST, l_default,
@@ -793,12 +793,12 @@ static void list_storage_ew_add_template_prime(LIST* dest, LDType d_default, con
 					tmp_result = *reinterpret_cast<LDType*>(l_node->val) + r_default;
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
-					new_level = list_create();
-					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+					new_level = list::create();
+					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_add_template_prime<LDType, RDType>(new_level, d_default,
 						reinterpret_cast<LIST*>(r_node->val), l_default,
@@ -820,12 +820,12 @@ static void list_storage_ew_add_template_prime(LIST* dest, LDType d_default, con
 						tmp_result = *reinterpret_cast<LDType*>(l_node->val) + *reinterpret_cast<RDType*>(r_node->val);
 						
 						if (tmp_result != d_default) {
-							dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+							dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 						}
 						
 					} else {
-						new_level = list_create();
-						dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+						new_level = list::create();
+						dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 					
 						list_storage_ew_add_template_prime<LDType, RDType>(new_level, d_default,
 							reinterpret_cast<LIST*>(l_node->val), l_default,
@@ -917,12 +917,12 @@ static void list_storage_ew_subtract_template_prime(LIST* dest, LDType d_default
 					tmp_result = l_default - *reinterpret_cast<RDType*>(r_node->val);
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
-					new_level = list_create();
-					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+					new_level = list::create();
+					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_subtract_template_prime<LDType, RDType>(new_level, d_default,
 						&EMPTY_LIST, l_default,
@@ -942,12 +942,12 @@ static void list_storage_ew_subtract_template_prime(LIST* dest, LDType d_default
 					tmp_result = *reinterpret_cast<LDType*>(l_node->val) - r_default;
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
-					new_level = list_create();
-					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+					new_level = list::create();
+					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_subtract_template_prime<LDType, RDType>(new_level, d_default,
 						reinterpret_cast<LIST*>(r_node->val), l_default,
@@ -969,12 +969,12 @@ static void list_storage_ew_subtract_template_prime(LIST* dest, LDType d_default
 						tmp_result = *reinterpret_cast<LDType*>(l_node->val) - *reinterpret_cast<RDType*>(r_node->val);
 						
 						if (tmp_result != d_default) {
-							dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+							dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 						}
 						
 					} else {
-						new_level = list_create();
-						dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+						new_level = list::create();
+						dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 					
 						list_storage_ew_subtract_template_prime<LDType, RDType>(new_level, d_default,
 							reinterpret_cast<LIST*>(l_node->val), l_default,
@@ -1066,12 +1066,12 @@ static void list_storage_ew_multiply_template_prime(LIST* dest, LDType d_default
 					tmp_result = l_default * *reinterpret_cast<RDType*>(r_node->val);
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
-					new_level = list_create();
-					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+					new_level = list::create();
+					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_multiply_template_prime<LDType, RDType>(new_level, d_default,
 						&EMPTY_LIST, l_default,
@@ -1091,12 +1091,12 @@ static void list_storage_ew_multiply_template_prime(LIST* dest, LDType d_default
 					tmp_result = *reinterpret_cast<LDType*>(l_node->val) * r_default;
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
-					new_level = list_create();
-					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+					new_level = list::create();
+					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_multiply_template_prime<LDType, RDType>(new_level, d_default,
 						reinterpret_cast<LIST*>(r_node->val), l_default,
@@ -1118,12 +1118,12 @@ static void list_storage_ew_multiply_template_prime(LIST* dest, LDType d_default
 						tmp_result = *reinterpret_cast<LDType*>(l_node->val) * *reinterpret_cast<RDType*>(r_node->val);
 						
 						if (tmp_result != d_default) {
-							dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+							dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 						}
 						
 					} else {
-						new_level = list_create();
-						dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+						new_level = list::create();
+						dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 					
 						list_storage_ew_multiply_template_prime<LDType, RDType>(new_level, d_default,
 							reinterpret_cast<LIST*>(l_node->val), l_default,
@@ -1215,12 +1215,12 @@ static void list_storage_ew_divide_template_prime(LIST* dest, LDType d_default, 
 					tmp_result = l_default / *reinterpret_cast<RDType*>(r_node->val);
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
-					new_level = list_create();
-					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+					new_level = list::create();
+					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_divide_template_prime<LDType, RDType>(new_level, d_default,
 						&EMPTY_LIST, l_default,
@@ -1240,12 +1240,12 @@ static void list_storage_ew_divide_template_prime(LIST* dest, LDType d_default, 
 					tmp_result = *reinterpret_cast<LDType*>(l_node->val) / r_default;
 					
 					if (tmp_result != d_default) {
-						dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
-					new_level = list_create();
-					dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+					new_level = list::create();
+					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 				
 					list_storage_ew_divide_template_prime<LDType, RDType>(new_level, d_default,
 						reinterpret_cast<LIST*>(r_node->val), l_default,
@@ -1267,12 +1267,12 @@ static void list_storage_ew_divide_template_prime(LIST* dest, LDType d_default, 
 						tmp_result = *reinterpret_cast<LDType*>(l_node->val) / *reinterpret_cast<RDType*>(r_node->val);
 						
 						if (tmp_result != d_default) {
-							dest_node = list_insert_helper<LDType>(dest, dest_node, index, tmp_result);
+							dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
 						}
 						
 					} else {
-						new_level = list_create();
-						dest_node = list_insert_helper<LIST*>(dest, dest_node, index, new_level);
+						new_level = list::create();
+						dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
 					
 						list_storage_ew_divide_template_prime<LDType, RDType>(new_level, d_default,
 							reinterpret_cast<LIST*>(l_node->val), l_default,
