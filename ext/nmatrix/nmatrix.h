@@ -178,8 +178,15 @@
 /*
  * Types
  */
-#define NUM_DTYPES 13
-#define NUM_ITYPES 4
+
+#define NM_NUM_DTYPES 13
+#define NM_NUM_ITYPES 4
+
+#ifndef __cplusplus
+//namespace nm {
+#else
+
+#endif
 
 /* Storage Type -- Dense or Sparse */
 NM_DEF_ENUM(stype_t,  DENSE_STORE = 0,
@@ -257,22 +264,29 @@ NM_DEF_STRUCT_POST(NMATRIX);  // };
 
 #define UnwrapNMatrix(obj,var)  Data_Get_Struct(obj, NMATRIX, var)
 
-#define NM_STRUCT(val)          ((struct NMATRIX*)(DATA_PTR(val)))
 #define NM_STORAGE(val)         (NM_STRUCT(val)->storage)
-#define NM_LIST_STORAGE(val)    ((struct LIST_STORAGE*)(NM_STORAGE(val)))
-#define NM_YALE_STORAGE(val)    ((struct YALE_STORAGE*)(NM_STORAGE(val)))
-#define NM_DENSE_STORAGE(val)   ((struct DENSE_STORAGE*)(NM_STORAGE(val)))
+#ifdef __cplusplus
+  #define NM_STRUCT(val)              ((NMATRIX*)(DATA_PTR(val)))
+  #define NM_STORAGE_LIST(val)        ((LIST_STORAGE*)(NM_STORAGE(val)))
+  #define NM_STORAGE_YALE(val)        ((YALE_STORAGE*)(NM_STORAGE(val)))
+  #define NM_STORAGE_DENSE(val)       ((DENSE_STORAGE*)(NM_STORAGE(val)))
+#else
+  #define NM_STRUCT(val)              ((struct NM_NMATRIX*)(DATA_PTR(val)))
+  #define NM_STORAGE_LIST(val)        ((struct NM_LIST_STORAGE*)(NM_STORAGE(val)))
+  #define NM_STORAGE_YALE(val)        ((struct NM_YALE_STORAGE*)(NM_STORAGE(val)))
+  #define NM_STORAGE_DENSE(val)       ((struct NM_DENSE_STORAGE*)(NM_STORAGE(val)))
+#endif
 
-#define NM_DENSE_SRC(val)       (NM_DENSE_STORAGE(val)->src)
+#define NM_DENSE_SRC(val)       (NM_STORAGE_DENSE(val)->src)
 #define NM_RANK(val)            (NM_STORAGE(val)->rank)
 #define NM_DTYPE(val)           (NM_STORAGE(val)->dtype)
-#define NM_ITYPE(val)           (NM_YALE_STORAGE(val)->itype)
+#define NM_ITYPE(val)           (NM_STORAGE_YALE(val)->itype)
 #define NM_STYPE(val)           (NM_STRUCT(val)->stype)
 #define NM_SHAPE(val,i)         (NM_STORAGE(val)->shape[(i)])
 #define NM_SHAPE0(val)          (NM_STORAGE(val)->shape[0])
 #define NM_SHAPE1(val)          (NM_STORAGE(val)->shape[1])
 
-#define NM_DENSE_COUNT(val)     (storage_count_max_elements(NM_DENSE_STORAGE(val)))
+#define NM_DENSE_COUNT(val)     (storage_count_max_elements(NM_STORAGE_DENSE(val)))
 #define NM_SIZEOF_DTYPE(val)    (DTYPE_SIZES[NM_DTYPE(val)])
 #define NM_REF(val,slice)      (RefFuncs[NM_STYPE(val)]( NM_STORAGE(val), slice, NM_SIZEOF_DTYPE(val) ))
     
@@ -293,6 +307,8 @@ NM_DEF_STRUCT_POST(NMATRIX);  // };
 
 #ifdef __cplusplus
 typedef VALUE (*METHOD)(...);
+
+//}; // end of namespace nm
 #endif
 
 /*

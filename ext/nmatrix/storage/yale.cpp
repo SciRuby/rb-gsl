@@ -1039,7 +1039,7 @@ static VALUE nm_yale_size(VALUE self) {
  * Get the A array of a Yale matrix (which stores the diagonal and the LU portions of the matrix).
  */
 static VALUE nm_yale_a(VALUE self) {
-  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+  YALE_STORAGE* s = NM_STORAGE_YALE(self);
 
   size_t size = yale_storage_get_size(s);
   VALUE* vals = ALLOCA_N(VALUE, size);
@@ -1060,7 +1060,7 @@ static VALUE nm_yale_a(VALUE self) {
  * Get the diagonal ("D") portion of the A array of a Yale matrix.
  */
 static VALUE nm_yale_d(VALUE self) {
-  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+  YALE_STORAGE* s = NM_STORAGE_YALE(self);
 
   VALUE* vals = ALLOCA_N(VALUE, s->shape[0]);
 
@@ -1075,7 +1075,7 @@ static VALUE nm_yale_d(VALUE self) {
  * Get the non-diagonal ("LU") portion of the A array of a Yale matrix.
  */
 static VALUE nm_yale_lu(VALUE self) {
-  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+  YALE_STORAGE* s = NM_STORAGE_YALE(self);
 
   size_t size = yale_storage_get_size(s);
 
@@ -1099,7 +1099,7 @@ static VALUE nm_yale_lu(VALUE self) {
  * JA and LU portions of the IJA and A arrays, respectively.
  */
 static VALUE nm_yale_ia(VALUE self) {
-  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+  YALE_STORAGE* s = NM_STORAGE_YALE(self);
 
   VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
 
@@ -1116,7 +1116,7 @@ static VALUE nm_yale_ia(VALUE self) {
  * positions in the LU portion of the A array.
  */
 static VALUE nm_yale_ja(VALUE self) {
-  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+  YALE_STORAGE* s = NM_STORAGE_YALE(self);
 
   size_t size = yale_storage_get_size(s);
 
@@ -1139,7 +1139,7 @@ static VALUE nm_yale_ja(VALUE self) {
  * Get the IJA array of a Yale matrix.
  */
 static VALUE nm_yale_ija(VALUE self) {
-  YALE_STORAGE* s = NM_YALE_STORAGE(self);
+  YALE_STORAGE* s = NM_STORAGE_YALE(self);
 
   size_t size = yale_storage_get_size(s);
 

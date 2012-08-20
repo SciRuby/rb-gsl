@@ -183,7 +183,7 @@ static VALUE nm_cblas_gemm(VALUE self,
   rubyval_to_cval(alpha, dtype, pAlpha);
   rubyval_to_cval(beta, dtype, pBeta);
 
-  return ttable[dtype](dtype, gemm_op_sym(trans_a), gemm_op_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_DENSE_STORAGE(a)->elements, FIX2INT(lda), NM_DENSE_STORAGE(b)->elements, FIX2INT(ldb), pBeta, NM_DENSE_STORAGE(c)->elements, FIX2INT(ldc)) ? Qtrue : Qfalse;
+  return ttable[dtype](dtype, gemm_op_sym(trans_a), gemm_op_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb), pBeta, NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc)) ? Qtrue : Qfalse;
 }
 
 
@@ -243,7 +243,7 @@ static VALUE nm_cblas_gemv(VALUE self,
   rubyval_to_cval(alpha, dtype, pAlpha);
   rubyval_to_cval(beta, dtype, pBeta);
 
-  return ttable[dtype](dtype, gemm_op_sym(trans_a), FIX2INT(m), FIX2INT(n), pAlpha, NM_DENSE_STORAGE(a)->elements, FIX2INT(lda), NM_DENSE_STORAGE(x)->elements, FIX2INT(incx), pBeta, NM_DENSE_STORAGE(y)->elements, FIX2INT(incy)) ? Qtrue : Qfalse;
+  return ttable[dtype](dtype, gemm_op_sym(trans_a), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(x)->elements, FIX2INT(incx), pBeta, NM_STORAGE_DENSE(y)->elements, FIX2INT(incy)) ? Qtrue : Qfalse;
 }
 
 

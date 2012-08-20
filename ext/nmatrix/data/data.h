@@ -234,6 +234,9 @@ static ret (*(name)[NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
  * Data
  */
 
+const size_t NUM_DTYPES = NM_NUM_DTYPES;
+const size_t NUM_ITYPES = NM_NUM_ITYPES;
+
 // regular data types
 extern const char* const	DTYPE_NAMES[NUM_DTYPES];
 extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
