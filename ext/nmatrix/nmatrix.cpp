@@ -21,35 +21,11 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == nmatrix.c
+// == nmatrix.cpp
 //
-
-/////////////////////////////////////////////////////////////////////
-// = NMatrix
-//
-// A linear algebra library for scientific computation in Ruby.
-// NMatrix is part of SciRuby.
-//
-// NMatrix was originally inspired by and derived from NArray, by
-// Masahiro Tanaka: http://narray.rubyforge.org
-//
-// == Copyright Information
-//
-// SciRuby is Copyright (c) 2010 - 2012, Ruby Science Foundation
-// NMatrix is Copyright (c) 2012, Ruby Science Foundation
-//
-// Please see LICENSE.txt for additional copyright notices.
-//
-// == Contributing
-//
-// By contributing source code to SciRuby, you agree to be bound by
-// our Contributor Agreement:
-//
-// * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
-//
-// == data.cpp
-//
-// Functions and data for dealing the data types.
+// Main C++ source file for NMatrix. Contains Init_nmatrix and most Ruby instance and
+// class methods for NMatrix. Also responsible for calling Init methods on related
+// modules.
 
 /*
  * Standard Includes
@@ -68,6 +44,10 @@
 #include "nmatrix.h"
 
 #include "ruby_constants.h"
+
+using std::memcmp;
+using std::memset;
+using std::strncmp;
 
 /*
  * Macros
