@@ -47,7 +47,7 @@
 
 #include "util/sl_list.h"
 
-#include "nmatrix.h"
+#include "nmatrix.hpp"
 
 /*
  * Macros

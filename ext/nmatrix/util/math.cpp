@@ -31,7 +31,7 @@
 
 #include "math.h"
 
-#include "nmatrix.h"
+#include "nmatrix.hpp"
 #include "ruby_constants.h"
 
 /*

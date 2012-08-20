@@ -44,7 +44,7 @@
 
 #include "data/data.h"
 
-#include "nmatrix.h"
+#include "nmatrix.hpp"
 
 /*
  * Macros
