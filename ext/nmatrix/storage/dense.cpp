@@ -279,7 +279,7 @@ void* dense_storage_ref(STORAGE* storage, SLICE* slice) {
     ns->stride     = s->stride;
     ns->elements   = s->elements;
     
-    ((DENSE_STORAGE*)((DENSE_STORAGE*)s->src))->count++;
+    s->src->count++;
     ns->src = s->src;
 
     return ns;

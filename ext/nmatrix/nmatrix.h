@@ -95,13 +95,13 @@ struct STORAGE {
 	size_t*	shape;
 	size_t*	offset;
 
+	int			count;  //ref count
+	STORAGE*		src;
 	//virtual void empty(void) = 0;
 };
 
 struct DENSE_STORAGE : STORAGE {
 	size_t*	stride;
-	int			count;
-	void*		src;
 	void*		elements;
 };
 

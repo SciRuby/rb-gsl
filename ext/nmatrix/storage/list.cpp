@@ -107,6 +107,12 @@ LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, voi
   LIST_STORAGE* s;
 
   s = ALLOC( LIST_STORAGE );
+  NM_CHECK_ALLOC(s);
+
+  s->offset = ALLOC_N(size_t, s->rank);
+  NM_CHECK_ALLOC(s);
+  memset(s->offset, 0, s->rank);
+
 
   s->rank  = rank;
   s->shape = shape;
@@ -115,6 +121,9 @@ LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, voi
   s->rows  = list_create();
 
   s->default_val = init_val;
+
+  s->count = 1;
+  s->src = s;
 
   return s;
 }
@@ -125,11 +134,27 @@ LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, voi
 void list_storage_delete(STORAGE* s) {
   if (s) {
     LIST_STORAGE* storage = (LIST_STORAGE*)s;
+    if (storage->count-- == 1) {
+      list_delete( storage->rows, storage->rank - 1 );
 
-    list_delete( storage->rows, storage->rank - 1 );
+      free(storage->shape);
+      free(storage->offset);
+      free(storage->default_val);
+      free(s);
+    }
+  }
+}
 
+/*
+ * Documentation goes here.
+ */
+void list_storage_delete_ref(STORAGE* s) {
+  if (s) {
+    LIST_STORAGE* storage = (LIST_STORAGE*)s;
+
+    list_storage_delete( reinterpret_cast<STORAGE*>(storage->src ) );
     free(storage->shape);
-    free(storage->default_val);
+    free(storage->offset);
     free(s);
   }
 }
@@ -166,19 +191,50 @@ void* list_storage_get(STORAGE* storage, SLICE* slice) {
  */
 void* list_storage_ref(STORAGE* storage, SLICE* slice) {
   LIST_STORAGE* s = (LIST_STORAGE*)storage;
+  LIST_STORAGE* ns = NULL;
   size_t r;
   NODE*  n;
   LIST*  l = s->rows;
 
-  for (r = s->rank; r > 1; --r) {
-    n = list_find(l, slice->coords[s->rank - r]);
-    if (n)  l = reinterpret_cast<LIST*>(n->val);
-    else return s->default_val;
-  }
+  if (slice->single) {
+    for (r = s->rank; r > 1; --r) {
+      n = list_find(l, s->offset[s->rank - r] + slice->coords[s->rank - r]);
+      if (n)  l = reinterpret_cast<LIST*>(n->val);
+      else return s->default_val;
+    }
 
-  n = list_find(l, slice->coords[s->rank - r]);
-  if (n) return n->val;
-  else   return s->default_val;
+    n = list_find(l, slice->coords[s->rank - r]);
+    if (n) return n->val;
+    else   return s->default_val;
+  } 
+  else {
+    ns = ALLOC( LIST_STORAGE );
+    NM_CHECK_ALLOC(ns);
+    
+    ns->rank = s->rank;
+    ns->dtype = s->dtype;
+
+    ns->offset     = ALLOC_N(size_t, ns->rank);
+    NM_CHECK_ALLOC(ns->offset);
+
+    ns->shape      = ALLOC_N(size_t, ns->rank);
+    NM_CHECK_ALLOC(ns->shape);
+
+    for (size_t i = 0; i < ns->rank; ++i) {
+      ns->offset[i] = slice->coords[i] + s->offset[i];
+      ns->shape[i]  = slice->lengths[i];
+    }
+
+    printf("Shape: [%d %d]\n", ns->shape[0], ns->shape[1]);
+    printf("Offset: [%d %d]\n", ns->offset[0], ns->offset[1]);
+    ns->rows = s->rows;
+    ns->default_val = s->default_val;
+    
+    s->src->count++;
+    ns->src = s->src;
+    
+    return ns;
+  }
 }
 
 /*

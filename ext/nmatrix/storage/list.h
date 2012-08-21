@@ -74,6 +74,7 @@
 
 LIST_STORAGE*	list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val);
 void					list_storage_delete(STORAGE* s);
+void					list_storage_delete_ref(STORAGE* s);
 void					list_storage_mark(void*);
 
 ///////////////
