@@ -31,7 +31,7 @@
 
 #include "sl_list.h"
 
-namespace list {
+namespace nm { namespace list {
 
 /*
  * Macros
@@ -370,7 +370,7 @@ void cast_copy_contents(LIST* lhs, const LIST* rhs, size_t recursions) {
   }
 }
 
-}; // end of namespace list
+}} // end of namespace nm::list
 
 extern "C" {
 
@@ -378,7 +378,7 @@ extern "C" {
    * C access for copying the contents of a list.
    */
   void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
-    LR_DTYPE_TEMPLATE_TABLE(list::cast_copy_contents, void, LIST*, const LIST*, size_t);
+    LR_DTYPE_TEMPLATE_TABLE(nm::list::cast_copy_contents, void, LIST*, const LIST*, size_t);
 
     ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
   }

@@ -170,7 +170,7 @@ extern "C" {
 
 } // end of extern "C" block
 
-namespace yale_storage {
+namespace nm { namespace yale_storage {
 
   /*
    * Constants
@@ -207,6 +207,6 @@ namespace yale_storage {
       a[i] = 0;
   }
 
-};
+}} // end of namespace nm::yale_storage
 
 #endif // YALE_H

@@ -53,25 +53,26 @@
 /*
  * Functions
  */
+namespace nm {
+  template <typename Type>
+  inline Type gcf(Type x, Type y) {
+    Type t;
 
-template <typename Type>
-inline Type gcf(Type x, Type y) {
-	Type t;
+    if (x < 0) x = -x;
+    if (y < 0) y = -y;
 
-	if (x < 0) x = -x;
-	if (y < 0) y = -y;
+    if (x == 0) return y;
+    if (y == 0) return x;
 
-	if (x == 0) return y;
-	if (y == 0) return x;
+    while (x > 0) {
+      t = x;
+      x = y % x;
+      y = t;
+    }
 
-	while (x > 0) {
-		t = x;
-		x = y % x;
-		y = t;
-	}
-
-	return y;
-}
+    return y;
+  }
+} // end of namespace nm
 
 
 /*extern template <>

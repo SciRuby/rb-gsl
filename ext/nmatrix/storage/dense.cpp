@@ -57,7 +57,7 @@
  * Forward Declarations
  */
 
-namespace dense_storage {
+namespace nm { namespace dense_storage {
 
   template <typename LDType, typename RDType>
   DENSE_STORAGE* cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype);
@@ -89,7 +89,7 @@ namespace dense_storage {
   template <typename DType>
   bool is_symmetric(const DENSE_STORAGE* mat, int lda);
 
-} // end of namespace dense_storage
+}} // end of namespace nm::dense_storage
 
 
 extern "C" {
@@ -314,7 +314,7 @@ void dense_storage_set(STORAGE* storage, SLICE* slice, void* val) {
  *				have the same dtype.
  */
 bool dense_storage_eqeq(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(dense_storage::eqeq, bool, const DENSE_STORAGE*, const DENSE_STORAGE*);
+	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::eqeq, bool, const DENSE_STORAGE*, const DENSE_STORAGE*);
 	
 	return ttable[left->dtype][right->dtype]((const DENSE_STORAGE*)left, (const DENSE_STORAGE*)right);
 }
@@ -325,10 +325,10 @@ bool dense_storage_eqeq(const STORAGE* left, const STORAGE* right) {
  */
 bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda) {
 	if (mat->dtype == COMPLEX64) {
-		return dense_storage::is_hermitian<Complex64>(mat, lda);
+		return nm::dense_storage::is_hermitian<nm::Complex64>(mat, lda);
 		
 	} else if (mat->dtype == COMPLEX128) {
-		return dense_storage::is_hermitian<Complex128>(mat, lda);
+		return nm::dense_storage::is_hermitian<nm::Complex128>(mat, lda);
 		
 	} else {
 		return dense_storage_is_symmetric(mat, lda);
@@ -339,7 +339,7 @@ bool dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda) {
  * Is this dense matrix symmetric about the diagonal?
  */
 bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
-	DTYPE_TEMPLATE_TABLE(dense_storage::is_symmetric, bool, const DENSE_STORAGE*, int);
+	DTYPE_TEMPLATE_TABLE(nm::dense_storage::is_symmetric, bool, const DENSE_STORAGE*, int);
 	
 	return ttable[mat->dtype](mat, lda);
 }
@@ -352,7 +352,7 @@ bool dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
  * Documentation goes here.
  */
 STORAGE* dense_storage_ew_add(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(dense_storage::ew_add, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
+	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_add, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
 	
 	return ttable[left->dtype][right->dtype]((DENSE_STORAGE*)left, (DENSE_STORAGE*)right);
 }
@@ -361,7 +361,7 @@ STORAGE* dense_storage_ew_add(const STORAGE* left, const STORAGE* right) {
  * Documentation goes here.
  */
 STORAGE* dense_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(dense_storage::ew_subtract, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
+	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_subtract, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
 	
 	return ttable[left->dtype][right->dtype]((DENSE_STORAGE*)left, (DENSE_STORAGE*)right);
 }
@@ -370,7 +370,7 @@ STORAGE* dense_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
  * Documentation goes here.
  */
 STORAGE* dense_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(dense_storage::ew_multiply, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
+	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_multiply, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
 	
 	return ttable[left->dtype][right->dtype]((DENSE_STORAGE*)left, (DENSE_STORAGE*)right);
 }
@@ -379,7 +379,7 @@ STORAGE* dense_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
  * Documentation goes here.
  */
 STORAGE* dense_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(dense_storage::ew_divide, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
+	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_divide, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
 	
 	return ttable[left->dtype][right->dtype]((DENSE_STORAGE*)left, (DENSE_STORAGE*)right);
 }
@@ -389,7 +389,7 @@ STORAGE* dense_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
  */
 /*
 STORAGE* dense_storage_ew_mod(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(dense_storage::ew_mod, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
+	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_mod, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
 	
 	return ttable[left->dtype][right->dtype]((DENSE_STORAGE*)left, (DENSE_STORAGE*)right);
 }
@@ -399,7 +399,7 @@ STORAGE* dense_storage_ew_mod(const STORAGE* left, const STORAGE* right) {
  * Documentation goes here.
  */
 STORAGE* dense_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
-  DTYPE_TEMPLATE_TABLE(dense_storage::matrix_multiply, DENSE_STORAGE*, const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
+  DTYPE_TEMPLATE_TABLE(nm::dense_storage::matrix_multiply, DENSE_STORAGE*, const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
   return ttable[casted_storage.left->dtype](casted_storage, resulting_shape, vector);
 }
@@ -466,7 +466,7 @@ static void dense_storage_slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *s
  * Copy dense storage, changing dtype if necessary.
  */
 STORAGE* dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
-	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, dense_storage::cast_copy, DENSE_STORAGE*, const DENSE_STORAGE* rhs, dtype_t new_dtype);
+	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::dense_storage::cast_copy, DENSE_STORAGE*, const DENSE_STORAGE* rhs, dtype_t new_dtype);
 
 	return (STORAGE*)ttable[new_dtype][rhs->dtype]((DENSE_STORAGE*)rhs, new_dtype);
 }
@@ -531,7 +531,7 @@ STORAGE* dense_storage_copy_transposed(const STORAGE* rhs_base) {
 
 } // end of extern "C" block
 
-namespace dense_storage {
+namespace nm { namespace dense_storage {
 
 /////////////////////////
 // Templated Functions //
@@ -767,4 +767,4 @@ static DENSE_STORAGE* matrix_multiply(const STORAGE_PAIR& casted_storage, size_t
   return result;
 }
 
-} // end of namespace dense_storage
+}} // end of namespace nm::dense_storage

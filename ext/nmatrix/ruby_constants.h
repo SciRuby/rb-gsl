@@ -50,32 +50,32 @@
  * Data
  */
 
-extern ID rbsym_real,
-					rbsym_imag,
+extern ID nm_rb_real,
+					nm_rb_imag,
 		
-					rbsym_numer,
-					rbsym_denom,
+					nm_rb_numer,
+					nm_rb_denom,
 		
-					rbsym_complex_conjugate,
-					rbsym_transpose,
-					rbsym_no_transpose,
+					nm_rb_complex_conjugate,
+					nm_rb_transpose,
+					nm_rb_no_transpose,
 		
-					rbsym_dense,
-					rbsym_list,
-					rbsym_yale,
+					nm_rb_dense,
+					nm_rb_list,
+					nm_rb_yale,
 		
-					rbsym_add,
-					rbsym_sub,
-					rbsym_mul,
-					rbsym_div,
+					nm_rb_add,
+					nm_rb_sub,
+					nm_rb_mul,
+					nm_rb_div,
 		
-					rbsym_percent,
-					rbsym_gt,
-					rbsym_lt,
-					rbsym_eql,
-					rbsym_neql,
-					rbsym_gte,
-					rbsym_lte;
+					nm_rb_percent,
+					nm_rb_gt,
+					nm_rb_lt,
+					nm_rb_eql,
+					nm_rb_neql,
+					nm_rb_gte,
+					nm_rb_lte;
 
 extern VALUE	cNMatrix,
 							cNVector,

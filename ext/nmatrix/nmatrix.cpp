@@ -724,13 +724,13 @@ static VALUE nm_complex_conjugate_bang(VALUE self) {
   if (NM_DTYPE(self) == COMPLEX64) {
 
     for (p = 0; p < size; ++p) {
-      reinterpret_cast<Complex64*>(elem)[p].i = -reinterpret_cast<Complex64*>(elem)[p].i;
+      reinterpret_cast<nm::Complex64*>(elem)[p].i = -reinterpret_cast<nm::Complex64*>(elem)[p].i;
     }
 
   } else if (NM_DTYPE(self) == COMPLEX128) {
 
     for (p = 0; p < size; ++p) {
-      reinterpret_cast<Complex128*>(elem)[p].i = -reinterpret_cast<Complex128*>(elem)[p].i;
+      reinterpret_cast<nm::Complex128*>(elem)[p].i = -reinterpret_cast<nm::Complex128*>(elem)[p].i;
     }
 
   } else {
@@ -797,7 +797,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   stype_t stype;
   size_t  offset = 0;
 
-  if (!SYMBOL_P(argv[0]) && !RUBYVAL_IS_STRING(argv[0])) {
+  if (!SYMBOL_P(argv[0]) && TYPE(argv[0]) != T_STRING) {
     stype = DENSE_STORE;
     
   } else {
@@ -825,7 +825,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
 
   size_t init_cap = 0, init_val_len = 0;
   void* init_val  = NULL;
-  if (RUBYVAL_IS_NUMERIC(argv[1+offset]) || TYPE(argv[1+offset]) == T_ARRAY) {
+  if (NM_RUBYVAL_IS_NUMERIC(argv[1+offset]) || TYPE(argv[1+offset]) == T_ARRAY) {
   	// Initial value provided (could also be initial capacity, if yale).
   	
     if (stype == YALE_STORE) {
@@ -1093,7 +1093,7 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 
   UnwrapNMatrix( left_v, left );
 
-  if (RUBYVAL_IS_NUMERIC(right_v))
+  if (NM_RUBYVAL_IS_NUMERIC(right_v))
     return matrix_multiply_scalar(left, right_v);
 
   else if (TYPE(right_v) == T_ARRAY)
@@ -1450,7 +1450,7 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
   if (SYMBOL_P(argv[offset])) {
   	return dtype_from_rbsymbol(argv[offset]);
   	
-  } else if (RUBYVAL_IS_STRING(argv[offset])) {
+  } else if (TYPE(argv[offset]) == T_STRING) {
   	return dtype_from_rbstring(StringValue(argv[offset]));
   	
   } else if (stype == YALE_STORE) {
@@ -1468,7 +1468,7 @@ static void* interpret_initial_value(VALUE arg, dtype_t dtype) {
   unsigned int index;
   void* init_val;
   
-  if (RUBYVAL_IS_ARRAY(arg)) {
+  if (TYPE(arg) == T_ARRAY) {
   	// Array
     
     init_val = ALLOC_N(int8_t, DTYPE_SIZES[dtype] * RARRAY_LEN(arg));
@@ -1523,7 +1523,7 @@ static stype_t interpret_stype(VALUE arg) {
   if (SYMBOL_P(arg)) {
   	return stype_from_rbsymbol(arg);
   	
-  } else if (RUBYVAL_IS_STRING(arg)) {
+  } else if (TYPE(arg) == T_STRING) {
   	return stype_from_rbstring(StringValue(arg));
   	
   } else {

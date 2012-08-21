@@ -43,32 +43,32 @@
  * Global Variables
  */
 
-ID	rbsym_real,
-		rbsym_imag,
+ID	nm_rb_real,
+		nm_rb_imag,
 
-		rbsym_numer,
-		rbsym_denom,
+		nm_rb_numer,
+		nm_rb_denom,
 
-		rbsym_complex_conjugate,
-		rbsym_transpose,
-		rbsym_no_transpose,
+		nm_rb_complex_conjugate,
+		nm_rb_transpose,
+		nm_rb_no_transpose,
 
-		rbsym_dense,
-		rbsym_list,
-		rbsym_yale,
+		nm_rb_dense,
+		nm_rb_list,
+		nm_rb_yale,
 
-		rbsym_add,
-		rbsym_sub,
-		rbsym_mul,
-		rbsym_div,
+		nm_rb_add,
+		nm_rb_sub,
+		nm_rb_mul,
+		nm_rb_div,
 
-		rbsym_percent,
-		rbsym_gt,
-		rbsym_lt,
-		rbsym_eql,
-		rbsym_neql,
-		rbsym_gte,
-		rbsym_lte;
+		nm_rb_percent,
+		nm_rb_gt,
+		nm_rb_lt,
+		nm_rb_eql,
+		nm_rb_neql,
+		nm_rb_gte,
+		nm_rb_lte;
 
 VALUE cNMatrix,
 			cNVector,
@@ -88,32 +88,32 @@ VALUE cNMatrix,
 
 void nm_init_ruby_constants(void) {
 
-	rbsym_real							= rb_intern("real");
-	rbsym_imag							= rb_intern("imag");
+	nm_rb_real							= rb_intern("real");
+	nm_rb_imag							= rb_intern("imag");
 
-	rbsym_numer							= rb_intern("numerator");
-	rbsym_denom							= rb_intern("denominator");
+	nm_rb_numer							= rb_intern("numerator");
+	nm_rb_denom							= rb_intern("denominator");
 
-	rbsym_complex_conjugate	= rb_intern("complex_conjugate");
-	rbsym_transpose					= rb_intern("transpose");
-	rbsym_no_transpose			= rb_intern("no_transpose");
+	nm_rb_complex_conjugate	= rb_intern("complex_conjugate");
+	nm_rb_transpose					= rb_intern("transpose");
+	nm_rb_no_transpose			= rb_intern("no_transpose");
 
-	rbsym_dense 						= rb_intern("dense");
-	rbsym_list							= rb_intern("list");
-	rbsym_yale							= rb_intern("yale");
+	nm_rb_dense 						= rb_intern("dense");
+	nm_rb_list							= rb_intern("list");
+	nm_rb_yale							= rb_intern("yale");
 
-	rbsym_add								= rb_intern("+");
-	rbsym_sub								= rb_intern("-");
-	rbsym_mul								= rb_intern("*");
-	rbsym_div								= rb_intern("/");
+	nm_rb_add								= rb_intern("+");
+	nm_rb_sub								= rb_intern("-");
+	nm_rb_mul								= rb_intern("*");
+	nm_rb_div								= rb_intern("/");
 
-	rbsym_percent						= rb_intern("%");
-	rbsym_gt								= rb_intern(">");
-	rbsym_lt								= rb_intern("<");
-	rbsym_eql								= rb_intern("==");
-	rbsym_neql							= rb_intern("!=");
-	rbsym_gte								= rb_intern(">=");
-	rbsym_lte								= rb_intern("<=");
+	nm_rb_percent						= rb_intern("%");
+	nm_rb_gt								= rb_intern(">");
+	nm_rb_lt								= rb_intern("<");
+	nm_rb_eql								= rb_intern("==");
+	nm_rb_neql							= rb_intern("!=");
+	nm_rb_gte								= rb_intern(">=");
+	nm_rb_lte								= rb_intern("<=");
 	
 }
 

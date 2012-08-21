@@ -45,17 +45,7 @@
 /*
  * Macros
  */
-
-#define RUBYVAL_IS_ARRAY(val)			(TYPE(val) == T_ARRAY)
-#define RUBYVAL_IS_COMPLEX(val)		(TYPE(val) == T_COMPLEX)
-#define RUBYVAL_IS_INTEGER(val)		(FIXNUM_P(val))
-#define RUBYVAL_IS_FLOAT(val)			(TYPE(val) == T_FLOAT)
-#define RUBYVAL_IS_NMATRIX(val) 	(rb_obj_is_kind_of(val, cNMatrix) == Qtrue)
-#define RUBYVAL_IS_NUMERIC(val)		(FIXNUM_P(val) or (TYPE(val) == T_FLOAT) or (TYPE(val) == T_COMPLEX) or (TYPE(val) == T_RATIONAL))
-#define RUBYVAL_IS_NVECTOR(val) 	(rb_obj_is_kind_of(val, cNVector) == Qtrue)
-#define RUBYVAL_IS_RATIONAL(val)	(TYPE(val) == T_RATIONAL)
-#define RUBYVAL_IS_STRING(val)    (TYPE(val) == T_STRING)
-
+#define NM_RUBYVAL_IS_NUMERIC(val)                (FIXNUM_P(val) or (TYPE(val) == T_FLOAT) or (TYPE(val) == T_COMPLEX) or (TYPE(val) == T_RATIONAL))
 #define NMATRIX_CHECK_TYPE(val) \
 	if (TYPE(val) != T_DATA || (RDATA(val)->dfree != (RUBY_DATA_FUNC)nm_delete && RDATA(val)->dfree != (RUBY_DATA_FUNC)nm_delete_ref)) \
 		rb_raise(rb_eTypeError, "Expected NMatrix on left-hand side of operation.");
@@ -71,7 +61,7 @@
 /*
  * Classes and Functions
  */
-
+namespace nm {
 template<typename T, typename U>
 struct made_from_same_template : std::false_type {}; 
  
@@ -128,57 +118,57 @@ class RubyObject {
 	 */
 	
 	inline RubyObject operator+(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->rval, rbsym_add, 1, other.rval));
+		return RubyObject(rb_funcall(this->rval, nm_rb_add, 1, other.rval));
 	}
 
 	inline RubyObject& operator+=(const RubyObject& other) {
-    this->rval = rb_funcall(this->rval, rbsym_add, 1, other.rval);
+    this->rval = rb_funcall(this->rval, nm_rb_add, 1, other.rval);
     return *this;
 	}
 
 	inline RubyObject operator-(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->rval, rbsym_sub, 1, other.rval));
+		return RubyObject(rb_funcall(this->rval, nm_rb_sub, 1, other.rval));
 	}
 	
 	inline RubyObject operator*(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->rval, rbsym_mul, 1, other.rval));
+		return RubyObject(rb_funcall(this->rval, nm_rb_mul, 1, other.rval));
 	}
 
 	inline RubyObject& operator*=(const RubyObject& other) {
-    this->rval = rb_funcall(this->rval, rbsym_mul, 1, other.rval);
+    this->rval = rb_funcall(this->rval, nm_rb_mul, 1, other.rval);
     return *this;
 	}
 	
 	inline RubyObject operator/(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->rval, rbsym_div, 1, other.rval));
+		return RubyObject(rb_funcall(this->rval, nm_rb_div, 1, other.rval));
 	}
 	
 	inline RubyObject operator%(const RubyObject& other) const {
-		return RubyObject(rb_funcall(this->rval, rbsym_percent, 1, other.rval));
+		return RubyObject(rb_funcall(this->rval, nm_rb_percent, 1, other.rval));
 	}
 	
 	inline bool operator>(const RubyObject& other) const {
-		return rb_funcall(this->rval, rbsym_gt, 1, other.rval) == Qtrue;
+		return rb_funcall(this->rval, nm_rb_gt, 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator<(const RubyObject& other) const {
-		return rb_funcall(this->rval, rbsym_lt, 1, other.rval) == Qtrue;
+		return rb_funcall(this->rval, nm_rb_lt, 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator==(const RubyObject& other) const {
-		return rb_funcall(this->rval, rbsym_eql, 1, other.rval) == Qtrue;
+		return rb_funcall(this->rval, nm_rb_eql, 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator!=(const RubyObject& other) const {
-		return rb_funcall(this->rval, rbsym_neql, 1, other.rval) == Qtrue;
+		return rb_funcall(this->rval, nm_rb_neql, 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator>=(const RubyObject& other) const {
-		return rb_funcall(this->rval, rbsym_gte, 1, other.rval) == Qtrue;
+		return rb_funcall(this->rval, nm_rb_gte, 1, other.rval) == Qtrue;
 	}
 	
 	inline bool operator<=(const RubyObject& other) const {
-		return rb_funcall(this->rval, rbsym_lte, 1, other.rval) == Qtrue;
+		return rb_funcall(this->rval, nm_rb_lte, 1, other.rval) == Qtrue;
 	}
 
 	////////////////////////////
@@ -244,11 +234,11 @@ class RubyObject {
 	 */
 	template <typename ComplexType>
 	inline typename std::enable_if<made_from_same_template<ComplexType, Complex64>::value, ComplexType>::type to(void) {
-		if (RUBYVAL_IS_INTEGER(this->rval) or RUBYVAL_IS_FLOAT(this->rval) or RUBYVAL_IS_RATIONAL(this->rval)) {
+		if (FIXNUM_P(this->rval) or TYPE(this->rval) == T_FLOAT or TYPE(this->rval) == T_RATIONAL) {
 			return ComplexType(NUM2DBL(this->rval));
 			
-		} else if (RUBYVAL_IS_COMPLEX(this->rval)) {
-			return ComplexType(NUM2DBL(rb_funcall(this->rval, rbsym_real, 0)), NUM2DBL(rb_funcall(this->rval, rbsym_imag, 0)));
+		} else if (TYPE(this->rval) == T_COMPLEX) {
+			return ComplexType(NUM2DBL(rb_funcall(this->rval, nm_rb_real, 0)), NUM2DBL(rb_funcall(this->rval, nm_rb_imag, 0)));
 			
 		} else {
 			rb_raise(rb_eTypeError, "Invalid conversion to Complex type.");
@@ -260,11 +250,11 @@ class RubyObject {
 	 */
 	template <typename RationalType>
 	inline typename std::enable_if<made_from_same_template<RationalType, Rational32>::value, RationalType>::type to(void) {
-		if (RUBYVAL_IS_INTEGER(this->rval) or RUBYVAL_IS_FLOAT(this->rval) or RUBYVAL_IS_COMPLEX(this->rval)) {
+		if (FIXNUM_P(this->rval) or TYPE(this->rval) == T_FLOAT or TYPE(this->rval) == T_COMPLEX) {
 			return RationalType(NUM2INT(this->rval));
 			
-		} else if (RUBYVAL_IS_RATIONAL(this->rval)) {
-			return RationalType(NUM2INT(rb_funcall(this->rval, rbsym_numer, 0)), NUM2INT(rb_funcall(this->rval, rbsym_denom, 0)));
+		} else if (TYPE(this->rval) == T_RATIONAL) {
+			return RationalType(NUM2INT(rb_funcall(this->rval, nm_rb_numer, 0)), NUM2INT(rb_funcall(this->rval, nm_rb_denom, 0)));
 			
 		} else {
 			rb_raise(rb_eTypeError, "Invalid conversion to Rational type.");
@@ -323,5 +313,6 @@ inline bool operator!=(const Rational<IntType>& left, const RubyObject& right) {
 	return RubyObject(left) != right;
 }
 
+} // end of namespace nm
 
 #endif // RUBY_OBJECT_H

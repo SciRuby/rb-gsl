@@ -187,9 +187,9 @@ void nm_math_init_blas() {
  *
  */
 static enum CBLAS_TRANSPOSE gemm_op_sym(VALUE op) {
-  if (op == Qfalse || rb_to_id(op) == rbsym_no_transpose) return CblasNoTrans;
-  else if (rb_to_id(op) == rbsym_transpose) return CblasTrans;
-  else if (rb_to_id(op) == rbsym_complex_conjugate) return CblasConjTrans;
+  if (op == Qfalse || rb_to_id(op) == nm_rb_no_transpose) return CblasNoTrans;
+  else if (rb_to_id(op) == nm_rb_transpose) return CblasTrans;
+  else if (rb_to_id(op) == nm_rb_complex_conjugate) return CblasConjTrans;
   else rb_raise(rb_eArgError, "Expected false, :transpose, or :complex_conjugate");
   return CblasNoTrans;
 }

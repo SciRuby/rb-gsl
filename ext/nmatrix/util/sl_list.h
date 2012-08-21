@@ -46,7 +46,7 @@
 
 #include "nmatrix.h"
 
-namespace list {
+namespace nm { namespace list {
 
 /*
  * Macros
@@ -243,7 +243,7 @@ NODE* find_nearest_from(NODE* prev, size_t key);
 template <typename LDType, typename RDType>
 void cast_copy_contents(LIST* lhs, const LIST* rhs, size_t recursions);
 
-}; // end of namespace list
+}} // end of namespace nm::list
 
 extern "C" {
   void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);

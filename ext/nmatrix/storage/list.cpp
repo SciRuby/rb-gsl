@@ -54,7 +54,7 @@
  * Global Variables
  */
 
-namespace list_storage {
+namespace nm { namespace list_storage {
 
 /*
  * Forward Declarations
@@ -267,7 +267,7 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
  * Comparison of contents for list storage.
  */
 bool list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
-	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, list_storage::eqeq, bool, const LIST_STORAGE* left, const LIST_STORAGE* right);
+	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::eqeq, bool, const LIST_STORAGE* left, const LIST_STORAGE* right);
 
 	return ttable[left->dtype][right->dtype]((const LIST_STORAGE*)left, (const LIST_STORAGE*)right);
 }
@@ -282,7 +282,7 @@ bool list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
  * Element-wise addition for list storage.
  */
 STORAGE* list_storage_ew_add(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(list_storage::ew_add, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
+	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_add, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
 	
@@ -324,7 +324,7 @@ STORAGE* list_storage_ew_add(const STORAGE* left, const STORAGE* right) {
  * Element-wise subtraction for list storage.
  */
 STORAGE* list_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(list_storage::ew_subtract, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
+	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_subtract, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
 	
@@ -366,7 +366,7 @@ STORAGE* list_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
  * Element-wise multiplication for list storage.
  */
 STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(list_storage::ew_multiply, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
+	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_multiply, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
 	
@@ -408,7 +408,7 @@ STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
  * Element-wise division for list storage.
  */
 STORAGE* list_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(list_storage::ew_divide, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
+	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_divide, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
 	
@@ -516,7 +516,7 @@ size_t list_storage_count_nd_elements(const LIST_STORAGE* s) {
  * List storage copy constructor C access.
  */
 STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
-  NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, list_storage::cast_copy, LIST_STORAGE*, const LIST_STORAGE* rhs, dtype_t new_dtype);
+  NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::cast_copy, LIST_STORAGE*, const LIST_STORAGE* rhs, dtype_t new_dtype);
 
   return (STORAGE*)ttable[new_dtype][rhs->dtype]((LIST_STORAGE*)rhs, new_dtype);
 }
@@ -1293,4 +1293,4 @@ static void ew_divide_prime(LIST* dest, LDType d_default, const LIST* left, LDTy
 	}
 }
 
-} // end of namespace list_storage
+}} // end of namespace nm::list_storage
