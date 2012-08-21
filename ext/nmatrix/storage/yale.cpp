@@ -795,16 +795,16 @@ static STORAGE* matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resu
   IType* ija = reinterpret_cast<IType*>(result->ija);
 
   // Symbolic multiplication step (build the structure)
-  symbmm<IType>(result->shape[0], result->shape[1], ijl, ijl, true, ijr, ijr, true, ija, true);
+  nm::math::symbmm<IType>(result->shape[0], result->shape[1], ijl, ijl, true, ijr, ijr, true, ija, true);
 
   // Numeric multiplication step (fill in the elements)
-  numbmm<DType,IType>(result->shape[0], result->shape[1],
-                      ijl, ijl, reinterpret_cast<DType*>(left->a), true,
-                      ijr, ijr, reinterpret_cast<DType*>(right->a), true,
-                      ija, ija, reinterpret_cast<DType*>(result->a), true);
+  nm::math::numbmm<DType,IType>(result->shape[0], result->shape[1],
+                                ijl, ijl, reinterpret_cast<DType*>(left->a), true,
+                                ijr, ijr, reinterpret_cast<DType*>(right->a), true,
+                                ija, ija, reinterpret_cast<DType*>(result->a), true);
 
   // Sort the columns
-  smmp_sort_columns<DType,IType>(result->shape[0], ija, ija, reinterpret_cast<DType*>(result->a));
+  nm::math::smmp_sort_columns<DType,IType>(result->shape[0], ija, ija, reinterpret_cast<DType*>(result->a));
 
   return reinterpret_cast<STORAGE*>(result);
 }
@@ -819,7 +819,7 @@ static STORAGE* matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resu
 
 extern "C" {
 
-void Init_yale_functions() {
+void nm_init_yale_functions() {
   cYaleFunctions = rb_define_module_under(cNMatrix, "YaleFunctions");
 
   rb_define_method(cYaleFunctions, "yale_ija", (METHOD)nm_yale_ija, 0);
@@ -947,7 +947,7 @@ STORAGE* yale_storage_copy_transposed(const STORAGE* rhs_base) {
   YALE_STORAGE* lhs = yale_storage_create(rhs->dtype, shape, 2, size);
   yale_storage_init(lhs);
 
-  NAMED_LI_DTYPE_TEMPLATE_TABLE(transp, transpose_yale_template, void, const size_t n, const size_t m, const void* ia_, const void* ja_, const void* a_, const bool diaga, void* ib_, void* jb_, void* b_, const bool move);
+  NAMED_LI_DTYPE_TEMPLATE_TABLE(transp, nm::math::transpose_yale, void, const size_t n, const size_t m, const void* ia_, const void* ja_, const void* a_, const bool diaga, void* ib_, void* jb_, void* b_, const bool move);
 
   transp[lhs->dtype][lhs->itype](rhs->shape[0], rhs->shape[1], rhs->ija, rhs->ija, rhs->a, true, lhs->ija, lhs->ija, lhs->a, true);
 

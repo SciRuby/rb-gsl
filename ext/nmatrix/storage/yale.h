@@ -165,7 +165,7 @@ extern "C" {
 
 
 
-  void Init_yale_functions(void);
+  void nm_init_yale_functions(void);
 
 
 } // end of extern "C" block

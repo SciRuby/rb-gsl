@@ -227,13 +227,13 @@ void Init_nmatrix() {
 	// YaleFunctions module //
 	//////////////////////////
 
-	Init_yale_functions();
+	nm_init_yale_functions();
 
 	/////////////////
 	// BLAS module //
 	/////////////////
 
-	Init_blas();
+	nm_math_init_blas();
 }
 
 /*
@@ -1678,7 +1678,7 @@ static VALUE nm_det_exact(VALUE self) {
 
   // Calculate the determinant and then assign it to the return value
   void* result = ALLOCA_N(char, DTYPE_SIZES[NM_DTYPE(self)]);
-  det_exact(NM_SHAPE0(self), NM_STORAGE_DENSE(self)->elements, NM_SHAPE0(self), NM_DTYPE(self), result);
+  nm_math_det_exact(NM_SHAPE0(self), NM_STORAGE_DENSE(self)->elements, NM_SHAPE0(self), NM_DTYPE(self), result);
 
   return rubyobj_from_cval(result, NM_DTYPE(self)).rval;
 }
