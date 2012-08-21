@@ -32,8 +32,6 @@
  * Standard Includes
  */
 
-#include <type_traits>
-
 #include <cstdlib>
 
 /*
