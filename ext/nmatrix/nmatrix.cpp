@@ -1024,7 +1024,7 @@ static VALUE elementwise_op(ewop_t op, VALUE left_val, VALUE right_val) {
 	
 	static STORAGE* (*ew_op[NUM_STYPES])(ewop_t, const STORAGE*, const STORAGE*) = {
 		dense_storage_ew_op,
-		NULL,
+		list_storage_ew_op,
 		NULL
 	};
 	

@@ -97,12 +97,7 @@ bool list_storage_eqeq(const STORAGE* left, const STORAGE* right);
 // Math //
 //////////
 
-STORAGE* list_storage_ew_add(const STORAGE* left, const STORAGE* right);
-STORAGE* list_storage_ew_subtract(const STORAGE* left, const STORAGE* right);
-STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right);
-STORAGE* list_storage_ew_divide(const STORAGE* left, const STORAGE* right);
-//STORAGE* list_storage_ew_mod(const STORAGE* left, const STORAGE* right);
-
+STORAGE* list_storage_ew_op(ewop_t op, const STORAGE* left, const STORAGE* right);
 STORAGE* list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
 /////////////
