@@ -305,9 +305,9 @@ NM_DEF_STRUCT_POST(NMATRIX);  // };
   (rb_obj_is_kind_of(obj, cNVector) == Qtrue)
 
 
-#ifdef __cplusplus
 typedef VALUE (*METHOD)(...);
 
+#ifdef __cplusplus
 //}; // end of namespace nm
 #endif
 
