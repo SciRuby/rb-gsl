@@ -56,30 +56,18 @@
 
 #include "nmatrix.h"
 
-/*
- * Macros
- */
-
 extern "C" {
 
-  #define YALE_GROWTH_CONSTANT 1.5
-
-  //#define YALE_JA_START(sptr)             (((YALE_STORAGE*)(sptr))->shape[0]+1)
-  #define YALE_IJA(sptr,elem_size,i)          (void*)( (char*)(((YALE_STORAGE*)(sptr))->ija) + i * elem_size )
-  //#define YALE_JA(sptr,dtype,j)           ((((dtype)*)((YALE_STORAGE*)(sptr))->ija)[(YALE_JA_START(sptr))+j])
-  #define YALE_ROW_LENGTH(sptr,elem_size,i)   (*(size_t*)YALE_IA((sptr),(elem_size),(i)+1) - *(size_t*)YALE_IJA((sptr),(elem_size),(i)))
-  #define YALE_A(sptr,elem_size,i)            (void*)((char*)(((YALE_STORAGE*)(sptr))->a) + elem_size * i)
-  #define YALE_DIAG(sptr, elem_size, i)       ( YALE_A((sptr),(elem_size),(i)) )
-  //#define YALE_LU(sptr,dtype,i,j)             (((dtype)*)(((YALE_STORAGE*)(sptr))->a)[ YALE_JA_START(sptr) +  ])
-  #define YALE_MINIMUM(sptr)                  (((YALE_STORAGE*)(sptr))->shape[0]*2 + 1) // arbitrarily defined
-  #define YALE_SIZE_PTR(sptr,elem_size)       (void*)((char*)((YALE_STORAGE*)(sptr))->ija + ((YALE_STORAGE*)(sptr))->shape[0]*elem_size )
-  #define YALE_MAX_SIZE(sptr)                 (((YALE_STORAGE*)(sptr))->shape[0] * ((YALE_STORAGE*)(sptr))->shape[1] + 1)
-  #define YALE_IA_SIZE(sptr)                  ((YALE_STORAGE*)(sptr))->shape[0]
-
+  /*
+   * Macros
+   */
+  #define NM_YALE_MINIMUM(sptr)               (((YALE_STORAGE*)(sptr))->shape[0]*2 + 1) // arbitrarily defined
+  #define NM_YALE_MAX_SIZE(sptr)              (((YALE_STORAGE*)(sptr))->shape[0] * ((YALE_STORAGE*)(sptr))->shape[1] + 1)
 
   #ifndef NM_CHECK_ALLOC
    #define NM_CHECK_ALLOC(x) if (!x) rb_raise(rb_eNoMemError, "insufficient memory");
   #endif
+
   /*
    * Types
    */
@@ -166,8 +154,6 @@ extern "C" {
     return yale_storage_itype_by_shape(s->shape);
   }
 
-  void		yale_storage_print_vectors(YALE_STORAGE* s);
-
 
   /////////////////////////
   // Copying and Casting //
@@ -185,6 +171,16 @@ extern "C" {
 } // end of extern "C" block
 
 namespace yale_storage {
+
+  /*
+   * Constants
+   */
+  const float GROWTH_CONSTANT = 1.5;
+
+
+  /*
+   * Templated Functions
+   */
 
   template <typename IType>
   int binary_search(YALE_STORAGE* s, IType left, IType right, IType key);

@@ -546,12 +546,12 @@ int binary_search(YALE_STORAGE* s, IType left, IType right, IType key) {
 template <typename DType, typename IType>
 char vector_insert_resize(YALE_STORAGE* s, size_t current_size, size_t pos, size_t* j, size_t n, bool struct_only) {
   // Determine the new capacity for the IJA and A vectors.
-  size_t new_capacity = s->capacity * YALE_GROWTH_CONSTANT;
+  size_t new_capacity = s->capacity * GROWTH_CONSTANT;
 
-  if (new_capacity > YALE_MAX_SIZE(s)) {
-    new_capacity = YALE_MAX_SIZE(s);
+  if (new_capacity > NM_YALE_MAX_SIZE(s)) {
+    new_capacity = NM_YALE_MAX_SIZE(s);
 
-    if (current_size + n > YALE_MAX_SIZE(s)) rb_raise(rb_eNoMemError, "insertion size exceeded maximum yale matrix size");
+    if (current_size + n > NM_YALE_MAX_SIZE(s)) rb_raise(rb_eNoMemError, "insertion size exceeded maximum yale matrix size");
   }
 
   if (new_capacity < current_size + n)
@@ -829,7 +829,7 @@ void Init_yale_functions() {
   rb_define_method(cYaleFunctions, "yale_ja", (METHOD)nm_yale_ja, 0);
   rb_define_method(cYaleFunctions, "yale_d", (METHOD)nm_yale_d, 0);
   rb_define_method(cYaleFunctions, "yale_lu", (METHOD)nm_yale_lu, 0);
-  //rb_define_const(cYaleFunctions, "YALE_GROWTH_CONSTANT", rb_float_new(YALE_GROWTH_CONSTANT));
+  rb_define_const(cYaleFunctions, "YALE_GROWTH_CONSTANT", rb_float_new(yale_storage::GROWTH_CONSTANT));
 }
 
 
@@ -993,8 +993,8 @@ YALE_STORAGE* yale_storage_create(dtype_t dtype, size_t* shape, size_t dim, size
   max_capacity = storage_count_max_elements(s) - s->shape[0] + 1;
 
   // Set matrix capacity (and ensure its validity)
-  if (init_capacity < YALE_MINIMUM(s)) {
-  	s->capacity = YALE_MINIMUM(s);
+  if (init_capacity < NM_YALE_MINIMUM(s)) {
+  	s->capacity = NM_YALE_MINIMUM(s);
 
   } else if (init_capacity > max_capacity) {
   	// Don't allow storage to be created larger than necessary
