@@ -56,7 +56,7 @@ const char* const STYPE_NAMES[NUM_STYPES] = {
 };
 
 void (* const STYPE_MARK[NUM_STYPES])(void*) = {
-	dense_storage_mark,
+	nm_dense_storage_mark,
 	list_storage_mark,
 	yale_storage_mark
 };
@@ -98,11 +98,11 @@ DENSE_STORAGE* create_from_list_storage(const LIST_STORAGE* rhs, dtype_t l_dtype
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
 
-  DENSE_STORAGE* lhs = dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
+  DENSE_STORAGE* lhs = nm_dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
 
   // Position in lhs->elements.
   size_t pos = 0;
-  size_t max_elements = storage_count_max_elements(rhs);
+  size_t max_elements = nm_storage_count_max_elements(rhs);
 
 //static void dense_storage_cast_copy_list_contents_template(LDType* lhs, const LIST* rhs, RDType* default_val, size_t& pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions)
   // recursively copy the contents
@@ -131,7 +131,7 @@ DENSE_STORAGE* create_from_yale_storage(const YALE_STORAGE* rhs, dtype_t l_dtype
   size_t* shape = ALLOC_N(size_t, rhs->rank);
   memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
 
-  DENSE_STORAGE* lhs = dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
+  DENSE_STORAGE* lhs = nm_dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
   LDType* lhs_elements = reinterpret_cast<LDType*>(lhs->elements);
 
   // Position in dense to write to.
@@ -567,7 +567,7 @@ extern "C" {
 
 
 
-  STORAGE* yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
+  STORAGE* nm_yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
     NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_dense_storage, YALE_STORAGE*, const DENSE_STORAGE* rhs, dtype_t l_dtype);
 
     itype_t itype = yale_storage_itype((const YALE_STORAGE*)right);
@@ -575,7 +575,7 @@ extern "C" {
     return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const DENSE_STORAGE*)right, l_dtype);
   }
 
-  STORAGE* yale_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
+  STORAGE* nm_yale_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
     NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_list_storage, YALE_STORAGE*, const LIST_STORAGE* rhs, dtype_t l_dtype);
 
     itype_t itype = yale_storage_itype((const YALE_STORAGE*)right);
@@ -583,26 +583,26 @@ extern "C" {
     return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const LIST_STORAGE*)right, l_dtype);
   }
 
-  STORAGE* dense_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
+  STORAGE* nm_dense_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
     NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::dense_storage::create_from_list_storage, DENSE_STORAGE*, const LIST_STORAGE* rhs, dtype_t l_dtype);
 
     return (STORAGE*)ttable[l_dtype][right->dtype]((const LIST_STORAGE*)right, l_dtype);
   }
 
-  STORAGE* dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
+  STORAGE* nm_dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
     NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::dense_storage::create_from_yale_storage, DENSE_STORAGE*, const YALE_STORAGE* rhs, dtype_t l_dtype);
 
     const YALE_STORAGE* casted_right = reinterpret_cast<const YALE_STORAGE*>(right);
     return reinterpret_cast<STORAGE*>(ttable[l_dtype][right->dtype][casted_right->itype](casted_right, l_dtype));
   }
 
-  STORAGE* list_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
+  STORAGE* nm_list_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
     NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::create_from_dense_storage, LIST_STORAGE*, const DENSE_STORAGE*, dtype_t);
 
     return (STORAGE*)ttable[l_dtype][right->dtype]((DENSE_STORAGE*)right, l_dtype);
   }
 
-  STORAGE* list_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
+  STORAGE* nm_list_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
     NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::create_from_yale_storage, LIST_STORAGE*, const YALE_STORAGE* rhs, dtype_t l_dtype);
 
     const YALE_STORAGE* casted_right = reinterpret_cast<const YALE_STORAGE*>(right);

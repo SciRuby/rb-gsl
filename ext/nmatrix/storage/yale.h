@@ -159,8 +159,7 @@ extern "C" {
   // Copying and Casting //
   /////////////////////////
 
-  STORAGE*      yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
-  YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs);
+  STORAGE*      nm_yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
   STORAGE*      yale_storage_copy_transposed(const STORAGE* rhs_base);
 
 

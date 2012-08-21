@@ -124,7 +124,7 @@ extern "C" {
 
   LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs);
   STORAGE*      list_storage_copy_transposed(const STORAGE* rhs_base);
-  STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
+  STORAGE* nm_list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 
 } // end of extern "C" block
 

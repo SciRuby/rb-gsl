@@ -90,16 +90,16 @@
 
 #define STYPE_MARK_TABLE(name)									\
   static void (*(name)[NUM_STYPES])(void*) = {	\
-    dense_storage_mark,													\
+    nm_dense_storage_mark,													\
     list_storage_mark,													\
     yale_storage_mark														\
   };
 
 #define STYPE_CAST_COPY_TABLE(name)                                                   \
   static STORAGE* (*(name)[NUM_STYPES][NUM_STYPES])(const STORAGE*, dtype_t) = {      \
-    { dense_storage_cast_copy,  dense_storage_from_list,  dense_storage_from_yale },  \
-    { list_storage_from_dense,  list_storage_cast_copy,   list_storage_from_yale  },  \
-    { yale_storage_from_dense,  yale_storage_from_list,   yale_storage_cast_copy  }   \
+    { nm_dense_storage_cast_copy,  nm_dense_storage_from_list,  nm_dense_storage_from_yale },  \
+    { nm_list_storage_from_dense,  nm_list_storage_cast_copy,   nm_list_storage_from_yale  },  \
+    { nm_yale_storage_from_dense,  nm_yale_storage_from_list,   nm_yale_storage_cast_copy  }   \
   };
 
 
@@ -240,14 +240,14 @@ const size_t NUM_DTYPES = NM_NUM_DTYPES;
 const size_t NUM_ITYPES = NM_NUM_ITYPES;
 
 // regular data types
-extern const char* const	DTYPE_NAMES[NUM_DTYPES];
-extern const size_t 			DTYPE_SIZES[NUM_DTYPES];
+extern const char* const	DTYPE_NAMES[NM_NUM_DTYPES];
+extern const size_t 			DTYPE_SIZES[NM_NUM_DTYPES];
 
 // index data types
-extern const char* const  ITYPE_NAMES[NUM_ITYPES];
-extern const size_t 			ITYPE_SIZES[NUM_ITYPES];
+extern const char* const  ITYPE_NAMES[NM_NUM_ITYPES];
+extern const size_t 			ITYPE_SIZES[NM_NUM_ITYPES];
 
-extern const dtype_t      Upcast[NUM_DTYPES][NUM_DTYPES];
+extern const dtype_t      Upcast[NM_NUM_DTYPES][NM_NUM_DTYPES];
 
 /*
  * Functions

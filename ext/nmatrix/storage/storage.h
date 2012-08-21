@@ -84,12 +84,12 @@ extern "C" {
   // Copying and Casting //
   /////////////////////////
 
-  STORAGE*	  dense_storage_from_list(const STORAGE* right, dtype_t l_dtype);
-  STORAGE*	  dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
-  STORAGE*		list_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
-  STORAGE*		list_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
-  STORAGE*		yale_storage_from_list(const STORAGE* right, dtype_t l_dtype);
-  STORAGE*		yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*	  nm_dense_storage_from_list(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*	  nm_dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*		nm_list_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*		nm_list_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*		nm_yale_storage_from_list(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*		nm_yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
 
 } // end of extern "C" block
 

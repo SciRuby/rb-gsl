@@ -304,7 +304,7 @@ STORAGE* list_storage_ew_add(const STORAGE* left, const STORAGE* right) {
 	 */
 	if (new_dtype != left->dtype) {
 		// Upcast the left-hand side if necessary.
-		new_l = reinterpret_cast<LIST_STORAGE*>(list_storage_cast_copy(l, new_dtype));
+		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
 		
 		result->default_val =
 			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
@@ -346,7 +346,7 @@ STORAGE* list_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
 	 */
 	if (new_dtype != left->dtype) {
 		// Upcast the left-hand side if necessary.
-		new_l = reinterpret_cast<LIST_STORAGE*>(list_storage_cast_copy(l, new_dtype));
+		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
 		
 		result->default_val =
 			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
@@ -388,7 +388,7 @@ STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
 	 */
 	if (new_dtype != left->dtype) {
 		// Upcast the left-hand side if necessary.
-		new_l = reinterpret_cast<LIST_STORAGE*>(list_storage_cast_copy(l, new_dtype));
+		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
 		
 		result->default_val =
 			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
@@ -430,7 +430,7 @@ STORAGE* list_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
 	 */
 	if (new_dtype != left->dtype) {
 		// Upcast the left-hand side if necessary.
-		new_l = reinterpret_cast<LIST_STORAGE*>(list_storage_cast_copy(l, new_dtype));
+		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
 		
 		result->default_val =
 			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
@@ -515,7 +515,7 @@ size_t list_storage_count_nd_elements(const LIST_STORAGE* s) {
 /*
  * List storage copy constructor C access.
  */
-STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
+STORAGE* nm_list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
   NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::cast_copy, LIST_STORAGE*, const LIST_STORAGE* rhs, dtype_t new_dtype);
 
   return (STORAGE*)ttable[new_dtype][rhs->dtype]((LIST_STORAGE*)rhs, new_dtype);
@@ -572,7 +572,7 @@ bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
   // in certain cases, we need to keep track of the number of elements checked.
   size_t num_checked  = 0,
 
-	max_elements = storage_count_max_elements(left);
+	max_elements = nm_storage_count_max_elements(left);
 
   if (!left->rows->first) {
     // Easy: both lists empty -- just compare default values

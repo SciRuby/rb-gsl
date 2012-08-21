@@ -266,7 +266,7 @@ static VALUE nm_capacity(VALUE self) {
     break;
 
   case DENSE_STORE:
-    cap = UINT2NUM(storage_count_max_elements( NM_STORAGE_DENSE(self) ));
+    cap = UINT2NUM(nm_storage_count_max_elements( NM_STORAGE_DENSE(self) ));
     break;
 
   case LIST_STORE:
@@ -285,7 +285,7 @@ static VALUE nm_capacity(VALUE self) {
  */
 static void nm_delete(NMATRIX* mat) {
   static void (*ttable[NUM_STYPES])(STORAGE*) = {
-    dense_storage_delete,
+    nm_dense_storage_delete,
     list_storage_delete,
     yale_storage_delete
   };
@@ -297,7 +297,7 @@ static void nm_delete(NMATRIX* mat) {
  */
 static void nm_delete_ref(NMATRIX* mat) {
   static void (*ttable[NUM_STYPES])(STORAGE*) = {
-    dense_storage_delete_ref,
+    nm_dense_storage_delete_ref,
     list_storage_delete,  // FIXME: Should these be _ref?
     yale_storage_delete
   };
@@ -372,14 +372,14 @@ static VALUE nm_each_dense(VALUE nmatrix) {
   if (NM_DTYPE(nmatrix) == RUBYOBJ) {
 
     // matrix of Ruby objects -- yield those objects directly
-    for (i = 0; i < storage_count_max_elements(s); ++i)
+    for (i = 0; i < nm_storage_count_max_elements(s); ++i)
       rb_yield( *((VALUE*)((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)])) );
 
   } else {
     // We're going to copy the matrix element into a Ruby VALUE and then operate on it. This way user can't accidentally
     // modify it and cause a seg fault.
 
-    for (i = 0; i < storage_count_max_elements(s); ++i) {
+    for (i = 0; i < nm_storage_count_max_elements(s); ++i) {
       v = rubyobj_from_cval((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)], NM_DTYPE(nmatrix)).rval;
       rb_yield(v); // yield to the copy we made
     }
@@ -431,7 +431,7 @@ static VALUE nm_eqeq(VALUE left, VALUE right) {
 
   switch(l->stype) {
   case DENSE_STORE:
-    result = dense_storage_eqeq(l->storage, r->storage);
+    result = nm_dense_storage_eqeq(l->storage, r->storage);
     break;
   case LIST_STORE:
     result = list_storage_eqeq(l->storage, r->storage);
@@ -456,7 +456,7 @@ static VALUE nm_ew_add(VALUE left_val, VALUE right_val) {
 	NMATRIX* result = ALLOC(NMATRIX);
 	
 	static STORAGE* (*ew_add[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
-		dense_storage_ew_add,
+		nm_dense_storage_ew_add,
 		list_storage_ew_add,
 		NULL
 	};
@@ -502,7 +502,7 @@ static VALUE nm_ew_subtract(VALUE left_val, VALUE right_val) {
 	NMATRIX* result = ALLOC(NMATRIX);
 	
 	static STORAGE* (*ew_subtract[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
-		dense_storage_ew_subtract,
+		nm_dense_storage_ew_subtract,
 		list_storage_ew_subtract,
 		NULL
 	};
@@ -548,7 +548,7 @@ static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
 	NMATRIX* result = ALLOC(NMATRIX);
 	
 	static STORAGE* (*ew_multiply[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
-		dense_storage_ew_multiply,
+		nm_dense_storage_ew_multiply,
 		list_storage_ew_multiply,
 		NULL
 	};
@@ -594,7 +594,7 @@ static VALUE nm_ew_divide(VALUE left_val, VALUE right_val) {
 	NMATRIX* result = ALLOC(NMATRIX);
 	
 	static STORAGE* (*ew_divide[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
-		dense_storage_ew_divide,
+		nm_dense_storage_ew_divide,
 		list_storage_ew_divide,
 		NULL
 	};
@@ -641,7 +641,7 @@ static VALUE nm_ew_mod(VALUE left_val, VALUE right_val) {
 	NMATRIX* result = ALLOC(NMATRIX);
 	
 	static STORAGE* (*ew_mod[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
-		dense_storage_ew_mod,
+		nm_dense_storage_ew_mod,
 		list_storage_ew_mod,
 		NULL
 	};
@@ -708,7 +708,7 @@ static VALUE nm_complex_conjugate_bang(VALUE self) {
 
   if (m->stype == DENSE_STORE) {
 
-    size = storage_count_max_elements(NM_STORAGE(self));
+    size = nm_storage_count_max_elements(NM_STORAGE(self));
     elem = NM_STORAGE_DENSE(self)->elements;
 
   } else if (m->stype == YALE_STORE) {
@@ -871,7 +871,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   
   switch (stype) {
   	case DENSE_STORE:
-  		nmatrix->storage = (STORAGE*)dense_storage_create(dtype, shape, rank, init_val, init_val_len);
+  		nmatrix->storage = (STORAGE*)nm_dense_storage_create(dtype, shape, rank, init_val, init_val_len);
   		break;
   		
   	case LIST_STORE:
@@ -917,7 +917,7 @@ static VALUE nm_init_cast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dty
  */
 static VALUE nm_init_transposed(VALUE self) {
   static STORAGE* (*storage_copy_transposed[NUM_STYPES])(const STORAGE* rhs_base) = {
-    dense_storage_copy_transposed,
+    nm_dense_storage_copy_transposed,
     list_storage_copy_transposed,
     yale_storage_copy_transposed
   };
@@ -1002,7 +1002,7 @@ static VALUE nm_is_ref(VALUE self) {
  */
 static VALUE nm_mget(int argc, VALUE* argv, VALUE self) {
   static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
-    dense_storage_get,
+    nm_dense_storage_get,
     list_storage_get,
     yale_storage_get
   };
@@ -1019,7 +1019,7 @@ static VALUE nm_mget(int argc, VALUE* argv, VALUE self) {
  */
 static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
   static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
-    dense_storage_ref,
+    nm_dense_storage_ref,
     list_storage_ref,
     yale_storage_ref
   };
@@ -1051,7 +1051,7 @@ static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
     // signatures (namely the return type).
     switch(NM_STYPE(self)) {
     case DENSE_STORE:
-      dense_storage_set(NM_STORAGE(self), slice, value);
+      nm_dense_storage_set(NM_STORAGE(self), slice, value);
       break;
     case LIST_STORE:
       // Remove if it's a zero, insert otherwise
@@ -1174,7 +1174,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
     if (slice->single) {
 
       static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
-        dense_storage_ref,
+        nm_dense_storage_ref,
         list_storage_ref,
         yale_storage_ref
       };
@@ -1243,10 +1243,10 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
   if (m->storage->shape[0] == m->storage->shape[1] and m->storage->rank == 2) {
 		if (NM_STYPE(self) == DENSE_STORE) {
       if (hermitian) {
-        dense_storage_is_hermitian((DENSE_STORAGE*)(m->storage), m->storage->shape[0]);
+        nm_dense_storage_is_hermitian((DENSE_STORAGE*)(m->storage), m->storage->shape[0]);
         
       } else {
-      	dense_storage_is_symmetric((DENSE_STORAGE*)(m->storage), m->storage->shape[0]);
+      	nm_dense_storage_is_symmetric((DENSE_STORAGE*)(m->storage), m->storage->shape[0]);
       }
       
     } else {
@@ -1625,7 +1625,7 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
   if (resulting_shape[1] == 1) vector = true;
 
   static STORAGE* (*storage_matrix_multiply[NUM_STYPES])(const STORAGE_PAIR&, size_t*, bool) = {
-    dense_storage_matrix_multiply,
+    nm_dense_storage_matrix_multiply,
     list_storage_matrix_multiply,
     yale_storage_matrix_multiply
   };
@@ -1638,7 +1638,7 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
   // If we did that, we night not have to re-create these every time, right? Or wrong? Need to do
   // more research.
   static void (*free_storage[NUM_STYPES])(STORAGE*) = {
-    dense_storage_delete,
+    nm_dense_storage_delete,
     list_storage_delete,
     yale_storage_delete
   };
@@ -1719,10 +1719,10 @@ VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t rank, void* e
   memcpy(elements_copy, elements, DTYPE_SIZES[dtype]*length);
 
   // allocate and create the matrix and its storage
-  nm = nm_create(DENSE_STORE, dense_storage_create(dtype, shape_copy, rank, elements_copy, length));
+  nm = nm_create(DENSE_STORE, nm_dense_storage_create(dtype, shape_copy, rank, elements_copy, length));
 
   // tell Ruby about the matrix and its storage, particularly how to garbage collect it.
-  return Data_Wrap_Struct(klass, dense_storage_mark, dense_storage_delete, nm);
+  return Data_Wrap_Struct(klass, nm_dense_storage_mark, nm_dense_storage_delete, nm);
 }
 
 

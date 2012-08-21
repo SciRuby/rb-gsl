@@ -69,7 +69,7 @@ extern "C" {
    * Functions
    */
 
-  size_t storage_count_max_elements(const STORAGE* storage);
+  size_t nm_storage_count_max_elements(const STORAGE* storage);
 } // end of extern "C" block
 
 #endif // STORAGE_COMMON_H

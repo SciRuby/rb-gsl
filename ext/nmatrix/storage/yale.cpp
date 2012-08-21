@@ -887,7 +887,7 @@ bool yale_storage_eqeq(const STORAGE* left, const STORAGE* right) {
 /*
  * Copy constructor for changing dtypes. (C accessor)
  */
-STORAGE* yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
+STORAGE* nm_yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
   NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::cast_copy, YALE_STORAGE*, const YALE_STORAGE* rhs, dtype_t new_dtype);
 
   const YALE_STORAGE* casted_rhs = reinterpret_cast<const YALE_STORAGE*>(rhs);
@@ -915,21 +915,6 @@ static YALE_STORAGE* yale_storage_copy_alloc_struct(const YALE_STORAGE* rhs, con
   return ttable[rhs->itype](rhs, new_dtype, new_capacity, new_size);
 }
 
-
-/*
- * Copy constructor.
- */
-YALE_STORAGE* yale_storage_copy(YALE_STORAGE* rhs) {
-  size_t size = yale_storage_get_size(rhs);
-
-  YALE_STORAGE* lhs = yale_storage_copy_alloc_struct(rhs, rhs->dtype, rhs->capacity, size);
-
-  // Now copy the contents -- but only within the boundaries set by the size. Leave
-  // the rest uninitialized.
-  memcpy(lhs->a, rhs->a, size * DTYPE_SIZES[lhs->dtype]);
-
-  return lhs;
-}
 
 
 /*
@@ -990,7 +975,7 @@ YALE_STORAGE* yale_storage_create(dtype_t dtype, size_t* shape, size_t dim, size
   }
 
   s = yale_storage_alloc(dtype, shape, dim);
-  max_capacity = storage_count_max_elements(s) - s->shape[0] + 1;
+  max_capacity = nm_storage_count_max_elements(s) - s->shape[0] + 1;
 
   // Set matrix capacity (and ensure its validity)
   if (init_capacity < NM_YALE_MINIMUM(s)) {
