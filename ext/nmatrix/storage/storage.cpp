@@ -57,8 +57,8 @@ const char* const STYPE_NAMES[NUM_STYPES] = {
 
 void (* const STYPE_MARK[NUM_STYPES])(void*) = {
 	nm_dense_storage_mark,
-	list_storage_mark,
-	yale_storage_mark
+	nm_list_storage_mark,
+	nm_yale_storage_mark
 };
 
 } // end extern "C" block
@@ -272,7 +272,7 @@ LIST_STORAGE* create_from_dense_storage(const DENSE_STORAGE* rhs, dtype_t l_dtyp
   else if (rhs->dtype == RUBYOBJ) *r_default_val = INT2FIX(0);
   else  	                        *r_default_val = 0;
 
-  LIST_STORAGE* lhs = list_storage_create(l_dtype, shape, rhs->rank, l_default_val);
+  LIST_STORAGE* lhs = nm_list_storage_create(l_dtype, shape, rhs->rank, l_default_val);
 
   size_t pos = 0;
   list_storage::cast_copy_contents_dense<LDType,RDType>(lhs->rows,
@@ -301,7 +301,7 @@ LIST_STORAGE* create_from_yale_storage(const YALE_STORAGE* rhs, dtype_t l_dtype)
   LDType* default_val = ALLOC_N(LDType, 1);
   *default_val        = R_ZERO;
 
-  LIST_STORAGE* lhs = list_storage_create(l_dtype, shape, rhs->rank, default_val);
+  LIST_STORAGE* lhs = nm_list_storage_create(l_dtype, shape, rhs->rank, default_val);
 
   if (rhs->rank != 2)    rb_raise(nm_eStorageTypeError, "Can only convert matrices of rank 2 from yale.");
 
@@ -462,7 +462,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     shape[1] = rhs->shape[1];
 
     // Create with minimum possible capacity -- just enough to hold all of the entries
-    YALE_STORAGE* lhs = yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
+    YALE_STORAGE* lhs = nm_yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
     LDType* lhs_a     = reinterpret_cast<LDType*>(lhs->a);
     LIType* lhs_ija   = reinterpret_cast<LIType*>(lhs->ija);
 
@@ -506,7 +506,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
   template <typename LDType, typename RDType, typename LIType>
   YALE_STORAGE* create_from_list_storage(const LIST_STORAGE* rhs, dtype_t l_dtype) {
     NODE *i_curr, *j_curr;
-    size_t ndnz = list_storage_count_nd_elements(rhs);
+    size_t ndnz = nm_list_storage_count_nd_elements(rhs);
 
     if (rhs->rank != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
 
@@ -520,7 +520,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     shape[0] = rhs->shape[0];
     shape[1] = rhs->shape[1];
 
-    YALE_STORAGE* lhs = yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
+    YALE_STORAGE* lhs = nm_yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
     clear_diagonal_and_zero<LIType>(lhs); // clear the diagonal and the zero location.
     LIType* lhs_ija = reinterpret_cast<LIType*>(lhs->ija);
     LDType* lhs_a   = reinterpret_cast<LDType*>(lhs->a);
@@ -570,7 +570,7 @@ extern "C" {
   STORAGE* nm_yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
     NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_dense_storage, YALE_STORAGE*, const DENSE_STORAGE* rhs, dtype_t l_dtype);
 
-    itype_t itype = yale_storage_itype((const YALE_STORAGE*)right);
+    itype_t itype = nm_yale_storage_itype((const YALE_STORAGE*)right);
 
     return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const DENSE_STORAGE*)right, l_dtype);
   }
@@ -578,7 +578,7 @@ extern "C" {
   STORAGE* nm_yale_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
     NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_list_storage, YALE_STORAGE*, const LIST_STORAGE* rhs, dtype_t l_dtype);
 
-    itype_t itype = yale_storage_itype((const YALE_STORAGE*)right);
+    itype_t itype = nm_yale_storage_itype((const YALE_STORAGE*)right);
 
     return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const LIST_STORAGE*)right, l_dtype);
   }

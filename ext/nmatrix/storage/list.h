@@ -73,57 +73,56 @@ extern "C" {
   // Lifecycle //
   ///////////////
 
-  LIST_STORAGE*	list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val);
-  void					list_storage_delete(STORAGE* s);
-  void					list_storage_mark(void*);
+  LIST_STORAGE*	nm_list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val);
+  void					nm_list_storage_delete(STORAGE* s);
+  void					nm_list_storage_mark(void*);
 
   ///////////////
   // Accessors //
   ///////////////
 
-  void* list_storage_ref(STORAGE* s, SLICE* slice);
-  void* list_storage_get(STORAGE* s, SLICE* slice);
-  void* list_storage_insert(STORAGE* s, SLICE* slice, void* val);
-  void* list_storage_remove(STORAGE* s, SLICE* slice);
+  void* nm_list_storage_ref(STORAGE* s, SLICE* slice);
+  void* nm_list_storage_get(STORAGE* s, SLICE* slice);
+  void* nm_list_storage_insert(STORAGE* s, SLICE* slice, void* val);
+  void* nm_list_storage_remove(STORAGE* s, SLICE* slice);
 
   ///////////
   // Tests //
   ///////////
 
-  bool list_storage_eqeq(const STORAGE* left, const STORAGE* right);
+  bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right);
 
   //////////
   // Math //
   //////////
 
-  STORAGE* list_storage_ew_add(const STORAGE* left, const STORAGE* right);
-  STORAGE* list_storage_ew_subtract(const STORAGE* left, const STORAGE* right);
-  STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right);
-  STORAGE* list_storage_ew_divide(const STORAGE* left, const STORAGE* right);
-  //STORAGE* list_storage_ew_mod(const STORAGE* left, const STORAGE* right);
+  STORAGE* nm_list_storage_ew_add(const STORAGE* left, const STORAGE* right);
+  STORAGE* nm_list_storage_ew_subtract(const STORAGE* left, const STORAGE* right);
+  STORAGE* nm_list_storage_ew_multiply(const STORAGE* left, const STORAGE* right);
+  STORAGE* nm_list_storage_ew_divide(const STORAGE* left, const STORAGE* right);
+  //STORAGE* nm_list_storage_ew_mod(const STORAGE* left, const STORAGE* right);
 
-  STORAGE* list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
+  STORAGE* nm_list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
   /////////////
   // Utility //
   /////////////
 
-  size_t list_storage_count_elements_r(const LIST* l, size_t recursions);
-  size_t list_storage_count_nd_elements(const LIST_STORAGE* s);
+  size_t nm_list_storage_count_elements_r(const LIST* l, size_t recursions);
+  size_t nm_list_storage_count_nd_elements(const LIST_STORAGE* s);
 
   /*
    * Count non-zero elements. See also count_list_storage_nd_elements.
    */
-  inline size_t list_storage_count_elements(const LIST_STORAGE* s) {
-    return list_storage_count_elements_r(s->rows, s->rank - 1);
+  inline size_t nm_list_storage_count_elements(const LIST_STORAGE* s) {
+    return nm_list_storage_count_elements_r(s->rows, s->rank - 1);
   }
 
   /////////////////////////
   // Copying and Casting //
   /////////////////////////
 
-  LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs);
-  STORAGE*      list_storage_copy_transposed(const STORAGE* rhs_base);
+  STORAGE*      nm_list_storage_copy_transposed(const STORAGE* rhs_base);
   STORAGE* nm_list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 
 } // end of extern "C" block

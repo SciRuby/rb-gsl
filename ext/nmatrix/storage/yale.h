@@ -86,35 +86,35 @@ extern "C" {
   // Lifecycle //
   ///////////////
 
-  YALE_STORAGE* yale_storage_create(dtype_t dtype, size_t* shape, size_t rank, size_t init_capacity);
-  YALE_STORAGE* yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, dtype_t from_dtype);
-  YALE_STORAGE*	yale_storage_create_merged(const YALE_STORAGE* merge_template, const YALE_STORAGE* other);
-  void          yale_storage_delete(STORAGE* s);
-  void					yale_storage_init(YALE_STORAGE* s);
-  void					yale_storage_mark(void*);
+  YALE_STORAGE* nm_yale_storage_create(dtype_t dtype, size_t* shape, size_t rank, size_t init_capacity);
+  YALE_STORAGE* nm_yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, dtype_t from_dtype);
+  YALE_STORAGE*	nm_yale_storage_create_merged(const YALE_STORAGE* merge_template, const YALE_STORAGE* other);
+  void          nm_yale_storage_delete(STORAGE* s);
+  void					nm_yale_storage_init(YALE_STORAGE* s);
+  void					nm_yale_storage_mark(void*);
 
   ///////////////
   // Accessors //
   ///////////////
 
-  void* yale_storage_get(STORAGE* s, SLICE* slice);
-  void*	yale_storage_ref(STORAGE* s, SLICE* slice);
-  char  yale_storage_set(STORAGE* storage, SLICE* slice, void* v);
+  void* nm_yale_storage_get(STORAGE* s, SLICE* slice);
+  void*	nm_yale_storage_ref(STORAGE* s, SLICE* slice);
+  char  nm_yale_storage_set(STORAGE* storage, SLICE* slice, void* v);
 
-  inline size_t  yale_storage_get_size(const YALE_STORAGE* storage);
+  inline size_t  nm_yale_storage_get_size(const YALE_STORAGE* storage);
 
   ///////////
   // Tests //
   ///////////
 
-  bool yale_storage_eqeq(const STORAGE* left, const STORAGE* right);
+  bool nm_yale_storage_eqeq(const STORAGE* left, const STORAGE* right);
 
   //////////
   // Math //
   //////////
 
-  STORAGE* yale_storage_ew_multiply(const STORAGE* left, const STORAGE* right);
-  STORAGE* yale_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
+  STORAGE* nm_yale_storage_ew_multiply(const STORAGE* left, const STORAGE* right);
+  STORAGE* nm_yale_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
   /////////////
   // Utility //
@@ -127,7 +127,7 @@ extern "C" {
    * Useful for creating Yale Storage by other means than NMatrix.new(:yale, ...),
    * e.g., from a MATLAB v5 .mat file.
    */
-  inline itype_t yale_storage_itype_by_shape(const size_t* shape) {
+  inline itype_t nm_yale_storage_itype_by_shape(const size_t* shape) {
     uint64_t yale_max_size = shape[0] * (shape[1]+1);
 
     if (yale_max_size < static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()) - 2) {
@@ -150,8 +150,8 @@ extern "C" {
    * because UINTX_MAX and UINTX_MAX-1 are both reserved for sparse matrix
    * multiplication.
    */
-  inline itype_t yale_storage_itype(const YALE_STORAGE* s) {
-    return yale_storage_itype_by_shape(s->shape);
+  inline itype_t nm_yale_storage_itype(const YALE_STORAGE* s) {
+    return nm_yale_storage_itype_by_shape(s->shape);
   }
 
 
@@ -160,7 +160,7 @@ extern "C" {
   /////////////////////////
 
   STORAGE*      nm_yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
-  STORAGE*      yale_storage_copy_transposed(const STORAGE* rhs_base);
+  STORAGE*      nm_yale_storage_copy_transposed(const STORAGE* rhs_base);
 
 
 
@@ -183,12 +183,6 @@ namespace nm { namespace yale_storage {
 
   template <typename IType>
   int binary_search(YALE_STORAGE* s, IType left, IType right, IType key);
-
-  template <typename DType, typename IType>
-  char vector_insert_resize(YALE_STORAGE* s, size_t current_size, size_t pos, size_t* j, size_t n, bool struct_only);
-
-  template <typename DType, typename IType>
-  char vector_insert(YALE_STORAGE* s, size_t pos, size_t* j, DType* val, size_t n, bool struct_only);
 
   /*
    * Clear out the D portion of the A vector (clearing the diagonal and setting

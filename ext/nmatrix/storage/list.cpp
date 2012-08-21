@@ -109,7 +109,7 @@ extern "C" {
  * Note: The pointers you pass in for shape and init_val become property of our
  * new storage. You don't need to free them, and you shouldn't re-use them.
  */
-LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val) {
+LIST_STORAGE* nm_list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val) {
   LIST_STORAGE* s;
 
   s = ALLOC( LIST_STORAGE );
@@ -128,7 +128,7 @@ LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, voi
 /*
  * Documentation goes here.
  */
-void list_storage_delete(STORAGE* s) {
+void nm_list_storage_delete(STORAGE* s) {
   if (s) {
     LIST_STORAGE* storage = (LIST_STORAGE*)s;
 
@@ -143,7 +143,7 @@ void list_storage_delete(STORAGE* s) {
 /*
  * Documentation goes here.
  */
-void list_storage_mark(void* storage_base) {
+void nm_list_storage_mark(void* storage_base) {
   LIST_STORAGE* storage = (LIST_STORAGE*)storage_base;
 
   if (storage && storage->dtype == RUBYOBJ) {
@@ -160,7 +160,7 @@ void list_storage_mark(void* storage_base) {
 /*
  * Documentation goes here.
  */
-void* list_storage_get(STORAGE* storage, SLICE* slice) {
+void* nm_list_storage_get(STORAGE* storage, SLICE* slice) {
   //LIST_STORAGE* s = (LIST_STORAGE*)storage;
   rb_raise(rb_eNotImpError, "This type of slicing not supported yet");
 }
@@ -170,7 +170,7 @@ void* list_storage_get(STORAGE* storage, SLICE* slice) {
  * Get the contents of some set of coordinates. Note: Does not make a copy!
  * Don't free!
  */
-void* list_storage_ref(STORAGE* storage, SLICE* slice) {
+void* nm_list_storage_ref(STORAGE* storage, SLICE* slice) {
   LIST_STORAGE* s = (LIST_STORAGE*)storage;
   size_t r;
   NODE*  n;
@@ -192,7 +192,7 @@ void* list_storage_ref(STORAGE* storage, SLICE* slice) {
  *
  * TODO: Allow this function to accept an entire row and not just one value -- for slicing
  */
-void* list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
+void* nm_list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
   LIST_STORAGE* s = (LIST_STORAGE*)storage;
   // Pretend ranks = 2
   // Then coords is going to be size 2
@@ -216,7 +216,7 @@ void* list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
  *
  * TODO: Speed up removal.
  */
-void* list_storage_remove(STORAGE* storage, SLICE* slice) {
+void* nm_list_storage_remove(STORAGE* storage, SLICE* slice) {
   LIST_STORAGE* s = (LIST_STORAGE*)storage;
   int r;
   NODE  *n = NULL;
@@ -266,7 +266,7 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
 /*
  * Comparison of contents for list storage.
  */
-bool list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
+bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
 	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::eqeq, bool, const LIST_STORAGE* left, const LIST_STORAGE* right);
 
 	return ttable[left->dtype][right->dtype]((const LIST_STORAGE*)left, (const LIST_STORAGE*)right);
@@ -281,7 +281,7 @@ bool list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
 /*
  * Element-wise addition for list storage.
  */
-STORAGE* list_storage_ew_add(const STORAGE* left, const STORAGE* right) {
+STORAGE* nm_list_storage_ew_add(const STORAGE* left, const STORAGE* right) {
 	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_add, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
@@ -296,7 +296,7 @@ STORAGE* list_storage_ew_add(const STORAGE* left, const STORAGE* right) {
 	memcpy(new_shape, left->shape, sizeof(size_t) * l->rank);
 	
 	// Create the result matrix.
-	LIST_STORAGE* result = list_storage_create(new_dtype, new_shape, left->rank, NULL); 
+	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->rank, NULL);
 	
 	/*
 	 * Call the templated elementwise multiplication function and set the default
@@ -310,7 +310,7 @@ STORAGE* list_storage_ew_add(const STORAGE* left, const STORAGE* right) {
 			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
 		
 		// Delete the temporary left-hand side matrix.
-		list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
+		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
 			
 	} else {
 		result->default_val =
@@ -323,7 +323,7 @@ STORAGE* list_storage_ew_add(const STORAGE* left, const STORAGE* right) {
 /*
  * Element-wise subtraction for list storage.
  */
-STORAGE* list_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
+STORAGE* nm_list_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
 	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_subtract, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
@@ -338,7 +338,7 @@ STORAGE* list_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
 	memcpy(new_shape, left->shape, sizeof(size_t) * l->rank);
 	
 	// Create the result matrix.
-	LIST_STORAGE* result = list_storage_create(new_dtype, new_shape, left->rank, NULL); 
+	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->rank, NULL);
 	
 	/*
 	 * Call the templated elementwise multiplication function and set the default
@@ -352,7 +352,7 @@ STORAGE* list_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
 			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
 		
 		// Delete the temporary left-hand side matrix.
-		list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
+		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
 			
 	} else {
 		result->default_val =
@@ -365,7 +365,7 @@ STORAGE* list_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
 /*
  * Element-wise multiplication for list storage.
  */
-STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
+STORAGE* nm_list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
 	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_multiply, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
@@ -380,7 +380,7 @@ STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
 	memcpy(new_shape, left->shape, sizeof(size_t) * l->rank);
 	
 	// Create the result matrix.
-	LIST_STORAGE* result = list_storage_create(new_dtype, new_shape, left->rank, NULL); 
+	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->rank, NULL);
 	
 	/*
 	 * Call the templated elementwise multiplication function and set the default
@@ -394,7 +394,7 @@ STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
 			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
 		
 		// Delete the temporary left-hand side matrix.
-		list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
+		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
 			
 	} else {
 		result->default_val =
@@ -407,7 +407,7 @@ STORAGE* list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
 /*
  * Element-wise division for list storage.
  */
-STORAGE* list_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
+STORAGE* nm_list_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
 	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_divide, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
@@ -422,7 +422,7 @@ STORAGE* list_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
 	memcpy(new_shape, left->shape, sizeof(size_t) * l->rank);
 	
 	// Create the result matrix.
-	LIST_STORAGE* result = list_storage_create(new_dtype, new_shape, left->rank, NULL); 
+	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->rank, NULL);
 	
 	/*
 	 * Call the templated elementwise multiplication function and set the default
@@ -436,7 +436,7 @@ STORAGE* list_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
 			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
 		
 		// Delete the temporary left-hand side matrix.
-		list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
+		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
 			
 	} else {
 		result->default_val =
@@ -450,7 +450,7 @@ STORAGE* list_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
 /*
  * List storage matrix multiplication.
  */
-STORAGE* list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
+STORAGE* nm_list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
   free(resulting_shape);
   rb_raise(rb_eNotImpError, "multiplication not implemented for list-of-list matrices");
   return NULL;
@@ -466,13 +466,13 @@ STORAGE* list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t
 /*
  * Recursively count the non-zero elements in a list storage object.
  */
-size_t list_storage_count_elements_r(const LIST* l, size_t recursions) {
+size_t nm_list_storage_count_elements_r(const LIST* l, size_t recursions) {
   size_t count = 0;
   NODE* curr = l->first;
   
   if (recursions) {
     while (curr) {
-      count += list_storage_count_elements_r(reinterpret_cast<const LIST*>(curr->val), recursions - 1);
+      count += nm_list_storage_count_elements_r(reinterpret_cast<const LIST*>(curr->val), recursions - 1);
       curr   = curr->next;
     }
     
@@ -489,7 +489,7 @@ size_t list_storage_count_elements_r(const LIST* l, size_t recursions) {
 /*
  * Count non-diagonal non-zero elements.
  */
-size_t list_storage_count_nd_elements(const LIST_STORAGE* s) {
+size_t nm_list_storage_count_nd_elements(const LIST_STORAGE* s) {
   NODE *i_curr, *j_curr;
   size_t count = 0;
   
@@ -525,7 +525,7 @@ STORAGE* nm_list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
 /*
  * List storage copy constructor for transposing.
  */
-STORAGE* list_storage_copy_transposed(const STORAGE* rhs_base) {
+STORAGE* nm_list_storage_copy_transposed(const STORAGE* rhs_base) {
   rb_raise(rb_eNotImpError, "list storage transpose not yet implemented");
   return NULL;
 }
@@ -554,7 +554,7 @@ static LIST_STORAGE* cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
   LDType* default_val = ALLOC_N(LDType, 1);
   *default_val = *reinterpret_cast<RDType*>(rhs->default_val);
 
-  LIST_STORAGE* lhs = list_storage_create(new_dtype, shape, rhs->rank, default_val);
+  LIST_STORAGE* lhs = nm_list_storage_create(new_dtype, shape, rhs->rank, default_val);
   lhs->rows         = list::create();
   list::cast_copy_contents<LDType, RDType>(lhs->rows, rhs->rows, rhs->rank - 1);
 

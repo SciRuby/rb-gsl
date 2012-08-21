@@ -91,8 +91,8 @@
 #define STYPE_MARK_TABLE(name)									\
   static void (*(name)[NUM_STYPES])(void*) = {	\
     nm_dense_storage_mark,													\
-    list_storage_mark,													\
-    yale_storage_mark														\
+    nm_list_storage_mark,													\
+    nm_yale_storage_mark														\
   };
 
 #define STYPE_CAST_COPY_TABLE(name)                                                   \

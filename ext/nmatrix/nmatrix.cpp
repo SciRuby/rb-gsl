@@ -270,7 +270,7 @@ static VALUE nm_capacity(VALUE self) {
     break;
 
   case LIST_STORE:
-    cap = UINT2NUM(list_storage_count_elements( NM_STORAGE_LIST(self) ));
+    cap = UINT2NUM(nm_list_storage_count_elements( NM_STORAGE_LIST(self) ));
     break;
 
   default:
@@ -286,8 +286,8 @@ static VALUE nm_capacity(VALUE self) {
 static void nm_delete(NMATRIX* mat) {
   static void (*ttable[NUM_STYPES])(STORAGE*) = {
     nm_dense_storage_delete,
-    list_storage_delete,
-    yale_storage_delete
+    nm_list_storage_delete,
+    nm_yale_storage_delete
   };
   ttable[mat->stype](mat->storage);
 }
@@ -298,8 +298,8 @@ static void nm_delete(NMATRIX* mat) {
 static void nm_delete_ref(NMATRIX* mat) {
   static void (*ttable[NUM_STYPES])(STORAGE*) = {
     nm_dense_storage_delete_ref,
-    list_storage_delete,  // FIXME: Should these be _ref?
-    yale_storage_delete
+    nm_list_storage_delete,  // FIXME: Should these be _ref?
+    nm_yale_storage_delete
   };
   ttable[mat->stype](mat->storage);
 }
@@ -335,7 +335,7 @@ static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg) {
   size_t rank;
   size_t* shape = interpret_shape(shape_arg, &rank);
 
-  itype_t itype = yale_storage_itype_by_shape(shape);
+  itype_t itype = nm_yale_storage_itype_by_shape(shape);
   ID itype_id   = rb_intern(ITYPE_NAMES[itype]);
 
   return ID2SYM(itype_id);
@@ -434,10 +434,10 @@ static VALUE nm_eqeq(VALUE left, VALUE right) {
     result = nm_dense_storage_eqeq(l->storage, r->storage);
     break;
   case LIST_STORE:
-    result = list_storage_eqeq(l->storage, r->storage);
+    result = nm_list_storage_eqeq(l->storage, r->storage);
     break;
   case YALE_STORE:
-    result = yale_storage_eqeq(l->storage, r->storage);
+    result = nm_yale_storage_eqeq(l->storage, r->storage);
     break;
   }
 
@@ -457,7 +457,7 @@ static VALUE nm_ew_add(VALUE left_val, VALUE right_val) {
 	
 	static STORAGE* (*ew_add[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
 		nm_dense_storage_ew_add,
-		list_storage_ew_add,
+		nm_list_storage_ew_add,
 		NULL
 	};
 	
@@ -503,7 +503,7 @@ static VALUE nm_ew_subtract(VALUE left_val, VALUE right_val) {
 	
 	static STORAGE* (*ew_subtract[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
 		nm_dense_storage_ew_subtract,
-		list_storage_ew_subtract,
+		nm_list_storage_ew_subtract,
 		NULL
 	};
 	
@@ -549,7 +549,7 @@ static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
 	
 	static STORAGE* (*ew_multiply[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
 		nm_dense_storage_ew_multiply,
-		list_storage_ew_multiply,
+		nm_list_storage_ew_multiply,
 		NULL
 	};
 	
@@ -595,7 +595,7 @@ static VALUE nm_ew_divide(VALUE left_val, VALUE right_val) {
 	
 	static STORAGE* (*ew_divide[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
 		nm_dense_storage_ew_divide,
-		list_storage_ew_divide,
+		nm_list_storage_ew_divide,
 		NULL
 	};
 	
@@ -642,7 +642,7 @@ static VALUE nm_ew_mod(VALUE left_val, VALUE right_val) {
 	
 	static STORAGE* (*ew_mod[NUM_STYPES])(const STORAGE*, const STORAGE*) = {
 		nm_dense_storage_ew_mod,
-		list_storage_ew_mod,
+		nm_list_storage_ew_mod,
 		NULL
 	};
 	
@@ -713,7 +713,7 @@ static VALUE nm_complex_conjugate_bang(VALUE self) {
 
   } else if (m->stype == YALE_STORE) {
 
-    size = yale_storage_get_size(NM_STORAGE_YALE(self));
+    size = nm_yale_storage_get_size(NM_STORAGE_YALE(self));
     elem = NM_STORAGE_YALE(self)->a;
 
   } else {
@@ -875,12 +875,12 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   		break;
   		
   	case LIST_STORE:
-  		nmatrix->storage = (STORAGE*)list_storage_create(dtype, shape, rank, init_val);
+  		nmatrix->storage = (STORAGE*)nm_list_storage_create(dtype, shape, rank, init_val);
   		break;
   		
   	case YALE_STORE:
-  		nmatrix->storage = (STORAGE*)yale_storage_create(dtype, shape, rank, init_cap);
-  		yale_storage_init((YALE_STORAGE*)(nmatrix->storage));
+  		nmatrix->storage = (STORAGE*)nm_yale_storage_create(dtype, shape, rank, init_cap);
+  		nm_yale_storage_init((YALE_STORAGE*)(nmatrix->storage));
   		break;
   }
 
@@ -918,8 +918,8 @@ static VALUE nm_init_cast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dty
 static VALUE nm_init_transposed(VALUE self) {
   static STORAGE* (*storage_copy_transposed[NUM_STYPES])(const STORAGE* rhs_base) = {
     nm_dense_storage_copy_transposed,
-    list_storage_copy_transposed,
-    yale_storage_copy_transposed
+    nm_list_storage_copy_transposed,
+    nm_yale_storage_copy_transposed
   };
 
   NMATRIX* lhs = nm_create( NM_STYPE(self),
@@ -974,7 +974,7 @@ static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALU
   UnwrapNMatrix( nm, nmatrix );
 
   nmatrix->stype   = YALE_STORE;
-  nmatrix->storage = (STORAGE*)yale_storage_create_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_);
+  nmatrix->storage = (STORAGE*)nm_yale_storage_create_from_old_yale(dtype_, shape_, ia_, ja_, a_, from_dtype_);
 
   return nm;
 }
@@ -1003,8 +1003,8 @@ static VALUE nm_is_ref(VALUE self) {
 static VALUE nm_mget(int argc, VALUE* argv, VALUE self) {
   static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
     nm_dense_storage_get,
-    list_storage_get,
-    yale_storage_get
+    nm_list_storage_get,
+    nm_yale_storage_get
   };
   
   return nm_xslice(argc, argv, ttable[NM_STYPE(self)], nm_delete, self);
@@ -1020,8 +1020,8 @@ static VALUE nm_mget(int argc, VALUE* argv, VALUE self) {
 static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
   static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
     nm_dense_storage_ref,
-    list_storage_ref,
-    yale_storage_ref
+    nm_list_storage_ref,
+    nm_yale_storage_ref
   };
   return nm_xslice(argc, argv, ttable[NM_STYPE(self)], nm_delete_ref, self);
 }
@@ -1057,14 +1057,14 @@ static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
       // Remove if it's a zero, insert otherwise
       if (!std::memcmp(value, NM_STORAGE_LIST(self)->default_val, DTYPE_SIZES[NM_DTYPE(self)])) {
         free(value);
-        value = list_storage_remove(NM_STORAGE(self), slice);
+        value = nm_list_storage_remove(NM_STORAGE(self), slice);
         free(value);
       } else {
-        list_storage_insert(NM_STORAGE(self), slice, value);
+        nm_list_storage_insert(NM_STORAGE(self), slice, value);
       }
       break;
     case YALE_STORE:
-      yale_storage_set(NM_STORAGE(self), slice, value);
+      nm_yale_storage_set(NM_STORAGE(self), slice, value);
       break;
     }
 
@@ -1175,8 +1175,8 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 
       static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
         nm_dense_storage_ref,
-        list_storage_ref,
-        yale_storage_ref
+        nm_list_storage_ref,
+        nm_yale_storage_ref
       };
 
       /* // Debugging for slice
@@ -1626,8 +1626,8 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
 
   static STORAGE* (*storage_matrix_multiply[NUM_STYPES])(const STORAGE_PAIR&, size_t*, bool) = {
     nm_dense_storage_matrix_multiply,
-    list_storage_matrix_multiply,
-    yale_storage_matrix_multiply
+    nm_list_storage_matrix_multiply,
+    nm_yale_storage_matrix_multiply
   };
 
   STORAGE* resulting_storage = storage_matrix_multiply[left->stype](casted, resulting_shape, vector);
@@ -1639,8 +1639,8 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
   // more research.
   static void (*free_storage[NUM_STYPES])(STORAGE*) = {
     nm_dense_storage_delete,
-    list_storage_delete,
-    yale_storage_delete
+    nm_list_storage_delete,
+    nm_yale_storage_delete
   };
 
   if (left->storage != casted.left)   free_storage[result->stype](casted.left);
