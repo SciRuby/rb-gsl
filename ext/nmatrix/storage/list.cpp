@@ -196,6 +196,7 @@ void* list_storage_ref(STORAGE* storage, SLICE* slice) {
   NODE*  n;
   LIST*  l = s->rows;
 
+  //TODO: It needs a refactoring.
   if (slice->single) {
     for (r = s->rank; r > 1; --r) {
       n = list_find(l, s->offset[s->rank - r] + slice->coords[s->rank - r]);
@@ -203,7 +204,7 @@ void* list_storage_ref(STORAGE* storage, SLICE* slice) {
       else return s->default_val;
     }
 
-    n = list_find(l, slice->coords[s->rank - r]);
+    n = list_find(l, s->offset[s->rank - r] + slice->coords[s->rank - r]);
     if (n) return n->val;
     else   return s->default_val;
   } 
