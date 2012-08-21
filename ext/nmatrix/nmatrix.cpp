@@ -41,7 +41,7 @@
 #include "util/math.h"
 #include "storage/storage.h"
 
-#include "nmatrix.hpp"
+#include "nmatrix.h"
 
 #include "ruby_constants.h"
 

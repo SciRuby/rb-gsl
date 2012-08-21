@@ -55,7 +55,7 @@
 #include "common.h"
 #include "yale.h"
 
-#include "nmatrix.hpp"
+#include "nmatrix.h"
 #include "ruby_constants.h"
 
 /*

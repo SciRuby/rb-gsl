@@ -45,7 +45,7 @@
 
 #include "common.h"
 
-#include "nmatrix.hpp"
+#include "nmatrix.h"
 
 /*
  * Macros

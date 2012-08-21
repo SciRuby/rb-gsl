@@ -36,7 +36,7 @@
  * Project Includes
  */
 #include "data/data.h"
-#include "nmatrix.hpp"
+#include "nmatrix.h"
 
 /*
  * Macros

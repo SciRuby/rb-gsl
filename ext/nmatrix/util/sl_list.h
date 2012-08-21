@@ -44,7 +44,7 @@
 
 #include "data/data.h"
 
-#include "nmatrix.hpp"
+#include "nmatrix.h"
 
 namespace list {
 
