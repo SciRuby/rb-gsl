@@ -23,17 +23,17 @@
 //
 // == sl_list.h
 //
-// Singly-linked list implementation
+// Singly-linked list implementation used for List Storage.
 
 #ifndef SL_LIST_H
 #define SL_LIST_H
+
 
 /*
  * Standard Includes
  */
 
 #include <type_traits>
-
 #include <cstdlib>
 
 /*
@@ -45,6 +45,8 @@
 #include "data/data.h"
 
 #include "nmatrix.hpp"
+
+namespace list {
 
 /*
  * Macros
@@ -67,38 +69,38 @@
 // Lifecycle //
 ///////////////
 
-LIST*	list_create(void);
-void	list_delete(LIST* list, size_t recursions);
-void	list_mark(LIST* list, size_t recursions);
+LIST*	create(void);
+void	del(LIST* list, size_t recursions);
+void	mark(LIST* list, size_t recursions);
 
 ///////////////
 // Accessors //
 ///////////////
 
-NODE* list_insert(LIST* list, bool replace, size_t key, void* val);
-NODE* list_insert_after(NODE* node, size_t key, void* val);
-void* list_remove(LIST* list, size_t key);
+NODE* insert(LIST* list, bool replace, size_t key, void* val);
+NODE* insert_after(NODE* node, size_t key, void* val);
+void* remove(LIST* list, size_t key);
 
 template <typename Type>
-inline NODE* list_insert_helper(LIST* list, NODE* node, size_t key, Type val) {
+inline NODE* insert_helper(LIST* list, NODE* node, size_t key, Type val) {
 	Type* val_mem = ALLOC(Type);
 	*val_mem = val;
 	
 	if (node == NULL) {
-		return list_insert(list, false, key, val_mem);
+		return insert(list, false, key, val_mem);
 		
 	} else {
-		return list_insert_after(node, key, val_mem);
+		return insert_after(node, key, val_mem);
 	}
 }
 
 template <typename Type>
-inline NODE* list_insert_helper(LIST* list, NODE* node, size_t key, Type* ptr) {
+inline NODE* insert_helper(LIST* list, NODE* node, size_t key, Type* ptr) {
 	if (node == NULL) {
-		return list_insert(list, false, key, ptr);
+		return insert(list, false, key, ptr);
 		
 	} else {
-		return list_insert_after(node, key, ptr);
+		return insert_after(node, key, ptr);
 	}
 }
 
@@ -113,7 +115,7 @@ inline NODE* list_insert_helper(LIST* list, NODE* node, size_t key, Type* ptr) {
  * other eqeq functions, which use left and right dtypes.
  */
 template <typename ListDType, typename ValueDType>
-bool list_eqeq_value_template(const LIST* l, const ValueDType* v, size_t recursions, size_t& checked) {
+bool eqeq_value_template(const LIST* l, const ValueDType* v, size_t recursions, size_t& checked) {
   NODE *next, *curr = l->first;
 
   while (curr) {
@@ -124,7 +126,7 @@ bool list_eqeq_value_template(const LIST* l, const ValueDType* v, size_t recursi
 
       if (*reinterpret_cast<ListDType*>(curr->val) != *v) return false;
 
-    } else if (!list_eqeq_value_template<ListDType,ValueDType>((LIST*)curr->val, v, recursions - 1, checked)) {
+    } else if (!eqeq_value_template<ListDType,ValueDType>((LIST*)curr->val, v, recursions - 1, checked)) {
       return false;
     }
 
@@ -140,7 +142,7 @@ bool list_eqeq_value_template(const LIST* l, const ValueDType* v, size_t recursi
  * other isn't, does the value in the list match the default value?
  */
 template <typename LDType, typename RDType>
-bool list_eqeq_list_template(const LIST* left, const LIST* right, const LDType* left_val, const RDType* right_val, size_t recursions, size_t& checked) {
+bool eqeq_list_template(const LIST* left, const LIST* right, const LDType* left_val, const RDType* right_val, size_t recursions, size_t& checked) {
   NODE *lnext = NULL, *lcurr = left->first, *rnext = NULL, *rcurr = right->first;
 
   if (lcurr) lnext = lcurr->next;
@@ -156,7 +158,7 @@ bool list_eqeq_list_template(const LIST* left, const LIST* right, const LDType* 
 
         if (*reinterpret_cast<LDType*>(lcurr->val) != *reinterpret_cast<RDType*>(rcurr->val)) return false;
 
-      } else if (!list_eqeq_list_template<LDType,RDType>(reinterpret_cast<LIST*>(lcurr->val), (LIST*)rcurr->val, left_val, right_val, recursions - 1, checked)) {
+      } else if (!eqeq_list_template<LDType,RDType>(reinterpret_cast<LIST*>(lcurr->val), (LIST*)rcurr->val, left_val, right_val, recursions - 1, checked)) {
         return false;
       }
 
@@ -175,7 +177,7 @@ bool list_eqeq_list_template(const LIST* left, const LIST* right, const LDType* 
 
         if (*reinterpret_cast<LDType*>(lcurr->val) != *right_val) return false;
 
-      } else if (!list_eqeq_value_template<LDType,RDType>(reinterpret_cast<LIST*>(lcurr->val), right_val, recursions - 1, checked)) {
+      } else if (!eqeq_value_template<LDType,RDType>(reinterpret_cast<LIST*>(lcurr->val), right_val, recursions - 1, checked)) {
         return false;
       }
 
@@ -192,7 +194,7 @@ bool list_eqeq_list_template(const LIST* left, const LIST* right, const LDType* 
 
         if (*reinterpret_cast<RDType*>(rcurr->val) != *left_val) return false;
 
-      } else if (!list_eqeq_value_template<RDType,LDType>(reinterpret_cast<LIST*>(rcurr->val), left_val, recursions - 1, checked)) {
+      } else if (!eqeq_value_template<RDType,LDType>(reinterpret_cast<LIST*>(rcurr->val), left_val, recursions - 1, checked)) {
         return false;
       }
 
@@ -229,17 +231,19 @@ bool list_eqeq_list_template(const LIST* left, const LIST* right, const LDType* 
 // Utility //
 /////////////
 
-NODE* list_find(LIST* list, size_t key);
-NODE* list_find_preceding_from(NODE* prev, size_t key);
-NODE* list_find_nearest(LIST* list, size_t key);
-NODE* list_find_nearest_from(NODE* prev, size_t key);
+NODE* find(LIST* list, size_t key);
+NODE* find_preceding_from(NODE* prev, size_t key);
+NODE* find_nearest(LIST* list, size_t key);
+NODE* find_nearest_from(NODE* prev, size_t key);
 
 /////////////////////////
 // Copying and Casting //
 /////////////////////////
 
 template <typename LDType, typename RDType>
-void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions);
-void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
+void cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions);
+void cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
+
+}; // end of namespace list
 
 #endif // SL_LIST_H

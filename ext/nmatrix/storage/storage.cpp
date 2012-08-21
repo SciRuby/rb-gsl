@@ -222,7 +222,6 @@ LIST_STORAGE* list_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t
 
   LIST_STORAGE* lhs = list_storage_create(l_dtype, shape, rhs->rank, l_default_val);
 
-  //lhs->rows = list_create();
   size_t pos = 0;
   list_storage_cast_copy_contents_dense_template<LDType,RDType>(lhs->rows,
                                                                 reinterpret_cast<const RDType*>(rhs->elements),
@@ -276,7 +275,7 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
 		
     if (ija < ija_next || add_diag) {
 
-      LIST* curr_row = list_create();
+      LIST* curr_row = list::create();
 
       LDType* insert_val;
 
@@ -290,8 +289,8 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
           *insert_val        = rhs_a[i];
 
           // insert the item in the list at the appropriate location
-          if (last_added) 	last_added = list_insert_after(last_added, i, insert_val);
-          else            	last_added = list_insert(curr_row, false, i, insert_val);
+          if (last_added) 	last_added = list::insert_after(last_added, i, insert_val);
+          else            	last_added = list::insert(curr_row, false, i, insert_val);
 					
 					// don't add again!
           add_diag = false;
@@ -301,8 +300,8 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
         insert_val  = ALLOC_N(LDType, 1);
         *insert_val = rhs_a[ija];
 
-        if (last_added)    	last_added = list_insert_after(last_added, jj, insert_val);
-        else              	last_added = list_insert(curr_row, false, jj, insert_val);
+        if (last_added)    	last_added = list::insert_after(last_added, jj, insert_val);
+        else              	last_added = list::insert(curr_row, false, jj, insert_val);
 
         ++ija; // move to next entry in Yale matrix
       }
@@ -313,13 +312,13 @@ LIST_STORAGE* list_storage_from_yale_template(const YALE_STORAGE* rhs, dtype_t l
         *insert_val        = rhs_a[i];
 
         // insert the item in the list at the appropriate location
-        if (last_added)    	last_added = list_insert_after(last_added, i, insert_val);
-        else              	last_added = list_insert(curr_row, false, i, insert_val);
+        if (last_added)    	last_added = list::insert_after(last_added, i, insert_val);
+        else              	last_added = list::insert(curr_row, false, i, insert_val);
       }
 
       // Now add the list at the appropriate location
-      if (last_row_added)  	last_row_added = list_insert_after(last_row_added, i, curr_row);
-      else                 	last_row_added = list_insert(lhs->rows, false, i, curr_row);
+      if (last_row_added)  	last_row_added = list::insert_after(last_row_added, i, curr_row);
+      else                 	last_row_added = list::insert(lhs->rows, false, i, curr_row);
     }
 	
 		// end of walk through rows
@@ -337,144 +336,151 @@ STORAGE* list_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
 }
 
 
-/*
- * Creation of yale storage from dense storage.
- */
-template <typename LDType, typename RDType, typename LIType>
-YALE_STORAGE* yale_storage_from_dense_template(const DENSE_STORAGE* rhs, dtype_t l_dtype) {
-  LIType pos = 0, ndnz = 0;
+namespace yale_storage { // FIXME: Move to yale.cpp
+  /*
+   * Creation of yale storage from dense storage.
+   */
+  template <typename LDType, typename RDType, typename LIType>
+  YALE_STORAGE* create_from_dense_storage(const DENSE_STORAGE* rhs, dtype_t l_dtype) {
+    LIType pos = 0, ndnz = 0;
 
-  RDType R_ZERO; // need zero for easier comparisons
-  if (rhs->dtype == RUBYOBJ)  R_ZERO = INT2FIX(0);
-  else                        R_ZERO = 0;
+    RDType R_ZERO; // need zero for easier comparisons
+    if (rhs->dtype == RUBYOBJ)  R_ZERO = INT2FIX(0);
+    else                        R_ZERO = 0;
 
-  if (rhs->rank != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
+    if (rhs->rank != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
 
-  RDType* rhs_elements = reinterpret_cast<RDType*>(rhs->elements);
+    RDType* rhs_elements = reinterpret_cast<RDType*>(rhs->elements);
 
-  // First, count the non-diagonal nonzeros
-	for (size_t i = rhs->shape[0]; i-- > 0;) {
-		for (size_t j = rhs->shape[1]; j-- > 0;) {
-		  if (i != j && rhs_elements[pos] != R_ZERO)	++ndnz;
+    // First, count the non-diagonal nonzeros
+    for (size_t i = rhs->shape[0]; i-- > 0;) {
+      for (size_t j = rhs->shape[1]; j-- > 0;) {
+        if (i != j && rhs_elements[pos] != R_ZERO)	++ndnz;
 
-      // move forward 1 position in dense matrix elements array
-      ++pos;
-    }
-  }
-
-  // Copy shape for yale construction
-  size_t* shape = ALLOC_N(size_t, 2);
-  shape[0] = rhs->shape[0];
-  shape[1] = rhs->shape[1];
-
-  // Create with minimum possible capacity -- just enough to hold all of the entries
-  YALE_STORAGE* lhs = yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
-  LDType* lhs_a     = reinterpret_cast<LDType*>(lhs->a);
-  LIType* lhs_ija   = reinterpret_cast<LIType*>(lhs->ija);
-
-  // Set the zero position in the yale matrix
-  lhs_a[ shape[0] ] = R_ZERO;
-
-  // Start just after the zero position.
-  LIType ija = lhs->shape[0]+1;
-  LIType i;
-  pos        = 0;
-
-  // Copy contents
-  for (i = 0; i < rhs->shape[0]; ++i) {
-    // indicate the beginning of a row in the IJA array
-    lhs_ija[i] = ija;
-
-    for (LIType j = 0; j < rhs->shape[1]; ++j) {
-
-      if (i == j) { // copy to diagonal
-        lhs_a[i] = rhs_elements[pos];
-      } else if (rhs_elements[pos] != R_ZERO) { // copy nonzero to LU
-        lhs_ija[ija] = j; // write column index
-
-        lhs_a[ija] = rhs_elements[pos];
-
-        ++ija;
-      }
-      ++pos;
-    }
-  }
-  lhs_ija[i] = ija; // indicate the end of the last row
-
-  lhs->ndnz = ndnz;
-
-  return lhs;
-}
-
-STORAGE* yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
-	NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_from_dense_template, YALE_STORAGE*, const DENSE_STORAGE* rhs, dtype_t l_dtype);
-
-  itype_t itype = yale_storage_itype((const YALE_STORAGE*)right);
-
-	return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const DENSE_STORAGE*)right, l_dtype);
-}
-
-
-/*
- * Creation of yale storage from list storage.
- */
-template <typename LDType, typename RDType, typename LIType>
-YALE_STORAGE* yale_storage_from_list_template(const LIST_STORAGE* rhs, dtype_t l_dtype) {
-  NODE *i_curr, *j_curr;
-  size_t ndnz = list_storage_count_nd_elements(rhs);
-
-  if (rhs->rank != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
-
-  if ((rhs->dtype == RUBYOBJ and (*reinterpret_cast<RubyObject*>(rhs->default_val)) == RubyObject(INT2FIX(0)))
-      || strncmp(reinterpret_cast<const char*>(rhs->default_val), "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", DTYPE_SIZES[rhs->dtype]))
-    rb_raise(nm_eStorageTypeError, "list matrix must have default value of 0 to convert to yale");
-
-
-  // Copy shape for yale construction
-  size_t* shape = ALLOC_N(size_t, 2);
-  shape[0] = rhs->shape[0];
-  shape[1] = rhs->shape[1];
-
-  YALE_STORAGE* lhs = yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
-  yale_storage_clear_diagonal_and_zero_template<LIType>(lhs); // clear the diagonal and the zero location.
-  LIType* lhs_ija = reinterpret_cast<LIType*>(lhs->ija);
-  LDType* lhs_a   = reinterpret_cast<LDType*>(lhs->a);
-
-  LIType ija = lhs->shape[0]+1;
-
-  for (i_curr = rhs->rows->first; i_curr; i_curr = i_curr->next) {
-
-    // indicate the beginning of a row in the IJA array
-    lhs_ija[i_curr->key] = ija;
-
-    for (j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
-      LDType cast_jcurr_val = *reinterpret_cast<RDType*>(j_curr->val);
-
-      if (i_curr->key == j_curr->key)
-        lhs_a[i_curr->key] = cast_jcurr_val; // set diagonal
-      else {
-
-        lhs_ija[ija] = j_curr->key;    // set column value
-        lhs_a[ija]   = cast_jcurr_val;                      // set cell value
-
-        ++ija;
+        // move forward 1 position in dense matrix elements array
+        ++pos;
       }
     }
 
-    if (!i_curr->next)	lhs_ija[i_curr->key] = ija; // indicate the end of the last row
+    // Copy shape for yale construction
+    size_t* shape = ALLOC_N(size_t, 2);
+    shape[0] = rhs->shape[0];
+    shape[1] = rhs->shape[1];
+
+    // Create with minimum possible capacity -- just enough to hold all of the entries
+    YALE_STORAGE* lhs = yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
+    LDType* lhs_a     = reinterpret_cast<LDType*>(lhs->a);
+    LIType* lhs_ija   = reinterpret_cast<LIType*>(lhs->ija);
+
+    // Set the zero position in the yale matrix
+    lhs_a[ shape[0] ] = R_ZERO;
+
+    // Start just after the zero position.
+    LIType ija = lhs->shape[0]+1;
+    LIType i;
+    pos        = 0;
+
+    // Copy contents
+    for (i = 0; i < rhs->shape[0]; ++i) {
+      // indicate the beginning of a row in the IJA array
+      lhs_ija[i] = ija;
+
+      for (LIType j = 0; j < rhs->shape[1]; ++j) {
+
+        if (i == j) { // copy to diagonal
+          lhs_a[i] = rhs_elements[pos];
+        } else if (rhs_elements[pos] != R_ZERO) { // copy nonzero to LU
+          lhs_ija[ija] = j; // write column index
+
+          lhs_a[ija] = rhs_elements[pos];
+
+          ++ija;
+        }
+        ++pos;
+      }
+    }
+    lhs_ija[i] = ija; // indicate the end of the last row
+
+    lhs->ndnz = ndnz;
+
+    return lhs;
   }
 
-  lhs->ndnz = ndnz;
-  return lhs;
-}
+  /*
+   * Creation of yale storage from list storage.
+   */
+  template <typename LDType, typename RDType, typename LIType>
+  YALE_STORAGE* create_from_list_storage(const LIST_STORAGE* rhs, dtype_t l_dtype) {
+    NODE *i_curr, *j_curr;
+    size_t ndnz = list_storage_count_nd_elements(rhs);
 
-STORAGE* yale_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
-	NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage_from_list_template, YALE_STORAGE*, const LIST_STORAGE* rhs, dtype_t l_dtype);
+    if (rhs->rank != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
 
-  itype_t itype = yale_storage_itype((const YALE_STORAGE*)right);
+    if ((rhs->dtype == RUBYOBJ and (*reinterpret_cast<RubyObject*>(rhs->default_val)) == RubyObject(INT2FIX(0)))
+        || strncmp(reinterpret_cast<const char*>(rhs->default_val), "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", DTYPE_SIZES[rhs->dtype]))
+      rb_raise(nm_eStorageTypeError, "list matrix must have default value of 0 to convert to yale");
 
-	return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const LIST_STORAGE*)right, l_dtype);
-}
+
+    // Copy shape for yale construction
+    size_t* shape = ALLOC_N(size_t, 2);
+    shape[0] = rhs->shape[0];
+    shape[1] = rhs->shape[1];
+
+    YALE_STORAGE* lhs = yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
+    clear_diagonal_and_zero<LIType>(lhs); // clear the diagonal and the zero location.
+    LIType* lhs_ija = reinterpret_cast<LIType*>(lhs->ija);
+    LDType* lhs_a   = reinterpret_cast<LDType*>(lhs->a);
+
+    LIType ija = lhs->shape[0]+1;
+
+    for (i_curr = rhs->rows->first; i_curr; i_curr = i_curr->next) {
+
+      // indicate the beginning of a row in the IJA array
+      lhs_ija[i_curr->key] = ija;
+
+      for (j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
+        LDType cast_jcurr_val = *reinterpret_cast<RDType*>(j_curr->val);
+
+        if (i_curr->key == j_curr->key)
+          lhs_a[i_curr->key] = cast_jcurr_val; // set diagonal
+        else {
+
+          lhs_ija[ija] = j_curr->key;    // set column value
+          lhs_a[ija]   = cast_jcurr_val;                      // set cell value
+
+          ++ija;
+        }
+      }
+
+      if (!i_curr->next)	lhs_ija[i_curr->key] = ija; // indicate the end of the last row
+    }
+
+    lhs->ndnz = ndnz;
+    return lhs;
+  }
+
+}; // end of namespace yale_storage
+
+extern "C" {
+
+  STORAGE* yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
+    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage::create_from_dense_storage, YALE_STORAGE*, const DENSE_STORAGE* rhs, dtype_t l_dtype);
+
+    itype_t itype = yale_storage_itype((const YALE_STORAGE*)right);
+
+    return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const DENSE_STORAGE*)right, l_dtype);
+  }
+
+
+  STORAGE* yale_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
+    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, yale_storage::create_from_list_storage, YALE_STORAGE*, const LIST_STORAGE* rhs, dtype_t l_dtype);
+
+    itype_t itype = yale_storage_itype((const YALE_STORAGE*)right);
+
+    return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const LIST_STORAGE*)right, l_dtype);
+  }
+
+} // end of extern "C"
 
 //////////////////////
 // Helper Functions //
@@ -552,8 +558,8 @@ static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDTy
         LDType* insert_value = ALLOC_N(LDType, 1);
         *insert_value        = static_cast<LDType>(rhs[pos]);
 
-        if (!lhs->first)    prev = list_insert(lhs, false, coords[rank-1-recursions], insert_value);
-        else               	prev = list_insert_after(prev, coords[rank-1-recursions], insert_value);
+        if (!lhs->first)    prev = list::insert(lhs, false, coords[rank-1-recursions], insert_value);
+        else               	prev = list::insert_after(prev, coords[rank-1-recursions], insert_value);
         
         added = true;
       }
@@ -561,13 +567,13 @@ static bool list_storage_cast_copy_contents_dense_template(LIST* lhs, const RDTy
       
     } else { // create lists
       // create a list as if there's something in the row in question, and then delete it if nothing turns out to be there
-      sub_list = list_create();
+      sub_list = list::create();
 
       added_list = list_storage_cast_copy_contents_dense_template<LDType,RDType>(sub_list, rhs, zero, pos, coords, shape, rank, recursions-1);
 
-      if (!added_list)      	list_delete(sub_list, recursions-1);
-      else if (!lhs->first)  	prev = list_insert(lhs, false, coords[rank-1-recursions], sub_list);
-      else                  	prev = list_insert_after(prev, coords[rank-1-recursions], sub_list);
+      if (!added_list)      	list::del(sub_list, recursions-1);
+      else if (!lhs->first)  	prev = list::insert(lhs, false, coords[rank-1-recursions], sub_list);
+      else                  	prev = list::insert_after(prev, coords[rank-1-recursions], sub_list);
 
       // added = (added || added_list);
     }

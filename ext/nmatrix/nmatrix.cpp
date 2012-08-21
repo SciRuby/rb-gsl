@@ -21,35 +21,11 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == nmatrix.c
+// == nmatrix.cpp
 //
-
-/////////////////////////////////////////////////////////////////////
-// = NMatrix
-//
-// A linear algebra library for scientific computation in Ruby.
-// NMatrix is part of SciRuby.
-//
-// NMatrix was originally inspired by and derived from NArray, by
-// Masahiro Tanaka: http://narray.rubyforge.org
-//
-// == Copyright Information
-//
-// SciRuby is Copyright (c) 2010 - 2012, Ruby Science Foundation
-// NMatrix is Copyright (c) 2012, Ruby Science Foundation
-//
-// Please see LICENSE.txt for additional copyright notices.
-//
-// == Contributing
-//
-// By contributing source code to SciRuby, you agree to be bound by
-// our Contributor Agreement:
-//
-// * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
-//
-// == data.cpp
-//
-// Functions and data for dealing the data types.
+// Main C++ source file for NMatrix. Contains Init_nmatrix and most Ruby instance and
+// class methods for NMatrix. Also responsible for calling Init methods on related
+// modules.
 
 /*
  * Standard Includes
@@ -68,6 +44,10 @@
 #include "nmatrix.hpp"
 
 #include "ruby_constants.h"
+
+using std::memcmp;
+using std::memset;
+using std::strncmp;
 
 /*
  * Macros
@@ -293,11 +273,11 @@ static VALUE nm_capacity(VALUE self) {
     break;
 
   case DENSE_STORE:
-    cap = UINT2NUM(storage_count_max_elements( NM_DENSE_STORAGE(self) ));
+    cap = UINT2NUM(storage_count_max_elements( NM_STORAGE_DENSE(self) ));
     break;
 
   case LIST_STORE:
-    cap = UINT2NUM(list_storage_count_elements( NM_LIST_STORAGE(self) ));
+    cap = UINT2NUM(list_storage_count_elements( NM_STORAGE_LIST(self) ));
     break;
 
   default:
@@ -392,7 +372,7 @@ static VALUE nm_upcast(VALUE self, VALUE t1, VALUE t2) {
  * containing other types of data.
  */
 static VALUE nm_each_dense(VALUE nmatrix) {
-  DENSE_STORAGE* s = NM_DENSE_STORAGE(nmatrix);
+  DENSE_STORAGE* s = NM_STORAGE_DENSE(nmatrix);
   VALUE v;
   size_t i;
 
@@ -736,12 +716,12 @@ static VALUE nm_complex_conjugate_bang(VALUE self) {
   if (m->stype == DENSE_STORE) {
 
     size = storage_count_max_elements(NM_STORAGE(self));
-    elem = NM_DENSE_STORAGE(self)->elements;
+    elem = NM_STORAGE_DENSE(self)->elements;
 
   } else if (m->stype == YALE_STORE) {
 
-    size = yale_storage_get_size(NM_YALE_STORAGE(self));
-    elem = NM_YALE_STORAGE(self)->a;
+    size = yale_storage_get_size(NM_STORAGE_YALE(self));
+    elem = NM_STORAGE_YALE(self)->a;
 
   } else {
     rb_raise(rb_eNotImpError, "please cast to yale or dense (complex) first");
@@ -1082,7 +1062,7 @@ static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
       break;
     case LIST_STORE:
       // Remove if it's a zero, insert otherwise
-      if (!memcmp(value, NM_LIST_STORAGE(self)->default_val, DTYPE_SIZES[NM_DTYPE(self)])) {
+      if (!memcmp(value, NM_STORAGE_LIST(self)->default_val, DTYPE_SIZES[NM_DTYPE(self)])) {
         free(value);
         value = list_storage_remove(NM_STORAGE(self), slice);
         free(value);
@@ -1214,7 +1194,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
       fprintf(stderr, "\n");
       */
 
-      //DENSE_STORAGE* s = NM_DENSE_STORAGE(self);
+      //DENSE_STORAGE* s = NM_STORAGE_DENSE(self);
 
       if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>( ttable[NM_STYPE(self)](NM_STORAGE(self), slice) );
       else                            result = rubyobj_from_cval( ttable[NM_STYPE(self)](NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
@@ -1698,7 +1678,7 @@ static VALUE nm_det_exact(VALUE self) {
 
   // Calculate the determinant and then assign it to the return value
   void* result = ALLOCA_N(char, DTYPE_SIZES[NM_DTYPE(self)]);
-  det_exact(NM_SHAPE0(self), NM_DENSE_STORAGE(self)->elements, NM_SHAPE0(self), NM_DTYPE(self), result);
+  det_exact(NM_SHAPE0(self), NM_STORAGE_DENSE(self)->elements, NM_SHAPE0(self), NM_DTYPE(self), result);
 
   return rubyobj_from_cval(result, NM_DTYPE(self)).rval;
 }

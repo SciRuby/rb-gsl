@@ -36,6 +36,8 @@
  * Project Includes
  */
 
+#include "nmatrix.h"
+
 #include "types.h"
 
 #include "complex.h"
@@ -46,8 +48,7 @@
  * Macros
  */
 
-#define NUM_DTYPES 13
-#define NUM_ITYPES 4
+
 
 
 
@@ -228,73 +229,13 @@ static ret (*(name)[NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
 /* Does not work. */
 #define LI_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...) NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
-/*
- * Types
- */
-
-enum dtype_t {
-	BYTE				=  0, // unsigned char
-	INT8				=  1, // char
-	INT16				=  2, // short
-	INT32				=  3, // int
-	INT64				=  4, // long
-	FLOAT32			=  5, // float
-	FLOAT64			=  6, // double
-	COMPLEX64		=  7, // Complex64 class
-	COMPLEX128	=  8, // Complex128 class
-	RATIONAL32	=  9, // Rational32 class
-	RATIONAL64	= 10, // Rational64 class
-	RATIONAL128	= 11, // Rational128 class
-	RUBYOBJ			= 12  // Ruby VALUE type
-};
-
-/*
- * Index Types
- */
-
-enum itype_t {
-  UINT8 = 0,
-  UINT16 = 1,
-  UINT32 = 2,
-  UINT64 = 3
-};
-
-//typedef union {
-//  uint8_t b[2];
-//  int16_t s;
-//} nm_size16_t;
-
-//typedef union {
-//  uint8_t b[4];
-//  int32_t  i;
-//  float    f;
-//} nm_size32_t;
-
-//typedef union {
-//  uint8_t  b[8];
-//  int64_t   q;
-//  float     f[2];
-//  double    d;
-//  Complex64 c;
-//} nm_size64_t;
-
-//typedef union {
-//  uint8_t   b[16];
-//  int64_t    i[2];
-//  double     d[2];
-//  float      f[4];
-//  Complex64  c[2];
-//  Complex128 z;
-//  Rational32 r[4];
-//  Rational64 ra[2];
-//  Rational128 rat;
-//  VALUE      v[2];
-//} nm_size128_t;
-
 
 /*
  * Data
  */
+
+const size_t NUM_DTYPES = NM_NUM_DTYPES;
+const size_t NUM_ITYPES = NM_NUM_ITYPES;
 
 // regular data types
 extern const char* const	DTYPE_NAMES[NUM_DTYPES];
