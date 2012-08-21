@@ -51,6 +51,7 @@
  * Functions
  */
 
+extern "C" {
 /*
  * Calculate the number of elements in the dense storage structure, based on
  * shape and rank.
@@ -66,3 +67,4 @@ size_t storage_count_max_elements(const STORAGE* storage) {
   return count;
 }
 
+} // end of extern "C" block

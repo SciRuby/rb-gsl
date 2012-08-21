@@ -42,30 +42,34 @@
  * Macros
  */
 
-/*
- * Types
- */
 
-// For binary operations involving matrices that need to be casted.
-struct STORAGE_PAIR {
-	STORAGE* left;
-	STORAGE* right;
-};
+extern "C" {
 
-struct SLICE {
-	size_t*	coords; // Coordinate of first element
-	size_t*	lengths; // Lengths of slice
-	bool  	single; // true if all lengths equal to 1 (represents single matrix element)
-};
+  /*
+   * Types
+   */
 
-/*
- * Data
- */
+  // For binary operations involving matrices that need to be casted.
+  struct STORAGE_PAIR {
+    STORAGE* left;
+    STORAGE* right;
+  };
 
-/*
- * Functions
- */
+  struct SLICE {
+    size_t*	coords; // Coordinate of first element
+    size_t*	lengths; // Lengths of slice
+    bool  	single; // true if all lengths equal to 1 (represents single matrix element)
+  };
 
-size_t storage_count_max_elements(const STORAGE* storage);
+  /*
+   * Data
+   */
+
+  /*
+   * Functions
+   */
+
+  size_t storage_count_max_elements(const STORAGE* storage);
+} // end of extern "C" block
 
 #endif // STORAGE_COMMON_H
