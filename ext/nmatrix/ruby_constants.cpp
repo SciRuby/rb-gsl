@@ -86,7 +86,7 @@ VALUE cNMatrix,
  * Functions
  */
 
-void Init_ruby_constants(void) {
+void nm_init_ruby_constants(void) {
 
 	rbsym_real							= rb_intern("real");
 	rbsym_imag							= rb_intern("imag");

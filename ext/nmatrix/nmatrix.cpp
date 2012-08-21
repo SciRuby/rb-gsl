@@ -45,10 +45,6 @@
 
 #include "ruby_constants.h"
 
-using std::memcmp;
-using std::memset;
-using std::strncmp;
-
 /*
  * Macros
  */
@@ -56,6 +52,9 @@ using std::strncmp;
 /*
  * Global Variables
  */
+
+
+extern "C" {
 
 /*
  * Forward Declarations
@@ -131,8 +130,6 @@ static double get_time(void);
 ///////////////////
 // Ruby Bindings //
 ///////////////////
-
-extern "C" {
 
 void Init_nmatrix() {
 	
@@ -221,7 +218,7 @@ void Init_nmatrix() {
 	// Symbol Generation //
 	///////////////////////
 	
-	Init_ruby_constants();
+	nm_init_ruby_constants();
 
 	//////////////////////////
 	// YaleFunctions module //
@@ -236,10 +233,6 @@ void Init_nmatrix() {
 	nm_math_init_blas();
 }
 
-/*
- * End of the Ruby binding functions in the `extern "C" {}` block.
- */
-}
 
 //////////////////
 // Ruby Methods //
@@ -477,7 +470,7 @@ static VALUE nm_ew_add(VALUE left_val, VALUE right_val) {
 	}
 	
 	// Check that the left- and right-hand sides have the same shape.
-	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
+	if (std::memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
 		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
 	}
 
@@ -523,7 +516,7 @@ static VALUE nm_ew_subtract(VALUE left_val, VALUE right_val) {
 	}
 	
 	// Check that the left- and right-hand sides have the same shape.
-	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
+	if (std::memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
 		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
 	}
 
@@ -569,7 +562,7 @@ static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
 	}
 	
 	// Check that the left- and right-hand sides have the same shape.
-	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
+	if (std::memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
 		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
 	}
 
@@ -615,7 +608,7 @@ static VALUE nm_ew_divide(VALUE left_val, VALUE right_val) {
 	}
 	
 	// Check that the left- and right-hand sides have the same shape.
-	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
+	if (std::memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
 		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
 	}
 
@@ -662,7 +655,7 @@ static VALUE nm_ew_mod(VALUE left_val, VALUE right_val) {
 	}
 	
 	// Check that the left- and right-hand sides have the same shape.
-	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
+	if (std::memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
 		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
 	}
 
@@ -866,7 +859,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
       }
     } else if (stype == LIST_STORE) {
     	init_val = ALLOC_N(char, DTYPE_SIZES[dtype]);
-      memset(init_val, 0, DTYPE_SIZES[dtype]);
+      std::memset(init_val, 0, DTYPE_SIZES[dtype]);
     }
   }
 	
@@ -1062,7 +1055,7 @@ static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
       break;
     case LIST_STORE:
       // Remove if it's a zero, insert otherwise
-      if (!memcmp(value, NM_STORAGE_LIST(self)->default_val, DTYPE_SIZES[NM_DTYPE(self)])) {
+      if (!std::memcmp(value, NM_STORAGE_LIST(self)->default_val, DTYPE_SIZES[NM_DTYPE(self)])) {
         free(value);
         value = list_storage_remove(NM_STORAGE(self), slice);
         free(value);
@@ -1276,7 +1269,7 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
  */
 dtype_t dtype_from_rbstring(VALUE str) {
   for (size_t index = 0; index < NUM_DTYPES; ++index) {
-  	if (!strncmp(RSTRING_PTR(str), DTYPE_NAMES[index], RSTRING_LEN(str))) {
+  	if (!std::strncmp(RSTRING_PTR(str), DTYPE_NAMES[index], RSTRING_LEN(str))) {
   		return static_cast<dtype_t>(index);
   	}
   }
@@ -1561,7 +1554,7 @@ static stype_t stype_from_rbstring(VALUE str) {
   size_t index;
   
   for (index = 0; index < NUM_STYPES; ++index) {
-    if (!strncmp(RSTRING_PTR(str), STYPE_NAMES[index], 3)) {
+    if (!std::strncmp(RSTRING_PTR(str), STYPE_NAMES[index], 3)) {
     	return static_cast<stype_t>(index);
     }
   }
@@ -1690,7 +1683,6 @@ static VALUE nm_det_exact(VALUE self) {
 // Exposed API //
 /////////////////
 
-extern "C" {
 
 /*
  * Create a dense matrix. Used by the NMatrix GSL fork. Unlike nm_create, this one copies all of the
@@ -1748,5 +1740,5 @@ VALUE rb_nvector_dense_create(dtype_t dtype, void* elements, size_t length) {
   return rb_nmatrix_dense_create(dtype, &shape, rank, elements, length);
 }
 
-}
+} // end of extern "C"
 

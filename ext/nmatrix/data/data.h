@@ -234,6 +234,8 @@ static ret (*(name)[NUM_DTYPES][NUM_ITYPES])(__VA_ARGS__) = { \
  * Data
  */
 
+extern "C" {
+
 const size_t NUM_DTYPES = NM_NUM_DTYPES;
 const size_t NUM_ITYPES = NM_NUM_ITYPES;
 
@@ -251,9 +253,12 @@ extern const dtype_t      Upcast[NUM_DTYPES][NUM_DTYPES];
  * Functions
  */
 
+
 void*				rubyobj_to_cval(VALUE val, dtype_t dtype);
 void				rubyval_to_cval(VALUE val, dtype_t dtype, void* loc);
 RubyObject	rubyobj_from_cval(void* val, dtype_t dtype);
 RubyObject  rubyobj_from_cval_by_itype(void* val, itype_t itype);
+
+} // end of extern "C" block
 
 #endif // DATA_H
