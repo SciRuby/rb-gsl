@@ -324,7 +324,7 @@ NODE* find_nearest_from(NODE* prev, size_t key) {
  * Copy the contents of a list.
  */
 template <typename LDType, typename RDType>
-void cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) {
+void cast_copy_contents(LIST* lhs, const LIST* rhs, size_t recursions) {
   NODE *lcurr, *rcurr;
 
   if (rhs->first) {
@@ -347,7 +347,7 @@ void cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) 
 
         lcurr->val = ALLOC( LIST );
 
-        cast_copy_contents_template<LDType, RDType>(
+        cast_copy_contents<LDType, RDType>(
           reinterpret_cast<LIST*>(lcurr->val),
           reinterpret_cast<LIST*>(rcurr->val),
           recursions-1
@@ -370,14 +370,18 @@ void cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) 
   }
 }
 
-/*
- * C access for copying the contents of a list.
- */
-void cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
-  LR_DTYPE_TEMPLATE_TABLE(cast_copy_contents_template, void, LIST*, const LIST*, size_t);
-
-  ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
-}
-
 }; // end of namespace list
+
+extern "C" {
+
+  /*
+   * C access for copying the contents of a list.
+   */
+  void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
+    LR_DTYPE_TEMPLATE_TABLE(list::cast_copy_contents, void, LIST*, const LIST*, size_t);
+
+    ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
+  }
+
+} // end of extern "C" block
 

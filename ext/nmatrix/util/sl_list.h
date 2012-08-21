@@ -115,7 +115,7 @@ inline NODE* insert_helper(LIST* list, NODE* node, size_t key, Type* ptr) {
  * other eqeq functions, which use left and right dtypes.
  */
 template <typename ListDType, typename ValueDType>
-bool eqeq_value_template(const LIST* l, const ValueDType* v, size_t recursions, size_t& checked) {
+bool eqeq_value(const LIST* l, const ValueDType* v, size_t recursions, size_t& checked) {
   NODE *next, *curr = l->first;
 
   while (curr) {
@@ -126,7 +126,7 @@ bool eqeq_value_template(const LIST* l, const ValueDType* v, size_t recursions, 
 
       if (*reinterpret_cast<ListDType*>(curr->val) != *v) return false;
 
-    } else if (!eqeq_value_template<ListDType,ValueDType>((LIST*)curr->val, v, recursions - 1, checked)) {
+    } else if (!eqeq_value<ListDType,ValueDType>((LIST*)curr->val, v, recursions - 1, checked)) {
       return false;
     }
 
@@ -142,7 +142,7 @@ bool eqeq_value_template(const LIST* l, const ValueDType* v, size_t recursions, 
  * other isn't, does the value in the list match the default value?
  */
 template <typename LDType, typename RDType>
-bool eqeq_list_template(const LIST* left, const LIST* right, const LDType* left_val, const RDType* right_val, size_t recursions, size_t& checked) {
+bool eqeq(const LIST* left, const LIST* right, const LDType* left_val, const RDType* right_val, size_t recursions, size_t& checked) {
   NODE *lnext = NULL, *lcurr = left->first, *rnext = NULL, *rcurr = right->first;
 
   if (lcurr) lnext = lcurr->next;
@@ -158,7 +158,7 @@ bool eqeq_list_template(const LIST* left, const LIST* right, const LDType* left_
 
         if (*reinterpret_cast<LDType*>(lcurr->val) != *reinterpret_cast<RDType*>(rcurr->val)) return false;
 
-      } else if (!eqeq_list_template<LDType,RDType>(reinterpret_cast<LIST*>(lcurr->val), (LIST*)rcurr->val, left_val, right_val, recursions - 1, checked)) {
+      } else if (!eqeq<LDType,RDType>(reinterpret_cast<LIST*>(lcurr->val), (LIST*)rcurr->val, left_val, right_val, recursions - 1, checked)) {
         return false;
       }
 
@@ -177,7 +177,7 @@ bool eqeq_list_template(const LIST* left, const LIST* right, const LDType* left_
 
         if (*reinterpret_cast<LDType*>(lcurr->val) != *right_val) return false;
 
-      } else if (!eqeq_value_template<LDType,RDType>(reinterpret_cast<LIST*>(lcurr->val), right_val, recursions - 1, checked)) {
+      } else if (!eqeq_value<LDType,RDType>(reinterpret_cast<LIST*>(lcurr->val), right_val, recursions - 1, checked)) {
         return false;
       }
 
@@ -194,7 +194,7 @@ bool eqeq_list_template(const LIST* left, const LIST* right, const LDType* left_
 
         if (*reinterpret_cast<RDType*>(rcurr->val) != *left_val) return false;
 
-      } else if (!eqeq_value_template<RDType,LDType>(reinterpret_cast<LIST*>(rcurr->val), left_val, recursions - 1, checked)) {
+      } else if (!eqeq_value<RDType,LDType>(reinterpret_cast<LIST*>(rcurr->val), left_val, recursions - 1, checked)) {
         return false;
       }
 
@@ -241,9 +241,12 @@ NODE* find_nearest_from(NODE* prev, size_t key);
 /////////////////////////
 
 template <typename LDType, typename RDType>
-void cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions);
-void cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
+void cast_copy_contents(LIST* lhs, const LIST* rhs, size_t recursions);
 
 }; // end of namespace list
+
+extern "C" {
+  void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
+} // end of extern "C" block
 
 #endif // SL_LIST_H
