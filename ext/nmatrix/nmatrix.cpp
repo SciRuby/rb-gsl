@@ -39,6 +39,7 @@
 #include "types.h"
 #include "data/data.h"
 #include "util/math.h"
+#include "util/io.h"
 #include "storage/storage.h"
 
 #include "nmatrix.h"
@@ -91,7 +92,7 @@ static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val);
 static VALUE nm_ew_divide(VALUE left_val, VALUE right_val);
 //static VALUE nm_ew_mod(VALUE left_val, VALUE right_val);
 
-static VALUE elementwise_op(ewop_t op, VALUE left_val, VALUE right_val);
+static VALUE elementwise_op(nm::ewop_t op, VALUE left_val, VALUE right_val);
 
 static VALUE nm_symmetric(VALUE self);
 static VALUE nm_hermitian(VALUE self);
@@ -105,16 +106,11 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v);
 static VALUE nm_det_exact(VALUE self);
 static VALUE nm_complex_conjugate_bang(VALUE self);
 
-static dtype_t	dtype_from_rbstring(VALUE str);
-static dtype_t	dtype_from_rbsymbol(VALUE sym);
-static itype_t  itype_from_rbsymbol(VALUE sym);
 static dtype_t	dtype_guess(VALUE v);
 static dtype_t	interpret_dtype(int argc, VALUE* argv, stype_t stype);
 static void*		interpret_initial_value(VALUE arg, dtype_t dtype);
 static size_t*	interpret_shape(VALUE arg, size_t* dim);
 static stype_t	interpret_stype(VALUE arg);
-static stype_t	stype_from_rbstring(VALUE str);
-static stype_t	stype_from_rbsymbol(VALUE sym);
 
 /* Singleton methods */
 static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg);
@@ -234,6 +230,11 @@ void Init_nmatrix() {
 	/////////////////
 
 	nm_math_init_blas();
+
+	///////////////
+	// IO module //
+	///////////////
+	nm_init_io();
 }
 
 
@@ -248,7 +249,7 @@ static VALUE nm_alloc(VALUE klass) {
   NMATRIX* mat = ALLOC(NMATRIX);
   mat->storage = NULL;
   // FIXME: mark_table[mat->stype] should be passed to Data_Wrap_Struct, but can't be done without stype. Also, nm_delete depends on this.
-  // mat->stype   = NUM_STYPES;
+  // mat->stype   = nm::NUM_STYPES;
 
   //STYPE_MARK_TABLE(mark_table);
 
@@ -287,7 +288,7 @@ static VALUE nm_capacity(VALUE self) {
  * Destructor.
  */
 static void nm_delete(NMATRIX* mat) {
-  static void (*ttable[NUM_STYPES])(STORAGE*) = {
+  static void (*ttable[nm::NUM_STYPES])(STORAGE*) = {
     nm_dense_storage_delete,
     nm_list_storage_delete,
     nm_yale_storage_delete
@@ -299,7 +300,7 @@ static void nm_delete(NMATRIX* mat) {
  * Slicing destructor.
  */
 static void nm_delete_ref(NMATRIX* mat) {
-  static void (*ttable[NUM_STYPES])(STORAGE*) = {
+  static void (*ttable[nm::NUM_STYPES])(STORAGE*) = {
     nm_dense_storage_delete_ref,
     nm_list_storage_delete,  // FIXME: Should these be _ref?
     nm_yale_storage_delete
@@ -352,8 +353,8 @@ static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg) {
  */
 static VALUE nm_upcast(VALUE self, VALUE t1, VALUE t2) {
 
-  dtype_t d1    = dtype_from_rbsymbol(t1),
-          d2    = dtype_from_rbsymbol(t2);
+  dtype_t d1    = nm_dtype_from_rbsymbol(t1),
+          d2    = nm_dtype_from_rbsymbol(t2);
 
   return ID2SYM(rb_intern( DTYPE_NAMES[ Upcast[d1][d2] ] ));
 }
@@ -451,28 +452,28 @@ static VALUE nm_eqeq(VALUE left, VALUE right) {
  * Simple n-dimensional matrix-matrix addition.
  */
 static VALUE nm_ew_add(VALUE left_val, VALUE right_val) {
-	return elementwise_op(EW_ADD, left_val, right_val);
+	return elementwise_op(nm::EW_ADD, left_val, right_val);
 }
 
 /*
  * Simple n-dimensional matrix-matrix subtraction.
  */
 static VALUE nm_ew_subtract(VALUE left_val, VALUE right_val) {
-	return elementwise_op(EW_SUB, left_val, right_val);
+	return elementwise_op(nm::EW_SUB, left_val, right_val);
 }
 
 /*
  * Simple n-dimensional matrix-matrix multiplication.
  */
 static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
-	return elementwise_op(EW_MUL, left_val, right_val);
+	return elementwise_op(nm::EW_MUL, left_val, right_val);
 }
 
 /*
  * Simple n-dimensional matrix-matrix division.
  */
 static VALUE nm_ew_divide(VALUE left_val, VALUE right_val) {
-	return elementwise_op(EW_DIV, left_val, right_val);
+	return elementwise_op(nm::EW_DIV, left_val, right_val);
 }
 
 /*
@@ -480,7 +481,7 @@ static VALUE nm_ew_divide(VALUE left_val, VALUE right_val) {
  */
 /*
 static VALUE nm_ew_mod(VALUE left_val, VALUE right_val) {
-	return elementwise_op(EW_MOD, left_val, right_val);
+	return elementwise_op(nm::EW_MOD, left_val, right_val);
 }
 */
 
@@ -693,8 +694,8 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
  * Copy constructor for changing dtypes and stypes.
  */
 static VALUE nm_init_cast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_symbol) {
-  dtype_t new_dtype = dtype_from_rbsymbol(new_dtype_symbol);
-  stype_t new_stype = stype_from_rbsymbol(new_stype_symbol);
+  dtype_t new_dtype = nm_dtype_from_rbsymbol(new_dtype_symbol);
+  stype_t new_stype = nm_stype_from_rbsymbol(new_stype_symbol);
 
   CheckNMatrixType(self);
 
@@ -718,7 +719,7 @@ static VALUE nm_init_cast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dty
  * Copy constructor for transposing.
  */
 static VALUE nm_init_transposed(VALUE self) {
-  static STORAGE* (*storage_copy_transposed[NUM_STYPES])(const STORAGE* rhs_base) = {
+  static STORAGE* (*storage_copy_transposed[nm::NUM_STYPES])(const STORAGE* rhs_base) = {
     nm_dense_storage_copy_transposed,
     nm_list_storage_copy_transposed,
     nm_yale_storage_copy_transposed
@@ -766,11 +767,11 @@ static VALUE nm_init_copy(VALUE copy, VALUE original) {
 static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm) {
   size_t dim     = 2;
   size_t* shape_  = interpret_shape(shape, &dim);
-  dtype_t dtype_  = dtype_from_rbsymbol(dtype);
+  dtype_t dtype_  = nm_dtype_from_rbsymbol(dtype);
   char *ia_       = RSTRING_PTR(ia),
        *ja_       = RSTRING_PTR(ja),
        *a_        = RSTRING_PTR(a);
-  dtype_t from_dtype_ = dtype_from_rbsymbol(from_dtype);
+  dtype_t from_dtype_ = nm_dtype_from_rbsymbol(from_dtype);
   NMATRIX* nmatrix;
 
   UnwrapNMatrix( nm, nmatrix );
@@ -803,7 +804,7 @@ static VALUE nm_is_ref(VALUE self) {
  *
  */
 static VALUE nm_mget(int argc, VALUE* argv, VALUE self) {
-  static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
+  static void* (*ttable[nm::NUM_STYPES])(STORAGE*, SLICE*) = {
     nm_dense_storage_get,
     nm_list_storage_get,
     nm_yale_storage_get
@@ -820,7 +821,7 @@ static VALUE nm_mget(int argc, VALUE* argv, VALUE self) {
  *
  */
 static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
-  static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
+  static void* (*ttable[nm::NUM_STYPES])(STORAGE*, SLICE*) = {
     nm_dense_storage_ref,
     nm_list_storage_ref,
     nm_yale_storage_ref
@@ -975,7 +976,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 
     if (slice->single) {
 
-      static void* (*ttable[NUM_STYPES])(STORAGE*, SLICE*) = {
+      static void* (*ttable[nm::NUM_STYPES])(STORAGE*, SLICE*) = {
         nm_dense_storage_ref,
         nm_list_storage_ref,
         nm_yale_storage_ref
@@ -1023,10 +1024,10 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 // Helper Functions //
 //////////////////////
 
-static VALUE elementwise_op(ewop_t op, VALUE left_val, VALUE right_val) {
+static VALUE elementwise_op(nm::ewop_t op, VALUE left_val, VALUE right_val) {
 	STYPE_MARK_TABLE(mark);
 	
-	static STORAGE* (*ew_op[NUM_STYPES])(ewop_t, const STORAGE*, const STORAGE*) = {
+	static STORAGE* (*ew_op[nm::NUM_STYPES])(nm::ewop_t, const STORAGE*, const STORAGE*) = {
 		nm_dense_storage_ew_op,
 		nm_list_storage_ew_op,
 		NULL
@@ -1109,33 +1110,6 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
 ///////////////////////
 // Utility Functions //
 ///////////////////////
-
-/*
- * Converts a string to a data type.
- */
-dtype_t dtype_from_rbstring(VALUE str) {
-  for (size_t index = 0; index < NUM_DTYPES; ++index) {
-  	if (!std::strncmp(RSTRING_PTR(str), DTYPE_NAMES[index], RSTRING_LEN(str))) {
-  		return static_cast<dtype_t>(index);
-  	}
-  }
-
-  rb_raise(rb_eArgError, "Invalid data type string specified.");
-}
-
-/*
- * Converts a symbol to a data type.
- */
-static dtype_t dtype_from_rbsymbol(VALUE sym) {
-  ID sym_id = SYM2ID(sym);
-  for (size_t index = 0; index < NUM_DTYPES; ++index) {
-    if (sym_id == rb_intern(DTYPE_NAMES[index])) {
-    	return static_cast<dtype_t>(index);
-    }
-  }
-  
-  rb_raise(rb_eArgError, "Invalid data type symbol specified.");
-}
 
 /*
  * Guess the data type given a value.
@@ -1294,10 +1268,10 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
   }
 
   if (SYMBOL_P(argv[offset])) {
-  	return dtype_from_rbsymbol(argv[offset]);
+  	return nm_dtype_from_rbsymbol(argv[offset]);
   	
   } else if (TYPE(argv[offset]) == T_STRING) {
-  	return dtype_from_rbstring(StringValue(argv[offset]));
+  	return nm_dtype_from_rbstring(StringValue(argv[offset]));
   	
   } else if (stype == YALE_STORE) {
   	rb_raise(rb_eArgError, "Yale storage class requires a dtype.");
@@ -1367,62 +1341,14 @@ static size_t* interpret_shape(VALUE arg, size_t* dim) {
  */
 static stype_t interpret_stype(VALUE arg) {
   if (SYMBOL_P(arg)) {
-  	return stype_from_rbsymbol(arg);
+  	return nm_stype_from_rbsymbol(arg);
   	
   } else if (TYPE(arg) == T_STRING) {
-  	return stype_from_rbstring(StringValue(arg));
+  	return nm_stype_from_rbstring(StringValue(arg));
   	
   } else {
   	rb_raise(rb_eArgError, "Expected storage type");
   }
-}
-
-/*
- * Converts a symbol to an index type.
- */
-static itype_t itype_from_rbsymbol(VALUE sym) {
-  size_t index;
-
-  for (index = 0; index < NUM_ITYPES; ++index) {
-    if (SYM2ID(sym) == rb_intern(ITYPE_NAMES[index])) {
-    	return static_cast<itype_t>(index);
-    }
-  }
-
-  rb_raise(rb_eArgError, "Invalid index type specified.");
-}
-
-/*
- * Converts a string to a storage type. Only looks at the first three
- * characters.
- */
-static stype_t stype_from_rbstring(VALUE str) {
-  size_t index;
-  
-  for (index = 0; index < NUM_STYPES; ++index) {
-    if (!std::strncmp(RSTRING_PTR(str), STYPE_NAMES[index], 3)) {
-    	return static_cast<stype_t>(index);
-    }
-  }
-
-  rb_raise(rb_eArgError, "Invalid storage type string specified");
-  return DENSE_STORE;
-}
-
-/*
- * Converts a symbol to a storage type.
- */
-static stype_t stype_from_rbsymbol(VALUE sym) {
-  size_t index;
-  
-  for (index = 0; index < NUM_STYPES; ++index) {
-    if (SYM2ID(sym) == rb_intern(STYPE_NAMES[index])) {
-    	return static_cast<stype_t>(index);
-    }
-  }
-
-  rb_raise(rb_eArgError, "Invalid storage type symbol specified");
-  return DENSE_STORE;
 }
 
 
@@ -1470,7 +1396,7 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
   bool vector = false;
   if (resulting_shape[1] == 1) vector = true;
 
-  static STORAGE* (*storage_matrix_multiply[NUM_STYPES])(const STORAGE_PAIR&, size_t*, bool) = {
+  static STORAGE* (*storage_matrix_multiply[nm::NUM_STYPES])(const STORAGE_PAIR&, size_t*, bool) = {
     nm_dense_storage_matrix_multiply,
     nm_list_storage_matrix_multiply,
     nm_yale_storage_matrix_multiply
@@ -1483,7 +1409,7 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
   // TODO: Can we make the Ruby GC take care of this stuff now that we're using it?
   // If we did that, we night not have to re-create these every time, right? Or wrong? Need to do
   // more research.
-  static void (*free_storage[NUM_STYPES])(STORAGE*) = {
+  static void (*free_storage[nm::NUM_STYPES])(STORAGE*) = {
     nm_dense_storage_delete,
     nm_list_storage_delete,
     nm_yale_storage_delete

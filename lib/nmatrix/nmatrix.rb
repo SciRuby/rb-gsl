@@ -43,6 +43,7 @@ class NMatrix
         end
       end
 
+      # FIXME: Remove autoloads
       autoload :MatReader, 'nmatrix/io/mat_reader'
       autoload :Mat5Reader, 'nmatrix/io/mat5_reader'
     end

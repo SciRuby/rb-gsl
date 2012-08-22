@@ -173,10 +173,10 @@ extern "C" {
 ///////////////////
 
 void nm_math_init_blas() {
-  cBLAS = rb_define_module_under(cNMatrix, "BLAS");
+  cNMatrix_BLAS = rb_define_module_under(cNMatrix, "BLAS");
 
-	rb_define_singleton_method(cBLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 13);
-	rb_define_singleton_method(cBLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
+	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 13);
+	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
 }
 
 

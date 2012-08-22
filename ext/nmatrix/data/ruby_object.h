@@ -94,11 +94,14 @@ class RubyObject {
 	 *
 	 * Does not work as a template.
 	 */
-	inline RubyObject(uint8_t other) : rval(INT2FIX(other)) {}
-	inline RubyObject(int8_t other)  : rval(INT2FIX(other)) {}
-	inline RubyObject(int16_t other) : rval(INT2FIX(other)) {}
-	inline RubyObject(int32_t other) : rval(INT2FIX(other)) {}
-	inline RubyObject(int64_t other) : rval(INT2FIX(other)) {}
+	inline RubyObject(uint8_t other)  : rval(INT2FIX(other)) {}
+	inline RubyObject(int8_t other)   : rval(INT2FIX(other)) {}
+	inline RubyObject(int16_t other)  : rval(INT2FIX(other)) {}
+	inline RubyObject(uint16_t other) : rval(INT2FIX(other)) {}
+	inline RubyObject(int32_t other)  : rval(INT2FIX(other)) {}
+	// there is no uint32_t here because that's a Ruby VALUE type, and we need the compiler to treat that as a VALUE.
+	inline RubyObject(int64_t other)  : rval(INT2FIX(other)) {}
+	inline RubyObject(uint64_t other) : rval(INT2FIX(other)) {}
 	
 	/*
 	 * Float constructor.

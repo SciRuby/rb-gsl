@@ -78,9 +78,11 @@ extern ID nm_rb_real,
 					nm_rb_lte;
 
 extern VALUE	cNMatrix,
+              cNMatrix_IO,
+              cNMatrix_IO_Matlab,
 							cNVector,
-							cYaleFunctions,
-							cBLAS,
+							cNMatrix_YaleFunctions,
+							cNMatrix_BLAS,
 			
 							nm_eDataTypeError,
 							nm_eStorageTypeError;

@@ -49,13 +49,16 @@
 #include "list.h"
 #include "yale.h"
 
+namespace nm {
+  const size_t NUM_STYPES = 3;
+}
+
 /*
  * Macros
  */
 
-extern "C" {
 
-  #define NUM_STYPES 3
+extern "C" {
 
   #define NMATRIX_DTYPE_IS_COMPLEX(s)		((s->dtype == COMPLEX64) or (s->dtype == COMPLEX128))
   #define NMATRIX_DTYPE_IS_FLOAT(s)			((s->dtype == FLOAT32) or (s->dtype == FLOAT64))
@@ -73,8 +76,8 @@ extern "C" {
    * Data
    */
 
-  extern const char* const STYPE_NAMES[NUM_STYPES];
-  extern void (* const STYPE_MARK[NUM_STYPES])(void*);
+  extern const char* const STYPE_NAMES[nm::NUM_STYPES];
+  extern void (* const STYPE_MARK[nm::NUM_STYPES])(void*);
 
   /*
    * Functions

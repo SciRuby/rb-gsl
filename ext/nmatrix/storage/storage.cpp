@@ -49,13 +49,13 @@
 
 extern "C" {
 
-const char* const STYPE_NAMES[NUM_STYPES] = {
+const char* const STYPE_NAMES[nm::NUM_STYPES] = {
 	"dense",
 	"list",
 	"yale"
 };
 
-void (* const STYPE_MARK[NUM_STYPES])(void*) = {
+void (* const STYPE_MARK[nm::NUM_STYPES])(void*) = {
 	nm_dense_storage_mark,
 	nm_list_storage_mark,
 	nm_yale_storage_mark

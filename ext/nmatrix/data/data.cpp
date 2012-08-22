@@ -49,7 +49,7 @@
 
 extern "C" {
 
-const char* const DTYPE_NAMES[NUM_DTYPES] = {
+const char* const DTYPE_NAMES[nm::NUM_DTYPES] = {
 	"byte",
 	"int8",
 	"int16",
@@ -65,14 +65,14 @@ const char* const DTYPE_NAMES[NUM_DTYPES] = {
 	"object"
 };
 
-const char* const ITYPE_NAMES[NUM_ITYPES] = {
+const char* const ITYPE_NAMES[nm::NUM_ITYPES] = {
 	"uint8",
 	"uint16",
 	"uint32",
 	"uint64"
 };
 
-const size_t DTYPE_SIZES[NUM_DTYPES] = {
+const size_t DTYPE_SIZES[nm::NUM_DTYPES] = {
 	sizeof(uint8_t),
 	sizeof(int8_t),
 	sizeof(int16_t),
@@ -88,14 +88,14 @@ const size_t DTYPE_SIZES[NUM_DTYPES] = {
 	sizeof(nm::RubyObject)
 };
 
-const size_t ITYPE_SIZES[NUM_ITYPES] = {
+const size_t ITYPE_SIZES[nm::NUM_ITYPES] = {
 	sizeof(uint8_t),
 	sizeof(uint16_t),
 	sizeof(uint32_t),
 	sizeof(uint64_t),
 };
 
-const dtype_t Upcast[NUM_DTYPES][NUM_DTYPES] = {
+const dtype_t Upcast[nm::NUM_DTYPES][nm::NUM_DTYPES] = {
   { BYTE, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
   { INT8, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
   { INT16, INT16, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},

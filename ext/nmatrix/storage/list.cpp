@@ -263,7 +263,7 @@ bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
 /*
  * Element-wise operations for list storage.
  */
-STORAGE* nm_list_storage_ew_op(ewop_t op, const STORAGE* left, const STORAGE* right) {
+STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
 	OP_LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_op, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];

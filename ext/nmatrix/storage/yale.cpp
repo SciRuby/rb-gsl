@@ -820,16 +820,16 @@ static STORAGE* matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resu
 extern "C" {
 
 void nm_init_yale_functions() {
-  cYaleFunctions = rb_define_module_under(cNMatrix, "YaleFunctions");
+  cNMatrix_YaleFunctions = rb_define_module_under(cNMatrix, "YaleFunctions");
 
-  rb_define_method(cYaleFunctions, "yale_ija", (METHOD)nm_ija, 0);
-  rb_define_method(cYaleFunctions, "yale_a", (METHOD)nm_a, 0);
-  rb_define_method(cYaleFunctions, "yale_size", (METHOD)nm_size, 0);
-  rb_define_method(cYaleFunctions, "yale_ia", (METHOD)nm_ia, 0);
-  rb_define_method(cYaleFunctions, "yale_ja", (METHOD)nm_ja, 0);
-  rb_define_method(cYaleFunctions, "yale_d", (METHOD)nm_d, 0);
-  rb_define_method(cYaleFunctions, "yale_lu", (METHOD)nm_lu, 0);
-  rb_define_const(cYaleFunctions, "YALE_GROWTH_CONSTANT", rb_float_new(nm::yale_storage::GROWTH_CONSTANT));
+  rb_define_method(cNMatrix_YaleFunctions, "yale_ija", (METHOD)nm_ija, 0);
+  rb_define_method(cNMatrix_YaleFunctions, "yale_a", (METHOD)nm_a, 0);
+  rb_define_method(cNMatrix_YaleFunctions, "yale_size", (METHOD)nm_size, 0);
+  rb_define_method(cNMatrix_YaleFunctions, "yale_ia", (METHOD)nm_ia, 0);
+  rb_define_method(cNMatrix_YaleFunctions, "yale_ja", (METHOD)nm_ja, 0);
+  rb_define_method(cNMatrix_YaleFunctions, "yale_d", (METHOD)nm_d, 0);
+  rb_define_method(cNMatrix_YaleFunctions, "yale_lu", (METHOD)nm_lu, 0);
+  rb_define_const(cNMatrix_YaleFunctions, "YALE_GROWTH_CONSTANT", rb_float_new(nm::yale_storage::GROWTH_CONSTANT));
 }
 
 

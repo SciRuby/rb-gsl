@@ -339,7 +339,7 @@ bool nm_dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
 /*
  * Dense element-wise operations.
  */
-STORAGE* nm_dense_storage_ew_op(ewop_t op, const STORAGE* left, const STORAGE* right) {
+STORAGE* nm_dense_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
 	OP_LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_op, DENSE_STORAGE*, const DENSE_STORAGE*, const DENSE_STORAGE*);
 
 	return ttable[op][left->dtype][right->dtype](reinterpret_cast<const DENSE_STORAGE*>(left), reinterpret_cast<const DENSE_STORAGE*>(right));

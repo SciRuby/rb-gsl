@@ -179,8 +179,9 @@
  * Types
  */
 
-#define NM_NUM_DTYPES 13
-#define NM_NUM_ITYPES 4
+#define NM_NUM_DTYPES 13  // data/data.h
+#define NM_NUM_ITYPES 4   // data/data.h
+#define NM_NUM_STYPES 3   // storage/storage.h
 
 #ifndef __cplusplus
 //namespace nm {
