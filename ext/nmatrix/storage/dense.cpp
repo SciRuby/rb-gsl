@@ -61,24 +61,12 @@ namespace nm { namespace dense_storage {
 
   template <typename LDType, typename RDType>
   DENSE_STORAGE* cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype);
-
-  template <typename LDType, typename RDType>
-  bool eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
-
-  template <typename LDType, typename RDType>
-  static DENSE_STORAGE* ew_add(DENSE_STORAGE* left, DENSE_STORAGE* right);
-
-  template <typename LDType, typename RDType>
-  static DENSE_STORAGE* ew_subtract(DENSE_STORAGE* left, DENSE_STORAGE* right);
-
-  template <typename LDType, typename RDType>
-  static DENSE_STORAGE* ew_multiply(DENSE_STORAGE* left, DENSE_STORAGE* right);
-
-  template <typename LDType, typename RDType>
-  static DENSE_STORAGE* ew_divide(DENSE_STORAGE* left, DENSE_STORAGE* right);
-
-  template <typename LDType, typename RDType>
-  static DENSE_STORAGE* ew_mod(DENSE_STORAGE* left, DENSE_STORAGE* right);
+	
+	template <typename LDType, typename RDType>
+	bool eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
+	
+	template <ewop_t op, typename LDType, typename RDType>
+	static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
 
   template <typename DType>
   static DENSE_STORAGE* matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
@@ -349,54 +337,16 @@ bool nm_dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
 //////////
 
 /*
- * Documentation goes here.
+ * Dense element-wise operations.
  */
-STORAGE* nm_dense_storage_ew_add(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_add, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
-	
-	return ttable[left->dtype][right->dtype]((DENSE_STORAGE*)left, (DENSE_STORAGE*)right);
+STORAGE* nm_dense_storage_ew_op(ewop_t op, const STORAGE* left, const STORAGE* right) {
+	OP_LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_op, DENSE_STORAGE*, const DENSE_STORAGE*, const DENSE_STORAGE*);
+
+	return ttable[op][left->dtype][right->dtype](reinterpret_cast<const DENSE_STORAGE*>(left), reinterpret_cast<const DENSE_STORAGE*>(right));
 }
 
 /*
- * Documentation goes here.
- */
-STORAGE* nm_dense_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_subtract, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
-	
-	return ttable[left->dtype][right->dtype]((DENSE_STORAGE*)left, (DENSE_STORAGE*)right);
-}
-
-/*
- * Documentation goes here.
- */
-STORAGE* nm_dense_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_multiply, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
-	
-	return ttable[left->dtype][right->dtype]((DENSE_STORAGE*)left, (DENSE_STORAGE*)right);
-}
-
-/*
- * Documentation goes here.
- */
-STORAGE* nm_dense_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_divide, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
-	
-	return ttable[left->dtype][right->dtype]((DENSE_STORAGE*)left, (DENSE_STORAGE*)right);
-}
-
-/*
- * Documentation goes here.
- */
-/*
-STORAGE* nm_dense_storage_ew_mod(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_mod, DENSE_STORAGE*, DENSE_STORAGE*, DENSE_STORAGE*);
-	
-	return ttable[left->dtype][right->dtype]((DENSE_STORAGE*)left, (DENSE_STORAGE*)right);
-}
-*/
-
-/*
- * Documentation goes here.
+ * Dense matrix-matrix multiplication.
  */
 STORAGE* nm_dense_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
   DTYPE_TEMPLATE_TABLE(nm::dense_storage::matrix_multiply, DENSE_STORAGE*, const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
@@ -628,8 +578,11 @@ bool is_symmetric(const DENSE_STORAGE* mat, int lda) {
 	return true;
 }
 
-template <typename LDType, typename RDType>
-static DENSE_STORAGE* ew_add(DENSE_STORAGE* left, DENSE_STORAGE* right) {
+/*
+ * Templated dense storage element-wise operations.
+ */
+template <ewop_t op, typename LDType, typename RDType>
+static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
 	unsigned int count;
 	
 	size_t* new_shape = (size_t*)calloc(left->rank, sizeof(size_t));
@@ -637,104 +590,41 @@ static DENSE_STORAGE* ew_add(DENSE_STORAGE* left, DENSE_STORAGE* right) {
 	
 	DENSE_STORAGE* result = nm_dense_storage_create(left->dtype, new_shape, left->rank, NULL, 0);
 	
-	LDType* l_elems = (LDType*)left->elements;
-	RDType* r_elems = (RDType*)right->elements;
+	LDType* l_elems = reinterpret_cast<LDType*>(left->elements);
+	RDType* r_elems = reinterpret_cast<RDType*>(right->elements);
 	
-	LDType* res_elems = (LDType*)result->elements;
-	
-	for (count = nm_storage_count_max_elements(result); count-- > 0;) {
-		res_elems[count] = l_elems[count] + r_elems[count];
-	}
-	
-	return result;
-}
+	LDType* res_elems = reinterpret_cast<LDType*>(result->elements);
 
-template <typename LDType, typename RDType>
-static DENSE_STORAGE* ew_subtract(DENSE_STORAGE* left, DENSE_STORAGE* right) {
-	unsigned int count;
-	
-	size_t* new_shape = (size_t*)calloc(left->rank, sizeof(size_t));
-	memcpy(new_shape, left->shape, sizeof(size_t) * left->rank);
-	
-	DENSE_STORAGE* result = nm_dense_storage_create(left->dtype, new_shape, left->rank, NULL, 0);
-	
-	LDType* l_elems = (LDType*)left->elements;
-	RDType* r_elems = (RDType*)right->elements;
-	
-	LDType* res_elems = (LDType*)result->elements;
-	
 	for (count = nm_storage_count_max_elements(result); count-- > 0;) {
-		res_elems[count] = l_elems[count] - r_elems[count];
-	}
-	
-	return result;
-}
-
-template <typename LDType, typename RDType>
-static DENSE_STORAGE* ew_multiply(DENSE_STORAGE* left, DENSE_STORAGE* right) {
-	unsigned int count;
-	
-	size_t* new_shape = (size_t*)calloc(left->rank, sizeof(size_t));
-	memcpy(new_shape, left->shape, sizeof(size_t) * left->rank);
-	
-	DENSE_STORAGE* result = nm_dense_storage_create(left->dtype, new_shape, left->rank, NULL, 0);
-	
-	LDType* l_elems = (LDType*)left->elements;
-	RDType* r_elems = (RDType*)right->elements;
-	
-	LDType* res_elems = (LDType*)result->elements;
-	
-	for (count = nm_storage_count_max_elements(result); count-- > 0;) {
-		res_elems[count] = l_elems[count] * r_elems[count];
-	}
-	
-	return result;
-}
-
-template <typename LDType, typename RDType>
-static DENSE_STORAGE* ew_divide(DENSE_STORAGE* left, DENSE_STORAGE* right) {
-	unsigned int count;
-	
-	size_t* new_shape = (size_t*)calloc(left->rank, sizeof(size_t));
-	memcpy(new_shape, left->shape, sizeof(size_t) * left->rank);
-	
-	DENSE_STORAGE* result = nm_dense_storage_create(left->dtype, new_shape, left->rank, NULL, 0);
-	
-	LDType* l_elems = (LDType*)left->elements;
-	RDType* r_elems = (RDType*)right->elements;
-	
-	LDType* res_elems = (LDType*)result->elements;
-	
-	for (count = nm_storage_count_max_elements(result); count-- > 0;) {
-		res_elems[count] = l_elems[count] / r_elems[count];
+		switch (op) {
+			case EW_ADD:
+				res_elems[count] = l_elems[count] + r_elems[count];
+				break;
+				
+			case EW_SUB:
+				res_elems[count] = l_elems[count] - r_elems[count];
+				break;
+				
+			case EW_MUL:
+				res_elems[count] = l_elems[count] * r_elems[count];
+				break;
+				
+			case EW_DIV:
+				res_elems[count] = l_elems[count] / r_elems[count];
+				break;
+				
+			case EW_MOD:
+				rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
+				break;
+		}
 	}
 	
 	return result;
 }
 
 /*
-template <typename LDType, typename RDType>
-static DENSE_STORAGE* ew_mod(DENSE_STORAGE* left, DENSE_STORAGE* right) {
-	unsigned int count;
-	
-	size_t* new_shape = (size_t*)calloc(left->rank, sizeof(size_t));
-	memcpy(new_shape, left->shape, sizeof(size_t) * left->rank);
-	
-	DENSE_STORAGE* result = nm_dense_storage_create(left->dtype, new_shape, left->rank, NULL, 0);
-	
-	LDType* l_elems = (LDType*)left->elements;
-	RDType* r_elems = (RDType*)right->elements;
-	
-	LDType* res_elems = (LDType*)result->elements;
-	
-	for (count = nm_storage_count_max_elements(result); count-- > 0;) {
-		res_elems[count] = l_elems[count] % r_elems[count];
-	}
-	
-	return result;
-}
-*/
-
+ * DType-templated matrix-matrix multiplication for dense storage.
+ */
 template <typename DType>
 static DENSE_STORAGE* matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
   DENSE_STORAGE *left  = (DENSE_STORAGE*)(casted_storage.left),

@@ -66,33 +66,16 @@ static LIST_STORAGE* cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype);
 template <typename LDType, typename RDType>
 static bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right);
 
-template <typename LDType, typename RDType>
-static void* ew_add(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank);
+template <ewop_t op, typename LDType, typename RDType>
+static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank);
 
-template <typename LDType, typename RDType>
-static void* ew_subtract(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank);
-
-template <typename LDType, typename RDType>
-static void* ew_multiply(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank);
-
-template <typename LDType, typename RDType>
-static void* ew_divide(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank);
-
-template <typename LDType, typename RDType>
-static void ew_add_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level);
-
-template <typename LDType, typename RDType>
-static void ew_subtract_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level);
-
-template <typename LDType, typename RDType>
-static void ew_multiply_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level);
-
-template <typename LDType, typename RDType>
-static void ew_divide_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level);
+template <ewop_t op, typename LDType, typename RDType>
+static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level);
 
 } // end of namespace list_storage
 
 extern "C" {
+
 /*
  * Functions
  */
@@ -276,13 +259,11 @@ bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
 // Math //
 //////////
 
-// TODO: Condense all of the element-wise operations.
-
 /*
- * Element-wise addition for list storage.
+ * Element-wise operations for list storage.
  */
-STORAGE* nm_list_storage_ew_add(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_add, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
+STORAGE* nm_list_storage_ew_op(ewop_t op, const STORAGE* left, const STORAGE* right) {
+	OP_LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_op, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
 	
@@ -307,140 +288,14 @@ STORAGE* nm_list_storage_ew_add(const STORAGE* left, const STORAGE* right) {
 		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
 		
 		result->default_val =
-			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
+			ttable[op][left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
 		
 		// Delete the temporary left-hand side matrix.
 		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
 			
 	} else {
 		result->default_val =
-			ttable[left->dtype][right->dtype](result->rows, l->rows, l->default_val, r->rows, r->default_val, result->shape, result->rank);
-	}
-	
-	return result;
-}
-
-/*
- * Element-wise subtraction for list storage.
- */
-STORAGE* nm_list_storage_ew_subtract(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_subtract, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
-	
-	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
-	
-	const LIST_STORAGE* l = reinterpret_cast<const LIST_STORAGE*>(left),
-										* r = reinterpret_cast<const LIST_STORAGE*>(right);
-	
-	LIST_STORAGE* new_l = NULL;
-	
-	// Allocate a new shape array for the resulting matrix.
-	size_t* new_shape = (size_t*)calloc(l->rank, sizeof(size_t));
-	memcpy(new_shape, left->shape, sizeof(size_t) * l->rank);
-	
-	// Create the result matrix.
-	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->rank, NULL);
-	
-	/*
-	 * Call the templated elementwise multiplication function and set the default
-	 * value for the resulting matrix.
-	 */
-	if (new_dtype != left->dtype) {
-		// Upcast the left-hand side if necessary.
-		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
-		
-		result->default_val =
-			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
-		
-		// Delete the temporary left-hand side matrix.
-		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
-			
-	} else {
-		result->default_val =
-			ttable[left->dtype][right->dtype](result->rows, l->rows, l->default_val, r->rows, r->default_val, result->shape, result->rank);
-	}
-	
-	return result;
-}
-
-/*
- * Element-wise multiplication for list storage.
- */
-STORAGE* nm_list_storage_ew_multiply(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_multiply, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
-	
-	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
-	
-	const LIST_STORAGE* l = reinterpret_cast<const LIST_STORAGE*>(left),
-										* r = reinterpret_cast<const LIST_STORAGE*>(right);
-	
-	LIST_STORAGE* new_l = NULL;
-	
-	// Allocate a new shape array for the resulting matrix.
-	size_t* new_shape = (size_t*)calloc(l->rank, sizeof(size_t));
-	memcpy(new_shape, left->shape, sizeof(size_t) * l->rank);
-	
-	// Create the result matrix.
-	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->rank, NULL);
-	
-	/*
-	 * Call the templated elementwise multiplication function and set the default
-	 * value for the resulting matrix.
-	 */
-	if (new_dtype != left->dtype) {
-		// Upcast the left-hand side if necessary.
-		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
-		
-		result->default_val =
-			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
-		
-		// Delete the temporary left-hand side matrix.
-		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
-			
-	} else {
-		result->default_val =
-			ttable[left->dtype][right->dtype](result->rows, l->rows, l->default_val, r->rows, r->default_val, result->shape, result->rank);
-	}
-	
-	return result;
-}
-
-/*
- * Element-wise division for list storage.
- */
-STORAGE* nm_list_storage_ew_divide(const STORAGE* left, const STORAGE* right) {
-	LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_divide, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
-	
-	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
-	
-	const LIST_STORAGE* l = reinterpret_cast<const LIST_STORAGE*>(left),
-										* r = reinterpret_cast<const LIST_STORAGE*>(right);
-	
-	LIST_STORAGE* new_l = NULL;
-	
-	// Allocate a new shape array for the resulting matrix.
-	size_t* new_shape = (size_t*)calloc(l->rank, sizeof(size_t));
-	memcpy(new_shape, left->shape, sizeof(size_t) * l->rank);
-	
-	// Create the result matrix.
-	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->rank, NULL);
-	
-	/*
-	 * Call the templated elementwise multiplication function and set the default
-	 * value for the resulting matrix.
-	 */
-	if (new_dtype != left->dtype) {
-		// Upcast the left-hand side if necessary.
-		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
-		
-		result->default_val =
-			ttable[left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
-		
-		// Delete the temporary left-hand side matrix.
-		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
-			
-	} else {
-		result->default_val =
-			ttable[left->dtype][right->dtype](result->rows, l->rows, l->default_val, r->rows, r->default_val, result->shape, result->rank);
+			ttable[op][left->dtype][right->dtype](result->rows, l->rows, l->default_val, r->rows, r->default_val, result->shape, result->rank);
 	}
 	
 	return result;
@@ -614,84 +469,43 @@ bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
 }
 
 /*
- * List storage element-wise addition.
+ * List storage element-wise operations.
  */
-template <typename LDType, typename RDType>
-static void* ew_add(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank) {
+template <ewop_t op, typename LDType, typename RDType>
+static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank) {
 	
 	/*
 	 * Allocate space for, and calculate, the default value for the destination
 	 * matrix.
 	 */
 	LDType* d_default_mem = ALLOC(LDType);
-	*d_default_mem = *reinterpret_cast<const LDType*>(l_default) + *reinterpret_cast<const RDType*>(r_default);
+	switch (op) {
+		case EW_ADD:
+			*d_default_mem = *reinterpret_cast<const LDType*>(l_default) + *reinterpret_cast<const RDType*>(r_default);
+			break;
+			
+		case EW_SUB:
+			*d_default_mem = *reinterpret_cast<const LDType*>(l_default) - *reinterpret_cast<const RDType*>(r_default);
+			break;
+			
+		case EW_MUL:
+			*d_default_mem = *reinterpret_cast<const LDType*>(l_default) * *reinterpret_cast<const RDType*>(r_default);
+			break;
+			
+		case EW_DIV:
+			*d_default_mem = *reinterpret_cast<const LDType*>(l_default) / *reinterpret_cast<const RDType*>(r_default);
+			break;
+			
+		case EW_MOD:
+			rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
+			break;
+	}
 	
 	// Now that setup is done call the actual elementwise multiplication function.
-	ew_add_prime<LDType, RDType>(dest, *reinterpret_cast<const LDType*>(d_default_mem),
-		left, *reinterpret_cast<const LDType*>(l_default), right, *reinterpret_cast<const RDType*>(r_default), shape, rank - 1, 0);
-	
-	// Return a pointer to the destination matrix's default value.
-	return d_default_mem;
-}
-
-/*
- * List storage element-wise subtraction.
- */
-template <typename LDType, typename RDType>
-static void* ew_subtract(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank) {
-	
-	/*
-	 * Allocate space for, and calculate, the default value for the destination
-	 * matrix.
-	 */
-	LDType* d_default_mem = ALLOC(LDType);
-	*d_default_mem = *reinterpret_cast<const LDType*>(l_default) - *reinterpret_cast<const RDType*>(r_default);
-	
-	// Now that setup is done call the actual elementwise multiplication function.
-	ew_subtract_prime<LDType, RDType>(dest, *reinterpret_cast<const LDType*>(d_default_mem),
-		left, *reinterpret_cast<const LDType*>(l_default), right, *reinterpret_cast<const RDType*>(r_default), shape, rank - 1, 0);
-	
-	// Return a pointer to the destination matrix's default value.
-	return d_default_mem;
-}
-
-/*
- * List storage element-wise multiplication.
- */
-template <typename LDType, typename RDType>
-static void* ew_multiply(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank) {
-	
-	/*
-	 * Allocate space for, and calculate, the default value for the destination
-	 * matrix.
-	 */
-	LDType* d_default_mem = ALLOC(LDType);
-	*d_default_mem = *reinterpret_cast<const LDType*>(l_default) * *reinterpret_cast<const RDType*>(r_default);
-	
-	// Now that setup is done call the actual elementwise multiplication function.
-	ew_multiply_prime<LDType, RDType>(dest, *reinterpret_cast<const LDType*>(d_default_mem),
-		left, *reinterpret_cast<const LDType*>(l_default), right, *reinterpret_cast<const RDType*>(r_default), shape, rank - 1, 0);
-	
-	// Return a pointer to the destination matrix's default value.
-	return d_default_mem;
-}
-
-/*
- * List storage element-wise division.
- */
-template <typename LDType, typename RDType>
-static void* ew_divide(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank) {
-	
-	/*
-	 * Allocate space for, and calculate, the default value for the destination
-	 * matrix.
-	 */
-	LDType* d_default_mem = ALLOC(LDType);
-	*d_default_mem = *reinterpret_cast<const LDType*>(l_default) / *reinterpret_cast<const RDType*>(r_default);
-	
-	// Now that setup is done call the actual elementwise multiplication function.
-	ew_divide_prime<LDType, RDType>(dest, *reinterpret_cast<const LDType*>(d_default_mem),
-		left, *reinterpret_cast<const LDType*>(l_default), right, *reinterpret_cast<const RDType*>(r_default), shape, rank - 1, 0);
+	ew_op_prime<op, LDType, RDType>(dest, *reinterpret_cast<const LDType*>(d_default_mem),
+		left, *reinterpret_cast<const LDType*>(l_default),
+		right, *reinterpret_cast<const RDType*>(r_default),
+		shape, rank - 1, 0);
 	
 	// Return a pointer to the destination matrix's default value.
 	return d_default_mem;
@@ -700,8 +514,8 @@ static void* ew_divide(LIST* dest, const LIST* left, const void* l_default, cons
 /*
  * List storage element-wise addition, recursive helper.
  */
-template <typename LDType, typename RDType>
-static void ew_add_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level) {
+template <ewop_t op, typename LDType, typename RDType>
+static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level) {
 	
 	static LIST EMPTY_LIST = {NULL};
 	
@@ -753,17 +567,37 @@ static void ew_add_prime(LIST* dest, LDType d_default, const LIST* left, LDType 
 				 */
 				
 				if (level == last_level) {
-					tmp_result = l_default + *reinterpret_cast<RDType*>(r_node->val);
+					switch (op) {
+						case EW_ADD:
+							tmp_result = l_default + *reinterpret_cast<RDType*>(r_node->val);
+							break;
+							
+						case EW_SUB:
+							tmp_result = l_default - *reinterpret_cast<RDType*>(r_node->val);
+							break;
+							
+						case EW_MUL:
+							tmp_result = l_default * *reinterpret_cast<RDType*>(r_node->val);
+							break;
+							
+						case EW_DIV:
+							tmp_result = l_default / *reinterpret_cast<RDType*>(r_node->val);
+							break;
+							
+						case EW_MOD:
+							rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
+							break;
+					}
 					
 					if (tmp_result != d_default) {
-						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
-					new_level = list::create();
-					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
+					new_level = nm::list::create();
+					dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
 				
-					ew_add_prime<LDType, RDType>(new_level, d_default,
+					ew_op_prime<op, LDType, RDType>(new_level, d_default,
 						&EMPTY_LIST, l_default,
 						reinterpret_cast<LIST*>(r_node->val), r_default,
 						shape, last_level, level + 1);
@@ -778,17 +612,37 @@ static void ew_add_prime(LIST* dest, LDType d_default, const LIST* left, LDType 
 				 */
 				
 				if (level == last_level) {
-					tmp_result = *reinterpret_cast<LDType*>(l_node->val) + r_default;
+					switch (op) {
+						case EW_ADD:
+							tmp_result = *reinterpret_cast<LDType*>(l_node->val) + r_default;
+							break;
+							
+						case EW_SUB:
+							tmp_result = *reinterpret_cast<LDType*>(l_node->val) - r_default;
+							break;
+							
+						case EW_MUL:
+							tmp_result = *reinterpret_cast<LDType*>(l_node->val) * r_default;
+							break;
+							
+						case EW_DIV:
+							tmp_result = *reinterpret_cast<LDType*>(l_node->val) / r_default;
+							break;
+							
+						case EW_MOD:
+							rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
+							break;
+					}
 					
 					if (tmp_result != d_default) {
-						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
+						dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
 					}
 					
 				} else {
-					new_level = list::create();
-					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
+					new_level = nm::list::create();
+					dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
 				
-					ew_add_prime<LDType, RDType>(new_level, d_default,
+					ew_op_prime<op, LDType, RDType>(new_level, d_default,
 						reinterpret_cast<LIST*>(r_node->val), l_default,
 						&EMPTY_LIST, r_default,
 						shape, last_level, level + 1);
@@ -805,464 +659,37 @@ static void ew_add_prime(LIST* dest, LDType d_default, const LIST* left, LDType 
 				if (l_node->key == r_node->key) {
 					
 					if (level == last_level) {
-						tmp_result = *reinterpret_cast<LDType*>(l_node->val) + *reinterpret_cast<RDType*>(r_node->val);
+						switch (op) {
+							case EW_ADD:
+								tmp_result = *reinterpret_cast<LDType*>(l_node->val) + *reinterpret_cast<RDType*>(r_node->val);
+								break;
+							
+							case EW_SUB:
+								tmp_result = *reinterpret_cast<LDType*>(l_node->val) - *reinterpret_cast<RDType*>(r_node->val);
+								break;
+							
+							case EW_MUL:
+								tmp_result = *reinterpret_cast<LDType*>(l_node->val) * *reinterpret_cast<RDType*>(r_node->val);
+								break;
+							
+							case EW_DIV:
+								tmp_result = *reinterpret_cast<LDType*>(l_node->val) / *reinterpret_cast<RDType*>(r_node->val);
+								break;
+							
+							case EW_MOD:
+								rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
+								break;
+						}
 						
 						if (tmp_result != d_default) {
-							dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
+							dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
 						}
 						
 					} else {
-						new_level = list::create();
-						dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
+						new_level = nm::list::create();
+						dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
 					
-						ew_add_prime<LDType, RDType>(new_level, d_default,
-							reinterpret_cast<LIST*>(l_node->val), l_default,
-							reinterpret_cast<LIST*>(r_node->val), r_default,
-							shape, last_level, level + 1);
-					}
-				
-					l_node = l_node->next;
-					r_node = r_node->next;
-			
-				} else if (l_node->key < r_node->key) {
-					// Advance the left node knowing that the default value is OK.
-			
-					l_node = l_node->next;
-					 
-				} else /* if (l_node->key > r_node->key) */ {
-					// Advance the right node knowing that the default value is OK.
-			
-					r_node = r_node->next;
-				}
-				
-			} else {
-				/*
-				 * Our index needs to catch up but the default value is OK.  This
-				 * conditional is here only for documentation and should be optimized
-				 * out.
-				 */
-			}
-		}
-	}
-}
-
-/*
- * List storage element-wise subtraction, recursive helper.
- */
-template <typename LDType, typename RDType>
-static void ew_subtract_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level) {
-	
-	static LIST EMPTY_LIST = {NULL};
-	
-	size_t index;
-	
-	LDType tmp_result;
-	
-	LIST* new_level = NULL;
-	
-	NODE* l_node		= left->first,
-			* r_node		= right->first,
-			* dest_node	= NULL;
-	
-	for (index = 0; index < shape[level]; ++index) {
-		if (l_node == NULL and r_node == NULL) {
-			/*
-			 * Both source lists are now empty.  Because the default value of the
-			 * destination is already set appropriately we can now return.
-			 */
-			
-			return;
-			
-		} else {
-			// At least one list still has entries.
-			
-			if (l_node == NULL and (l_default == 0 and d_default == 0)) {
-				/* 
-				 * The left hand list has run out of elements.  We don't need to add new
-				 * values to the destination if l_default and d_default are both 0.
-				 */
-				
-				return;
-			
-			} else if (r_node == NULL and (r_default == 0 and d_default == 0)) {
-				/*
-				 * The right hand list has run out of elements.  We don't need to add new
-				 * values to the destination if r_default and d_default are both 0.
-				 */
-				
-				return;
-			}
-			
-			// We need to continue processing the lists.
-			
-			if (l_node == NULL and r_node->key == index) {
-				/*
-				 * One source list is empty, but the index has caught up to the key of
-				 * the other list.
-				 */
-				
-				if (level == last_level) {
-					tmp_result = l_default - *reinterpret_cast<RDType*>(r_node->val);
-					
-					if (tmp_result != d_default) {
-						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
-					}
-					
-				} else {
-					new_level = list::create();
-					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
-				
-					ew_subtract_prime<LDType, RDType>(new_level, d_default,
-						&EMPTY_LIST, l_default,
-						reinterpret_cast<LIST*>(r_node->val), r_default,
-						shape, last_level, level + 1);
-				}
-				
-				r_node = r_node->next;
-				
-			} else if (r_node == NULL and l_node->key == index) {
-				/*
-				 * One source list is empty, but the index has caught up to the key of
-				 * the other list.
-				 */
-				
-				if (level == last_level) {
-					tmp_result = *reinterpret_cast<LDType*>(l_node->val) - r_default;
-					
-					if (tmp_result != d_default) {
-						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
-					}
-					
-				} else {
-					new_level = list::create();
-					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
-				
-					ew_subtract_prime<LDType, RDType>(new_level, d_default,
-						reinterpret_cast<LIST*>(r_node->val), l_default,
-						&EMPTY_LIST, r_default,
-						shape, last_level, level + 1);
-				}
-				
-				l_node = l_node->next;
-				
-			} else if (l_node != NULL and r_node != NULL and index == NM_MIN(l_node->key, r_node->key)) {
-				/*
-				 * Neither list is empty and our index has caught up to one of the
-				 * source lists.
-				 */
-				
-				if (l_node->key == r_node->key) {
-					
-					if (level == last_level) {
-						tmp_result = *reinterpret_cast<LDType*>(l_node->val) - *reinterpret_cast<RDType*>(r_node->val);
-						
-						if (tmp_result != d_default) {
-							dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
-						}
-						
-					} else {
-						new_level = list::create();
-						dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
-					
-						ew_subtract_prime<LDType, RDType>(new_level, d_default,
-							reinterpret_cast<LIST*>(l_node->val), l_default,
-							reinterpret_cast<LIST*>(r_node->val), r_default,
-							shape, last_level, level + 1);
-					}
-				
-					l_node = l_node->next;
-					r_node = r_node->next;
-			
-				} else if (l_node->key < r_node->key) {
-					// Advance the left node knowing that the default value is OK.
-			
-					l_node = l_node->next;
-					 
-				} else /* if (l_node->key > r_node->key) */ {
-					// Advance the right node knowing that the default value is OK.
-			
-					r_node = r_node->next;
-				}
-				
-			} else {
-				/*
-				 * Our index needs to catch up but the default value is OK.  This
-				 * conditional is here only for documentation and should be optimized
-				 * out.
-				 */
-			}
-		}
-	}
-}
-
-/*
- * List storage element-wise multiplication, recursive helper.
- */
-template <typename LDType, typename RDType>
-static void ew_multiply_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level) {
-	
-	static LIST EMPTY_LIST = {NULL};
-	
-	size_t index;
-	
-	LDType tmp_result;
-	
-	LIST* new_level = NULL;
-	
-	NODE* l_node		= left->first,
-			* r_node		= right->first,
-			* dest_node	= NULL;
-	
-	for (index = 0; index < shape[level]; ++index) {
-		if (l_node == NULL and r_node == NULL) {
-			/*
-			 * Both source lists are now empty.  Because the default value of the
-			 * destination is already set appropriately we can now return.
-			 */
-			
-			return;
-			
-		} else {
-			// At least one list still has entries.
-			
-			if (l_node == NULL and (l_default == 0 and d_default == 0)) {
-				/* 
-				 * The left hand list has run out of elements.  We don't need to add new
-				 * values to the destination if l_default and d_default are both 0.
-				 */
-				
-				return;
-			
-			} else if (r_node == NULL and (r_default == 0 and d_default == 0)) {
-				/*
-				 * The right hand list has run out of elements.  We don't need to add new
-				 * values to the destination if r_default and d_default are both 0.
-				 */
-				
-				return;
-			}
-			
-			// We need to continue processing the lists.
-			
-			if (l_node == NULL and r_node->key == index) {
-				/*
-				 * One source list is empty, but the index has caught up to the key of
-				 * the other list.
-				 */
-				
-				if (level == last_level) {
-					tmp_result = l_default * *reinterpret_cast<RDType*>(r_node->val);
-					
-					if (tmp_result != d_default) {
-						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
-					}
-					
-				} else {
-					new_level = list::create();
-					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
-				
-					ew_multiply_prime<LDType, RDType>(new_level, d_default,
-						&EMPTY_LIST, l_default,
-						reinterpret_cast<LIST*>(r_node->val), r_default,
-						shape, last_level, level + 1);
-				}
-				
-				r_node = r_node->next;
-				
-			} else if (r_node == NULL and l_node->key == index) {
-				/*
-				 * One source list is empty, but the index has caught up to the key of
-				 * the other list.
-				 */
-				
-				if (level == last_level) {
-					tmp_result = *reinterpret_cast<LDType*>(l_node->val) * r_default;
-					
-					if (tmp_result != d_default) {
-						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
-					}
-					
-				} else {
-					new_level = list::create();
-					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
-				
-					ew_multiply_prime<LDType, RDType>(new_level, d_default,
-						reinterpret_cast<LIST*>(r_node->val), l_default,
-						&EMPTY_LIST, r_default,
-						shape, last_level, level + 1);
-				}
-				
-				l_node = l_node->next;
-				
-			} else if (l_node != NULL and r_node != NULL and index == NM_MIN(l_node->key, r_node->key)) {
-				/*
-				 * Neither list is empty and our index has caught up to one of the
-				 * source lists.
-				 */
-				
-				if (l_node->key == r_node->key) {
-					
-					if (level == last_level) {
-						tmp_result = *reinterpret_cast<LDType*>(l_node->val) * *reinterpret_cast<RDType*>(r_node->val);
-						
-						if (tmp_result != d_default) {
-							dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
-						}
-						
-					} else {
-						new_level = list::create();
-						dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
-					
-						ew_multiply_prime<LDType, RDType>(new_level, d_default,
-							reinterpret_cast<LIST*>(l_node->val), l_default,
-							reinterpret_cast<LIST*>(r_node->val), r_default,
-							shape, last_level, level + 1);
-					}
-				
-					l_node = l_node->next;
-					r_node = r_node->next;
-			
-				} else if (l_node->key < r_node->key) {
-					// Advance the left node knowing that the default value is OK.
-			
-					l_node = l_node->next;
-					 
-				} else /* if (l_node->key > r_node->key) */ {
-					// Advance the right node knowing that the default value is OK.
-			
-					r_node = r_node->next;
-				}
-				
-			} else {
-				/*
-				 * Our index needs to catch up but the default value is OK.  This
-				 * conditional is here only for documentation and should be optimized
-				 * out.
-				 */
-			}
-		}
-	}
-}
-
-/*
- * List storage element-wise multiplication, recursive helper.
- */
-template <typename LDType, typename RDType>
-static void ew_divide_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level) {
-	
-	static LIST EMPTY_LIST = {NULL};
-	
-	size_t index;
-	
-	LDType tmp_result;
-	
-	LIST* new_level = NULL;
-	
-	NODE* l_node		= left->first,
-			* r_node		= right->first,
-			* dest_node	= NULL;
-	
-	for (index = 0; index < shape[level]; ++index) {
-		if (l_node == NULL and r_node == NULL) {
-			/*
-			 * Both source lists are now empty.  Because the default value of the
-			 * destination is already set appropriately we can now return.
-			 */
-			
-			return;
-			
-		} else {
-			// At least one list still has entries.
-			
-			if (l_node == NULL and (l_default == 0 and d_default == 0)) {
-				/* 
-				 * The left hand list has run out of elements.  We don't need to add new
-				 * values to the destination if l_default and d_default are both 0.
-				 */
-				
-				return;
-			
-			} else if (r_node == NULL and (r_default == 0 and d_default == 0)) {
-				/*
-				 * The right hand list has run out of elements.  We don't need to add new
-				 * values to the destination if r_default and d_default are both 0.
-				 */
-				
-				return;
-			}
-			
-			// We need to continue processing the lists.
-			
-			if (l_node == NULL and r_node->key == index) {
-				/*
-				 * One source list is empty, but the index has caught up to the key of
-				 * the other list.
-				 */
-				
-				if (level == last_level) {
-					tmp_result = l_default / *reinterpret_cast<RDType*>(r_node->val);
-					
-					if (tmp_result != d_default) {
-						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
-					}
-					
-				} else {
-					new_level = list::create();
-					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
-				
-					ew_divide_prime<LDType, RDType>(new_level, d_default,
-						&EMPTY_LIST, l_default,
-						reinterpret_cast<LIST*>(r_node->val), r_default,
-						shape, last_level, level + 1);
-				}
-				
-				r_node = r_node->next;
-				
-			} else if (r_node == NULL and l_node->key == index) {
-				/*
-				 * One source list is empty, but the index has caught up to the key of
-				 * the other list.
-				 */
-				
-				if (level == last_level) {
-					tmp_result = *reinterpret_cast<LDType*>(l_node->val) / r_default;
-					
-					if (tmp_result != d_default) {
-						dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
-					}
-					
-				} else {
-					new_level = list::create();
-					dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
-				
-					ew_divide_prime<LDType, RDType>(new_level, d_default,
-						reinterpret_cast<LIST*>(r_node->val), l_default,
-						&EMPTY_LIST, r_default,
-						shape, last_level, level + 1);
-				}
-				
-				l_node = l_node->next;
-				
-			} else if (l_node != NULL and r_node != NULL and index == NM_MIN(l_node->key, r_node->key)) {
-				/*
-				 * Neither list is empty and our index has caught up to one of the
-				 * source lists.
-				 */
-				
-				if (l_node->key == r_node->key) {
-					
-					if (level == last_level) {
-						tmp_result = *reinterpret_cast<LDType*>(l_node->val) / *reinterpret_cast<RDType*>(r_node->val);
-						
-						if (tmp_result != d_default) {
-							dest_node = list::insert_helper<LDType>(dest, dest_node, index, tmp_result);
-						}
-						
-					} else {
-						new_level = list::create();
-						dest_node = list::insert_helper<LIST*>(dest, dest_node, index, new_level);
-					
-						ew_divide_prime<LDType, RDType>(new_level, d_default,
+						ew_op_prime<op, LDType, RDType>(new_level, d_default,
 							reinterpret_cast<LIST*>(l_node->val), l_default,
 							reinterpret_cast<LIST*>(r_node->val), r_default,
 							shape, last_level, level + 1);

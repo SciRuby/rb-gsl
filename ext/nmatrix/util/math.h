@@ -32,8 +32,10 @@
  * Standard Includes
  */
 
-
+extern "C" {
 #include <cblas.h>
+}
+
 #include <algorithm> // std::min, std::max
 #include <limits> // std::numeric_limits
 

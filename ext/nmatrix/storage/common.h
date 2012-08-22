@@ -41,35 +41,35 @@
 /*
  * Macros
  */
-
-
+ 
 extern "C" {
 
-  /*
-   * Types
-   */
+/*
+ * Types
+ */
 
-  // For binary operations involving matrices that need to be casted.
-  struct STORAGE_PAIR {
-    STORAGE* left;
-    STORAGE* right;
-  };
+// For binary operations involving matrices that need to be casted.
+struct STORAGE_PAIR {
+  STORAGE* left;
+  STORAGE* right;
+};
 
-  struct SLICE {
-    size_t*	coords; // Coordinate of first element
-    size_t*	lengths; // Lengths of slice
-    bool  	single; // true if all lengths equal to 1 (represents single matrix element)
-  };
+struct SLICE {
+  size_t*	coords; // Coordinate of first element
+  size_t*	lengths; // Lengths of slice
+  bool  	single; // true if all lengths equal to 1 (represents single matrix element)
+};
 
-  /*
-   * Data
-   */
+/*
+ * Data
+ */
 
-  /*
-   * Functions
-   */
+/*
+ * Functions
+ */
 
   size_t nm_storage_count_max_elements(const STORAGE* storage);
+
 } // end of extern "C" block
 
 #endif // STORAGE_COMMON_H

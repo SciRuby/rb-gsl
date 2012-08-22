@@ -96,13 +96,9 @@ extern "C" {
   // Math //
   //////////
 
-  STORAGE* nm_list_storage_ew_add(const STORAGE* left, const STORAGE* right);
-  STORAGE* nm_list_storage_ew_subtract(const STORAGE* left, const STORAGE* right);
-  STORAGE* nm_list_storage_ew_multiply(const STORAGE* left, const STORAGE* right);
-  STORAGE* nm_list_storage_ew_divide(const STORAGE* left, const STORAGE* right);
-  //STORAGE* nm_list_storage_ew_mod(const STORAGE* left, const STORAGE* right);
-
+  STORAGE* nm_list_storage_ew_op(ewop_t op, const STORAGE* left, const STORAGE* right);
   STORAGE* nm_list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
+
 
   /////////////
   // Utility //
@@ -123,7 +119,7 @@ extern "C" {
   /////////////////////////
 
   STORAGE*      nm_list_storage_copy_transposed(const STORAGE* rhs_base);
-  STORAGE* nm_list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
+  STORAGE*      nm_list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
 
 } // end of extern "C" block
 
