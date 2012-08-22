@@ -69,7 +69,7 @@ extern "C" {
 // Lifecycle //
 ///////////////
 
-DENSE_STORAGE*	nm_dense_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t elements_length);
+DENSE_STORAGE*	nm_dense_storage_create(dtype_t dtype, size_t* shape, size_t dim, void* elements, size_t elements_length);
 void						nm_dense_storage_delete(STORAGE* s);
 void						nm_dense_storage_delete_ref(STORAGE* s);
 void						nm_dense_storage_mark(void*);

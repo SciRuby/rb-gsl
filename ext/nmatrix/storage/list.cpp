@@ -31,6 +31,7 @@
  */
 
 #include <ruby.h>
+#include <algorithm> // std::min
 
 /*
  * Project Includes
@@ -67,7 +68,7 @@ template <typename LDType, typename RDType>
 static bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right);
 
 template <ewop_t op, typename LDType, typename RDType>
-static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank);
+static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t dim);
 
 template <ewop_t op, typename LDType, typename RDType>
 static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level);
@@ -92,12 +93,12 @@ extern "C" {
  * Note: The pointers you pass in for shape and init_val become property of our
  * new storage. You don't need to free them, and you shouldn't re-use them.
  */
-LIST_STORAGE* nm_list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val) {
+LIST_STORAGE* nm_list_storage_create(dtype_t dtype, size_t* shape, size_t dim, void* init_val) {
   LIST_STORAGE* s;
 
   s = ALLOC( LIST_STORAGE );
 
-  s->rank  = rank;
+  s->dim   = dim;
   s->shape = shape;
   s->dtype = dtype;
 
@@ -115,7 +116,7 @@ void nm_list_storage_delete(STORAGE* s) {
   if (s) {
     LIST_STORAGE* storage = (LIST_STORAGE*)s;
 
-    list::del( storage->rows, storage->rank - 1 );
+    list::del( storage->rows, storage->dim - 1 );
 
     free(storage->shape);
     free(storage->default_val);
@@ -131,7 +132,7 @@ void nm_list_storage_mark(void* storage_base) {
 
   if (storage && storage->dtype == RUBYOBJ) {
     rb_gc_mark(*((VALUE*)(storage->default_val)));
-    list::mark(storage->rows, storage->rank - 1);
+    list::mark(storage->rows, storage->dim - 1);
   }
 }
 
@@ -159,13 +160,13 @@ void* nm_list_storage_ref(STORAGE* storage, SLICE* slice) {
   NODE*  n;
   LIST*  l = s->rows;
 
-  for (r = s->rank; r > 1; --r) {
-    n = list::find(l, slice->coords[s->rank - r]);
+  for (r = s->dim; r > 1; --r) {
+    n = list::find(l, slice->coords[s->dim - r]);
     if (n)  l = reinterpret_cast<LIST*>(n->val);
     else return s->default_val;
   }
 
-  n = list::find(l, slice->coords[s->rank - r]);
+  n = list::find(l, slice->coords[s->dim - r]);
   if (n) return n->val;
   else   return s->default_val;
 }
@@ -177,7 +178,7 @@ void* nm_list_storage_ref(STORAGE* storage, SLICE* slice) {
  */
 void* nm_list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
   LIST_STORAGE* s = (LIST_STORAGE*)storage;
-  // Pretend ranks = 2
+  // Pretend dims = 2
   // Then coords is going to be size 2
   // So we need to find out if some key already exists
   size_t r;
@@ -185,12 +186,12 @@ void* nm_list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
   LIST*  l = s->rows;
 
   // drill down into the structure
-  for (r = s->rank; r > 1; --r) {
-    n = list::insert(l, false, slice->coords[s->rank - r], list::create());
+  for (r = s->dim; r > 1; --r) {
+    n = list::insert(l, false, slice->coords[s->dim - r], list::create());
     l = reinterpret_cast<LIST*>(n->val);
   }
 
-  n = list::insert(l, true, slice->coords[s->rank - r], val);
+  n = list::insert(l, true, slice->coords[s->dim - r], val);
   return n->val;
 }
 
@@ -207,11 +208,11 @@ void* nm_list_storage_remove(STORAGE* storage, SLICE* slice) {
   void*  rm = NULL;
 
   // keep track of where we are in the traversals
-  NODE** stack = ALLOCA_N( NODE*, s->rank - 1 );
+  NODE** stack = ALLOCA_N( NODE*, s->dim - 1 );
 
-  for (r = (int)(s->rank); r > 1; --r) {
+  for (r = (int)(s->dim); r > 1; --r) {
   	// does this row exist in the matrix?
-    n = list::find(l, slice->coords[s->rank - r]);
+    n = list::find(l, slice->coords[s->dim - r]);
 
     if (!n) {
     	// not found
@@ -220,16 +221,16 @@ void* nm_list_storage_remove(STORAGE* storage, SLICE* slice) {
       
     } else {
     	// found
-      stack[s->rank - r]    = n;
+      stack[s->dim - r]     = n;
       l                     = reinterpret_cast<LIST*>(n->val);
     }
   }
 
-  rm = list::remove(l, slice->coords[s->rank - r]);
+  rm = list::remove(l, slice->coords[s->dim - r]);
 
   // if we removed something, we may now need to remove parent lists
   if (rm) {
-    for (r = (int)(s->rank) - 2; r >= 0; --r) {
+    for (r = (int)(s->dim) - 2; r >= 0; --r) {
     	// walk back down the stack
       
       if (((LIST*)(stack[r]->val))->first == NULL)
@@ -273,11 +274,11 @@ STORAGE* nm_list_storage_ew_op(ewop_t op, const STORAGE* left, const STORAGE* ri
 	LIST_STORAGE* new_l = NULL;
 	
 	// Allocate a new shape array for the resulting matrix.
-	size_t* new_shape = (size_t*)calloc(l->rank, sizeof(size_t));
-	memcpy(new_shape, left->shape, sizeof(size_t) * l->rank);
+	size_t* new_shape = (size_t*)calloc(l->dim, sizeof(size_t));
+	memcpy(new_shape, left->shape, sizeof(size_t) * l->dim);
 	
 	// Create the result matrix.
-	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->rank, NULL);
+	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->dim, NULL);
 	
 	/*
 	 * Call the templated elementwise multiplication function and set the default
@@ -288,14 +289,14 @@ STORAGE* nm_list_storage_ew_op(ewop_t op, const STORAGE* left, const STORAGE* ri
 		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
 		
 		result->default_val =
-			ttable[op][left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->rank);
+			ttable[op][left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->dim);
 		
 		// Delete the temporary left-hand side matrix.
 		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
 			
 	} else {
 		result->default_val =
-			ttable[op][left->dtype][right->dtype](result->rows, l->rows, l->default_val, r->rows, r->default_val, result->shape, result->rank);
+			ttable[op][left->dtype][right->dtype](result->rows, l->rows, l->default_val, r->rows, r->default_val, result->shape, result->dim);
 	}
 	
 	return result;
@@ -348,8 +349,8 @@ size_t nm_list_storage_count_nd_elements(const LIST_STORAGE* s) {
   NODE *i_curr, *j_curr;
   size_t count = 0;
   
-  if (s->rank != 2) {
-  	rb_raise(rb_eNotImpError, "non-diagonal element counting only defined for rank = 2");
+  if (s->dim != 2) {
+  	rb_raise(rb_eNotImpError, "non-diagonal element counting only defined for dim = 2");
   }
 
   for (i_curr = s->rows->first; i_curr; i_curr = i_curr->next) {
@@ -402,16 +403,16 @@ template <typename LDType, typename RDType>
 static LIST_STORAGE* cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
 
   // allocate and copy shape
-  size_t* shape = ALLOC_N(size_t, rhs->rank);
-  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
+  size_t* shape = ALLOC_N(size_t, rhs->dim);
+  memcpy(shape, rhs->shape, rhs->dim * sizeof(size_t));
 
   // copy default value
   LDType* default_val = ALLOC_N(LDType, 1);
   *default_val = *reinterpret_cast<RDType*>(rhs->default_val);
 
-  LIST_STORAGE* lhs = nm_list_storage_create(new_dtype, shape, rhs->rank, default_val);
+  LIST_STORAGE* lhs = nm_list_storage_create(new_dtype, shape, rhs->dim, default_val);
   lhs->rows         = list::create();
-  list::cast_copy_contents<LDType, RDType>(lhs->rows, rhs->rows, rhs->rank - 1);
+  list::cast_copy_contents<LDType, RDType>(lhs->rows, rhs->rows, rhs->dim - 1);
 
   return lhs;
 }
@@ -434,7 +435,7 @@ bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
     if (!right->rows->first) {
     	return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     	
-    } else if (!list::eqeq_value<RDType,LDType>(right->rows, reinterpret_cast<LDType*>(left->default_val), left->rank-1, num_checked)) {
+    } else if (!list::eqeq_value<RDType,LDType>(right->rows, reinterpret_cast<LDType*>(left->default_val), left->dim-1, num_checked)) {
     	// Left empty, right not empty. Do all values in right == left->default_val?
     	return false;
     	
@@ -446,7 +447,7 @@ bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
   } else if (!right->rows->first) {
     // fprintf(stderr, "!right->rows true\n");
     // Right empty, left not empty. Do all values in left == right->default_val?
-    if (!list::eqeq_value<LDType,RDType>(left->rows, reinterpret_cast<RDType*>(right->default_val), left->rank-1, num_checked)) {
+    if (!list::eqeq_value<LDType,RDType>(left->rows, reinterpret_cast<RDType*>(right->default_val), left->dim-1, num_checked)) {
     	return false;
     	
     } else if (num_checked < max_elements) {
@@ -457,7 +458,7 @@ bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
   } else {
     // fprintf(stderr, "both matrices have entries\n");
     // Hardest case. Compare lists node by node. Let's make it simpler by requiring that both have the same default value
-    if (!list::eqeq<LDType,RDType>(left->rows, right->rows, reinterpret_cast<LDType*>(left->default_val), reinterpret_cast<RDType*>(right->default_val), left->rank-1, num_checked)) {
+    if (!list::eqeq<LDType,RDType>(left->rows, right->rows, reinterpret_cast<LDType*>(left->default_val), reinterpret_cast<RDType*>(right->default_val), left->dim-1, num_checked)) {
     	return false;
     	
     } else if (num_checked < max_elements) {
@@ -472,7 +473,7 @@ bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
  * List storage element-wise operations.
  */
 template <ewop_t op, typename LDType, typename RDType>
-static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t rank) {
+static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t dim) {
 	
 	/*
 	 * Allocate space for, and calculate, the default value for the destination
@@ -505,7 +506,7 @@ static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LI
 	ew_op_prime<op, LDType, RDType>(dest, *reinterpret_cast<const LDType*>(d_default_mem),
 		left, *reinterpret_cast<const LDType*>(l_default),
 		right, *reinterpret_cast<const RDType*>(r_default),
-		shape, rank - 1, 0);
+		shape, dim - 1, 0);
 	
 	// Return a pointer to the destination matrix's default value.
 	return d_default_mem;
@@ -650,7 +651,7 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 				
 				l_node = l_node->next;
 				
-			} else if (l_node != NULL and r_node != NULL and index == NM_MIN(l_node->key, r_node->key)) {
+			} else if (l_node != NULL and r_node != NULL and index == std::min(l_node->key, r_node->key)) {
 				/*
 				 * Neither list is empty and our index has caught up to one of the
 				 * source lists.

@@ -73,7 +73,7 @@ extern "C" {
   // Lifecycle //
   ///////////////
 
-  LIST_STORAGE*	nm_list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val);
+  LIST_STORAGE*	nm_list_storage_create(dtype_t dtype, size_t* shape, size_t dim, void* init_val);
   void					nm_list_storage_delete(STORAGE* s);
   void					nm_list_storage_mark(void*);
 
@@ -111,7 +111,7 @@ extern "C" {
    * Count non-zero elements. See also count_list_storage_nd_elements.
    */
   inline size_t nm_list_storage_count_elements(const LIST_STORAGE* s) {
-    return nm_list_storage_count_elements_r(s->rows, s->rank - 1);
+    return nm_list_storage_count_elements_r(s->rows, s->dim - 1);
   }
 
   /////////////////////////

@@ -54,13 +54,13 @@
 extern "C" {
 /*
  * Calculate the number of elements in the dense storage structure, based on
- * shape and rank.
+ * shape and dim.
  */
 size_t nm_storage_count_max_elements(const STORAGE* storage) {
   unsigned int i;
   size_t count = 1;
   
-  for (i = storage->rank; i-- > 0;) {
+  for (i = storage->dim; i-- > 0;) {
 		count *= storage->shape[i];
   }
   

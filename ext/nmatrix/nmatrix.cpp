@@ -71,12 +71,12 @@ static void  nm_delete_ref(NMATRIX* mat);
 static VALUE nm_dtype(VALUE self);
 static VALUE nm_itype(VALUE self);
 static VALUE nm_stype(VALUE self);
-static VALUE nm_rank(VALUE self);
+static VALUE nm_dim(VALUE self);
 static VALUE nm_shape(VALUE self);
 static VALUE nm_capacity(VALUE self);
 static VALUE nm_each(VALUE nmatrix);
 
-static SLICE* get_slice(size_t rank, VALUE* c, VALUE self);
+static SLICE* get_slice(size_t dim, VALUE* c, VALUE self);
 static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLICE*), void (*delete_func)(NMATRIX*), VALUE self);
 static VALUE nm_mset(int argc, VALUE* argv, VALUE self);
 static VALUE nm_mget(int argc, VALUE* argv, VALUE self);
@@ -111,7 +111,7 @@ static itype_t  itype_from_rbsymbol(VALUE sym);
 static dtype_t	dtype_guess(VALUE v);
 static dtype_t	interpret_dtype(int argc, VALUE* argv, stype_t stype);
 static void*		interpret_initial_value(VALUE arg, dtype_t dtype);
-static size_t*	interpret_shape(VALUE arg, size_t* rank);
+static size_t*	interpret_shape(VALUE arg, size_t* dim);
 static stype_t	interpret_stype(VALUE arg);
 static stype_t	stype_from_rbstring(VALUE str);
 static stype_t	stype_from_rbsymbol(VALUE sym);
@@ -178,7 +178,8 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, "slice", (METHOD)nm_mget, -1);
 	rb_define_method(cNMatrix, "[]=", (METHOD)nm_mset, -1);
 	rb_define_method(cNMatrix, "is_ref?", (METHOD)nm_is_ref, 0);
-	rb_define_method(cNMatrix, "rank", (METHOD)nm_rank, 0);
+	rb_define_method(cNMatrix, "dimensions", (METHOD)nm_dim, 0);
+
 	rb_define_method(cNMatrix, "shape", (METHOD)nm_shape, 0);
 	rb_define_method(cNMatrix, "det_exact", (METHOD)nm_det_exact, 0);
 	//rb_define_method(cNMatrix, "transpose!", (METHOD)nm_transpose_self, 0);
@@ -213,7 +214,7 @@ void Init_nmatrix() {
 	// Aliases //
 	/////////////
 	
-	rb_define_alias(cNMatrix, "dim", "rank");
+	rb_define_alias(cNMatrix, "dim", "dimensions");
 	rb_define_alias(cNMatrix, "equal?", "eql?");
 	
 	///////////////////////
@@ -334,8 +335,8 @@ static VALUE nm_itype(VALUE self) {
  */
 static VALUE nm_itype_by_shape(VALUE self, VALUE shape_arg) {
 
-  size_t rank;
-  size_t* shape = interpret_shape(shape_arg, &rank);
+  size_t dim;
+  size_t* shape = interpret_shape(shape_arg, &dim);
 
   itype_t itype = nm_yale_storage_itype_by_shape(shape);
   ID itype_id   = rb_intern(ITYPE_NAMES[itype]);
@@ -618,8 +619,8 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   }
 	
 	// 1: Array or Fixnum
-	size_t rank;
-  size_t* shape = interpret_shape(argv[offset], &rank);
+	size_t dim;
+  size_t* shape = interpret_shape(argv[offset], &dim);
 
   // 2-3: dtype
   dtype_t dtype = interpret_dtype(argc-1-offset, argv+offset+1, stype);
@@ -672,15 +673,15 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   
   switch (stype) {
   	case DENSE_STORE:
-  		nmatrix->storage = (STORAGE*)nm_dense_storage_create(dtype, shape, rank, init_val, init_val_len);
+  		nmatrix->storage = (STORAGE*)nm_dense_storage_create(dtype, shape, dim, init_val, init_val_len);
   		break;
   		
   	case LIST_STORE:
-  		nmatrix->storage = (STORAGE*)nm_list_storage_create(dtype, shape, rank, init_val);
+  		nmatrix->storage = (STORAGE*)nm_list_storage_create(dtype, shape, dim, init_val);
   		break;
   		
   	case YALE_STORE:
-  		nmatrix->storage = (STORAGE*)nm_yale_storage_create(dtype, shape, rank, init_cap);
+  		nmatrix->storage = (STORAGE*)nm_yale_storage_create(dtype, shape, dim, init_cap);
   		nm_yale_storage_init((YALE_STORAGE*)(nmatrix->storage));
   		break;
   }
@@ -763,8 +764,8 @@ static VALUE nm_init_copy(VALUE copy, VALUE original) {
  * checks.
  */
 static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm) {
-  size_t rank     = 2;
-  size_t* shape_  = interpret_shape(shape, &rank);
+  size_t dim     = 2;
+  size_t* shape_  = interpret_shape(shape, &dim);
   dtype_t dtype_  = dtype_from_rbsymbol(dtype);
   char *ia_       = RSTRING_PTR(ia),
        *ja_       = RSTRING_PTR(ja),
@@ -837,16 +838,16 @@ static VALUE nm_mref(int argc, VALUE* argv, VALUE self) {
  *     n[3,3] = n[2,3] = 5.0
  */
 static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
-  size_t rank = argc - 1; // last arg is the value
+  size_t dim = argc - 1; // last arg is the value
 
   if (argc <= 1) {
     rb_raise(rb_eArgError, "Expected coordinates and r-value");
 
-  } else if (NM_RANK(self) == rank) {
+  } else if (NM_DIM(self) == dim) {
 
-    SLICE* slice = get_slice(rank, argv, self);
+    SLICE* slice = get_slice(dim, argv, self);
 
-    void* value = rubyobj_to_cval(argv[rank], NM_DTYPE(self));
+    void* value = rubyobj_to_cval(argv[dim], NM_DTYPE(self));
 
     // FIXME: Can't use a function pointer table here currently because these functions have different
     // signatures (namely the return type).
@@ -869,10 +870,10 @@ static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
       break;
     }
 
-    return argv[rank];
+    return argv[dim];
 
-  } else if (NM_RANK(self) < rank) {
-    rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");
+  } else if (NM_DIM(self) < dim) {
+    rb_raise(rb_eArgError, "Coordinates given exceed number of matrix dimensions");
   } else {
     rb_raise(rb_eNotImpError, "Slicing not supported yet");
   }
@@ -919,16 +920,16 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 }
 
 /*
- * Get the rank of an NMatrix (the number of dimensions).
+ * Get the number of dimensions of a matrix.
  *
- * In other words, if you set your matrix to be 3x4, the rank is 2. If the
- * matrix was initialized as 3x4x3, the rank is 3.
+ * In other words, if you set your matrix to be 3x4, the dim is 2. If the
+ * matrix was initialized as 3x4x3, the dim is 3.
  *
  * This function may lie slightly for NVectors, which are internally stored as
- * rank 2 (and have an orientation), but act as if they're rank 1.
+ * dim 2 (and have an orientation), but act as if they're dim 1.
  */
-static VALUE nm_rank(VALUE self) {
-  return INT2FIX(NM_STORAGE(self)->rank);
+static VALUE nm_dim(VALUE self) {
+  return INT2FIX(NM_STORAGE(self)->dim);
 }
 
 /*
@@ -939,11 +940,11 @@ static VALUE nm_shape(VALUE self) {
   size_t index;
 
   // Copy elements into a VALUE array and then use those to create a Ruby array with rb_ary_new4.
-  VALUE* shape = ALLOCA_N(VALUE, s->rank);
-  for (index = 0; index < s->rank; ++index)
+  VALUE* shape = ALLOCA_N(VALUE, s->dim);
+  for (index = 0; index < s->dim; ++index)
     shape[index] = INT2FIX(s->shape[index]);
 
-  return rb_ary_new4(s->rank, shape);
+  return rb_ary_new4(s->dim, shape);
 }
 
 /*
@@ -967,7 +968,7 @@ static VALUE nm_symmetric(VALUE self) {
 static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLICE*), void (*delete_func)(NMATRIX*), VALUE self) {
   VALUE result = Qnil;
 
-  if (NM_RANK(self) == (size_t)(argc)) {
+  if (NM_DIM(self) == (size_t)(argc)) {
     SLICE* slice = get_slice((size_t)(argc), argv, self);
 
     // TODO: Slice for List, Yale types
@@ -982,7 +983,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 
       /* // Debugging for slice
       fprintf(stderr, "single: ");
-      for (size_t i = 0; i < NM_RANK(self); ++i) {
+      for (size_t i = 0; i < NM_DIM(self); ++i) {
         fprintf(stderr, "%u(%u) ", slice->coords[i], slice->lengths[i]);
       }
       fprintf(stderr, "\n");
@@ -1009,8 +1010,8 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 
     free(slice);
 
-  } else if (NM_RANK(self) < (size_t)(argc)) {
-    rb_raise(rb_eArgError, "Coordinates given exceed matrix rank");
+  } else if (NM_DIM(self) < (size_t)(argc)) {
+    rb_raise(rb_eArgError, "Coordinates given exceed number of matrix dimensions");
   } else {
     rb_raise(rb_eNotImpError, "This type slicing not supported yet");
   }
@@ -1036,13 +1037,13 @@ static VALUE elementwise_op(ewop_t op, VALUE left_val, VALUE right_val) {
 	CheckNMatrixType(left_val);
 	CheckNMatrixType(right_val);
 
-	// Check that the left- and right-hand sides have the same rank.
-	if (NM_RANK(left_val) != NM_RANK(right_val)) {
-		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same rank.");
+	// Check that the left- and right-hand sides have the same dimensionality.
+	if (NM_DIM(left_val) != NM_DIM(right_val)) {
+		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same dimensionality.");
 	}
 	
 	// Check that the left- and right-hand sides have the same shape.
-	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_RANK(left_val)) != 0) {
+	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_DIM(left_val)) != 0) {
 		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
 	}
 
@@ -1085,7 +1086,7 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
   NMATRIX* m;
   UnwrapNMatrix(self, m);
 
-  if (m->storage->shape[0] == m->storage->shape[1] and m->storage->rank == 2) {
+  if (m->storage->shape[0] == m->storage->shape[1] and m->storage->dim == 2) {
 		if (NM_STYPE(self) == DENSE_STORE) {
       if (hermitian) {
         nm_dense_storage_is_hermitian((DENSE_STORAGE*)(m->storage), m->storage->shape[0]);
@@ -1217,17 +1218,17 @@ static dtype_t dtype_guess(VALUE v) {
 /*
  * Documentation goes here.
  */
-static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
+static SLICE* get_slice(size_t dim, VALUE* c, VALUE self) {
   size_t r;
   VALUE beg, end;
   int exl;
 
   SLICE* slice = ALLOC(SLICE);
-  slice->coords = ALLOC_N(size_t,rank);
-  slice->lengths = ALLOC_N(size_t, rank);
+  slice->coords = ALLOC_N(size_t,dim);
+  slice->lengths = ALLOC_N(size_t, dim);
   slice->single = true;
 
-  for (r = 0; r < rank; ++r) {
+  for (r = 0; r < dim; ++r) {
 
     if (FIXNUM_P(c[r])) { // this used CLASS_OF before, which is inefficient for fixnum
 
@@ -1332,24 +1333,24 @@ static void* interpret_initial_value(VALUE arg, dtype_t dtype) {
 
 /*
  * Convert the shape argument, which may be either a Ruby value or an array of
- * Ruby values, into C values.  The second argument is where the rank of the
- * matrix will be stored.  The function itself returns a pointer to the array
- * describing the shape, which must be freed manually.
+ * Ruby values, into C values.  The second argument is where the dimensionality
+ * of the matrix will be stored.  The function itself returns a pointer to the
+ * array describing the shape, which must be freed manually.
  */
-static size_t* interpret_shape(VALUE arg, size_t* rank) {
+static size_t* interpret_shape(VALUE arg, size_t* dim) {
   size_t* shape;
 
   if (TYPE(arg) == T_ARRAY) {
-    *rank = RARRAY_LEN(arg);
-    shape = ALLOC_N(size_t, *rank);
+    *dim = RARRAY_LEN(arg);
+    shape = ALLOC_N(size_t, *dim);
     
-    for (size_t index = 0; index < *rank; ++index) {
+    for (size_t index = 0; index < *dim; ++index) {
       shape[index] = FIX2UINT( RARRAY_PTR(arg)[index] );
     }
     
   } else if (FIXNUM_P(arg)) {
-    *rank = 2;
-    shape = ALLOC_N(size_t, *rank);
+    *dim = 2;
+    shape = ALLOC_N(size_t, *dim);
     
     shape[0] = FIX2UINT(arg);
     shape[1] = FIX2UINT(arg);
@@ -1505,14 +1506,14 @@ static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right) {
 /*
  * Calculate the exact determinant of a dense matrix.
  *
- * Returns nil for dense matrices which are not square or rank other than 2.
+ * Returns nil for dense matrices which are not square or number of dimensions other than 2.
  *
  * Note: Currently only implemented for 2x2 and 3x3 matrices.
  */
 static VALUE nm_det_exact(VALUE self) {
   if (NM_STYPE(self) != DENSE_STORE) rb_raise(nm_eStorageTypeError, "can only calculate exact determinant for dense matrices");
 
-  if (NM_RANK(self) != 2 || NM_SHAPE0(self) != NM_SHAPE1(self)) return Qnil;
+  if (NM_DIM(self) != 2 || NM_SHAPE0(self) != NM_SHAPE1(self)) return Qnil;
 
   // Calculate the determinant and then assign it to the return value
   void* result = ALLOCA_N(char, DTYPE_SIZES[NM_DTYPE(self)]);
@@ -1538,25 +1539,25 @@ static VALUE nm_det_exact(VALUE self) {
  *
  * TODO: Add a column-major option for libraries that use column-major matrices.
  */
-VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t length) {
+VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t dim, void* elements, size_t length) {
   NMATRIX* nm;
   VALUE klass;
-  size_t nm_rank;
+  size_t nm_dim;
   size_t* shape_copy;
 
-  // Do not allow a rank of 1; if rank == 1, this should probably be an NVector instead, but that still has rank 2.
-  if (rank == 1) {
+  // Do not allow a dim of 1; if dim == 1, this should probably be an NVector instead, but that still has dim 2.
+  if (dim == 1) {
     klass					= cNVector;
-    nm_rank				= 2;
-    shape_copy		= ALLOC_N(size_t, nm_rank);
+    nm_dim				= 2;
+    shape_copy		= ALLOC_N(size_t, nm_dim);
     shape_copy[0]	= shape[0];
     shape_copy[1]	= 1;
     
   } else {
     klass				= cNMatrix;
-    nm_rank			= rank;
-    shape_copy	= ALLOC_N(size_t, nm_rank);
-    memcpy(shape_copy, shape, sizeof(size_t)*nm_rank);
+    nm_dim			= dim;
+    shape_copy	= ALLOC_N(size_t, nm_dim);
+    memcpy(shape_copy, shape, sizeof(size_t)*nm_dim);
   }
 
   // Copy elements
@@ -1564,7 +1565,7 @@ VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t rank, void* e
   memcpy(elements_copy, elements, DTYPE_SIZES[dtype]*length);
 
   // allocate and create the matrix and its storage
-  nm = nm_create(DENSE_STORE, nm_dense_storage_create(dtype, shape_copy, rank, elements_copy, length));
+  nm = nm_create(DENSE_STORE, nm_dense_storage_create(dtype, shape_copy, dim, elements_copy, length));
 
   // tell Ruby about the matrix and its storage, particularly how to garbage collect it.
   return Data_Wrap_Struct(klass, nm_dense_storage_mark, nm_dense_storage_delete, nm);
@@ -1581,8 +1582,8 @@ VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t rank, void* e
  * TODO: Add a transpose option for setting the orientation of the vector?
  */
 VALUE rb_nvector_dense_create(dtype_t dtype, void* elements, size_t length) {
-  size_t rank = 1, shape = length;
-  return rb_nmatrix_dense_create(dtype, &shape, rank, elements, length);
+  size_t dim = 1, shape = length;
+  return rb_nmatrix_dense_create(dtype, &shape, dim, elements, length);
 }
 
 } // end of extern "C"

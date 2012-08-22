@@ -86,7 +86,7 @@ extern "C" {
   // Lifecycle //
   ///////////////
 
-  YALE_STORAGE* nm_yale_storage_create(dtype_t dtype, size_t* shape, size_t rank, size_t init_capacity);
+  YALE_STORAGE* nm_yale_storage_create(dtype_t dtype, size_t* shape, size_t dim, size_t init_capacity);
   YALE_STORAGE* nm_yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, dtype_t from_dtype);
   YALE_STORAGE*	nm_yale_storage_create_merged(const YALE_STORAGE* merge_template, const YALE_STORAGE* other);
   void          nm_yale_storage_delete(STORAGE* s);

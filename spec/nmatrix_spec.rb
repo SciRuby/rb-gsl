@@ -35,7 +35,7 @@ describe NMatrix do
     x = a.det_exact
   end
 
-  it "allows stype casting of a rank 2 matrix between dense, sparse, and list (different dtypes)" do
+  it "allows stype casting of a dim 2 matrix between dense, sparse, and list (different dtypes)" do
     m = NMatrix.new(:dense, [3,3], [0,0,1,0,2,0,3,4,5], :int64).
         cast(:yale, :int32).
         cast(:dense, :float64).
@@ -210,11 +210,11 @@ describe NMatrix do
 
         m.shape[0].should == 3
         m.shape[1].should == 2
-        m.rank.should == 2
+        m.dim.should == 2
 
         n.shape[0].should == 4
         n.shape[1].should == 3
-        n.rank.should == 2
+        n.dim.should == 2
 
         n.shape[1].should == m.shape[0]
 
@@ -252,7 +252,7 @@ describe NMatrix do
 
         n.shape[0].should == 4
         n.shape[1].should == 3
-        n.rank.should == 2
+        n.dim.should == 2
 
         n.shape[1].should == m.shape[0]
 
@@ -282,7 +282,7 @@ describe NMatrix do
 
         m = n.dup
         m.shape.should == n.shape
-        m.rank.should == n.rank
+        m.dim.should == n.dim
         m.object_id.should_not == n.object_id
         m.stype.should equal(storage_type)
         m[0,0].should == n[0,0]
@@ -311,7 +311,7 @@ describe NMatrix do
         n[0,1].should == 1
       end
 
-      it "#{storage_type} correctly handles elementwise addition" do
+      it "#{storage_type} handles elementwise addition" do
         n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3,  4], :int64)
         m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [-3, 1, 3, 70], :int64)
@@ -319,7 +319,7 @@ describe NMatrix do
         r.should.eql? rcorrect
       end
       
-      it "#{storage_type} correctly handles elementwise subtraction" do
+      it "#{storage_type} handles elementwise subtraction" do
         n = NMatrix.new(storage_type, [2,2],  [1,  2, 3,  4], :int64)
         m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [5, 3, 3, -62], :int64)
@@ -327,7 +327,7 @@ describe NMatrix do
         r.should.eql? rcorrect
       end
       
-      it "#{storage_type} correctly handles elementwise multiplication" do
+      it "#{storage_type} handles elementwise multiplication" do
         n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3,  4], :int64)
         m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [-8, -2, 0, 264], :int64)
@@ -335,7 +335,7 @@ describe NMatrix do
         r.should.eql? rcorrect
       end
       
-      it "#{storage_type} correctly handles elementwise division" do
+      it "#{storage_type} handles elementwise division" do
         n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3, 4], :int64)
         m = NMatrix.new(storage_type, [2,2], [-4, -1, 3, 2], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [-1, -2, 1, 2], :int64)
@@ -343,7 +343,7 @@ describe NMatrix do
         r.should.eql? rcorrect
       end
       
-      it "#{storage_type} correctly handles elementwise modulo" do
+      it "#{storage_type} handles elementwise modulo" do
         n = NMatrix.new(storage_type, [2,2], [10, 11, 12, 13], :int64)
         m = NMatrix.new(storage_type, [2,2], [ 2, 10,  5, 10], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [0, 1, 2, 3], :int64)
@@ -360,9 +360,9 @@ describe NMatrix do
         NMatrix.new(storage_type, 3, 1)[1,1].should   == 1
       end
 
-      it "returns shape and rank" do
+      it "returns shape and dim" do
         NMatrix.new(storage_type, [3,2,8], 0).shape.should == [3,2,8]
-        NMatrix.new(storage_type, [3,2,8], 0).rank.should  == 3
+        NMatrix.new(storage_type, [3,2,8], 0).dim.should  == 3
       end
     end unless storage_type == :yale
   end

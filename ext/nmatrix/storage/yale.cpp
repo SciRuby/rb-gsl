@@ -77,7 +77,7 @@
 
 extern "C" {
   static YALE_STORAGE*  _copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
-  static YALE_STORAGE*	alloc(dtype_t dtype, size_t* shape, size_t rank);
+  static YALE_STORAGE*	alloc(dtype_t dtype, size_t* shape, size_t dim);
 
   /* Ruby-accessible functions */
   static VALUE nm_size(VALUE self);
@@ -757,9 +757,9 @@ static inline size_t get_size(const YALE_STORAGE* storage) {
 template <typename IType>
 static YALE_STORAGE* copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size) {
   YALE_STORAGE* lhs = ALLOC( YALE_STORAGE );
-  lhs->rank         = rhs->rank;
-  lhs->shape        = ALLOC_N( size_t, lhs->rank );
-  memcpy(lhs->shape, rhs->shape, lhs->rank * sizeof(size_t));
+  lhs->dim          = rhs->dim;
+  lhs->shape        = ALLOC_N( size_t, lhs->dim );
+  memcpy(lhs->shape, rhs->shape, lhs->dim * sizeof(size_t));
   lhs->itype        = rhs->itype;
   lhs->capacity     = new_capacity;
   lhs->dtype        = new_dtype;
@@ -1039,7 +1039,7 @@ void nm_yale_storage_mark(void* storage_base) {
 /*
  * Allocates and initializes the basic struct (but not the IJA or A vectors).
  */
-static YALE_STORAGE* alloc(dtype_t dtype, size_t* shape, size_t rank) {
+static YALE_STORAGE* alloc(dtype_t dtype, size_t* shape, size_t dim) {
   YALE_STORAGE* s;
 
   s = ALLOC( YALE_STORAGE );
@@ -1047,7 +1047,7 @@ static YALE_STORAGE* alloc(dtype_t dtype, size_t* shape, size_t rank) {
   s->ndnz        = 0;
   s->dtype       = dtype;
   s->shape       = shape;
-  s->rank        = rank;
+  s->dim         = dim;
   s->itype       = nm_yale_storage_itype_by_shape(shape);
 
   return s;

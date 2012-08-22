@@ -82,11 +82,11 @@ namespace dense_storage {
 
 template <typename LDType, typename RDType>
 static void cast_copy_list_contents(LDType* lhs, const LIST* rhs, RDType* default_val,
-  size_t& pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
+  size_t& pos, const size_t* shape, size_t dim, size_t max_elements, size_t recursions);
 
 template <typename LDType, typename RDType>
 static void cast_copy_list_default(LDType* lhs, RDType* default_val, size_t& pos,
-  const size_t* shape, size_t rank, size_t max_elements, size_t recursions);
+  const size_t* shape, size_t dim, size_t max_elements, size_t recursions);
 
 /*
  * Convert (by creating a copy) from list storage to dense storage.
@@ -95,21 +95,21 @@ template <typename LDType, typename RDType>
 DENSE_STORAGE* create_from_list_storage(const LIST_STORAGE* rhs, dtype_t l_dtype) {
 
   // allocate and copy shape
-  size_t* shape = ALLOC_N(size_t, rhs->rank);
-  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
+  size_t* shape = ALLOC_N(size_t, rhs->dim);
+  memcpy(shape, rhs->shape, rhs->dim * sizeof(size_t));
 
-  DENSE_STORAGE* lhs = nm_dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
+  DENSE_STORAGE* lhs = nm_dense_storage_create(l_dtype, shape, rhs->dim, NULL, 0);
 
   // Position in lhs->elements.
   size_t pos = 0;
   size_t max_elements = nm_storage_count_max_elements(rhs);
 
-//static void dense_storage_cast_copy_list_contents_template(LDType* lhs, const LIST* rhs, RDType* default_val, size_t& pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions)
+//static void dense_storage_cast_copy_list_contents_template(LDType* lhs, const LIST* rhs, RDType* default_val, size_t& pos, const size_t* shape, size_t dim, size_t max_elements, size_t recursions)
   // recursively copy the contents
   cast_copy_list_contents<LDType,RDType>(reinterpret_cast<LDType*>(lhs->elements),
                                          rhs->rows,
                                          reinterpret_cast<RDType*>(rhs->default_val),
-                                         pos, shape, lhs->rank, max_elements, rhs->rank-1);
+                                         pos, shape, lhs->dim, max_elements, rhs->dim-1);
 
   return lhs;
 }
@@ -128,10 +128,10 @@ DENSE_STORAGE* create_from_yale_storage(const YALE_STORAGE* rhs, dtype_t l_dtype
   RDType* rhs_a   = reinterpret_cast<RDType*>(rhs->a);
 
   // Allocate and set shape.
-  size_t* shape = ALLOC_N(size_t, rhs->rank);
-  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
+  size_t* shape = ALLOC_N(size_t, rhs->dim);
+  memcpy(shape, rhs->shape, rhs->dim * sizeof(size_t));
 
-  DENSE_STORAGE* lhs = nm_dense_storage_create(l_dtype, shape, rhs->rank, NULL, 0);
+  DENSE_STORAGE* lhs = nm_dense_storage_create(l_dtype, shape, rhs->dim, NULL, 0);
   LDType* lhs_elements = reinterpret_cast<LDType*>(lhs->elements);
 
   // Position in dense to write to.
@@ -195,17 +195,17 @@ DENSE_STORAGE* create_from_yale_storage(const YALE_STORAGE* rhs, dtype_t l_dtype
  * Copy list contents into dense recursively.
  */
 template <typename LDType, typename RDType>
-static void cast_copy_list_contents(LDType* lhs, const LIST* rhs, RDType* default_val, size_t& pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
+static void cast_copy_list_contents(LDType* lhs, const LIST* rhs, RDType* default_val, size_t& pos, const size_t* shape, size_t dim, size_t max_elements, size_t recursions) {
 
   NODE *curr = rhs->first;
   int last_key = -1;
 
-	for (size_t i = 0; i < shape[rank - 1 - recursions]; ++i, ++pos) {
+	for (size_t i = 0; i < shape[dim - 1 - recursions]; ++i, ++pos) {
 
     if (!curr || (curr->key > (size_t)(last_key+1))) {
 
       if (recursions == 0)  lhs[pos] = *default_val;
-      else               		cast_copy_list_default<LDType,RDType>(lhs, default_val, pos, shape, rank, max_elements, recursions-1);
+      else               		cast_copy_list_default<LDType,RDType>(lhs, default_val, pos, shape, dim, max_elements, recursions-1);
 
       ++last_key;
 
@@ -213,7 +213,7 @@ static void cast_copy_list_contents(LDType* lhs, const LIST* rhs, RDType* defaul
 
       if (recursions == 0)  lhs[pos] = *reinterpret_cast<RDType*>(curr->val);
       else                	cast_copy_list_contents<LDType,RDType>(lhs, (const LIST*)(curr->val),
-                                                                                         default_val, pos, shape, rank, max_elements, recursions-1);
+                                                                                         default_val, pos, shape, dim, max_elements, recursions-1);
 
       last_key = curr->key;
       curr     = curr->next;
@@ -227,11 +227,11 @@ static void cast_copy_list_contents(LDType* lhs, const LIST* rhs, RDType* defaul
  * Copy a set of default values into dense.
  */
 template <typename LDType,typename RDType>
-static void cast_copy_list_default(LDType* lhs, RDType* default_val, size_t& pos, const size_t* shape, size_t rank, size_t max_elements, size_t recursions) {
-	for (size_t i = 0; i < shape[rank - 1 - recursions]; ++i, ++pos) {
+static void cast_copy_list_default(LDType* lhs, RDType* default_val, size_t& pos, const size_t* shape, size_t dim, size_t max_elements, size_t recursions) {
+	for (size_t i = 0; i < shape[dim - 1 - recursions]; ++i, ++pos) {
 
     if (recursions == 0)    lhs[pos] = *default_val;
-    else                  	cast_copy_list_default<LDType,RDType>(lhs, default_val, pos, shape, rank, max_elements, recursions-1);
+    else                  	cast_copy_list_default<LDType,RDType>(lhs, default_val, pos, shape, dim, max_elements, recursions-1);
 
   }
 
@@ -245,7 +245,7 @@ namespace list_storage {
 
 
 template <typename LDType, typename RDType>
-static bool cast_copy_contents_dense(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions);
+static bool cast_copy_contents_dense(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t dim, size_t recursions);
 
 /*
  * Creation of list storage from dense storage.
@@ -257,11 +257,11 @@ LIST_STORAGE* create_from_dense_storage(const DENSE_STORAGE* rhs, dtype_t l_dtyp
   RDType* r_default_val = ALLOCA_N(RDType, 1); // clean up when finished with this function
 
   // allocate and copy shape and coords
-  size_t *shape  = ALLOC_N(size_t, rhs->rank),
-         *coords = ALLOC_N(size_t, rhs->rank);
+  size_t *shape  = ALLOC_N(size_t, rhs->dim),
+         *coords = ALLOC_N(size_t, rhs->dim);
 
-  memcpy(shape, rhs->shape, rhs->rank * sizeof(size_t));
-  memset(coords, 0, rhs->rank * sizeof(size_t));
+  memcpy(shape, rhs->shape, rhs->dim * sizeof(size_t));
+  memset(coords, 0, rhs->dim * sizeof(size_t));
 
   // set list default_val to 0
   if (l_dtype == RUBYOBJ)  	*l_default_val = INT2FIX(0);
@@ -272,13 +272,13 @@ LIST_STORAGE* create_from_dense_storage(const DENSE_STORAGE* rhs, dtype_t l_dtyp
   else if (rhs->dtype == RUBYOBJ) *r_default_val = INT2FIX(0);
   else  	                        *r_default_val = 0;
 
-  LIST_STORAGE* lhs = nm_list_storage_create(l_dtype, shape, rhs->rank, l_default_val);
+  LIST_STORAGE* lhs = nm_list_storage_create(l_dtype, shape, rhs->dim, l_default_val);
 
   size_t pos = 0;
   list_storage::cast_copy_contents_dense<LDType,RDType>(lhs->rows,
                                                         reinterpret_cast<const RDType*>(rhs->elements),
                                                         r_default_val,
-                                                        pos, coords, rhs->shape, rhs->rank, rhs->rank - 1);
+                                                        pos, coords, rhs->shape, rhs->dim, rhs->dim - 1);
 
   return lhs;
 }
@@ -291,7 +291,7 @@ LIST_STORAGE* create_from_dense_storage(const DENSE_STORAGE* rhs, dtype_t l_dtyp
 template <typename LDType, typename RDType, typename RIType>
 LIST_STORAGE* create_from_yale_storage(const YALE_STORAGE* rhs, dtype_t l_dtype) {
   // allocate and copy shape
-  size_t *shape = ALLOC_N(size_t, rhs->rank);
+  size_t *shape = ALLOC_N(size_t, rhs->dim);
   shape[0] = rhs->shape[0]; shape[1] = rhs->shape[1];
 
   RDType* rhs_a    = reinterpret_cast<RDType*>(rhs->a);
@@ -301,9 +301,9 @@ LIST_STORAGE* create_from_yale_storage(const YALE_STORAGE* rhs, dtype_t l_dtype)
   LDType* default_val = ALLOC_N(LDType, 1);
   *default_val        = R_ZERO;
 
-  LIST_STORAGE* lhs = nm_list_storage_create(l_dtype, shape, rhs->rank, default_val);
+  LIST_STORAGE* lhs = nm_list_storage_create(l_dtype, shape, rhs->dim, default_val);
 
-  if (rhs->rank != 2)    rb_raise(nm_eStorageTypeError, "Can only convert matrices of rank 2 from yale.");
+  if (rhs->dim != 2)    rb_raise(nm_eStorageTypeError, "Can only convert matrices of dim 2 from yale.");
 
   RIType* rhs_ija  = reinterpret_cast<RIType*>(rhs->ija);
 
@@ -380,13 +380,13 @@ LIST_STORAGE* create_from_yale_storage(const YALE_STORAGE* rhs, dtype_t l_dtype)
  * FIXME: This works, but could probably be cleaner (do we really need to pass coords around?)
  */
 template <typename LDType, typename RDType>
-static bool cast_copy_contents_dense(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t rank, size_t recursions) {
+static bool cast_copy_contents_dense(LIST* lhs, const RDType* rhs, RDType* zero, size_t& pos, size_t* coords, const size_t* shape, size_t dim, size_t recursions) {
   NODE *prev = NULL;
   LIST *sub_list;
   bool added = false, added_list = false;
   //void* insert_value;
 
-  for (coords[rank-1-recursions] = 0; coords[rank-1-recursions] < shape[rank-1-recursions]; ++coords[rank-1-recursions], ++pos) {
+  for (coords[dim-1-recursions] = 0; coords[dim-1-recursions] < shape[dim-1-recursions]; ++coords[dim-1-recursions], ++pos) {
     //fprintf(stderr, "(%u)\t<%u, %u>: ", recursions, coords[0], coords[1]);
 
     if (recursions == 0) {
@@ -400,8 +400,8 @@ static bool cast_copy_contents_dense(LIST* lhs, const RDType* rhs, RDType* zero,
         LDType* insert_value = ALLOC_N(LDType, 1);
         *insert_value        = static_cast<LDType>(rhs[pos]);
 
-        if (!lhs->first)    prev = list::insert(lhs, false, coords[rank-1-recursions], insert_value);
-        else               	prev = list::insert_after(prev, coords[rank-1-recursions], insert_value);
+        if (!lhs->first)    prev = list::insert(lhs, false, coords[dim-1-recursions], insert_value);
+        else               	prev = list::insert_after(prev, coords[dim-1-recursions], insert_value);
 
         added = true;
       }
@@ -411,17 +411,17 @@ static bool cast_copy_contents_dense(LIST* lhs, const RDType* rhs, RDType* zero,
       // create a list as if there's something in the row in question, and then delete it if nothing turns out to be there
       sub_list = list::create();
 
-      added_list = list_storage::cast_copy_contents_dense<LDType,RDType>(sub_list, rhs, zero, pos, coords, shape, rank, recursions-1);
+      added_list = list_storage::cast_copy_contents_dense<LDType,RDType>(sub_list, rhs, zero, pos, coords, shape, dim, recursions-1);
 
       if (!added_list)      	list::del(sub_list, recursions-1);
-      else if (!lhs->first)  	prev = list::insert(lhs, false, coords[rank-1-recursions], sub_list);
-      else                  	prev = list::insert_after(prev, coords[rank-1-recursions], sub_list);
+      else if (!lhs->first)  	prev = list::insert(lhs, false, coords[dim-1-recursions], sub_list);
+      else                  	prev = list::insert_after(prev, coords[dim-1-recursions], sub_list);
 
       // added = (added || added_list);
     }
   }
 
-  coords[rank-1-recursions] = 0;
+  coords[dim-1-recursions] = 0;
   --pos;
 
   return added;
@@ -442,7 +442,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     if (rhs->dtype == RUBYOBJ)  R_ZERO = INT2FIX(0);
     else                        R_ZERO = 0;
 
-    if (rhs->rank != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
+    if (rhs->dim != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of dim 2 to yale");
 
     RDType* rhs_elements = reinterpret_cast<RDType*>(rhs->elements);
 
@@ -508,7 +508,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     NODE *i_curr, *j_curr;
     size_t ndnz = nm_list_storage_count_nd_elements(rhs);
 
-    if (rhs->rank != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of rank 2 to yale");
+    if (rhs->dim != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of dim 2 to yale");
 
     if ((rhs->dtype == RUBYOBJ and (*reinterpret_cast<RubyObject*>(rhs->default_val)) == RubyObject(INT2FIX(0)))
         || strncmp(reinterpret_cast<const char*>(rhs->default_val), "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", DTYPE_SIZES[rhs->dtype]))

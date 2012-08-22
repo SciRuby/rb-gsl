@@ -50,7 +50,7 @@ class NMatrix
 
 	# TODO: Make this actually pretty.
 	def pretty_print(q = nil)
-		raise(NotImplementedError, 'Can only print rank 2 matrices.') unless rank == 2
+		raise(NotImplementedError, 'Can only print dim 2 matrices.') unless dim == 2
 
     arr = []
 
@@ -94,7 +94,7 @@ class NMatrix
 	end
 
 	def hermitian?
-		return false if self.rank != 2 or self.shape[0] != self.shape[1]
+		return false if self.dim != 2 or self.shape[0] != self.shape[1]
 		
 		if [:complex64, :complex128].include?(self.dtype)
 			# TODO: Write much faster Hermitian test in C

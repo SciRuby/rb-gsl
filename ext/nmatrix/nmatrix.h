@@ -123,7 +123,7 @@
 
   #define NM_DEF_STORAGE_ELEMENTS    \
     NM_DECL_ENUM(dtype_t, dtype);    \
-    size_t  rank;                    \
+    size_t  dim;                     \
     size_t* shape;                   \
     size_t* offset;
 
@@ -150,7 +150,7 @@
 
   #define NM_DEF_STORAGE_ELEMENTS    \
     NM_DECL_ENUM(dtype_t, dtype);    \
-    size_t      rank;                \
+    size_t      dim;                \
     size_t*     shape;               \
     size_t*     offset;
 
@@ -278,7 +278,7 @@ NM_DEF_STRUCT_POST(NMATRIX);  // };
 #endif
 
 #define NM_DENSE_SRC(val)       (NM_STORAGE_DENSE(val)->src)
-#define NM_RANK(val)            (NM_STORAGE(val)->rank)
+#define NM_DIM(val)             (NM_STORAGE(val)->dim)
 #define NM_DTYPE(val)           (NM_STORAGE(val)->dtype)
 #define NM_ITYPE(val)           (NM_STORAGE_YALE(val)->itype)
 #define NM_STYPE(val)           (NM_STRUCT(val)->stype)
@@ -323,7 +323,7 @@ extern "C" {
 	void Init_nmatrix();
 	
 	// External API
-	VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t length);
+	VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t dim, void* elements, size_t length);
 	VALUE rb_nvector_dense_create(dtype_t dtype, void* elements, size_t length);
 }
 
