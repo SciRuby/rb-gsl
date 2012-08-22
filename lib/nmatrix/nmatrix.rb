@@ -50,29 +50,32 @@ class NMatrix
 
 	# TODO: Make this actually pretty.
 	def pretty_print(q = nil)
-		raise(NotImplementedError, 'Can only print dim 2 matrices.') unless dim == 2
-
-    arr = []
-
-		(0...shape[0]).each do |i|
-			arr << (0...shape[1]).inject(Array.new) do |a, j|
-        o = begin
-          self[i, j]
-        rescue ArgumentError
-          nil
-        end
-        a << (o.nil? ? 'nil' : o)
-      end
-    end
-
-    if q.nil?
-      puts arr.join("  ")
+		if dim != 2 || (dim == 2 && shape[1] > 10) # FIXME: Come up with a better way of restricting the display
+      inspect
     else
-      q.group(1, "", "\n") do
-        q.seplist(arr, lambda { q.text "  " }, :each)  { |v| q.text v.to_s }
-      end
-    end
 
+      arr = (0...shape[0]).map do |i|
+        ary = []
+        (0...shape[1]).each do |j|
+          o = begin
+            self[i, j]
+          rescue ArgumentError
+            nil
+          end
+          ary << (o.nil? ? 'nil' : o)
+        end
+        ary.inspect
+      end
+
+      if q.nil?
+        puts arr.join("\n")
+      else
+        q.group(1, "", "\n") do
+          q.seplist(arr, lambda { q.text "  " }, :each)  { |v| q.text v.to_s }
+        end
+      end
+
+    end
 	end
 	alias :pp :pretty_print
 
