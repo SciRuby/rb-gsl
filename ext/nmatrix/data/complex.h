@@ -47,6 +47,7 @@
 /*
  * Types
  */
+namespace nm {
 
 template <typename IntType> class Rational;
 template <typename Type> class Complex;
@@ -330,5 +331,7 @@ template <typename NativeType, typename ComplexType, typename = typename std::en
 inline bool operator>=(const NativeType left, const Complex<ComplexType>& right) {
 	return Complex<ComplexType>(left) >= right;
 }
+
+} // end of namespace nm
 
 #endif // COMPLEX_H

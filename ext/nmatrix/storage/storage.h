@@ -53,45 +53,44 @@
  * Macros
  */
 
-#define NUM_STYPES 3
+extern "C" {
 
-#define NMATRIX_DTYPE_IS_COMPLEX(s)		((s->dtype == COMPLEX64) or (s->dtype == COMPLEX128))
-#define NMATRIX_DTYPE_IS_FLOAT(s)			((s->dtype == FLOAT32) or (s->dtype == FLOAT64))
-#define NMATRIX_DTYPE_IS_INTEGER(s)		(s->dtype <= INT64)
-#define NMATRIX_DTYPE_IS_RATIONAL(s)	((s->dtype == RATIONAL32) or (s->dtype == RATIONAL64) or (s->dtype == RATIONAL128))
-#define NMATRIX_DTYPE_IS_RUBYOBJ(s)		(s->dtype == RUBYOBJ)
+  #define NUM_STYPES 3
+
+  #define NMATRIX_DTYPE_IS_COMPLEX(s)		((s->dtype == COMPLEX64) or (s->dtype == COMPLEX128))
+  #define NMATRIX_DTYPE_IS_FLOAT(s)			((s->dtype == FLOAT32) or (s->dtype == FLOAT64))
+  #define NMATRIX_DTYPE_IS_INTEGER(s)		(s->dtype <= INT64)
+  #define NMATRIX_DTYPE_IS_RATIONAL(s)	((s->dtype == RATIONAL32) or (s->dtype == RATIONAL64) or (s->dtype == RATIONAL128))
+  #define NMATRIX_DTYPE_IS_RUBYOBJ(s)		(s->dtype == RUBYOBJ)
 
 
-/*
- * Types
- */
+  /*
+   * Types
+   */
 
-typedef enum {
-	DENSE_STORE,
-	LIST_STORE,
-	YALE_STORE
-} stype_t;
 
-/*
- * Data
- */
+  /*
+   * Data
+   */
 
-extern const char* const STYPE_NAMES[NUM_STYPES];
-extern void (* const STYPE_MARK[NUM_STYPES])(void*);
+  extern const char* const STYPE_NAMES[NUM_STYPES];
+  extern void (* const STYPE_MARK[NUM_STYPES])(void*);
 
-/*
- * Functions
- */
+  /*
+   * Functions
+   */
 
-/////////////////////////
-// Copying and Casting //
-/////////////////////////
+  /////////////////////////
+  // Copying and Casting //
+  /////////////////////////
 
-STORAGE*	  dense_storage_from_list(const STORAGE* right, dtype_t l_dtype);
-STORAGE*	  dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
-STORAGE*		list_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
-STORAGE*		list_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
-STORAGE*		yale_storage_from_list(const STORAGE* right, dtype_t l_dtype);
-STORAGE*		yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*	  dense_storage_from_list(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*	  dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*		list_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*		list_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*		yale_storage_from_list(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*		yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
+
+} // end of extern "C" block
 
 #endif // STORAGE_H

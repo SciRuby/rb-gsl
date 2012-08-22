@@ -45,6 +45,8 @@
 
 #include "common.h"
 
+#include "nmatrix.h"
+
 /*
  * Macros
  */
@@ -53,17 +55,11 @@
  * Types
  */
 
-struct DENSE_STORAGE : STORAGE {
-	size_t*	stride;
-	int			count;
-	void*		src;
-	void*		elements;
-};
-
 /*
  * Data
  */
- 
+
+extern "C" {
 
 /*
  * Functions
@@ -114,5 +110,7 @@ size_t dense_storage_pos(const DENSE_STORAGE* s, const size_t* coords);
 DENSE_STORAGE*  dense_storage_copy(const DENSE_STORAGE* rhs);
 STORAGE*        dense_storage_copy_transposed(const STORAGE* rhs_base);
 STORAGE*        dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
+
+} // end of extern "C" block
 
 #endif // DENSE_H

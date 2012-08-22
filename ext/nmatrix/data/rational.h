@@ -50,6 +50,9 @@
 /*
  * Types
  */
+
+namespace nm {
+
 template <typename Type> class Rational;
 
 typedef Rational<int16_t>	Rational32;
@@ -380,5 +383,7 @@ inline bool operator>=(const NativeType left, const Rational<RationalType>& righ
 	//return Rational<RationalType>(left) >= right;
 	return (left > right) or (left == right); 
 }
+
+} // end of namespace nm
 
 #endif // RATIONAL_H

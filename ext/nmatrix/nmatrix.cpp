@@ -21,8 +21,11 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == nmatrix.c
+// == nmatrix.cpp
 //
+// Main C++ source file for NMatrix. Contains Init_nmatrix and most Ruby instance and
+// class methods for NMatrix. Also responsible for calling Init methods on related
+// modules.
 
 /*
  * Standard Includes
@@ -33,10 +36,13 @@
 /*
  * Project Includes
  */
-
-#include "nmatrix.h"
+#include "types.h"
+#include "data/data.h"
 #include "util/math.h"
 #include "storage/storage.h"
+
+#include "nmatrix.h"
+
 #include "ruby_constants.h"
 
 /*
@@ -46,6 +52,9 @@
 /*
  * Global Variables
  */
+
+
+extern "C" {
 
 /*
  * Forward Declarations
@@ -123,8 +132,6 @@ static double get_time(void);
 ///////////////////
 // Ruby Bindings //
 ///////////////////
-
-extern "C" {
 
 void Init_nmatrix() {
 	
@@ -213,25 +220,21 @@ void Init_nmatrix() {
 	// Symbol Generation //
 	///////////////////////
 	
-	Init_ruby_constants();
+	nm_init_ruby_constants();
 
 	//////////////////////////
 	// YaleFunctions module //
 	//////////////////////////
 
-	Init_yale_functions();
+	nm_init_yale_functions();
 
 	/////////////////
 	// BLAS module //
 	/////////////////
 
-	Init_blas();
+	nm_math_init_blas();
 }
 
-/*
- * End of the Ruby binding functions in the `extern "C" {}` block.
- */
-}
 
 //////////////////
 // Ruby Methods //
@@ -265,11 +268,11 @@ static VALUE nm_capacity(VALUE self) {
     break;
 
   case DENSE_STORE:
-    cap = UINT2NUM(storage_count_max_elements( NM_DENSE_STORAGE(self) ));
+    cap = UINT2NUM(storage_count_max_elements( NM_STORAGE_DENSE(self) ));
     break;
 
   case LIST_STORE:
-    cap = UINT2NUM(list_storage_count_elements( NM_LIST_STORAGE(self) ));
+    cap = UINT2NUM(list_storage_count_elements( NM_STORAGE_LIST(self) ));
     break;
 
   default:
@@ -364,7 +367,7 @@ static VALUE nm_upcast(VALUE self, VALUE t1, VALUE t2) {
  * containing other types of data.
  */
 static VALUE nm_each_dense(VALUE nmatrix) {
-  DENSE_STORAGE* s = NM_DENSE_STORAGE(nmatrix);
+  DENSE_STORAGE* s = NM_STORAGE_DENSE(nmatrix);
   VALUE v;
   size_t i;
 
@@ -507,12 +510,12 @@ static VALUE nm_complex_conjugate_bang(VALUE self) {
   if (m->stype == DENSE_STORE) {
 
     size = storage_count_max_elements(NM_STORAGE(self));
-    elem = NM_DENSE_STORAGE(self)->elements;
+    elem = NM_STORAGE_DENSE(self)->elements;
 
   } else if (m->stype == YALE_STORE) {
 
-    size = yale_storage_get_size(NM_YALE_STORAGE(self));
-    elem = NM_YALE_STORAGE(self)->a;
+    size = yale_storage_get_size(NM_STORAGE_YALE(self));
+    elem = NM_STORAGE_YALE(self)->a;
 
   } else {
     rb_raise(rb_eNotImpError, "please cast to yale or dense (complex) first");
@@ -522,13 +525,13 @@ static VALUE nm_complex_conjugate_bang(VALUE self) {
   if (NM_DTYPE(self) == COMPLEX64) {
 
     for (p = 0; p < size; ++p) {
-      reinterpret_cast<Complex64*>(elem)[p].i = -reinterpret_cast<Complex64*>(elem)[p].i;
+      reinterpret_cast<nm::Complex64*>(elem)[p].i = -reinterpret_cast<nm::Complex64*>(elem)[p].i;
     }
 
   } else if (NM_DTYPE(self) == COMPLEX128) {
 
     for (p = 0; p < size; ++p) {
-      reinterpret_cast<Complex128*>(elem)[p].i = -reinterpret_cast<Complex128*>(elem)[p].i;
+      reinterpret_cast<nm::Complex128*>(elem)[p].i = -reinterpret_cast<nm::Complex128*>(elem)[p].i;
     }
 
   } else {
@@ -595,7 +598,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
   stype_t stype;
   size_t  offset = 0;
 
-  if (!SYMBOL_P(argv[0]) && !RUBYVAL_IS_STRING(argv[0])) {
+  if (!SYMBOL_P(argv[0]) && TYPE(argv[0]) != T_STRING) {
     stype = DENSE_STORE;
     
   } else {
@@ -623,7 +626,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
 
   size_t init_cap = 0, init_val_len = 0;
   void* init_val  = NULL;
-  if (RUBYVAL_IS_NUMERIC(argv[1+offset]) || TYPE(argv[1+offset]) == T_ARRAY) {
+  if (NM_RUBYVAL_IS_NUMERIC(argv[1+offset]) || TYPE(argv[1+offset]) == T_ARRAY) {
   	// Initial value provided (could also be initial capacity, if yale).
   	
     if (stype == YALE_STORE) {
@@ -657,7 +660,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
       }
     } else if (stype == LIST_STORE) {
     	init_val = ALLOC_N(char, DTYPE_SIZES[dtype]);
-      memset(init_val, 0, DTYPE_SIZES[dtype]);
+      std::memset(init_val, 0, DTYPE_SIZES[dtype]);
     }
   }
 	
@@ -853,7 +856,7 @@ static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
       break;
     case LIST_STORE:
       // Remove if it's a zero, insert otherwise
-      if (!memcmp(value, NM_LIST_STORAGE(self)->default_val, DTYPE_SIZES[NM_DTYPE(self)])) {
+      if (!std::memcmp(value, NM_STORAGE_LIST(self)->default_val, DTYPE_SIZES[NM_DTYPE(self)])) {
         free(value);
         value = list_storage_remove(NM_STORAGE(self), slice);
         free(value);
@@ -891,7 +894,7 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 
   UnwrapNMatrix( left_v, left );
 
-  if (RUBYVAL_IS_NUMERIC(right_v))
+  if (NM_RUBYVAL_IS_NUMERIC(right_v))
     return matrix_multiply_scalar(left, right_v);
 
   else if (TYPE(right_v) == T_ARRAY)
@@ -985,7 +988,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
       fprintf(stderr, "\n");
       */
 
-      //DENSE_STORAGE* s = NM_DENSE_STORAGE(self);
+      //DENSE_STORAGE* s = NM_STORAGE_DENSE(self);
 
       if (NM_DTYPE(self) == RUBYOBJ)  result = *reinterpret_cast<VALUE*>( ttable[NM_STYPE(self)](NM_STORAGE(self), slice) );
       else                            result = rubyobj_from_cval( ttable[NM_STYPE(self)](NM_STORAGE(self), slice), NM_DTYPE(self) ).rval;
@@ -1111,7 +1114,7 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
  */
 dtype_t dtype_from_rbstring(VALUE str) {
   for (size_t index = 0; index < NUM_DTYPES; ++index) {
-  	if (!strncmp(RSTRING_PTR(str), DTYPE_NAMES[index], RSTRING_LEN(str))) {
+  	if (!std::strncmp(RSTRING_PTR(str), DTYPE_NAMES[index], RSTRING_LEN(str))) {
   		return static_cast<dtype_t>(index);
   	}
   }
@@ -1217,7 +1220,7 @@ static dtype_t dtype_guess(VALUE v) {
 static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
   size_t r;
   VALUE beg, end;
-  int i;
+  int exl;
 
   SLICE* slice = ALLOC(SLICE);
   slice->coords = ALLOC_N(size_t,rank);
@@ -1232,9 +1235,14 @@ static SLICE* get_slice(size_t rank, VALUE* c, VALUE self) {
       slice->lengths[r] = 1;
 
     } else if (CLASS_OF(c[r]) == rb_cRange) {
-        rb_range_values(c[r], &beg, &end, &i);
+        rb_range_values(c[r], &beg, &end, &exl);
         slice->coords[r]  = FIX2UINT(beg);
         slice->lengths[r] = FIX2UINT(end) - slice->coords[r] + 1;
+
+        // Exclude last element for a...b range
+        if (exl)
+          slice->lengths[r] -= 1;
+
         slice->single     = false;
 
     } else {
@@ -1287,7 +1295,7 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
   if (SYMBOL_P(argv[offset])) {
   	return dtype_from_rbsymbol(argv[offset]);
   	
-  } else if (RUBYVAL_IS_STRING(argv[offset])) {
+  } else if (TYPE(argv[offset]) == T_STRING) {
   	return dtype_from_rbstring(StringValue(argv[offset]));
   	
   } else if (stype == YALE_STORE) {
@@ -1305,7 +1313,7 @@ static void* interpret_initial_value(VALUE arg, dtype_t dtype) {
   unsigned int index;
   void* init_val;
   
-  if (RUBYVAL_IS_ARRAY(arg)) {
+  if (TYPE(arg) == T_ARRAY) {
   	// Array
     
     init_val = ALLOC_N(int8_t, DTYPE_SIZES[dtype] * RARRAY_LEN(arg));
@@ -1360,7 +1368,7 @@ static stype_t interpret_stype(VALUE arg) {
   if (SYMBOL_P(arg)) {
   	return stype_from_rbsymbol(arg);
   	
-  } else if (RUBYVAL_IS_STRING(arg)) {
+  } else if (TYPE(arg) == T_STRING) {
   	return stype_from_rbstring(StringValue(arg));
   	
   } else {
@@ -1391,7 +1399,7 @@ static stype_t stype_from_rbstring(VALUE str) {
   size_t index;
   
   for (index = 0; index < NUM_STYPES; ++index) {
-    if (!strncmp(RSTRING_PTR(str), STYPE_NAMES[index], 3)) {
+    if (!std::strncmp(RSTRING_PTR(str), STYPE_NAMES[index], 3)) {
     	return static_cast<stype_t>(index);
     }
   }
@@ -1508,7 +1516,7 @@ static VALUE nm_det_exact(VALUE self) {
 
   // Calculate the determinant and then assign it to the return value
   void* result = ALLOCA_N(char, DTYPE_SIZES[NM_DTYPE(self)]);
-  det_exact(NM_SHAPE0(self), NM_DENSE_STORAGE(self)->elements, NM_SHAPE0(self), NM_DTYPE(self), result);
+  nm_math_det_exact(NM_SHAPE0(self), NM_STORAGE_DENSE(self)->elements, NM_SHAPE0(self), NM_DTYPE(self), result);
 
   return rubyobj_from_cval(result, NM_DTYPE(self)).rval;
 }
@@ -1520,7 +1528,6 @@ static VALUE nm_det_exact(VALUE self) {
 // Exposed API //
 /////////////////
 
-extern "C" {
 
 /*
  * Create a dense matrix. Used by the NMatrix GSL fork. Unlike nm_create, this one copies all of the
@@ -1578,5 +1585,5 @@ VALUE rb_nvector_dense_create(dtype_t dtype, void* elements, size_t length) {
   return rb_nmatrix_dense_create(dtype, &shape, rank, elements, length);
 }
 
-}
+} // end of extern "C"
 

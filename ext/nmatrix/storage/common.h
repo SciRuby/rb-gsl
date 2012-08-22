@@ -36,33 +36,28 @@
  * Project Includes
  */
 #include "data/data.h"
+#include "nmatrix.h"
 
 /*
  * Macros
  */
+ 
+extern "C" {
 
 /*
  * Types
  */
 
-struct STORAGE {
-	// Common elements found in all storage types. Should not be re-arranged.
-	dtype_t	dtype;
-	size_t	rank;
-	size_t*	shape;
-	size_t*	offset;
-};
-
 // For binary operations involving matrices that need to be casted.
 struct STORAGE_PAIR {
-	STORAGE* left;
-	STORAGE* right;
+  STORAGE* left;
+  STORAGE* right;
 };
 
 struct SLICE {
-	size_t*	coords; // Coordinate of first element
-	size_t*	lengths; // Lengths of slice
-	bool  	single; // true if all lengths equal to 1 (represents single matrix element)
+  size_t*	coords; // Coordinate of first element
+  size_t*	lengths; // Lengths of slice
+  bool  	single; // true if all lengths equal to 1 (represents single matrix element)
 };
 
 /*
@@ -74,5 +69,6 @@ struct SLICE {
  */
 
 size_t storage_count_max_elements(const STORAGE* storage);
+} // end of extern "C" block
 
 #endif // STORAGE_COMMON_H
