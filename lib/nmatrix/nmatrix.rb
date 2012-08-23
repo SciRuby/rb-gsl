@@ -296,3 +296,4 @@ class N
 		NMatrix.new( dim, params.flatten, dtype )
 	end
 end
+=======
