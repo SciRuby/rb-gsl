@@ -226,8 +226,6 @@ void* list_storage_ref(STORAGE* storage, SLICE* slice) {
       ns->shape[i]  = slice->lengths[i];
     }
 
-    printf("Shape: [%d %d]\n", ns->shape[0], ns->shape[1]);
-    printf("Offset: [%d %d]\n", ns->offset[0], ns->offset[1]);
     ns->rows = s->rows;
     ns->default_val = s->default_val;
     
@@ -254,11 +252,11 @@ void* list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
 
   // drill down into the structure
   for (r = s->rank; r > 1; --r) {
-    n = list_insert(l, false, slice->coords[s->rank - r], list_create());
+    n = list_insert(l, false, s->offset[s->rank - r] + slice->coords[s->rank - r], list_create());
     l = reinterpret_cast<LIST*>(n->val);
   }
 
-  n = list_insert(l, true, slice->coords[s->rank - r], val);
+  n = list_insert(l, true, s->offset[s->rank - r] + slice->coords[s->rank - r], val);
   return n->val;
 }
 
@@ -276,10 +274,11 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
 
   // keep track of where we are in the traversals
   NODE** stack = ALLOCA_N( NODE*, s->rank - 1 );
+  NM_CHECK_ALLOC(stack);
 
   for (r = (int)(s->rank); r > 1; --r) {
   	// does this row exist in the matrix?
-    n = list_find(l, slice->coords[s->rank - r]);
+    n = list_find(l, s->offset[s->rank - r] + slice->coords[s->rank - r]);
 
     if (!n) {
     	// not found
@@ -293,7 +292,7 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
     }
   }
 
-  rm = list_remove(l, slice->coords[s->rank - r]);
+  rm = list_remove(l, s->offset[s->rank -r] + slice->coords[s->rank - r]);
 
   // if we removed something, we may now need to remove parent lists
   if (rm) {
@@ -301,7 +300,7 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
     	// walk back down the stack
       
       if (((LIST*)(stack[r]->val))->first == NULL)
-        free(list_remove(reinterpret_cast<LIST*>(stack[r]->val), slice->coords[r]));
+        free(list_remove(reinterpret_cast<LIST*>(stack[r]->val), s->offset[r] + slice->coords[r]));
       else break; // no need to continue unless we just deleted one.
 
     }

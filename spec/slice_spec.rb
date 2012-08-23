@@ -30,7 +30,17 @@ describe "Slice operation" do
   [:dense, :list].each do |stype|
   context "for #{stype}" do
     before :each do
-      @m = NMatrix.new(stype, [3,3], (0..9).to_a, :int32)
+      @m = NMatrix.new(stype, [3,3], 0, :int32)
+
+      @m[0,0] = 0
+      @m[0,1] = 1
+      @m[0,2] = 2
+      @m[1,0] = 3
+      @m[1,1] = 4
+      @m[1,2] = 5
+      @m[2,0] = 6
+      @m[2,1] = 7
+      @m[2,2] = 8
     end
 
     it "should have #is_ref? method" do
@@ -86,7 +96,7 @@ describe "Slice operation" do
     end
 
     
-    context "be reference" do
+    context "by reference" do
       it 'should return an NMatrix' do
         n = @m[0..1,0..1]
         n.should.eql? NMatrix.new(stype, [2,2], [0,1,3,4], :int32)

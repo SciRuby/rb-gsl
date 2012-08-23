@@ -1084,8 +1084,8 @@ static VALUE nm_mset(int argc, VALUE* argv, VALUE self) {
       // Remove if it's a zero, insert otherwise
       if (!memcmp(value, NM_LIST_STORAGE(self)->default_val, DTYPE_SIZES[NM_DTYPE(self)])) {
         free(value);
-        value = list_storage_remove(NM_STORAGE(self), slice);
-        free(value);
+        // value = list_storage_remove(NM_STORAGE(self), slice);
+        // free(value);
       } else {
         list_storage_insert(NM_STORAGE(self), slice, value);
       }
