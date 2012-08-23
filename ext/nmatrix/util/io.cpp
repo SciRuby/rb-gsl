@@ -50,7 +50,7 @@ namespace nm { namespace io {
     "miMATRIX"
   };
 
-/*  const size_t MATLAB_DTYPE_SIZES[NUM_MATLAB_DTYPES] = {
+  const size_t MATLAB_DTYPE_SIZES[NUM_MATLAB_DTYPES] = {
     1, // undefined
     1, // int8
     1, // uint8
@@ -67,7 +67,7 @@ namespace nm { namespace io {
     8, // uint64
     1  // matlab array?
   };
-*/
+
 
 /*
  * Templated function for converting from MATLAB dtypes to NMatrix dtypes.
@@ -246,11 +246,49 @@ static VALUE nm_rbstring_matlab_repack(VALUE self, VALUE str, VALUE from, VALUE 
 }
 
 
+/*
+ * Take two byte-strings (real and imaginary) and treat them as if they contain
+ * a sequence of data of type dtype. Merge them together and return a new string.
+ */
+static VALUE nm_rbstring_merge(VALUE self, VALUE rb_real, VALUE rb_imaginary, VALUE rb_dtype) {
+
+  // Sanity check.
+  if (RSTRING_LEN(rb_real) != RSTRING_LEN(rb_imaginary)) {
+    rb_raise(rb_eArgError, "real and imaginary components do not have same length");
+  }
+
+  dtype_t dtype = nm_dtype_from_rbsymbol(rb_dtype);
+  size_t len    = DTYPE_SIZES[dtype];
+
+  char *real    = RSTRING_PTR(rb_real),
+       *imag    = RSTRING_PTR(rb_imaginary);
+
+  char* merge   = ALLOCA_N(char, RSTRING_LEN(rb_real)*2);
+
+  size_t merge_pos = 0;
+
+  // Merge the two sequences
+  for (size_t i = 0; i < RSTRING_LEN(rb_real); i += len) {
+
+    // Copy real number
+    memcpy(merge + merge_pos, real + i, len);
+    merge_pos += len;
+
+    // Copy imaginary number
+    memcpy(merge + merge_pos, imag + i, len);
+    merge_pos += len;
+  }
+
+  return rb_str_new(merge, merge_pos);
+}
+
+
 void nm_init_io() {
   cNMatrix_IO = rb_define_module_under(cNMatrix, "IO");
   cNMatrix_IO_Matlab = rb_define_module_under(cNMatrix_IO, "Matlab");
 
   rb_define_singleton_method(cNMatrix_IO_Matlab, "repack", (METHOD)nm_rbstring_matlab_repack, 3);
+  rb_define_singleton_method(cNMatrix_IO_Matlab, "complex_merge", (METHOD)nm_rbstring_merge, 3);
 }
 
 

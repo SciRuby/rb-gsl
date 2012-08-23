@@ -136,49 +136,43 @@ module NMatrix::IO::Matlab
       # Complex is always unpacked and repacked, as the real and imaginary components must be merged together (MATLAB
       # stores them separately for some crazy reason).
       def repacked_data(to_dtype = nil)
+
         real_mdtype = self.real_part.tag.data_type
 
-        if !self.complex and MatReader::NO_REPACK.include?(real_mdtype)
-          self.real_part.data
+        # Sometimes repacking isn't necessary -- sometimes the format is already good
+        if !self.complex && MatReader::NO_REPACK.include?(real_mdtype)
+          return self.real_part.data
+        end
 
-        else
-          to_dtype ||=
-          begin
-            imag_mdtype = self.imaginary_part.tag.data_type
+        # Figure out what dtype to use based on the MATLAB data-types (mdtypes). They could be different for real and
+        # imaginary, so call upcast to figure out what to use.
+        to_dtype = nil
 
-            # Figure out what dtype we need to convert to and get arguments for pack
-            if self.complex && real_mdtype != imag_mdtype
-              # TODO: Expose upcasting in NMatrix namespace and allow this to take different dtypes in real and imag components.
-              raise NotImplementedError, 'MATLAB dtypes differ for real and imaginary components, please specify dtype as argument'
-            end
+        components = [] # real and imaginary parts or just the real part
 
-            MatReader::MDTYPE_TO_DTYPE[real_mdtype]
+        if self.complex
+          imag_mdtype = self.imaginary_part.tag.data_type
+
+          # Make sure we convert both mdtypes do the same dtype
+          to_dtype = NMatrix.upcast(MatReader::MDTYPE_TO_DTYPE[real_mdtype], MatReader::MDTYPE_TO_DTYPE[imag_mdtype])
+
+          # Let's make sure we don't try to send NMatrix complex integers. We need complex floating points.
+          unless [:float32, :float64].include?(to_dtype)
+            to_dtype = NMatrix.upcast(to_dtype, :float32)
           end
 
-          repack_args = MatReader::DTYPE_PACK_ARGS[to_dtype]
-
-          unpacked_data(real_mdtype, imag_mdtype).pack(repack_args)
-        end
-      end
-
-      def unpacked_data(real_mdtype = nil, imag_mdtype = nil)
-        # Get Matlab data type and unpack args
-        real_mdtype			||= self.real_part.tag.data_type
-        real_unpack_args	= MatReader::MDTYPE_UNPACK_ARGS[real_mdtype]
-
-        # zip real and complex components together, or just return real component
-        if self.complex
-          imag_mdtype			||= self.imaginary_part.tag.data_type
-          imag_unpack_args	= MatReader::MDTYPE_UNPACK_ARGS[imag_mdtype]
-
-          unpacked_real = self.real_part.data.unpack(real_unpack_args)
-          unpacked_imag = self.imaginary_part.data.unpack(imag_unpack_args)
-
-          unpacked_real.zip(unpacked_imag).flatten
+          # Repack the imaginary part
+          components[1] = ::NMatrix::IO::Matlab.repack( self.imaginary_part.data, imag_mdtype, :dtype => to_dtype )
 
         else
-          self.real_part.data.unpack(real_unpack_args)
+          to_dtype = MatReader::MDTYPE_TO_DTYPE[real_mdtype]
         end
+
+        # Repack the real part
+        components[0] = ::NMatrix::IO::Matlab.repack( self.real_part.data, real_mdtype, :dtype => to_dtype )
+
+        # Merge the two parts if complex, or just return the real part.
+        self.complex ? ::NMatrix::IO::Matlab.complex_merge( components[0], components[1], to_dtype ) : components[0]
       end
 
 
@@ -188,15 +182,10 @@ module NMatrix::IO::Matlab
       def repacked_indices(to_itype)
         return [row_index.data, column_index.data] if to_itype == :uint32 # No need to re-pack -- already correct
 
-        unpack_args = [MatReader::MDTYPE_UNPACK_ARGS[:miINT32]] * (self.row_index.data.length / 4)
-        unpacked_row_indices = self.row_index.data.unpack(*unpack_args)
-        repacked_row_indices = unpacked_row_indices.pack(*([MatReader::ITYPE_PACK_ARGS[to_itype][1]] * unpacked_row_indices.size))
+        repacked_row_indices = ::NMatrix::IO::Matlab.repack( self.row_index.data, :miINT32, :itype => to_itype )
+        repacked_col_indices = ::NMatrix::IO::Matlab.repack( self.column_index.data, :miINT32, :itype => to_itype )
 
-        unpack_args = [MatReader::MDTYPE_UNPACK_ARGS[:miINT32]] * (self.column_index.data.length / 4)
-        unpacked_column_indices = self.column_index.data.unpack(*unpack_args)
-        repacked_column_indices = unpacked_column_indices.pack(*([MatReader::ITYPE_PACK_ARGS[to_itype][1]] * unpacked_column_indices.size))
-
-        [repacked_row_indices, repacked_column_indices]
+        [repacked_row_indices, repacked_col_indices]
       end
 
 
