@@ -129,24 +129,45 @@ module NMatrix::IO::Matlab
         dtype == :float32 ? :complex64 : :complex128
       end
 
+      # Unpacks data without repacking it.
+      #
+      # Used only for dense matrix creation. Yale matrix creation uses repacked_data.
+      def unpacked_data real_mdtype=nil, imag_mdtype=nil
+        # Get Matlab data type and unpack args
+        real_mdtype ||= self.real_part.tag.data_type
+        real_unpack_args = MatReader::MDTYPE_UNPACK_ARGS[real_mdtype]
+
+        # zip real and complex components together, or just return real component
+        if self.complex
+          imag_mdtype ||= self.imaginary_part.tag.data_type
+          imag_unpack_args = MatReader::MDTYPE_UNPACK_ARGS[imag_mdtype]
+
+          unpacked_real = self.real_part.data.unpack(real_unpack_args)
+          unpacked_imag = self.imaginary_part.data.unpack(imag_unpack_args)
+
+          unpacked_real.zip(unpacked_imag).flatten
+        else
+          self.real_part.data.unpack(real_unpack_args)
+        end
+
+      end
+
       # Unpacks and repacks data into the appropriate format for NMatrix.
       #
       # If data is already in the appropriate format, does not unpack or repack, just returns directly.
       #
       # Complex is always unpacked and repacked, as the real and imaginary components must be merged together (MATLAB
       # stores them separately for some crazy reason).
+      #
+      # Used only for Yale storage creation. For dense, see unpacked_data.
+      #
+      # This function calls repack and complex_merge, which are both defined in io.cpp.
       def repacked_data(to_dtype = nil)
 
         real_mdtype = self.real_part.tag.data_type
 
-        # Sometimes repacking isn't necessary -- sometimes the format is already good
-        if !self.complex && MatReader::NO_REPACK.include?(real_mdtype)
-          return self.real_part.data
-        end
-
         # Figure out what dtype to use based on the MATLAB data-types (mdtypes). They could be different for real and
         # imaginary, so call upcast to figure out what to use.
-        to_dtype = nil
 
         components = [] # real and imaginary parts or just the real part
 
@@ -154,25 +175,36 @@ module NMatrix::IO::Matlab
           imag_mdtype = self.imaginary_part.tag.data_type
 
           # Make sure we convert both mdtypes do the same dtype
-          to_dtype = NMatrix.upcast(MatReader::MDTYPE_TO_DTYPE[real_mdtype], MatReader::MDTYPE_TO_DTYPE[imag_mdtype])
+          to_dtype ||= NMatrix.upcast(MatReader::MDTYPE_TO_DTYPE[real_mdtype], MatReader::MDTYPE_TO_DTYPE[imag_mdtype])
 
           # Let's make sure we don't try to send NMatrix complex integers. We need complex floating points.
           unless [:float32, :float64].include?(to_dtype)
             to_dtype = NMatrix.upcast(to_dtype, :float32)
           end
 
+          STDERR.puts "imag: Requesting dtype #{to_dtype.inspect}"
           # Repack the imaginary part
           components[1] = ::NMatrix::IO::Matlab.repack( self.imaginary_part.data, imag_mdtype, :dtype => to_dtype )
 
         else
-          to_dtype = MatReader::MDTYPE_TO_DTYPE[real_mdtype]
+
+          to_dtype ||= MatReader::MDTYPE_TO_DTYPE[real_mdtype]
+
+          # Sometimes repacking isn't necessary -- sometimes the format is already good
+          if MatReader::NO_REPACK.include?(real_mdtype)
+            STDERR.puts "No repack"
+            return [self.real_part.data, to_dtype]
+          end
+
         end
 
         # Repack the real part
+        STDERR.puts "real: Requesting dtype #{to_dtype.inspect}"
         components[0] = ::NMatrix::IO::Matlab.repack( self.real_part.data, real_mdtype, :dtype => to_dtype )
 
         # Merge the two parts if complex, or just return the real part.
-        self.complex ? ::NMatrix::IO::Matlab.complex_merge( components[0], components[1], to_dtype ) : components[0]
+        [self.complex ? ::NMatrix::IO::Matlab.complex_merge( components[0], components[1], to_dtype ) : components[0],
+         to_dtype]
       end
 
 
@@ -182,6 +214,7 @@ module NMatrix::IO::Matlab
       def repacked_indices(to_itype)
         return [row_index.data, column_index.data] if to_itype == :uint32 # No need to re-pack -- already correct
 
+        STDERR.puts "indices: Requesting itype #{to_itype.inspect}"
         repacked_row_indices = ::NMatrix::IO::Matlab.repack( self.row_index.data, :miINT32, :itype => to_itype )
         repacked_col_indices = ::NMatrix::IO::Matlab.repack( self.column_index.data, :miINT32, :itype => to_itype )
 
@@ -217,11 +250,13 @@ module NMatrix::IO::Matlab
           #binding.pry
 
           # MATLAB always uses :miINT32 for indices according to the spec
-          NMatrix.new(:yale, dimensions, dtype, *repacked_indices(to_itype), repacked_data(dtype), from_dtype)
+          ia_ja                     = repacked_indices(to_itype)
+          data_str, repacked_dtype  = repacked_data(dtype)
+          NMatrix.new(:yale, self.dimensions, repacked_dtype, ia_ja[0], ia_ja[1], data_str, repacked_dtype)
 
         else
           # Call regular dense constructor.
-          NMatrix.new(:dense, dimensions, unpacked_data, dtype)
+          NMatrix.new(:dense, self.dimensions, unpacked_data, dtype)
         end
       end
 

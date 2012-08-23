@@ -138,19 +138,19 @@ YALE_STORAGE* create_from_old_yale(dtype_t dtype, size_t* shape, void* r_ia, voi
   RDType* ar = reinterpret_cast<RDType*>(r_a);
 
   // Read through ia and ja and figure out the ndnz (non-diagonal non-zeros) count.
-  size_t ndnz = 0;
-  IType i;
+  size_t ndnz = 0, i, p, p_next;
+
   for (i = 0; i < shape[0]; ++i) { // Walk down rows
-    for (IType p = ir[i], p_next = ir[i+1]; p < p_next; ++p) { // Now walk through columns
-      if (i != jr[p]) {
-      	// entry is non-diagonal and probably nonzero
-      	++ndnz;
-      }
+    for (p = ir[i], p_next = ir[i+1]; p < p_next; ++p) { // Now walk through columns
+
+      if (i != jr[p]) ++ndnz; // entry is non-diagonal and probably nonzero
+
     }
   }
 
   // Having walked through the matrix, we now go about allocating the space for it.
   YALE_STORAGE* s = alloc(dtype, shape, 2);
+
   s->capacity = shape[0] + ndnz + 1;
   s->ndnz     = ndnz;
 
@@ -160,22 +160,36 @@ YALE_STORAGE* create_from_old_yale(dtype_t dtype, size_t* shape, void* r_ia, voi
   IType* ijl    = reinterpret_cast<IType*>(s->ija);
   LDType* al    = reinterpret_cast<LDType*>(s->a);
 
+  // set the diagonal to zero -- this prevents uninitialized values from popping up.
+  for (size_t index = 0; index < shape[0]; ++index) {
+    al[index] = 0;
+  }
+
   // Figure out where to start writing JA in IJA:
-  IType pp = s->shape[0]+1;
+  size_t pp = s->shape[0]+1;
+
+  // Find beginning of first row
+  p = ir[0];
 
   // Now fill the arrays
   for (i = 0; i < s->shape[0]; ++i) {
 
-    // Now walk through columns
-    for (IType p = ir[i], p_next = ir[i+1]; p < p_next; ++p, ++pp) {
+    // Set the beginning of the row (of output)
+    ijl[i] = pp;
+
+    // Now walk through columns, starting at end of row (of input)
+    for (size_t p_next = ir[i+1]; p < p_next; ++p, ++pp) {
 
       if (i == jr[p]) { // diagonal
+
         al[i] = ar[p];
         --pp;
 
       } else {          // nondiagonal
+
         ijl[pp] = jr[p];
         al[pp]  = ar[p];
+
       }
     }
   }

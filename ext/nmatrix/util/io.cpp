@@ -27,7 +27,6 @@
 
 #include "io.h"
 
-#include <sstream>
 #include <ruby.h>
 
 namespace nm { namespace io {
@@ -83,8 +82,7 @@ char* matlab_cstring_to_dtype_string(size_t& result_len, const char* str, size_t
   }
 
   for (size_t i = 0, j = 0; i < bytes; i += sizeof(MDType), j += sizeof(DType)) {
-    DType val = (DType)(*reinterpret_cast<const MDType*>(str + i));
-    result[j] = val;
+    *reinterpret_cast<DType*>(result+j) = (DType)(*reinterpret_cast<const MDType*>(str + i));
   }
 
   return result;
@@ -222,6 +220,7 @@ static VALUE nm_rbstring_matlab_repack(VALUE self, VALUE str, VALUE from, VALUE 
     // signed.
     to_type           = static_cast<uint8_t>(to_itype);
     if (to_itype != UINT8) to_type += 1;
+
 
   } else {
     rb_raise(rb_eArgError, "third argument must have either :itype or :dtype as a key");

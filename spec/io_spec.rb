@@ -27,16 +27,29 @@
 require "./lib/nmatrix"
 
 describe NMatrix::IO do
-  it "successfully repacks a string" do
+  it "repacks a string" do
     NMatrix::IO::Matlab.repack("hello", :miUINT8, :dtype => :byte).should == "hello"
   end
 
+  it "creates yale from internal byte-string function" do
+    n = NMatrix.new(:yale, [4,4], :byte, "\0\1\3\3\4", "\0\1\3\0\0\0\0\0\0\0\0", "\2\3\5\4", :byte)
+    n[0,0].should == 2
+    n[1,1].should == 3
+    n[1,3].should == 5
+    n[3,0].should == 4
+    n[2,2].should == 0
+    n[3,3].should == 0
+  end
+
   it "reads MATLAB .mat file containing a single square sparse matrix" do
+    # Note: same matrix as above
     n = NMatrix::IO::Matlab.load_mat("spec/4x4_sparse.mat")
     n[0,0].should == 2
     n[1,1].should == 3
     n[1,3].should == 5
     n[3,0].should == 4
+    n[2,2].should == 0
+    n[3,3].should == 0
   end
 
   it "reads MATLAB .mat file containing a single dense matrix" do
