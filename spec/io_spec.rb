@@ -27,6 +27,10 @@
 require "./lib/nmatrix"
 
 describe NMatrix::IO do
+  it "successfully repacks a string" do
+    NMatrix::IO::Matlab.repack("hello", :miUINT8, :dtype => :byte).should == "hello"
+  end
+
   it "reads MATLAB .mat file containing a single square sparse matrix" do
     n = NMatrix::IO::Matlab.load_mat("spec/4x4_sparse.mat")
     n[0,0].should == 2

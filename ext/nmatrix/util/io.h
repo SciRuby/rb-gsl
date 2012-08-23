@@ -81,6 +81,11 @@ extern "C" {
 
   void nm_init_io(void);
 
+
+  /*
+   * Macros.
+   */
+
   /*
    * Macro for a function pointer table between NMatrix dtypes and MATLAB dtypes.
    *
@@ -102,6 +107,10 @@ extern "C" {
       { NULL, fun<double,int8_t>, fun<double,uint8_t>, fun<double,int16_t>, fun<double,uint16_t>, fun<double,int32_t>, fun<double,uint32_t>, fun<double,float>, NULL, fun<double,double>, NULL, NULL, fun<double,int64_t>, fun<double,uint64_t>, NULL }             \
     };
 
+  /*
+   * Hash#has_key? for symbols. Arguments are: hash (VALUE), string (char*).
+   */
+  #define RB_HASH_HAS_SYMBOL_KEY(hash, str)   (rb_funcall((hash), rb_intern("has_key?"), 1, ID2SYM(rb_intern(str))) == Qtrue)
 }
 
 

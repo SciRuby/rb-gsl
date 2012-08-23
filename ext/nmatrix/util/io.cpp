@@ -50,7 +50,7 @@ namespace nm { namespace io {
     "miMATRIX"
   };
 
-  const size_t MATLAB_DTYPE_SIZES[NUM_MATLAB_DTYPES] = {
+/*  const size_t MATLAB_DTYPE_SIZES[NUM_MATLAB_DTYPES] = {
     1, // undefined
     1, // int8
     1, // uint8
@@ -67,22 +67,27 @@ namespace nm { namespace io {
     8, // uint64
     1  // matlab array?
   };
-
+*/
 
 /*
  * Templated function for converting from MATLAB dtypes to NMatrix dtypes.
  */
 template <typename DType, typename MDType>
-std::string matlab_cstring_to_dtype_string(const char* str, size_t bytes) {
+char* matlab_cstring_to_dtype_string(size_t& result_len, const char* str, size_t bytes) {
 
-  std::ostringstream out;
+  result_len   = bytes / sizeof(DType);
+  char* result = ALLOC_N(char, bytes / sizeof(DType));
 
-  for (size_t i = 0; i < bytes / sizeof(MDType); i += sizeof(MDType)) {
-    DType val = *reinterpret_cast<const MDType*>(str+i);
-    out.write( reinterpret_cast<char*>(&val), sizeof(DType) );
+  if (bytes % sizeof(MDType) != 0) {
+    rb_raise(rb_eArgError, "the given string does not divide evenly for the given MATLAB dtype");
   }
 
-  return out.str();
+  for (size_t i = 0, j = 0; i < bytes; i += sizeof(MDType), j += sizeof(DType)) {
+    DType val = (DType)(*reinterpret_cast<const MDType*>(str + i));
+    result[j] = val;
+  }
+
+  return result;
 }
 
 }} // end of namespace nm::io
@@ -196,22 +201,30 @@ static nm::io::matlab_dtype_t matlab_dtype_from_rbsymbol(VALUE sym) {
  *                 what to give as output.
  */
 static VALUE nm_rbstring_matlab_repack(VALUE self, VALUE str, VALUE from, VALUE options) {
-  NM_MATLAB_DTYPE_TEMPLATE_TABLE(ttable, nm::io::matlab_cstring_to_dtype_string, std::string, const char* str, size_t bytes);
-
   nm::io::matlab_dtype_t from_type = matlab_dtype_from_rbsymbol(from);
   uint8_t to_type;
 
-  if (rb_funcall(options, rb_intern("has_key?"), rb_intern("dtype"))) { // Hash#has_key?(:dtype)
-    dtype_t to_dtype = nm_dtype_from_rbsymbol(rb_hash_aref(options, rb_intern("dtype")));
-    to_type  = static_cast<int8_t>(to_dtype);
-  } else {
-    itype_t to_itype = nm_itype_from_rbsymbol(rb_hash_aref(options, rb_intern("itype")));
+  if (TYPE(options) != T_HASH) {
+    rb_raise(rb_eArgError, "third argument to repack must be an options hash");
+  }
+
+  if (RB_HASH_HAS_SYMBOL_KEY(options, "dtype")) { // Hash#has_key?(:dtype)
+
+    dtype_t to_dtype  = nm_dtype_from_rbsymbol(rb_hash_aref(options, ID2SYM(rb_intern("dtype"))));
+    to_type           = static_cast<int8_t>(to_dtype);
+
+  } else if (RB_HASH_HAS_SYMBOL_KEY(options, "itype")) {
+
+    itype_t to_itype  = nm_itype_from_rbsymbol(rb_hash_aref(options, ID2SYM(rb_intern("itype"))));
 
     // we're going to cheat and use the DTYPE template table. To do this, we just act like uint8_t
     // is a dtype (both are 0, itype and dtype), or we add 1 to the other itypes and treat them as
     // signed.
-    to_type = static_cast<uint8_t>(to_itype);
+    to_type           = static_cast<uint8_t>(to_itype);
     if (to_itype != UINT8) to_type += 1;
+
+  } else {
+    rb_raise(rb_eArgError, "third argument must have either :itype or :dtype as a key");
   }
 
   // For next few lines, see explanation above NM_MATLAB_DTYPE_TEMPLATE_TABLE definition in io.h.
@@ -219,9 +232,17 @@ static VALUE nm_rbstring_matlab_repack(VALUE self, VALUE str, VALUE from, VALUE 
     rb_raise(rb_eArgError, "can only repack into a simple dtype, no complex/rational/VALUE");
   }
 
-  std::string repacked_data = ttable[to_type][from_type](RSTRING_PTR(str), RSTRING_LEN(str));
+  // Do the actual repacking -- really simple!
+  NM_MATLAB_DTYPE_TEMPLATE_TABLE(ttable, nm::io::matlab_cstring_to_dtype_string, char*, size_t& result_len, const char* str, size_t bytes);
 
-  return rb_str_new2(repacked_data.c_str());
+  size_t repacked_data_length;
+  char* repacked_data = ttable[to_type][from_type](repacked_data_length, RSTRING_PTR(str), RSTRING_LEN(str));
+
+  // Encode as 8-bit ASCII with a length -- don't want to hiccup on \0
+  VALUE result = rb_str_new(repacked_data, repacked_data_length);
+  free(repacked_data); // Don't forget to free what we allocated!
+
+  return result;
 }
 
 
