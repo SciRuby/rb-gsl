@@ -59,18 +59,27 @@ end
 
 def create_conf_h(file)
   print "creating #{file}\n"
-  hfile = open(file, "w")
-  for line in $defs
-    line =~ /^-D(.*)/
-    hfile.printf "#define %s 1\n", $1
+  File.open(file, 'w') do |hfile|
+  	header_guard = file.upcase.sub(/\s|\./, '_')
+		
+		hfile.puts "#ifndef #{header_guard}"
+		hfile.puts "#define #{header_guard}"
+		hfile.puts
+		
+		for line in $defs
+		  line =~ /^-D(.*)/
+		  hfile.printf "#define %s 1\n", $1
+		end
+		
+		hfile.puts
+		hfile.puts "#endif"
   end
-  hfile.close
 end
 
 if RUBY_VERSION < '1.9'
   raise(NotImplementedError, "Sorry, you need Ruby 1.9!")
 else
-  $INSTALLFILES = [['nmatrix.h', '$(archdir)'], ['nmatrix_config.h', '$(archdir)']]
+  $INSTALLFILES = [['nmatrix.h', '$(archdir)'], ['nmatrix.hpp', '$(archdir)'], ['nmatrix_config.h', '$(archdir)']]
   if /cygwin|mingw/ =~ RUBY_PLATFORM
 	 $INSTALLFILES << ['libnmatrix.a', '$(archdir)']
   end
@@ -81,20 +90,22 @@ if /cygwin|mingw/ =~ RUBY_PLATFORM
 end
 
 $DEBUG = true
-$CFLAGS = ["-Wall ",$CFLAGS].join(" ") #-BENCHMARK for comparing transp
+$CFLAGS = ["-Wall ",$CFLAGS].join(" ")
 
-srcs = %w(
-nmatrix
-list
-dense
-yale
-dfuncs
-smmp1
-smmp2
-cblas
-blas
-rational
-)
+$srcs = [
+	'nmatrix.cpp',
+	'ruby_constants.cpp',
+
+	'data/data.cpp',
+	'util/math.cpp',
+  'util/sl_list.cpp',
+  'util/io.cpp',
+  'storage/common.cpp',
+	'storage/storage.cpp',
+	'storage/dense.cpp',
+  'storage/yale.cpp',
+  'storage/list.cpp'
+]
 # add smmp in to get generic transp; remove smmp2 to eliminate funcptr transp
 
 header = "stdint.h"
@@ -134,10 +145,40 @@ have_header("f2c.h")
 
 $libs += " -lcblas -latlas "
 
-$objs = srcs.collect{|i| i+".o" }
+$objs = %w{nmatrix ruby_constants data/data util/io util/math util/sl_list storage/common storage/storage storage/dense storage/yale storage/list}.map { |i| i + ".o" }
 
-$CFLAGS += " -O0"
+#CONFIG['CXX'] = 'clang++'
+
+if CONFIG['CXX'] == 'clang++'
+	$CPP_STANDARD = 'c++11'
+
+else
+	version = `g++ -v 2>&1`.lines.to_a.last.match(/gcc\sversion\s(\d\.\d.\d)/).captures.first
+	
+	if version < '4.7.0'
+		$CPP_STANDARD = 'c++0x'
+	else
+		$CPP_STANDARD = 'c++11'
+	end
+end
+
+$CFLAGS += " -O0 "
+# -std=c++11 only works with G++ 4.7 and higher.
+$CPPFLAGS += " -O0 -std=#{$CPP_STANDARD} " #-fmax-errors=10 -save-temps
+
+CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
+CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
 
 create_conf_h("nmatrix_config.h")
 create_makefile("nmatrix")
 
+Dir.mkdir("data") unless Dir.exists?("data")
+Dir.mkdir("util") unless Dir.exists?("util")
+Dir.mkdir("storage") unless Dir.exists?("storage")
+
+# to clean up object files in subdirectories:
+open('Makefile', 'a') do |f|
+  f.write <<EOS
+CLEANOBJS := $(CLEANOBJS) data/*.#{CONFIG["OBJEXT"]} storage/*.#{CONFIG["OBJEXT"]} util/*.#{CONFIG["OBJEXT"]}
+EOS
+end
