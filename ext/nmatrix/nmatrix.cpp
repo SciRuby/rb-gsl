@@ -32,6 +32,7 @@
  */
 
 #include <ruby.h>
+#include <algorithm> // std::min
 
 /*
  * Project Includes
@@ -102,7 +103,7 @@ static VALUE nm_eqeq(VALUE left, VALUE right);
 static VALUE matrix_multiply_scalar(NMATRIX* left, VALUE scalar);
 static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right);
 static VALUE nm_multiply(VALUE left_v, VALUE right_v);
-
+static VALUE nm_factorize_lu_bang(VALUE self);
 static VALUE nm_det_exact(VALUE self);
 static VALUE nm_complex_conjugate_bang(VALUE self);
 
@@ -189,7 +190,12 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, "/",			(METHOD)nm_ew_divide,		1);
 //rb_define_method(cNMatrix, "%",			(METHOD)nm_ew_mod,			1);
 	rb_define_method(cNMatrix, "eql?",	(METHOD)nm_eqeq,				1);
+
+	/////////////////////////
+	// Matrix Math Methods //
+	/////////////////////////
 	rb_define_method(cNMatrix, "dot",		(METHOD)nm_multiply,		1);
+	rb_define_method(cNMatrix, "factorize_lu!", (METHOD)nm_factorize_lu_bang, 0);
 	
 	/*
 	 * TODO: Write new elementwise code for boolean operations
@@ -918,6 +924,27 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
   } 
 
   return Qnil;
+}
+
+/*
+ * In-place LU factorization of a matrix.
+ */
+static VALUE nm_factorize_lu_bang(VALUE self) {
+  if (NM_STYPE(self) != DENSE_STORE) {
+    rb_raise(rb_eNotImpError, "only implemented for dense storage");
+  }
+
+  if (NM_DIM(self) != 2) {
+    rb_raise(rb_eNotImpError, "matrix is not 2-dimensional");
+  }
+
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::clapack_getrf, bool, const int m, const int n, void* a, const int lda, int* ipiv);
+
+  int* ipiv = ALLOCA_N(int, std::min(NM_SHAPE0(self), NM_SHAPE1(self)));
+
+  bool result = ttable[NM_DTYPE(self)](NM_SHAPE0(self), NM_SHAPE1(self), NM_STORAGE_DENSE(self)->elements, NM_SHAPE1(self), ipiv) ? Qtrue : Qfalse;
+
+  return self;
 }
 
 /*

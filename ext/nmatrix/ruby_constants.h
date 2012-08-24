@@ -83,6 +83,7 @@ extern VALUE	cNMatrix,
 							cNVector,
 							cNMatrix_YaleFunctions,
 							cNMatrix_BLAS,
+							cNMatrix_LAPACK,
 			
 							nm_eDataTypeError,
 							nm_eStorageTypeError;

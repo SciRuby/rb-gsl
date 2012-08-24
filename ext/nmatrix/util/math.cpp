@@ -24,6 +24,87 @@
 // == math.cpp
 //
 // Ruby-exposed BLAS functions.
+//
+// === Procedure for adding LAPACK or CBLAS functions to math.cpp/math.h:
+//
+// This procedure is written as if for a fictional function with double
+// version dbacon, which we'll say is from LAPACK.
+//
+// 1. Write a default templated version which probably returns a boolean.
+//    Call it bacon, and put it in math.h.
+//
+//    Order will always be row-major, so we don't need to pass that.
+//    CBLAS_TRANSPOSE-type arguments, however, should be passed.
+//
+//    Otherwise, arguments should look like those in cblas.h or clapack.h:
+//
+//    template <typename DType>
+//    bool bacon(const CBLAS_TRANSPOSE trans, const int M, const int N, DType* A, ...) {
+//      rb_raise(rb_eNotImpError, "only implemented for ATLAS types (float32, float64, complex64, complex128)");
+//    }
+//
+// 2. In math.cpp, add a templated inline static version of the function which takes
+//    only void* pointers and uses reinterpret_cast to convert them to the
+//    proper dtype.
+//
+//    This function may also need to switch m and n if these arguments are given.
+//
+//    For an example, see cblas_gemm. This function should do nothing other than cast
+//    appropriately. If clapack_dbacon, clapack_sbacon, clapack_cbacon, and clapack_zbacon
+//    all take void* only, and no other pointers that vary between functions, you can skip
+//    this particular step -- as we can call them directly using a custom function pointer
+//    array (same function signature!).
+//
+//    This version of the function will be the one exposed through NMatrix::LAPACK. We
+//    want it to be as close to the actual LAPACK version of the function as possible,
+//    and with as few checks as possible.
+//
+//    You will probably need a forward declaration in the extern "C" block.
+//
+//    Note: In that case, the function you wrote in Step 1 should also take exactly the
+//    same arguments as clapack_xbacon. Otherwise Bad Things will happen.
+//
+// 3. In math.cpp, add inline specialized versions of bacon for the different ATLAS types.
+//
+//    You could do this with a macro, if the arguments are all similar (see #define LAPACK_GETRF).
+//    Or you may prefer to do it by hand:
+//
+//    template <>
+//    inline bool bacon(const CBLAS_TRANSPOSE trans, const int M, const int N, float* A, ...) {
+//      clapack_sbacon(trans, M, N, A, ...);
+//      return true;
+//    }
+//
+//    Make sure these functions are in the namespace nm::math.
+//
+//    Note that you should do everything in your power here to parse any return values
+//    clapack_sbacon may give you. We're not trying very hard in this example, but you might
+//    look at getrf to see how it might be done.
+//
+// 4. Expose the function in nm_math_init_blas(), in math.cpp:
+//
+//    rb_define_singleton_method(cNMatrix_LAPACK, "clapack_bacon", (METHOD)nm_lapack_bacon, 5);
+//
+//    Here, we're telling Ruby that nm_lapack_bacon takes five arguments as a Ruby function.
+//
+// 5. In blas.rb, write a bacon function which accesses clapack_bacon, but does all the
+//    sanity checks we left out in step 2.
+//
+// 6. Write tests for NMatrix::LAPACK::getrf, confirming that it works for the ATLAS dtypes.
+//
+// 7. After you get it working properly with ATLAS, download dbacon.f from NETLIB, and use
+//    f2c to convert it to C. Clean it up so it's readable. Remove the extra indices -- f2c
+//    inserts a lot of unnecessary stuff.
+//
+//    Copy and paste the output into the default templated function you wrote in Step 1.
+//    Fix it so it works as a template instead of just for doubles.
+//
+// 8. Write tests to confirm that it works for integers, rationals, and Ruby objects.
+//
+// 9. See about adding a Ruby-like interface, such as matrix_matrix_multiply for cblas_gemm,
+//    or matrix_vector_multiply for cblas_gemv. This step is not mandatory.
+//
+// 10. Pull request!
 
 /*
  * Project Includes
@@ -45,6 +126,8 @@ extern "C" {
 
   static VALUE nm_cblas_gemv(VALUE self, VALUE trans_a, VALUE m, VALUE n, VALUE vAlpha, VALUE a, VALUE lda,
                              VALUE x, VALUE incx, VALUE vBeta, VALUE y, VALUE incy);
+
+  static VALUE nm_clapack_getrf(VALUE self, VALUE m, VALUE n, VALUE a, VALUE lda);
 
 } // end of extern "C" block
 
@@ -84,6 +167,86 @@ void det_exact(const int M, const void* A_elements, const int lda, void* result_
 
 
 
+/*
+ * Function signature conversion for calling CBLAS' gemm functions as directly as possible.
+ *
+ * For documentation: http://www.netlib.org/blas/dgemm.f
+ */
+template <typename DType>
+inline static bool cblas_gemm(const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b,
+                              int m, int n, int k,
+                              void* alpha,
+                              void* a, int lda,
+                              void* b, int ldb,
+                              void* beta,
+                              void* c, int ldc)
+{
+  return  gemm<DType>(trans_a, trans_b, n, m, k, reinterpret_cast<DType*>(alpha),
+                      reinterpret_cast<DType*>(b), ldb,
+                      reinterpret_cast<DType*>(a), lda, reinterpret_cast<DType*>(beta),
+                      reinterpret_cast<DType*>(c), ldc);
+}
+
+
+
+/*
+ * Function signature conversion for calling CBLAS's gemv functions as directly as possible.
+ *
+ * For documentation: http://www.netlib.org/lapack/double/dgetrf.f
+ */
+template <typename DType>
+inline static bool cblas_gemv(const enum CBLAS_TRANSPOSE trans_a,
+                              int m, int n,
+                              void* alpha,
+                              void* a, int lda,
+                              void* x, int incx,
+                              void* beta,
+                              void* y, int incy)
+{
+  return gemv<DType>(trans_a,
+                     m, n, reinterpret_cast<DType*>(alpha),
+                     reinterpret_cast<DType*>(a), lda,
+                     reinterpret_cast<DType*>(x), incx, reinterpret_cast<DType*>(beta),
+                     reinterpret_cast<DType*>(y), incy);
+}
+
+
+}} // end of namespace nm::math
+
+
+extern "C" {
+
+///////////////////
+// Ruby Bindings //
+///////////////////
+
+void nm_math_init_blas() {
+	cNMatrix_LAPACK = rb_define_module_under(cNMatrix, "LAPACK");
+
+  rb_define_singleton_method(cNMatrix_LAPACK, "getrf", (METHOD)nm_clapack_getrf, 4);
+
+  cNMatrix_BLAS = rb_define_module_under(cNMatrix, "BLAS");
+
+	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 13);
+	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
+}
+
+
+/* Interprets cblas argument which could be any of false/:no_transpose, :transpose, or :complex_conjugate,
+ * into an enum recognized by cblas.
+ *
+ * Called by nm_cblas_gemm -- basically inline.
+ *
+ */
+static enum CBLAS_TRANSPOSE gemm_op_sym(VALUE op) {
+  if (op == Qfalse || rb_to_id(op) == nm_rb_no_transpose) return CblasNoTrans;
+  else if (rb_to_id(op) == nm_rb_transpose) return CblasTrans;
+  else if (rb_to_id(op) == nm_rb_complex_conjugate) return CblasConjTrans;
+  else rb_raise(rb_eArgError, "Expected false, :transpose, or :complex_conjugate");
+  return CblasNoTrans;
+}
+
+
 /* Call any of the cblas_xgemm functions as directly as possible.
  *
  * The cblas_xgemm functions (dgemm, sgemm, cgemm, and zgemm) define the following operation:
@@ -105,24 +268,26 @@ void det_exact(const int M, const void* A_elements, const int lda, void* result_
  * This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
  * handling, so you can easily crash Ruby!
  */
-template <typename DType>
-inline static bool cblas_gemm(dtype_t dtype,
-                                   const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b,
-                                   int m, int n, int k,
-                                   void* alpha,
-                                   void* a, int lda,
-                                   void* b, int ldb,
-                                   void* beta,
-                                   void* c, int ldc)
+static VALUE nm_cblas_gemm(VALUE self,
+                           VALUE trans_a, VALUE trans_b,
+                           VALUE m, VALUE n, VALUE k,
+                           VALUE alpha,
+                           VALUE a, VALUE lda,
+                           VALUE b, VALUE ldb,
+                           VALUE beta,
+                           VALUE c, VALUE ldc)
 {
-  return  gemm<DType>(trans_a, trans_b, n, m, k, reinterpret_cast<DType*>(alpha),
-                      reinterpret_cast<DType*>(b), ldb,
-                      reinterpret_cast<DType*>(a), lda, reinterpret_cast<DType*>(beta),
-                      reinterpret_cast<DType*>(c), ldc);
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemm, bool, const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b, int m, int n, int k, void* alpha, void* a, int lda, void* b, int ldb, void* beta, void* c, int ldc);
+
+  dtype_t dtype = NM_DTYPE(a);
+
+  void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]),
+       *pBeta  = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+  rubyval_to_cval(alpha, dtype, pAlpha);
+  rubyval_to_cval(beta, dtype, pBeta);
+
+  return ttable[dtype](gemm_op_sym(trans_a), gemm_op_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb), pBeta, NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc)) ? Qtrue : Qfalse;
 }
-
-
-
 
 
 /* Call any of the cblas_xgemv functions as directly as possible.
@@ -146,83 +311,6 @@ inline static bool cblas_gemm(dtype_t dtype,
  * This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
  * handling, so you can easily crash Ruby!
  */
-template <typename DType>
-inline static bool cblas_gemv(dtype_t dtype,
-                                    const enum CBLAS_TRANSPOSE trans_a,
-                                    int m, int n,
-                                    void* alpha,
-                                    void* a, int lda,
-                                    void* x, int incx,
-                                    void* beta,
-                                    void* y, int incy)
-{
-  return gemv<DType>(trans_a,
-                     m, n, reinterpret_cast<DType*>(alpha),
-                     reinterpret_cast<DType*>(a), lda,
-                     reinterpret_cast<DType*>(x), incx, reinterpret_cast<DType*>(beta),
-                     reinterpret_cast<DType*>(y), incy);
-}
-
-}} // end of namespace nm::math
-
-
-extern "C" {
-
-///////////////////
-// Ruby Bindings //
-///////////////////
-
-void nm_math_init_blas() {
-  cNMatrix_BLAS = rb_define_module_under(cNMatrix, "BLAS");
-
-	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 13);
-	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
-}
-
-
-/* Interprets cblas argument which could be any of false/:no_transpose, :transpose, or :complex_conjugate,
- * into an enum recognized by cblas.
- *
- * Called by nm_cblas_gemm -- basically inline.
- *
- */
-static enum CBLAS_TRANSPOSE gemm_op_sym(VALUE op) {
-  if (op == Qfalse || rb_to_id(op) == nm_rb_no_transpose) return CblasNoTrans;
-  else if (rb_to_id(op) == nm_rb_transpose) return CblasTrans;
-  else if (rb_to_id(op) == nm_rb_complex_conjugate) return CblasConjTrans;
-  else rb_raise(rb_eArgError, "Expected false, :transpose, or :complex_conjugate");
-  return CblasNoTrans;
-}
-
-
-/*
- * Ruby accessor for calling CBLAS' gemm functions as directly as possible.
- */
-static VALUE nm_cblas_gemm(VALUE self,
-                           VALUE trans_a, VALUE trans_b,
-                           VALUE m, VALUE n, VALUE k,
-                           VALUE alpha,
-                           VALUE a, VALUE lda,
-                           VALUE b, VALUE ldb,
-                           VALUE beta,
-                           VALUE c, VALUE ldc)
-{
-  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemm, bool, dtype_t dtype, const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b, int m, int n, int k, void* alpha, void* a, int lda, void* b, int ldb, void* beta, void* c, int ldc);
-
-  dtype_t dtype = NM_DTYPE(a);
-
-  void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]),
-       *pBeta  = ALLOCA_N(char, DTYPE_SIZES[dtype]);
-  rubyval_to_cval(alpha, dtype, pAlpha);
-  rubyval_to_cval(beta, dtype, pBeta);
-
-  return ttable[dtype](dtype, gemm_op_sym(trans_a), gemm_op_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb), pBeta, NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc)) ? Qtrue : Qfalse;
-}
-
-
-/*
- * Ruby accessor for calling CBLAS' gemv functions as directly as possible.
- */
 static VALUE nm_cblas_gemv(VALUE self,
                            VALUE trans_a,
                            VALUE m, VALUE n,
@@ -232,7 +320,7 @@ static VALUE nm_cblas_gemv(VALUE self,
                            VALUE beta,
                            VALUE y, VALUE incy)
 {
-  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemv, bool, dtype_t dtype, const enum CBLAS_TRANSPOSE trans_a, int m, int n, void* alpha, void* a, int lda, void* x, int incx, void* beta, void* y, int incy);
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemv, bool, const enum CBLAS_TRANSPOSE trans_a, int m, int n, void* alpha, void* a, int lda, void* x, int incx, void* beta, void* y, int incy);
 
   dtype_t dtype = NM_DTYPE(a);
 
@@ -241,7 +329,54 @@ static VALUE nm_cblas_gemv(VALUE self,
   rubyval_to_cval(alpha, dtype, pAlpha);
   rubyval_to_cval(beta, dtype, pBeta);
 
-  return ttable[dtype](dtype, gemm_op_sym(trans_a), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(x)->elements, FIX2INT(incx), pBeta, NM_STORAGE_DENSE(y)->elements, FIX2INT(incy)) ? Qtrue : Qfalse;
+  return ttable[dtype](gemm_op_sym(trans_a), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(x)->elements, FIX2INT(incx), pBeta, NM_STORAGE_DENSE(y)->elements, FIX2INT(incy)) ? Qtrue : Qfalse;
+}
+
+
+/* Call any of the clpack_xgetrf functions as directly as possible.
+ *
+ * The clapack_getrf functions (dgetrf, sgetrf, cgetrf, and zgetrf) compute an LU factorization of a general M-by-N
+ * matrix A using partial pivoting with row interchanges.
+ *
+ * The factorization has the form:
+ *    A = P * L * U
+ * where P is a permutation matrix, L is lower triangular with unit diagonal elements (lower trapezoidal if m > n),
+ * and U is upper triangular (upper trapezoidal if m < n).
+ *
+ * This is the right-looking level 3 BLAS version of the algorithm.
+ *
+ * == Arguments
+ * See: http://www.netlib.org/lapack/double/dgetrf.f
+ * (You don't need argument 5; this is the value returned by this function.)
+ *
+ * You probably don't want to call this function. Instead, why don't you try clapack_getrf, which is more flexible
+ * with its arguments?
+ *
+ * This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
+ * handling, so you can easily crash Ruby!
+ *
+ * Returns an array giving the pivot indices (normally these are argument #5).
+ */
+static VALUE nm_clapack_getrf(VALUE self, VALUE m, VALUE n, VALUE a, VALUE lda) {
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::clapack_getrf, bool, const int m, const int n, void* a, const int lda, int* ipiv);
+
+  int M = FIX2INT(m),
+      N = FIX2INT(n);
+
+  // Allocate the pivot index array, which is of size MIN(M, N).
+  size_t ipiv_size = std::min(M,N);
+  int* ipiv = ALLOCA_N(int, ipiv_size);
+
+  // Call either our version of getrf or the LAPACK version.
+  ttable[NM_DTYPE(a)](FIX2INT(m), FIX2INT(n), NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), ipiv);
+
+  // Result will be stored in a. We return ipiv as an array.
+  VALUE ipiv_array = rb_ary_new2(ipiv_size);
+  for (size_t i = 0; i < ipiv_size; ++i) {
+    rb_ary_store(ipiv_array, i, INT2FIX(ipiv[i]));
+  }
+
+  return ipiv_array;
 }
 
 
