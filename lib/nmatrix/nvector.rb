@@ -28,20 +28,19 @@
 # Requires #
 ############
 
-# NMatrix
-require 'nmatrix'
 
 #######################
 # Classes and Modules #
 #######################
 
 # This is a specific type of NMatrix in which only one dimension is not 1.
-# Although it is stored as a rank-2, n x 1, matrix, it acts as a rank-1 vector
+# Although it is stored as a dim-2, n x 1, matrix, it acts as a dim-1 vector
 # of size n. If the @orientation flag is set to :row, it is stored as 1 x n
 # instead of n x 1.
 class NVector < NMatrix
 	def initialize(length, *args)
 		super(:dense, [length, 1], *args)
+    orientation
 	end
 
 	# Orientation defaults to column (e.g., [3,1] is a column of length 3). It
@@ -69,19 +68,19 @@ class NVector < NMatrix
 
 	def [](i)
 		case @orientation
-		when :row			super(0, i)
-		when :column	super(i, 0)
+		when :row;		super(i, 0)
+		when :column;	super(0, i)
 		end
-	end
+  end
 
 	def []=(i, val)
 		case @orientation
-		when :row			super(0, i, val)
-		when :column	super(i, 0, val)
+		when :row;		super(i, 0, val)
+		when :column;	super(0, i, val)
 		end
 	end
 
-	def rank; 1; end
+	def dim; 1; end
 
 	# TODO: Make this actually pretty.
 	def pretty_print
@@ -90,7 +89,7 @@ class NVector < NMatrix
 		puts (0...shape[dim]).inject(Array.new) { |a, i| a << self[i] }.join('  ')
 	end
 
-	protected
+protected
 	def inspect_helper
 		super() << "orientation:#{self.orientation}"
 	end

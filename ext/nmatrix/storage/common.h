@@ -35,34 +35,30 @@
 /*
  * Project Includes
  */
+#include "data/data.h"
+#include "nmatrix.h"
 
 /*
  * Macros
  */
+ 
+extern "C" {
 
 /*
  * Types
  */
 
-typedef struct {
-	// Common elements found in all storage types.  Must not be re-arranged.
-	dtype_t	dtype;
-	size_t	rank;
-	size_t*	shape;
-	size_t*	offset;
-} STORAGE;
-
 // For binary operations involving matrices that need to be casted.
-typedef struct {
-	STORAGE* left;
-	STORAGE* right;
-} STORAGE_PAIR;
+struct STORAGE_PAIR {
+  STORAGE* left;
+  STORAGE* right;
+};
 
-typedef struct {
-	size_t*	coords; // Coordinate of first element
-	size_t*	lengths; // Lengths of slice
-	uint8_t	is_one_el; // 1 - if all lens eql 1
-} SLICE;
+struct SLICE {
+  size_t*	coords; // Coordinate of first element
+  size_t*	lengths; // Lengths of slice
+  bool  	single; // true if all lengths equal to 1 (represents single matrix element)
+};
 
 /*
  * Data
@@ -72,21 +68,8 @@ typedef struct {
  * Functions
  */
 
+  size_t nm_storage_count_max_elements(const STORAGE* storage);
 
-
-/*
- * Calculate the number of elements in the dense storage structure, based on
- * shape and rank.
- */
-inline size_t storage_count_max_elements(size_t rank, const size_t* shape) {
-  unsigned int i;
-  size_t count = 1;
-  
-  for (i = rank; i-- > 0;) {
-  	count *= shape[i];
-  }
-  
-  return count;
-}
+} // end of extern "C" block
 
 #endif // STORAGE_COMMON_H

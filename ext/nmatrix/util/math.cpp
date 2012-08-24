@@ -23,602 +23,252 @@
 //
 // == math.cpp
 //
-// Source file for math functions, interfacing with BLAS, etc.
-
-/*
- * Standard Includes
- */
-
-#include <ruby.h>
-#include <cblas.h>
-#include <limits> // for numeric_limits<T>::max()
+// Ruby-exposed BLAS functions.
 
 /*
  * Project Includes
  */
 
-#include "data/complex.h"
-#include "data/rational.h"
-#include "data/ruby_object.h"
-#include "types.h"
-
 #include "math.h"
 
-/*
- * Macros
- */
-#ifndef NM_MAX
-# define NM_MAX(a,b) (((a)>(b))?(a):(b))
-# define NM_MIN(a,b) (((a)>(b))?(b):(a))
-#endif
-
-/*
- * Global Variables
- */
-
-// These allow an increase in precision for intermediate values of gemm and gemv.
-// See also: http://stackoverflow.com/questions/11873694/how-does-one-increase-precision-in-c-templates-in-a-template-typename-dependen
-template <typename DType> struct LongDType;
-template <> struct LongDType<int8_t> { typedef int16_t type; };
-template <> struct LongDType<int16_t> { typedef int32_t type; };
-template <> struct LongDType<int32_t> { typedef int64_t type; };
-template <> struct LongDType<int64_t> { typedef int64_t type; };
-template <> struct LongDType<float> { typedef double type; };
-template <> struct LongDType<double> { typedef double type; };
-template <> struct LongDType<Complex64> { typedef Complex128 type; };
-template <> struct LongDType<Complex128> { typedef Complex128 type; };
-template <> struct LongDType<Rational32> { typedef Rational128 type; };
-template <> struct LongDType<Rational64> { typedef Rational128 type; };
-template <> struct LongDType<Rational128> { typedef Rational128 type; };
-template <> struct LongDType<RubyObject> { typedef RubyObject type; };
+#include "nmatrix.h"
+#include "ruby_constants.h"
 
 /*
  * Forward Declarations
  */
 
+extern "C" {
 
+  static VALUE nm_cblas_gemm(VALUE self, VALUE trans_a, VALUE trans_b, VALUE m, VALUE n, VALUE k, VALUE vAlpha,
+                             VALUE a, VALUE lda, VALUE b, VALUE ldb, VALUE vBeta, VALUE c, VALUE ldc);
 
+  static VALUE nm_cblas_gemv(VALUE self, VALUE trans_a, VALUE m, VALUE n, VALUE vAlpha, VALUE a, VALUE lda,
+                             VALUE x, VALUE incx, VALUE vBeta, VALUE y, VALUE incy);
 
-/*
- * Functions
- */
+} // end of extern "C" block
 
-/*
- * GEneral Matrix Multiplication: based on dgemm.f from Netlib.
- *
- * This is an extremely inefficient algorithm. Recommend using ATLAS' version instead.
- *
- * Template parameters: LT -- long version of type T. Type T is the matrix dtype.
- */
-template <typename DType>
-bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-          const DType* alpha, const DType* A, const int lda, const DType* B, const int ldb, const DType* beta, DType* C, const int ldc) {
-  int num_rows_a, /*num_cols_a,*/ num_rows_b; // nrowa, ncola, nrowb
+////////////////////
+// Math Functions //
+////////////////////
 
-  typename LongDType<DType>::type temp;
-
-  // %%= if [:rational,:complex,:value].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1, temp2;"; end%%
-  int i, j, l;
-
-  if (TransA == CblasNoTrans) num_rows_a = M;
-  else                        num_rows_a = K;
-
-  if (TransB == CblasNoTrans) num_rows_b = K;
-  else                        num_rows_b = N;
-
-  // Test the input parameters
-  if (TransA < 111 || TransA > 113) {
-    rb_raise(rb_eArgError, "GEMM: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans");
-    return false;
-  } else if (TransB < 111 || TransB > 113) {
-    rb_raise(rb_eArgError, "GEMM: TransB must be CblasNoTrans, CblasTrans, or CblasConjTrans");
-    return false;
-  } else if (M < 0) {
-    rb_raise(rb_eArgError, "GEMM: Expected M >= 0");
-    return false;
-  } else if (N < 0) {
-    rb_raise(rb_eArgError, "GEMM: Expected N >= 0");
-    return false;
-  } else if (K < 0) {
-    rb_raise(rb_eArgError, "GEMM: Expected K >= 0");
-    return false;
-  } else if (lda < NM_MAX(1, num_rows_a)) {
-    fprintf(stderr, "GEMM: num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
-    rb_raise(rb_eArgError, "GEMM: Expected lda >= max(1, num_rows_a)");
-    return false;
-  } else if (ldb < NM_MAX(1, num_rows_b)) {
-    fprintf(stderr, "GEMM: num_rows_b = %d; got ldb=%d\n", num_rows_b, ldb);
-    rb_raise(rb_eArgError, "GEMM: Expected ldb >= max(1, num_rows_b)");
-    return false;
-  } else if (ldc < NM_MAX(1,M)) {
-    fprintf(stderr, "GEMM: M=%d; got ldc=%d\n", M, ldc);
-    rb_raise(rb_eArgError, "GEMM: Expected ldc >= max(1,M)");
-    return false;
-  }
-
-  // Quick return if possible
-  if (!M || !N || (*alpha == 0 || !K) && *beta == 1) return true;
-
-  // For alpha = 0
-  if (*alpha == 0) {
-    if (*beta == 0) {
-      for (j = 0; j < N; ++j)
-        for (i = 0; i < M; ++i) {
-          C[i+j*ldc] = 0;
-        }
-    } else {
-      for (j = 0; j < N; ++j)
-        for (i = 0; i < M; ++i) {
-          C[i+j*ldc] *= *beta;
-        }
-    }
-    return false;
-  }
-
-  // Start the operations
-  if (TransB == CblasNoTrans) {
-    if (TransA == CblasNoTrans) {
-      // C = alpha*A*B+beta*C
-      for (j = 0; j < N; ++j) {
-        if (*beta == 0) {
-          for (i = 0; i < M; ++i) {
-            C[i+j*ldc] = 0;
-          }
-        } else if (*beta != 1) {
-          for (i = 0; i < M; ++i) {
-            C[i+j*ldc] *= *beta;
-          }
-        }
-
-        for (l = 0; l < K; ++l) {
-          if (B[l+j*ldb] != 0) {
-            temp = *alpha * B[l+j*ldb];
-            for (i = 0; i < M; ++i) {
-              C[i+j*ldc] += A[i+l*lda] * temp;
-            }
-          }
-        }
-      }
-
-    } else {
-
-      // C = alpha*A**DType*B + beta*C
-      for (j = 0; j < N; ++j) {
-        for (i = 0; i < M; ++i) {
-          temp = 0;
-          for (l = 0; l < K; ++l) {
-            temp += A[l+i*lda] * B[l+j*ldb];
-          }
-
-          if (*beta == 0) {
-            C[i+j*ldc] = *alpha*temp;
-          } else {
-            C[i+j*ldc] = *alpha*temp + *beta*C[i+j*ldc];
-          }
-        }
-      }
-
-    }
-
-  } else if (TransA == CblasNoTrans) {
-
-    // C = alpha*A*B**T + beta*C
-    for (j = 0; j < N; ++j) {
-      if (*beta == 0) {
-        for (i = 0; i < M; ++i) {
-          C[i+j*ldc] = 0;
-        }
-      } else if (*beta != 1) {
-        for (i = 0; i < M; ++i) {
-          C[i+j*ldc] *= *beta;
-        }
-      }
-
-      for (l = 0; l < K; ++l) {
-        if (B[j+l*ldb] != 0) {
-          temp = *alpha * B[j+l*ldb];
-          for (i = 0; i < M; ++i) {
-            C[i+j*ldc] += A[i+l*lda] * temp;
-          }
-        }
-      }
-
-    }
-
-  } else {
-
-    // C = alpha*A**DType*B**T + beta*C
-    for (j = 0; j < N; ++j) {
-      for (i = 0; i < M; ++i) {
-        temp = 0;
-        for (l = 0; l < K; ++l) {
-          temp += A[l+i*lda] * B[j+l*ldb];
-        }
-
-        if (*beta == 0) {
-          C[i+j*ldc] = *alpha*temp;
-        } else {
-          C[i+j*ldc] = *alpha*temp + *beta*C[i+j*ldc];
-        }
-      }
-    }
-
-  }
-
-  return true;
-}
-
-template <>
-bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-          const float* alpha, const float* A, const int lda, const float* B, const int ldb, const float* beta, float* C, const int ldc) {
-  cblas_sgemm(CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
-  return true;
-}
-
-template <>
-bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-          const double* alpha, const double* A, const int lda, const double* B, const int ldb, const double* beta, double* C, const int ldc) {
-  cblas_dgemm(CblasRowMajor, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
-  return true;
-}
-
-template <>
-bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-          const Complex64* alpha, const Complex64* A, const int lda, const Complex64* B, const int ldb, const Complex64* beta, Complex64* C, const int ldc) {
-  cblas_cgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
-  return true;
-}
-
-template <>
-bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-          const Complex128* alpha, const Complex128* A, const int lda, const Complex128* B, const int ldb, const Complex128* beta, Complex128* C, const int ldc) {
-  cblas_zgemm(CblasRowMajor, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
-  return true;
-}
+namespace nm { namespace math {
 
 /*
- * GEneral Matrix-Vector multiplication: based on dgemv.f from Netlib.
- *
- * This is an extremely inefficient algorithm. Recommend using ATLAS' version instead.
- *
- * Template parameters: LT -- long version of type T. Type T is the matrix dtype.
+ * Calculate the determinant for a dense matrix (A [elements]) of size 2 or 3. Return the result.
  */
 template <typename DType>
-bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const DType* alpha, const DType* A, const int lda,
-          const DType* X, const int incX, const DType* beta, DType* Y, const int incY) {
-  int lenX, lenY, i, j;
-  int kx, ky, iy, jx, jy, ix;
+void det_exact(const int M, const void* A_elements, const int lda, void* result_arg) {
+  DType* result  = reinterpret_cast<DType*>(result_arg);
+  const DType* A = reinterpret_cast<const DType*>(A_elements);
 
-  typename LongDType<DType>::type temp;
+  typename LongDType<DType>::type x, y;
 
-  // Test the input parameters
-  if (Trans < 111 || Trans > 113) {
-    rb_raise(rb_eArgError, "GEMV: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans");
-    return false;
-  } else if (lda < NM_MAX(1, N)) {
-    fprintf(stderr, "GEMV: N = %d; got lda=%d", N, lda);
-    rb_raise(rb_eArgError, "GEMV: Expected lda >= max(1, N)");
-    return false;
-  } else if (incX == 0) {
-    rb_raise(rb_eArgError, "GEMV: Expected incX != 0\n");
-    return false;
-  } else if (incY == 0) {
-    rb_raise(rb_eArgError, "GEMV: Expected incY != 0\n");
-    return false;
-  }
+  if (M == 2) {
+    *result = A[0] * A[lda+1] - A[1] * A[lda];
 
-  // Quick return if possible
-  if (!M || !N || *alpha == 0 && *beta == 1) return true;
+  } else if (M == 3) {
+    x = A[lda+1] * A[2*lda+2] - A[lda+2] * A[2*lda+1]; // ei - fh
+    y = A[lda] * A[2*lda+2] -   A[lda+2] * A[2*lda];   // fg - di
+    x = A[0]*x - A[1]*y ; // a*(ei-fh) - b*(fg-di)
 
-  if (Trans == CblasNoTrans) {
-    lenX = N;
-    lenY = M;
+    y = A[lda] * A[2*lda+1] - A[lda+1] * A[2*lda];    // dh - eg
+    *result = A[2]*y + x; // c*(dh-eg) + _
+  } else if (M < 2) {
+    rb_raise(rb_eArgError, "can only calculate exact determinant of a square matrix of size 2 or larger");
   } else {
-    lenX = M;
-    lenY = N;
+    rb_raise(rb_eNotImpError, "exact determinant calculation needed for matrices larger than 3x3");
   }
-
-  if (incX > 0) kx = 0;
-  else          kx = (lenX - 1) * -incX;
-
-  if (incY > 0) ky = 0;
-  else          ky =  (lenY - 1) * -incY;
-
-  // Start the operations. In this version, the elements of A are accessed sequentially with one pass through A.
-  if (*beta != 1) {
-    if (incY == 1) {
-      if (*beta == 0) {
-        for (i = 0; i < lenY; ++i) {
-          Y[i] = 0;
-        }
-      } else {
-        for (i = 0; i < lenY; ++i) {
-          Y[i] *= *beta;
-        }
-      }
-    } else {
-      iy = ky;
-      if (*beta == 0) {
-        for (i = 0; i < lenY; ++i) {
-          Y[iy] = 0;
-          iy += incY;
-        }
-      } else {
-        for (i = 0; i < lenY; ++i) {
-          Y[iy] *= *beta;
-          iy += incY;
-        }
-      }
-    }
-  }
-
-  if (*alpha == 0) return false;
-
-  if (Trans == CblasNoTrans) {
-
-    // Form  y := alpha*A*x + y.
-    jx = kx;
-    if (incY == 1) {
-      for (j = 0; j < N; ++j) {
-        if (X[jx] != 0) {
-          temp = *alpha * X[jx];
-          for (i = 0; i < M; ++i) {
-            Y[i] += A[j+i*lda] * temp;
-          }
-        }
-        jx += incX;
-      }
-    } else {
-      for (j = 0; j < N; ++j) {
-        if (X[jx] != 0) {
-          temp = *alpha * X[jx];
-          iy = ky;
-          for (i = 0; i < M; ++i) {
-            Y[iy] += A[j+i*lda] * temp;
-            iy += incY;
-          }
-        }
-        jx += incX;
-      }
-    }
-
-  } else { // TODO: Check that indices are correct! They're switched for C.
-
-    // Form  y := alpha*A**DType*x + y.
-    jy = ky;
-
-    if (incX == 1) {
-      for (j = 0; j < N; ++j) {
-        temp = 0;
-        for (i = 0; i < M; ++i) {
-          temp += A[j+i*lda]*X[j];
-        }
-        Y[jy] += *alpha * temp;
-        jy += incY;
-      }
-    } else {
-      for (j = 0; j < N; ++j) {
-        temp = 0;
-        ix = kx;
-        for (i = 0; i < M; ++i) {
-          temp += A[j+i*lda] * X[ix];
-          ix += incX;
-        }
-
-        Y[jy] += *alpha * temp;
-        jy += incY;
-      }
-    }
-  }
-
-  return true;
-}  // end of GEMV
-
-template <>
-bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const float* alpha, const float* A, const int lda,
-          const float* X, const int incX, const float* beta, float* Y, const int incY) {
-  cblas_sgemv(CblasRowMajor, Trans, M, N, *alpha, A, lda, X, incX, *beta, Y, incY);
-  return true;
 }
 
-template <>
-bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const double* alpha, const double* A, const int lda,
-          const double* X, const int incX, const double* beta, double* Y, const int incY) {
-  cblas_dgemv(CblasRowMajor, Trans, M, N, *alpha, A, lda, X, incX, *beta, Y, incY);
-  return true;
-}
 
-template <>
-bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex64* alpha, const Complex64* A, const int lda,
-          const Complex64* X, const int incX, const Complex64* beta, Complex64* Y, const int incY) {
-  cblas_cgemv(CblasRowMajor, Trans, M, N, alpha, A, lda, X, incX, beta, Y, incY);
-  return true;
-}
 
-template <>
-bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, const Complex128* alpha, const Complex128* A, const int lda,
-          const Complex128* X, const int incX, const Complex128* beta, Complex128* Y, const int incY) {
-  cblas_zgemv(CblasRowMajor, Trans, M, N, alpha, A, lda, X, incX, beta, Y, incY);
-  return true;
+
+/* Call any of the cblas_xgemm functions as directly as possible.
+ *
+ * The cblas_xgemm functions (dgemm, sgemm, cgemm, and zgemm) define the following operation:
+ *
+ *    C = alpha*op(A)*op(B) + beta*C
+ *
+ * where op(X) is one of <tt>op(X) = X</tt>, <tt>op(X) = X**T</tt>, or the complex conjugate of X.
+ *
+ * Note that this will only work for dense matrices that are of types :float32, :float64, :complex64, and :complex128.
+ * Other types are not implemented in BLAS, and while they exist in NMatrix, this method is intended only to
+ * expose the ultra-optimized ATLAS versions.
+ *
+ * == Arguments
+ * See: http://www.netlib.org/blas/dgemm.f
+ *
+ * You probably don't want to call this function. Instead, why don't you try cblas_gemm, which is more flexible
+ * with its arguments?
+ *
+ * This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
+ * handling, so you can easily crash Ruby!
+ */
+template <typename DType>
+inline static bool cblas_gemm(dtype_t dtype,
+                                   const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b,
+                                   int m, int n, int k,
+                                   void* alpha,
+                                   void* a, int lda,
+                                   void* b, int ldb,
+                                   void* beta,
+                                   void* c, int ldc)
+{
+  return  gemm<DType>(trans_a, trans_b, n, m, k, reinterpret_cast<DType*>(alpha),
+                      reinterpret_cast<DType*>(b), ldb,
+                      reinterpret_cast<DType*>(a), lda, reinterpret_cast<DType*>(beta),
+                      reinterpret_cast<DType*>(c), ldc);
 }
 
 
-// Yale: numeric matrix multiply c=a*b
-template <typename DType, typename IType>
-void numbmm(const unsigned int n, const unsigned int m, const IType* ia, const IType* ja, const DType* a, const bool diaga,
-            const IType* ib, const IType* jb, const DType* b, const bool diagb, IType* ic, IType* jc, DType* c, const bool diagc) {
-  IType next[m];
-  DType sums[m];
-
-  DType v;
-
-  IType head, length, temp, ndnz = 0;
-  IType jj_start, jj_end, kk_start, kk_end;
-  IType i, j, k, kk, jj;
-  IType minmn = NM_MIN(m,n);
-
-  for (i = 0; i < m; ++i) { // initialize scratch arrays
-    next[i] = std::numeric_limits<IType>::max();
-    sums[i] = 0;
-  }
-
-  for (i = 0; i < n; ++i) { // walk down the rows
-    head = std::numeric_limits<IType>::max()-1; // head gets assigned as whichever column of B's row j we last visited
-    length = 0;
-
-    jj_start = ia[i];
-    jj_end   = ia[i+1];
-
-    for (jj = jj_start; jj <= jj_end; ++jj) { // walk through entries in each row
-
-      if (jj == jj_end) { // if we're in the last entry for this row:
-        if (!diaga || i >= minmn) continue;
-        j   = i;      // if it's a new Yale matrix, and last entry, get the diagonal position (j) and entry (ajj)
-        v   = a[i];
-      } else {
-        j   = ja[jj]; // if it's not the last entry for this row, get the column (j) and entry (ajj)
-        v   = a[jj];
-      }
-
-      kk_start = ib[j];   // Find the first entry of row j of matrix B
-      kk_end   = ib[j+1];
-      for (kk = kk_start; kk <= kk_end; ++kk) {
-
-        if (kk == kk_end) { // Get the column id for that entry
-          if (!diagb || j >= minmn) continue;
-          k  = j;
-          sums[k] += v*b[k];
-        } else {
-          k  = jb[kk];
-          sums[k] += v*b[kk];
-        }
-
-        if (next[k] == std::numeric_limits<IType>::max()) {
-          next[k] = head;
-          head    = k;
-          ++length;
-        }
-      }
-    }
-
-    for (jj = 0; jj < length; ++jj) {
-      if (sums[head] != 0) {
-        if (diagc && head == i) {
-          c[head] = sums[head];
-        } else {
-          jc[n+1+ndnz] = head;
-          c[n+1+ndnz]  = sums[head];
-          ++ndnz;
-        }
-      }
-
-      temp = head;
-      head = next[head];
-
-      next[temp] = std::numeric_limits<IType>::max();
-      sums[temp] = 0;
-    }
-
-    ic[i+1] = n+1+ndnz;
-  }
-} /* numbmm_ */
 
 
 
-// Yale: Symbolic matrix multiply c=a*b
-template <typename IType>
-void symbmm(const unsigned int n, const unsigned int m, const IType* ia, const IType* ja, const bool diaga,
-            const IType* ib, const IType* jb, const bool diagb, IType* ic, const bool diagc) {
-  IType mask[m];
-  IType j, k, ndnz = n; /* Local variables */
+/* Call any of the cblas_xgemv functions as directly as possible.
+ *
+ * The cblas_xgemv functions (dgemv, sgemv, cgemv, and zgemv) define the following operation:
+ *
+ *    y = alpha*op(A)*x + beta*y
+ *
+ * where op(A) is one of <tt>op(A) = A</tt>, <tt>op(A) = A**T</tt>, or the complex conjugate of A.
+ *
+ * Note that this will only work for dense matrices that are of types :float32, :float64, :complex64, and :complex128.
+ * Other types are not implemented in BLAS, and while they exist in NMatrix, this method is intended only to
+ * expose the ultra-optimized ATLAS versions.
+ *
+ * == Arguments
+ * See: http://www.netlib.org/blas/dgemm.f
+ *
+ * You probably don't want to call this function. Instead, why don't you try cblas_gemv, which is more flexible
+ * with its arguments?
+ *
+ * This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
+ * handling, so you can easily crash Ruby!
+ */
+template <typename DType>
+inline static bool cblas_gemv(dtype_t dtype,
+                                    const enum CBLAS_TRANSPOSE trans_a,
+                                    int m, int n,
+                                    void* alpha,
+                                    void* a, int lda,
+                                    void* x, int incx,
+                                    void* beta,
+                                    void* y, int incy)
+{
+  return gemv<DType>(trans_a,
+                     m, n, reinterpret_cast<DType*>(alpha),
+                     reinterpret_cast<DType*>(a), lda,
+                     reinterpret_cast<DType*>(x), incx, reinterpret_cast<DType*>(beta),
+                     reinterpret_cast<DType*>(y), incy);
+}
+
+}} // end of namespace nm::math
 
 
-  for (j = 0; j < m; ++j)
-    mask[j] = std::numeric_limits<IType>::max();
+extern "C" {
 
-  if (diagc)  ic[0] = n+1;
-  else        ic[0] = 0;
+///////////////////
+// Ruby Bindings //
+///////////////////
 
-  IType minmn = NM_MIN(m,n);
+void nm_math_init_blas() {
+  cNMatrix_BLAS = rb_define_module_under(cNMatrix, "BLAS");
 
-  for (IType i = 0; i < n; ++i) { // MAIN LOOP: through rows
-
-    for (IType jj = ia[i]; jj <= ia[i+1]; ++jj) { // merge row lists, walking through columns in each row
-
-      // j <- column index given by JA[jj], or handle diagonal.
-      if (jj == ia[i+1]) { // Don't really do it the last time -- just handle diagonals in a new yale matrix.
-        if (!diaga || i >= minmn) continue;
-        j = i;
-      } else j = ja[jj];
-
-      for (IType kk = ib[j]; kk <= ib[j+1]; ++kk) { // Now walk through columns of row J in matrix B.
-        if (kk == ib[j+1]) {
-          if (!diagb || j >= minmn) continue;
-          k = j;
-        } else k = jb[kk];
-
-        if (mask[k] != i) {
-          mask[k] = i;
-          ++ndnz;
-        }
-      }
-    }
-
-    if (diagc && !mask[i]) --ndnz;
-
-    ic[i+1] = ndnz;
-  }
-} /* symbmm_ */
+	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 13);
+	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
+}
 
 
-//TODO: More efficient sorting algorithm than selection sort would be nice, probably.
-// Remember, we're dealing with unique keys, which simplifies things.
-// Doesn't have to be in-place, since we probably just multiplied and that wasn't in-place.
-template <typename DType, typename IType>
-void smmp_sort_columns(const unsigned int n, const IType* ia, IType* ja, DType* a) {
-  IType i, jj, jj_start, jj_end, min, min_jj;
-  DType temp_val;
+/* Interprets cblas argument which could be any of false/:no_transpose, :transpose, or :complex_conjugate,
+ * into an enum recognized by cblas.
+ *
+ * Called by nm_cblas_gemm -- basically inline.
+ *
+ */
+static enum CBLAS_TRANSPOSE gemm_op_sym(VALUE op) {
+  if (op == Qfalse || rb_to_id(op) == nm_rb_no_transpose) return CblasNoTrans;
+  else if (rb_to_id(op) == nm_rb_transpose) return CblasTrans;
+  else if (rb_to_id(op) == nm_rb_complex_conjugate) return CblasConjTrans;
+  else rb_raise(rb_eArgError, "Expected false, :transpose, or :complex_conjugate");
+  return CblasNoTrans;
+}
 
-  for (i = 0; i < n; ++i) {
-    // No need to sort if there are 0 or 1 entries in the row
-    if (ia[i+1] - ia[i] < 2) continue;
 
-    jj_end = ia[i+1];
-    for (jj_start = ia[i]; jj_start < jj_end; ++jj_start) {
+/*
+ * Ruby accessor for calling CBLAS' gemm functions as directly as possible.
+ */
+static VALUE nm_cblas_gemm(VALUE self,
+                           VALUE trans_a, VALUE trans_b,
+                           VALUE m, VALUE n, VALUE k,
+                           VALUE alpha,
+                           VALUE a, VALUE lda,
+                           VALUE b, VALUE ldb,
+                           VALUE beta,
+                           VALUE c, VALUE ldc)
+{
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemm, bool, dtype_t dtype, const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b, int m, int n, int k, void* alpha, void* a, int lda, void* b, int ldb, void* beta, void* c, int ldc);
 
-      // If the previous min is just current-1, this key/value pair is already in sorted order.
-      // This follows from the unique condition on our column keys.
-      if (jj_start > ia[i] && min+1 == ja[jj_start]) {
-        min    = ja[jj_start];
-        continue;
-      }
+  dtype_t dtype = NM_DTYPE(a);
 
-      // find the minimum key (column index) between jj_start and jj_end
-      min    = ja[jj_start];
-      min_jj = jj_start;
-      for (jj = jj_start+1; jj < jj_end; ++jj) {
-        if (ja[jj] < min) {
-          min_jj = jj;
-          min    = ja[jj];
-        }
-      }
+  void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]),
+       *pBeta  = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+  rubyval_to_cval(alpha, dtype, pAlpha);
+  rubyval_to_cval(beta, dtype, pBeta);
 
-      // if min is already first, skip this iteration
-      if (min_jj == jj_start) continue;
+  return ttable[dtype](dtype, gemm_op_sym(trans_a), gemm_op_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb), pBeta, NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc)) ? Qtrue : Qfalse;
+}
 
-      for (jj = jj_start; jj < jj_end; ++jj) {
-        // swap minimum key/value pair with key/value pair in the first position.
-        if (min_jj != jj) {
-          // min already = ja[min_jj], so use this as temp_key
-          temp_val = a[min_jj];
 
-          ja[min_jj] = ja[jj];
-          a[min_jj] = a[jj];
+/*
+ * Ruby accessor for calling CBLAS' gemv functions as directly as possible.
+ */
+static VALUE nm_cblas_gemv(VALUE self,
+                           VALUE trans_a,
+                           VALUE m, VALUE n,
+                           VALUE alpha,
+                           VALUE a, VALUE lda,
+                           VALUE x, VALUE incx,
+                           VALUE beta,
+                           VALUE y, VALUE incy)
+{
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemv, bool, dtype_t dtype, const enum CBLAS_TRANSPOSE trans_a, int m, int n, void* alpha, void* a, int lda, void* x, int incx, void* beta, void* y, int incy);
 
-          ja[jj] = min;
-          a[jj] = temp_val;
-        }
-      }
+  dtype_t dtype = NM_DTYPE(a);
+
+  void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]),
+       *pBeta  = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+  rubyval_to_cval(alpha, dtype, pAlpha);
+  rubyval_to_cval(beta, dtype, pBeta);
+
+  return ttable[dtype](dtype, gemm_op_sym(trans_a), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(x)->elements, FIX2INT(incx), pBeta, NM_STORAGE_DENSE(y)->elements, FIX2INT(incy)) ? Qtrue : Qfalse;
+}
+
+
+/*
+ * C accessor for calculating an exact determinant.
+ */
+void nm_math_det_exact(const int M, const void* elements, const int lda, dtype_t dtype, void* result) {
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::det_exact, void, const int M, const void* A_elements, const int lda, void* result_arg);
+
+  ttable[dtype](M, elements, lda, result);
+}
+
+
+/*
+ * Transpose an array of elements that represent a row-major dense matrix. Does not allocate anything, only does an memcpy.
+ */
+void nm_math_transpose_generic(const size_t M, const size_t N, const void* A, const int lda, void* B, const int ldb, size_t element_size) {
+  for (size_t i = 0; i < N; ++i) {
+    for (size_t j = 0; j < M; ++j) {
+
+      memcpy(reinterpret_cast<char*>(B) + (i*ldb+j)*element_size,
+             reinterpret_cast<const char*>(A) + (j*lda+i)*element_size,
+             element_size);
+
     }
   }
 }
+
+
+} // end of extern "C" block

@@ -47,6 +47,8 @@
 
 #include "util/sl_list.h"
 
+#include "nmatrix.h"
+
 /*
  * Macros
  */
@@ -55,78 +57,70 @@
  * Types
  */
 
-typedef struct {
-	// Common elements found in all storage types.  Must not be re-arranged.
-	dtype_t	dtype;
-	size_t	rank;
-	size_t*	shape;
-	size_t*	offset;
-	
-	// List storage specific elements.
-	void* default_val;
-	LIST* rows;
-} LIST_STORAGE;
+
 
 /*
  * Data
  */
  
+extern "C" {
 
-/*
- * Functions
- */
+  /*
+   * Functions
+   */
 
-////////////////
-// Lifecycle //
-///////////////
+  ////////////////
+  // Lifecycle //
+  ///////////////
 
-LIST_STORAGE*	list_storage_create(dtype_t dtype, size_t* shape, size_t rank, void* init_val);
-void					list_storage_delete(STORAGE* s);
-void					list_storage_mark(void*);
+  LIST_STORAGE*	nm_list_storage_create(dtype_t dtype, size_t* shape, size_t dim, void* init_val);
+  void					nm_list_storage_delete(STORAGE* s);
+  void					nm_list_storage_mark(void*);
 
-///////////////
-// Accessors //
-///////////////
+  ///////////////
+  // Accessors //
+  ///////////////
 
-void* list_storage_ref(STORAGE* s, SLICE* slice);
-void* list_storage_get(STORAGE* s, SLICE* slice);
-void* list_storage_insert(STORAGE* s, SLICE* slice, void* val);
-void* list_storage_remove(STORAGE* s, SLICE* slice);
+  void* nm_list_storage_ref(STORAGE* s, SLICE* slice);
+  void* nm_list_storage_get(STORAGE* s, SLICE* slice);
+  void* nm_list_storage_insert(STORAGE* s, SLICE* slice, void* val);
+  void* nm_list_storage_remove(STORAGE* s, SLICE* slice);
 
-///////////
-// Tests //
-///////////
+  ///////////
+  // Tests //
+  ///////////
 
-bool list_storage_eqeq(const STORAGE* left, const STORAGE* right);
+  bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right);
 
-//////////
-// Math //
-//////////
+  //////////
+  // Math //
+  //////////
 
-STORAGE* list_storage_matrix_multiply(STORAGE_PAIR casted_storage, size_t* resulting_shape, bool vector);
+  STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right);
+  STORAGE* nm_list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
-/////////////
-// Utility //
-/////////////
 
-size_t list_storage_count_elements_r(const LIST* l, size_t recursions);
-size_t list_storage_count_nd_elements(const LIST_STORAGE* s);
+  /////////////
+  // Utility //
+  /////////////
 
-/*
- * Count non-zero elements. See also count_list_storage_nd_elements.
- */
-inline size_t list_storage_count_elements(const LIST_STORAGE* s) {
-  return list_storage_count_elements_r(s->rows, s->rank - 1);
-}
+  size_t nm_list_storage_count_elements_r(const LIST* l, size_t recursions);
+  size_t nm_list_storage_count_nd_elements(const LIST_STORAGE* s);
 
-/////////////////////////
-// Copying and Casting //
-/////////////////////////
+  /*
+   * Count non-zero elements. See also count_list_storage_nd_elements.
+   */
+  inline size_t nm_list_storage_count_elements(const LIST_STORAGE* s) {
+    return nm_list_storage_count_elements_r(s->rows, s->dim - 1);
+  }
 
-LIST_STORAGE* list_storage_copy(LIST_STORAGE* rhs);
-STORAGE* list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
+  /////////////////////////
+  // Copying and Casting //
+  /////////////////////////
 
-template <typename LDType, typename RDType>
-bool list_storage_cast_copy_contents_dense_template(LIST*, const RDType*, RDType*, size_t&, size_t*, const size_t*, size_t, size_t);
+  STORAGE*      nm_list_storage_copy_transposed(const STORAGE* rhs_base);
+  STORAGE*      nm_list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
+
+} // end of extern "C" block
 
 #endif // LIST_H

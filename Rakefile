@@ -16,6 +16,17 @@ Rake::ExtensionTask.new do |ext|
     ext.name = 'nmatrix'          
     ext.ext_dir = 'ext/nmatrix' 
     ext.lib_dir = 'lib/'             
+    ext.source_pattern = "**/*.{c,cpp, h}" 
+end
+
+gemspec = eval(IO.read("nmatrix.gemspec"))
+
+require "rake/gempackagetask"
+Rake::GemPackageTask.new(gemspec).define
+
+desc "install the gem locally"
+task :install => [:package] do
+  sh %{gem install pkg/nmatrix-#{NMatrix::VERSION}}
 end
 
 require 'rspec/core/rake_task'

@@ -79,7 +79,7 @@ end
 if RUBY_VERSION < '1.9'
   raise(NotImplementedError, "Sorry, you need Ruby 1.9!")
 else
-  $INSTALLFILES = [['nmatrix.h', '$(archdir)'], ['nmatrix_config.h', '$(archdir)']]
+  $INSTALLFILES = [['nmatrix.h', '$(archdir)'], ['nmatrix.hpp', '$(archdir)'], ['nmatrix_config.h', '$(archdir)']]
   if /cygwin|mingw/ =~ RUBY_PLATFORM
 	 $INSTALLFILES << ['libnmatrix.a', '$(archdir)']
   end
@@ -99,7 +99,8 @@ $srcs = [
 	'data/data.cpp',
 	'util/math.cpp',
   'util/sl_list.cpp',
-  'util/util.cpp',
+  'util/io.cpp',
+  'storage/common.cpp',
 	'storage/storage.cpp',
 	'storage/dense.cpp',
   'storage/yale.cpp',
@@ -144,10 +145,26 @@ have_header("f2c.h")
 
 $libs += " -lcblas -latlas "
 
-$objs = %w{nmatrix ruby_constants data/data util/math util/sl_list util/util storage/storage storage/dense storage/yale storage/list}.map { |i| i + ".o" }
+$objs = %w{nmatrix ruby_constants data/data util/io util/math util/sl_list storage/common storage/storage storage/dense storage/yale storage/list}.map { |i| i + ".o" }
 
-$CFLAGS += " -O0"
-$CPPFLAGS += " -O0 -std=c++0x " #-fmax-errors=10 -save-temps
+#CONFIG['CXX'] = 'clang++'
+
+if CONFIG['CXX'] == 'clang++'
+	$CPP_STANDARD = 'c++11'
+
+else
+	version = `g++ -v 2>&1`.lines.to_a.last.match(/gcc\sversion\s(\d\.\d.\d)/).captures.first
+	
+	if version < '4.7.0'
+		$CPP_STANDARD = 'c++0x'
+	else
+		$CPP_STANDARD = 'c++11'
+	end
+end
+
+$CFLAGS += " -O0 "
+# -std=c++11 only works with G++ 4.7 and higher.
+$CPPFLAGS += " -O0 -std=#{$CPP_STANDARD} " #-fmax-errors=10 -save-temps
 
 CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
 CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')

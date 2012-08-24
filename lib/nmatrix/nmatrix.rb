@@ -29,6 +29,8 @@
 # Requires #
 ############
 
+require_relative './shortcuts.rb'
+
 #######################
 # Classes and Modules #
 #######################
@@ -36,28 +38,47 @@
 class NMatrix
 	# Read and write extensions for NMatrix. These are only loaded when needed.
 	module IO
-		autoload :MatReader, 'nmatrix/io/mat_reader'
-		autoload :Mat5Reader, 'nmatrix/io/mat5_reader'
+    module Matlab
+      class << self
+        def load_mat file_path
+          NMatrix::IO::Matlab::Mat5Reader.new(File.open(file_path, "rb+")).to_ruby
+        end
+      end
+
+      # FIXME: Remove autoloads
+      autoload :MatReader, 'nmatrix/io/mat_reader'
+      autoload :Mat5Reader, 'nmatrix/io/mat5_reader'
+    end
 	end
 
 	# TODO: Make this actually pretty.
 	def pretty_print(q = nil)
-		raise NotImplementedError, 'Can only print rank 2 matrices.' unless rank == 2
-
-    arr = []
-
-		(0...shape[0]).each do |i|
-			arr << (0...shape[1]).inject(Array.new) { |a, j| a << if o = self[i, j] then o else 'nil' end }
-    end
-
-    if q
-      q.group(1, "", "\n") do
-        q.seplist(arr, lambda { q.text "  " }, :each)  { |v| q.text v.to_s }
-      end
+		if dim != 2 || (dim == 2 && shape[1] > 10) # FIXME: Come up with a better way of restricting the display
+      inspect
     else
-      puts arr.join("  ")
-    end
 
+      arr = (0...shape[0]).map do |i|
+        ary = []
+        (0...shape[1]).each do |j|
+          o = begin
+            self[i, j]
+          rescue ArgumentError
+            nil
+          end
+          ary << (o.nil? ? 'nil' : o)
+        end
+        ary.inspect
+      end
+
+      if q.nil?
+        puts arr.join("\n")
+      else
+        q.group(1, "", "\n") do
+          q.seplist(arr, lambda { q.text "  " }, :each)  { |v| q.text v.to_s }
+        end
+      end
+
+    end
 	end
 	alias :pp :pretty_print
 
@@ -79,7 +100,7 @@ class NMatrix
 	end
 
 	def hermitian?
-		return false if self.rank != 2 or self.shape[0] != self.shape[1]
+		return false if self.dim != 2 or self.shape[0] != self.shape[1]
 		
 		if [:complex64, :complex128].include?(self.dtype)
 			# TODO: Write much faster Hermitian test in C
@@ -102,70 +123,6 @@ class NMatrix
 	end
 
 	class << self
-		def cblas_gemm(a, b, c = nil, alpha = 1.0, beta = 0.0, transpose_a = false, transpose_b = false, m = nil, n = nil, k = nil, lda = nil, ldb = nil, ldc = nil)
-			raise ArgumentError, 'Expected dense NMatrices as first two arguments.' unless a.is_a?(NMatrix) and b.is_a?(NMatrix) and a.stype == :dense and b.stype == :dense
-			raise ArgumentError, 'Expected nil or dense NMatrix as third argument.' unless c.nil? or (c.is_a?(NMatrix) and c.stype == :dense)
-			raise ArgumentError, 'NMatrix dtype mismatch.'													unless a.dtype == b.dtype and (c ? a.dtype == c.dtype : true)
-
-			# First, set m, n, and k, which depend on whether we're taking the
-			# transpose of a and b.
-			if c
-				m ||= c.shape[0]
-				n ||= c.shape[1]
-				k ||= transpose_a ? a.shape[0] : a.shape[1]
-				
-			else
-				if transpose_a
-					# Either :transpose or :complex_conjugate.
-					m ||= a.shape[1]
-					k ||= a.shape[0]
-					
-				else
-					# No transpose.
-					m ||= a.shape[0]
-					k ||= a.shape[1]
-				end
-				
-				n ||= transpose_b ? b.shape[0] : b.shape[1]
-				c		= NMatrix.new([m, n], a.dtype)
-			end
-
-			# I think these are independent of whether or not a transpose occurs.
-			lda ||= a.shape[1]
-			ldb ||= b.shape[1]
-			ldc ||= c.shape[1]
-
-			# NM_COMPLEX64 and NM_COMPLEX128 both require complex alpha and beta.
-			if a.dtype == :complex64 or a.dtype == :complex128
-				alpha = Complex.new(1.0, 0.0) if alpha == 1.0
-				beta  = Complex.new(0.0, 0.0) if beta  == 0.0
-			end
-
-			# For argument descriptions, see: http://www.netlib.org/blas/dgemm.f
-			NMatrix.__cblas_gemm__(transpose_a, transpose_b, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
-
-			return c
-		end
-
-		def cblas_gemv(a, x, y = nil, alpha = 1.0, beta = 0.0, transpose_a = false, m = nil, n = nil, lda = nil, incx = nil, incy = nil)
-			m ||= transpose_a ? a.shape[1] : a.shape[0]
-			n ||= transpose_a ? a.shape[0] : a.shape[1]
-			
-			lda		||= a.shape[1]
-			incx	||= 1
-			incy	||= 1
-			
-			# NM_COMPLEX64 and NM_COMPLEX128 both require complex alpha and beta.
-			if a.dtype == :complex64 or a.dtype == :complex128
-				alpha = Complex.new(1.0, 0.0) if alpha == 1.0
-				beta  = Complex.new(0.0, 0.0) if beta  == 0.0
-			end
-			
-			NMatrix.__cblas_gemv__(transpose_a, m, n, alpha, a, lda, x, incx, beta, y, incy)
-			
-			return y
-		end
-		
 		def load_file(file_path)
 			NMatrix::IO::Mat5Reader.new(File.open(file_path, 'rb')).to_ruby
 		end
@@ -222,15 +179,21 @@ class NMatrix
 		end
 	end
 
-	protected
+protected
 	def inspect_helper
 		ary = []
 		ary << "shape:[#{shape.join(',')}]" << "dtype:#{dtype}" << "stype:#{stype}"
 
 		if stype == :yale
-			ary <<	"capacity:#{capacity}" << "ija:#{__yale_ary__to_s(:ija)}" << "ia:#{__yale_ary__to_s(:ia)}" <<
-							"ja:#{__yale_ary__to_s(:ja)}" << "a:#{__yale_ary__to_s(:a)}" << "d:#{__yale_ary__to_s(:d)}" <<
-							"lu:#{__yale_ary__to_s(:lu)}" << "yale_size:#{__yale_size__}"
+			ary <<	"capacity:#{capacity}"
+
+      # These are enabled by the DEBUG_YALE compiler flag in extconf.rb.
+      if respond_to?(:__yale_a__)
+        ary << "ija:#{__yale_ary__to_s(:ija)}" << "ia:#{__yale_ary__to_s(:ia)}" <<
+				  			"ja:#{__yale_ary__to_s(:ja)}" << "a:#{__yale_ary__to_s(:a)}" << "d:#{__yale_ary__to_s(:d)}" <<
+					  		"lu:#{__yale_ary__to_s(:lu)}" << "yale_size:#{__yale_size__}"
+      end
+
 		end
 
 		ary

@@ -41,11 +41,11 @@ describe "Slice operation" do
     b.is_ref?.should be_false
   end
 
-  it "reference should compare with non-refernce" do
-    @m.slice(1..2,0..1).should == @m[1..2, 0..1]
+  it "reference should compare with non-reference" do
+    @m.slice(1..2,0..1).should.eql? @m[1..2, 0..1]
   end
 
-  context "with copping" do
+  context "with copying" do
     it 'should return an NMatrix' do
       n = @m.slice(0..1,0..1)
       n.should eql( NMatrix.new(:dense, [2,2], [0,1,3,4], :int32))
@@ -73,18 +73,21 @@ describe "Slice operation" do
       n = @m.slice(0..1,1)
       n.shape.should eql([2,1])
 
-      n[0,0].should == @m[0,1]
+      n[0,0].should.eql? @m[0,1]
       n[0,0] = -9
       @m[0,1].should eql(1)
     end
 
+    it 'should be correct slice for range 0..2 and 0...3' do
+      @m.slice(0..2,0..2).should.eql? @m.slice(0...3,0...3)
+    end
   end
 
   
   context "be reference" do
     it 'should return an NMatrix' do
       n = @m[0..1,0..1]
-      n.should eql( NMatrix.new(:dense, [2,2], [0,1,3,4], :int32))
+      n.should.eql? NMatrix.new(:dense, [2,2], [0,1,3,4], :int32)
     end
 
     it 'should return a 2x2 matrix with refs to self elements' do
@@ -119,8 +122,12 @@ describe "Slice operation" do
     it 'should slice again' do
       n = @m[1..2, 1..2]
 
-      n[1,0..1].should == NMatrix.new([1,2], [7,8])
-      n.slice(1,0..1).should eql(NMatrix.new([1,2], [7,8]))
+      n[1,0..1].should.eql? NMatrix.new([1,2], [7,8])
+      n.slice(1,0..1).should.eql? NMatrix.new([1,2], [7,8])
+    end
+
+    it 'should be correct slice for range 0..2 and 0...3' do
+      @m[0..2,0..2].should.eql? @m[0...3,0...3]
     end
 
   [:byte,:int8,:int16,:int32,:int64,:float32,:float64,:rational64,:rational128].each do |left_dtype|
@@ -131,7 +138,7 @@ describe "Slice operation" do
 
       # For now, don't bother testing int-int mult.
       #next if [:int8,:int16,:int32,:int64].include?(left_dtype) && [:int8,:int16,:int32,:int64].include?(right_dtype)
-      it "correctly handles #{left_dtype.to_s} dot #{right_dtype.to_s} matrix multiplication" do
+      it "handles #{left_dtype.to_s} dot #{right_dtype.to_s} matrix multiplication" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "2"
 

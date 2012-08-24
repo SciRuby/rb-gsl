@@ -8,7 +8,8 @@ http://sciruby.com
 
 == Description
 
-NMatrix is an experimental linear algebra library for Ruby, written mostly in C. It can be used with or without SciRuby, but is part of the SciRuby project.
+NMatrix is an experimental linear algebra library for Ruby, written mostly in C and C++. It can be used with or without
+SciRuby, but is part of the SciRuby project.
 
 NMatrix was inspired by and based heavily upon {NArray}[http://narray.rubyforge.org], by Masahiro Tanaka.
 
@@ -16,25 +17,71 @@ NMatrix was inspired by and based heavily upon {NArray}[http://narray.rubyforge.
 
 === WARNING:
 
-Please be aware that SciRuby and NMatrix are in *PRE-ALPHA* status. If you're thinking of using SciRuby/NMatrix to write mission critical code, such as for driving a car or flying a space shuttle, you may wish to choose other software (for now).
+Please be aware that SciRuby and NMatrix are *ALPHA* status. If you're thinking of using SciRuby/NMatrix to write
+mission-critical code, such as for driving a car or flying a space shuttle, you may wish to choose other software (for
+now).
+
+You should also be aware that NMatrix and NArray are incompatible with one another; you should not try to require both
+at the same time. Unfortunately, that causes problems with Ruby/GSL, which currently depends upon NArray. As such, we
+are working on a {patch for Ruby/GSL}[https://github.com/SciRuby/rb-gsl].
 
 == Features
 
+The following features exist in the version of NMatrix (0.0.2) currently under development, and may or may not exist in
+0.0.1 (the current gem):
+
 * Matrix storage containers: dense, yale, list (more to come)
-* Data types: int8, int16, int32, int64, float32, float64, complex64, complex128, rational64, rational128 (incomplete)
-* Very basic algebra (more to come)
+* Data types: uint8, int8, int16, int32, int64, float32, float64, complex64, complex128, rational64, rational128
+  (incomplete)
+* Conversion between storage and data types (except from-complex, and from-float-to-rational)
+* Matrix-matrix multiplication for dense (using ATLAS) and yale
+* Matrix-vector multiplication for dense (using ATLAS)
+* Dense matrix slicing
+* Matlab .MAT v5 file input
+
+=== Planned Features (Very Short Term)
+
+These features will exist in our second alpha release, 0.0.2 (incomplete, thus not yet available as a gem):
+
+* Yale, list matrix slicing
+* C API
+
+The estimated release date for 0.0.2 is the end of August 2012.
+
+=== Planned Features (Short-to-Medium Term)
+
+These are features planned for NMatrix 0.1.0, our first beta.
+
+* calculation of determinant, trace, and eigenvalues (characteristic polynomial) (0.1.0)
+* Gaussian elimination
+* exponentials and square roots
+* matrix inversions
+* matrix decomposition/factorization
+* calculation of norms
+* tensor products
+* principal component analysis (PCA)
+* improved file I/O
+* operation scheduling
+* parallelization of some types of operations
+* optimization of non-BLAS data types on BLAS-like operations (e.g., matrix multiplication for rational numbers)
+* Ruby/GSL interoperability
 
 == SYNOPSIS:
 
-From the command line,
+For full instructions, please see sciruby.com/nmatrix. Generally, you should be able to do
+
+    gem install nmatrix
+
+However, you will need to install ATLAS with CBLAS first. Those directions can be found at our website.
+
+NOTE: The above command will not give you 0.0.2, which is not yet complete. To obtain 0.0.2, you should use the
+following sequence of commands:
 
     git clone https://github.com/SciRuby/nmatrix.git
-    cd nmatrix
-    bundle
+    cd nmatrix/
     rake compile
-    rake console
-
-Gem coming later.
+    rake repackage
+    gem install pkg/nmatrix-0.0.2.gem
 
 == REQUIREMENTS:
 
@@ -50,7 +97,13 @@ More detailed installation instructions are available at {here}[http://sciruby.c
 
 == DEVELOPERS:
 
-Before commiting any code, you *MUST* read our {Contributor Agreement}[http://github.com/SciRuby/sciruby/wiki/Contributor-Agreement].
+Code in the master branch of SciRuby/nmatrix on github should compile and link, but is not necessarily stable. You might
+also check out the dev branch if master hasn't been updated in some time.
+
+    git clone https://github.com/mohawkjohn/nmatrix.git
+
+Before commiting any code, you *MUST* read our
+{Contributor Agreement}[http://github.com/SciRuby/sciruby/wiki/Contributor-Agreement].
 
 == LICENSE:
 
@@ -58,8 +111,11 @@ Copyright (c) 2012, The Ruby Science Foundation.
 
 All rights reserved.
 
-NMatrix, along with SciRuby, is licensed under the BSD 2-clause license. See {LICENSE.txt}[https://github.com/SciRuby/sciruby/wiki/License] for details.
+NMatrix, along with SciRuby, is licensed under the BSD 2-clause license. See
+{LICENSE.txt}[https://github.com/SciRuby/sciruby/wiki/License] for details.
 
 == DONATIONS:
+
+Support a SciRuby Fellow:
 
 {<img src=https://www.pledgie.com/campaigns/15783.png?skin_name=chrome>}[http://www.pledgie.com/campaigns/15783]

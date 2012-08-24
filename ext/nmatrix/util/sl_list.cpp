@@ -31,6 +31,8 @@
 
 #include "sl_list.h"
 
+namespace nm { namespace list {
+
 /*
  * Macros
  */
@@ -55,7 +57,7 @@
 /*
  * Creates an empty linked list.
  */
-LIST* list_create(void) {
+LIST* create(void) {
   LIST* list;
   
   //if (!(list = malloc(sizeof(LIST)))) return NULL;
@@ -72,7 +74,7 @@ LIST* list_create(void) {
  * list inside of a list, set recursions to 1. For lists inside of lists inside
  *  of the list, set it to 2; and so on. Setting it to 0 is for no recursions.
  */
-void list_delete(LIST* list, size_t recursions) {
+void del(LIST* list, size_t recursions) {
   NODE* next;
   NODE* curr = list->first;
 
@@ -85,7 +87,7 @@ void list_delete(LIST* list, size_t recursions) {
       
     } else {
       //fprintf(stderr, "    free_list: %p\n", list);
-      list_delete((LIST*)curr->val, recursions - 1);
+      del((LIST*)curr->val, recursions - 1);
     }
 
     free(curr);
@@ -98,7 +100,7 @@ void list_delete(LIST* list, size_t recursions) {
 /*
  * Documentation goes here.
  */
-void list_mark(LIST* list, size_t recursions) {
+void mark(LIST* list, size_t recursions) {
   NODE* next;
   NODE* curr = list->first;
 
@@ -109,7 +111,7 @@ void list_mark(LIST* list, size_t recursions) {
     	rb_gc_mark(*((VALUE*)(curr->val)));
     	
     } else {
-    	list_mark((LIST*)curr->val, recursions - 1);
+    	mark((LIST*)curr->val, recursions - 1);
     }
     
     curr = next;
@@ -126,7 +128,7 @@ void list_mark(LIST* list, size_t recursions) {
  * If the key already exists in the list, replace tells it to delete the old
  * value and put in your new one. !replace means delete the new value.
  */
-NODE* list_insert(LIST* list, bool replace, size_t key, void* val) {
+NODE* insert(LIST* list, bool replace, size_t key, void* val) {
   NODE *ins;
 
   if (list->first == NULL) {
@@ -155,7 +157,7 @@ NODE* list_insert(LIST* list, bool replace, size_t key, void* val) {
   }
 
   // Goes somewhere else in the list.
-  ins = list_find_nearest_from(list->first, key);
+  ins = find_nearest_from(list->first, key);
 
   if (ins->key == key) {
     // key already exists
@@ -170,14 +172,14 @@ NODE* list_insert(LIST* list, bool replace, size_t key, void* val) {
     return ins;
 
   } else {
-  	return list_insert_after(ins, key, val);
+  	return insert_after(ins, key, val);
   }
 }
 
 /*
  * Documentation goes here.
  */
-NODE* list_insert_after(NODE* node, size_t key, void* val) {
+NODE* insert_after(NODE* node, size_t key, void* val) {
   NODE* ins;
 
   //if (!(ins = malloc(sizeof(NODE)))) return NULL;
@@ -199,7 +201,7 @@ NODE* list_insert_after(NODE* node, size_t key, void* val) {
  * free the memory for the value stored in the node -- that pointer gets
  * returned! Only the node is destroyed.
  */
-void* list_remove(LIST* list, size_t key) {
+void* remove(LIST* list, size_t key) {
   NODE *f, *rm;
   void* val;
 
@@ -218,7 +220,7 @@ void* list_remove(LIST* list, size_t key) {
     return val;
   }
 
-  f = list_find_preceding_from(list->first, key);
+  f = find_preceding_from(list->first, key);
   if (!f || !f->next) {
   	// not found, end of list
   	return NULL;
@@ -242,124 +244,6 @@ void* list_remove(LIST* list, size_t key) {
 // Tests //
 ///////////
 
-/*
- * Are all values in the two lists equal? If one is missing a value, but the
- * other isn't, does the value in the list match the default value?
- *
- * FIXME: Add templating.
- */
-template <typename LDType, typename RDType>
-bool list_eqeq_list_template(const LIST* left, const LIST* right, const void* left_val, const void* right_val, size_t recursions, size_t* checked) {
-  NODE *lnext = NULL, *lcurr = left->first, *rnext = NULL, *rcurr = right->first;
-
-  if (lcurr) lnext = lcurr->next;
-  if (rcurr) rnext = rcurr->next;
-
-  while (lcurr && rcurr) {
-
-    if (lcurr->key == rcurr->key) {
-    	// MATCHING KEYS
-    	
-      if (recursions == 0) {
-        ++(*checked);
-
-        if (*reinterpret_cast<LDType*>(lcurr->val) != *reinterpret_cast<RDType*>(rcurr->val)) return false;
-
-      } else if (!list_eqeq_list_template<LDType,RDType>((LIST*)lcurr->val, (LIST*)rcurr->val, left_val, right_val, recursions - 1, checked)) {
-        return false;
-      }
-
-      // increment both iterators
-      rcurr = rnext;
-      if (rcurr) rnext = rcurr->next;
-      lcurr = lnext;
-      if (lcurr) lnext = lcurr->next;
-
-    } else if (lcurr->key < rcurr->key) {
-    	// NON-MATCHING KEYS
-
-      if (recursions == 0) {
-        // compare left entry to right default value
-        ++(*checked);
-
-        if (*reinterpret_cast<LDType*>(lcurr->val) != *reinterpret_cast<RDType*>(right_val)) return false;
-        
-      } else if (!list_eqeq_value_template<LDType,RDType>((LIST*)lcurr->val, right_val, recursions - 1, checked)) {
-        return false;
-      }
-
-      // increment left iterator
-      lcurr = lnext;
-      if (lcurr) lnext = lcurr->next;
-
-    } else {
-			// if (rcurr->key < lcurr->key)
-      
-      if (recursions == 0) {
-        // compare right entry to left default value
-        ++(*checked);
-
-        if (*reinterpret_cast<RDType*>(rcurr->val) != *reinterpret_cast<LDType*>(left_val)) return false;
-        
-      } else if (!list_eqeq_value_template<RDType,LDType>((LIST*)rcurr->val, left_val, recursions - 1, checked)) {
-        return false;
-      }
-
-      // increment right iterator
-      rcurr = rnext;
-      if (rcurr) rnext = rcurr->next;
-    }
-
-  }
-
-  /*
-   * One final check, in case we get to the end of one list but not the other
-   * one.
-   */
-  if (lcurr) {
-  	// nothing left in right-hand list
-  	if (*reinterpret_cast<LDType*>(lcurr->val) != *reinterpret_cast<RDType*>(right_val)) return false;
-
-  } else if (rcurr) {
-  	// nothing left in left-hand list
-  	if (*reinterpret_cast<RDType*>(rcurr->val) != *reinterpret_cast<LDType*>(left_val)) return false;
-
-  }
-
-  /*
-   * Nothing different between the two lists -- but make sure after this return
-   * that you compare the default values themselves, if we haven't visited
-   * every value in the two matrices.
-   */
-  return true;
-}
-
-/*
- * Do all values in a list == some value?
- *
- * FIXME: Add templating.
- */
-template <typename LDType, typename RDType>
-bool list_eqeq_value_template(const LIST* l, const void* v, size_t recursions, size_t* checked) {
-  NODE *next, *curr = l->first;
-
-  while (curr) {
-    next = curr->next;
-
-    if (recursions == 0) {
-      ++(*checked);
-
-      if (*reinterpret_cast<LDType*>(curr->val) != *reinterpret_cast<RDType*>(v)) return false;
-
-    } else if (!list_eqeq_value_template<LDType,RDType>((LIST*)curr->val, v, recursions - 1, checked)) {
-      return false;
-    }
-
-    curr = next;
-  }
-  
-  return true;
-}
 
 /////////////
 // Utility //
@@ -368,7 +252,7 @@ bool list_eqeq_value_template(const LIST* l, const void* v, size_t recursions, s
 /*
  * Find some element in the list and return the node ptr for that key.
  */
-NODE* list_find(LIST* list, size_t key) {
+NODE* find(LIST* list, size_t key) {
   NODE* f;
   if (!list->first) {
   	// empty list -- does not exist
@@ -376,7 +260,7 @@ NODE* list_find(LIST* list, size_t key) {
   }
 
   // see if we can find it.
-  f = list_find_nearest_from(list->first, key);
+  f = find_nearest_from(list->first, key);
   
   if (!f || f->key == key) {
   	return f;
@@ -389,14 +273,14 @@ NODE* list_find(LIST* list, size_t key) {
  * Finds the node that should go before whatever key we request, whether or not
  * that key is present.
  */
-NODE* list_find_preceding_from(NODE* prev, size_t key) {
+NODE* find_preceding_from(NODE* prev, size_t key) {
   NODE* curr = prev->next;
 
   if (!curr || key <= curr->key) {
   	return prev;
   	
   } else {
-  	return list_find_preceding_from(curr, key);
+  	return find_preceding_from(curr, key);
   }
 }
 
@@ -404,21 +288,21 @@ NODE* list_find_preceding_from(NODE* prev, size_t key) {
  * Finds the node or, if not present, the node that it should follow. NULL
  * indicates no preceding node.
  */
-NODE* list_find_nearest(LIST* list, size_t key) {
-  return list_find_nearest_from(list->first, key);
+NODE* find_nearest(LIST* list, size_t key) {
+  return find_nearest_from(list->first, key);
 }
 
 /*
  * Finds a node or the one immediately preceding it if it doesn't exist.
  */
-NODE* list_find_nearest_from(NODE* prev, size_t key) {
+NODE* find_nearest_from(NODE* prev, size_t key) {
   NODE* f;
 
   if (prev && prev->key == key) {
   	return prev;
   }
 
-  f = list_find_preceding_from(prev, key);
+  f = find_preceding_from(prev, key);
 
   if (!f->next) {
   	return f;
@@ -437,19 +321,10 @@ NODE* list_find_nearest_from(NODE* prev, size_t key) {
 
 
 /*
- * C access for copying the contents of a list.
- */
-void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
-  LR_DTYPE_TEMPLATE_TABLE(list_cast_copy_contents_template, void, LIST*, const LIST*, size_t);
-
-  ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
-}
-
-/*
  * Copy the contents of a list.
  */
 template <typename LDType, typename RDType>
-static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) {
+void cast_copy_contents(LIST* lhs, const LIST* rhs, size_t recursions) {
   NODE *lcurr, *rcurr;
 
   if (rhs->first) {
@@ -462,26 +337,26 @@ static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t 
 
       if (recursions == 0) {
       	// contents is some kind of value
-      	
+
         lcurr->val = ALLOC( LDType );
 
         *reinterpret_cast<LDType*>(lcurr->val) = *reinterpret_cast<RDType*>( rcurr->val );
 
       } else {
       	// contents is a list
-      	
+
         lcurr->val = ALLOC( LIST );
 
-        list_cast_copy_contents_template<LDType, RDType>(
+        cast_copy_contents<LDType, RDType>(
           reinterpret_cast<LIST*>(lcurr->val),
           reinterpret_cast<LIST*>(rcurr->val),
           recursions-1
         );
       }
-      
+
       if (rcurr->next) {
       	lcurr->next = ALLOC( NODE );
-      	
+
       } else {
       	lcurr->next = NULL;
       }
@@ -489,9 +364,24 @@ static void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t 
       lcurr = lcurr->next;
       rcurr = rcurr->next;
     }
-    
+
   } else {
     lhs->first = NULL;
   }
 }
+
+}} // end of namespace nm::list
+
+extern "C" {
+
+  /*
+   * C access for copying the contents of a list.
+   */
+  void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
+    LR_DTYPE_TEMPLATE_TABLE(nm::list::cast_copy_contents, void, LIST*, const LIST*, size_t);
+
+    ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
+  }
+
+} // end of extern "C" block
 

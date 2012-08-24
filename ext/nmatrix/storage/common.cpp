@@ -21,9 +21,9 @@
 //
 // * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 //
-// == util.cpp
+// == common.cpp
 //
-// Utility functions and data.
+// Code for the STORAGE struct that is common to all storage types.
 
 /*
  * Standard Includes
@@ -33,9 +33,7 @@
  * Project Includes
  */
 
-#include "types.h"
-
-#include "util.h"
+#include "common.h"
 
 /*
  * Macros
@@ -49,33 +47,24 @@
  * Forward Declarations
  */
 
-
 /*
  * Functions
  */
 
-template <typename Type>
-Type gcf(Type x, Type y) {
-	Type t;
-	
-	if (x < 0) x = -x;
-	if (y < 0) y = -y;
-	
-	if (x == 0) return y;
-	if (y == 0) return x;
-	
-	while (x > 0) {
-		t = x;
-		x = y % x;
-		y = t;
-	}
-	
-	return y;
+extern "C" {
+/*
+ * Calculate the number of elements in the dense storage structure, based on
+ * shape and dim.
+ */
+size_t nm_storage_count_max_elements(const STORAGE* storage) {
+  unsigned int i;
+  size_t count = 1;
+  
+  for (i = storage->dim; i-- > 0;) {
+		count *= storage->shape[i];
+  }
+  
+  return count;
 }
 
-template <> int16_t
-gcf<int16_t>(int16_t, int16_t);
-template <> int32_t
-gcf<int32_t>(int32_t, int32_t);
-template <> int64_t
-gcf<int64_t>(int64_t, int64_t);
+} // end of extern "C" block

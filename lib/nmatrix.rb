@@ -25,11 +25,21 @@
 # This file loads the C extension for NMatrix and adds an autoload for the
 # NMatrix and NVector classes.
 
+
+#############
+# Autoloads #
+#############
+
+
 ############
 # Requires #
 ############
 
 # NMatrix
+
+require 'nmatrix/nmatrix.rb'
+require 'nmatrix/nvector.rb'
+require 'nmatrix/blas.rb'
 
 # For some reason nmatrix.so ends up in a different place during gem build.
 if File.exist? 'lib/nmatrix/nmatrix.so'

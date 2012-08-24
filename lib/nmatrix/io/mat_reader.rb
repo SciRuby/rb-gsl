@@ -92,7 +92,6 @@ module NMatrix::IO::Matlab
       :miUINT32	=> :uint32,
       :miINT64	=> :uint64,
       :miUINT64	=> :uint64
-   		}
     }
 
 		# Before release v7.1 (release 14) matlab (TM) used the system

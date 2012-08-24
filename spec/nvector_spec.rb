@@ -28,7 +28,7 @@
 require "./lib/nmatrix"
 
 describe NVector do
-  it "correctly initializes" do
+  it "initializes" do
     v = NVector.new 5, :float64
     v.shape[0].should == 5
     v.shape[1].should == 1
