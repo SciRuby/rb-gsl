@@ -45,11 +45,12 @@ class NMatrix
     #
     #   zeros(:list, 5, :int32) # =>  0  0  0  0  0
     #
+    
     def zeros(*params)
-      dtype = params.last.is_a?(Symbol) ? params.pop   : :float64
-      store = params.first.is_a?(Symbol) ? params.shift : :dense
+      dtype = params.last.is_a?(Symbol) ? params.pop : :float64
+      stype = params.first.is_a?(Symbol) ? params.shift : :dense
 
-      NMatrix.new(store, params, 0, dtype)
+      NMatrix.new(stype, params, 0, dtype)
     end
 
     alias :zeroes :zeros
@@ -67,8 +68,9 @@ class NMatrix
     #   ones(2,3,:int32) # =>  1  1  1
     #                          1  1  1
     #
+    
     def ones(*params)
-        dtype = params.last.is_a?(Symbol) ? params.pop   : :float64
+        dtype = params.last.is_a?(Symbol) ? params.pop : :float64
 
         NMatrix.new(params, 1, dtype)
     end
@@ -96,40 +98,17 @@ class NMatrix
     #
 
     def eye(*params)
-      dtype = params.last.is_a?(Symbol) ? params.pop   : :float64
-      store = params.first.is_a?(Symbol) ? params.shift : :dense
+      dtype = params.last.is_a?(Symbol) ? params.pop : :float64
+      stype = params.first.is_a?(Symbol) ? params.shift : :dense
 
       n = params[0]
-      m = zeros(store,n,n,dtype)
-      (0..n-1).each { |i| m[i,i] = 1 }
-      m
+      matrix = zeros(stype, n, n, dtype)
+      (0..n-1).each { |i| matrix[i,i] = 1 }
+      matrix
     end
 
     alias :identity :eye
-
-    # seq()
-    #
-    #     Creates a :dense NMatrix with a sequence of integers starting at
-    #     zero until the matrix is filled. The parameters to the method
-    #     are the dimensions of the matrix. Optionaly, one can specify a
-    #     dtype as the last parameter (default is :float64).
-    #
-    # Examples:
-    #
-    #   seq(4) # =>   0   1   2   3
-    #
-    #   seq(3,3, :float32) # =>  0.0  1.0  2.0
-    #                            3.0  4.0  5.0
-    #                            6.0  7.0  8.0
-    #
-    def seq(*params)
-      dtype = params.last.is_a?(Symbol) ? params.pop : nil
-
-      product = params.reduce(1) { |prod, n| prod *= n }
-
-      NMatrix.new(params,  (0..product-1).to_a, dtype )
-    end
-
+    
     # rand()
     #
     #     Creates a :dense NMatrix with random numbers between 0 and 1 generated
@@ -150,7 +129,47 @@ class NMatrix
       random_values = []
       product.times { |i| random_values << rng.rand }
 
-      NMatrix.new params, random_values, :float32
+      NMatrix.new(params, random_values, :float64)
+    end
+
+    # seq()
+    #
+    #     Creates a :dense NMatrix with a sequence of integers starting at
+    #     zero until the matrix is filled. The parameters to the method
+    #     are the dimensions of the matrix. Optionaly, one can specify a
+    #     dtype as the last parameter (default is :float64).
+    #
+    # Examples:
+    #
+    #   seq(4) # =>   0   1   2   3
+    #
+    #   seq(3,3, :float32) # =>  0.0  1.0  2.0
+    #                            3.0  4.0  5.0
+    #                            6.0  7.0  8.0
+    #
+    
+    def seq(*params)
+      dtype = params.last.is_a?(Symbol) ? params.pop : nil
+      
+      # Already popped the dtype, if one is provided.
+      is_vector = (params.size == 1)
+      
+      product = params.reduce(1) { |prod, n| prod *= n }
+      
+      # TODO: Is there a cleaner way to handle this?
+      if dtype
+        if is_vector
+          NVector.new(params, (0..product-1).to_a, dtype)
+        else
+          NMatrix.new(params, (0..product-1).to_a, dtype)
+        end
+      else
+        if is_vector
+          NVector.new(params, (0..product-1).to_a)
+        else
+          NMatrix.new(params, (0..product-1).to_a)
+        end
+      end
     end
 
     #########################################
@@ -242,6 +261,7 @@ end
 #     SciRuby:      a = N[ [1,2,3], [4,5,6] ]
 #     Ruby array:   a =  [ [1,2,3], [4,5,6] ]
 #
+
 class N
   class << self
     def [](*params)
@@ -262,7 +282,11 @@ class N
       #
       # Then flatten the array.
       #
-      NMatrix.new( dim, params.flatten, dtype )
+      if dtype
+        NMatrix.new(dim, params.flatten, dtype)
+      else
+        NMatrix.new(dim, params.flatten)
+      end
     end
   end
 end
