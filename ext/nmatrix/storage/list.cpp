@@ -175,13 +175,132 @@ void list_storage_mark(void* storage_base) {
 // Accessors //
 ///////////////
 
+/*
+ * Documentation goes here.
+ */
+NODE* list_storage_get_single_node(LIST_STORAGE* s, SLICE* slice)
+{
+  size_t r;
+  LIST*  l = s->rows;
+  NODE*  n;
+
+  for (r = 0; r < s->rank; r++) {
+    n = list_find(l, s->offset[r] + slice->coords[r]);
+    if (n)  l = reinterpret_cast<LIST*>(n->val);
+    else return NULL;
+  }
+
+  return n;
+}
+
+
+
+static LIST* list_storage_slice_copy(const LIST_STORAGE *src, SLICE *slice, LIST *src_rows, size_t n)
+{
+  NODE *src_node, *dst_node;
+  LIST *dst_rows = NULL;
+  void *val = NULL;
+  
+  dst_rows = list_create();
+
+  if (src->rank - n > 1) {
+    for (size_t i = 0; i < slice->lengths[n]; i++) {
+      src_node = list_find(src_rows, src->offset[n] + slice->coords[n] + i);
+      
+      if (src_node && src_node->val) {
+        
+        val = list_storage_slice_copy(src, slice, 
+            reinterpret_cast<LIST*>(src_node->val), 
+            n + 1);  
+
+        if (val) {
+          dst_node = ALLOC(NODE);
+          NM_CHECK_ALLOC(dst_node);
+
+          dst_node->val = ALLOC(LIST);
+          NM_CHECK_ALLOC(dst_node->val);
+
+          memcpy(dst_node->val, val, sizeof(LIST));
+          dst_node->key = i;
+            
+          if (dst_rows->first == NULL)
+            dst_node->next    = NULL;
+          else 
+            dst_node->next    = dst_rows->first;
+
+          dst_rows->first = dst_node;
+        }
+      }
+    }
+  }
+  else {
+    for (size_t i = 0; i < slice->lengths[n]; i++) {
+      src_node = list_find(src_rows, src->offset[n] + slice->coords[n] + i);
+
+      if (src_node && src_node->val) {
+        dst_node = ALLOC(NODE);
+        NM_CHECK_ALLOC(dst_node);
+
+        dst_node->val = ALLOC_N(char, DTYPE_SIZES[src->dtype]);
+        NM_CHECK_ALLOC(dst_node->val);
+
+        memcpy(dst_node->val, src_node->val, DTYPE_SIZES[src->dtype]);
+        dst_node->key = i;
+          
+        if (dst_rows->first == NULL)
+          dst_node->next    = NULL;
+        else 
+          dst_node->next    = dst_rows->first;
+        
+        dst_rows->first = dst_node;
+
+      }
+    }
+  }
+
+  return dst_rows;
+}
 
 /*
  * Documentation goes here.
  */
 void* list_storage_get(STORAGE* storage, SLICE* slice) {
-  //LIST_STORAGE* s = (LIST_STORAGE*)storage;
-  rb_raise(rb_eNotImpError, "This type of slicing not supported yet");
+  LIST_STORAGE* s = (LIST_STORAGE*)storage;
+  LIST_STORAGE* ns = NULL;
+  NODE* n;
+
+  if (slice->single) {
+    n = list_storage_get_single_node(s, slice); 
+    return (n ? n->val : s->default_val);
+  } 
+  else {
+    ns = ALLOC( LIST_STORAGE );
+    NM_CHECK_ALLOC(ns);
+    
+    ns->rank = s->rank;
+    ns->dtype = s->dtype;
+
+    ns->offset     = ALLOC_N(size_t, ns->rank);
+    NM_CHECK_ALLOC(ns->offset);
+
+    ns->shape      = ALLOC_N(size_t, ns->rank);
+    NM_CHECK_ALLOC(ns->shape);
+
+    for (size_t i = 0; i < ns->rank; ++i) {
+      ns->offset[i] = 0; 
+      ns->shape[i]  = slice->lengths[i];
+    }
+
+    ns->default_val = ALLOC_N(char, DTYPE_SIZES[ns->dtype]);
+    NM_CHECK_ALLOC(ns->default_val);
+    memcpy(ns->default_val, s->default_val, DTYPE_SIZES[ns->dtype]);
+    
+    ns->count = 1;
+    ns->src = ns;
+    
+    ns->rows = list_storage_slice_copy(s, slice, s->rows, 0);
+    return ns;
+  }
 }
 
 
@@ -192,21 +311,12 @@ void* list_storage_get(STORAGE* storage, SLICE* slice) {
 void* list_storage_ref(STORAGE* storage, SLICE* slice) {
   LIST_STORAGE* s = (LIST_STORAGE*)storage;
   LIST_STORAGE* ns = NULL;
-  size_t r;
-  NODE*  n;
-  LIST*  l = s->rows;
+  NODE* n;
 
   //TODO: It needs a refactoring.
   if (slice->single) {
-    for (r = s->rank; r > 1; --r) {
-      n = list_find(l, s->offset[s->rank - r] + slice->coords[s->rank - r]);
-      if (n)  l = reinterpret_cast<LIST*>(n->val);
-      else return s->default_val;
-    }
-
-    n = list_find(l, s->offset[s->rank - r] + slice->coords[s->rank - r]);
-    if (n) return n->val;
-    else   return s->default_val;
+    n = list_storage_get_single_node(s, slice); 
+    return (n ? n->val : s->default_val);
   } 
   else {
     ns = ALLOC( LIST_STORAGE );

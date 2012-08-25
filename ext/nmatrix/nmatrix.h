@@ -165,6 +165,7 @@ struct NMATRIX {
 #define NM_DENSE_STORAGE(val)   ((struct DENSE_STORAGE*)(NM_STORAGE(val)))
 
 #define NM_DENSE_SRC(val)       (NM_DENSE_STORAGE(val)->src)
+#define NM_LIST_SRC(val)        (NM_LIST_STORAGE(val)->src)
 #define NM_RANK(val)            (NM_STORAGE(val)->rank)
 #define NM_DTYPE(val)           (NM_STORAGE(val)->dtype)
 #define NM_ITYPE(val)           (NM_YALE_STORAGE(val)->itype)

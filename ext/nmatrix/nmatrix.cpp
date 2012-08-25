@@ -1010,9 +1010,13 @@ static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALU
  * Check to determine whether matrix is a reference to another matrix.
  */
 static VALUE nm_is_ref(VALUE self) {
-	// Refs only allowed for dense matrices.
+	// Refs only allowed for dense and list matrices.
   if (NM_STYPE(self) == DENSE_STORE) {
     return (NM_DENSE_SRC(self) == NM_STORAGE(self)) ? Qfalse : Qtrue;
+  }
+
+  if (NM_STYPE(self) == LIST_STORE) {
+    return (NM_LIST_SRC(self) == NM_STORAGE(self)) ? Qfalse : Qtrue;
   }
 
   return Qfalse;

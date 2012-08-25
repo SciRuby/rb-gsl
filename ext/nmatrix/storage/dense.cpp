@@ -88,7 +88,7 @@ template <typename DType>
 bool dense_storage_is_symmetric_template(const DENSE_STORAGE* mat, int lda);
 
 static size_t* dense_storage_stride(size_t* shape, size_t rank);
-static void dense_storage_slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *src, size_t* lengths, size_t psrc, size_t pdest, size_t n);
+static void dense_storage_slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *src, size_t* lengths, size_t pdest, size_t psrc, size_t n);
 
 /*
  * Functions
@@ -240,7 +240,7 @@ void* dense_storage_get(STORAGE* storage, SLICE* slice) {
     ns->elements   = ALLOC_N(char, DTYPE_SIZES[ns->dtype] * count);
     NM_CHECK_ALLOC(ns->elements);
 
-    dense_storage_slice_copy(ns, s, slice->lengths, dense_storage_pos(s, slice->coords), 0, 0);
+    dense_storage_slice_copy(ns, s, slice->lengths, 0, dense_storage_pos(s, slice->coords), 0);
     return ns;
   }
 }
@@ -436,11 +436,12 @@ static size_t* dense_storage_stride(size_t* shape, size_t rank) {
 /*
  * Recursive slicing for N-dimensional matrix.
  */
-static void dense_storage_slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *src, size_t* lengths, size_t psrc, size_t pdest, size_t n) {
+static void dense_storage_slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *src, size_t* lengths, size_t pdest, size_t psrc, size_t n) {
   if (src->rank - n > 1) {
     for (size_t i = 0; i < lengths[n]; ++i) {
       dense_storage_slice_copy(dest, src, lengths,
-                                    psrc + src->stride[n]*i, pdest + dest->stride[n]*i,
+                                    pdest + dest->stride[n]*i,
+                                    psrc + src->stride[n]*i, 
                                     n + 1);
     }
   } else {
@@ -488,8 +489,8 @@ DENSE_STORAGE* dense_storage_copy(const DENSE_STORAGE* rhs) {
       dense_storage_slice_copy(lhs,
                                reinterpret_cast<const DENSE_STORAGE*>(rhs->src),
                                rhs->shape,
-                               dense_storage_pos(reinterpret_cast<const DENSE_STORAGE*>(rhs->src), rhs->offset),
                                0,
+                               dense_storage_pos(reinterpret_cast<const DENSE_STORAGE*>(rhs->src), rhs->offset),
                                0);
   }
 
