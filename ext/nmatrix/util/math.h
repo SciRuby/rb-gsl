@@ -24,6 +24,9 @@
 // == math.h
 //
 // Header file for math functions, interfacing with BLAS, etc.
+//
+// For instructions on adding CBLAS and CLAPACK functions, see the
+// beginning of math.cpp.
 
 #ifndef MATH_H
 #define MATH_H
@@ -32,8 +35,9 @@
  * Standard Includes
  */
 
-extern "C" {
-#include <cblas.h>
+extern "C" { // These need to be in an extern "C" block or you'll get all kinds of undefined symbol errors.
+  #include <cblas.h>
+  #include <clapack.h>
 }
 
 #include <algorithm> // std::min, std::max
@@ -70,6 +74,7 @@ namespace nm {
  * Types
  */
 
+
 // These allow an increase in precision for intermediate values of gemm and gemv.
 // See also: http://stackoverflow.com/questions/11873694/how-does-one-increase-precision-in-c-templates-in-a-template-typename-dependen
 template <typename DType> struct LongDType;
@@ -90,6 +95,7 @@ template <> struct LongDType<RubyObject> { typedef RubyObject type; };
 /*
  * Functions
  */
+
 
 /*
  * GEneral Matrix Multiplication: based on dgemm.f from Netlib.
@@ -712,6 +718,52 @@ void transpose_yale(const size_t n, const size_t m, const void* ia_, const void*
   } else {
     ib[0] = 0;
   }
+}
+
+/*
+ * Macro for declaring LAPACK specializations of the getrf function.
+ *
+ * type is the DType; call is the specific function to call; cast_as is what the DType* should be
+ * cast to in order to pass it to LAPACK.
+ */
+#define LAPACK_GETRF(type, call, cast_as)                                     \
+template <>                                                                   \
+inline bool getrf(const int M, const int N, type * A, const int lda, int* ipiv) { \
+  int info = call(CblasRowMajor, M, N, reinterpret_cast<cast_as *>(A), lda, ipiv); \
+  if (!info) return true;                                                     \
+  else {                                                                      \
+    rb_raise(rb_eArgError, "getrf: problem with argument %d\n", info);        \
+    return false;                                                             \
+  }                                                                           \
+}
+
+/*
+ * lapack_?getrf - default implementation
+ *
+ * TODO: Use f2c to convert getrf and other functions it calls to C code, then implement them here,
+ * TODO: as templates, for int, rational, RubyObject, etc.
+ */
+template <typename DType>
+inline bool getrf(const int M, const int N, DType* A, const int lda, int* ipiv) {
+  rb_raise(rb_eNotImpError, "only implemented for LAPACK types (float32, float64, complex64, complex128)");
+}
+
+LAPACK_GETRF(float,      clapack_sgetrf, float)
+LAPACK_GETRF(double,     clapack_dgetrf, double)
+LAPACK_GETRF(Complex64,  clapack_cgetrf, void)
+LAPACK_GETRF(Complex128, clapack_zgetrf, void)
+
+
+/*
+* Function signature conversion for calling LAPACK's getrf functions as directly as possible.
+*
+* For documentation: http://www.netlib.org/lapack/double/dgetrf.f
+*
+* This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
+*/
+template <typename DType>
+inline bool clapack_getrf(const int m, const int n, void* a, const int lda, int* ipiv) {
+ return  getrf<DType>(m, n, reinterpret_cast<DType*>(a), lda, ipiv);
 }
 
 }} // end namespace nm::math

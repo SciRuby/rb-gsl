@@ -139,11 +139,15 @@ find_library("cblas", "cblas_dgemm", "/usr/local/lib", "/usr/local/atlas/lib")
 find_library("atlas", "ATL_dgemmNN", "/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib")
 find_header("cblas.h", "/usr/local/include", "/usr/local/atlas/include")
 
+find_library("lapack", "clapack_dgetrf", "/usr/local/lib", "/usr/local/atlas/lib")
+find_header("clapack.h", "/usr/local/include", "/usr/local/atlas/include")
+
+# Needed for LAPACK
 have_library("f2c")
 have_header("f2c.h")
 
-
-$libs += " -lcblas -latlas "
+# Order matters here: ATLAS has to go after LAPACK: http://mail.scipy.org/pipermail/scipy-user/2007-January/010717.html
+$libs += " -llapack -lcblas -latlas "
 
 $objs = %w{nmatrix ruby_constants data/data util/io util/math util/sl_list storage/common storage/storage storage/dense storage/yale storage/list}.map { |i| i + ".o" }
 
