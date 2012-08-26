@@ -195,6 +195,27 @@ NODE* list_insert_after(NODE* node, size_t key, void* val) {
 }
 
 /*
+ * Analog functions list_insert but this insert copy of value.
+ */
+NODE* list_insert_with_copy(LIST *list, size_t key, void *val, size_t size)
+{
+  NODE* n;
+
+  n = ALLOC(NODE);
+  NM_CHECK_ALLOC(n);
+
+  n->val = ALLOC_N(char, size);
+  NM_CHECK_ALLOC(n->val);
+
+  memcpy(n->val, val, size);
+  n->key = key;
+  n->next    = list->first;
+
+  list->first = n;
+
+  return n;
+}
+/*
  * Returns the value pointer (not the node) for some key. Note that it doesn't
  * free the memory for the value stored in the node -- that pointer gets
  * returned! Only the node is destroyed.
@@ -376,6 +397,5 @@ void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtyp
 
   ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
 }
-
 
 

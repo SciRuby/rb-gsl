@@ -194,7 +194,6 @@ NODE* list_storage_get_single_node(LIST_STORAGE* s, SLICE* slice)
 }
 
 
-
 static LIST* list_storage_slice_copy(const LIST_STORAGE *src, SLICE *slice, LIST *src_rows, size_t n)
 {
   NODE *src_node, *dst_node;
@@ -214,21 +213,7 @@ static LIST* list_storage_slice_copy(const LIST_STORAGE *src, SLICE *slice, LIST
             n + 1);  
 
         if (val) {
-          dst_node = ALLOC(NODE);
-          NM_CHECK_ALLOC(dst_node);
-
-          dst_node->val = ALLOC(LIST);
-          NM_CHECK_ALLOC(dst_node->val);
-
-          memcpy(dst_node->val, val, sizeof(LIST));
-          dst_node->key = i;
-            
-          if (dst_rows->first == NULL)
-            dst_node->next    = NULL;
-          else 
-            dst_node->next    = dst_rows->first;
-
-          dst_rows->first = dst_node;
+          list_insert_with_copy(dst_rows, i, val, sizeof(LIST));          
         }
       }
     }
@@ -238,22 +223,7 @@ static LIST* list_storage_slice_copy(const LIST_STORAGE *src, SLICE *slice, LIST
       src_node = list_find(src_rows, src->offset[n] + slice->coords[n] + i);
 
       if (src_node && src_node->val) {
-        dst_node = ALLOC(NODE);
-        NM_CHECK_ALLOC(dst_node);
-
-        dst_node->val = ALLOC_N(char, DTYPE_SIZES[src->dtype]);
-        NM_CHECK_ALLOC(dst_node->val);
-
-        memcpy(dst_node->val, src_node->val, DTYPE_SIZES[src->dtype]);
-        dst_node->key = i;
-          
-        if (dst_rows->first == NULL)
-          dst_node->next    = NULL;
-        else 
-          dst_node->next    = dst_rows->first;
-        
-        dst_rows->first = dst_node;
-
+        list_insert_with_copy(dst_rows, i, src_node->val, DTYPE_SIZES[src->dtype]);
       }
     }
   }

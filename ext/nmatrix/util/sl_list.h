@@ -78,6 +78,7 @@ void	list_mark(LIST* list, size_t recursions);
 NODE* list_insert(LIST* list, bool replace, size_t key, void* val);
 NODE* list_insert_after(NODE* node, size_t key, void* val);
 void* list_remove(LIST* list, size_t key);
+NODE* list_insert_with_copy(LIST *list, size_t key, void *val, size_t size);
 
 template <typename Type>
 inline NODE* list_insert_helper(LIST* list, NODE* node, size_t key, Type val) {
