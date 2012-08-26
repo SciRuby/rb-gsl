@@ -107,21 +107,18 @@ LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, voi
   LIST_STORAGE* s;
 
   s = ALLOC( LIST_STORAGE );
-  NM_CHECK_ALLOC(s);
-
-  s->offset = ALLOC_N(size_t, s->rank);
-  NM_CHECK_ALLOC(s);
-  memset(s->offset, 0, s->rank);
-
 
   s->rank  = rank;
   s->shape = shape;
   s->dtype = dtype;
 
+  s->offset = ALLOC_N(size_t, s->rank);
+  memset(s->offset, 0, s->rank);
+
+
+
   s->rows  = list_create();
-
   s->default_val = init_val;
-
   s->count = 1;
   s->src = s;
 
