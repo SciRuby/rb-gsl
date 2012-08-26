@@ -116,7 +116,6 @@ LIST_STORAGE* list_storage_create(dtype_t dtype, size_t* shape, size_t rank, voi
   memset(s->offset, 0, s->rank);
 
 
-
   s->rows  = list_create();
   s->default_val = init_val;
   s->count = 1;
@@ -242,16 +241,11 @@ void* list_storage_get(STORAGE* storage, SLICE* slice) {
   } 
   else {
     ns = ALLOC( LIST_STORAGE );
-    NM_CHECK_ALLOC(ns);
     
     ns->rank = s->rank;
     ns->dtype = s->dtype;
-
     ns->offset     = ALLOC_N(size_t, ns->rank);
-    NM_CHECK_ALLOC(ns->offset);
-
     ns->shape      = ALLOC_N(size_t, ns->rank);
-    NM_CHECK_ALLOC(ns->shape);
 
     for (size_t i = 0; i < ns->rank; ++i) {
       ns->offset[i] = 0; 
@@ -259,7 +253,6 @@ void* list_storage_get(STORAGE* storage, SLICE* slice) {
     }
 
     ns->default_val = ALLOC_N(char, DTYPE_SIZES[ns->dtype]);
-    NM_CHECK_ALLOC(ns->default_val);
     memcpy(ns->default_val, s->default_val, DTYPE_SIZES[ns->dtype]);
     
     ns->count = 1;
@@ -287,16 +280,11 @@ void* list_storage_ref(STORAGE* storage, SLICE* slice) {
   } 
   else {
     ns = ALLOC( LIST_STORAGE );
-    NM_CHECK_ALLOC(ns);
     
     ns->rank = s->rank;
     ns->dtype = s->dtype;
-
     ns->offset     = ALLOC_N(size_t, ns->rank);
-    NM_CHECK_ALLOC(ns->offset);
-
     ns->shape      = ALLOC_N(size_t, ns->rank);
-    NM_CHECK_ALLOC(ns->shape);
 
     for (size_t i = 0; i < ns->rank; ++i) {
       ns->offset[i] = slice->coords[i] + s->offset[i];
@@ -351,7 +339,6 @@ void* list_storage_remove(STORAGE* storage, SLICE* slice) {
 
   // keep track of where we are in the traversals
   NODE** stack = ALLOCA_N( NODE*, s->rank - 1 );
-  NM_CHECK_ALLOC(stack);
 
   for (r = (int)(s->rank); r > 1; --r) {
   	// does this row exist in the matrix?

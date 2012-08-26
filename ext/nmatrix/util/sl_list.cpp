@@ -202,10 +202,7 @@ NODE* list_insert_with_copy(LIST *list, size_t key, void *val, size_t size)
   NODE* n;
 
   n = ALLOC(NODE);
-  NM_CHECK_ALLOC(n);
-
   n->val = ALLOC_N(char, size);
-  NM_CHECK_ALLOC(n->val);
 
   memcpy(n->val, val, size);
   n->key = key;
