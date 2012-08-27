@@ -38,22 +38,27 @@
  * Forward Declarations
  */
 
-static VALUE nm_cblas_gemm(VALUE self, VALUE trans_a, VALUE trans_b, VALUE m, VALUE n, VALUE k, VALUE vAlpha,
-                           VALUE a, VALUE lda, VALUE b, VALUE ldb, VALUE vBeta, VALUE c, VALUE ldc);
+extern "C" {
 
-static VALUE nm_cblas_gemv(VALUE self, VALUE trans_a, VALUE m, VALUE n, VALUE vAlpha, VALUE a, VALUE lda,
-                           VALUE x, VALUE incx, VALUE vBeta, VALUE y, VALUE incy);
+  static VALUE nm_cblas_gemm(VALUE self, VALUE trans_a, VALUE trans_b, VALUE m, VALUE n, VALUE k, VALUE vAlpha,
+                             VALUE a, VALUE lda, VALUE b, VALUE ldb, VALUE vBeta, VALUE c, VALUE ldc);
 
+  static VALUE nm_cblas_gemv(VALUE self, VALUE trans_a, VALUE m, VALUE n, VALUE vAlpha, VALUE a, VALUE lda,
+                             VALUE x, VALUE incx, VALUE vBeta, VALUE y, VALUE incy);
+
+} // end of extern "C" block
 
 ////////////////////
 // Math Functions //
 ////////////////////
 
+namespace nm { namespace math {
+
 /*
  * Calculate the determinant for a dense matrix (A [elements]) of size 2 or 3. Return the result.
  */
 template <typename DType>
-void det_exact_template(const int M, const void* A_elements, const int lda, void* result_arg) {
+void det_exact(const int M, const void* A_elements, const int lda, void* result_arg) {
   DType* result  = reinterpret_cast<DType*>(result_arg);
   const DType* A = reinterpret_cast<const DType*>(A_elements);
 
@@ -77,54 +82,6 @@ void det_exact_template(const int M, const void* A_elements, const int lda, void
 }
 
 
-void det_exact(const int M, const void* elements, const int lda, dtype_t dtype, void* result) {
-  NAMED_DTYPE_TEMPLATE_TABLE(ttable, det_exact_template, void, const int M, const void* A_elements, const int lda, void* result_arg);
-
-  ttable[dtype](M, elements, lda, result);
-}
-
-
-/*
- * Transpose an array of elements that represent a row-major dense matrix. Does not allocate anything, only does an memcpy.
- */
-void transpose_generic(const size_t M, const size_t N, const void* A, const int lda, void* B, const int ldb, size_t element_size) {
-  for (size_t i = 0; i < N; ++i) {
-    for (size_t j = 0; j < M; ++j) {
-
-      memcpy(reinterpret_cast<char*>(B) + (i*ldb+j)*element_size,
-             reinterpret_cast<const char*>(A) + (j*lda+i)*element_size,
-             element_size);
-
-    }
-  }
-}
-
-
-///////////////////
-// Ruby Bindings //
-///////////////////
-
-void Init_blas() {
-  cBLAS = rb_define_module_under(cNMatrix, "BLAS");
-
-	rb_define_singleton_method(cBLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 13);
-	rb_define_singleton_method(cBLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
-}
-
-
-/* Interprets cblas argument which could be any of false/:no_transpose, :transpose, or :complex_conjugate,
- * into an enum recognized by cblas.
- *
- * Called by nm_cblas_gemm -- basically inline.
- *
- */
-static enum CBLAS_TRANSPOSE gemm_op_sym(VALUE op) {
-  if (op == Qfalse || rb_to_id(op) == rbsym_no_transpose) return CblasNoTrans;
-  else if (rb_to_id(op) == rbsym_transpose) return CblasTrans;
-  else if (rb_to_id(op) == rbsym_complex_conjugate) return CblasConjTrans;
-  else rb_raise(rb_eArgError, "Expected false, :transpose, or :complex_conjugate");
-  return CblasNoTrans;
-}
 
 
 /* Call any of the cblas_xgemm functions as directly as possible.
@@ -149,7 +106,7 @@ static enum CBLAS_TRANSPOSE gemm_op_sym(VALUE op) {
  * handling, so you can easily crash Ruby!
  */
 template <typename DType>
-inline static bool nm_cblas_gemm_template(dtype_t dtype,
+inline static bool cblas_gemm(dtype_t dtype,
                                    const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b,
                                    int m, int n, int k,
                                    void* alpha,
@@ -165,26 +122,7 @@ inline static bool nm_cblas_gemm_template(dtype_t dtype,
 }
 
 
-static VALUE nm_cblas_gemm(VALUE self,
-                           VALUE trans_a, VALUE trans_b,
-                           VALUE m, VALUE n, VALUE k,
-                           VALUE alpha,
-                           VALUE a, VALUE lda,
-                           VALUE b, VALUE ldb,
-                           VALUE beta,
-                           VALUE c, VALUE ldc)
-{
-  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm_cblas_gemm_template, bool, dtype_t dtype, const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b, int m, int n, int k, void* alpha, void* a, int lda, void* b, int ldb, void* beta, void* c, int ldc);
 
-  dtype_t dtype = NM_DTYPE(a);
-
-  void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]),
-       *pBeta  = ALLOCA_N(char, DTYPE_SIZES[dtype]);
-  rubyval_to_cval(alpha, dtype, pAlpha);
-  rubyval_to_cval(beta, dtype, pBeta);
-
-  return ttable[dtype](dtype, gemm_op_sym(trans_a), gemm_op_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_DENSE_STORAGE(a)->elements, FIX2INT(lda), NM_DENSE_STORAGE(b)->elements, FIX2INT(ldb), pBeta, NM_DENSE_STORAGE(c)->elements, FIX2INT(ldc)) ? Qtrue : Qfalse;
-}
 
 
 /* Call any of the cblas_xgemv functions as directly as possible.
@@ -209,7 +147,7 @@ static VALUE nm_cblas_gemm(VALUE self,
  * handling, so you can easily crash Ruby!
  */
 template <typename DType>
-inline static bool nm_cblas_gemv_template(dtype_t dtype,
+inline static bool cblas_gemv(dtype_t dtype,
                                     const enum CBLAS_TRANSPOSE trans_a,
                                     int m, int n,
                                     void* alpha,
@@ -225,6 +163,66 @@ inline static bool nm_cblas_gemv_template(dtype_t dtype,
                      reinterpret_cast<DType*>(y), incy);
 }
 
+}} // end of namespace nm::math
+
+
+extern "C" {
+
+///////////////////
+// Ruby Bindings //
+///////////////////
+
+void nm_math_init_blas() {
+  cBLAS = rb_define_module_under(cNMatrix, "BLAS");
+
+	rb_define_singleton_method(cBLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 13);
+	rb_define_singleton_method(cBLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
+}
+
+
+/* Interprets cblas argument which could be any of false/:no_transpose, :transpose, or :complex_conjugate,
+ * into an enum recognized by cblas.
+ *
+ * Called by nm_cblas_gemm -- basically inline.
+ *
+ */
+static enum CBLAS_TRANSPOSE gemm_op_sym(VALUE op) {
+  if (op == Qfalse || rb_to_id(op) == nm_rb_no_transpose) return CblasNoTrans;
+  else if (rb_to_id(op) == nm_rb_transpose) return CblasTrans;
+  else if (rb_to_id(op) == nm_rb_complex_conjugate) return CblasConjTrans;
+  else rb_raise(rb_eArgError, "Expected false, :transpose, or :complex_conjugate");
+  return CblasNoTrans;
+}
+
+
+/*
+ * Ruby accessor for calling CBLAS' gemm functions as directly as possible.
+ */
+static VALUE nm_cblas_gemm(VALUE self,
+                           VALUE trans_a, VALUE trans_b,
+                           VALUE m, VALUE n, VALUE k,
+                           VALUE alpha,
+                           VALUE a, VALUE lda,
+                           VALUE b, VALUE ldb,
+                           VALUE beta,
+                           VALUE c, VALUE ldc)
+{
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemm, bool, dtype_t dtype, const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b, int m, int n, int k, void* alpha, void* a, int lda, void* b, int ldb, void* beta, void* c, int ldc);
+
+  dtype_t dtype = NM_DTYPE(a);
+
+  void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]),
+       *pBeta  = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+  rubyval_to_cval(alpha, dtype, pAlpha);
+  rubyval_to_cval(beta, dtype, pBeta);
+
+  return ttable[dtype](dtype, gemm_op_sym(trans_a), gemm_op_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb), pBeta, NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc)) ? Qtrue : Qfalse;
+}
+
+
+/*
+ * Ruby accessor for calling CBLAS' gemv functions as directly as possible.
+ */
 static VALUE nm_cblas_gemv(VALUE self,
                            VALUE trans_a,
                            VALUE m, VALUE n,
@@ -234,7 +232,7 @@ static VALUE nm_cblas_gemv(VALUE self,
                            VALUE beta,
                            VALUE y, VALUE incy)
 {
-  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm_cblas_gemv_template, bool, dtype_t dtype, const enum CBLAS_TRANSPOSE trans_a, int m, int n, void* alpha, void* a, int lda, void* x, int incx, void* beta, void* y, int incy);
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemv, bool, dtype_t dtype, const enum CBLAS_TRANSPOSE trans_a, int m, int n, void* alpha, void* a, int lda, void* x, int incx, void* beta, void* y, int incy);
 
   dtype_t dtype = NM_DTYPE(a);
 
@@ -243,8 +241,34 @@ static VALUE nm_cblas_gemv(VALUE self,
   rubyval_to_cval(alpha, dtype, pAlpha);
   rubyval_to_cval(beta, dtype, pBeta);
 
-  return ttable[dtype](dtype, gemm_op_sym(trans_a), FIX2INT(m), FIX2INT(n), pAlpha, NM_DENSE_STORAGE(a)->elements, FIX2INT(lda), NM_DENSE_STORAGE(x)->elements, FIX2INT(incx), pBeta, NM_DENSE_STORAGE(y)->elements, FIX2INT(incy)) ? Qtrue : Qfalse;
+  return ttable[dtype](dtype, gemm_op_sym(trans_a), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(x)->elements, FIX2INT(incx), pBeta, NM_STORAGE_DENSE(y)->elements, FIX2INT(incy)) ? Qtrue : Qfalse;
 }
 
 
+/*
+ * C accessor for calculating an exact determinant.
+ */
+void nm_math_det_exact(const int M, const void* elements, const int lda, dtype_t dtype, void* result) {
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::det_exact, void, const int M, const void* A_elements, const int lda, void* result_arg);
 
+  ttable[dtype](M, elements, lda, result);
+}
+
+
+/*
+ * Transpose an array of elements that represent a row-major dense matrix. Does not allocate anything, only does an memcpy.
+ */
+void nm_math_transpose_generic(const size_t M, const size_t N, const void* A, const int lda, void* B, const int ldb, size_t element_size) {
+  for (size_t i = 0; i < N; ++i) {
+    for (size_t j = 0; j < M; ++j) {
+
+      memcpy(reinterpret_cast<char*>(B) + (i*ldb+j)*element_size,
+             reinterpret_cast<const char*>(A) + (j*lda+i)*element_size,
+             element_size);
+
+    }
+  }
+}
+
+
+} // end of extern "C" block

@@ -31,6 +31,8 @@
 
 #include "sl_list.h"
 
+namespace nm { namespace list {
+
 /*
  * Macros
  */
@@ -55,7 +57,7 @@
 /*
  * Creates an empty linked list.
  */
-LIST* list_create(void) {
+LIST* create(void) {
   LIST* list;
   
   //if (!(list = malloc(sizeof(LIST)))) return NULL;
@@ -72,7 +74,7 @@ LIST* list_create(void) {
  * list inside of a list, set recursions to 1. For lists inside of lists inside
  *  of the list, set it to 2; and so on. Setting it to 0 is for no recursions.
  */
-void list_delete(LIST* list, size_t recursions) {
+void del(LIST* list, size_t recursions) {
   NODE* next;
   NODE* curr = list->first;
 
@@ -85,7 +87,7 @@ void list_delete(LIST* list, size_t recursions) {
       
     } else {
       //fprintf(stderr, "    free_list: %p\n", list);
-      list_delete((LIST*)curr->val, recursions - 1);
+      del((LIST*)curr->val, recursions - 1);
     }
 
     free(curr);
@@ -98,7 +100,7 @@ void list_delete(LIST* list, size_t recursions) {
 /*
  * Documentation goes here.
  */
-void list_mark(LIST* list, size_t recursions) {
+void mark(LIST* list, size_t recursions) {
   NODE* next;
   NODE* curr = list->first;
 
@@ -109,7 +111,7 @@ void list_mark(LIST* list, size_t recursions) {
     	rb_gc_mark(*((VALUE*)(curr->val)));
     	
     } else {
-    	list_mark((LIST*)curr->val, recursions - 1);
+    	mark((LIST*)curr->val, recursions - 1);
     }
     
     curr = next;
@@ -126,7 +128,7 @@ void list_mark(LIST* list, size_t recursions) {
  * If the key already exists in the list, replace tells it to delete the old
  * value and put in your new one. !replace means delete the new value.
  */
-NODE* list_insert(LIST* list, bool replace, size_t key, void* val) {
+NODE* insert(LIST* list, bool replace, size_t key, void* val) {
   NODE *ins;
 
   if (list->first == NULL) {
@@ -155,7 +157,7 @@ NODE* list_insert(LIST* list, bool replace, size_t key, void* val) {
   }
 
   // Goes somewhere else in the list.
-  ins = list_find_nearest_from(list->first, key);
+  ins = find_nearest_from(list->first, key);
 
   if (ins->key == key) {
     // key already exists
@@ -170,14 +172,14 @@ NODE* list_insert(LIST* list, bool replace, size_t key, void* val) {
     return ins;
 
   } else {
-  	return list_insert_after(ins, key, val);
+  	return insert_after(ins, key, val);
   }
 }
 
 /*
  * Documentation goes here.
  */
-NODE* list_insert_after(NODE* node, size_t key, void* val) {
+NODE* insert_after(NODE* node, size_t key, void* val) {
   NODE* ins;
 
   //if (!(ins = malloc(sizeof(NODE)))) return NULL;
@@ -197,7 +199,7 @@ NODE* list_insert_after(NODE* node, size_t key, void* val) {
 /*
  * Analog functions list_insert but this insert copy of value.
  */
-NODE* list_insert_with_copy(LIST *list, size_t key, void *val, size_t size)
+NODE* insert_with_copy(LIST *list, size_t key, void *val, size_t size)
 {
   NODE* n;
 
@@ -217,7 +219,7 @@ NODE* list_insert_with_copy(LIST *list, size_t key, void *val, size_t size)
  * free the memory for the value stored in the node -- that pointer gets
  * returned! Only the node is destroyed.
  */
-void* list_remove(LIST* list, size_t key) {
+void* remove(LIST* list, size_t key) {
   NODE *f, *rm;
   void* val;
 
@@ -236,7 +238,7 @@ void* list_remove(LIST* list, size_t key) {
     return val;
   }
 
-  f = list_find_preceding_from(list->first, key);
+  f = find_preceding_from(list->first, key);
   if (!f || !f->next) {
   	// not found, end of list
   	return NULL;
@@ -268,7 +270,7 @@ void* list_remove(LIST* list, size_t key) {
 /*
  * Find some element in the list and return the node ptr for that key.
  */
-NODE* list_find(LIST* list, size_t key) {
+NODE* find(LIST* list, size_t key) {
   NODE* f;
   if (!list->first) {
   	// empty list -- does not exist
@@ -276,7 +278,7 @@ NODE* list_find(LIST* list, size_t key) {
   }
 
   // see if we can find it.
-  f = list_find_nearest_from(list->first, key);
+  f = find_nearest_from(list->first, key);
   
   if (!f || f->key == key) {
   	return f;
@@ -289,14 +291,14 @@ NODE* list_find(LIST* list, size_t key) {
  * Finds the node that should go before whatever key we request, whether or not
  * that key is present.
  */
-NODE* list_find_preceding_from(NODE* prev, size_t key) {
+NODE* find_preceding_from(NODE* prev, size_t key) {
   NODE* curr = prev->next;
 
   if (!curr || key <= curr->key) {
   	return prev;
   	
   } else {
-  	return list_find_preceding_from(curr, key);
+  	return find_preceding_from(curr, key);
   }
 }
 
@@ -304,21 +306,21 @@ NODE* list_find_preceding_from(NODE* prev, size_t key) {
  * Finds the node or, if not present, the node that it should follow. NULL
  * indicates no preceding node.
  */
-NODE* list_find_nearest(LIST* list, size_t key) {
-  return list_find_nearest_from(list->first, key);
+NODE* find_nearest(LIST* list, size_t key) {
+  return find_nearest_from(list->first, key);
 }
 
 /*
  * Finds a node or the one immediately preceding it if it doesn't exist.
  */
-NODE* list_find_nearest_from(NODE* prev, size_t key) {
+NODE* find_nearest_from(NODE* prev, size_t key) {
   NODE* f;
 
   if (prev && prev->key == key) {
   	return prev;
   }
 
-  f = list_find_preceding_from(prev, key);
+  f = find_preceding_from(prev, key);
 
   if (!f->next) {
   	return f;
@@ -340,7 +342,7 @@ NODE* list_find_nearest_from(NODE* prev, size_t key) {
  * Copy the contents of a list.
  */
 template <typename LDType, typename RDType>
-void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursions) {
+void cast_copy_contents(LIST* lhs, const LIST* rhs, size_t recursions) {
   NODE *lcurr, *rcurr;
 
   if (rhs->first) {
@@ -363,7 +365,7 @@ void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursi
 
         lcurr->val = ALLOC( LIST );
 
-        list_cast_copy_contents_template<LDType, RDType>(
+        cast_copy_contents<LDType, RDType>(
           reinterpret_cast<LIST*>(lcurr->val),
           reinterpret_cast<LIST*>(rcurr->val),
           recursions-1
@@ -386,13 +388,18 @@ void list_cast_copy_contents_template(LIST* lhs, const LIST* rhs, size_t recursi
   }
 }
 
-/*
- * C access for copying the contents of a list.
- */
-void list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
-  LR_DTYPE_TEMPLATE_TABLE(list_cast_copy_contents_template, void, LIST*, const LIST*, size_t);
+}} // end of namespace nm::list
 
-  ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
-}
+extern "C" {
 
+  /*
+   * C access for copying the contents of a list.
+   */
+  void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
+    LR_DTYPE_TEMPLATE_TABLE(nm::list::cast_copy_contents, void, LIST*, const LIST*, size_t);
+
+    ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
+  }
+
+} // end of extern "C" block
 

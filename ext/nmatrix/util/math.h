@@ -36,6 +36,7 @@ extern "C" {
 #include <cblas.h>
 }
 
+#include <algorithm> // std::min, std::max
 #include <limits> // std::numeric_limits
 
 /*
@@ -46,10 +47,24 @@ extern "C" {
 /*
  * Macros
  */
-#ifndef NM_MAX
-# define NM_MAX(a,b) (((a)>(b))?(a):(b))
-# define NM_MIN(a,b) (((a)>(b))?(b):(a))
-#endif
+
+/*
+ * Data
+ */
+
+
+extern "C" {
+  /*
+   * C accessors.
+   */
+  void nm_math_det_exact(const int M, const void* elements, const int lda, dtype_t dtype, void* result);
+  void nm_math_transpose_generic(const size_t M, const size_t N, const void* A, const int lda, void* B, const int ldb, size_t element_size);
+  void nm_math_init_blas(void);
+}
+
+
+namespace nm {
+  namespace math {
 
 /*
  * Types
@@ -72,15 +87,9 @@ template <> struct LongDType<Rational64> { typedef Rational128 type; };
 template <> struct LongDType<Rational128> { typedef Rational128 type; };
 template <> struct LongDType<RubyObject> { typedef RubyObject type; };
 
-
-/*
- * Data
- */
-
 /*
  * Functions
  */
-void Init_blas(void);
 
 /*
  * GEneral Matrix Multiplication: based on dgemm.f from Netlib.
@@ -121,15 +130,15 @@ inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE T
   } else if (K < 0) {
     rb_raise(rb_eArgError, "GEMM: Expected K >= 0");
     return false;
-  } else if (lda < NM_MAX(1, num_rows_a)) {
+  } else if (lda < std::max(1, num_rows_a)) {
     fprintf(stderr, "GEMM: num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
     rb_raise(rb_eArgError, "GEMM: Expected lda >= max(1, num_rows_a)");
     return false;
-  } else if (ldb < NM_MAX(1, num_rows_b)) {
+  } else if (ldb < std::max(1, num_rows_b)) {
     fprintf(stderr, "GEMM: num_rows_b = %d; got ldb=%d\n", num_rows_b, ldb);
     rb_raise(rb_eArgError, "GEMM: Expected ldb >= max(1, num_rows_b)");
     return false;
-  } else if (ldc < NM_MAX(1,M)) {
+  } else if (ldc < std::max(1,M)) {
     fprintf(stderr, "GEMM: M=%d; got ldc=%d\n", M, ldc);
     rb_raise(rb_eArgError, "GEMM: Expected ldc >= max(1,M)");
     return false;
@@ -295,7 +304,7 @@ inline bool gemv(const enum CBLAS_TRANSPOSE Trans, const int M, const int N, con
   if (Trans < 111 || Trans > 113) {
     rb_raise(rb_eArgError, "GEMV: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans");
     return false;
-  } else if (lda < NM_MAX(1, N)) {
+  } else if (lda < std::max(1, N)) {
     fprintf(stderr, "GEMV: N = %d; got lda=%d", N, lda);
     rb_raise(rb_eArgError, "GEMV: Expected lda >= max(1, N)");
     return false;
@@ -455,7 +464,7 @@ inline void numbmm(const unsigned int n, const unsigned int m, const IType* ia, 
   IType head, length, temp, ndnz = 0;
   IType jj_start, jj_end, kk_start, kk_end;
   IType i, j, k, kk, jj;
-  IType minmn = NM_MIN(m,n);
+  IType minmn = std::min(m,n);
 
   for (i = 0; i < m; ++i) { // initialize scratch arrays
     next[i] = std::numeric_limits<IType>::max();
@@ -539,7 +548,7 @@ inline void symbmm(const unsigned int n, const unsigned int m, const IType* ia, 
   if (diagc)  ic[0] = n+1;
   else        ic[0] = 0;
 
-  IType minmn = NM_MIN(m,n);
+  IType minmn = std::min(m,n);
 
   for (IType i = 0; i < n; ++i) { // MAIN LOOP: through rows
 
@@ -632,7 +641,7 @@ inline void smmp_sort_columns(const size_t n, const IType* ia, IType* ja, DType*
  * object.
  */
 template <typename DType, typename IType>
-void transpose_yale_template(const size_t n, const size_t m, const void* ia_, const void* ja_, const void* a_,
+void transpose_yale(const size_t n, const size_t m, const void* ia_, const void* ja_, const void* a_,
                              const bool diaga, void* ib_, void* jb_, void* b_, const bool move)
 {
   const IType *ia = reinterpret_cast<const IType*>(ia_),
@@ -692,7 +701,7 @@ void transpose_yale_template(const size_t n, const size_t m, const void* ia_, co
 
   if (diaga) {
     if (move) {
-      size_t j = NM_MIN(n,m);
+      size_t j = std::min(n,m);
 
       for (size_t i = 0; i < j; ++i) {
         b[i] = a[i];
@@ -705,9 +714,7 @@ void transpose_yale_template(const size_t n, const size_t m, const void* ia_, co
   }
 }
 
+}} // end namespace nm::math
 
-
-void det_exact(const int M, const void* elements, const int lda, dtype_t dtype, void* result);
-void transpose_generic(const size_t M, const size_t N, const void* A, const int lda, void* B, const int ldb, size_t element_size);
 
 #endif // MATH_H

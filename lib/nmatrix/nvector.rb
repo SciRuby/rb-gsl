@@ -34,7 +34,7 @@
 #######################
 
 # This is a specific type of NMatrix in which only one dimension is not 1.
-# Although it is stored as a rank-2, n x 1, matrix, it acts as a rank-1 vector
+# Although it is stored as a dim-2, n x 1, matrix, it acts as a dim-1 vector
 # of size n. If the @orientation flag is set to :row, it is stored as 1 x n
 # instead of n x 1.
 class NVector < NMatrix
@@ -80,7 +80,7 @@ class NVector < NMatrix
 		end
 	end
 
-	def rank; 1; end
+	def dim; 1; end
 
 	# TODO: Make this actually pretty.
 	def pretty_print
