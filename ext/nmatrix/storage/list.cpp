@@ -103,7 +103,7 @@ LIST_STORAGE* nm_list_storage_create(dtype_t dtype, size_t* shape, size_t dim, v
   s->dtype = dtype;
 
   s->offset = ALLOC_N(size_t, s->dim);
-  memset(s->offset, 0, s->dim);
+  memset(s->offset, 0, s->dim * sizeof(s->dim));
 
   s->rows  = list::create();
   s->default_val = init_val;
