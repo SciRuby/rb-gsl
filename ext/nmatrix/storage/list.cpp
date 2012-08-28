@@ -136,7 +136,6 @@ void nm_list_storage_delete(STORAGE* s) {
 void nm_list_storage_delete_ref(STORAGE* s) {
   if (s) {
     LIST_STORAGE* storage = (LIST_STORAGE*)s;
-    list::del( storage->rows, storage->dim - 1 );
 
     nm_list_storage_delete( reinterpret_cast<STORAGE*>(storage->src ) );
     free(storage->shape);
@@ -306,11 +305,11 @@ void* nm_list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
 
   // drill down into the structure
   for (r = s->dim; r > 1; --r) {
-    n = list::insert(l, false, slice->coords[s->dim - r], list::create());
+    n = list::insert(l, false, s->offset[s->dim - r] + slice->coords[s->dim - r], list::create());
     l = reinterpret_cast<LIST*>(n->val);
   }
 
-  n = list::insert(l, true, slice->coords[s->dim - r], val);
+  n = list::insert(l, true, s->offset[s->dim - r] + slice->coords[s->dim - r], val);
   return n->val;
 }
 
@@ -327,7 +326,7 @@ void* nm_list_storage_remove(STORAGE* storage, SLICE* slice) {
   void*  rm = NULL;
 
   // keep track of where we are in the traversals
-  NODE** stack = ALLOCA_N( NODE*, s->dim - 1 );
+  NODE** stack = ALLOC_N( NODE*, s->dim - 1 );
 
   for (r = (int)(s->dim); r > 1; --r) {
   	// does this row exist in the matrix?
