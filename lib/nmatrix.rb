@@ -60,4 +60,4 @@ require 'nmatrix/monkeys'
 autoload :NMatrix, 'nmatrix/nmatrix'
 autoload :NVector, 'nmatrix/nvector'
 
-require "nmatrix/helpers"
+require "nmatrix/shortcuts.rb"
