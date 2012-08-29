@@ -73,6 +73,9 @@ static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LI
 template <ewop_t op, typename LDType, typename RDType>
 static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level);
 
+template <ewop_t op, typename LDType, typename RDType>
+static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level);
+
 } // end of namespace list_storage
 
 extern "C" {
@@ -382,7 +385,7 @@ bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
  * Element-wise operations for list storage.
  */
 STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
-	OP_LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_op, void*, LIST*, const LIST*, const void*, const LIST*, const void*, const size_t*, size_t);
+	OP_LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_op, void*, LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t dim);
 	
 	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
 	
@@ -588,50 +591,332 @@ bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
 }
 
 /*
- * List storage element-wise operations.
+ * List storage element-wise operations (including comparisons).
  */
 template <ewop_t op, typename LDType, typename RDType>
 static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t dim) {
-	
-	/*
-	 * Allocate space for, and calculate, the default value for the destination
-	 * matrix.
-	 */
-	LDType* d_default_mem = ALLOC(LDType);
-	switch (op) {
-		case EW_ADD:
-			*d_default_mem = *reinterpret_cast<const LDType*>(l_default) + *reinterpret_cast<const RDType*>(r_default);
-			break;
-			
-		case EW_SUB:
-			*d_default_mem = *reinterpret_cast<const LDType*>(l_default) - *reinterpret_cast<const RDType*>(r_default);
-			break;
-			
-		case EW_MUL:
-			*d_default_mem = *reinterpret_cast<const LDType*>(l_default) * *reinterpret_cast<const RDType*>(r_default);
-			break;
-			
-		case EW_DIV:
-			*d_default_mem = *reinterpret_cast<const LDType*>(l_default) / *reinterpret_cast<const RDType*>(r_default);
-			break;
-			
-		case EW_MOD:
-			rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
-			break;
+
+	if (static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS) {
+
+    /*
+     * Allocate space for, and calculate, the default value for the destination
+     * matrix.
+     */
+    LDType* d_default_mem = ALLOC(LDType);
+    switch (op) {
+      case EW_ADD:
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) + *reinterpret_cast<const RDType*>(r_default);
+        break;
+
+      case EW_SUB:
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) - *reinterpret_cast<const RDType*>(r_default);
+        break;
+
+      case EW_MUL:
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) * *reinterpret_cast<const RDType*>(r_default);
+        break;
+
+      case EW_DIV:
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) / *reinterpret_cast<const RDType*>(r_default);
+        break;
+
+      case EW_MOD:
+        rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
+        break;
+
+      default:
+        rb_raise(rb_eStandardError, "this should not happen");
+    }
+
+    // Now that setup is done call the actual elementwise operation function.
+    ew_op_prime<op, LDType, RDType>(dest, *reinterpret_cast<const LDType*>(d_default_mem),
+                                    left, *reinterpret_cast<const LDType*>(l_default),
+                                    right, *reinterpret_cast<const RDType*>(r_default),
+                                    shape, dim - 1, 0);
+
+    // Return a pointer to the destination matrix's default value.
+    return d_default_mem;
+
+	} else { // Handle comparison operations in a similar manner.
+    /*
+     * Allocate a byte for default, and set default value to 0.
+     */
+    uint8_t* d_default_mem = ALLOC(uint8_t);
+    *d_default_mem = 0;
+    switch (op) {
+      case EW_EQEQ:
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) == *reinterpret_cast<const RDType*>(r_default);
+        break;
+
+      case EW_NEQ:
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) != *reinterpret_cast<const RDType*>(r_default);
+        break;
+
+      case EW_LT:
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) < *reinterpret_cast<const RDType*>(r_default);
+        break;
+
+      case EW_GT:
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) > *reinterpret_cast<const RDType*>(r_default);
+        break;
+
+      case EW_LEQ:
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) <= *reinterpret_cast<const RDType*>(r_default);
+        break;
+
+      case EW_GEQ:
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) >= *reinterpret_cast<const RDType*>(r_default);
+        break;
+
+      default:
+        rb_raise(rb_eStandardError, "this should not happen");
+    }
+
+    // Now that setup is done call the actual elementwise comparison function.
+    ew_comp_prime<op, LDType, RDType>(dest, *reinterpret_cast<const uint8_t*>(d_default_mem),
+                                      left, *reinterpret_cast<const LDType*>(l_default),
+                                      right, *reinterpret_cast<const RDType*>(r_default),
+                                      shape, dim - 1, 0);
+
+    // Return a pointer to the destination matrix's default value.
+    return d_default_mem;
 	}
-	
-	// Now that setup is done call the actual elementwise multiplication function.
-	ew_op_prime<op, LDType, RDType>(dest, *reinterpret_cast<const LDType*>(d_default_mem),
-		left, *reinterpret_cast<const LDType*>(l_default),
-		right, *reinterpret_cast<const RDType*>(r_default),
-		shape, dim - 1, 0);
-	
-	// Return a pointer to the destination matrix's default value.
-	return d_default_mem;
 }
 
+
 /*
- * List storage element-wise addition, recursive helper.
+ * List storage element-wise comparisons, recursive helper.
+ */
+template <ewop_t op, typename LDType, typename RDType>
+static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level) {
+
+	static LIST EMPTY_LIST = {NULL};
+
+	size_t index;
+
+	uint8_t tmp_result;
+
+	LIST* new_level = NULL;
+
+	NODE* l_node		= left->first,
+			* r_node		= right->first,
+			* dest_node	= NULL;
+
+	for (index = 0; index < shape[level]; ++index) {
+		if (l_node == NULL and r_node == NULL) {
+			/*
+			 * Both source lists are now empty.  Because the default value of the
+			 * destination is already set appropriately we can now return.
+			 */
+
+			return;
+
+		} else {
+			// At least one list still has entries.
+
+			if (l_node == NULL and (l_default == 0 and d_default == 0)) {
+				/*
+				 * The left hand list has run out of elements.  We don't need to add new
+				 * values to the destination if l_default and d_default are both 0.
+				 */
+
+				return;
+
+			} else if (r_node == NULL and (r_default == 0 and d_default == 0)) {
+				/*
+				 * The right hand list has run out of elements.  We don't need to add new
+				 * values to the destination if r_default and d_default are both 0.
+				 */
+
+				return;
+			}
+
+			// We need to continue processing the lists.
+
+			if (l_node == NULL and r_node->key == index) {
+				/*
+				 * One source list is empty, but the index has caught up to the key of
+				 * the other list.
+				 */
+
+				if (level == last_level) {
+					switch (op) {
+						case EW_EQEQ:
+							tmp_result = l_default == *reinterpret_cast<RDType*>(r_node->val);
+							break;
+
+						case EW_NEQ:
+							tmp_result = l_default != *reinterpret_cast<RDType*>(r_node->val);
+							break;
+
+						case EW_LT:
+							tmp_result = l_default < *reinterpret_cast<RDType*>(r_node->val);
+							break;
+
+						case EW_GT:
+							tmp_result = l_default > *reinterpret_cast<RDType*>(r_node->val);
+							break;
+
+						case EW_LEQ:
+							tmp_result = l_default <= *reinterpret_cast<RDType*>(r_node->val);
+							break;
+
+						case EW_GEQ:
+							tmp_result = l_default >= *reinterpret_cast<RDType*>(r_node->val);
+							break;
+
+            default:
+              rb_raise(rb_eStandardError, "this should not happen");
+					}
+
+					if (tmp_result != d_default) {
+						dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
+					}
+
+				} else {
+					new_level = nm::list::create();
+					dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
+
+					ew_comp_prime<op, LDType, RDType>(new_level, d_default,
+						&EMPTY_LIST, l_default,
+						reinterpret_cast<LIST*>(r_node->val), r_default,
+						shape, last_level, level + 1);
+				}
+
+				r_node = r_node->next;
+
+			} else if (r_node == NULL and l_node->key == index) {
+				/*
+				 * One source list is empty, but the index has caught up to the key of
+				 * the other list.
+				 */
+
+				if (level == last_level) {
+					switch (op) {
+						case EW_EQEQ:
+							tmp_result = *reinterpret_cast<LDType*>(l_node->val) == r_default;
+							break;
+
+						case EW_NEQ:
+							tmp_result = *reinterpret_cast<LDType*>(l_node->val) != r_default;
+							break;
+
+						case EW_LT:
+							tmp_result = *reinterpret_cast<LDType*>(l_node->val) < r_default;
+							break;
+
+						case EW_GT:
+							tmp_result = *reinterpret_cast<LDType*>(l_node->val) > r_default;
+							break;
+
+						case EW_LEQ:
+							tmp_result = *reinterpret_cast<LDType*>(l_node->val) <= r_default;
+							break;
+
+						case EW_GEQ:
+							tmp_result = *reinterpret_cast<LDType*>(l_node->val) >= r_default;
+							break;
+
+            default:
+              rb_raise(rb_eStandardError, "this should not happen");
+					}
+
+					if (tmp_result != d_default) {
+						dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
+					}
+
+				} else {
+					new_level = nm::list::create();
+					dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
+
+					ew_comp_prime<op, LDType, RDType>(new_level, d_default,
+						reinterpret_cast<LIST*>(r_node->val), l_default,
+						&EMPTY_LIST, r_default,
+						shape, last_level, level + 1);
+				}
+
+				l_node = l_node->next;
+
+			} else if (l_node != NULL and r_node != NULL and index == std::min(l_node->key, r_node->key)) {
+				/*
+				 * Neither list is empty and our index has caught up to one of the
+				 * source lists.
+				 */
+
+				if (l_node->key == r_node->key) {
+
+					if (level == last_level) {
+						switch (op) {
+							case EW_EQEQ:
+								tmp_result = *reinterpret_cast<LDType*>(l_node->val) == *reinterpret_cast<RDType*>(r_node->val);
+								break;
+
+							case EW_NEQ:
+								tmp_result = *reinterpret_cast<LDType*>(l_node->val) != *reinterpret_cast<RDType*>(r_node->val);
+								break;
+
+							case EW_LT:
+								tmp_result = *reinterpret_cast<LDType*>(l_node->val) < *reinterpret_cast<RDType*>(r_node->val);
+								break;
+
+							case EW_GT:
+								tmp_result = *reinterpret_cast<LDType*>(l_node->val) > *reinterpret_cast<RDType*>(r_node->val);
+								break;
+
+							case EW_LEQ:
+								tmp_result = *reinterpret_cast<LDType*>(l_node->val) <= *reinterpret_cast<RDType*>(r_node->val);
+								break;
+
+							case EW_GEQ:
+								tmp_result = *reinterpret_cast<LDType*>(l_node->val) >= *reinterpret_cast<RDType*>(r_node->val);
+								break;
+
+              default:
+                rb_raise(rb_eStandardError, "this should not happen");
+						}
+
+						if (tmp_result != d_default) {
+							dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
+						}
+
+					} else {
+						new_level = nm::list::create();
+						dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
+
+						ew_comp_prime<op, LDType, RDType>(new_level, d_default,
+							reinterpret_cast<LIST*>(l_node->val), l_default,
+							reinterpret_cast<LIST*>(r_node->val), r_default,
+							shape, last_level, level + 1);
+					}
+
+					l_node = l_node->next;
+					r_node = r_node->next;
+
+				} else if (l_node->key < r_node->key) {
+					// Advance the left node knowing that the default value is OK.
+
+					l_node = l_node->next;
+
+				} else /* if (l_node->key > r_node->key) */ {
+					// Advance the right node knowing that the default value is OK.
+
+					r_node = r_node->next;
+				}
+
+			} else {
+				/*
+				 * Our index needs to catch up but the default value is OK.  This
+				 * conditional is here only for documentation and should be optimized
+				 * out.
+				 */
+			}
+		}
+	}
+}
+
+
+/*
+ * List storage element-wise operations, recursive helper.
  */
 template <ewop_t op, typename LDType, typename RDType>
 static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l_default, const LIST* right, RDType r_default, const size_t* shape, size_t last_level, size_t level) {
@@ -706,6 +991,9 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 						case EW_MOD:
 							rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
 							break;
+
+            default:
+              rb_raise(rb_eStandardError, "this should not happen");
 					}
 					
 					if (tmp_result != d_default) {
@@ -751,6 +1039,9 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 						case EW_MOD:
 							rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
 							break;
+
+            default:
+              rb_raise(rb_eStandardError, "this should not happen");
 					}
 					
 					if (tmp_result != d_default) {
@@ -798,6 +1089,9 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 							case EW_MOD:
 								rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
 								break;
+
+              default:
+                rb_raise(rb_eStandardError, "this should not happen");
 						}
 						
 						if (tmp_result != d_default) {

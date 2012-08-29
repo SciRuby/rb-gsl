@@ -27,7 +27,13 @@ EWOPS = [
 	:EW_SUB,
 	:EW_MUL,
 	:EW_DIV,
-	:EW_MOD
+	:EW_MOD,
+  :EW_EQEQ,
+  :EW_NEQ,
+  :EW_LT,
+  :EW_GT,
+  :EW_LEQ,
+  :EW_GEQ
 ]
 
 LR_ALLOWED = {

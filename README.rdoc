@@ -34,17 +34,26 @@ The following features exist in the version of NMatrix (0.0.2) currently under d
 * Data types: uint8, int8, int16, int32, int64, float32, float64, complex64, complex128, rational64, rational128
   (incomplete)
 * Conversion between storage and data types (except from-complex, and from-float-to-rational)
+* Element-wise operations and comparisons
 * Matrix-matrix multiplication for dense (using ATLAS) and yale
 * Matrix-vector multiplication for dense (using ATLAS)
-* Dense matrix slicing
+* Dense and list matrix slicing and referencing
 * Matlab .MAT v5 file input
+* C and C++ API
+* Level 3 BLAS internal implementations (no library) and ATLAS (with library) access:
+  * xGEMM
+  * xTRSM
+* LAPACK ATLAS access:
+  * xGETRF (experimental)
 
 === Planned Features (Very Short Term)
 
 These features will exist in our second alpha release, 0.0.2 (incomplete, thus not yet available as a gem):
 
-* Yale, list matrix slicing
-* C API
+* Yale matrix slicing and referencing
+* LU decomposition
+* LAPACK internal implementations (no library needed):
+  * xGETRF
 
 The estimated release date for 0.0.2 is the end of August 2012.
 
@@ -82,6 +91,16 @@ following sequence of commands:
     rake compile
     rake repackage
     gem install pkg/nmatrix-0.0.2.gem
+
+If you get errors about clapack.h or cblas.h, figure out where your ATLAS headers are using:
+
+    locate clapack.h
+
+Then, tell your system:
+
+    export C_INCLUDE_PATH=/usr/local/atlas/include
+
+Finally, try compiling again.
 
 == REQUIREMENTS:
 

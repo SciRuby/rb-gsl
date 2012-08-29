@@ -167,21 +167,46 @@ class RubyObject {
 	inline bool operator<(const RubyObject& other) const {
 		return rb_funcall(this->rval, nm_rb_lt, 1, other.rval) == Qtrue;
 	}
+
+	template <typename OtherType>
+	inline bool operator<(const OtherType& other) const {
+		return *this < RubyObject(other);
+	}
 	
 	inline bool operator==(const RubyObject& other) const {
 		return rb_funcall(this->rval, nm_rb_eql, 1, other.rval) == Qtrue;
+	}
+
+	template <typename OtherType>
+	inline bool operator==(const OtherType& other) const {
+		return *this == RubyObject(other);
 	}
 	
 	inline bool operator!=(const RubyObject& other) const {
 		return rb_funcall(this->rval, nm_rb_neql, 1, other.rval) == Qtrue;
 	}
+
+	template <typename OtherType>
+	inline bool operator!=(const OtherType& other) const {
+		return *this != RubyObject(other);
+	}
 	
 	inline bool operator>=(const RubyObject& other) const {
 		return rb_funcall(this->rval, nm_rb_gte, 1, other.rval) == Qtrue;
 	}
+
+	template <typename OtherType>
+	inline bool operator>=(const OtherType& other) const {
+		return *this >= RubyObject(other);
+	}
 	
 	inline bool operator<=(const RubyObject& other) const {
 		return rb_funcall(this->rval, nm_rb_lte, 1, other.rval) == Qtrue;
+	}
+
+	template <typename OtherType>
+	inline bool operator<=(const OtherType& other) const {
+		return *this <= RubyObject(other);
 	}
 
 	////////////////////////////
@@ -300,6 +325,26 @@ inline bool operator!=(const NativeType left, const RubyObject& right) {
   return RubyObject(left) != right;
 }
 
+template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator<=(const NativeType left, const RubyObject& right) {
+  return RubyObject(left) <= right;
+}
+
+template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator>=(const NativeType left, const RubyObject& right) {
+  return RubyObject(left) >= right;
+}
+
+template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator<(const NativeType left, const RubyObject& right) {
+  return RubyObject(left) < right;
+}
+
+template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator>(const NativeType left, const RubyObject& right) {
+  return RubyObject(left) > right;
+}
+
 
 /////////////////////////////
 // COMPLEX-RUBY OPERATIONS //
@@ -313,6 +358,26 @@ inline bool operator==(const Complex<FloatType>& left, const RubyObject& right) 
 template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
 inline bool operator!=(const Complex<FloatType>& left, const RubyObject& right) {
 	return RubyObject(left) != right;
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator<=(const Complex<FloatType>& left, const RubyObject& right) {
+	return RubyObject(left) <= right;
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator>=(const Complex<FloatType>& left, const RubyObject& right) {
+	return RubyObject(left) >= right;
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator<(const Complex<FloatType>& left, const RubyObject& right) {
+	return RubyObject(left) < right;
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator>(const Complex<FloatType>& left, const RubyObject& right) {
+	return RubyObject(left) > right;
 }
 
 
@@ -329,6 +394,26 @@ inline bool operator==(const Rational<IntType>& left, const RubyObject& right) {
 template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
 inline bool operator!=(const Rational<IntType>& left, const RubyObject& right) {
 	return RubyObject(left) != right;
+}
+
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator>=(const Rational<IntType>& left, const RubyObject& right) {
+	return RubyObject(left) >= right;
+}
+
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator<=(const Rational<IntType>& left, const RubyObject& right) {
+	return RubyObject(left) <= right;
+}
+
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator<(const Rational<IntType>& left, const RubyObject& right) {
+	return RubyObject(left) < right;
+}
+
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator>(const Rational<IntType>& left, const RubyObject& right) {
+	return RubyObject(left) > right;
 }
 
 } // end of namespace nm
