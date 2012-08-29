@@ -98,35 +98,17 @@ template <> struct LongDType<RubyObject> { typedef RubyObject type; };
 
 
 /*
- * BLAS' DTRSM function, generalized.
+ * This version of trsm doesn't do any error checks and only works on column-major matrices.
+ *
+ * For row major, call trsm<DType> instead. That will handle necessary changes-of-variables
+ * and parameter checks.
  */
-template <typename DType, typename = typename std::enable_if<!std::is_integral<DType>::value>::type>
-inline void trsm(const enum CBLAS_ORDER order,
-                 const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
-                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
-                 const int m, const int n, const DType alpha, const DType* a,
-                 const int lda, DType* b, const int ldb)
+template <typename DType>
+inline void trsm_nothrow(const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                         const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                         const int m, const int n, const DType alpha, const DType* a,
+                         const int lda, DType* b, const int ldb)
 {
-  int                     num_rows_a = n;
-  if (side == CblasLeft)  num_rows_a = m;
-
-
-  bool lside  = side == CblasLeft;
-  bool nounit = diag == CblasNonUnit;
-  bool upper  = uplo == CblasUpper;
-
-  // Test the input parameters.
-  if (order != CblasRowMajor) {
-    rb_raise(rb_eNotImpError, "only ATLAS version of trsm can take column-major matrices");
-  } else if (lda < std::max(1,num_rows_a)) {
-    fprintf(stderr, "TRSM: num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
-    rb_raise(rb_eArgError, "TRSM: Expected lda >= max(1, num_rows_a)");
-  } else if (ldb < std::max(1,m)) {
-    fprintf(stderr, "TRSM: M=%d; got ldb=%d\n", m, ldb);
-    rb_raise(rb_eArgError, "TRSM: Expected ldb >= max(1,M)");
-  }
-
-
   if (m == 0 || n == 0) return; /* Quick return if possible. */
 
   if (alpha == 0) { // Handle alpha == 0
@@ -138,11 +120,11 @@ inline void trsm(const enum CBLAS_ORDER order,
 	  return;
   }
 
-  if (lside) {
+  if (side == CblasLeft) {
 	  if (trans_a == CblasNoTrans) {
 
       /* Form  B := alpha*inv( A )*B. */
-	    if (upper) {
+	    if (uplo == CblasUpper) {
     		for (int j = 0; j < n; ++j) {
 		      if (alpha != 1) {
 			      for (int i = 0; i < m; ++i) {
@@ -151,7 +133,7 @@ inline void trsm(const enum CBLAS_ORDER order,
 		      }
 		      for (int k = m-1; k >= 0; --k) {
 			      if (b[k + j * ldb] != 0) {
-			        if (nounit) {
+			        if (diag == CblasNonUnit) {
 				        b[k + j * ldb] /= a[k + k * lda];
 			        }
 
@@ -170,7 +152,7 @@ inline void trsm(const enum CBLAS_ORDER order,
 		      }
   		    for (int k = 0; k < m; ++k) {
       			if (b[k + j * ldb] != 0.) {
-			        if (nounit) {
+			        if (diag == CblasNonUnit) {
 				        b[k + j * ldb] /= a[k + k * lda];
 			        }
     			    for (int i = k+1; i < m; ++i) {
@@ -183,14 +165,14 @@ inline void trsm(const enum CBLAS_ORDER order,
 	  } else { // CblasTrans
 
       /*           Form  B := alpha*inv( A**T )*B. */
-	    if (upper) {
+	    if (uplo == CblasUpper) {
     		for (int j = 0; j < n; ++j) {
 		      for (int i = 0; i < m; ++i) {
 			      DType temp = alpha * b[i + j * ldb];
             for (int k = 0; k < i-1; ++k) {
               temp -= a[k + i * lda] * b[k + j * ldb];
       			}
-			      if (nounit) {
+			      if (diag == CblasNonUnit) {
 			        temp /= a[i + i * lda];
 			      }
 			      b[i + j * ldb] = temp;
@@ -203,7 +185,7 @@ inline void trsm(const enum CBLAS_ORDER order,
       			for (int k = i+1; k < m; ++k) {
 			        temp -= a[k + i * lda] * b[k + j * ldb];
       			}
-			      if (nounit) {
+			      if (diag == CblasNonUnit) {
 			        temp /= a[i + i * lda];
 			      }
 			      b[i + j * ldb] = temp;
@@ -217,7 +199,7 @@ inline void trsm(const enum CBLAS_ORDER order,
 
       /*           Form  B := alpha*B*inv( A ). */
 
-	    if (upper) {
+	    if (uplo == CblasUpper) {
     		for (int j = 0; j < n; ++j) {
 		      if (alpha != 1) {
       			for (int i = 0; i < m; ++i) {
@@ -231,7 +213,7 @@ inline void trsm(const enum CBLAS_ORDER order,
 			        }
 			      }
   		    }
-	  	    if (nounit) {
+	  	    if (diag == CblasNonUnit) {
 		      	DType temp = 1 / a[j + j * lda];
 			      for (int i = 0; i < m; ++i) {
 			        b[i + j * ldb] = temp * b[i + j * ldb];
@@ -253,7 +235,7 @@ inline void trsm(const enum CBLAS_ORDER order,
     			    }
 		      	}
   		    }
-	  	    if (nounit) {
+	  	    if (diag == CblasNonUnit) {
 		      	DType temp = 1 / a[j + j * lda];
 
 			      for (int i = 0; i < m; ++i) {
@@ -266,9 +248,9 @@ inline void trsm(const enum CBLAS_ORDER order,
 
       /*           Form  B := alpha*B*inv( A**T ). */
 
-	    if (upper) {
+	    if (uplo == CblasUpper) {
 		    for (int k = n-1; k >= 0; --k) {
-		      if (nounit) {
+		      if (diag == CblasNonUnit) {
 			      DType temp= 1 / a[k + k * lda];
 	      		for (int i = 0; i < m; ++i) {
   			      b[i + k * ldb] = temp * b[i + k * ldb];
@@ -290,7 +272,7 @@ inline void trsm(const enum CBLAS_ORDER order,
     		}
 	    } else {
     		for (int k = 0; k < n; ++k) {
-		      if (nounit) {
+		      if (diag == CblasNonUnit) {
       			DType temp = 1 / a[k + k * lda];
 			      for (int i = 0; i < m; ++i) {
 			        b[i + k * ldb] = temp * b[i + k * ldb];
@@ -298,7 +280,7 @@ inline void trsm(const enum CBLAS_ORDER order,
 		      }
   		    for (int j = k+1; j < n; ++j) {
 	      		if (a[j + k * lda] != 0.) {
-			        DType temp= a[j + k * lda];
+			        DType temp = a[j + k * lda];
 			        for (int i = 0; i < m; ++i) {
 				        b[i + j * ldb] -= temp * b[i + k * ldb];
     			    }
@@ -313,6 +295,51 @@ inline void trsm(const enum CBLAS_ORDER order,
 	    }
 	  }
   }
+}
+
+
+/*
+ * BLAS' DTRSM function, generalized.
+ */
+template <typename DType, typename = typename std::enable_if<!std::is_integral<DType>::value>::type>
+inline void trsm(const enum CBLAS_ORDER order,
+                 const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const DType alpha, const DType* a,
+                 const int lda, DType* b, const int ldb)
+{
+  int                     num_rows_a = n;
+  if (side == CblasLeft)  num_rows_a = m;
+
+  if (lda < std::max(1,num_rows_a)) {
+    fprintf(stderr, "TRSM: num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
+    rb_raise(rb_eArgError, "TRSM: Expected lda >= max(1, num_rows_a)");
+  }
+
+  // Test the input parameters.
+  if (order == CblasRowMajor) {
+    if (ldb < std::max(1,n)) {
+      fprintf(stderr, "TRSM: M=%d; got ldb=%d\n", m, ldb);
+      rb_raise(rb_eArgError, "TRSM: Expected ldb >= max(1,N)");
+    }
+
+    // For row major, need to switch side and uplo
+    enum CBLAS_SIDE side_ = side == CblasLeft  ? CblasRight : CblasLeft;
+    enum CBLAS_UPLO uplo_ = uplo == CblasUpper ? CblasLower : CblasUpper;
+
+    trsm_nothrow<DType>(side_, uplo_, trans_a, diag, n, m, alpha, a, lda, b, ldb);
+
+  } else { // CblasColMajor
+
+    if (ldb < std::max(1,m)) {
+      fprintf(stderr, "TRSM: M=%d; got ldb=%d\n", m, ldb);
+      rb_raise(rb_eArgError, "TRSM: Expected ldb >= max(1,M)");
+    }
+
+    trsm_nothrow<DType>(side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
+
+  }
+
 }
 
 
@@ -333,6 +360,7 @@ inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const
 {
   cblas_dtrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
 }
+
 
 template <>
 inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
