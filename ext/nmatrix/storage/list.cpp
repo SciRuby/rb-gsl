@@ -386,8 +386,14 @@ bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
  */
 STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
 	OP_LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_op, void*, LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t dim);
-	
-	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
+
+  // We may need to upcast our arguments to the same type.
+  dtype_t new_dtype = Upcast[left->dtype][right->dtype];
+
+	// Make sure we allocate a byte-storing matrix for comparison operations; otherwise, use the argument dtype (new_dtype)
+	dtype_t result_dtype = static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS ? new_dtype : BYTE;
+
+
 	
 	const LIST_STORAGE* l = reinterpret_cast<const LIST_STORAGE*>(left),
 										* r = reinterpret_cast<const LIST_STORAGE*>(right);
@@ -399,7 +405,7 @@ STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE
 	memcpy(new_shape, left->shape, sizeof(size_t) * l->dim);
 	
 	// Create the result matrix.
-	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->dim, NULL);
+	LIST_STORAGE* result = nm_list_storage_create(result_dtype, new_shape, left->dim, NULL);
 	
 	/*
 	 * Call the templated elementwise multiplication function and set the default
@@ -410,7 +416,7 @@ STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE
 		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
 		
 		result->default_val =
-			ttable[op][left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->dim);
+			ttable[op][new_l->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->dim);
 		
 		// Delete the temporary left-hand side matrix.
 		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
@@ -617,7 +623,7 @@ static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LI
         break;
 
       case EW_DIV:
-        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) / *reinterpret_cast<const RDType*>(r_default);
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default); // just use left default to avoid div-by-zero
         break;
 
       case EW_MOD:
@@ -830,9 +836,9 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 					dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
 
 					ew_comp_prime<op, LDType, RDType>(new_level, d_default,
-						reinterpret_cast<LIST*>(r_node->val), l_default,
-						&EMPTY_LIST, r_default,
-						shape, last_level, level + 1);
+                                            reinterpret_cast<LIST*>(r_node->val), l_default,
+                                            &EMPTY_LIST, r_default,
+                                            shape, last_level, level + 1);
 				}
 
 				l_node = l_node->next;

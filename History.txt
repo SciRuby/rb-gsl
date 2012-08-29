@@ -10,9 +10,7 @@
 
   * Second alpha release
 
-  * Rewrote NMatrix in C++0x and C++11 using templates, namespaces
-
-  * Removed Ruby generators and CAST parser
+  * Rewrote NMatrix in C++0x and C++11 using templates, namespaces; removed Ruby generators and CAST parser
 
   * Added preliminary C API
 
@@ -22,10 +20,12 @@
 
   * LAPACK support added, including partially working xGETRF subroutine
 
-  * `==` operator now used for matrix equality, `=~` and `!~` for element-wise comparisons
-
   * Element-wise comparisons now return byte-matrices
+
+  * Element-wise operations on list matrices may alter the default value of the return matrix
 
   * Improved MATLAB .MAT v5 file reading
 
   * clang support
+
+  * `==` operator now used for matrix equality, `=~` and `!~` for element-wise comparisons
