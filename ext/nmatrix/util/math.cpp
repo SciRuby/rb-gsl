@@ -111,6 +111,7 @@
  */
 
 #include "math.h"
+#include "lapack.h"
 
 #include "nmatrix.h"
 #include "ruby_constants.h"
@@ -127,7 +128,12 @@ extern "C" {
   static VALUE nm_cblas_gemv(VALUE self, VALUE trans_a, VALUE m, VALUE n, VALUE vAlpha, VALUE a, VALUE lda,
                              VALUE x, VALUE incx, VALUE vBeta, VALUE y, VALUE incy);
 
+  static VALUE nm_cblas_trsm(VALUE self, VALUE side, VALUE uplo, VALUE trans_a, VALUE diag, VALUE m, VALUE n,
+                             VALUE vAlpha, VALUE a, VALUE lda, VALUE b, VALUE ldb);
+
   static VALUE nm_clapack_getrf(VALUE self, VALUE m, VALUE n, VALUE a, VALUE lda);
+
+  static VALUE nm_clapack_scal(VALUE self, VALUE n, VALUE scale, VALUE vector, VALUE incx);
 
 } // end of extern "C" block
 
@@ -188,7 +194,6 @@ inline static bool cblas_gemm(const enum CBLAS_TRANSPOSE trans_a, const enum CBL
 }
 
 
-
 /*
  * Function signature conversion for calling CBLAS's gemv functions as directly as possible.
  *
@@ -211,6 +216,22 @@ inline static bool cblas_gemv(const enum CBLAS_TRANSPOSE trans_a,
 }
 
 
+/*
+ * Function signature conversion for calling CBLAS' trsm functions as directly as possible.
+ *
+ * For documentation: http://www.netlib.org/blas/dtrsm.f
+ */
+template <typename DType>
+inline static void cblas_trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                               const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                               const int m, const int n, const void* alpha, const void* a,
+                               const int lda, void* b, const int ldb)
+{
+  trsm<DType>(order, side, uplo, trans_a, diag, m, n, *reinterpret_cast<const DType*>(alpha),
+              reinterpret_cast<const DType*>(a), lda, reinterpret_cast<DType*>(b), ldb);
+}
+
+
 }} // end of namespace nm::math
 
 
@@ -223,12 +244,14 @@ extern "C" {
 void nm_math_init_blas() {
 	cNMatrix_LAPACK = rb_define_module_under(cNMatrix, "LAPACK");
 
-  rb_define_singleton_method(cNMatrix_LAPACK, "getrf", (METHOD)nm_clapack_getrf, 4);
+  rb_define_singleton_method(cNMatrix_LAPACK, "clapack_getrf", (METHOD)nm_clapack_getrf, 4);
+  rb_define_singleton_method(cNMatrix_LAPACK, "clapack_scal", (METHOD)nm_clapack_scal, 4);
 
   cNMatrix_BLAS = rb_define_module_under(cNMatrix, "BLAS");
 
 	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 13);
 	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
+	rb_define_singleton_method(cNMatrix_BLAS, "cblas_trsm", (METHOD)nm_cblas_trsm, 11);
 }
 
 
@@ -238,12 +261,49 @@ void nm_math_init_blas() {
  * Called by nm_cblas_gemm -- basically inline.
  *
  */
-static enum CBLAS_TRANSPOSE gemm_op_sym(VALUE op) {
+static inline enum CBLAS_TRANSPOSE blas_transpose_sym(VALUE op) {
   if (op == Qfalse || rb_to_id(op) == nm_rb_no_transpose) return CblasNoTrans;
   else if (rb_to_id(op) == nm_rb_transpose) return CblasTrans;
   else if (rb_to_id(op) == nm_rb_complex_conjugate) return CblasConjTrans;
   else rb_raise(rb_eArgError, "Expected false, :transpose, or :complex_conjugate");
   return CblasNoTrans;
+}
+
+/*
+ * Interprets cblas argument which could be :left or :right
+ *
+ * Called by nm_cblas_trsm -- basically inline
+ */
+static inline enum CBLAS_SIDE blas_side_sym(VALUE op) {
+  ID op_id = rb_to_id(op);
+  if (op_id == nm_rb_left)  return CblasLeft;
+  if (op_id == nm_rb_right) return CblasRight;
+  rb_raise(rb_eArgError, "Expected :left or :right for side argument");
+  return CblasLeft;
+}
+
+/*
+ * Interprets cblas argument which could be :upper or :lower
+ *
+ * Called by nm_cblas_trsm -- basically inline
+ */
+static inline enum CBLAS_UPLO blas_uplo_sym(VALUE op) {
+  ID op_id = rb_to_id(op);
+  if (op_id == nm_rb_upper) return CblasUpper;
+  if (op_id == nm_rb_lower) return CblasLower;
+  rb_raise(rb_eArgError, "Expected :upper or :lower for uplo argument");
+  return CblasUpper;
+}
+
+
+/*
+ * Interprets cblas argument which could be :unit (true) or :nonunit (false or anything other than true/:unit)
+ *
+ * Called by nm_cblas_trsm -- basically inline
+ */
+static inline enum CBLAS_DIAG blas_diag_sym(VALUE op) {
+  if (rb_to_id(op) == nm_rb_unit || op == Qtrue) return CblasUnit;
+  return CblasNonUnit;
 }
 
 
@@ -286,7 +346,7 @@ static VALUE nm_cblas_gemm(VALUE self,
   rubyval_to_cval(alpha, dtype, pAlpha);
   rubyval_to_cval(beta, dtype, pBeta);
 
-  return ttable[dtype](gemm_op_sym(trans_a), gemm_op_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb), pBeta, NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc)) ? Qtrue : Qfalse;
+  return ttable[dtype](blas_transpose_sym(trans_a), blas_transpose_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb), pBeta, NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc)) ? Qtrue : Qfalse;
 }
 
 
@@ -329,7 +389,59 @@ static VALUE nm_cblas_gemv(VALUE self,
   rubyval_to_cval(alpha, dtype, pAlpha);
   rubyval_to_cval(beta, dtype, pBeta);
 
-  return ttable[dtype](gemm_op_sym(trans_a), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(x)->elements, FIX2INT(incx), pBeta, NM_STORAGE_DENSE(y)->elements, FIX2INT(incy)) ? Qtrue : Qfalse;
+  return ttable[dtype](blas_transpose_sym(trans_a), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(x)->elements, FIX2INT(incx), pBeta, NM_STORAGE_DENSE(y)->elements, FIX2INT(incy)) ? Qtrue : Qfalse;
+}
+
+
+static VALUE nm_cblas_trsm(VALUE self,
+                           VALUE side, VALUE uplo,
+                           VALUE trans_a, VALUE diag,
+                           VALUE m, VALUE n,
+                           VALUE alpha,
+                           VALUE a, VALUE lda,
+                           VALUE b, VALUE ldb)
+{
+  static void (*ttable[nm::NUM_DTYPES])(const enum CBLAS_ORDER, const enum CBLAS_SIDE, const enum CBLAS_UPLO,
+                                        const enum CBLAS_TRANSPOSE, const enum CBLAS_DIAG,
+                                        const int, const int, const void* alpha, const void* a,
+                                        const int lda, void* b, const int ldb) = {
+      NULL, NULL, NULL, NULL, NULL, // integers not allowed due to division
+      nm::math::cblas_trsm<float>,
+      nm::math::cblas_trsm<double>,
+      cblas_ctrsm, cblas_ztrsm, // call directly, same function signature!
+      nm::math::cblas_trsm<nm::Rational32>,
+      nm::math::cblas_trsm<nm::Rational64>,
+      nm::math::cblas_trsm<nm::Rational128>,
+      nm::math::cblas_trsm<nm::RubyObject>
+  };
+
+  dtype_t dtype = NM_DTYPE(a);
+
+  void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+  rubyval_to_cval(alpha, dtype, pAlpha);
+
+  ttable[dtype](CblasRowMajor, blas_side_sym(side), blas_uplo_sym(uplo), blas_transpose_sym(trans_a), blas_diag_sym(diag), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb));
+
+  return Qtrue;
+}
+
+
+/*
+ * Based on LAPACK's dscal function, but for any dtype.
+ *
+ * In-place modification; returns the modified vector as well.
+ */
+static VALUE nm_clapack_scal(VALUE self, VALUE n, VALUE scale, VALUE vector, VALUE incx) {
+  dtype_t dtype = NM_DTYPE(vector);
+
+  void* da      = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+  rubyval_to_cval(scale, dtype, da);
+
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::clapack_scal, void, const int n, const void* da, void* dx, const int incx);
+
+  ttable[dtype](FIX2INT(n), da, NM_STORAGE_DENSE(vector)->elements, FIX2INT(incx));
+
+  return vector;
 }
 
 

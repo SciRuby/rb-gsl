@@ -717,7 +717,7 @@ static VALUE nm_init_cast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dty
 
   STYPE_MARK_TABLE(mark);
 
-  return Data_Wrap_Struct(cNMatrix, mark[lhs->stype], nm_delete, lhs);
+  return Data_Wrap_Struct(CLASS_OF(self), mark[lhs->stype], nm_delete, lhs);
 }
 
 
@@ -737,7 +737,7 @@ static VALUE nm_init_transposed(VALUE self) {
 
   STYPE_MARK_TABLE(mark);
 
-  return Data_Wrap_Struct(cNMatrix, mark[lhs->stype], nm_delete, lhs);
+  return Data_Wrap_Struct(CLASS_OF(self), mark[lhs->stype], nm_delete, lhs);
 }
 
 

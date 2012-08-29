@@ -52,6 +52,12 @@ ID	nm_rb_real,
 		nm_rb_complex_conjugate,
 		nm_rb_transpose,
 		nm_rb_no_transpose,
+    nm_rb_left,
+    nm_rb_right,
+    nm_rb_upper,
+    nm_rb_lower,
+    nm_rb_unit,
+    nm_rb_nonunit,
 
 		nm_rb_dense,
 		nm_rb_list,
@@ -117,6 +123,12 @@ void nm_init_ruby_constants(void) {
 	nm_rb_neql							= rb_intern("!=");
 	nm_rb_gte								= rb_intern(">=");
 	nm_rb_lte								= rb_intern("<=");
-	
+
+	nm_rb_left              = rb_intern("left");
+	nm_rb_right             = rb_intern("right");
+	nm_rb_upper             = rb_intern("upper");
+	nm_rb_lower             = rb_intern("lower");
+	nm_rb_unit              = rb_intern("unit");
+	nm_rb_nonunit           = rb_intern("nonunit");
 }
 

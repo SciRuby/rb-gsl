@@ -98,6 +98,261 @@ template <> struct LongDType<RubyObject> { typedef RubyObject type; };
 
 
 /*
+ * BLAS' DTRSM function, generalized.
+ */
+template <typename DType, typename = typename std::enable_if<!std::is_integral<DType>::value>::type>
+inline void trsm(const enum CBLAS_ORDER order,
+                 const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const DType alpha, const DType* a,
+                 const int lda, DType* b, const int ldb)
+{
+  int                     num_rows_a = n;
+  if (side == CblasLeft)  num_rows_a = m;
+
+
+  bool lside  = side == CblasLeft;
+  bool nounit = diag == CblasNonUnit;
+  bool upper  = uplo == CblasUpper;
+
+  // Test the input parameters.
+  if (order != CblasRowMajor) {
+    rb_raise(rb_eNotImpError, "only ATLAS version of trsm can take column-major matrices");
+  } else if (lda < std::max(1,num_rows_a)) {
+    fprintf(stderr, "TRSM: num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
+    rb_raise(rb_eArgError, "TRSM: Expected lda >= max(1, num_rows_a)");
+  } else if (ldb < std::max(1,m)) {
+    fprintf(stderr, "TRSM: M=%d; got ldb=%d\n", m, ldb);
+    rb_raise(rb_eArgError, "TRSM: Expected ldb >= max(1,M)");
+  }
+
+
+  if (m == 0 || n == 0) return; /* Quick return if possible. */
+
+  if (alpha == 0) { // Handle alpha == 0
+    for (int j = 0; j < n; ++j) {
+      for (int i = 0; i < m; ++i) {
+        b[i + j * ldb] = 0;
+      }
+    }
+	  return;
+  }
+
+  if (lside) {
+	  if (trans_a == CblasNoTrans) {
+
+      /* Form  B := alpha*inv( A )*B. */
+	    if (upper) {
+    		for (int j = 0; j < n; ++j) {
+		      if (alpha != 1) {
+			      for (int i = 0; i < m; ++i) {
+			        b[i + j * ldb] = alpha * b[i + j * ldb];
+			      }
+		      }
+		      for (int k = m-1; k >= 0; --k) {
+			      if (b[k + j * ldb] != 0) {
+			        if (nounit) {
+				        b[k + j * ldb] /= a[k + k * lda];
+			        }
+
+              for (int i = 0; i < k-1; ++i) {
+                b[i + j * ldb] -= b[k + j * ldb] * a[i + k * lda];
+              }
+			      }
+  		    }
+		    }
+	    } else {
+    		for (int j = 0; j < n; ++j) {
+		      if (alpha != 1) {
+            for (int i = 0; i < m; ++i) {
+              b[i + j * ldb] = alpha * b[i + j * ldb];
+			      }
+		      }
+  		    for (int k = 0; k < m; ++k) {
+      			if (b[k + j * ldb] != 0.) {
+			        if (nounit) {
+				        b[k + j * ldb] /= a[k + k * lda];
+			        }
+    			    for (int i = k+1; i < m; ++i) {
+        				b[i + j * ldb] -= b[k + j * ldb] * a[i + k * lda];
+    			    }
+      			}
+  		    }
+    		}
+	    }
+	  } else { // CblasTrans
+
+      /*           Form  B := alpha*inv( A**T )*B. */
+	    if (upper) {
+    		for (int j = 0; j < n; ++j) {
+		      for (int i = 0; i < m; ++i) {
+			      DType temp = alpha * b[i + j * ldb];
+            for (int k = 0; k < i-1; ++k) {
+              temp -= a[k + i * lda] * b[k + j * ldb];
+      			}
+			      if (nounit) {
+			        temp /= a[i + i * lda];
+			      }
+			      b[i + j * ldb] = temp;
+  		    }
+    		}
+	    } else {
+    		for (int j = 0; j < n; ++j) {
+		      for (int i = m-1; i >= 0; --i) {
+			      DType temp= alpha * b[i + j * ldb];
+      			for (int k = i+1; k < m; ++k) {
+			        temp -= a[k + i * lda] * b[k + j * ldb];
+      			}
+			      if (nounit) {
+			        temp /= a[i + i * lda];
+			      }
+			      b[i + j * ldb] = temp;
+  		    }
+    		}
+	    }
+	  }
+  } else { // right side
+
+	  if (trans_a == CblasNoTrans) {
+
+      /*           Form  B := alpha*B*inv( A ). */
+
+	    if (upper) {
+    		for (int j = 0; j < n; ++j) {
+		      if (alpha != 1) {
+      			for (int i = 0; i < m; ++i) {
+			        b[i + j * ldb] = alpha * b[i + j * ldb];
+      			}
+		      }
+  		    for (int k = 0; k < j-1; ++k) {
+	      		if (a[k + j * lda] != 0) {
+    			    for (int i = 0; i < m; ++i) {
+				        b[i + j * ldb] -= a[k + j * lda] * b[i + k * ldb];
+			        }
+			      }
+  		    }
+	  	    if (nounit) {
+		      	DType temp = 1 / a[j + j * lda];
+			      for (int i = 0; i < m; ++i) {
+			        b[i + j * ldb] = temp * b[i + j * ldb];
+      			}
+		      }
+    		}
+	    } else {
+		    for (int j = n-1; j >= 0; --j) {
+		      if (alpha != 1) {
+			      for (int i = 0; i < m; ++i) {
+			        b[i + j * ldb] = alpha * b[i + j * ldb];
+      			}
+  		    }
+
+  		    for (int k = j+1; k < n; ++k) {
+	      		if (a[k + j * lda] != 0.) {
+    			    for (int i = 0; i < m; ++i) {
+				        b[i + j * ldb] -= a[k + j * lda] * b[i + k * ldb];
+    			    }
+		      	}
+  		    }
+	  	    if (nounit) {
+		      	DType temp = 1 / a[j + j * lda];
+
+			      for (int i = 0; i < m; ++i) {
+			        b[i + j * ldb] = temp * b[i + j * ldb];
+      			}
+		      }
+    		}
+	    }
+	  } else { // CblasTrans
+
+      /*           Form  B := alpha*B*inv( A**T ). */
+
+	    if (upper) {
+		    for (int k = n-1; k >= 0; --k) {
+		      if (nounit) {
+			      DType temp= 1 / a[k + k * lda];
+	      		for (int i = 0; i < m; ++i) {
+  			      b[i + k * ldb] = temp * b[i + k * ldb];
+      			}
+		      }
+  		    for (int j = 0; j < k-1; ++j) {
+	      		if (a[j + k * lda] != 0.) {
+			        DType temp= a[j + k * lda];
+    			    for (int i = 0; i < m; ++i) {
+		        		b[i + j * ldb] -= temp * b[i + k *	ldb];
+    			    }
+      			}
+  		    }
+	  	    if (alpha != 1) {
+      			for (int i = 0; i < m; ++i) {
+			        b[i + k * ldb] = alpha * b[i + k * ldb];
+      			}
+		      }
+    		}
+	    } else {
+    		for (int k = 0; k < n; ++k) {
+		      if (nounit) {
+      			DType temp = 1 / a[k + k * lda];
+			      for (int i = 0; i < m; ++i) {
+			        b[i + k * ldb] = temp * b[i + k * ldb];
+      			}
+		      }
+  		    for (int j = k+1; j < n; ++j) {
+	      		if (a[j + k * lda] != 0.) {
+			        DType temp= a[j + k * lda];
+			        for (int i = 0; i < m; ++i) {
+				        b[i + j * ldb] -= temp * b[i + k * ldb];
+    			    }
+		      	}
+  		    }
+	  	    if (alpha != 1) {
+      			for (int i = 0; i < m; ++i) {
+			        b[i + k * ldb] = alpha * b[i + k * ldb];
+      			}
+  		    }
+    		}
+	    }
+	  }
+  }
+}
+
+
+template <>
+inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const float alpha, const float* a,
+                 const int lda, float* b, const int ldb)
+{
+  cblas_strsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
+}
+
+template <>
+inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const double alpha, const double* a,
+                 const int lda, double* b, const int ldb)
+{
+  cblas_dtrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
+}
+
+template <>
+inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const Complex64 alpha, const Complex64* a,
+                 const int lda, Complex64* b, const int ldb)
+{
+  cblas_ctrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, (const void*)(&alpha), (const void*)(a), lda, (void*)(b), ldb);
+}
+
+template <>
+inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const Complex128 alpha, const Complex128* a,
+                 const int lda, Complex128* b, const int ldb)
+{
+  cblas_ztrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, (const void*)(&alpha), (const void*)(a), lda, (void*)(b), ldb);
+}
+
+/*
  * GEneral Matrix Multiplication: based on dgemm.f from Netlib.
  *
  * This is an extremely inefficient algorithm. Recommend using ATLAS' version instead.
@@ -106,7 +361,7 @@ template <> struct LongDType<RubyObject> { typedef RubyObject type; };
  */
 template <typename DType>
 inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-          const DType* alpha, const DType* A, const int lda, const DType* B, const int ldb, const DType* beta, DType* C, const int ldc) {
+                 const DType* alpha, const DType* A, const int lda, const DType* B, const int ldb, const DType* beta, DType* C, const int ldc) {
   int num_rows_a, /*num_cols_a,*/ num_rows_b; // nrowa, ncola, nrowb
 
   typename LongDType<DType>::type temp;
@@ -121,13 +376,7 @@ inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE T
   else                        num_rows_b = N;
 
   // Test the input parameters
-  if (TransA < 111 || TransA > 113) {
-    rb_raise(rb_eArgError, "GEMM: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans");
-    return false;
-  } else if (TransB < 111 || TransB > 113) {
-    rb_raise(rb_eArgError, "GEMM: TransB must be CblasNoTrans, CblasTrans, or CblasConjTrans");
-    return false;
-  } else if (M < 0) {
+  if (M < 0) {
     rb_raise(rb_eArgError, "GEMM: Expected M >= 0");
     return false;
   } else if (N < 0) {
@@ -765,6 +1014,8 @@ template <typename DType>
 inline bool clapack_getrf(const int m, const int n, void* a, const int lda, int* ipiv) {
  return  getrf<DType>(m, n, reinterpret_cast<DType*>(a), lda, ipiv);
 }
+
+
 
 }} // end namespace nm::math
 

@@ -132,6 +132,11 @@ class RubyObject {
 	inline RubyObject operator-(const RubyObject& other) const {
 		return RubyObject(rb_funcall(this->rval, nm_rb_sub, 1, other.rval));
 	}
+
+	inline RubyObject& operator-=(const RubyObject& other) {
+    this->rval = rb_funcall(this->rval, nm_rb_sub, 1, other.rval);
+    return *this;
+	}
 	
 	inline RubyObject operator*(const RubyObject& other) const {
 		return RubyObject(rb_funcall(this->rval, nm_rb_mul, 1, other.rval));
@@ -144,6 +149,11 @@ class RubyObject {
 	
 	inline RubyObject operator/(const RubyObject& other) const {
 		return RubyObject(rb_funcall(this->rval, nm_rb_div, 1, other.rval));
+	}
+
+	inline RubyObject& operator/=(const RubyObject& other) {
+    this->rval = rb_funcall(this->rval, nm_rb_div, 1, other.rval);
+    return *this;
 	}
 	
 	inline RubyObject operator%(const RubyObject& other) const {
@@ -274,6 +284,11 @@ class RubyObject {
 ////////////////////////////
 // NATIVE-RUBY OPERATIONS //
 ////////////////////////////
+
+template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline RubyObject operator/(const NativeType left, const RubyObject& right) {
+  return RubyObject(left) / right;
+}
 
 template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
 inline bool operator==(const NativeType left, const RubyObject& right) {

@@ -22,16 +22,19 @@
 #
 # == math_spec.rb
 #
-# Tests for properly exposed BLAS functions.
+# Tests for non-BLAS and non-LAPACK math functions, or for simplified
+# versions of unfriendly BLAS and LAPACK functions.
 #
 
 # Can we use require_relative here instead?
 require File.join(File.dirname(__FILE__), "spec_helper.rb")
 
-describe NMatrix::BLAS do
+describe "math" do
   [:float32, :float64, :complex64, :complex128].each do |dtype|
     context dtype do
-      it "exposes cblas gemm" do
+
+      # Note: this exposes gemm, not cblas_gemm (which is the unfriendly CBLAS no-error-checking version)
+      it "exposes gemm" do
         #STDERR.puts "dtype=#{dtype.to_s}"
         #STDERR.puts "1"
         n = NMatrix.new([4,3], dtype)
@@ -71,7 +74,6 @@ describe NMatrix::BLAS do
         r[3,1].should == 160.0
       end
 
-      it "exposes cblas gemv"
     end
   end
 end

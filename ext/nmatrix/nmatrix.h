@@ -87,13 +87,6 @@
  #endif
 #endif
 
-// The definition above is partially overridden by the definition below when size_t is undefined.
-#ifndef HAVE_SIZE_T
- typedef u_int64_t  size_t;
- #define SIZE_T     INT64
-#endif
-
-
 /*
  * == Macros for Concurrent C and C++ Header Maintenance
  *

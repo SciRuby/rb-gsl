@@ -108,43 +108,24 @@ $srcs = [
 ]
 # add smmp in to get generic transp; remove smmp2 to eliminate funcptr transp
 
-header = "stdint.h"
-unless have_header(header)
-  header = "sys/types.h"
-  unless have_header(header)
-    header = nil
-  end
-end
+# The next line allows the user to supply --with-atlas-include=/usr/local/atlas, for example,
+# and tell the compiler where to look for ATLAS.
+dir_config("atlas")
 
-have_type("u_int8_t", header)
-have_type("uint8_t", header)
-have_type("u_int16_t", header)
-have_type("uint16_t", header)
-have_type("int16_t", header)
-have_type("int32_t", header)
-have_type("u_int32_t", header)
-have_type("uint32_t", header)
-have_type("int64_t", header)
-have_type("u_int64_t", header)
-have_type("uint64_t", header)
-
-unless have_type("size_t", header)
-  have_type("size_t", "stddef.h")
-end
-
-# dir_config("cblas")
-# dir_config("atlas")
+# Is g++ having trouble finding your header files?
+# Try this: export C_INCLUDE_PATH=/usr/local/atlas/include (substituting in the path of your cblas.h
+# clapack.h for the path I used). -- JW 8/27/12
 
 find_library("cblas", "cblas_dgemm", "/usr/local/lib", "/usr/local/atlas/lib")
 find_library("atlas", "ATL_dgemmNN", "/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib")
-find_header("cblas.h", "/usr/local/include", "/usr/local/atlas/include")
+have_header("cblas.h")
 
 find_library("lapack", "clapack_dgetrf", "/usr/local/lib", "/usr/local/atlas/lib")
-find_header("clapack.h", "/usr/local/include", "/usr/local/atlas/include")
+have_header("clapack.h")
 
-# Needed for LAPACK
-have_library("f2c")
-have_header("f2c.h")
+# May be needed for LAPACK // FIXME: Test to see if we can leave out this option.
+#have_library("f2c")
+#have_header("f2c.h")
 
 # Order matters here: ATLAS has to go after LAPACK: http://mail.scipy.org/pipermail/scipy-user/2007-January/010717.html
 $libs += " -llapack -lcblas -latlas "
