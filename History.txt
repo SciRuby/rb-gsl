@@ -4,3 +4,28 @@
 
   * Initial alpha release
 
+=== 0.0.2 / 2012-08-??
+
+* Numerous major enhancements
+
+  * Second alpha release
+
+  * Rewrote NMatrix in C++0x and C++11 using templates, namespaces
+
+  * Removed Ruby generators and CAST parser
+
+  * Added preliminary C API
+
+  * Slicing and referencing support for dense and list matrices
+
+  * BLAS level-3 xTRSM algorithm added for rationals and BLAS types
+
+  * LAPACK support added, including partially working xGETRF subroutine
+
+  * `==` operator now used for matrix equality, `=~` and `!~` for element-wise comparisons
+
+  * Element-wise comparisons now return byte-matrices
+
+  * Improved MATLAB .MAT v5 file reading
+
+  * clang support

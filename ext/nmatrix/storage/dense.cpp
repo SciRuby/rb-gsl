@@ -340,7 +340,7 @@ bool nm_dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
  * Dense element-wise operations.
  */
 STORAGE* nm_dense_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
-	OP_LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_op, DENSE_STORAGE*, const DENSE_STORAGE*, const DENSE_STORAGE*);
+	OP_LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_op, DENSE_STORAGE*, const DENSE_STORAGE* left, const DENSE_STORAGE* right);
 
 	return ttable[op][left->dtype][right->dtype](reinterpret_cast<const DENSE_STORAGE*>(left), reinterpret_cast<const DENSE_STORAGE*>(right));
 }
@@ -580,7 +580,7 @@ bool is_symmetric(const DENSE_STORAGE* mat, int lda) {
 }
 
 /*
- * Templated dense storage element-wise operations.
+ * Templated dense storage element-wise operations which return the same DType.
  */
 template <ewop_t op, typename LDType, typename RDType>
 static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
@@ -588,40 +588,83 @@ static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* righ
 	
 	size_t* new_shape = (size_t*)calloc(left->dim, sizeof(size_t));
 	memcpy(new_shape, left->shape, sizeof(size_t) * left->dim);
-	
-	DENSE_STORAGE* result = nm_dense_storage_create(left->dtype, new_shape, left->dim, NULL, 0);
+
+  // Determine the return dtype. This depends on the type of operation we're doing. Usually, it's going to be
+  // set by the left matrix, but for comparisons, we'll use BYTE (in lieu of boolean).
+  dtype_t new_dtype = static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS ? left->dtype : BYTE;
+
+	DENSE_STORAGE* result = nm_dense_storage_create(new_dtype, new_shape, left->dim, NULL, 0);
 	
 	LDType* l_elems = reinterpret_cast<LDType*>(left->elements);
 	RDType* r_elems = reinterpret_cast<RDType*>(right->elements);
-	
-	LDType* res_elems = reinterpret_cast<LDType*>(result->elements);
 
-	for (count = nm_storage_count_max_elements(result); count-- > 0;) {
-		switch (op) {
-			case EW_ADD:
-				res_elems[count] = l_elems[count] + r_elems[count];
-				break;
-				
-			case EW_SUB:
-				res_elems[count] = l_elems[count] - r_elems[count];
-				break;
-				
-			case EW_MUL:
-				res_elems[count] = l_elems[count] * r_elems[count];
-				break;
-				
-			case EW_DIV:
-				res_elems[count] = l_elems[count] / r_elems[count];
-				break;
-				
-			case EW_MOD:
-				rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
-				break;
-		}
-	}
+	if (static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS) { // use left-dtype
+    LDType* res_elems = reinterpret_cast<LDType*>(result->elements);
+
+    for (count = nm_storage_count_max_elements(result); count-- > 0;) {
+      switch (op) {
+        case EW_ADD:
+          res_elems[count] = l_elems[count] + r_elems[count];
+          break;
+
+        case EW_SUB:
+          res_elems[count] = l_elems[count] - r_elems[count];
+          break;
+
+        case EW_MUL:
+          res_elems[count] = l_elems[count] * r_elems[count];
+          break;
+
+        case EW_DIV:
+          res_elems[count] = l_elems[count] / r_elems[count];
+          break;
+
+        case EW_MOD:
+          rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
+          break;
+
+        default:
+          rb_raise(rb_eStandardError, "this should not happen");
+      }
+    }
+  } else { // new_dtype is BYTE: comparison operators
+    uint8_t* res_elems = reinterpret_cast<uint8_t*>(result->elements);
+
+    for (count = nm_storage_count_max_elements(result); count-- > 0;) {
+      switch (op) {
+        case EW_EQEQ:
+          res_elems[count] = l_elems[count] == r_elems[count];
+          break;
+
+        case EW_NEQ:
+          res_elems[count] = l_elems[count] != r_elems[count];
+          break;
+
+        case EW_LT:
+          res_elems[count] = l_elems[count] < r_elems[count];
+          break;
+
+        case EW_GT:
+          res_elems[count] = l_elems[count] > r_elems[count];
+          break;
+
+        case EW_LEQ:
+          res_elems[count] = l_elems[count] <= r_elems[count];
+          break;
+
+        case EW_GEQ:
+          res_elems[count] = l_elems[count] >= r_elems[count];
+          break;
+
+        default:
+          rb_raise(rb_eStandardError, "this should not happen");
+      }
+    }
+  }
 	
 	return result;
 }
+
 
 /*
  * DType-templated matrix-matrix multiplication for dense storage.

@@ -54,16 +54,16 @@ describe NMatrix do
   it "compares two list matrices" do
     n = NMatrix.new(:list, [3,3,3], :int64)
     m = NMatrix.new(:list, [3,3,3], :int64)
-    n.should.eql? m
+    n.should == m
     n[0,0,0] = 5
-    n.should_not.eql? m
+    n.should_not == m
     n[0,0,1] = 52
     n[1,2,1] = -4
 
     m[0,0,0] = 5
     m[0,0,1] = 52
     m[1,2,1] = -4
-    n.should.eql? m
+    n.should == m
   end
 
   it "fills dense Ruby object matrix with nil" do
@@ -271,7 +271,7 @@ describe NMatrix do
 
 
   [:dense, :list, :yale].each do |storage_type|
-    context "(storage: #{storage_type})" do
+    context storage_type do
       it "can be duplicated" do
         n = NMatrix.new(storage_type, [2,3], storage_type == :yale ? :float64 : 1.1)
         n.stype.should equal(storage_type)
@@ -311,44 +311,92 @@ describe NMatrix do
         n[0,1].should == 1
       end
 
-      it "#{storage_type} handles elementwise addition" do
+      it "handles elementwise addition" do
         n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3,  4], :int64)
         m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [-3, 1, 3, 70], :int64)
         r = n+m
-        r.should.eql? rcorrect
+        r.should == rcorrect
       end
       
-      it "#{storage_type} handles elementwise subtraction" do
+      it "handles elementwise subtraction" do
         n = NMatrix.new(storage_type, [2,2],  [1,  2, 3,  4], :int64)
         m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [5, 3, 3, -62], :int64)
         r = n-m
-        r.should.eql? rcorrect
+        r.should == rcorrect
       end
       
-      it "#{storage_type} handles elementwise multiplication" do
+      it "handles elementwise multiplication" do
         n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3,  4], :int64)
         m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
-        rcorrect = NMatrix.new(storage_type, [2,2], [-8, -2, 0, 264], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [-4, -2, 0, 264], :int64)
         r = n*m
-        r.should.eql? rcorrect
+        r.should == rcorrect
       end
       
-      it "#{storage_type} handles elementwise division" do
+      it "handles elementwise division" do
         n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3, 4], :int64)
         m = NMatrix.new(storage_type, [2,2], [-4, -1, 3, 2], :int64)
-        rcorrect = NMatrix.new(storage_type, [2,2], [-1, -2, 1, 2], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [0, -2, 1, 2], :int64)
         r = n/m
-        r.should.eql? rcorrect
+        r.should == rcorrect
       end
       
-      it "#{storage_type} handles elementwise modulo" do
+      it "handles elementwise modulo" do
         n = NMatrix.new(storage_type, [2,2], [10, 11, 12, 13], :int64)
         m = NMatrix.new(storage_type, [2,2], [ 2, 10,  5, 10], :int64)
         rcorrect = NMatrix.new(storage_type, [2,2], [0, 1, 2, 3], :int64)
         r = n%m
-        r.should.eql? rcorrect
+        r.should == rcorrect
+      end
+
+      it "handles elementwise equality" do
+        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3, 4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4, -1, 3, 2], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [0, 0, 1, 0], :byte)
+        r = n =~ m
+        r.should == rcorrect
+      end
+
+      it "handles elementwise inequality" do
+        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3, 4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4, -1, 3, 2], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [1, 1, 0, 1], :byte)
+        r = n !~ m
+        r.should == rcorrect
+      end
+
+      it "handles elementwise less-than" do
+        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3, 4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4, -1, 3, 2], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [0, 0, 0, 0], :byte)
+        r = n < m
+        r.should == rcorrect
+      end
+
+      it "handles elementwise greater-than" do
+        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3, 4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4, -1, 3, 2], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [1, 1, 0, 1], :byte)
+        r = n > m
+        r.should == rcorrect
+      end
+
+      it "handles elementwise less-than-or-equal-to" do
+        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3, 4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4, -1, 3, 2], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [0, 0, 1, 0], :byte)
+        r = n <= m
+        r.should == rcorrect
+      end
+
+      it "handles elementwise greater-than-or-equal-to" do
+        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 2, 4], :int64)
+        m = NMatrix.new(storage_type, [2,2], [-4, -1, 3, 2], :int64)
+        rcorrect = NMatrix.new(storage_type, [2,2], [1, 1, 0, 1], :byte)
+        r = n >= m
+        r.should == rcorrect
       end
     end
 

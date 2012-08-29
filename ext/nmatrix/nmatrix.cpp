@@ -87,11 +87,31 @@ static VALUE nm_is_ref(VALUE self);
 
 static VALUE is_symmetric(VALUE self, bool hermitian);
 
-static VALUE nm_ew_add(VALUE left_val, VALUE right_val);
-static VALUE nm_ew_subtract(VALUE left_val, VALUE right_val);
-static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val);
-static VALUE nm_ew_divide(VALUE left_val, VALUE right_val);
-//static VALUE nm_ew_mod(VALUE left_val, VALUE right_val);
+/*
+ * Macro defines an element-wise accessor function for some operation.
+ *
+ * This is only responsible for the Ruby accessor! You still have to write the actual functions, obviously.
+ */
+#define DEF_ELEMENTWISE_RUBY_ACCESSOR(oper, name)                 \
+static VALUE nm_ew_##name(VALUE left_val, VALUE right_val) {  \
+  return elementwise_op(nm::EW_##oper, left_val, right_val);  \
+}
+
+/*
+ * Macro declares a corresponding accessor function prototype for some element-wise operation.
+ */
+#define DECL_ELEMENTWISE_RUBY_ACCESSOR(name)    static VALUE nm_ew_##name(VALUE left_val, VALUE right_val);
+
+DECL_ELEMENTWISE_RUBY_ACCESSOR(add)
+DECL_ELEMENTWISE_RUBY_ACCESSOR(subtract)
+DECL_ELEMENTWISE_RUBY_ACCESSOR(multiply)
+DECL_ELEMENTWISE_RUBY_ACCESSOR(divide)
+DECL_ELEMENTWISE_RUBY_ACCESSOR(eqeq)
+DECL_ELEMENTWISE_RUBY_ACCESSOR(neq)
+DECL_ELEMENTWISE_RUBY_ACCESSOR(lt)
+DECL_ELEMENTWISE_RUBY_ACCESSOR(gt)
+DECL_ELEMENTWISE_RUBY_ACCESSOR(leq)
+DECL_ELEMENTWISE_RUBY_ACCESSOR(geq)
 
 static VALUE elementwise_op(nm::ewop_t op, VALUE left_val, VALUE right_val);
 
@@ -184,28 +204,27 @@ void Init_nmatrix() {
 
 	rb_define_method(cNMatrix, "each", (METHOD)nm_each, 0);
 
+	rb_define_method(cNMatrix, "==",	  (METHOD)nm_eqeq,				1);
+
 	rb_define_method(cNMatrix, "+",			(METHOD)nm_ew_add,			1);
 	rb_define_method(cNMatrix, "-",			(METHOD)nm_ew_subtract,	1);
   rb_define_method(cNMatrix, "*",			(METHOD)nm_ew_multiply,	1);
 	rb_define_method(cNMatrix, "/",			(METHOD)nm_ew_divide,		1);
-//rb_define_method(cNMatrix, "%",			(METHOD)nm_ew_mod,			1);
-	rb_define_method(cNMatrix, "eql?",	(METHOD)nm_eqeq,				1);
+  //rb_define_method(cNMatrix, "%",			(METHOD)nm_ew_mod,			1);
+
+	rb_define_method(cNMatrix, "=~", (METHOD)nm_ew_eqeq, 1);
+	rb_define_method(cNMatrix, "!~", (METHOD)nm_ew_neq, 1);
+	rb_define_method(cNMatrix, "<=", (METHOD)nm_ew_leq, 1);
+	rb_define_method(cNMatrix, ">=", (METHOD)nm_ew_geq, 1);
+	rb_define_method(cNMatrix, "<", (METHOD)nm_ew_lt, 1);
+	rb_define_method(cNMatrix, ">", (METHOD)nm_ew_gt, 1);
 
 	/////////////////////////
 	// Matrix Math Methods //
 	/////////////////////////
 	rb_define_method(cNMatrix, "dot",		(METHOD)nm_multiply,		1);
 	rb_define_method(cNMatrix, "factorize_lu!", (METHOD)nm_factorize_lu_bang, 0);
-	
-	/*
-	 * TODO: Write new elementwise code for boolean operations
-	rb_define_method(cNMatrix, "==", (METHOD)nm_ew_eqeq, 1);
-	rb_define_method(cNMatrix, "!=", (METHOD)nm_ew_neq, 1);
-	rb_define_method(cNMatrix, "<=", (METHOD)nm_ew_leq, 1);
-	rb_define_method(cNMatrix, ">=", (METHOD)nm_ew_geq, 1);
-	rb_define_method(cNMatrix, "<", (METHOD)nm_ew_lt, 1);
-	rb_define_method(cNMatrix, ">", (METHOD)nm_ew_gt, 1);
-	 */
+
 
 	rb_define_method(cNMatrix, "symmetric?", (METHOD)nm_symmetric, 0);
 	rb_define_method(cNMatrix, "hermitian?", (METHOD)nm_hermitian, 0);
@@ -421,7 +440,7 @@ static VALUE nm_each(VALUE nmatrix) {
  * Equality operator. Returns a single true or false value indicating whether
  * the matrices are equivalent.
  *
- * For elementwise, use == instead.
+ * For elementwise, use =~ instead.
  *
  * This method will raise an exception if dimensions do not match.
  */
@@ -454,42 +473,17 @@ static VALUE nm_eqeq(VALUE left, VALUE right) {
   return result ? Qtrue : Qfalse;
 }
 
-/*
- * Simple n-dimensional matrix-matrix addition.
- */
-static VALUE nm_ew_add(VALUE left_val, VALUE right_val) {
-	return elementwise_op(nm::EW_ADD, left_val, right_val);
-}
-
-/*
- * Simple n-dimensional matrix-matrix subtraction.
- */
-static VALUE nm_ew_subtract(VALUE left_val, VALUE right_val) {
-	return elementwise_op(nm::EW_SUB, left_val, right_val);
-}
-
-/*
- * Simple n-dimensional matrix-matrix multiplication.
- */
-static VALUE nm_ew_multiply(VALUE left_val, VALUE right_val) {
-	return elementwise_op(nm::EW_MUL, left_val, right_val);
-}
-
-/*
- * Simple n-dimensional matrix-matrix division.
- */
-static VALUE nm_ew_divide(VALUE left_val, VALUE right_val) {
-	return elementwise_op(nm::EW_DIV, left_val, right_val);
-}
-
-/*
- * Simple n-dimensional matrix-matrix module.
- */
-/*
-static VALUE nm_ew_mod(VALUE left_val, VALUE right_val) {
-	return elementwise_op(nm::EW_MOD, left_val, right_val);
-}
-*/
+DEF_ELEMENTWISE_RUBY_ACCESSOR(ADD, add)
+DEF_ELEMENTWISE_RUBY_ACCESSOR(SUB, subtract)
+DEF_ELEMENTWISE_RUBY_ACCESSOR(MUL, multiply)
+DEF_ELEMENTWISE_RUBY_ACCESSOR(DIV, divide)
+//DEF_ELEMENTWISE_RUBY_ACCESSOR(MOD, mod)
+DEF_ELEMENTWISE_RUBY_ACCESSOR(EQEQ, eqeq)
+DEF_ELEMENTWISE_RUBY_ACCESSOR(NEQ, neq)
+DEF_ELEMENTWISE_RUBY_ACCESSOR(LEQ, leq)
+DEF_ELEMENTWISE_RUBY_ACCESSOR(GEQ, geq)
+DEF_ELEMENTWISE_RUBY_ACCESSOR(LT, lt)
+DEF_ELEMENTWISE_RUBY_ACCESSOR(GT, gt)
 
 /*
  * Is this matrix hermitian?
