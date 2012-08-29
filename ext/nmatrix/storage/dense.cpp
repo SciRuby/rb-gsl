@@ -38,7 +38,6 @@
 #include "util/math.h"
 
 #include "data/data.h"
-
 #include "common.h"
 #include "dense.h"
 
@@ -599,34 +598,11 @@ static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* righ
 	RDType* r_elems = reinterpret_cast<RDType*>(right->elements);
 
 	if (static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS) { // use left-dtype
-    LDType* res_elems = reinterpret_cast<LDType*>(result->elements);
 
     for (count = nm_storage_count_max_elements(result); count-- > 0;) {
-      switch (op) {
-        case EW_ADD:
-          res_elems[count] = l_elems[count] + r_elems[count];
-          break;
-
-        case EW_SUB:
-          res_elems[count] = l_elems[count] - r_elems[count];
-          break;
-
-        case EW_MUL:
-          res_elems[count] = l_elems[count] * r_elems[count];
-          break;
-
-        case EW_DIV:
-          res_elems[count] = l_elems[count] / r_elems[count];
-          break;
-
-        case EW_MOD:
-          rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
-          break;
-
-        default:
-          rb_raise(rb_eStandardError, "this should not happen");
-      }
+      reinterpret_cast<LDType*>(result->elements)[count] = ew_op_switch<op,LDType,RDType>(l_elems[count], r_elems[count]);
     }
+
   } else { // new_dtype is BYTE: comparison operators
     uint8_t* res_elems = reinterpret_cast<uint8_t*>(result->elements);
 

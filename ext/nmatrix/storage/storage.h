@@ -96,4 +96,5 @@ extern "C" {
 
 } // end of extern "C" block
 
+
 #endif // STORAGE_H
