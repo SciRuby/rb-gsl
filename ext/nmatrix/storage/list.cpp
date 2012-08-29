@@ -407,7 +407,7 @@ STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE
 		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
 		
 		result->default_val =
-			ttable[op][left->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->dim);
+			ttable[op][new_l->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->dim);
 		
 		// Delete the temporary left-hand side matrix.
 		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
