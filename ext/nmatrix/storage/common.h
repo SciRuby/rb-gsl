@@ -102,39 +102,68 @@ namespace nm {
     return 0;
   }
 
-  #define EWOP_NO_DIV_BY_ZERO(ltype, rtype)       template <>       \
+  #define EWOP_INT_INT_DIV(ltype, rtype)       template <>       \
+  inline ltype ew_op_switch<EW_DIV>( ltype & left, rtype & right) { \
+    if (right == 0) rb_raise(rb_eZeroDivError, "cannot divide type by 0, would throw SIGFPE");  \
+    if ((left > 0 && right > 0) || (left < 0 && right < 0)) \
+      return left / right;  \
+    else \
+      return ( ltype )(std::floor((double)(left) / (double)(right)));  \
+  }
+
+  #define EWOP_UINT_UINT_DIV(ltype, rtype)       template <>       \
   inline ltype ew_op_switch<EW_DIV>( ltype & left, rtype & right) { \
     if (right == 0) rb_raise(rb_eZeroDivError, "cannot divide type by 0, would throw SIGFPE");  \
     return left / right;  \
   }
 
-  // Outlaw certain divisions which would abort SIGFPE
-  EWOP_NO_DIV_BY_ZERO(int64_t, int64_t)
-  EWOP_NO_DIV_BY_ZERO(int32_t, int32_t)
-  EWOP_NO_DIV_BY_ZERO(int32_t, int64_t)
-  EWOP_NO_DIV_BY_ZERO(int16_t, int16_t)
-  EWOP_NO_DIV_BY_ZERO(int16_t, int32_t)
-  EWOP_NO_DIV_BY_ZERO(int16_t, int64_t)
-  EWOP_NO_DIV_BY_ZERO(int8_t, int8_t)
-  EWOP_NO_DIV_BY_ZERO(int8_t, u_int8_t)
-  EWOP_NO_DIV_BY_ZERO(int8_t, int16_t)
-  EWOP_NO_DIV_BY_ZERO(int8_t, int32_t)
-  EWOP_NO_DIV_BY_ZERO(int8_t, int64_t)
-  EWOP_NO_DIV_BY_ZERO(uint8_t, uint8_t)
-  EWOP_NO_DIV_BY_ZERO(uint8_t, int8_t)
-  EWOP_NO_DIV_BY_ZERO(uint8_t, int16_t)
-  EWOP_NO_DIV_BY_ZERO(uint8_t, int32_t)
-  EWOP_NO_DIV_BY_ZERO(uint8_t, int64_t)
-  EWOP_NO_DIV_BY_ZERO(float, int8_t)
-  EWOP_NO_DIV_BY_ZERO(float, u_int8_t)
-  EWOP_NO_DIV_BY_ZERO(float, int16_t)
-  EWOP_NO_DIV_BY_ZERO(float, int32_t)
-  EWOP_NO_DIV_BY_ZERO(float, int64_t)
-  EWOP_NO_DIV_BY_ZERO(double, int8_t)
-  EWOP_NO_DIV_BY_ZERO(double, u_int8_t)
-  EWOP_NO_DIV_BY_ZERO(double, int16_t)
-  EWOP_NO_DIV_BY_ZERO(double, int32_t)
-  EWOP_NO_DIV_BY_ZERO(double, int64_t)
+  #define EWOP_INT_UINT_DIV(ltype, rtype)       template <>       \
+  inline ltype ew_op_switch<EW_DIV>( ltype & left, rtype & right) { \
+    if (right == 0) rb_raise(rb_eZeroDivError, "cannot divide type by 0, would throw SIGFPE");  \
+    if (left > 0 )  return left / right;  \
+    else            return ( ltype )(std::floor((double)(left) / (double)(right)));  \
+  }
+
+  #define EWOP_UINT_INT_DIV(ltype, rtype)       template <>       \
+  inline ltype ew_op_switch<EW_DIV>( ltype & left, rtype & right) { \
+    if (right == 0) rb_raise(rb_eZeroDivError, "cannot divide type by 0, would throw SIGFPE");  \
+    if (right > 0)  return left / right;  \
+    else            return ( ltype )(std::floor((double)(left) / (double)(right)));  \
+  }
+
+  #define EWOP_FLOAT_INT_DIV(ltype, rtype)       template <>       \
+  inline ltype ew_op_switch<EW_DIV>( ltype & left, rtype & right) { \
+    return left / (ltype)(right);  \
+  }
+
+  // Ensure that divisions are done in the Ruby way, and that (int)x/0 always raises a Ruby error instead
+  // of throwing a SIGFPE.
+  EWOP_INT_INT_DIV(int64_t, int64_t)
+  EWOP_INT_INT_DIV(int32_t, int32_t)
+  EWOP_INT_INT_DIV(int32_t, int64_t)
+  EWOP_INT_INT_DIV(int16_t, int16_t)
+  EWOP_INT_INT_DIV(int16_t, int32_t)
+  EWOP_INT_INT_DIV(int16_t, int64_t)
+  EWOP_INT_INT_DIV(int8_t, int8_t)
+  EWOP_INT_UINT_DIV(int8_t, u_int8_t)
+  EWOP_INT_INT_DIV(int8_t, int16_t)
+  EWOP_INT_INT_DIV(int8_t, int32_t)
+  EWOP_INT_INT_DIV(int8_t, int64_t)
+  EWOP_UINT_UINT_DIV(uint8_t, uint8_t)
+  EWOP_UINT_INT_DIV(uint8_t, int8_t)
+  EWOP_UINT_INT_DIV(uint8_t, int16_t)
+  EWOP_UINT_INT_DIV(uint8_t, int32_t)
+  EWOP_UINT_INT_DIV(uint8_t, int64_t)
+  EWOP_FLOAT_INT_DIV(float, int8_t)
+  EWOP_FLOAT_INT_DIV(float, u_int8_t)
+  EWOP_FLOAT_INT_DIV(float, int16_t)
+  EWOP_FLOAT_INT_DIV(float, int32_t)
+  EWOP_FLOAT_INT_DIV(float, int64_t)
+  EWOP_FLOAT_INT_DIV(double, int8_t)
+  EWOP_FLOAT_INT_DIV(double, u_int8_t)
+  EWOP_FLOAT_INT_DIV(double, int16_t)
+  EWOP_FLOAT_INT_DIV(double, int32_t)
+  EWOP_FLOAT_INT_DIV(double, int64_t)
 
 }
 
