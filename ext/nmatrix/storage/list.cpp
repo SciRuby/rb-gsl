@@ -530,7 +530,34 @@ static LIST_STORAGE* cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
 
   LIST_STORAGE* lhs = nm_list_storage_create(new_dtype, shape, rhs->dim, default_val);
   lhs->rows         = list::create();
-  list::cast_copy_contents<LDType, RDType>(lhs->rows, rhs->rows, rhs->dim - 1);
+
+  // TODO: Needs optimization. When matrix is reference it is copped twice.
+  if (rhs->src != rhs) {
+    SLICE *slice;
+    LIST_STORAGE* tmp;
+    size_t i;
+    
+    slice = ALLOC(SLICE);
+    slice->coords = ALLOC_N(size_t, rhs->dim);
+    slice->lengths = ALLOC_N(size_t, rhs->dim);
+    slice->single = false;
+
+    for (i = 0; i < rhs->dim; i++) {
+      slice->coords[i] = 0;
+      slice->lengths[i] = rhs->shape[i];
+    }
+    
+    tmp = (LIST_STORAGE*)nm_list_storage_get((STORAGE*)rhs, slice); 
+    list::cast_copy_contents<LDType, RDType>(lhs->rows, tmp->rows, rhs->dim - 1);
+
+    nm_list_storage_delete(tmp);
+    free(slice->coords);
+    free(slice->lengths);
+    free(slice);
+  }
+  else {
+    list::cast_copy_contents<LDType, RDType>(lhs->rows, rhs->rows, rhs->dim - 1);
+  }
 
   return lhs;
 }
