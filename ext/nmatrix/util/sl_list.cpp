@@ -199,8 +199,7 @@ NODE* insert_after(NODE* node, size_t key, void* val) {
 /*
  * Analog functions list_insert but this insert copy of value.
  */
-NODE* insert_with_copy(LIST *list, size_t key, void *val, size_t size)
-{
+NODE* insert_with_copy(LIST *list, size_t key, void *val, size_t size) {
   NODE* n;
 
   n = ALLOC(NODE);

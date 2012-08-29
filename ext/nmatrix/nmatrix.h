@@ -133,7 +133,7 @@
   #define NM_DEF_STRUCT_PRE(name)  struct name {
   #define NM_DEF_STRUCT_POST(name) };
 
-  #define NM_DEF_ENUM(name, ...)         \
+  #define NM_DEF_ENUM(name, ...)          \
     enum name {                           \
       __VA_ARGS__                         \
     };
@@ -148,7 +148,7 @@
     size_t      dim;                \
     size_t*     shape;              \
     size_t*     offset;             \
-	  int			count;                  \ 
+	  int			    count;              \
 	  STORAGE*		src;              
   #define NM_DEF_STORAGE_CHILD_STRUCT_PRE(name)  typedef struct NM_ ## name { \
                                                     NM_DEF_STORAGE_ELEMENTS;

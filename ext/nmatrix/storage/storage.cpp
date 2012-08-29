@@ -387,18 +387,16 @@ static bool cast_copy_contents_dense(LIST* lhs, const RDType* rhs, RDType* zero,
   //void* insert_value;
 
   for (coords[dim-1-recursions] = 0; coords[dim-1-recursions] < shape[dim-1-recursions]; ++coords[dim-1-recursions], ++pos) {
-    //fprintf(stderr, "(%u)\t<%u, %u>: ", recursions, coords[0], coords[1]);
 
     if (recursions == 0) {
     	// create nodes
 
       if (rhs[pos] != *zero) {
       	// is not zero
-        //fprintf(stderr, "inserting value\n");
 
         // Create a copy of our value that we will insert in the list
         LDType* insert_value = ALLOC_N(LDType, 1);
-        *insert_value        = static_cast<LDType>(rhs[pos]);
+        *insert_value        = (LDType)(rhs[pos]);
 
         if (!lhs->first)    prev = list::insert(lhs, false, coords[dim-1-recursions], insert_value);
         else               	prev = list::insert_after(prev, coords[dim-1-recursions], insert_value);
