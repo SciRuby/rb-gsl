@@ -194,14 +194,14 @@ describe "Slice operation" do
           n = @m[1..2,0..1]
         end
         GC.start
-        @m.should == NMatrix.new([3,3], (0..9).to_a, :int32)
+        @m.should == NMatrix.new(:dense, [3,3], (0..9).to_a, :int32).cast(stype, :int32)
         n = nil
         1.times do
-          m = NMatrix.new(stype, [2,2], [1,2,3,4])
+          m = NMatrix.new(:dense, [2,2], [1,2,3,4]).cast(stype, :int32)
           n = m[0..1,0..1]
         end
         GC.start
-        n.should == NMatrix.new(stype, [2,2], [1,2,3,4])
+        n.should == NMatrix.new(:dense, [2,2], [1,2,3,4]).cast(stype, :int32)
       end
     end
   end

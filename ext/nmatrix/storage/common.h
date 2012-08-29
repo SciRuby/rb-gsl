@@ -72,4 +72,36 @@ struct SLICE {
 
 } // end of extern "C" block
 
+namespace nm {
+
+  /*
+   * Templated helper function for element-wise operations, used by dense, yale, and list.
+   */
+  template <ewop_t op, typename LDType, typename RDType>
+  static LDType ew_op_switch(LDType& left, RDType& right) {
+    switch (op) {
+      case EW_ADD:
+        return left + right;
+
+      case EW_SUB:
+        return left - right;
+
+      case EW_MUL:
+        return left * right;
+
+      case EW_DIV:
+        return left / right;
+
+      case EW_MOD:
+        rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
+        break;
+
+      default:
+        rb_raise(rb_eStandardError, "this should not happen");
+    }
+    return 0;
+  }
+
+}
+
 #endif // STORAGE_COMMON_H

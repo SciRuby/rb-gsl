@@ -386,8 +386,14 @@ bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
  */
 STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
 	OP_LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_op, void*, LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t dim);
-	
-	dtype_t new_dtype = Upcast[left->dtype][right->dtype];
+
+  // We may need to upcast our arguments to the same type.
+  dtype_t new_dtype = Upcast[left->dtype][right->dtype];
+
+	// Make sure we allocate a byte-storing matrix for comparison operations; otherwise, use the argument dtype (new_dtype)
+	dtype_t result_dtype = static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS ? new_dtype : BYTE;
+
+
 	
 	const LIST_STORAGE* l = reinterpret_cast<const LIST_STORAGE*>(left),
 										* r = reinterpret_cast<const LIST_STORAGE*>(right);
@@ -399,7 +405,7 @@ STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE
 	memcpy(new_shape, left->shape, sizeof(size_t) * l->dim);
 	
 	// Create the result matrix.
-	LIST_STORAGE* result = nm_list_storage_create(new_dtype, new_shape, left->dim, NULL);
+	LIST_STORAGE* result = nm_list_storage_create(result_dtype, new_shape, left->dim, NULL);
 	
 	/*
 	 * Call the templated elementwise multiplication function and set the default
@@ -617,7 +623,7 @@ static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LI
         break;
 
       case EW_DIV:
-        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) / *reinterpret_cast<const RDType*>(r_default);
+        *d_default_mem = *reinterpret_cast<const LDType*>(l_default); // just use left default to avoid div-by-zero
         break;
 
       case EW_MOD:
@@ -742,27 +748,27 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 				if (level == last_level) {
 					switch (op) {
 						case EW_EQEQ:
-							tmp_result = l_default == *reinterpret_cast<RDType*>(r_node->val);
+							tmp_result = (uint8_t)(l_default == *reinterpret_cast<RDType*>(r_node->val));
 							break;
 
 						case EW_NEQ:
-							tmp_result = l_default != *reinterpret_cast<RDType*>(r_node->val);
+							tmp_result = (uint8_t)(l_default != *reinterpret_cast<RDType*>(r_node->val));
 							break;
 
 						case EW_LT:
-							tmp_result = l_default < *reinterpret_cast<RDType*>(r_node->val);
+							tmp_result = (uint8_t)(l_default < *reinterpret_cast<RDType*>(r_node->val));
 							break;
 
 						case EW_GT:
-							tmp_result = l_default > *reinterpret_cast<RDType*>(r_node->val);
+							tmp_result = (uint8_t)(l_default > *reinterpret_cast<RDType*>(r_node->val));
 							break;
 
 						case EW_LEQ:
-							tmp_result = l_default <= *reinterpret_cast<RDType*>(r_node->val);
+							tmp_result = (uint8_t)(l_default <= *reinterpret_cast<RDType*>(r_node->val));
 							break;
 
 						case EW_GEQ:
-							tmp_result = l_default >= *reinterpret_cast<RDType*>(r_node->val);
+							tmp_result = (uint8_t)(l_default >= *reinterpret_cast<RDType*>(r_node->val));
 							break;
 
             default:
@@ -777,10 +783,9 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 					new_level = nm::list::create();
 					dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
 
-					ew_comp_prime<op, LDType, RDType>(new_level, d_default,
-						&EMPTY_LIST, l_default,
-						reinterpret_cast<LIST*>(r_node->val), r_default,
-						shape, last_level, level + 1);
+					ew_comp_prime<op, LDType, RDType>(new_level, d_default, &EMPTY_LIST, l_default,
+                                            reinterpret_cast<LIST*>(r_node->val), r_default,
+                                            shape, last_level, level + 1);
 				}
 
 				r_node = r_node->next;
@@ -794,27 +799,27 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 				if (level == last_level) {
 					switch (op) {
 						case EW_EQEQ:
-							tmp_result = *reinterpret_cast<LDType*>(l_node->val) == r_default;
+							tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) == r_default);
 							break;
 
 						case EW_NEQ:
-							tmp_result = *reinterpret_cast<LDType*>(l_node->val) != r_default;
+							tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) != r_default);
 							break;
 
 						case EW_LT:
-							tmp_result = *reinterpret_cast<LDType*>(l_node->val) < r_default;
+							tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) < r_default);
 							break;
 
 						case EW_GT:
-							tmp_result = *reinterpret_cast<LDType*>(l_node->val) > r_default;
+							tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) > r_default);
 							break;
 
 						case EW_LEQ:
-							tmp_result = *reinterpret_cast<LDType*>(l_node->val) <= r_default;
+							tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) <= r_default);
 							break;
 
 						case EW_GEQ:
-							tmp_result = *reinterpret_cast<LDType*>(l_node->val) >= r_default;
+							tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) >= r_default);
 							break;
 
             default:
@@ -830,9 +835,9 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 					dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
 
 					ew_comp_prime<op, LDType, RDType>(new_level, d_default,
-						reinterpret_cast<LIST*>(r_node->val), l_default,
-						&EMPTY_LIST, r_default,
-						shape, last_level, level + 1);
+                                            reinterpret_cast<LIST*>(l_node->val), l_default,
+                                            &EMPTY_LIST, r_default,
+                                            shape, last_level, level + 1);
 				}
 
 				l_node = l_node->next;
@@ -848,27 +853,27 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 					if (level == last_level) {
 						switch (op) {
 							case EW_EQEQ:
-								tmp_result = *reinterpret_cast<LDType*>(l_node->val) == *reinterpret_cast<RDType*>(r_node->val);
+								tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) == *reinterpret_cast<RDType*>(r_node->val));
 								break;
 
 							case EW_NEQ:
-								tmp_result = *reinterpret_cast<LDType*>(l_node->val) != *reinterpret_cast<RDType*>(r_node->val);
+								tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) != *reinterpret_cast<RDType*>(r_node->val));
 								break;
 
 							case EW_LT:
-								tmp_result = *reinterpret_cast<LDType*>(l_node->val) < *reinterpret_cast<RDType*>(r_node->val);
+								tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) < *reinterpret_cast<RDType*>(r_node->val));
 								break;
 
 							case EW_GT:
-								tmp_result = *reinterpret_cast<LDType*>(l_node->val) > *reinterpret_cast<RDType*>(r_node->val);
+								tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) > *reinterpret_cast<RDType*>(r_node->val));
 								break;
 
 							case EW_LEQ:
-								tmp_result = *reinterpret_cast<LDType*>(l_node->val) <= *reinterpret_cast<RDType*>(r_node->val);
+								tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) <= *reinterpret_cast<RDType*>(r_node->val));
 								break;
 
 							case EW_GEQ:
-								tmp_result = *reinterpret_cast<LDType*>(l_node->val) >= *reinterpret_cast<RDType*>(r_node->val);
+								tmp_result = (uint8_t)(*reinterpret_cast<LDType*>(l_node->val) >= *reinterpret_cast<RDType*>(r_node->val));
 								break;
 
               default:
@@ -913,6 +918,7 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 		}
 	}
 }
+
 
 
 /*
@@ -971,30 +977,7 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 				 */
 				
 				if (level == last_level) {
-					switch (op) {
-						case EW_ADD:
-							tmp_result = l_default + *reinterpret_cast<RDType*>(r_node->val);
-							break;
-							
-						case EW_SUB:
-							tmp_result = l_default - *reinterpret_cast<RDType*>(r_node->val);
-							break;
-							
-						case EW_MUL:
-							tmp_result = l_default * *reinterpret_cast<RDType*>(r_node->val);
-							break;
-							
-						case EW_DIV:
-							tmp_result = l_default / *reinterpret_cast<RDType*>(r_node->val);
-							break;
-							
-						case EW_MOD:
-							rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
-							break;
-
-            default:
-              rb_raise(rb_eStandardError, "this should not happen");
-					}
+				  tmp_result = ew_op_switch<op, LDType, RDType>(l_default, *reinterpret_cast<RDType*>(r_node->val));
 					
 					if (tmp_result != d_default) {
 						dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
@@ -1004,10 +987,9 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 					new_level = nm::list::create();
 					dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
 				
-					ew_op_prime<op, LDType, RDType>(new_level, d_default,
-						&EMPTY_LIST, l_default,
-						reinterpret_cast<LIST*>(r_node->val), r_default,
-						shape, last_level, level + 1);
+					ew_op_prime<op, LDType, RDType>(new_level, d_default,	&EMPTY_LIST, l_default,
+						                              reinterpret_cast<LIST*>(r_node->val), r_default,
+						                              shape, last_level, level + 1);
 				}
 				
 				r_node = r_node->next;
@@ -1019,31 +1001,8 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 				 */
 				
 				if (level == last_level) {
-					switch (op) {
-						case EW_ADD:
-							tmp_result = *reinterpret_cast<LDType*>(l_node->val) + r_default;
-							break;
-							
-						case EW_SUB:
-							tmp_result = *reinterpret_cast<LDType*>(l_node->val) - r_default;
-							break;
-							
-						case EW_MUL:
-							tmp_result = *reinterpret_cast<LDType*>(l_node->val) * r_default;
-							break;
-							
-						case EW_DIV:
-							tmp_result = *reinterpret_cast<LDType*>(l_node->val) / r_default;
-							break;
-							
-						case EW_MOD:
-							rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
-							break;
+				  tmp_result = ew_op_switch<op, LDType, RDType>(*reinterpret_cast<LDType*>(l_node->val), r_default);
 
-            default:
-              rb_raise(rb_eStandardError, "this should not happen");
-					}
-					
 					if (tmp_result != d_default) {
 						dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
 					}
@@ -1052,10 +1011,8 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 					new_level = nm::list::create();
 					dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
 				
-					ew_op_prime<op, LDType, RDType>(new_level, d_default,
-						reinterpret_cast<LIST*>(r_node->val), l_default,
-						&EMPTY_LIST, r_default,
-						shape, last_level, level + 1);
+					ew_op_prime<op, LDType, RDType>(new_level, d_default,	reinterpret_cast<LIST*>(l_node->val), l_default,
+						                              &EMPTY_LIST, r_default,	shape, last_level, level + 1);
 				}
 				
 				l_node = l_node->next;
@@ -1069,30 +1026,7 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 				if (l_node->key == r_node->key) {
 					
 					if (level == last_level) {
-						switch (op) {
-							case EW_ADD:
-								tmp_result = *reinterpret_cast<LDType*>(l_node->val) + *reinterpret_cast<RDType*>(r_node->val);
-								break;
-							
-							case EW_SUB:
-								tmp_result = *reinterpret_cast<LDType*>(l_node->val) - *reinterpret_cast<RDType*>(r_node->val);
-								break;
-							
-							case EW_MUL:
-								tmp_result = *reinterpret_cast<LDType*>(l_node->val) * *reinterpret_cast<RDType*>(r_node->val);
-								break;
-							
-							case EW_DIV:
-								tmp_result = *reinterpret_cast<LDType*>(l_node->val) / *reinterpret_cast<RDType*>(r_node->val);
-								break;
-							
-							case EW_MOD:
-								rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
-								break;
-
-              default:
-                rb_raise(rb_eStandardError, "this should not happen");
-						}
+					  tmp_result = ew_op_switch<op, LDType, RDType>(*reinterpret_cast<LDType*>(l_node->val),*reinterpret_cast<RDType*>(r_node->val));
 						
 						if (tmp_result != d_default) {
 							dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
@@ -1103,9 +1037,9 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 						dest_node = nm::list::insert_helper(dest, dest_node, index, new_level);
 					
 						ew_op_prime<op, LDType, RDType>(new_level, d_default,
-							reinterpret_cast<LIST*>(l_node->val), l_default,
-							reinterpret_cast<LIST*>(r_node->val), r_default,
-							shape, last_level, level + 1);
+                                            reinterpret_cast<LIST*>(l_node->val), l_default,
+                                            reinterpret_cast<LIST*>(r_node->val), r_default,
+                                            shape, last_level, level + 1);
 					}
 				
 					l_node = l_node->next;
