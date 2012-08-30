@@ -197,7 +197,6 @@ void nm_dense_storage_mark(void* storage_base) {
 void* nm_dense_storage_get(STORAGE* storage, SLICE* slice) {
   DENSE_STORAGE* s = (DENSE_STORAGE*)storage;
   DENSE_STORAGE* ns;
-  size_t count;
 
   if (slice->single)
     return (char*)(s->elements) + nm_dense_storage_pos(s, slice->coords) * DTYPE_SIZES[s->dtype];
@@ -218,8 +217,6 @@ void* nm_dense_storage_get(STORAGE* storage, SLICE* slice) {
     return ns;
   }
 }
-
-
 
 /*
  * Get a slice or one element by reference (no copy).

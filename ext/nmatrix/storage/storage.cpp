@@ -275,10 +275,21 @@ LIST_STORAGE* create_from_dense_storage(const DENSE_STORAGE* rhs, dtype_t l_dtyp
   LIST_STORAGE* lhs = nm_list_storage_create(l_dtype, shape, rhs->dim, l_default_val);
 
   size_t pos = 0;
-  list_storage::cast_copy_contents_dense<LDType,RDType>(lhs->rows,
-                                                        reinterpret_cast<const RDType*>(rhs->elements),
+
+  if (rhs->src == rhs)
+    list_storage::cast_copy_contents_dense<LDType,RDType>(lhs->rows,
+                                                          reinterpret_cast<const RDType*>(rhs->elements),
                                                         r_default_val,
                                                         pos, coords, rhs->shape, rhs->dim, rhs->dim - 1);
+  else {
+    DENSE_STORAGE* tmp = nm_dense_storage_copy(rhs);
+    list_storage::cast_copy_contents_dense<LDType,RDType>(lhs->rows,
+                                                          reinterpret_cast<const RDType*>(tmp->elements),
+                                                        r_default_val,
+                                                        pos, coords, rhs->shape, rhs->dim, rhs->dim - 1);
+
+    nm_dense_storage_delete(tmp);
+  }
 
   return lhs;
 }
