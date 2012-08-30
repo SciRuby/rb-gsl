@@ -203,15 +203,14 @@ describe "Slice operation" do
         n.should eql(NMatrix.new(stype, [2,2], [1,2,3,4]))
       end
 
-      if stype == :list
-      [:dense, :list].each do |cast_type|
+      cast_type = stype
+      # [:dense, :list].each do |cast_type|
         it "should be correct casting from #{stype.upcase} to #{cast_type.upcase}" do
           nm_eql(@m[1..2, 1..2].cast(cast_type, :int32), @m.slice(1..2,1..2)).should be_true
         end
-      end
+      # end
       end
     end
-  end
   end
 
   # Stupid but independent comparison

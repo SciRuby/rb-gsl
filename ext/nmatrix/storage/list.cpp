@@ -103,7 +103,7 @@ LIST_STORAGE* nm_list_storage_create(dtype_t dtype, size_t* shape, size_t dim, v
   s->dtype = dtype;
 
   s->offset = ALLOC_N(size_t, s->dim);
-  memset(s->offset, 0, s->dim * sizeof(s->dim));
+  memset(s->offset, 0, s->dim * sizeof(size_t));
 
   s->rows  = list::create();
   s->default_val = init_val;
@@ -179,7 +179,7 @@ NODE* list_storage_get_single_node(LIST_STORAGE* s, SLICE* slice)
 }
 
 
-static LIST* list_storage_slice_copy(const LIST_STORAGE *src, SLICE *slice, LIST *src_rows, size_t n)
+static LIST* slice_copy(const LIST_STORAGE *src, LIST *src_rows, size_t *coords, size_t *lengths, size_t n)
 {
   NODE *src_node;
   LIST *dst_rows = NULL;
@@ -188,13 +188,15 @@ static LIST* list_storage_slice_copy(const LIST_STORAGE *src, SLICE *slice, LIST
   dst_rows = list::create();
 
   if (src->dim - n > 1) {
-    for (size_t i = 0; i < slice->lengths[n]; i++) {
-      src_node = list::find(src_rows, src->offset[n] + slice->coords[n] + i);
+    for (size_t i = 0; i < lengths[n]; i++) {
+      src_node = list::find(src_rows, src->offset[n] + coords[n] + i);
       
       if (src_node && src_node->val) {
         
-        val = list_storage_slice_copy(src, slice, 
+        val = slice_copy(src,  
             reinterpret_cast<LIST*>(src_node->val), 
+            coords,
+            lengths,
             n + 1);  
 
         if (val) {
@@ -204,8 +206,8 @@ static LIST* list_storage_slice_copy(const LIST_STORAGE *src, SLICE *slice, LIST
     }
   }
   else {
-    for (size_t i = 0; i < slice->lengths[n]; i++) {
-      src_node = list::find(src_rows, src->offset[n] + slice->coords[n] + i);
+    for (size_t i = 0; i < lengths[n]; i++) {
+      src_node = list::find(src_rows, src->offset[n] + coords[n] + i);
 
       if (src_node && src_node->val) {
         list::insert_with_copy(dst_rows, i, src_node->val, DTYPE_SIZES[src->dtype]);
@@ -229,25 +231,15 @@ void* nm_list_storage_get(STORAGE* storage, SLICE* slice) {
     return (n ? n->val : s->default_val);
   } 
   else {
-    ns = ALLOC( LIST_STORAGE );
-    
-    ns->dim = s->dim;
-    ns->dtype = s->dtype;
-    ns->offset     = ALLOC_N(size_t, ns->dim);
-    ns->shape      = ALLOC_N(size_t, ns->dim);
+    void *init_val = ALLOC_N(char, DTYPE_SIZES[s->dtype]);
+    memcpy(init_val, s->default_val, DTYPE_SIZES[s->dtype]);
 
-    for (size_t i = 0; i < ns->dim; ++i) {
-      ns->offset[i] = 0; 
-      ns->shape[i]  = slice->lengths[i];
-    }
+    size_t *shape = ALLOC_N(size_t, s->dim);
+    memcpy(shape, slice->lengths, sizeof(size_t) * s->dim);
 
-    ns->default_val = ALLOC_N(char, DTYPE_SIZES[ns->dtype]);
-    memcpy(ns->default_val, s->default_val, DTYPE_SIZES[ns->dtype]);
+    ns = nm_list_storage_create(s->dtype, shape, s->dim, init_val);
     
-    ns->count = 1;
-    ns->src = ns;
-    
-    ns->rows = list_storage_slice_copy(s, slice, s->rows, 0);
+    ns->rows = slice_copy(s, s->rows, slice->coords, slice->lengths, 0);
     return ns;
   }
 }
@@ -532,31 +524,20 @@ static LIST_STORAGE* cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
   lhs->rows         = list::create();
 
   // TODO: Needs optimization. When matrix is reference it is copped twice.
-  if (rhs->src != rhs) {
-    SLICE *slice;
-    LIST_STORAGE* tmp;
-    size_t i;
-    
-    slice = ALLOC(SLICE);
-    slice->coords = ALLOC_N(size_t, rhs->dim);
-    slice->lengths = ALLOC_N(size_t, rhs->dim);
-    slice->single = false;
-
-    for (i = 0; i < rhs->dim; i++) {
-      slice->coords[i] = 0;
-      slice->lengths[i] = rhs->shape[i];
-    }
-    
-    tmp = (LIST_STORAGE*)nm_list_storage_get((STORAGE*)rhs, slice); 
-    list::cast_copy_contents<LDType, RDType>(lhs->rows, tmp->rows, rhs->dim - 1);
-
-    nm_list_storage_delete(tmp);
-    free(slice->coords);
-    free(slice->lengths);
-    free(slice);
-  }
-  else {
+  if (rhs->src == rhs) 
     list::cast_copy_contents<LDType, RDType>(lhs->rows, rhs->rows, rhs->dim - 1);
+  else {
+    size_t *tmp_shape = ALLOC_N(size_t, rhs->dim);
+    memcpy(tmp_shape, shape, sizeof(size_t) * rhs->dim);
+    
+    RDType *tmp_init_val = ALLOC_N(RDType, 1);
+    *tmp_init_val = *reinterpret_cast<RDType*>(rhs->default_val);
+
+    LIST_STORAGE* tmp = nm_list_storage_create(rhs->dtype, tmp_shape, rhs->dim, tmp_init_val);
+    
+    tmp->rows = slice_copy(rhs, rhs->rows, tmp->offset, tmp->shape, 0);
+    list::cast_copy_contents<LDType, RDType>(lhs->rows, tmp->rows, rhs->dim - 1);
+    nm_list_storage_delete(tmp);
   }
 
   return lhs;
