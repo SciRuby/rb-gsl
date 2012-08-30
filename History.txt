@@ -24,6 +24,8 @@
 
   * Element-wise operations on list matrices may alter the default value of the return matrix
 
+  * Element-wise division behaves like Ruby division
+
   * Improved MATLAB .MAT v5 file reading
 
   * clang support

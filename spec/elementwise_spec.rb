@@ -110,9 +110,11 @@ describe NMatrix do
         r.should == NMatrix.new(:dense, [2,2], [-4, -2, 0, 264], :int64)
       end
 
-      it "divides" do
-        r = @n/@m
-        r.should == NMatrix.new(:dense, [2,2], [0, -2, 1, 2], :int64)
+      it "divides in the Ruby way" do
+        m = @m.clone
+        m[1,0] = 3
+        r = @n/m
+        r.should == NMatrix.new(:dense, [2,2], [-1, -2, 1, 0], :int64)
       end
 
       it "modulo" do
