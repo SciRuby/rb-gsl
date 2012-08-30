@@ -477,9 +477,28 @@ size_t nm_list_storage_count_nd_elements(const LIST_STORAGE* s) {
 /////////////////////////
 // Copying and Casting //
 /////////////////////////
-
+//
 /*
  * List storage copy constructor C access.
+ */
+
+LIST_STORAGE* nm_list_storage_copy(const LIST_STORAGE* rhs)
+{
+  size_t *shape = ALLOC_N(size_t, rhs->dim);
+  memcpy(shape, rhs->shape, sizeof(size_t) * rhs->dim);
+  
+  void *init_val = ALLOC_N(char, DTYPE_SIZES[rhs->dtype]);
+  memcpy(init_val, rhs->default_val, DTYPE_SIZES[rhs->dtype]);
+
+  LIST_STORAGE* lhs = nm_list_storage_create(rhs->dtype, shape, rhs->dim, init_val);
+  
+  lhs->rows = slice_copy(rhs, rhs->rows, lhs->offset, lhs->shape, 0);
+
+  return lhs;
+}
+
+/*
+ * List storage copy constructor C access with casting.
  */
 STORAGE* nm_list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
   NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::cast_copy, LIST_STORAGE*, const LIST_STORAGE* rhs, dtype_t new_dtype);
@@ -527,15 +546,7 @@ static LIST_STORAGE* cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
   if (rhs->src == rhs) 
     list::cast_copy_contents<LDType, RDType>(lhs->rows, rhs->rows, rhs->dim - 1);
   else {
-    size_t *tmp_shape = ALLOC_N(size_t, rhs->dim);
-    memcpy(tmp_shape, shape, sizeof(size_t) * rhs->dim);
-    
-    RDType *tmp_init_val = ALLOC_N(RDType, 1);
-    *tmp_init_val = *reinterpret_cast<RDType*>(rhs->default_val);
-
-    LIST_STORAGE* tmp = nm_list_storage_create(rhs->dtype, tmp_shape, rhs->dim, tmp_init_val);
-    
-    tmp->rows = slice_copy(rhs, rhs->rows, tmp->offset, tmp->shape, 0);
+    LIST_STORAGE *tmp = nm_list_storage_copy(rhs);
     list::cast_copy_contents<LDType, RDType>(lhs->rows, tmp->rows, rhs->dim - 1);
     nm_list_storage_delete(tmp);
   }

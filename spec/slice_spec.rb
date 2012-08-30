@@ -219,7 +219,10 @@ describe "Slice operation" do
     else
       n.shape[0].times do |i|
         n.shape[1].times do |j|
-           return false unless n[i,j] == m[i,j]
+          if n[i,j] != m[i,j]
+            puts "n[#{i},#{j}] != m[#{i},#{j}] (#{n[i,j]} != #{m[i,j]})"
+            return false 
+          end
         end
       end
       true

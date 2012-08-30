@@ -106,10 +106,20 @@ DENSE_STORAGE* create_from_list_storage(const LIST_STORAGE* rhs, dtype_t l_dtype
 
 //static void dense_storage_cast_copy_list_contents_template(LDType* lhs, const LIST* rhs, RDType* default_val, size_t& pos, const size_t* shape, size_t dim, size_t max_elements, size_t recursions)
   // recursively copy the contents
-  cast_copy_list_contents<LDType,RDType>(reinterpret_cast<LDType*>(lhs->elements),
+  if (rhs->src == rhs)
+    cast_copy_list_contents<LDType,RDType>(reinterpret_cast<LDType*>(lhs->elements),
                                          rhs->rows,
                                          reinterpret_cast<RDType*>(rhs->default_val),
                                          pos, shape, lhs->dim, max_elements, rhs->dim-1);
+  else {
+    LIST_STORAGE *tmp = nm_list_storage_copy(rhs);
+    cast_copy_list_contents<LDType,RDType>(reinterpret_cast<LDType*>(lhs->elements),
+                                         tmp->rows,
+                                         reinterpret_cast<RDType*>(tmp->default_val),
+                                         pos, shape, lhs->dim, max_elements, tmp->dim-1);
+    nm_list_storage_delete(tmp);
+
+  }
 
   return lhs;
 }
