@@ -201,18 +201,10 @@ NODE* insert_after(NODE* node, size_t key, void* val) {
  */
 NODE* insert_with_copy(LIST *list, size_t key, void *val, size_t size)
 {
-  NODE* n;
+  void *copy_val = ALLOC_N(char, size);
+  memcpy(copy_val, val, size);
 
-  n = ALLOC(NODE);
-  n->val = ALLOC_N(char, size);
-
-  memcpy(n->val, val, size);
-  n->key = key;
-  n->next    = list->first;
-
-  list->first = n;
-
-  return n;
+  return insert(list, false, key, copy_val);
 }
 /*
  * Returns the value pointer (not the node) for some key. Note that it doesn't

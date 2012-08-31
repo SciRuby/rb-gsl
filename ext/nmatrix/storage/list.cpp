@@ -184,35 +184,29 @@ static LIST* slice_copy(const LIST_STORAGE *src, LIST *src_rows, size_t *coords,
   NODE *src_node;
   LIST *dst_rows = NULL;
   void *val = NULL;
+  size_t offset;
   
   dst_rows = list::create();
+  offset = src->offset[n] + coords[n];
+  src_node = src_rows->first;
 
-  if (src->dim - n > 1) {
-    for (size_t i = 0; i < lengths[n]; i++) {
-      src_node = list::find(src_rows, src->offset[n] + coords[n] + i);
+  while (src_node) {
+    if (src->dim - n > 1) {
+      val = slice_copy(src,  
+        reinterpret_cast<LIST*>(src_node->val), 
+        coords,
+        lengths,
+        n + 1);  
+
+      if (val) 
+        list::insert_with_copy(dst_rows, src_node->key - offset, val, sizeof(LIST));          
       
-      if (src_node && src_node->val) {
-        
-        val = slice_copy(src,  
-            reinterpret_cast<LIST*>(src_node->val), 
-            coords,
-            lengths,
-            n + 1);  
-
-        if (val) {
-          list::insert_with_copy(dst_rows, i, val, sizeof(LIST));          
-        }
-      }
     }
-  }
-  else {
-    for (size_t i = 0; i < lengths[n]; i++) {
-      src_node = list::find(src_rows, src->offset[n] + coords[n] + i);
-
-      if (src_node && src_node->val) {
-        list::insert_with_copy(dst_rows, i, src_node->val, DTYPE_SIZES[src->dtype]);
-      }
+    else {
+      list::insert_with_copy(dst_rows, src_node->key - offset, src_node->val, DTYPE_SIZES[src->dtype]);
     }
+
+    src_node = src_node->next;
   }
 
   return dst_rows;
