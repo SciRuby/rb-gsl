@@ -35,7 +35,7 @@ describe NMatrix::BLAS do
         a = NMatrix.new(:dense, 3, [5,4,-1,0,10,-3,0,0,1], dtype)
         b = NVector.new(3, [0,11,3], dtype)
         alpha = 1
-        NMatrix::BLAS::cblas_trsm(:left, :upper, :no_transpose, :nonunit, b.shape[0], b.shape[1], alpha, a, 3, b, 1)
+        NMatrix::BLAS::cblas_trsm(:row, :left, :upper, :no_transpose, :nonunit, b.shape[0], b.shape[1], alpha, a, 3, b, 1)
         b[0].should == -1
         b[1].should == 2
         b[2].should == 3

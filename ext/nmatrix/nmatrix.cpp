@@ -31,6 +31,11 @@
  * Standard Includes
  */
 
+
+extern "C" {
+  #include <clapack.h>
+}
+
 #include <ruby.h>
 #include <algorithm> // std::min
 
@@ -936,11 +941,20 @@ static VALUE nm_factorize_lu_bang(VALUE self) {
     rb_raise(rb_eNotImpError, "matrix is not 2-dimensional");
   }
 
-  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::clapack_getrf, bool, const int m, const int n, void* a, const int lda, int* ipiv);
+  static int (*ttable[nm::NUM_DTYPES])(const enum CBLAS_ORDER, const int m, const int n, void* a, const int lda, int* ipiv) = {
+      NULL, NULL, NULL, NULL, NULL, // integers not allowed due to division
+      nm::math::clapack_getrf<float>,
+      nm::math::clapack_getrf<double>,
+      clapack_cgetrf, clapack_zgetrf, // call directly, same function signature!
+      nm::math::clapack_getrf<nm::Rational32>,
+      nm::math::clapack_getrf<nm::Rational64>,
+      nm::math::clapack_getrf<nm::Rational128>,
+      nm::math::clapack_getrf<nm::RubyObject>
+  };
 
   int* ipiv = ALLOCA_N(int, std::min(NM_SHAPE0(self), NM_SHAPE1(self)));
 
-  bool result = ttable[NM_DTYPE(self)](NM_SHAPE0(self), NM_SHAPE1(self), NM_STORAGE_DENSE(self)->elements, NM_SHAPE1(self), ipiv) ? Qtrue : Qfalse;
+  ttable[NM_DTYPE(self)](CblasRowMajor, NM_SHAPE0(self), NM_SHAPE1(self), NM_STORAGE_DENSE(self)->elements, NM_SHAPE1(self), ipiv);
 
   return self;
 }

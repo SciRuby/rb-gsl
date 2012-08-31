@@ -653,26 +653,21 @@ static DENSE_STORAGE* matrix_multiply(const STORAGE_PAIR& casted_storage, size_t
   // Create result storage.
   DENSE_STORAGE* result = nm_dense_storage_create(left->dtype, resulting_shape, 2, NULL, 0);
 
-  DType *pAlpha = new DType(1),
-        *pBeta  = new DType(0);
+  DType *pAlpha = ALLOCA_N(DType, 1),
+        *pBeta  = ALLOCA_N(DType, 1);
 
+  *pAlpha = 1;
+  *pBeta = 0;
   // Do the multiplication
-  bool succ;
 
-  if (vector) succ = nm::math::gemv<DType>(CblasNoTrans, left->shape[0], left->shape[1], pAlpha,
-                                           reinterpret_cast<DType*>(left->elements), left->shape[1],
-                                           reinterpret_cast<DType*>(right->elements), 1, pBeta,
-                                           reinterpret_cast<DType*>(result->elements), 1);
-  else        succ = nm::math::gemm<DType>(CblasNoTrans, CblasNoTrans, right->shape[1], left->shape[0], left->shape[1], pAlpha,
-                                           reinterpret_cast<DType*>(right->elements), right->shape[1],
-                                           reinterpret_cast<DType*>(left->elements), left->shape[1], pBeta,
-                                           reinterpret_cast<DType*>(result->elements), result->shape[1]);
-
-  delete pAlpha;
-  delete pBeta;
-
-  if (!succ)
-    rb_raise(rb_eStandardError, "gemm/gemv failed for an unknown reason");
+  if (vector) nm::math::gemv<DType>(CblasNoTrans, left->shape[0], left->shape[1], pAlpha,
+                                    reinterpret_cast<DType*>(left->elements), left->shape[1],
+                                    reinterpret_cast<DType*>(right->elements), 1, pBeta,
+                                    reinterpret_cast<DType*>(result->elements), 1);
+  else        nm::math::gemm<DType>(CblasRowMajor, CblasNoTrans, CblasNoTrans, left->shape[0], right->shape[1], left->shape[1],
+                                    pAlpha, reinterpret_cast<DType*>(left->elements), left->shape[1],
+                                    reinterpret_cast<DType*>(right->elements), right->shape[1], pBeta,
+                                    reinterpret_cast<DType*>(result->elements), result->shape[1]);
 
   return result;
 }

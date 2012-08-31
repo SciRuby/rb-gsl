@@ -102,7 +102,7 @@ class RubyObject {
 	// there is no uint32_t here because that's a Ruby VALUE type, and we need the compiler to treat that as a VALUE.
 	inline RubyObject(int64_t other)  : rval(INT2FIX(other)) {}
 	inline RubyObject(uint64_t other) : rval(INT2FIX(other)) {}
-	
+
 	/*
 	 * Float constructor.
 	 *
@@ -115,7 +115,21 @@ class RubyObject {
 	 * Copy constructors.
 	 */
 	inline RubyObject(const RubyObject& other) : rval(other.rval) {}
-	
+
+  /*
+   * Inverse operator.
+   */
+	inline RubyObject inverse() const {
+	  rb_raise(rb_eNotImpError, "RubyObject#inverse needs to be implemented");
+	}
+
+	/*
+	 * Absolute value.
+	 */
+	inline RubyObject abs() const {
+	  return RubyObject(rb_funcall(this->rval, rb_intern("abs"), 0));
+	}
+
 	/*
 	 * Binary operator definitions.
 	 */
@@ -417,5 +431,11 @@ inline bool operator>(const Rational<IntType>& left, const RubyObject& right) {
 }
 
 } // end of namespace nm
+
+namespace std {
+  inline nm::RubyObject abs(const nm::RubyObject& obj) {
+    return obj.abs();
+  }
+}
 
 #endif // RUBY_OBJECT_H
