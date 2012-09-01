@@ -184,26 +184,30 @@ static LIST* slice_copy(const LIST_STORAGE *src, LIST *src_rows, size_t *coords,
   NODE *src_node;
   LIST *dst_rows = NULL;
   void *val = NULL;
-  size_t offset;
+  size_t offset, key;
   
   dst_rows = list::create();
   offset = src->offset[n] + coords[n];
   src_node = src_rows->first;
 
   while (src_node) {
-    if (src->dim - n > 1) {
-      val = slice_copy(src,  
-        reinterpret_cast<LIST*>(src_node->val), 
-        coords,
-        lengths,
-        n + 1);  
+    key = src_node->key - offset;
+    
+    if (key >= 0) {
+      if (src->dim - n > 1) {
+        val = slice_copy(src,  
+          reinterpret_cast<LIST*>(src_node->val), 
+          coords,
+          lengths,
+          n + 1);  
 
-      if (val) 
-        list::insert_with_copy(dst_rows, src_node->key - offset, val, sizeof(LIST));          
-      
-    }
-    else {
-      list::insert_with_copy(dst_rows, src_node->key - offset, src_node->val, DTYPE_SIZES[src->dtype]);
+        if (val) 
+          list::insert_with_copy(dst_rows, key, val, sizeof(LIST));          
+        
+      }
+      else {
+        list::insert_with_copy(dst_rows, key, src_node->val, DTYPE_SIZES[src->dtype]);
+      }
     }
 
     src_node = src_node->next;
