@@ -457,13 +457,15 @@ namespace yale_storage { // FIXME: Move to yale.cpp
    */
   template <typename LDType, typename RDType, typename LIType>
   YALE_STORAGE* create_from_dense_storage(const DENSE_STORAGE* rhs, dtype_t l_dtype) {
-    LIType pos = 0, ndnz = 0;
+    if (rhs->dim != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of dim 2 to yale");
+
+    LIType pos = 0;
+    LIType ndnz = 0;
 
     RDType R_ZERO; // need zero for easier comparisons
     if (rhs->dtype == RUBYOBJ)  R_ZERO = INT2FIX(0);
     else                        R_ZERO = 0;
 
-    if (rhs->dim != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of dim 2 to yale");
 
     RDType* rhs_elements = reinterpret_cast<RDType*>(rhs->elements);
 
@@ -500,7 +502,8 @@ namespace yale_storage { // FIXME: Move to yale.cpp
       // indicate the beginning of a row in the IJA array
       lhs_ija[i] = ija;
 
-      for (LIType j = 0; j < rhs->shape[1]; ++j) {
+      for (LIType j = 0; j < rhs->shape[1];  ++j) {
+        pos = rhs->stride[0] * (rhs->offset[0] + i) + rhs->stride[1] * (rhs->offset[1] + j);
 
         if (i == j) { // copy to diagonal
           lhs_a[i] = rhs_elements[pos];
@@ -511,8 +514,8 @@ namespace yale_storage { // FIXME: Move to yale.cpp
 
           ++ija;
         }
-        ++pos;
       }
+      
     }
     lhs_ija[i] = ija; // indicate the end of the last row
 
