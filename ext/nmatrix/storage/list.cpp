@@ -720,25 +720,6 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 		} else {
 			// At least one list still has entries.
 
-			if (l_node == NULL and (l_default == 0 and d_default == 0)) {
-				/*
-				 * The left hand list has run out of elements.  We don't need to add new
-				 * values to the destination if l_default and d_default are both 0.
-				 */
-
-				return;
-
-			} else if (r_node == NULL and (r_default == 0 and d_default == 0)) {
-				/*
-				 * The right hand list has run out of elements.  We don't need to add new
-				 * values to the destination if r_default and d_default are both 0.
-				 */
-
-				return;
-			}
-
-			// We need to continue processing the lists.
-
 			if (l_node == NULL and r_node->key == index) {
 				/*
 				 * One source list is empty, but the index has caught up to the key of
@@ -772,7 +753,7 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 							break;
 
             default:
-              rb_raise(rb_eStandardError, "this should not happen");
+              rb_raise(rb_eStandardError, "This should not happen.");
 					}
 
 					if (tmp_result != d_default) {

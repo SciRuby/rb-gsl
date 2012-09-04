@@ -64,11 +64,11 @@ describe NMatrix do
     it "modulo"
 
     it "equals" do
-      (@n =~ @m).should == NMatrix.new(:list, 2, 0, :byte)
+      (@n =~ @m).cast(:dense, :byte).should == NMatrix.new(:dense, 2, [0, 1, 1, 0], :byte)
     end
 
     it "is not equal to" do
-      (@n !~ @m).should == NMatrix.new(:list, 2, 1, :byte)
+      (@n !~ @m).cast(:dense, :byte).should == NMatrix.new(:dense, 2, [1, 0, 0, 1], :byte)
     end
 
     it "is less than" do
@@ -80,11 +80,11 @@ describe NMatrix do
     end
 
     it "is greater than or equal to" do
-      (@n >= @m).should == NMatrix.new(:dense, 2, [1, 1, 1, 1], :byte).cast(:list, :byte)
+      (@n >= @m).cast(:dense, :byte).should == NMatrix.new(:dense, 2, [1, 1, 1, 1], :byte)
     end
 
     it "is less than or equal to" do
-      (@n <= @m).should == NMatrix.new(:dense, 2, [0, 1, 1, 0], :byte).cast(:list, :byte)
+      (@n <= @m).cast(:dense, :byte).should == NMatrix.new(:dense, 2, [0, 1, 1, 0], :byte)
     end
   end
 
