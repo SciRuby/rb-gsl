@@ -83,9 +83,29 @@ class Complex {
 
 	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
 	inline Complex(const Rational<IntType>& other) : r(Type(other.n) / Type(other.d)), i(0) {}
-	
+
+  /*
+   * Complex conjugate function -- creates a copy, but inverted.
+   */
+  inline Complex<Type> conjugate() const {
+    Complex<Type>(this->r, -(this->i));
+  }
+
+  /*
+   * Complex inverse function -- creates a copy, but inverted.
+   *
+   * FIXME: Check that this doesn't duplicate functionality of NativeType / Complex<Type>
+   */
+  inline Complex<Type> inverse() const {
+    Complex<Type> conj = conjugate();
+    Type denom = this->r * this->r + this->i * this->i;
+    return Complex<Type>(conj.r / denom, conj.i / denom);
+  }
+
+
+
 	/*
-	 * Binary operator definitions for varous types.
+	 * Binary operator definitions for various types.
 	 */
 	
 	////////////////////////////////

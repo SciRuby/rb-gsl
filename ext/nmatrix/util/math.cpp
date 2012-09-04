@@ -106,6 +106,8 @@
 //
 // 10. Pull request!
 
+
+
 /*
  * Project Includes
  */
@@ -121,17 +123,18 @@
  */
 
 extern "C" {
+  #include <clapack.h>
 
-  static VALUE nm_cblas_gemm(VALUE self, VALUE trans_a, VALUE trans_b, VALUE m, VALUE n, VALUE k, VALUE vAlpha,
+  static VALUE nm_cblas_gemm(VALUE self, VALUE order, VALUE trans_a, VALUE trans_b, VALUE m, VALUE n, VALUE k, VALUE vAlpha,
                              VALUE a, VALUE lda, VALUE b, VALUE ldb, VALUE vBeta, VALUE c, VALUE ldc);
 
   static VALUE nm_cblas_gemv(VALUE self, VALUE trans_a, VALUE m, VALUE n, VALUE vAlpha, VALUE a, VALUE lda,
                              VALUE x, VALUE incx, VALUE vBeta, VALUE y, VALUE incy);
 
-  static VALUE nm_cblas_trsm(VALUE self, VALUE side, VALUE uplo, VALUE trans_a, VALUE diag, VALUE m, VALUE n,
+  static VALUE nm_cblas_trsm(VALUE self, VALUE order, VALUE side, VALUE uplo, VALUE trans_a, VALUE diag, VALUE m, VALUE n,
                              VALUE vAlpha, VALUE a, VALUE lda, VALUE b, VALUE ldb);
 
-  static VALUE nm_clapack_getrf(VALUE self, VALUE m, VALUE n, VALUE a, VALUE lda);
+  static VALUE nm_clapack_getrf(VALUE self, VALUE order, VALUE m, VALUE n, VALUE a, VALUE lda);
 
   static VALUE nm_clapack_scal(VALUE self, VALUE n, VALUE scale, VALUE vector, VALUE incx);
 
@@ -179,7 +182,8 @@ void det_exact(const int M, const void* A_elements, const int lda, void* result_
  * For documentation: http://www.netlib.org/blas/dgemm.f
  */
 template <typename DType>
-inline static bool cblas_gemm(const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b,
+inline static void cblas_gemm(const enum CBLAS_ORDER order,
+                              const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b,
                               int m, int n, int k,
                               void* alpha,
                               void* a, int lda,
@@ -187,10 +191,10 @@ inline static bool cblas_gemm(const enum CBLAS_TRANSPOSE trans_a, const enum CBL
                               void* beta,
                               void* c, int ldc)
 {
-  return  gemm<DType>(trans_a, trans_b, n, m, k, reinterpret_cast<DType*>(alpha),
-                      reinterpret_cast<DType*>(b), ldb,
-                      reinterpret_cast<DType*>(a), lda, reinterpret_cast<DType*>(beta),
-                      reinterpret_cast<DType*>(c), ldc);
+  gemm<DType>(order, trans_a, trans_b, m, n, k, reinterpret_cast<DType*>(alpha),
+              reinterpret_cast<DType*>(a), lda,
+              reinterpret_cast<DType*>(b), ldb, reinterpret_cast<DType*>(beta),
+              reinterpret_cast<DType*>(c), ldc);
 }
 
 
@@ -232,6 +236,7 @@ inline static void cblas_trsm(const enum CBLAS_ORDER order, const enum CBLAS_SID
 }
 
 
+
 }} // end of namespace nm::math
 
 
@@ -244,14 +249,14 @@ extern "C" {
 void nm_math_init_blas() {
 	cNMatrix_LAPACK = rb_define_module_under(cNMatrix, "LAPACK");
 
-  rb_define_singleton_method(cNMatrix_LAPACK, "clapack_getrf", (METHOD)nm_clapack_getrf, 4);
+  rb_define_singleton_method(cNMatrix_LAPACK, "clapack_getrf", (METHOD)nm_clapack_getrf, 5);
   rb_define_singleton_method(cNMatrix_LAPACK, "clapack_scal", (METHOD)nm_clapack_scal, 4);
 
   cNMatrix_BLAS = rb_define_module_under(cNMatrix, "BLAS");
 
-	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 13);
+	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 14);
 	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
-	rb_define_singleton_method(cNMatrix_BLAS, "cblas_trsm", (METHOD)nm_cblas_trsm, 11);
+	rb_define_singleton_method(cNMatrix_BLAS, "cblas_trsm", (METHOD)nm_cblas_trsm, 12);
 }
 
 
@@ -306,6 +311,17 @@ static inline enum CBLAS_DIAG blas_diag_sym(VALUE op) {
   return CblasNonUnit;
 }
 
+/*
+ * Interprets cblas argument which could be :row or :col
+ */
+static inline enum CBLAS_ORDER blas_order_sym(VALUE op) {
+  if (rb_to_id(op) == rb_intern("row") || rb_to_id(op) == rb_intern("row_major")) return CblasRowMajor;
+  else if (rb_to_id(op) == rb_intern("col") || rb_to_id(op) == rb_intern("col_major") ||
+           rb_to_id(op) == rb_intern("column") || rb_to_id(op) == rb_intern("column_major")) return CblasColMajor;
+  rb_raise(rb_eArgError, "Expected :row or :col for order argument");
+  return CblasRowMajor;
+}
+
 
 /* Call any of the cblas_xgemm functions as directly as possible.
  *
@@ -329,6 +345,7 @@ static inline enum CBLAS_DIAG blas_diag_sym(VALUE op) {
  * handling, so you can easily crash Ruby!
  */
 static VALUE nm_cblas_gemm(VALUE self,
+                           VALUE order,
                            VALUE trans_a, VALUE trans_b,
                            VALUE m, VALUE n, VALUE k,
                            VALUE alpha,
@@ -337,7 +354,7 @@ static VALUE nm_cblas_gemm(VALUE self,
                            VALUE beta,
                            VALUE c, VALUE ldc)
 {
-  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemm, bool, const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b, int m, int n, int k, void* alpha, void* a, int lda, void* b, int ldb, void* beta, void* c, int ldc);
+  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemm, void, const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b, int m, int n, int k, void* alpha, void* a, int lda, void* b, int ldb, void* beta, void* c, int ldc);
 
   dtype_t dtype = NM_DTYPE(a);
 
@@ -346,7 +363,9 @@ static VALUE nm_cblas_gemm(VALUE self,
   rubyval_to_cval(alpha, dtype, pAlpha);
   rubyval_to_cval(beta, dtype, pBeta);
 
-  return ttable[dtype](blas_transpose_sym(trans_a), blas_transpose_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb), pBeta, NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc)) ? Qtrue : Qfalse;
+  ttable[dtype](blas_order_sym(order), blas_transpose_sym(trans_a), blas_transpose_sym(trans_b), FIX2INT(m), FIX2INT(n), FIX2INT(k), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb), pBeta, NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc));
+
+  return c;
 }
 
 
@@ -394,6 +413,7 @@ static VALUE nm_cblas_gemv(VALUE self,
 
 
 static VALUE nm_cblas_trsm(VALUE self,
+                           VALUE order,
                            VALUE side, VALUE uplo,
                            VALUE trans_a, VALUE diag,
                            VALUE m, VALUE n,
@@ -420,7 +440,7 @@ static VALUE nm_cblas_trsm(VALUE self,
   void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]);
   rubyval_to_cval(alpha, dtype, pAlpha);
 
-  ttable[dtype](CblasRowMajor, blas_side_sym(side), blas_uplo_sym(uplo), blas_transpose_sym(trans_a), blas_diag_sym(diag), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb));
+  ttable[dtype](blas_order_sym(order), blas_side_sym(side), blas_uplo_sym(uplo), blas_transpose_sym(trans_a), blas_diag_sym(diag), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb));
 
   return Qtrue;
 }
@@ -469,8 +489,17 @@ static VALUE nm_clapack_scal(VALUE self, VALUE n, VALUE scale, VALUE vector, VAL
  *
  * Returns an array giving the pivot indices (normally these are argument #5).
  */
-static VALUE nm_clapack_getrf(VALUE self, VALUE m, VALUE n, VALUE a, VALUE lda) {
-  NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::clapack_getrf, bool, const int m, const int n, void* a, const int lda, int* ipiv);
+static VALUE nm_clapack_getrf(VALUE self, VALUE order, VALUE m, VALUE n, VALUE a, VALUE lda) {
+  static int (*ttable[nm::NUM_DTYPES])(const enum CBLAS_ORDER, const int m, const int n, void* a, const int lda, int* ipiv) = {
+      NULL, NULL, NULL, NULL, NULL, // integers not allowed due to division
+      nm::math::clapack_getrf<float>,
+      nm::math::clapack_getrf<double>,
+      clapack_cgetrf, clapack_zgetrf, // call directly, same function signature!
+      nm::math::clapack_getrf<nm::Rational32>,
+      nm::math::clapack_getrf<nm::Rational64>,
+      nm::math::clapack_getrf<nm::Rational128>,
+      nm::math::clapack_getrf<nm::RubyObject>
+  };
 
   int M = FIX2INT(m),
       N = FIX2INT(n);
@@ -480,7 +509,7 @@ static VALUE nm_clapack_getrf(VALUE self, VALUE m, VALUE n, VALUE a, VALUE lda) 
   int* ipiv = ALLOCA_N(int, ipiv_size);
 
   // Call either our version of getrf or the LAPACK version.
-  ttable[NM_DTYPE(a)](FIX2INT(m), FIX2INT(n), NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), ipiv);
+  ttable[NM_DTYPE(a)](blas_order_sym(order), M, N, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), ipiv);
 
   // Result will be stored in a. We return ipiv as an array.
   VALUE ipiv_array = rb_ary_new2(ipiv_size);
