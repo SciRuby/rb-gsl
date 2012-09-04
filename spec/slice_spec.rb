@@ -60,7 +60,7 @@ describe "Slice operation" do
     context "with copying" do
       it 'should return an NMatrix' do
         n = @m.slice(0..1,0..1)
-        n.should == NMatrix.new([2,2], [0,1,3,4], :int32)
+        nm_eql(n, NMatrix.new([2,2], [0,1,3,4], :int32)).should be_true
       end
 
       it 'should return a copy of 2x2 matrix to self elements' do
@@ -99,7 +99,7 @@ describe "Slice operation" do
     context "by reference" do
       it 'should return an NMatrix' do
         n = @m[0..1,0..1]
-        n.should == NMatrix.new([2,2], [0,1,3,4], :int32)
+        nm_eql(n, NMatrix.new([2,2], [0,1,3,4], :int32)).should be_true
       end
 
       it 'should return a 2x2 matrix with refs to self elements' do
@@ -133,9 +133,7 @@ describe "Slice operation" do
 
       it 'should slice again' do
         n = @m[1..2, 1..2]
-
-        n[1,0..1].should == NMatrix.new([1,2], [7,8])
-        n.slice(1,0..1).should == NMatrix.new([1,2], [7,8])
+        nm_eql(n[1,0..1], NMatrix.new([1,2], [7,8])).should be_true
       end
 
       it 'should be correct slice for range 0..2 and 0...3' do
@@ -203,7 +201,30 @@ describe "Slice operation" do
         GC.start
         n.should == NMatrix.new(:dense, [2,2], [1,2,3,4]).cast(stype, :int32)
       end
+
+      [:dense, :list, :yale].each do |cast_type|
+        it "should cast from #{stype.upcase} to #{cast_type.upcase}" do
+          nm_eql(@m[1..2, 1..2].cast(cast_type, :int32), @m[1..2,1..2]).should be_true
+        end
+      end
+      end
     end
   end
+
+  # Stupid but independent comparison
+  def nm_eql(n, m)
+    if n.shape != m.shape
+      false
+    else
+      n.shape[0].times do |i|
+        n.shape[1].times do |j|
+          if n[i,j] != m[i,j]
+            puts "n[#{i},#{j}] != m[#{i},#{j}] (#{n[i,j]} != #{m[i,j]})"
+            return false 
+          end
+        end
+      end
+      true
+    end 
   end
 end

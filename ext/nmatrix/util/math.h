@@ -477,6 +477,7 @@ inline void laswp(const int N, DType* A, const int lda, const int K1, const int 
         else          KeepOn = (--i >= i2);
 
       } while (KeepOn);
+      A += incA;
     } while (--nb);
   }
 

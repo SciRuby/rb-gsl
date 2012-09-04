@@ -44,9 +44,6 @@
 /*
  * Macros
  */
-#ifndef NM_CHECK_ALLOC
-#define NM_CHECK_ALLOC(x) if (!x) rb_raise(rb_eNoMemError, "insufficient memory");
-#endif
 
 /*
  * Global Variables
@@ -106,8 +103,6 @@ DENSE_STORAGE* nm_dense_storage_create(dtype_t dtype, size_t* shape, size_t dim,
   s->dtype      = dtype;
 
   s->offset     = ALLOC_N(size_t, dim);
-  NM_CHECK_ALLOC(s->offset);
-
   memset(s->offset, 0, sizeof(size_t)*dim);
 
   s->stride     = stride(shape, dim);
@@ -121,7 +116,6 @@ DENSE_STORAGE* nm_dense_storage_create(dtype_t dtype, size_t* shape, size_t dim,
   	
   } else {
     s->elements = ALLOC_N(char, DTYPE_SIZES[dtype]*count);
-    NM_CHECK_ALLOC(s->elements);
 
     size_t copy_length = elements_length;
 
@@ -202,44 +196,26 @@ void nm_dense_storage_mark(void* storage_base) {
 void* nm_dense_storage_get(STORAGE* storage, SLICE* slice) {
   DENSE_STORAGE* s = (DENSE_STORAGE*)storage;
   DENSE_STORAGE* ns;
-  size_t count;
 
   if (slice->single)
     return (char*)(s->elements) + nm_dense_storage_pos(s, slice->coords) * DTYPE_SIZES[s->dtype];
   else { // Make references
-    ns = ALLOC( DENSE_STORAGE );
-
-    NM_CHECK_ALLOC(ns);
-
-    ns->dim        = s->dim;
-    ns->dtype      = s->dtype;
-
-    ns->offset     = ALLOC_N(size_t, ns->dim);
-    NM_CHECK_ALLOC(ns->offset);
-
-    ns->shape      = ALLOC_N(size_t, ns->dim);
-    NM_CHECK_ALLOC(ns->shape);
-
-    for (size_t i = 0; i < ns->dim; ++i) {
-      ns->offset[i] = 0;
-      ns->shape[i]  = slice->lengths[i];
+    size_t *shape      = ALLOC_N(size_t, s->dim);
+    for (size_t i = 0; i < s->dim; ++i) {
+      shape[i]  = slice->lengths[i];
     }
 
-    ns->stride     = stride(ns->shape, ns->dim);
-    ns->count      = 1;
-    ns->src        = ns;
+    ns = nm_dense_storage_create(s->dtype, shape, s->dim, NULL, 0); 
 
-    count          = nm_storage_count_max_elements(s);
-
-    ns->elements   = ALLOC_N(char, DTYPE_SIZES[ns->dtype] * count);
-    NM_CHECK_ALLOC(ns->elements);
-
-    slice_copy(ns, s, slice->lengths, 0, nm_dense_storage_pos(s, slice->coords), 0);
+    slice_copy(ns, 
+        reinterpret_cast<const DENSE_STORAGE*>(s->src), 
+        slice->lengths, 
+        0, 
+        nm_dense_storage_pos(s, slice->coords), 
+        0);
     return ns;
   }
 }
-
-
 
 /*
  * Get a slice or one element by reference (no copy).
@@ -254,16 +230,10 @@ void* nm_dense_storage_ref(STORAGE* storage, SLICE* slice) {
     
   else {
     DENSE_STORAGE* ns = ALLOC( DENSE_STORAGE );
-    NM_CHECK_ALLOC(ns);
-
     ns->dim        = s->dim;
     ns->dtype      = s->dtype;
-
     ns->offset     = ALLOC_N(size_t, ns->dim);
-    NM_CHECK_ALLOC(ns->offset);
-
     ns->shape      = ALLOC_N(size_t, ns->dim);
-    NM_CHECK_ALLOC(ns->shape);
 
     for (size_t i = 0; i < ns->dim; ++i) {
       ns->offset[i] = slice->coords[i] + s->offset[i];
@@ -377,8 +347,6 @@ static size_t* stride(size_t* shape, size_t dim) {
   size_t i, j;
   size_t* stride = ALLOC_N(size_t, dim);
 
-  NM_CHECK_ALLOC(stride);
-
   for (i = 0; i < dim; ++i) {
     stride[i] = 1;
     for (j = i+1; j < dim; ++j) {
@@ -425,10 +393,8 @@ STORAGE* nm_dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
  * Copy dense storage without a change in dtype.
  */
 DENSE_STORAGE* nm_dense_storage_copy(const DENSE_STORAGE* rhs) {
-  size_t  count = nm_storage_count_max_elements(rhs);
+  size_t  count = 0;  
   size_t *shape  = ALLOC_N(size_t, rhs->dim);
-
-  NM_CHECK_ALLOC(shape);
 
   // copy shape and offset
   for (size_t i = 0; i < rhs->dim; ++i) {
@@ -436,18 +402,24 @@ DENSE_STORAGE* nm_dense_storage_copy(const DENSE_STORAGE* rhs) {
   }
 
   DENSE_STORAGE* lhs = nm_dense_storage_create(rhs->dtype, shape, rhs->dim, NULL, 0);
+  count = nm_storage_count_max_elements(lhs);
+
 
 	// Ensure that allocation worked before copying.
   if (lhs && count) {
     if (rhs == rhs->src) // not a reference
       memcpy(lhs->elements, rhs->elements, DTYPE_SIZES[rhs->dtype] * count);
-    else // slice whole matrix
+    else { // slice whole matrix
+      size_t *offset = ALLOC_N(size_t, rhs->dim);
+      memset(offset, 0, sizeof(size_t) * rhs->dim);
+
       slice_copy(lhs,
            reinterpret_cast<const DENSE_STORAGE*>(rhs->src),
            rhs->shape,
            0,
-           nm_dense_storage_pos(reinterpret_cast<const DENSE_STORAGE*>(rhs->src), rhs->offset),
+           nm_dense_storage_pos(rhs, offset),
            0);
+    }
   }
 
   return lhs;
@@ -463,8 +435,6 @@ STORAGE* nm_dense_storage_copy_transposed(const STORAGE* rhs_base) {
   DENSE_STORAGE* rhs = (DENSE_STORAGE*)rhs_base;
 
   size_t *shape = ALLOC_N(size_t, rhs->dim);
-
-  NM_CHECK_ALLOC(shape);
 
   // swap shape and offset
   shape[0] = rhs->shape[1];
@@ -492,13 +462,9 @@ DENSE_STORAGE* cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
   size_t  count = nm_storage_count_max_elements(rhs);
 
   size_t *shape = ALLOC_N(size_t, rhs->dim);
-
-  NM_CHECK_ALLOC(shape); // presumably we couldn't allocate offset if shape allocation failed.
-
   memcpy(shape, rhs->shape, sizeof(size_t) * rhs->dim);
 
   DENSE_STORAGE* lhs			= nm_dense_storage_create(new_dtype, shape, rhs->dim, NULL, 0);
-  memcpy(lhs->offset, rhs->offset, sizeof(size_t) * rhs->dim);
 
   RDType*	rhs_els         = reinterpret_cast<RDType*>(rhs->elements);
   LDType* lhs_els	        = reinterpret_cast<LDType*>(lhs->elements);
@@ -509,10 +475,11 @@ DENSE_STORAGE* cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
       /* Make a copy of a ref to a matrix. */
 
       DENSE_STORAGE* tmp = nm_dense_storage_copy(rhs);
-      NM_CHECK_ALLOC(tmp);
 
       RDType* tmp_els    = reinterpret_cast<RDType*>(tmp->elements);
-      while (count-- > 0)         lhs_els[count] = tmp_els[count];
+      while (count-- > 0)   {
+        lhs_els[count] = tmp_els[count];
+      }
       nm_dense_storage_delete(tmp);
     } else {
       /* Make a regular copy. */

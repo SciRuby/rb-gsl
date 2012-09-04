@@ -182,38 +182,38 @@ NODE* list_storage_get_single_node(LIST_STORAGE* s, SLICE* slice)
 }
 
 
-static LIST* list_storage_slice_copy(const LIST_STORAGE *src, SLICE *slice, LIST *src_rows, size_t n)
+static LIST* slice_copy(const LIST_STORAGE *src, LIST *src_rows, size_t *coords, size_t *lengths, size_t n)
 {
   NODE *src_node;
   LIST *dst_rows = NULL;
   void *val = NULL;
+  size_t offset, key;
   
   dst_rows = list::create();
+  offset = src->offset[n] + coords[n];
+  src_node = src_rows->first;
 
-  if (src->dim - n > 1) {
-    for (size_t i = 0; i < slice->lengths[n]; i++) {
-      src_node = list::find(src_rows, src->offset[n] + slice->coords[n] + i);
-      
-      if (src_node && src_node->val) {
+  while (src_node) {
+    key = src_node->key - offset;
+    
+    if (key >= 0) {
+      if (src->dim - n > 1) {
+        val = slice_copy(src,  
+          reinterpret_cast<LIST*>(src_node->val), 
+          coords,
+          lengths,
+          n + 1);  
+
+        if (val) 
+          list::insert_with_copy(dst_rows, key, val, sizeof(LIST));          
         
-        val = list_storage_slice_copy(src, slice, 
-            reinterpret_cast<LIST*>(src_node->val), 
-            n + 1);  
-
-        if (val) {
-          list::insert_with_copy(dst_rows, i, val, sizeof(LIST));          
-        }
+      }
+      else {
+        list::insert_with_copy(dst_rows, key, src_node->val, DTYPE_SIZES[src->dtype]);
       }
     }
-  }
-  else {
-    for (size_t i = 0; i < slice->lengths[n]; i++) {
-      src_node = list::find(src_rows, src->offset[n] + slice->coords[n] + i);
 
-      if (src_node && src_node->val) {
-        list::insert_with_copy(dst_rows, i, src_node->val, DTYPE_SIZES[src->dtype]);
-      }
-    }
+    src_node = src_node->next;
   }
 
   return dst_rows;
@@ -232,25 +232,15 @@ void* nm_list_storage_get(STORAGE* storage, SLICE* slice) {
     return (n ? n->val : s->default_val);
   } 
   else {
-    ns = ALLOC( LIST_STORAGE );
-    
-    ns->dim = s->dim;
-    ns->dtype = s->dtype;
-    ns->offset     = ALLOC_N(size_t, ns->dim);
-    ns->shape      = ALLOC_N(size_t, ns->dim);
+    void *init_val = ALLOC_N(char, DTYPE_SIZES[s->dtype]);
+    memcpy(init_val, s->default_val, DTYPE_SIZES[s->dtype]);
 
-    for (size_t i = 0; i < ns->dim; ++i) {
-      ns->offset[i] = 0; 
-      ns->shape[i]  = slice->lengths[i];
-    }
+    size_t *shape = ALLOC_N(size_t, s->dim);
+    memcpy(shape, slice->lengths, sizeof(size_t) * s->dim);
 
-    ns->default_val = ALLOC_N(char, DTYPE_SIZES[ns->dtype]);
-    memcpy(ns->default_val, s->default_val, DTYPE_SIZES[ns->dtype]);
+    ns = nm_list_storage_create(s->dtype, shape, s->dim, init_val);
     
-    ns->count = 1;
-    ns->src = ns;
-    
-    ns->rows = list_storage_slice_copy(s, slice, s->rows, 0);
+    ns->rows = slice_copy(s, s->rows, slice->coords, slice->lengths, 0);
     return ns;
   }
 }
@@ -494,9 +484,28 @@ size_t nm_list_storage_count_nd_elements(const LIST_STORAGE* s) {
 /////////////////////////
 // Copying and Casting //
 /////////////////////////
-
+//
 /*
  * List storage copy constructor C access.
+ */
+
+LIST_STORAGE* nm_list_storage_copy(const LIST_STORAGE* rhs)
+{
+  size_t *shape = ALLOC_N(size_t, rhs->dim);
+  memcpy(shape, rhs->shape, sizeof(size_t) * rhs->dim);
+  
+  void *init_val = ALLOC_N(char, DTYPE_SIZES[rhs->dtype]);
+  memcpy(init_val, rhs->default_val, DTYPE_SIZES[rhs->dtype]);
+
+  LIST_STORAGE* lhs = nm_list_storage_create(rhs->dtype, shape, rhs->dim, init_val);
+  
+  lhs->rows = slice_copy(rhs, rhs->rows, lhs->offset, lhs->shape, 0);
+
+  return lhs;
+}
+
+/*
+ * List storage copy constructor C access with casting.
  */
 STORAGE* nm_list_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
   NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::cast_copy, LIST_STORAGE*, const LIST_STORAGE* rhs, dtype_t new_dtype);
@@ -539,7 +548,15 @@ static LIST_STORAGE* cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
 
   LIST_STORAGE* lhs = nm_list_storage_create(new_dtype, shape, rhs->dim, default_val);
   lhs->rows         = list::create();
-  list::cast_copy_contents<LDType, RDType>(lhs->rows, rhs->rows, rhs->dim - 1);
+
+  // TODO: Needs optimization. When matrix is reference it is copped twice.
+  if (rhs->src == rhs) 
+    list::cast_copy_contents<LDType, RDType>(lhs->rows, rhs->rows, rhs->dim - 1);
+  else {
+    LIST_STORAGE *tmp = nm_list_storage_copy(rhs);
+    list::cast_copy_contents<LDType, RDType>(lhs->rows, tmp->rows, rhs->dim - 1);
+    nm_list_storage_delete(tmp);
+  }
 
   return lhs;
 }

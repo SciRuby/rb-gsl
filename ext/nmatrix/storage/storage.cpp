@@ -106,10 +106,20 @@ DENSE_STORAGE* create_from_list_storage(const LIST_STORAGE* rhs, dtype_t l_dtype
 
 //static void dense_storage_cast_copy_list_contents_template(LDType* lhs, const LIST* rhs, RDType* default_val, size_t& pos, const size_t* shape, size_t dim, size_t max_elements, size_t recursions)
   // recursively copy the contents
-  cast_copy_list_contents<LDType,RDType>(reinterpret_cast<LDType*>(lhs->elements),
+  if (rhs->src == rhs)
+    cast_copy_list_contents<LDType,RDType>(reinterpret_cast<LDType*>(lhs->elements),
                                          rhs->rows,
                                          reinterpret_cast<RDType*>(rhs->default_val),
                                          pos, shape, lhs->dim, max_elements, rhs->dim-1);
+  else {
+    LIST_STORAGE *tmp = nm_list_storage_copy(rhs);
+    cast_copy_list_contents<LDType,RDType>(reinterpret_cast<LDType*>(lhs->elements),
+                                         tmp->rows,
+                                         reinterpret_cast<RDType*>(tmp->default_val),
+                                         pos, shape, lhs->dim, max_elements, tmp->dim-1);
+    nm_list_storage_delete(tmp);
+
+  }
 
   return lhs;
 }
@@ -275,10 +285,21 @@ LIST_STORAGE* create_from_dense_storage(const DENSE_STORAGE* rhs, dtype_t l_dtyp
   LIST_STORAGE* lhs = nm_list_storage_create(l_dtype, shape, rhs->dim, l_default_val);
 
   size_t pos = 0;
-  list_storage::cast_copy_contents_dense<LDType,RDType>(lhs->rows,
-                                                        reinterpret_cast<const RDType*>(rhs->elements),
+
+  if (rhs->src == rhs)
+    list_storage::cast_copy_contents_dense<LDType,RDType>(lhs->rows,
+                                                          reinterpret_cast<const RDType*>(rhs->elements),
                                                         r_default_val,
                                                         pos, coords, rhs->shape, rhs->dim, rhs->dim - 1);
+  else {
+    DENSE_STORAGE* tmp = nm_dense_storage_copy(rhs);
+    list_storage::cast_copy_contents_dense<LDType,RDType>(lhs->rows,
+                                                          reinterpret_cast<const RDType*>(tmp->elements),
+                                                        r_default_val,
+                                                        pos, coords, rhs->shape, rhs->dim, rhs->dim - 1);
+
+    nm_dense_storage_delete(tmp);
+  }
 
   return lhs;
 }
@@ -434,13 +455,15 @@ namespace yale_storage { // FIXME: Move to yale.cpp
    */
   template <typename LDType, typename RDType, typename LIType>
   YALE_STORAGE* create_from_dense_storage(const DENSE_STORAGE* rhs, dtype_t l_dtype) {
-    LIType pos = 0, ndnz = 0;
+    if (rhs->dim != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of dim 2 to yale");
+
+    LIType pos = 0;
+    LIType ndnz = 0;
 
     RDType R_ZERO; // need zero for easier comparisons
     if (rhs->dtype == RUBYOBJ)  R_ZERO = INT2FIX(0);
     else                        R_ZERO = 0;
 
-    if (rhs->dim != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of dim 2 to yale");
 
     RDType* rhs_elements = reinterpret_cast<RDType*>(rhs->elements);
 
@@ -459,8 +482,14 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     shape[0] = rhs->shape[0];
     shape[1] = rhs->shape[1];
 
+    size_t request_capacity = shape[0] + ndnz + 1;
+
     // Create with minimum possible capacity -- just enough to hold all of the entries
     YALE_STORAGE* lhs = nm_yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
+
+    if (lhs->capacity < request_capacity)
+      rb_raise(nm_eStorageTypeError, "conversion failed; capacity of %d requested, max allowable is %d", request_capacity, lhs->capacity);
+
     LDType* lhs_a     = reinterpret_cast<LDType*>(lhs->a);
     LIType* lhs_ija   = reinterpret_cast<LIType*>(lhs->ija);
 
@@ -477,7 +506,8 @@ namespace yale_storage { // FIXME: Move to yale.cpp
       // indicate the beginning of a row in the IJA array
       lhs_ija[i] = ija;
 
-      for (LIType j = 0; j < rhs->shape[1]; ++j) {
+      for (LIType j = 0; j < rhs->shape[1];  ++j) {
+        pos = rhs->stride[0] * (rhs->offset[0] + i) + rhs->stride[1] * (rhs->offset[1] + j);
 
         if (i == j) { // copy to diagonal
           lhs_a[i] = rhs_elements[pos];
@@ -488,8 +518,8 @@ namespace yale_storage { // FIXME: Move to yale.cpp
 
           ++ija;
         }
-        ++pos;
       }
+      
     }
     lhs_ija[i] = ija; // indicate the end of the last row
 
@@ -518,7 +548,13 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     shape[0] = rhs->shape[0];
     shape[1] = rhs->shape[1];
 
-    YALE_STORAGE* lhs = nm_yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
+    size_t request_capacity = shape[0] + ndnz + 1;
+
+    YALE_STORAGE* lhs = nm_yale_storage_create(l_dtype, shape, 2, request_capacity);
+
+    if (lhs->capacity < request_capacity)
+      rb_raise(nm_eStorageTypeError, "conversion failed; capacity of %d requested, max allowable is %d", request_capacity, lhs->capacity);
+
     clear_diagonal_and_zero<LIType>(lhs); // clear the diagonal and the zero location.
     LIType* lhs_ija = reinterpret_cast<LIType*>(lhs->ija);
     LDType* lhs_a   = reinterpret_cast<LDType*>(lhs->a);
