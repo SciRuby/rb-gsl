@@ -101,7 +101,7 @@ class RubyObject {
 	inline RubyObject(int32_t other)  : rval(INT2FIX(other)) {}
 	// there is no uint32_t here because that's a Ruby VALUE type, and we need the compiler to treat that as a VALUE.
 	inline RubyObject(int64_t other)  : rval(INT2FIX(other)) {}
-	inline RubyObject(uint64_t other) : rval(INT2FIX(other)) {}
+//	inline RubyObject(uint64_t other) : rval(INT2FIX(other)) {}
 
 	/*
 	 * Float constructor.

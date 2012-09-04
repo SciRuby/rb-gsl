@@ -146,7 +146,6 @@ else
 end
 
 $CFLAGS += " -O0 "
-# -std=c++11 only works with G++ 4.7 and higher.
 $CPPFLAGS += " -O0 -std=#{$CPP_STANDARD} " #-fmax-errors=10 -save-temps
 
 CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')

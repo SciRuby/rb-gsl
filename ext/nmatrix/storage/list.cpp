@@ -737,25 +737,6 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 		} else {
 			// At least one list still has entries.
 
-			if (l_node == NULL and (l_default == 0 and d_default == 0)) {
-				/*
-				 * The left hand list has run out of elements.  We don't need to add new
-				 * values to the destination if l_default and d_default are both 0.
-				 */
-
-				return;
-
-			} else if (r_node == NULL and (r_default == 0 and d_default == 0)) {
-				/*
-				 * The right hand list has run out of elements.  We don't need to add new
-				 * values to the destination if r_default and d_default are both 0.
-				 */
-
-				return;
-			}
-
-			// We need to continue processing the lists.
-
 			if (l_node == NULL and r_node->key == index) {
 				/*
 				 * One source list is empty, but the index has caught up to the key of
@@ -789,7 +770,7 @@ static void ew_comp_prime(LIST* dest, uint8_t d_default, const LIST* left, LDTyp
 							break;
 
             default:
-              rb_raise(rb_eStandardError, "this should not happen");
+              rb_raise(rb_eStandardError, "This should not happen.");
 					}
 
 					if (tmp_result != d_default) {
@@ -968,21 +949,48 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 		} else {
 			// At least one list still has entries.
 			
-			if (l_node == NULL and (l_default == 0 and d_default == 0)) {
-				/* 
-				 * The left hand list has run out of elements.  We don't need to add new
-				 * values to the destination if l_default and d_default are both 0.
-				 */
+			if (op == EW_MUL) {
+				// Special cases for multiplication.
 				
-				return;
+				if (l_node == NULL and (l_default == 0 and d_default == 0)) {
+					/* 
+					 * The left hand list has run out of elements.  We don't need to add new
+					 * values to the destination if l_default and d_default are both 0.
+					 */
+				
+					return;
 			
-			} else if (r_node == NULL and (r_default == 0 and d_default == 0)) {
-				/*
-				 * The right hand list has run out of elements.  We don't need to add new
-				 * values to the destination if r_default and d_default are both 0.
-				 */
+				} else if (r_node == NULL and (r_default == 0 and d_default == 0)) {
+					/*
+					 * The right hand list has run out of elements.  We don't need to add new
+					 * values to the destination if r_default and d_default are both 0.
+					 */
 				
-				return;
+					return;
+				}
+				
+			} else if (op == EW_DIV) {
+				// Special cases for division.
+				
+				if (l_node == NULL and (l_default == 0 and d_default == 0)) {
+					/* 
+					 * The left hand list has run out of elements.  We don't need to add new
+					 * values to the destination if l_default and d_default are both 0.
+					 */
+				
+					return;
+			
+				} else if (r_node == NULL and (r_default == 0 and d_default == 0)) {
+					/*
+					 * The right hand list has run out of elements.  If the r_default
+					 * value is 0 any further division will result in a SIGFPE.
+					 */
+				
+					rb_raise(rb_eZeroDivError, "Cannot divide type by 0, would throw SIGFPE.");
+				}
+				
+				// TODO: Add optimizations for addition and subtraction.
+				
 			}
 			
 			// We need to continue processing the lists.

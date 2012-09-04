@@ -97,7 +97,7 @@ namespace nm {
         break;
 
       default:
-        rb_raise(rb_eStandardError, "this should not happen");
+        rb_raise(rb_eStandardError, "This should not happen.");
     }
     return 0;
   }
