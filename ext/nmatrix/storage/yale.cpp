@@ -1001,6 +1001,7 @@ YALE_STORAGE* nm_yale_storage_create(dtype_t dtype, size_t* shape, size_t dim, s
 
   } else {
   	s->capacity = init_capacity;
+
   }
 
   s->ija = ALLOC_N( char, ITYPE_SIZES[s->itype] * s->capacity );
@@ -1142,7 +1143,7 @@ static VALUE nm_lu(VALUE self) {
 
   size_t size = nm_yale_storage_get_size(s);
 
-  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
+  VALUE* vals = ALLOCA_N(VALUE, size - s->shape[0] - 1);
 
   for (size_t i = 0; i < size - s->shape[0] - 1; ++i) {
     vals[i] = rubyobj_from_cval((char*)(s->a) + DTYPE_SIZES[s->dtype]*(s->shape[0] + 1 + i), s->dtype).rval;
@@ -1164,7 +1165,7 @@ static VALUE nm_lu(VALUE self) {
 static VALUE nm_ia(VALUE self) {
   YALE_STORAGE* s = NM_STORAGE_YALE(self);
 
-  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
+  VALUE* vals = ALLOCA_N(VALUE, s->shape[0] + 1);
 
   for (size_t i = 0; i < s->shape[0] + 1; ++i) {
     vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*i, s->itype).rval;
@@ -1183,7 +1184,7 @@ static VALUE nm_ja(VALUE self) {
 
   size_t size = nm_yale_storage_get_size(s);
 
-  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
+  VALUE* vals = ALLOCA_N(VALUE, size - s->shape[0] - 1);
 
   for (size_t i = 0; i < size - s->shape[0] - 1; ++i) {
     vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*(s->shape[0] + 1 + i), s->itype).rval;
@@ -1206,7 +1207,7 @@ static VALUE nm_ija(VALUE self) {
 
   size_t size = nm_yale_storage_get_size(s);
 
-  VALUE* vals = ALLOCA_N(VALUE, s->capacity - s->shape[0]);
+  VALUE* vals = ALLOCA_N(VALUE, size);
 
   for (size_t i = 0; i < size; ++i) {
     vals[i] = rubyobj_from_cval_by_itype((char*)(s->ija) + ITYPE_SIZES[s->itype]*i, s->itype).rval;

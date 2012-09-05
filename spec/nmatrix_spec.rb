@@ -354,4 +354,22 @@ describe NMatrix do
     # FIXME: Actually test that values are correct.
   end
 
+  it "converts from list to yale properly" do
+    m = NMatrix.new(:list, 3, 0)
+    m[2,2] = 777
+    n = m.cast(:yale, :int32)
+    puts n.capacity
+    n.extend NMatrix::YaleFunctions
+    puts n.yale_ija.inspect
+    n[0,0].should == 0
+    n[0,1].should == 0
+    n[0,2].should == 0
+    n[1,0].should == 0
+    n[1,1].should == 0
+    n[1,2].should == 0
+    n[2,0].should == 0
+    n[2,1].should == 0
+    n[2,2].should == 777
+  end
+
 end

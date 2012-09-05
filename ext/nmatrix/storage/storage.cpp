@@ -533,7 +533,6 @@ namespace yale_storage { // FIXME: Move to yale.cpp
    */
   template <typename LDType, typename RDType, typename LIType>
   YALE_STORAGE* create_from_list_storage(const LIST_STORAGE* rhs, dtype_t l_dtype) {
-    NODE *i_curr, *j_curr;
     size_t ndnz = nm_list_storage_count_nd_elements(rhs);
 
     if (rhs->dim != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of dim 2 to yale");
@@ -555,18 +554,20 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     if (lhs->capacity < request_capacity)
       rb_raise(nm_eStorageTypeError, "conversion failed; capacity of %d requested, max allowable is %d", request_capacity, lhs->capacity);
 
-    clear_diagonal_and_zero<LIType>(lhs); // clear the diagonal and the zero location.
+    // Initialize the A and IJA arrays
+    init<LDType,LIType>(lhs);
+
     LIType* lhs_ija = reinterpret_cast<LIType*>(lhs->ija);
     LDType* lhs_a   = reinterpret_cast<LDType*>(lhs->a);
 
     LIType ija = lhs->shape[0]+1;
 
-    for (i_curr = rhs->rows->first; i_curr; i_curr = i_curr->next) {
+    for (NODE* i_curr = rhs->rows->first; i_curr; i_curr = i_curr->next) {
 
       // indicate the beginning of a row in the IJA array
       lhs_ija[i_curr->key] = ija;
 
-      for (j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
+      for (NODE* j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
         LDType cast_jcurr_val = *reinterpret_cast<RDType*>(j_curr->val);
 
         if (i_curr->key == j_curr->key)
@@ -580,7 +581,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
         }
       }
 
-      if (!i_curr->next)	lhs_ija[i_curr->key] = ija; // indicate the end of the last row
+      if (!i_curr->next) lhs_ija[i_curr->key] = ija; // indicate the end of the last row
     }
 
     lhs->ndnz = ndnz;
