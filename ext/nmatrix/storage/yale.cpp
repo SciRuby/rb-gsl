@@ -76,7 +76,7 @@
  */
 
 extern "C" {
-  static YALE_STORAGE*  _copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
+  static YALE_STORAGE*  nm_copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
   static YALE_STORAGE*	alloc(dtype_t dtype, size_t* shape, size_t dim);
 
   /* Ruby-accessible functions */
@@ -923,7 +923,7 @@ inline size_t nm_yale_storage_get_size(const YALE_STORAGE* storage) {
 /*
  * C accessor for allocating a yale storage object for cast-copying. Copies the IJA vector, does not copy the A vector.
  */
-static YALE_STORAGE* _copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size) {
+static YALE_STORAGE* nm_copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size) {
   NAMED_ITYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::copy_alloc_struct, YALE_STORAGE*, const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
 
   return ttable[rhs->itype](rhs, new_dtype, new_capacity, new_size);
