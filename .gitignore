@@ -1,2 +1,13 @@
-pkg/
+ext/*.o
+ext/Makefile
+ext/mkmf.log
+ext/rb_gsl.bundle
+ext/rb_gsl.dll
+ext/rb_gsl.dylib
+ext/rb_gsl.so
+ext/tags
 html/created.rid
+include/rb_gsl_config.h
+lib/gsl.rb
+lib/rbgsl.rb
+pkg/
