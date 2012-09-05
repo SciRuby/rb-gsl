@@ -133,7 +133,8 @@ end
 
 #####
 
-$CFLAGS = " -Wall -I../include "
+$CFLAGS ||= ''
+$CFLAGS += " -Wall -I../include "
 
 begin
   RB_GSL_CONFIG = File.open("../include/rb_gsl_config.h", "w")
