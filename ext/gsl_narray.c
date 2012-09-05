@@ -244,7 +244,7 @@ static VALUE rb_gsl_na_to_gsl_vector_method(VALUE na)
   return v;
 }
 
-static VALUE rb_gsl_na_to_gsl_vector_view_method(VALUE na)
+VALUE rb_gsl_na_to_gsl_vector_view_method(VALUE na)
 {
   VALUE v;
 

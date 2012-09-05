@@ -25,6 +25,7 @@
 #include <gsl/gsl_ieee_utils.h>
 #ifdef HAVE_NARRAY_H
 #include "narray.h"
+#include "rb_gsl_with_narray.h"
 #endif
 
 EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
@@ -135,13 +136,11 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #ifdef HAVE_NARRAY_H
 #define Data_Get_Vector(obj,sval) do {\
     if (NA_IsNArray(obj)) {\
-      (sval)->data = NA_PTR_TYPE(obj,double*);\
-      (sval)->size = NA_TOTAL(obj);\
-      (sval)->stride = 1;\
-    } else {\
-      CHECK_VECTOR(obj);\
-      Data_Get_Struct(obj,gsl_vector,sval);\
+      /* Convert obj to GSL::Vector::View */\
+      obj = rb_gsl_na_to_gsl_vector_view_method(obj);\
     }\
+    CHECK_VECTOR(obj);\
+    Data_Get_Struct(obj,gsl_vector,sval);\
 } while (0)
 #else
 #define Data_Get_Vector(obj,sval) do {\
