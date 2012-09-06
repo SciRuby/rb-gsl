@@ -169,21 +169,6 @@ void cvector_set_from_carray(gsl_vector *v, const double *a)
   for (i = 0; i < v->size; i++) gsl_vector_set(v, i, a[i]);
 }
 
-void cvector_set_from_rarrays(gsl_vector *v, VALUE ary)
-{
-  if (CLASS_OF(ary) == rb_cRange) ary = rb_gsl_range2ary(ary);
-  if (TYPE(ary) == T_ARRAY) {
-    return cvector_set_from_rarray(v, ary);
-#ifdef HAVE_NARRAY_H
-  } else if (NA_IsNArray(ary)) {
-    return cvector_set_from_narray(v, ary);
-#endif
-  } else {
-    rb_raise(rb_eTypeError,
-	     "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
-  }
-}
-
 void carray_set_from_cvector(double *a, const gsl_vector *v)
 {
   size_t i;
@@ -255,15 +240,6 @@ gsl_vector* make_cvector_from_narray(VALUE ary)
   return v;
 }
 
-void cvector_set_from_narray(gsl_vector *v, VALUE ary)
-{
-  int size;
-  if (!NA_IsNArray(ary))
-    rb_raise(rb_eTypeError,
-             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
-  size = NA_TOTAL(ary);
-  carray_set_from_narray(v->data, ary);
-}
 #endif
 
 gsl_vector_complex* make_vector_complex_clone(const gsl_vector_complex *v)
