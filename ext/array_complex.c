@@ -30,29 +30,30 @@ static VALUE rb_gsl_complex_arithmetics5(int flag, VALUE obj, VALUE bb)
   gsl_vector *v = NULL;
   gsl_vector_complex *cv = NULL, *cvnew = NULL;
   gsl_complex (*func1)(gsl_complex, gsl_complex);
-  int (*func2)(gsl_matrix_complex*, const gsl_matrix_complex*);
-  int (*func3)(gsl_matrix_complex*, const gsl_complex);
+  // local variables "func2" iand "func3" declared and set, but never used
+  //int (*func2)(gsl_matrix_complex*, const gsl_matrix_complex*);
+  //int (*func3)(gsl_matrix_complex*, const gsl_complex);
   int flagcm = 0;
   switch (flag) {
   case GSL_COMPLEX_ADD:
     func1 = gsl_complex_add;
-    func2 = gsl_matrix_complex_add;
-    func3 = gsl_matrix_complex_add_constant;
+    //func2 = gsl_matrix_complex_add;
+    //func3 = gsl_matrix_complex_add_constant;
     break;
   case GSL_COMPLEX_SUB:
     func1 = gsl_complex_sub;
-    func2 = gsl_matrix_complex_sub;
-    func3 = gsl_matrix_complex_add_constant;
+    //func2 = gsl_matrix_complex_sub;
+    //func3 = gsl_matrix_complex_add_constant;
     break;
   case GSL_COMPLEX_MUL:
     func1 = gsl_complex_mul;
-    func2 = gsl_matrix_complex_mul_elements;
-    func3 = gsl_matrix_complex_scale;
+    //func2 = gsl_matrix_complex_mul_elements;
+    //func3 = gsl_matrix_complex_scale;
     break;
   case GSL_COMPLEX_DIV:
     func1 = gsl_complex_div;
-    func2 = gsl_matrix_complex_div_elements;
-    func3 = gsl_matrix_complex_scale;
+    //func2 = gsl_matrix_complex_div_elements;
+    //func3 = gsl_matrix_complex_scale;
     break;
   default:
     rb_raise(rb_eRuntimeError, "undefined operation");

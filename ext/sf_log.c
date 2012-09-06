@@ -47,7 +47,8 @@ static VALUE rb_gsl_sf_complex_log_e(int argc, VALUE *argv, VALUE obj)
   gsl_complex *z = NULL;
   VALUE vlnr, vtheta;
   double re, im;
-  int status;
+  // local variable "status" was defined and set, but never used
+  //int status;
   switch (argc) {
   case 1:
     CHECK_COMPLEX(argv[0]);
@@ -65,7 +66,7 @@ static VALUE rb_gsl_sf_complex_log_e(int argc, VALUE *argv, VALUE obj)
   }
   vlnr = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt1);
   vtheta = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt2);
-  status = gsl_sf_complex_log_e(re, im, rslt1, rslt2);
+  /*status =*/ gsl_sf_complex_log_e(re, im, rslt1, rslt2);
   return rb_ary_new3(2, vlnr, vtheta);
 }
 

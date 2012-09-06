@@ -116,32 +116,35 @@ static int get_vector_complex2(int argc, VALUE *argv, VALUE obj,
 static VALUE rb_gsl_blas_ddot(int argc, VALUE *argv, VALUE obj)
 {
   double r;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   gsl_vector *x = NULL, *y = NULL;
   get_vector2(argc, argv, obj, &x, &y);
-  status = gsl_blas_ddot(x, y, &r);
+  /*status =*/ gsl_blas_ddot(x, y, &r);
   return rb_float_new(r);
 }
 
 static VALUE rb_gsl_blas_zdotu(int argc, VALUE *argv, VALUE obj)
 {
   gsl_complex *r;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   gsl_vector_complex *x = NULL, *y = NULL;
   get_vector_complex2(argc, argv, obj, &x, &y);
   r = ALLOC(gsl_complex);
-  status = gsl_blas_zdotu(x, y, r);
+  /*status =*/ gsl_blas_zdotu(x, y, r);
   return Data_Wrap_Struct(cgsl_complex, 0, free, r);
 }
 
 static VALUE rb_gsl_blas_zdotc(int argc, VALUE *argv, VALUE obj)
 {
   gsl_complex *r;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   gsl_vector_complex *x = NULL, *y = NULL;
   get_vector_complex2(argc, argv, obj, &x, &y);
   r = ALLOC(gsl_complex);
-  status = gsl_blas_zdotc(x, y, r);
+  /*status =*/ gsl_blas_zdotc(x, y, r);
   return Data_Wrap_Struct(cgsl_complex, 0, free, r);
 }
 

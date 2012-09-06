@@ -874,7 +874,7 @@ static VALUE rb_gsl_vector_normalize(int argc, VALUE *argv, VALUE obj)
 static VALUE rb_gsl_vector_normalize_bang(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector *v = NULL;
-  double mean;  
+  //  double mean;
   double nrm;
   double factor;
   switch (argc) {
@@ -890,8 +890,8 @@ static VALUE rb_gsl_vector_normalize_bang(int argc, VALUE *argv, VALUE obj)
     break;
   }
   Data_Get_Vector(obj, v);
-  mean = gsl_stats_mean(v->data, v->stride, v->size);
-  /*  gsl_vector_add_constant(v, -mean);  
+  /*  mean = gsl_stats_mean(v->data, v->stride, v->size);
+  gsl_vector_add_constant(v, -mean);
   sd = gsl_stats_sd(v->data, v->stride, v->size);  
   gsl_vector_scale(v, sqrt(nrm)/sd);*/
   factor = nrm/gsl_blas_dnrm2(v);

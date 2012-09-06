@@ -71,13 +71,13 @@ enum {
   GSL_MATRIX_INT_DIV,
 };
 
-static VALUE rb_gsl_matrix_int_operation1(VALUE obj, VALUE other, int flag);
 static VALUE rb_gsl_matrix_int_operation1(VALUE obj, VALUE other, int flag)
 {
   gsl_matrix_int *a, *anew, *b;
   gsl_vector_int *vi, *vinew;
   double bval;
-  int result;
+  // local variable "result" declared and set, but never used
+  //int result;
   Data_Get_Struct(obj, gsl_matrix_int, a);
   switch (TYPE(other)) {
   case T_FIXNUM:
@@ -86,16 +86,16 @@ static VALUE rb_gsl_matrix_int_operation1(VALUE obj, VALUE other, int flag)
     anew = make_matrix_int_clone(a);
     switch (flag) {
     case GSL_MATRIX_INT_ADD: 
-      result = gsl_matrix_int_add_constant(anew, bval);
+      /*result =*/ gsl_matrix_int_add_constant(anew, bval);
       break;
     case GSL_MATRIX_INT_SUB: 
-      result = gsl_matrix_int_add_constant(anew, -bval);
+      /*result =*/ gsl_matrix_int_add_constant(anew, -bval);
       break;
     case GSL_MATRIX_INT_MUL: 
-      result = gsl_matrix_int_scale(anew, bval);
+      /*result =*/ gsl_matrix_int_scale(anew, bval);
       break;
     case GSL_MATRIX_INT_DIV: 
-      result = gsl_matrix_int_scale(anew, 1.0/bval);
+      /*result =*/ gsl_matrix_int_scale(anew, 1.0/bval);
       break;
     default:
       break;
@@ -109,16 +109,16 @@ static VALUE rb_gsl_matrix_int_operation1(VALUE obj, VALUE other, int flag)
       Data_Get_Struct(other, gsl_matrix_int, b);
       switch (flag) {
       case GSL_MATRIX_INT_ADD:
-	result = gsl_matrix_int_add(anew, b);
+	/*result =*/ gsl_matrix_int_add(anew, b);
 	break;
       case GSL_MATRIX_INT_SUB:
-	result = gsl_matrix_int_sub(anew, b);
+	/*result =*/ gsl_matrix_int_sub(anew, b);
 	break;
       case GSL_MATRIX_INT_MUL:
-	result = gsl_matrix_int_mul_elements(anew, b);
+	/*result =*/ gsl_matrix_int_mul_elements(anew, b);
 	break;
       case GSL_MATRIX_INT_DIV:
-	result = gsl_matrix_int_div_elements(anew, b);
+	/*result =*/ gsl_matrix_int_div_elements(anew, b);
 	break;
       default:
 	break;

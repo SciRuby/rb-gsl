@@ -31,8 +31,6 @@ static VALUE rb_gsl_vector_to_narray(VALUE obj, VALUE klass)
     memcpy(NA_PTR_TYPE(nary,double*), v->data, shape[0]*sizeof(double));
   } else {
     int i;
-    struct NARRAY *na;
-    GetNArray(nary, na);
     for(i=0; i < v->size; i++) {
       (NA_PTR_TYPE(nary,double*))[i] = gsl_vector_get(v, i);
     }
@@ -52,8 +50,6 @@ static VALUE rb_gsl_vector_complex_to_narray(VALUE obj, VALUE klass)
     memcpy(NA_PTR_TYPE(nary,double*), v->data, shape[0]*2*sizeof(double));
   } else {
     int i;
-    struct NARRAY *na;
-    GetNArray(nary, na);
     for(i=0; i < 2*v->size; i++) {
       (NA_PTR_TYPE(nary,gsl_complex*))[i] = gsl_vector_complex_get(v, i);
     }
@@ -174,8 +170,6 @@ static VALUE rb_gsl_vector_int_to_narray(VALUE obj, VALUE klass)
     memcpy(NA_PTR_TYPE(nary,int*), v->data, shape[0]*sizeof(int));
   } else {
     int i;
-    struct NARRAY *na;
-    GetNArray(nary, na);
     for(i=0; i < v->size; i++) {
       (NA_PTR_TYPE(nary,int*))[i] = gsl_vector_int_get(v, i);
     }

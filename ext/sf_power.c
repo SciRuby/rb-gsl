@@ -27,11 +27,12 @@ static VALUE rb_gsl_sf_pow_int_e(VALUE obj, VALUE x, VALUE n)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Need_Float(x);
   CHECK_FIXNUM(n);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_pow_int_e(NUM2DBL(x), FIX2INT(n), rslt);
+  /*status =*/ gsl_sf_pow_int_e(NUM2DBL(x), FIX2INT(n), rslt);
   return v;
 }
 

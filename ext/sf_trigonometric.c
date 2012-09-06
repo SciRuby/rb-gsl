@@ -63,7 +63,8 @@ static VALUE rb_gsl_sf_complex_XXX_e(int argc, VALUE *argv, VALUE obj,
   gsl_complex *z;
   double re, im;
   VALUE v1, v2;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   switch (argc) {
   case 1:
     CHECK_COMPLEX(argv[0]);
@@ -82,7 +83,7 @@ static VALUE rb_gsl_sf_complex_XXX_e(int argc, VALUE *argv, VALUE obj,
   }
   v1 = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, r1);
   v2 = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, r2);
-  status = (*f)(re, im, r1, r2);
+  /*status =*/ (*f)(re, im, r1, r2);
   return rb_ary_new3(2, v1, v2);
 }
 
@@ -157,11 +158,12 @@ static VALUE rb_gsl_sf_sin_err_e(VALUE obj, VALUE x, VALUE dx)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Need_Float(x);
   Need_Float(dx);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_sin_err_e(NUM2DBL(x), NUM2DBL(dx), rslt);
+  /*status =*/ gsl_sf_sin_err_e(NUM2DBL(x), NUM2DBL(dx), rslt);
   return v;
 }
 
@@ -169,11 +171,12 @@ static VALUE rb_gsl_sf_cos_err_e(VALUE obj, VALUE x, VALUE dx)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Need_Float(x);
   Need_Float(dx);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_cos_err_e(NUM2DBL(x), NUM2DBL(dx), rslt);
+  /*status =*/ gsl_sf_cos_err_e(NUM2DBL(x), NUM2DBL(dx), rslt);
   return v;
 }
 

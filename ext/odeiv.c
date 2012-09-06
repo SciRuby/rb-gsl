@@ -81,7 +81,8 @@ static int calc_jac(double t, const double y[], double *dfdy, double dfdt[], voi
 static int calc_func(double t, const double y[], double dydt[], void *data)
 {
   VALUE ary, params, proc;
-  VALUE result;
+  // local variable "result" declared and set, but never used
+  //VALUE result;
   VALUE vy, vdydt;
   gsl_vector_view ytmp, dydttmp;
   size_t dim;
@@ -100,9 +101,9 @@ static int calc_func(double t, const double y[], double dydt[], void *data)
   vy = Data_Wrap_Struct(cgsl_vector_view_ro, 0, NULL, &ytmp);
   vdydt = Data_Wrap_Struct(cgsl_vector_view, 0, NULL, &dydttmp);
 
-  if (NIL_P(params)) result = rb_funcall((VALUE) proc, RBGSL_ID_call, 3, rb_float_new(t), 
+  if (NIL_P(params)) /*result =*/ rb_funcall((VALUE) proc, RBGSL_ID_call, 3, rb_float_new(t), 
 					 vy, vdydt);
-  else result = rb_funcall((VALUE) proc, RBGSL_ID_call, 4, rb_float_new(t), vy, vdydt, params);
+  else /*result =*/ rb_funcall((VALUE) proc, RBGSL_ID_call, 4, rb_float_new(t), vy, vdydt, params);
  
   return GSL_SUCCESS;
 }
@@ -110,7 +111,9 @@ static int calc_func(double t, const double y[], double dydt[], void *data)
 static int calc_jac(double t, const double y[], double *dfdy, double dfdt[], void *data)
 {
   VALUE params, proc, ary;
-  VALUE result, vdfdt;
+  VALUE vdfdt;
+  // local variable "result" declared and set, but never used
+  //VALUE result;
   VALUE vy, vmjac;
   gsl_vector_view ytmp, dfdttmp;
   gsl_matrix_view mv;
@@ -133,9 +136,9 @@ static int calc_jac(double t, const double y[], double *dfdy, double dfdt[], voi
   vy = Data_Wrap_Struct(cgsl_vector_view_ro, 0, NULL, &ytmp);
   vmjac = Data_Wrap_Struct(cgsl_matrix_view, 0, NULL, &mv);
   vdfdt = Data_Wrap_Struct(cgsl_vector_view, 0, NULL, &dfdttmp);
-  if (NIL_P(params)) result = rb_funcall((VALUE) proc, RBGSL_ID_call, 4, rb_float_new(t),
+  if (NIL_P(params)) /*result =*/ rb_funcall((VALUE) proc, RBGSL_ID_call, 4, rb_float_new(t),
 					 vy, vmjac, vdfdt);
-  else result = rb_funcall((VALUE) proc, RBGSL_ID_call, 5, rb_float_new(t), 
+  else /*result =*/ rb_funcall((VALUE) proc, RBGSL_ID_call, 5, rb_float_new(t), 
 			   vy, vmjac, vdfdt, params);
   return GSL_SUCCESS;
 }

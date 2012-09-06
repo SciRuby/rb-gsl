@@ -485,13 +485,13 @@ static void rb_gsl_function_fdf_fdf(double x, void *p, double *f, double *df)
 
 void Init_gsl_function(VALUE module)
 {
-  VALUE cgsl_function_fdf2;
   RBGSL_ID_call = rb_intern("call");
   RBGSL_ID_arity = rb_intern("arity");
 
   cgsl_function = rb_define_class_under(module, "Function", cGSL_Object);
   cgsl_function_fdf = rb_define_class_under(module, "Function_fdf", cGSL_Object);
-  cgsl_function_fdf2 = rb_define_class_under(cgsl_function_fdf, "Fdf", cgsl_function_fdf);
+  // This Fdf class seems superfluous.  Should probably be deleted?
+  rb_define_class_under(cgsl_function_fdf, "Fdf", cgsl_function_fdf);
 
   /*  rb_define_singleton_method(cgsl_function, "new", rb_gsl_function_new, -1);*/
   rb_define_singleton_method(cgsl_function, "alloc", rb_gsl_function_alloc, -1);

@@ -25,11 +25,12 @@ static VALUE rb_gsl_sf_coupling_3j_e(VALUE obj, VALUE two_ja, VALUE two_jb, VALU
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   CHECK_FIXNUM(two_ja); CHECK_FIXNUM(two_jb); CHECK_FIXNUM(two_jc);
   CHECK_FIXNUM(two_ma); CHECK_FIXNUM(two_mb); CHECK_FIXNUM(two_mc);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_coupling_3j_e(FIX2INT(two_ja), FIX2INT(two_jb),
+  /*status =*/ gsl_sf_coupling_3j_e(FIX2INT(two_ja), FIX2INT(two_jb),
 			  FIX2INT(two_jc), FIX2INT(two_ma),
 			  FIX2INT(two_mb), FIX2INT(two_mc),
 			  rslt);
@@ -50,11 +51,12 @@ static VALUE rb_gsl_sf_coupling_6j_e(VALUE obj, VALUE two_ja, VALUE two_jb, VALU
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   CHECK_FIXNUM(two_ja); CHECK_FIXNUM(two_jb); CHECK_FIXNUM(two_jc);
   CHECK_FIXNUM(two_jd); CHECK_FIXNUM(two_je); CHECK_FIXNUM(two_jf);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_coupling_6j_e(FIX2INT(two_ja), FIX2INT(two_jb),
+  /*status =*/ gsl_sf_coupling_6j_e(FIX2INT(two_ja), FIX2INT(two_jb),
 			  FIX2INT(two_jc), FIX2INT(two_jd),
 			  FIX2INT(two_je), FIX2INT(two_jf),
 			  rslt);
@@ -83,12 +85,13 @@ static VALUE rb_gsl_sf_coupling_9j_e(VALUE obj, VALUE two_ja, VALUE two_jb,
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   CHECK_FIXNUM(two_ja); CHECK_FIXNUM(two_jb); CHECK_FIXNUM(two_jc);
   CHECK_FIXNUM(two_jd); CHECK_FIXNUM(two_je); CHECK_FIXNUM(two_jf);
   CHECK_FIXNUM(two_jg); CHECK_FIXNUM(two_jh); CHECK_FIXNUM(two_ji);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_coupling_9j_e(FIX2INT(two_ja), FIX2INT(two_jb),
+  /*status =*/ gsl_sf_coupling_9j_e(FIX2INT(two_ja), FIX2INT(two_jb),
 			   FIX2INT(two_jc), FIX2INT(two_jd),
 			   FIX2INT(two_je), FIX2INT(two_jf),
 			   FIX2INT(two_jg), FIX2INT(two_jh),

@@ -875,14 +875,15 @@ static VALUE FUNCTION(rb_gsl_matrix,to_s)(VALUE obj)
   char buf[32], format[32], format2[32];
   size_t i, j;
   VALUE str;
-  BASE x, min;
+  BASE x;
   int dig = 8;
 #ifdef BASE_INT
+  BASE min;
   BASE max;
 #endif
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
-  min = FUNCTION(gsl_matrix,min)(m);
 #ifdef BASE_INT
+  min = FUNCTION(gsl_matrix,min)(m);
   max = gsl_matrix_int_max(m);
   dig = (int) GSL_MAX(fabs(max),fabs(min));
   if (dig > 0) dig = ceil(log10(dig+1e-10));

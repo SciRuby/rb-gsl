@@ -569,7 +569,7 @@ static VALUE rb_gsl_siman_solver_solve(VALUE obj, VALUE rng,
   siman_metric *metric = NULL;
   siman_print *print = NULL;
   gsl_vector *vtmp = NULL;
-  gsl_siman_params_t *params = NULL, ppp;
+  gsl_siman_params_t *params = NULL;
   int flag = 0;
   /*  Data_Get_Struct(obj, siman_solver, ss);*/
   CHECK_VECTOR(vx0p);
@@ -622,7 +622,6 @@ static VALUE rb_gsl_siman_solver_solve(VALUE obj, VALUE rng,
   ss->proc_metric  = metric->proc;
 
   gsl_vector_memcpy(ss->vx, vtmp);
-  ppp = *params;
 
   if (NIL_P(vprint)) {
     gsl_siman_solve(r, ss, rb_gsl_siman_Efunc_t, 

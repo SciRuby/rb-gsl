@@ -1026,7 +1026,6 @@ struct fit_histogram {
 
 static VALUE rb_gsl_histogram_fit_exponential(int argc, VALUE *argv, VALUE obj)
 {
-  struct fit_histogram hh;
   gsl_histogram *h;
   gsl_vector *x, *lny, *w;
   size_t binstart = 0, binend, n, p = 2, dof, i;
@@ -1047,9 +1046,6 @@ static VALUE rb_gsl_histogram_fit_exponential(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eArgError, "too many arguments (%d for 0 or 2)", argc);
     break;
   }
-  hh.h = h;
-  hh.binstart = binstart;
-  hh.binend = binend;
   n = binend - binstart + 1;
   dof = n - p;
   
@@ -1076,7 +1072,6 @@ static VALUE rb_gsl_histogram_fit_exponential(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_histogram_fit_power(int argc, VALUE *argv, VALUE obj)
 {
-  struct fit_histogram hh;
   gsl_histogram *h;
   gsl_vector *lnx, *lny, *w;
   size_t binstart = 0, binend, n, p = 2, dof, i;
@@ -1097,9 +1092,6 @@ static VALUE rb_gsl_histogram_fit_power(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eArgError, "too many arguments (%d for 0 or 2)", argc);
     break;
   }
-  hh.h = h;
-  hh.binstart = binstart;
-  hh.binend = binend;
   n = binend - binstart + 1;
   dof = n - p;
   

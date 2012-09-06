@@ -288,14 +288,16 @@ static VALUE rb_gsl_sf_bessel_jl_e(VALUE obj, VALUE n, VALUE x)
 static VALUE rb_gsl_sf_bessel_xl_array(VALUE obj, VALUE n1, VALUE x,
 				       int (*f)(int, double, double[]))
 {
-  int nmax, n, status;
+  int nmax, n;
+  // local variable "status" declared and set, but never used
+  //int status;
   gsl_vector *v = NULL;
   CHECK_FIXNUM(n1);
   Need_Float(x);
   nmax = FIX2INT(n1);
   n = nmax  + 1;
   v = gsl_vector_alloc(n);
-  status = (*f)(nmax, NUM2DBL(x), v->data);
+  /*status =*/ (*f)(nmax, NUM2DBL(x), v->data);
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
 }
 
@@ -465,7 +467,9 @@ static VALUE rb_gsl_sf_bessel_Jnu_e(VALUE obj, VALUE nu, VALUE x)
 static VALUE rb_gsl_sf_bessel_sequence_Jnu_e(int argc, VALUE *argv, VALUE obj)
 {
   size_t i, size;
-  int status, flag = 0;
+  // local variable "status" declared and set, but never used
+  //int status;
+  int flag = 0;
   gsl_vector *v = NULL;
   gsl_mode_t mode;
   char c;
@@ -515,7 +519,7 @@ static VALUE rb_gsl_sf_bessel_sequence_Jnu_e(int argc, VALUE *argv, VALUE obj)
     flag = 0;
     break;
   }
-  status = gsl_sf_bessel_sequence_Jnu_e(NUM2DBL(nu), mode, size, v->data);
+  /*status =*/ gsl_sf_bessel_sequence_Jnu_e(NUM2DBL(nu), mode, size, v->data);
   if (flag == 1) return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
   else return ary;
 }
