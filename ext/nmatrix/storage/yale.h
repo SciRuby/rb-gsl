@@ -200,6 +200,9 @@ namespace nm { namespace yale_storage {
       a[i] = 0;
   }
 
+  template <typename DType, typename IType>
+  void init(YALE_STORAGE* s);
+
 }} // end of namespace nm::yale_storage
 
 #endif // YALE_H
