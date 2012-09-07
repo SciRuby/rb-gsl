@@ -588,17 +588,6 @@ namespace yale_storage { // FIXME: Move to yale.cpp
       if (!i_curr->next) lhs_ija[rhs->shape[0]] = ija; // indicate the end of the last row
     }
 
-    // TODO: should delete in 0.0.3 version
-    // printf("a: ");
-    // for (size_t i=0; i < lhs->capacity; ++i)
-    //   printf("%d, ", (int)((LDType*)lhs->a)[i]);
-    // printf("\n");
-
-    // printf("ija: ");
-    // for (size_t i=0; i < lhs->capacity; ++i)
-    //   printf("%d, ", (int)((LIType*)lhs->ija)[i]);
-    // printf("\n");
-
     lhs->ndnz = ndnz;
     return lhs;
   }
