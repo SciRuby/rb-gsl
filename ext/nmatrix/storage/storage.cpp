@@ -564,8 +564,6 @@ namespace yale_storage { // FIXME: Move to yale.cpp
 
     for (NODE* i_curr = rhs->rows->first; i_curr; i_curr = i_curr->next) {
 
-      // indicate the beginning of a row in the IJA array
-      lhs_ija[i_curr->key] = ija;
 
       for (NODE* j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
         LDType cast_jcurr_val = *reinterpret_cast<RDType*>(j_curr->val);
@@ -573,16 +571,33 @@ namespace yale_storage { // FIXME: Move to yale.cpp
         if (i_curr->key == j_curr->key)
           lhs_a[i_curr->key] = cast_jcurr_val; // set diagonal
         else {
-
           lhs_ija[ija] = j_curr->key;    // set column value
+
           lhs_a[ija]   = cast_jcurr_val;                      // set cell value
 
           ++ija;
+
+          // indicate the beginning of a row in the IJA array
+          for (size_t i = i_curr->key + 1; i < shape[0]; ++i) {
+            lhs_ija[i] = ija;
+          }
+
         }
       }
 
-      if (!i_curr->next) lhs_ija[i_curr->key] = ija; // indicate the end of the last row
+      if (!i_curr->next) lhs_ija[rhs->shape[0]] = ija; // indicate the end of the last row
     }
+
+    // TODO: should delete in 0.0.3 version
+    // printf("a: ");
+    // for (size_t i=0; i < lhs->capacity; ++i)
+    //   printf("%d, ", (int)((LDType*)lhs->a)[i]);
+    // printf("\n");
+
+    // printf("ija: ");
+    // for (size_t i=0; i < lhs->capacity; ++i)
+    //   printf("%d, ", (int)((LIType*)lhs->ija)[i]);
+    // printf("\n");
 
     lhs->ndnz = ndnz;
     return lhs;

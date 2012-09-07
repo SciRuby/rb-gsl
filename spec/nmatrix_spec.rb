@@ -362,6 +362,7 @@ describe NMatrix do
     puts n.capacity
     n.extend NMatrix::YaleFunctions
     puts n.yale_ija.inspect
+    puts n.yale_a.inspect
     n[0,0].should == 0
     n[0,1].should == 0
     n[0,2].should == 333
