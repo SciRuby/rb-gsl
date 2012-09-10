@@ -568,11 +568,12 @@ static LIST_STORAGE* cast_copy(const LIST_STORAGE* rhs, dtype_t new_dtype) {
  */
 template <typename LDType, typename RDType>
 bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
+  bool result;
 
   // in certain cases, we need to keep track of the number of elements checked.
   size_t num_checked  = 0,
-
 	max_elements = nm_storage_count_max_elements(left);
+  LIST_STORAGE *tmp1 = NULL, *tmp2 = NULL;
 
   if (!left->rows->first) {
     // Easy: both lists empty -- just compare default values
@@ -602,9 +603,33 @@ bool eqeq(const LIST_STORAGE* left, const LIST_STORAGE* right) {
   } else {
     // fprintf(stderr, "both matrices have entries\n");
     // Hardest case. Compare lists node by node. Let's make it simpler by requiring that both have the same default value
-    if (!list::eqeq<LDType,RDType>(left->rows, right->rows, reinterpret_cast<LDType*>(left->default_val), reinterpret_cast<RDType*>(right->default_val), left->dim-1, num_checked)) {
-    	return false;
-    	
+    
+    // left is reference
+    if (left->src != left && right->src == right) {
+      tmp1 = nm_list_storage_copy(left);
+      result = list::eqeq<LDType,RDType>(tmp1->rows, right->rows, reinterpret_cast<LDType*>(left->default_val), reinterpret_cast<RDType*>(right->default_val), left->dim-1, num_checked);
+      nm_list_storage_delete(tmp1);
+    } 
+    // right is reference
+    if (left->src == left && right->src != right) {
+      tmp2 = nm_list_storage_copy(right);
+      result = list::eqeq<LDType,RDType>(left->rows, tmp2->rows, reinterpret_cast<LDType*>(left->default_val), reinterpret_cast<RDType*>(right->default_val), left->dim-1, num_checked);
+      nm_list_storage_delete(tmp2);
+    } 
+    // both are references
+    if (left->src != left && right->src != right) {
+      tmp1 = nm_list_storage_copy(left);
+      tmp2 = nm_list_storage_copy(right);
+      result = list::eqeq<LDType,RDType>(tmp1->rows, tmp2->rows, reinterpret_cast<LDType*>(left->default_val), reinterpret_cast<RDType*>(right->default_val), left->dim-1, num_checked);
+      nm_list_storage_delete(tmp1);
+      nm_list_storage_delete(tmp2);
+    }
+    // both are normal matricies
+    if (left->src == left && right->src == right) 
+      result = list::eqeq<LDType,RDType>(left->rows, right->rows, reinterpret_cast<LDType*>(left->default_val), reinterpret_cast<RDType*>(right->default_val), left->dim-1, num_checked);
+
+    if (!result){
+      return result;
     } else if (num_checked < max_elements) {
       return *reinterpret_cast<LDType*>(left->default_val) == *reinterpret_cast<RDType*>(right->default_val);
     }
