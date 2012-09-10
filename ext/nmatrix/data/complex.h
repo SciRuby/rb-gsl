@@ -88,7 +88,7 @@ class Complex {
    * Complex conjugate function -- creates a copy, but inverted.
    */
   inline Complex<Type> conjugate() const {
-    Complex<Type>(this->r, -(this->i));
+    return Complex<Type>(this->r, -(this->i));
   }
 
   /*
@@ -353,5 +353,13 @@ inline bool operator>=(const NativeType left, const Complex<ComplexType>& right)
 }
 
 } // end of namespace nm
+
+namespace std {
+  template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+  nm::Complex<FloatType> abs(const nm::Complex<FloatType>& value) {
+    return nm::Complex<FloatType>(value.r < 0 ? -value.r : value.r,
+                                  value.i < 0 ? -value.i : value.i);
+  }
+}
 
 #endif // COMPLEX_H

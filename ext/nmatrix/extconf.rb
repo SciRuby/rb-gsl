@@ -22,11 +22,13 @@
 #
 # == extconf.rb
 #
-# This file mostly derived from NArray.
+# This file checks for ATLAS and other necessary headers, and
+# generates a Makefile for compiling NMatrix.
 
 require "mkmf"
 
 
+# Function derived from NArray's extconf.rb.
 def have_type(type, header=nil)
   printf "checking for %s... ", type
   STDOUT.flush
@@ -57,6 +59,7 @@ SRC
   return true
 end
 
+# Function derived from NArray's extconf.rb.
 def create_conf_h(file)
   print "creating #{file}\n"
   File.open(file, 'w') do |hfile|
@@ -131,13 +134,35 @@ $libs += " -llapack -lcblas -latlas "
 $objs = %w{nmatrix ruby_constants data/data util/io util/math util/sl_list storage/common storage/storage storage/dense storage/yale storage/list}.map { |i| i + ".o" }
 
 #CONFIG['CXX'] = 'clang++'
+CONFIG['CXX'] = 'g++'
+
+def find_newer_gplusplus
+  [7,6,5,4,3].each do |minor|
+    result = `which g++-4.#{minor}`
+    next if result.empty?
+    CONFIG['CXX'] = "g++-4.#{minor}"
+    return CONFIG['CXX']
+  end
+  false
+end
+
+def gplusplus_version
+  `#{CONFIG['CXX']} -v 2>&1`.lines.to_a.last.match(/gcc\sversion\s(\d\.\d.\d)/).captures.first
+end
+
 
 if CONFIG['CXX'] == 'clang++'
 	$CPP_STANDARD = 'c++11'
 
 else
-	version = `g++ -v 2>&1`.lines.to_a.last.match(/gcc\sversion\s(\d\.\d.\d)/).captures.first
-	
+	version = gplusplus_version
+  if version < '4.3.0' && CONFIG['CXX'] == 'g++'  # see if we can find a newer G++, unless it's been overridden by user
+    if !find_newer_gplusplus
+      raise("You need a version of g++ which supports -std=c++0x or -std=c++11. If you're on a Mac and using Homebrew, we recommend using mac-brew-gcc.sh to install a more recent g++.")
+    end
+    version = gplusplus_version
+  end
+
 	if version < '4.7.0'
 		$CPP_STANDARD = 'c++0x'
 	else
@@ -145,9 +170,11 @@ else
 	end
 end
 
+# For release, these next two should both be changed to -O3.
 $CFLAGS += " -O0 "
 $CPPFLAGS += " -O0 -std=#{$CPP_STANDARD} " #-fmax-errors=10 -save-temps
 
+CONFIG['warnflags'].gsub!('-Wshorten-64-to-32', '') # doesn't work except in Mac-patched gcc (4.2)
 CONFIG['warnflags'].gsub!('-Wdeclaration-after-statement', '')
 CONFIG['warnflags'].gsub!('-Wimplicit-function-declaration', '')
 

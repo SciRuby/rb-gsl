@@ -31,10 +31,11 @@
  * Standard Includes
  */
 
-
+#ifdef HAVE_CLAPACK_H
 extern "C" {
   #include <clapack.h>
 }
+#endif
 
 #include <ruby.h>
 #include <algorithm> // std::min
@@ -945,7 +946,12 @@ static VALUE nm_factorize_lu_bang(VALUE self) {
       NULL, NULL, NULL, NULL, NULL, // integers not allowed due to division
       nm::math::clapack_getrf<float>,
       nm::math::clapack_getrf<double>,
+#ifdef HAVE_CLAPACK_H
       clapack_cgetrf, clapack_zgetrf, // call directly, same function signature!
+#else
+      nm::math::clapack_getrf<nm::Complex64>,
+      nm::math::clapack_getrf<nm::Complex128>,
+#endif
       nm::math::clapack_getrf<nm::Rational32>,
       nm::math::clapack_getrf<nm::Rational64>,
       nm::math::clapack_getrf<nm::Rational128>,

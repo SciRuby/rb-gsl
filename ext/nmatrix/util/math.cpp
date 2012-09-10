@@ -494,7 +494,12 @@ static VALUE nm_clapack_getrf(VALUE self, VALUE order, VALUE m, VALUE n, VALUE a
       NULL, NULL, NULL, NULL, NULL, // integers not allowed due to division
       nm::math::clapack_getrf<float>,
       nm::math::clapack_getrf<double>,
+#ifdef HAVE_CLAPACK_H
       clapack_cgetrf, clapack_zgetrf, // call directly, same function signature!
+#else // Especially important for Mac OS, which doesn't seem to include the ATLAS clapack interface.
+      nm::math::clapack_getrf<nm::Complex64>,
+      nm::math::clapack_getrf<nm::Complex128>,
+#endif
       nm::math::clapack_getrf<nm::Rational32>,
       nm::math::clapack_getrf<nm::Rational64>,
       nm::math::clapack_getrf<nm::Rational128>,
