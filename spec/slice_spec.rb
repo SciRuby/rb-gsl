@@ -55,6 +55,8 @@ describe "Slice operation" do
 
     it "reference should compare with non-reference" do
       @m.slice(1..2,0..1).should == @m[1..2, 0..1]
+      @m[1..2,0..1].should == @m.slice(1..2, 0..1)
+      @m[1..2,0..1].should == @m[1..2, 0..1]
     end
 
     context "with copying" do
@@ -204,7 +206,7 @@ describe "Slice operation" do
 
       [:dense, :list, :yale].each do |cast_type|
         it "should cast from #{stype.upcase} to #{cast_type.upcase}" do
-          nm_eql(@m[1..2, 0..2].cast(cast_type, :int32), @m[1..2,0..2]).should be_true
+          nm_eql(@m[1..2, 1..2].cast(cast_type, :int32), @m[1..2,1..2]).should be_true
         end
       end
       end

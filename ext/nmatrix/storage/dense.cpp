@@ -494,18 +494,41 @@ DENSE_STORAGE* cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
 template <typename LDType, typename RDType>
 bool eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
   size_t index;
-  
+  DENSE_STORAGE *tmp1, *tmp2;
+  tmp1 = NULL; tmp2 = NULL;
+  bool result = true;
   /* FIXME: Very strange behavior! The GC calls the method directly with non-initialized data. */
   if (left->dim != right->dim) return false;
 
+
 	LDType* left_elements	  = (LDType*)left->elements;
-	RDType* right_elements	= (RDType*)right->elements;
-	
+  RDType* right_elements	= (RDType*)right->elements;
+
+  // Copy elements in temp matrix if you have refernce to the right.
+  if (left->src != left) {
+    tmp1 = nm_dense_storage_copy(left);
+    left_elements = (LDType*)tmp1->elements;
+  }
+  if (right->src != right) {
+    tmp2 = nm_dense_storage_copy(right);
+    right_elements = (RDType*)tmp2->elements;
+  }
+  
+
+
 	for (index = nm_storage_count_max_elements(left); index-- > 0;) {
-		if (left_elements[index] != right_elements[index]) return false;
+		if (left_elements[index] != right_elements[index]) {
+      result = false;
+      break;
+    }
 	}
 
-	return true;
+  if (tmp1)
+    free(tmp1);
+  if (tmp2)
+    free(tmp2);
+
+	return result;
 }
 
 template <typename DType>
