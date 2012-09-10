@@ -129,7 +129,7 @@ static VALUE nm_eqeq(VALUE left, VALUE right);
 static VALUE matrix_multiply_scalar(NMATRIX* left, VALUE scalar);
 static VALUE matrix_multiply(NMATRIX* left, NMATRIX* right);
 static VALUE nm_multiply(VALUE left_v, VALUE right_v);
-static VALUE nm_factorize_lu_bang(VALUE self);
+static VALUE nm_factorize_lu(VALUE self);
 static VALUE nm_det_exact(VALUE self);
 static VALUE nm_complex_conjugate_bang(VALUE self);
 
@@ -229,7 +229,7 @@ void Init_nmatrix() {
 	// Matrix Math Methods //
 	/////////////////////////
 	rb_define_method(cNMatrix, "dot",		(METHOD)nm_multiply,		1);
-	rb_define_method(cNMatrix, "factorize_lu!", (METHOD)nm_factorize_lu_bang, 0);
+	rb_define_method(cNMatrix, "factorize_lu", (METHOD)nm_factorize_lu, 0);
 
 
 	rb_define_method(cNMatrix, "symmetric?", (METHOD)nm_symmetric, 0);
@@ -931,9 +931,12 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
 }
 
 /*
- * In-place LU factorization of a matrix.
+ * LU factorization of a matrix.
+ *
+ * FIXME: For some reason, getrf seems to require that the matrix be transposed first -- and then you have to transpose the
+ * FIXME: result again. Ideally, this would be an in-place factorize instead, and would be called nm_factorize_lu_bang.
  */
-static VALUE nm_factorize_lu_bang(VALUE self) {
+static VALUE nm_factorize_lu(VALUE self) {
   if (NM_STYPE(self) != DENSE_STORE) {
     rb_raise(rb_eNotImpError, "only implemented for dense storage");
   }
@@ -941,6 +944,8 @@ static VALUE nm_factorize_lu_bang(VALUE self) {
   if (NM_DIM(self) != 2) {
     rb_raise(rb_eNotImpError, "matrix is not 2-dimensional");
   }
+
+  VALUE copy = nm_init_transposed(self);
 
   static int (*ttable[nm::NUM_DTYPES])(const enum CBLAS_ORDER, const int m, const int n, void* a, const int lda, int* ipiv) = {
       NULL, NULL, NULL, NULL, NULL, // integers not allowed due to division
@@ -958,11 +963,13 @@ static VALUE nm_factorize_lu_bang(VALUE self) {
       nm::math::clapack_getrf<nm::RubyObject>
   };
 
-  int* ipiv = ALLOCA_N(int, std::min(NM_SHAPE0(self), NM_SHAPE1(self)));
+  int* ipiv = ALLOCA_N(int, std::min(NM_SHAPE0(copy), NM_SHAPE1(copy)));
 
-  ttable[NM_DTYPE(self)](CblasRowMajor, NM_SHAPE0(self), NM_SHAPE1(self), NM_STORAGE_DENSE(self)->elements, NM_SHAPE1(self), ipiv);
+  // In-place factorize
+  ttable[NM_DTYPE(copy)](CblasRowMajor, NM_SHAPE0(copy), NM_SHAPE1(copy), NM_STORAGE_DENSE(copy)->elements, NM_SHAPE1(copy), ipiv);
 
-  return self;
+  // Transpose the result
+  return nm_init_transposed(copy);
 }
 
 /*

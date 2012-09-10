@@ -30,6 +30,23 @@
 require File.join(File.dirname(__FILE__), "spec_helper.rb")
 
 describe "math" do
+
+  [:float32, :float64, :complex64, :complex128, :rational32, :rational64, :rational128].each do |dtype|
+    context dtype do
+      it "should correctly factorize a matrix" do
+        m = NMatrix.new(:dense, 3, [4,9,2,3,5,7,8,1,6], dtype)
+        a = m.factorize_lu
+        a[0,0].should == 8
+        a[0,1].should == 1
+        a[0,2].should == 6
+        a[1,0].should == 0.5
+        a[1,1].should == 8.5
+        a[1,2].should == -1
+        a[2,0].should == 0.375
+      end
+    end
+  end
+
   [:float32, :float64, :complex64, :complex128].each do |dtype|
     context dtype do
 
