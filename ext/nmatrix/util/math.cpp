@@ -123,7 +123,9 @@
  */
 
 extern "C" {
+#ifdef HAVE_CLAPACK_H
   #include <clapack.h>
+#endif
 
   static VALUE nm_cblas_gemm(VALUE self, VALUE order, VALUE trans_a, VALUE trans_b, VALUE m, VALUE n, VALUE k, VALUE vAlpha,
                              VALUE a, VALUE lda, VALUE b, VALUE ldb, VALUE vBeta, VALUE c, VALUE ldc);
