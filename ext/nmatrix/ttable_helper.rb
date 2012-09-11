@@ -14,26 +14,33 @@ DTYPES = [
 	:int64_t,
 	:float32_t,
 	:float64_t,
-	:Complex64,
-	:Complex128,
-	:Rational32,
-	:Rational64,
-	:Rational128,
-	:RubyObject
+	:'nm::Complex64',
+	:'nm::Complex128',
+	:'nm::Rational32',
+	:'nm::Rational64',
+	:'nm::Rational128',
+	:'nm::RubyObject'
+]
+
+ITYPES = [
+	:uint8_t,
+	:uint16_t,
+	:uint32_t,
+	:uint64_t
 ]
 
 EWOPS = [
-	:EW_ADD,
-	:EW_SUB,
-	:EW_MUL,
-	:EW_DIV,
-	:EW_MOD,
-  :EW_EQEQ,
-  :EW_NEQ,
-  :EW_LT,
-  :EW_GT,
-  :EW_LEQ,
-  :EW_GEQ
+	:'nm::EW_ADD',
+	:'nm::EW_SUB',
+	:'nm::EW_MUL',
+	:'nm::EW_DIV',
+	:'nm::EW_MOD',
+  :'nm::EW_EQEQ',
+  :'nm::EW_NEQ',
+  :'nm::EW_LT',
+  :'nm::EW_GT',
+  :'nm::EW_LEQ',
+  :'nm::EW_GEQ'
 ]
 
 LR_ALLOWED = {
@@ -46,9 +53,9 @@ LR_ALLOWED = {
 	:float64_t		=> nullify([:RubyObject]),
 	:Complex64		=> nullify([:RubyObject]),
 	:Complex128		=> nullify([:RubyObject]),
-	:Rational32		=> nullify([:float32_t, :float64_t, :Complex64, :Complex128, :RubyObject]),
-	:Rational64		=> nullify([:float32_t, :float64_t, :Complex64, :Complex128, :RubyObject]),
-	:Rational128	=> nullify([:float32_t, :float64_t, :Complex64, :Complex128, :RubyObject]),
+	:Rational32		=> nullify([:float32_t, :float64_t, :'nm::Complex64', :'nm::Complex128', :'nm::RubyObject']),
+	:Rational64		=> nullify([:float32_t, :float64_t, :'nm::Complex64', :'nm::Complex128', :'nm::RubyObject']),
+	:Rational128	=> nullify([:float32_t, :float64_t, :'nm::Complex64', :'nm::Complex128', :'nm::RubyObject']),
 	:RubyObject		=> nullify(DTYPES - [:RubyObject])
 }
 
@@ -75,6 +82,27 @@ when 'OPLR'
 		'}'
 	
 	end.join(",\n") +
+	'}'
+
+when 'OPID'
+	'{' +
+	EWOPS.map do |op|
+		'{' +
+		ITYPES.map do |itype|
+			'{' +
+			DTYPES.map do |dtype|
+			
+				if dtype == :NULL
+					'NULL'
+				else
+					"fun<#{op}, #{itype}, #{dtype}>"
+				end
+		
+			end.join(",") +
+			'}'
+		end.join(",\\\n") +
+		'}'
+	end.join(",\\\n") +
 	'}'
 
 when 'LR'

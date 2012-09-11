@@ -488,7 +488,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     YALE_STORAGE* lhs = nm_yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
 
     if (lhs->capacity < request_capacity)
-      rb_raise(nm_eStorageTypeError, "conversion failed; capacity of %d requested, max allowable is %d", request_capacity, lhs->capacity);
+      rb_raise(nm_eStorageTypeError, "conversion failed; capacity of %ld requested, max allowable is %ld", request_capacity, lhs->capacity);
 
     LDType* lhs_a     = reinterpret_cast<LDType*>(lhs->a);
     LIType* lhs_ija   = reinterpret_cast<LIType*>(lhs->ija);
@@ -553,7 +553,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     YALE_STORAGE* lhs = nm_yale_storage_create(l_dtype, shape, 2, request_capacity);
 
     if (lhs->capacity < request_capacity)
-      rb_raise(nm_eStorageTypeError, "conversion failed; capacity of %d requested, max allowable is %d", request_capacity, lhs->capacity);
+      rb_raise(nm_eStorageTypeError, "conversion failed; capacity of %ld requested, max allowable is %ld", request_capacity, lhs->capacity);
 
     clear_diagonal_and_zero<LIType>(lhs); // clear the diagonal and the zero location.
     LIType* lhs_ija = reinterpret_cast<LIType*>(lhs->ija);
