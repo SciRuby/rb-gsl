@@ -43,8 +43,6 @@
 #include <algorithm>  // std::min
 #include <cstdio>     // std::fprintf
 
-#include <iostream>
-
 /*
  * Project Includes
  */
@@ -745,7 +743,7 @@ YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t
 	}
 	
 	// Set the last row's right bound.
-	YALE_IJ(dest)[row_index] = da_index + a_index_offset;
+	YALE_IA(dest)[row_index] = da_index + a_index_offset;
 	
 	printf("Right bound of row %d in destination: %d\n", row_index - 1, da_index + a_index_offset);
 	
@@ -760,22 +758,6 @@ YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t
 	// Resize the destination matrix.
 	dest->a		= realloc(dest->a,   sizeof(DType) * dest->capacity);
 	dest->ija = realloc(dest->ija, sizeof(IType) * dest->capacity);
-	
-//	printf("Destination's A array: [ ");
-
-//	for (unsigned int tmp_index = 0; tmp_index < dest->capacity; ++tmp_index) {
-//		std::cout << da[tmp_index] << " ";
-//	}
-//	
-//	printf("]\n\n");
-//	
-//	printf("Destination's IJA array: [ ");
-
-//	for (unsigned int tmp_index = 0; tmp_index < dest->capacity; ++tmp_index) {
-//		std::cout << reinterpret_cast<DType*>(dest->ija)[tmp_index] << " ";
-//	}
-//	
-//	printf("]\n");
 	
 	return dest;
 }
