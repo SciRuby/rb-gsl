@@ -58,6 +58,21 @@ extern "C" {
  */
 
 /*
+ * If no block is given, return an enumerator. This copied straight out of ruby's include/ruby/intern.h.
+ *
+ * rb_enumeratorize is located in enumerator.c.
+ *
+ *    VALUE rb_enumeratorize(VALUE obj, VALUE meth, int argc, VALUE *argv) {
+ *      return enumerator_init(enumerator_allocate(rb_cEnumerator), obj, meth, argc, argv);
+ *    }
+ */
+#define RETURN_ENUMERATOR(obj, argc, argv) do {				            \
+	if (!rb_block_given_p())					                              \
+	  return rb_enumeratorize((obj), ID2SYM(rb_frame_this_func()),  \
+				    (argc), (argv));			                                \
+  } while (0)
+
+/*
  * Global Variables
  */
 
@@ -391,6 +406,36 @@ static VALUE nm_upcast(VALUE self, VALUE t1, VALUE t2) {
 }
 
 
+/*
+ * Each: Yield objects directly (suitable only for a dense matrix of Ruby objects).
+ */
+static VALUE nm_dense_each_direct(VALUE nm) {
+  DENSE_STORAGE* s = NM_STORAGE_DENSE(nm);
+
+  RETURN_ENUMERATOR(nm, 0, 0);
+
+  for (size_t i = 0; i < nm_storage_count_max_elements(s); ++i)
+    rb_yield( reinterpret_cast<VALUE*>(s->elements)[i] );
+
+  return nm;
+}
+
+/*
+ * Each: Copy matrix elements into Ruby VALUEs before operating on them (suitable for a dense matrix).
+ */
+static VALUE nm_dense_each_indirect(VALUE nm) {
+  DENSE_STORAGE* s = NM_STORAGE_DENSE(nm);
+
+  RETURN_ENUMERATOR(nm, 0, 0);
+
+  for (size_t i = 0; i < nm_storage_count_max_elements(s); ++i) {
+    VALUE v = rubyobj_from_cval((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nm)], NM_DTYPE(nm)).rval;
+    rb_yield( v ); // yield to the copy we made
+  }
+
+  return nm;
+}
+
 
 /*
  * Borrowed this function from NArray. Handles 'each' iteration on a dense
@@ -399,28 +444,20 @@ static VALUE nm_upcast(VALUE self, VALUE t1, VALUE t2) {
  * Additionally, handles separately matrices containing VALUEs and matrices
  * containing other types of data.
  */
-static VALUE nm_each_dense(VALUE nmatrix) {
-  DENSE_STORAGE* s = NM_STORAGE_DENSE(nmatrix);
-  VALUE v;
-  size_t i;
+static VALUE nm_dense_each(VALUE nmatrix) {
+  volatile VALUE nm = nmatrix; // Not sure this actually does anything.
 
-  if (NM_DTYPE(nmatrix) == RUBYOBJ) {
+  if (NM_DTYPE(nm) == RUBYOBJ) {
 
     // matrix of Ruby objects -- yield those objects directly
-    for (i = 0; i < nm_storage_count_max_elements(s); ++i)
-      rb_yield( *((VALUE*)((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)])) );
+    return nm_dense_each_direct(nm);
 
   } else {
+
     // We're going to copy the matrix element into a Ruby VALUE and then operate on it. This way user can't accidentally
     // modify it and cause a seg fault.
-
-    for (i = 0; i < nm_storage_count_max_elements(s); ++i) {
-      v = rubyobj_from_cval((char*)(s->elements) + i*DTYPE_SIZES[NM_DTYPE(nmatrix)], NM_DTYPE(nmatrix)).rval;
-      rb_yield(v); // yield to the copy we made
-    }
+    return nm_dense_each_indirect(nm);
   }
-
-  return nmatrix;
 }
 
 
@@ -434,7 +471,7 @@ static VALUE nm_each(VALUE nmatrix) {
 
   switch(NM_STYPE(nm)) {
   case DENSE_STORE:
-    return nm_each_dense(nm);
+    return nm_dense_each(nm);
   default:
     rb_raise(rb_eNotImpError, "only dense matrix's each method works right now");
   }
