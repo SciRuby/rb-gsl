@@ -1120,7 +1120,8 @@ static VALUE elementwise_op(nm::ewop_t op, VALUE left_val, VALUE right_val) {
 	static STORAGE* (*ew_op[nm::NUM_STYPES])(nm::ewop_t, const STORAGE*, const STORAGE*) = {
 		nm_dense_storage_ew_op,
 		nm_list_storage_ew_op,
-		NULL
+		nm_yale_storage_ew_op
+//		NULL
 	};
 	
 	NMATRIX* result = ALLOC(NMATRIX);
@@ -1145,7 +1146,7 @@ static VALUE elementwise_op(nm::ewop_t op, VALUE left_val, VALUE right_val) {
 	if (left->stype == right->stype) {
 		
 		if (ew_op[left->stype] == NULL) {
-			rb_raise(rb_eArgError, "Element-wise operations are not supported for the given storage type.");
+			rb_raise(rb_eArgError, "Element-wise operations are not currently supported for this data type.");
 		}
 		
 		result->storage	= ew_op[left->stype](op, reinterpret_cast<STORAGE*>(left->storage), reinterpret_cast<STORAGE*>(right->storage));
