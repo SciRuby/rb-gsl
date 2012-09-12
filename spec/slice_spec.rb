@@ -99,8 +99,16 @@ describe "Slice operation" do
       [:dense, :list, :yale].each do |cast_type|
         it "should cast from #{stype.upcase} to #{cast_type.upcase}" do
           nm_eql(@m.slice(1..2, 1..2).cast(cast_type, :int32), @m.slice(1..2,1..2)).should be_true
+          nm_eql(@m.slice(0..1, 1..2).cast(cast_type, :int32), @m.slice(0..1,1..2)).should be_true
+          nm_eql(@m.slice(1..2, 0..1).cast(cast_type, :int32), @m.slice(1..2,0..1)).should be_true
+          nm_eql(@m.slice(0..1, 0..1).cast(cast_type, :int32), @m.slice(0..1,0..1)).should be_true
+
+          # Non square
           nm_eql(@m.slice(0..2, 1..2).cast(cast_type, :int32), @m.slice(0..2,1..2)).should be_true
           nm_eql(@m.slice(1..2, 0..2).cast(cast_type, :int32), @m.slice(1..2,0..2)).should be_true
+
+          # Full
+          nm_eql(@m.slice(0..2, 0..2).cast(cast_type, :int32), @m).should be_true
         end
       end
 
@@ -216,8 +224,16 @@ describe "Slice operation" do
       [:dense, :list, :yale].each do |cast_type|
         it "should cast from #{stype.upcase} to #{cast_type.upcase}" do
           nm_eql(@m[1..2, 1..2].cast(cast_type, :int32), @m[1..2,1..2]).should be_true
+          nm_eql(@m[0..1, 1..2].cast(cast_type, :int32), @m[0..1,1..2]).should be_true
+          nm_eql(@m[1..2, 0..1].cast(cast_type, :int32), @m[1..2,0..1]).should be_true
+          nm_eql(@m[0..1, 0..1].cast(cast_type, :int32), @m[0..1,0..1]).should be_true
+
+          # Non square
           nm_eql(@m[0..2, 1..2].cast(cast_type, :int32), @m[0..2,1..2]).should be_true
           nm_eql(@m[1..2, 0..2].cast(cast_type, :int32), @m[1..2,0..2]).should be_true
+
+          # Full
+          nm_eql(@m[0..2, 0..2].cast(cast_type, :int32), @m).should be_true
         end
       end
       end

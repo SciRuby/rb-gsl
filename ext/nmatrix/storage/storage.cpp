@@ -507,7 +507,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
       lhs_ija[i]= ija;
 
       for (LIType j = 0; j < rhs->shape[1];  ++j) {
-        pos = rhs->stride[0]*(i + rhs->offset[0]) + rhs->stride[1]*(j + rhs->offset[1]);
+        pos = rhs->stride[0]*(i + rhs->offset[0]) + rhs->stride[1]*(j + rhs->offset[1]); // calc position with offsets
 
         if (i == j) { // copy to diagonal
           lhs_a[i]  = rhs_elements[pos];
@@ -532,8 +532,6 @@ namespace yale_storage { // FIXME: Move to yale.cpp
    */
   template <typename LDType, typename RDType, typename LIType>
   YALE_STORAGE* create_from_list_storage(const LIST_STORAGE* rhs, dtype_t l_dtype) {
-    size_t ndnz = nm_list_storage_count_nd_elements(rhs);
-
     if (rhs->dim != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of dim 2 to yale");
 
     if ((rhs->dtype == RUBYOBJ and (*reinterpret_cast<RubyObject*>(rhs->default_val)) == RubyObject(INT2FIX(0)))
@@ -541,6 +539,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
       rb_raise(nm_eStorageTypeError, "list matrix must have default value of 0 to convert to yale");
 
 
+    size_t ndnz = nm_list_storage_count_nd_elements(rhs);
     // Copy shape for yale construction
     size_t* shape = ALLOC_N(size_t, 2);
     shape[0] = rhs->shape[0];
@@ -561,20 +560,30 @@ namespace yale_storage { // FIXME: Move to yale.cpp
 
     LIType ija = lhs->shape[0]+1;
 
+    // Copy contents 
     for (NODE* i_curr = rhs->rows->first; i_curr; i_curr = i_curr->next) {
-      for (NODE* j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
-        LDType cast_jcurr_val = *reinterpret_cast<RDType*>(j_curr->val);
 
-        if (i_curr->key == j_curr->key)
-          lhs_a[i_curr->key] = cast_jcurr_val; // set diagonal
+      // Shrink refernce
+      int i = i_curr->key - rhs->offset[0];
+      if (i < 0 || i >= (int)rhs->shape[0]) continue;
+
+      for (NODE* j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
+        
+        // Shrink refernce
+        int j = j_curr->key - rhs->offset[1];
+        if (j < 0 || j >= (int)rhs->shape[1]) continue;
+
+        LDType cast_jcurr_val = *reinterpret_cast<RDType*>(j_curr->val);
+        if (i_curr->key - rhs->offset[0] == j_curr->key - rhs->offset[1])
+          lhs_a[i_curr->key - rhs->offset[0]] = cast_jcurr_val; // set diagonal
         else {
-          lhs_ija[ija] = j_curr->key;    // set column value
+          lhs_ija[ija] = j_curr->key - rhs->offset[1];    // set column value
 
           lhs_a[ija]   = cast_jcurr_val;                      // set cell value
 
           ++ija;
           // indicate the beginning of a row in the IJA array
-          for (size_t i = i_curr->key + 1; i < shape[0]; ++i) {
+          for (size_t i = i_curr->key - rhs->offset[0] + 1; i < rhs->shape[0] + rhs->offset[0]; ++i) {
             lhs_ija[i] = ija;
           }
 
