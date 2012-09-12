@@ -31,3 +31,5 @@
   * clang support
 
   * `==` operator now used for matrix equality, `=~` and `!~` for element-wise comparisons
+
+  * Dense `each` returns an Enumerator when called without a block

@@ -374,4 +374,15 @@ describe NMatrix do
     n[2,2].should == 777
   end
 
+  it "should return an enumerator when each is called without a block" do
+    a = NMatrix.new(2, 1)
+    b = NMatrix.new(2, [-1,0,1,0])
+    enums = [a.each, b.each]
+
+    begin
+      atans = []
+      atans << Math.atan2(*enums.map(&:next)) while true
+    rescue StopIteration
+    end
+  end
 end
