@@ -287,7 +287,13 @@ void init(YALE_STORAGE* s) {
   clear_diagonal_and_zero<DType>(s);
 }
 
+size_t max_size(YALE_STORAGE* s) {
+  size_t result = s->shape[0]*s->shape[1] + 1;
+  if (s->shape[0] > s->shape[1])
+    result += s->shape[0] - s->shape[1];
 
+  return result;
+}
 ///////////////
 // Accessors //
 ///////////////
@@ -561,11 +567,12 @@ template <typename DType, typename IType>
 static char vector_insert_resize(YALE_STORAGE* s, size_t current_size, size_t pos, size_t* j, size_t n, bool struct_only) {
   // Determine the new capacity for the IJA and A vectors.
   size_t new_capacity = s->capacity * GROWTH_CONSTANT;
+  size_t max_capacity = max_size(s);
 
-  if (new_capacity > NM_YALE_MAX_SIZE(s)) {
-    new_capacity = NM_YALE_MAX_SIZE(s);
+  if (new_capacity > max_capacity) {
+    new_capacity = max_capacity;
 
-    if (current_size + n > NM_YALE_MAX_SIZE(s)) rb_raise(rb_eNoMemError, "insertion size exceeded maximum yale matrix size");
+    if (current_size + n > max_capacity) rb_raise(rb_eNoMemError, "insertion size exceeded maximum yale matrix size");
   }
 
   if (new_capacity < current_size + n)
@@ -989,7 +996,7 @@ YALE_STORAGE* nm_yale_storage_create(dtype_t dtype, size_t* shape, size_t dim, s
   }
 
   s = alloc(dtype, shape, dim);
-  max_capacity = nm_storage_count_max_elements(s)+1;
+  max_capacity = nm::yale_storage::max_size(s);
 
   // Set matrix capacity (and ensure its validity)
   if (init_capacity < NM_YALE_MINIMUM(s)) {

@@ -95,6 +95,15 @@ describe "Slice operation" do
       it 'should be correct slice for range 0..2 and 0...3' do
         @m.slice(0..2,0..2).should == @m.slice(0...3,0...3)
       end
+    
+      [:dense, :list, :yale].each do |cast_type|
+        it "should cast from #{stype.upcase} to #{cast_type.upcase}" do
+          nm_eql(@m.slice(1..2, 1..2).cast(cast_type, :int32), @m.slice(1..2,1..2)).should be_true
+          nm_eql(@m.slice(0..2, 1..2).cast(cast_type, :int32), @m.slice(0..2,1..2)).should be_true
+          nm_eql(@m.slice(1..2, 0..2).cast(cast_type, :int32), @m.slice(1..2,0..2)).should be_true
+        end
+      end
+
     end
 
     
@@ -207,6 +216,8 @@ describe "Slice operation" do
       [:dense, :list, :yale].each do |cast_type|
         it "should cast from #{stype.upcase} to #{cast_type.upcase}" do
           nm_eql(@m[1..2, 1..2].cast(cast_type, :int32), @m[1..2,1..2]).should be_true
+          nm_eql(@m[0..2, 1..2].cast(cast_type, :int32), @m[0..2,1..2]).should be_true
+          nm_eql(@m[1..2, 0..2].cast(cast_type, :int32), @m[1..2,0..2]).should be_true
         end
       end
       end

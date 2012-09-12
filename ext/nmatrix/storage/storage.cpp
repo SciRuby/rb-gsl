@@ -470,10 +470,10 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     // First, count the non-diagonal nonzeros
     for (size_t i = rhs->shape[0]; i-- > 0;) {
       for (size_t j = rhs->shape[1]; j-- > 0;) {
+        pos = rhs->stride[0]*(i + rhs->offset[0]) + rhs->stride[1]*(j + rhs->offset[1]);
         if (i != j && rhs_elements[pos] != R_ZERO)	++ndnz;
 
         // move forward 1 position in dense matrix elements array
-        ++pos;
       }
     }
 
@@ -485,7 +485,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     size_t request_capacity = shape[0] + ndnz + 1;
 
     // Create with minimum possible capacity -- just enough to hold all of the entries
-    YALE_STORAGE* lhs = nm_yale_storage_create(l_dtype, shape, 2, shape[0] + ndnz + 1);
+    YALE_STORAGE* lhs = nm_yale_storage_create(l_dtype, shape, 2, request_capacity);
 
     if (lhs->capacity < request_capacity)
       rb_raise(nm_eStorageTypeError, "conversion failed; capacity of %d requested, max allowable is %d", (int)request_capacity, (int)lhs->capacity);
@@ -494,35 +494,34 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     LIType* lhs_ija   = reinterpret_cast<LIType*>(lhs->ija);
 
     // Set the zero position in the yale matrix
-    lhs_a[ shape[0] ] = R_ZERO;
+    lhs_a[shape[0]] = R_ZERO;
 
     // Start just after the zero position.
-    LIType ija = lhs->shape[0]+1;
+    LIType ija = shape[0]+1;
     LIType i;
     pos        = 0;
 
     // Copy contents
     for (i = 0; i < rhs->shape[0]; ++i) {
       // indicate the beginning of a row in the IJA array
-      lhs_ija[i] = ija;
+      lhs_ija[i]= ija;
 
       for (LIType j = 0; j < rhs->shape[1];  ++j) {
-        pos = rhs->stride[0] * (rhs->offset[0] + i) + rhs->stride[1] * (rhs->offset[1] + j);
+        pos = rhs->stride[0]*(i + rhs->offset[0]) + rhs->stride[1]*(j + rhs->offset[1]);
 
         if (i == j) { // copy to diagonal
-          lhs_a[i] = rhs_elements[pos];
+          lhs_a[i]  = rhs_elements[pos];
         } else if (rhs_elements[pos] != R_ZERO) { // copy nonzero to LU
           lhs_ija[ija] = j; // write column index
-
+          
           lhs_a[ija] = rhs_elements[pos];
 
           ++ija;
         }
       }
-      
     }
-    lhs_ija[i] = ija; // indicate the end of the last row
 
+    lhs_ija[shape[0]] = ija; // indicate the end of the last row
     lhs->ndnz = ndnz;
 
     return lhs;
@@ -563,9 +562,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     LIType ija = lhs->shape[0]+1;
 
     for (NODE* i_curr = rhs->rows->first; i_curr; i_curr = i_curr->next) {
-
-
-      for (NODE* j_curr = ((LIST*)(i_curr->val))->first; j_curr && ija < lhs->capacity; j_curr = j_curr->next) {
+      for (NODE* j_curr = ((LIST*)(i_curr->val))->first; j_curr; j_curr = j_curr->next) {
         LDType cast_jcurr_val = *reinterpret_cast<RDType*>(j_curr->val);
 
         if (i_curr->key == j_curr->key)
@@ -576,7 +573,6 @@ namespace yale_storage { // FIXME: Move to yale.cpp
           lhs_a[ija]   = cast_jcurr_val;                      // set cell value
 
           ++ija;
-
           // indicate the beginning of a row in the IJA array
           for (size_t i = i_curr->key + 1; i < shape[0]; ++i) {
             lhs_ija[i] = ija;
@@ -585,10 +581,11 @@ namespace yale_storage { // FIXME: Move to yale.cpp
         }
       }
 
-      if (!i_curr->next) lhs_ija[rhs->shape[0]] = ija; // indicate the end of the last row
     }
-
+    
+    lhs_ija[rhs->shape[0]] = ija; // indicate the end of the last row
     lhs->ndnz = ndnz;
+
     return lhs;
   }
 
