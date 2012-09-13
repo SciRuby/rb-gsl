@@ -55,9 +55,9 @@ describe NMatrix do
     end
 
     it "divides" do
-      m = @m.clone
+      m = NMatrix.new(:list, 2, 1, :int64)
       m[1,1] = 2
-      r = NMatrix.new(:dense, 2, [-2, 0, 0, 1], :int64).cast(:list, :int64)
+      r = NMatrix.new(:dense, 2, [52, 0, 0, 20], :int64).cast(:list, :int64)
       (@n/@m).should == r
     end
 

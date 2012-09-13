@@ -78,7 +78,7 @@ namespace nm {
    * Templated helper function for element-wise operations, used by dense, yale, and list.
    */
   template <ewop_t op, typename LDType, typename RDType>
-  inline LDType ew_op_switch(LDType& left, RDType& right) {
+  inline LDType ew_op_switch(LDType left, RDType right) {
     switch (op) {
       case EW_ADD:
         return left + right;
@@ -103,7 +103,7 @@ namespace nm {
   }
 
   #define EWOP_INT_INT_DIV(ltype, rtype)       template <>       \
-  inline ltype ew_op_switch<EW_DIV>( ltype & left, rtype & right) { \
+  inline ltype ew_op_switch<EW_DIV>( ltype left, rtype right) { \
     if (right == 0) rb_raise(rb_eZeroDivError, "cannot divide type by 0, would throw SIGFPE");  \
     if ((left > 0 && right > 0) || (left < 0 && right < 0)) \
       return left / right;  \
@@ -112,27 +112,27 @@ namespace nm {
   }
 
   #define EWOP_UINT_UINT_DIV(ltype, rtype)       template <>       \
-  inline ltype ew_op_switch<EW_DIV>( ltype & left, rtype & right) { \
+  inline ltype ew_op_switch<EW_DIV>( ltype left, rtype right) { \
     if (right == 0) rb_raise(rb_eZeroDivError, "cannot divide type by 0, would throw SIGFPE");  \
     return left / right;  \
   }
 
   #define EWOP_INT_UINT_DIV(ltype, rtype)       template <>       \
-  inline ltype ew_op_switch<EW_DIV>( ltype & left, rtype & right) { \
+  inline ltype ew_op_switch<EW_DIV>( ltype left, rtype right) { \
     if (right == 0) rb_raise(rb_eZeroDivError, "cannot divide type by 0, would throw SIGFPE");  \
     if (left > 0 )  return left / right;  \
     else            return ( ltype )(std::floor((double)(left) / (double)(right)));  \
   }
 
   #define EWOP_UINT_INT_DIV(ltype, rtype)       template <>       \
-  inline ltype ew_op_switch<EW_DIV>( ltype & left, rtype & right) { \
+  inline ltype ew_op_switch<EW_DIV>( ltype left, rtype right) { \
     if (right == 0) rb_raise(rb_eZeroDivError, "cannot divide type by 0, would throw SIGFPE");  \
     if (right > 0)  return left / right;  \
     else            return ( ltype )(std::floor((double)(left) / (double)(right)));  \
   }
 
   #define EWOP_FLOAT_INT_DIV(ltype, rtype)       template <>       \
-  inline ltype ew_op_switch<EW_DIV>( ltype & left, rtype & right) { \
+  inline ltype ew_op_switch<EW_DIV>( ltype left, rtype right) { \
     return left / (ltype)(right);  \
   }
 

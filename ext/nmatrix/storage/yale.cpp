@@ -121,6 +121,9 @@ static char           vector_insert(YALE_STORAGE* s, size_t pos, size_t* j, DTyp
 template <typename DType, typename IType>
 static char           vector_insert_resize(YALE_STORAGE* s, size_t current_size, size_t pos, size_t* j, size_t n, bool struct_only);
 
+template <typename nm::ewop_t op, typename IType, typename DType>
+YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t dtype);
+
 /*
  * Functions
  */
@@ -298,7 +301,6 @@ size_t max_size(YALE_STORAGE* s) {
 // Accessors //
 ///////////////
 
-
 /*
  * Returns a pointer to the correct location in the A vector of a YALE_STORAGE object, given some set of coordinates
  * (the coordinates are stored in slice).
@@ -327,10 +329,6 @@ void* ref(YALE_STORAGE* storage, SLICE* slice) {
 
   return &(a[ storage->shape[0] ]); // return a pointer that happens to be zero
 }
-
-
-
-
 
 /*
  * Attempt to set some cell in a YALE_STORAGE object. Must supply coordinates and a pointer to a value (which will be
@@ -382,11 +380,9 @@ char set(YALE_STORAGE* storage, SLICE* slice, void* value) {
   return ins_type;
 }
 
-
 ///////////
 // Tests //
 ///////////
-
 
 /*
  * Yale eql? -- for whole-matrix comparison returning a single value.
@@ -432,11 +428,8 @@ static bool eqeq(const YALE_STORAGE* left, const YALE_STORAGE* right) {
   return true;
 }
 
-
 /*
  * Are two non-diagonal rows the same? We already know.
- *
- * FIXME: Add templating.
  */
 template <typename LDType, typename RDType, typename IType>
 static bool ndrow_eqeq_ndrow(const YALE_STORAGE* l, const YALE_STORAGE* r, IType l_ija, const IType l_ija_next, IType r_ija, const IType r_ija_next) {
@@ -530,10 +523,254 @@ static bool ndrow_is_empty(const YALE_STORAGE* s, IType ija, const IType ija_nex
   return true;
 }
 
+//////////
+// Math //
+//////////
+
+#define YALE_IA(s) (reinterpret_cast<IType*>(s->ija))
+#define YALE_IJ(s) (reinterpret_cast<IType*>(s->ija) + s->shape[0] + 1)
+#define YALE_COUNT(yale) (yale->ndnz + yale->shape[0])
+
+template <typename nm::ewop_t op, typename IType, typename DType>
+YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t dtype) {
+	size_t  init_capacity;
+	size_t* new_shape;
+	
+	unsigned int	da_index,
+								la_index,
+								ra_index,
+								
+								a_index_offset,
+								
+								la_row_max,
+								ra_row_max,
+								
+								row_index;
+	
+	DType tmp_result;
+	
+	DType * la = reinterpret_cast<DType*> (left->a),
+				* ra = reinterpret_cast<DType*>(right->a),
+				* da;
+	
+	YALE_STORAGE* dest;
+	
+	new_shape			= reinterpret_cast<size_t*>(calloc(2, sizeof(size_t)));
+	new_shape[0]	= left->shape[0];
+	new_shape[1]	= left->shape[1];
+	
+	init_capacity = std::min(left->ndnz + right->ndnz + new_shape[0], new_shape[0] * new_shape[1]);
+	
+	dest	= nm_yale_storage_create(dtype, new_shape, 2, init_capacity);
+	da		= reinterpret_cast<DType*>(dest->a);
+	
+	// Calculate diagonal values.
+	for (da_index = 0; da_index < dest->shape[0]; ++da_index) {
+		da[da_index] = ew_op_switch<op, DType, DType>(la[da_index], ra[da_index]);
+	}
+	
+	// Set the zero representation seperator.
+	da[da_index] = typeid(DType) == typeid(RubyObject) ? INT2FIX(0) : 0;
+	
+	/*
+	 * Calculate the offset between start of the A arrays and the non-diagonal
+	 * entries.
+	 */
+	a_index_offset = dest->shape[0] + 1;
+	
+	// Re-base the A arrays.
+	la = la + a_index_offset;
+	ra = ra + a_index_offset;
+	da = da + a_index_offset;
+	
+	// Initialize our A array indices.
+	la_index = ra_index = da_index = 0;
+	
+	// Calculate the non-diagonal values.
+	for (row_index = 0; row_index < dest->shape[0]; ++row_index) {
+		/*
+		 * Each row.
+		 */
+		
+		printf("Row %d\n", row_index);
+		
+		// Get row bounds.
+		la_row_max = YALE_IA( left)[row_index + 1] - a_index_offset;
+		ra_row_max = YALE_IA(right)[row_index + 1] - a_index_offset;
+		
+		printf("Left  : Row Start: %d - Row End %d\n", la_index + a_index_offset, la_row_max + a_index_offset);
+		printf("Right : Row Start: %d - Row End %d\n", ra_index + a_index_offset, ra_row_max + a_index_offset);
+		
+		/*
+		 * Set this row's left bound (which is also the previous row's right
+		 * bound).
+		 */
+		YALE_IA(dest)[row_index] = da_index + a_index_offset;
+		
+		printf("Left bound of row %d in destination: %d\n", row_index, YALE_IA(dest)[row_index]);
+		
+		// Iterate over non-diagonal entries in this row.
+		while (la_index < la_row_max and ra_index < ra_row_max) {
+			/*
+			 * Elements are present on both the left- and right-hand side.
+			 */
+			
+			printf("Marker 0\n");
+			
+			if (YALE_IJ(left)[la_index] == YALE_IJ(right)[ra_index]) {
+				/*
+				 * Current left- and right-hand values are in the same row and
+				 * column.
+				 */
+				
+				printf("Calculating value for [%d, %d].\n", row_index, YALE_IJ(left)[la_index]);
+				
+				tmp_result = ew_op_switch<op, DType, DType>(la[la_index], ra[ra_index]);
+				
+				if (tmp_result != 0) {
+					printf("Setting value for [%d, %d] at index %d in destination's A array.\n", row_index, YALE_IJ(left)[la_index], da_index + a_index_offset);
+					
+					da[da_index]						= tmp_result;
+					YALE_IJ(dest)[da_index] = YALE_IJ(left)[la_index];
+					
+					++da_index;
+					
+				} else {
+					printf("Result was 0.  Skipping.\n");
+				}
+				
+				++la_index;
+				++ra_index;
+				
+			} else if (YALE_IJ(left)[la_index] < YALE_IJ(right)[ra_index]) {
+				/*
+				 * The right-hand index is ahead of the left-hand index.
+				 */
+				
+				if (op != EW_MUL) {
+					// If this is multiplion there is no point in doing the operation.
+					
+					tmp_result = ew_op_switch<op, DType, DType>(la[la_index], typeid(DType) == typeid(RubyObject) ? INT2FIX(0) : 0);
+				
+					printf("Setting value for [%d, %d].\n", row_index, YALE_IJ(left)[la_index]);
+				
+					if (tmp_result != 0) {
+						da[da_index]						= tmp_result;
+						YALE_IJ(dest)[da_index] = YALE_IJ(left)[la_index];
+				
+						++da_index;
+					}
+				}
+				
+				++la_index;
+				
+			} else {
+				/*
+				 * The left-hand index is ahead of the right-hand index.
+				 */
+				
+				if (op != EW_MUL) {
+					// If this is multiplion there is no point in doing the operation.
+					
+					tmp_result = ew_op_switch<op, DType, DType>(typeid(DType) == typeid(RubyObject) ? INT2FIX(0) : 0, ra[ra_index]);
+				
+					printf("Setting value for [%d, %d].\n", row_index, YALE_IJ(right)[ra_index]);
+				
+					if (tmp_result != 0) {
+						da[da_index]						= tmp_result;
+						YALE_IJ(dest)[da_index] = YALE_IJ(right)[ra_index];
+				
+						++da_index;
+					}
+				}
+				
+				++ra_index;
+			}
+		}
+		
+		if (op != EW_MUL) {
+			/*
+			 * Process the remaining elements on the left- or right-hand side.  One or
+			 * the other, or neither, of the following loops may execute, but not
+			 * both.
+			 *
+			 * If we are doing multiplication this is unnecessary as all remaining
+			 * operations will produce a zero value.
+			 */
+		
+			while (la_index < la_row_max) {
+				/*
+				 * Process the remaining elements on the left-hand side.
+				 */
+				
+				printf("Marker 1\n");
+				
+				tmp_result = ew_op_switch<op, DType, DType>(la[la_index], typeid(DType) == typeid(RubyObject) ? INT2FIX(0) : 0);
+				
+				printf("Setting value for [%d, %d].\n", row_index, YALE_IJ(left)[la_index]);
+				
+				if (tmp_result != 0) {
+					da[da_index]						= tmp_result;
+					YALE_IJ(dest)[da_index] = YALE_IJ(left)[la_index];
+					
+					++da_index;
+				}
+				
+				++la_index;
+			}
+		
+			while (ra_index < ra_row_max) {
+				/*
+				 * Process the remaining elements on the right-hand side.
+				 */
+				
+				printf("Marker 2\n");
+				
+				tmp_result = ew_op_switch<op, DType, DType>(typeid(DType) == typeid(RubyObject) ? INT2FIX(0) : 0, ra[ra_index]);
+				
+				printf("Setting value for [%d, %d].\n", row_index, YALE_IJ(right)[ra_index]);
+				
+				if (tmp_result != 0) {
+					da[da_index]						= tmp_result;
+					YALE_IJ(dest)[da_index] = YALE_IJ(right)[ra_index];
+					
+					++da_index;
+				}
+				
+				++ra_index;
+			}
+		}
+		
+		// Advance the row indices.
+		la_index = la_row_max;
+		ra_index = ra_row_max;
+		
+		printf("End of row %d\n\n", row_index);
+	}
+	
+	// Set the last row's right bound.
+	YALE_IA(dest)[row_index] = da_index + a_index_offset;
+	
+	printf("Right bound of row %d in destination: %d\n", row_index - 1, da_index + a_index_offset);
+	
+	// Set the number of non-diagonal non-zero entries in the destination matrix.
+	dest->ndnz = da_index;
+	
+	printf("Number of non-diagonal non-zero entires: %ld\n\n", dest->ndnz);
+	
+	// Set the capacity of the destination matrix.
+	dest->capacity = dest->shape[0] + dest->ndnz + 1;
+	
+	// Resize the destination matrix.
+	dest->a		= realloc(dest->a,   sizeof(DType) * dest->capacity);
+	dest->ija = realloc(dest->ija, sizeof(IType) * dest->capacity);
+	
+	return dest;
+}
+
 /////////////
 // Utility //
 /////////////
-
 
 /*
  * Binary search for returning stored values. Returns a non-negative position, or -1 for not found.
@@ -731,7 +968,6 @@ static IType insert_search(YALE_STORAGE* s, IType left, IType right, IType key, 
 // Copying and Casting //
 /////////////////////////
 
-
 /*
  * Templated copy constructor for changing dtypes.
  */
@@ -760,8 +996,6 @@ YALE_STORAGE* cast_copy(const YALE_STORAGE* rhs, dtype_t new_dtype) {
   return lhs;
 }
 
-
-
 /*
  * Template access for getting the size of Yale storage.
  */
@@ -769,7 +1003,6 @@ template <typename IType>
 static inline size_t get_size(const YALE_STORAGE* storage) {
   return static_cast<size_t>(reinterpret_cast<IType*>(storage->ija)[ storage->shape[0] ]);
 }
-
 
 /*
  * Allocate for a copy or copy-cast operation, and copy the IJA portion of the
@@ -796,7 +1029,6 @@ static YALE_STORAGE* copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t ne
 
   return lhs;
 }
-
 
 template <typename DType, typename IType>
 static STORAGE* matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
@@ -869,7 +1101,6 @@ char nm_yale_storage_set(STORAGE* storage, SLICE* slice, void* v) {
   return ttable[casted_storage->dtype][casted_storage->itype](casted_storage, slice, v);
 }
 
-
 /*
  * Documentation goes here. FIXME: Aleksey, what is this supposed to do?
  *
@@ -879,7 +1110,6 @@ void* nm_yale_storage_get(STORAGE* storage, SLICE* slice) {
   //YALE_STORAGE* s = (YALE_STORAGE*)storage;
   rb_raise(rb_eNotImpError, "This type of yale slicing not supported yet");
 }
-
 
 /*
  * C accessor for yale_storage::ref, which returns a pointer to the correct location in a YALE_STORAGE object
@@ -916,7 +1146,6 @@ STORAGE* nm_yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
   return (STORAGE*)ttable[new_dtype][casted_rhs->dtype][casted_rhs->itype](casted_rhs, new_dtype);
 }
 
-
 /*
  * Returns size of Yale storage as a size_t (no matter what the itype is). (C accessor)
  */
@@ -926,7 +1155,6 @@ inline size_t nm_yale_storage_get_size(const YALE_STORAGE* storage) {
   return ttable[storage->itype](storage);
 }
 
-
 /*
  * C accessor for allocating a yale storage object for cast-copying. Copies the IJA vector, does not copy the A vector.
  */
@@ -935,8 +1163,6 @@ static YALE_STORAGE* nm_copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t
 
   return ttable[rhs->itype](rhs, new_dtype, new_capacity, new_size);
 }
-
-
 
 /*
  * Transposing copy constructor.
@@ -966,13 +1192,77 @@ STORAGE* nm_yale_storage_copy_transposed(const STORAGE* rhs_base) {
  * FIXME: What happens if the two matrices have different itypes?
  */
 STORAGE* nm_yale_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector) {
-  NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::matrix_multiply, STORAGE*, const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
+  LI_DTYPE_TEMPLATE_TABLE(nm::yale_storage::matrix_multiply, STORAGE*, const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
   YALE_STORAGE* storage_access = (YALE_STORAGE*)(casted_storage.left);
 
   return ttable[storage_access->dtype][storage_access->itype](casted_storage, resulting_shape, vector);
 }
 
+/*
+ * Documentation goes here.
+ */
+STORAGE* nm_yale_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
+	OP_ITYPE_DTYPE_TEMPLATE_TABLE(nm::yale_storage::ew_op, YALE_STORAGE*, const YALE_STORAGE*, const YALE_STORAGE*, dtype_t);
+	
+	YALE_STORAGE* new_l = NULL, * new_r = NULL;
+	YALE_STORAGE* result;
+	
+	const YALE_STORAGE* casted_l, * casted_r;
+	
+	dtype_t new_dtype;
+	
+	if (left->dtype != right->dtype) {
+		
+		new_dtype = Upcast[left->dtype][right->dtype];
+		
+		if (left->dtype != new_dtype) {
+			new_l = reinterpret_cast<YALE_STORAGE*>(nm_yale_storage_cast_copy( left, new_dtype));
+		}
+		
+		if (right->dtype != new_dtype) {
+			new_r = reinterpret_cast<YALE_STORAGE*>(nm_yale_storage_cast_copy(right, new_dtype));
+		}
+		
+		if (static_cast<uint8_t>(op) < nm::NUM_NONCOMP_EWOPS) {
+			result = ttable[op][new_l->itype][new_dtype](	left->dtype  == new_dtype ?
+																											reinterpret_cast<const YALE_STORAGE*>( left) :
+																											reinterpret_cast<const YALE_STORAGE*>(new_l),
+																										
+																										right->dtype == new_dtype ?
+																											reinterpret_cast<const YALE_STORAGE*>(right) :
+																											reinterpret_cast<const YALE_STORAGE*>(new_r),
+																										
+																										new_dtype);
+			
+		} else {
+			rb_raise(rb_eNotImpError, "Elementwise comparison is not yet implemented for the Yale storage class.");
+		}
+		
+		if (new_l != NULL) {
+			nm_yale_storage_delete(new_l);
+		}
+		
+		if (new_r != NULL) {
+			nm_yale_storage_delete(new_r);
+		}
+		
+		return result;
+		
+	} else {
+		
+		casted_l = reinterpret_cast<const YALE_STORAGE*>( left);
+		casted_r = reinterpret_cast<const YALE_STORAGE*>(right);
+		
+		if (static_cast<uint8_t>(op) < nm::NUM_NONCOMP_EWOPS) {
+			
+			return ttable[op][casted_l->itype][casted_l->dtype](casted_l, casted_r, casted_l->dtype);
+		
+		} else {
+			rb_raise(rb_eNotImpError, "Elementwise comparison is not yet implemented for the Yale storage class.");
+		}
+	}
+}
 
 ///////////////
 // Lifecycle //
@@ -1017,7 +1307,6 @@ YALE_STORAGE* nm_yale_storage_create(dtype_t dtype, size_t* shape, size_t dim, s
   return s;
 }
 
-
 /*
  * Destructor for yale storage (C-accessible).
  */
@@ -1030,7 +1319,6 @@ void nm_yale_storage_delete(STORAGE* s) {
     free(storage);
   }
 }
-
 
 /*
  * C accessor for yale_storage::init, a templated function.
@@ -1057,7 +1345,6 @@ void nm_yale_storage_mark(void* storage_base) {
   }
 }
 
-
 /*
  * Allocates and initializes the basic struct (but not the IJA or A vectors).
  */
@@ -1075,7 +1362,6 @@ static YALE_STORAGE* alloc(dtype_t dtype, size_t* shape, size_t dim) {
   return s;
 }
 
-
 YALE_STORAGE* nm_yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, dtype_t from_dtype) {
 
   NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_old_yale, YALE_STORAGE*, dtype_t dtype, size_t* shape, void* r_ia, void* r_ja, void* r_a);
@@ -1088,7 +1374,6 @@ YALE_STORAGE* nm_yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape,
   return ttable[dtype][from_dtype][to_itype](dtype, shape, ia, ja, a);
 
 }
-
 
 //////////////////////////////////////////////
 // YALE-SPECIFIC FUNCTIONS (RUBY ACCESSORS) //
@@ -1141,7 +1426,6 @@ static VALUE nm_d(VALUE self) {
   return rb_ary_new4(s->shape[0], vals);
 }
 
-
 /*
  * Get the non-diagonal ("LU") portion of the A array of a Yale matrix.
  */
@@ -1164,7 +1448,6 @@ static VALUE nm_lu(VALUE self) {
   return ary;
 }
 
-
 /*
  * Get the IA portion of the IJA array of a Yale matrix. This gives the start and end positions of rows in the
  * JA and LU portions of the IJA and A arrays, respectively.
@@ -1180,7 +1463,6 @@ static VALUE nm_ia(VALUE self) {
 
   return rb_ary_new4(s->shape[0]+1, vals);
 }
-
 
 /*
  * Get the JA portion of the IJA array of a Yale matrix. This gives the column indices for entries in corresponding
@@ -1204,7 +1486,6 @@ static VALUE nm_ja(VALUE self) {
 
   return ary;
 }
-
 
 /*
  * Get the IJA array of a Yale matrix.
