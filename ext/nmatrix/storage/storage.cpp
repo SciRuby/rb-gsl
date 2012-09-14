@@ -546,7 +546,6 @@ namespace yale_storage { // FIXME: Move to yale.cpp
     shape[1] = rhs->shape[1];
 
     size_t request_capacity = shape[0] + ndnz + 1;
-
     YALE_STORAGE* lhs = nm_yale_storage_create(l_dtype, shape, 2, request_capacity);
 
     if (lhs->capacity < request_capacity)

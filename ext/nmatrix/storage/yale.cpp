@@ -302,6 +302,89 @@ size_t max_size(YALE_STORAGE* s) {
 ///////////////
 
 /*
+ * Returns a slice of YALE_STORAGE object by coppy
+ *
+ * Slicing-related.
+ */
+template <typename DType,typename IType>
+void* get(YALE_STORAGE* storage, SLICE* slice) {
+  
+  size_t *offset = slice->coords;
+  // Copy shape for yale construction
+  size_t* shape = ALLOC_N(size_t, 2);
+  shape[0] = slice->lengths[0];
+  shape[1] = slice->lengths[1];
+
+  IType *src_ija = reinterpret_cast<IType*>(storage->ija);
+  DType *src_a = reinterpret_cast<DType*>(storage->a);
+
+  // Calc ndnz
+  size_t ndnz  = 0;
+  size_t i,j; // indexes of destination matrix
+  size_t k,l; // indexes of source matrix
+  for (i = 0; i < shape[0]; i++) {
+    k = i + offset[0];
+    for (j = 0; j < shape[1]; j++) {
+      l = j + offset[1];
+
+      if (j == i)  continue;
+
+      if (k == l && src_a[k] != 0) ndnz++; // for diagonal element of source         
+      else { // for non-diagonal element 
+        for (size_t c = src_ija[k]; c < src_ija[k+1]; c++) 
+          if (src_ija[c] == l) { ndnz++; break; }
+      }
+
+    }
+  }
+
+  size_t request_capacity = shape[0] + ndnz + 1;
+  YALE_STORAGE* ns = nm_yale_storage_create(storage->dtype, shape, 2, request_capacity);
+
+  if (ns->capacity < request_capacity)
+      rb_raise(nm_eStorageTypeError, "conversion failed; capacity of %ld requested, max allowable is %ld", request_capacity, ns->capacity);
+
+   // Initialize the A and IJA arrays
+  init<DType,IType>(ns);
+  IType *dst_ija = reinterpret_cast<IType*>(ns->ija);
+  DType *dst_a = reinterpret_cast<DType*>(ns->a);
+ 
+  size_t ija = shape[0] + 1;
+  DType val; 
+  for (i = 0; i < shape[0]; ++i) {
+    k = i + offset[0];
+    for (j = 0; j < shape[1]; ++j) {
+      l = j + offset[1];
+    
+      // Get value from source matrix
+      if (k == l) val = src_a[k];
+      else {
+        // copy non-diagonal element
+        for (size_t c = src_ija[k]; c < src_ija[k+1]; ++c) {
+          if (src_ija[c] == l) val = src_a[c];
+        }
+      }
+
+      // Set value to destination matrix
+      if (i == j)  dst_a[i] = val; 
+      else { 
+        // copy non-diagonal element
+        dst_ija[ija] = j;
+        dst_a[ija] = val;
+
+        ++ija;
+        for (size_t c = i + 1; c <= shape[0]; ++c) {
+          dst_ija[c] = ija;
+        }
+      } 
+    }
+  }
+
+  dst_ija[shape[0]] = ija; // indicate the end of the last row
+  ns->ndnz = ndnz;
+  return ns;
+}
+/*
  * Returns a pointer to the correct location in the A vector of a YALE_STORAGE object, given some set of coordinates
  * (the coordinates are stored in slice).
  */
@@ -607,7 +690,7 @@ YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t
 		 */
 		YALE_IA(dest)[row_index] = da_index + a_index_offset;
 		
-		printf("Left bound of row %d in destination: %d\n", row_index, YALE_IA(dest)[row_index]);
+		printf("Left bound of row %d in destination: %d\n", (int)row_index, (int)YALE_IA(dest)[row_index]);
 		
 		// Iterate over non-diagonal entries in this row.
 		while (la_index < la_row_max and ra_index < ra_row_max) {
@@ -623,12 +706,12 @@ YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t
 				 * column.
 				 */
 				
-				printf("Calculating value for [%d, %d].\n", row_index, YALE_IJ(left)[la_index]);
+				printf("Calculating value for [%d, %d].\n", (int)row_index, (int)YALE_IJ(left)[la_index]);
 				
 				tmp_result = ew_op_switch<op, DType, DType>(la[la_index], ra[ra_index]);
 				
 				if (tmp_result != 0) {
-					printf("Setting value for [%d, %d] at index %d in destination's A array.\n", row_index, YALE_IJ(left)[la_index], da_index + a_index_offset);
+					printf("Setting value for [%d, %d] at index %d in destination's A array.\n", (int)row_index, (int)YALE_IJ(left)[la_index], (int)(da_index + a_index_offset));
 					
 					da[da_index]						= tmp_result;
 					YALE_IJ(dest)[da_index] = YALE_IJ(left)[la_index];
@@ -652,7 +735,7 @@ YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t
 					
 					tmp_result = ew_op_switch<op, DType, DType>(la[la_index], typeid(DType) == typeid(RubyObject) ? INT2FIX(0) : 0);
 				
-					printf("Setting value for [%d, %d].\n", row_index, YALE_IJ(left)[la_index]);
+					printf("Setting value for [%d, %d].\n", (int)row_index, (int)YALE_IJ(left)[la_index]);
 				
 					if (tmp_result != 0) {
 						da[da_index]						= tmp_result;
@@ -674,7 +757,7 @@ YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t
 					
 					tmp_result = ew_op_switch<op, DType, DType>(typeid(DType) == typeid(RubyObject) ? INT2FIX(0) : 0, ra[ra_index]);
 				
-					printf("Setting value for [%d, %d].\n", row_index, YALE_IJ(right)[ra_index]);
+					printf("Setting value for [%d, %d].\n", (int)row_index, (int)YALE_IJ(right)[ra_index]);
 				
 					if (tmp_result != 0) {
 						da[da_index]						= tmp_result;
@@ -707,7 +790,7 @@ YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t
 				
 				tmp_result = ew_op_switch<op, DType, DType>(la[la_index], typeid(DType) == typeid(RubyObject) ? INT2FIX(0) : 0);
 				
-				printf("Setting value for [%d, %d].\n", row_index, YALE_IJ(left)[la_index]);
+				printf("Setting value for [%d, %d].\n", (int)row_index, (int)YALE_IJ(left)[la_index]);
 				
 				if (tmp_result != 0) {
 					da[da_index]						= tmp_result;
@@ -728,7 +811,7 @@ YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t
 				
 				tmp_result = ew_op_switch<op, DType, DType>(typeid(DType) == typeid(RubyObject) ? INT2FIX(0) : 0, ra[ra_index]);
 				
-				printf("Setting value for [%d, %d].\n", row_index, YALE_IJ(right)[ra_index]);
+				printf("Setting value for [%d, %d].\n", (int)row_index, (int)YALE_IJ(right)[ra_index]);
 				
 				if (tmp_result != 0) {
 					da[da_index]						= tmp_result;
@@ -1102,13 +1185,17 @@ char nm_yale_storage_set(STORAGE* storage, SLICE* slice, void* v) {
 }
 
 /*
- * Documentation goes here. FIXME: Aleksey, what is this supposed to do?
+ * C accessor for yale_storage::get, which returns a slice of YALE_STORAGE object by coppy
  *
  * Slicing-related.
  */
 void* nm_yale_storage_get(STORAGE* storage, SLICE* slice) {
-  //YALE_STORAGE* s = (YALE_STORAGE*)storage;
-  rb_raise(rb_eNotImpError, "This type of yale slicing not supported yet");
+  NAMED_LI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::get, void*, YALE_STORAGE* storage, SLICE* slice);
+  YALE_STORAGE* s = (YALE_STORAGE*)storage;
+
+
+  YALE_STORAGE* casted_storage = (YALE_STORAGE*)storage;
+  return ttable[casted_storage->dtype][casted_storage->itype](casted_storage, slice);
 }
 
 /*

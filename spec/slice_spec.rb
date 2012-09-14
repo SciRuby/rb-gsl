@@ -27,22 +27,13 @@
 require File.dirname(__FILE__) + "/spec_helper.rb"
 
 describe "Slice operation" do
-  [:dense, :list].each do |stype|
+  [:dense, :list, :yale].each do |stype|
   context "for #{stype}" do
     before :each do
-      @m = NMatrix.new(stype, [3,3], 0, :int32)
-
-      @m[0,0] = 0
-      @m[0,1] = 1
-      @m[0,2] = 2
-      @m[1,0] = 3
-      @m[1,1] = 4
-      @m[1,2] = 5
-      @m[2,0] = 6
-      @m[2,1] = 7
-      @m[2,2] = 8
+      @m = create_matrix(stype)
     end
 
+    unless stype == :yale
     it "should have #is_ref? method" do
       a = @m[0..1, 0..1]
       b = @m.slice(0..1, 0..1)
@@ -58,6 +49,7 @@ describe "Slice operation" do
       @m[1..2,0..1].should == @m.slice(1..2, 0..1)
       @m[1..2,0..1].should == @m[1..2, 0..1]
     end
+    end # unless stype == :yale
 
     context "with copying" do
       it 'should return an NMatrix' do
@@ -111,10 +103,9 @@ describe "Slice operation" do
           nm_eql(@m.slice(0..2, 0..2).cast(cast_type, :int32), @m).should be_true
         end
       end
-
     end
 
-    
+    unless stype == :yale
     context "by reference" do
       it 'should return an NMatrix' do
         n = @m[0..1,0..1]
@@ -238,6 +229,7 @@ describe "Slice operation" do
       end
       end
     end
+    end # unless stype == :yale
   end
 
   # Stupid but independent comparison
