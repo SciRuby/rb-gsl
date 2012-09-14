@@ -105,7 +105,13 @@ describe "Slice operation" do
       end
     end
 
-    unless stype == :yale
+    if stype == :yale
+    context "by reference" do
+      it "should be raise error" do
+        expect{ @m[1..2,1..2] }.to raise_error(NotImplementedError)
+      end
+    end
+    else
     context "by reference" do
       it 'should return an NMatrix' do
         n = @m[0..1,0..1]
