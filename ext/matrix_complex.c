@@ -199,7 +199,7 @@ static VALUE rb_gsl_matrix_complex_eye(int argc, VALUE *argv, VALUE klass)
 {
   size_t n, i;
   gsl_matrix_complex *m = NULL;
-  gsl_complex z, *p = &z;
+  gsl_complex z, *pz = &z;
   switch (argc) {
   case 1:
     CHECK_FIXNUM(argv[0]);
@@ -223,7 +223,8 @@ static VALUE rb_gsl_matrix_complex_eye(int argc, VALUE *argv, VALUE klass)
       break;
     default:
       if (rb_obj_is_kind_of(argv[1], cgsl_complex)) {
-	Data_Get_Struct(argv[1], gsl_complex, p);
+	Data_Get_Struct(argv[1], gsl_complex, pz);
+        z = *pz;
       } else {
 	rb_raise(rb_eTypeError, 
 		 "wrong argument type %s", rb_class2name(CLASS_OF(argv[1])));
@@ -422,6 +423,7 @@ static VALUE rb_gsl_matrix_complex_set_row(int argc, VALUE *argv, VALUE obj)
     default:
       CHECK_COMPLEX(argv[k]);
       Data_Get_Struct(argv[k], gsl_complex, pz);
+      z = *pz;
       break;
     }
     gsl_matrix_complex_set(A, i, k-1, z);
@@ -448,6 +450,7 @@ static VALUE rb_gsl_matrix_complex_set_col(int argc, VALUE *argv, VALUE obj)
     default:
       CHECK_COMPLEX(argv[k]);
       Data_Get_Struct(argv[k], gsl_complex, pz);
+      z = *pz;
       break;
     }
     gsl_matrix_complex_set(A, k-1, j, z);
