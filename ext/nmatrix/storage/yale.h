@@ -62,7 +62,7 @@ extern "C" {
    * Macros
    */
 
-  #define NM_YALE_MINIMUM(sptr)               (((YALE_STORAGE*)(sptr))->shape[0] + 1) // arbitrarily defined
+  #define NM_YALE_MINIMUM(sptr)               (((YALE_STORAGE*)(sptr))->shape[0]*2 + 1) // arbitrarily defined
 
   #ifndef NM_CHECK_ALLOC
    #define NM_CHECK_ALLOC(x) if (!x) rb_raise(rb_eNoMemError, "insufficient memory");
