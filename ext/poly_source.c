@@ -466,9 +466,16 @@ static VALUE FUNCTION(rb_gsl_poly,solve_quadratic)(int argc, VALUE *argv, VALUE 
 	     "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
-  r = gsl_vector_alloc(2);
-  gsl_vector_set(r, 0, x0);
-  gsl_vector_set(r, 1, x1);
+  // If n == 0, we want to return an empty gsl_vector, but gsl_vectors can'y be
+  // empty, so just return an empty Array.
+  if(n == 0) {
+    return rb_ary_new();
+  }
+  r = gsl_vector_alloc(n);
+  switch(n) {
+    case 2: gsl_vector_set(r, 1, x1); /* fall through */
+    case 1: gsl_vector_set(r, 0, x0);
+  }
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, r);
 }
 
@@ -507,9 +514,16 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_quadratic)(int argc, VALUE *argv
 	     "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
-  r = gsl_vector_complex_alloc(2);
-  gsl_vector_complex_set(r, 0, z0);
-  gsl_vector_complex_set(r, 1, z1);
+  // If n == 0, we want to return an empty gsl_vector, but gsl_vectors can'y be
+  // empty, so just return an empty Array.
+  if(n == 0) {
+    return rb_ary_new();
+  }
+  r = gsl_vector_complex_alloc(n);
+  switch(n) {
+    case 2: gsl_vector_complex_set(r, 1, z1); /* fall through */
+    case 1: gsl_vector_complex_set(r, 0, z0);
+  }
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, r);
 }
 
@@ -547,10 +561,12 @@ static VALUE FUNCTION(rb_gsl_poly,solve_cubic)(int argc, VALUE *argv, VALUE obj)
 	     "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
-  r = gsl_vector_alloc(3);
-  gsl_vector_set(r, 0, x0);
-  gsl_vector_set(r, 1, x1);
-  gsl_vector_set(r, 2, x2);
+  r = gsl_vector_alloc(n);
+  switch(n) {
+    case 3: gsl_vector_set(r, 2, x2); /* fall through */
+    case 2: gsl_vector_set(r, 1, x1); /* fall through */
+    case 1: gsl_vector_set(r, 0, x0);
+  }
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, r);
 }
 
@@ -588,10 +604,12 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_cubic)(int argc, VALUE *argv, VA
 	     "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
-  r = gsl_vector_complex_alloc(3);
-  gsl_vector_complex_set(r, 0, z0);
-  gsl_vector_complex_set(r, 1, z1);
-  gsl_vector_complex_set(r, 2, z2);
+  r = gsl_vector_complex_alloc(n);
+  switch(n) {
+    case 3: gsl_vector_complex_set(r, 2, z2); /* fall through */
+    case 2: gsl_vector_complex_set(r, 1, z1); /* fall through */
+    case 1: gsl_vector_complex_set(r, 0, z0);
+  }
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, r);
 }
 
@@ -633,11 +651,13 @@ static VALUE FUNCTION(rb_gsl_poly,solve_quartic)(int argc, VALUE *argv, VALUE ob
 	     "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
-  r = gsl_vector_alloc(4);
-  gsl_vector_set(r, 0, x0);
-  gsl_vector_set(r, 1, x1);
-  gsl_vector_set(r, 2, x2);
-  gsl_vector_set(r, 3, x3);
+  r = gsl_vector_alloc(n);
+  switch(n) {
+    case 4: gsl_vector_set(r, 3, x3); /* fall through */
+    case 3: gsl_vector_set(r, 2, x2); /* fall through */
+    case 2: gsl_vector_set(r, 1, x1); /* fall through */
+    case 1: gsl_vector_set(r, 0, x0);
+  }
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, r);
 }
 
@@ -678,11 +698,13 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_quartic)(int argc, VALUE *argv, 
 	     "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
-  r = gsl_vector_complex_alloc(4);
-  gsl_vector_complex_set(r, 0, z0);
-  gsl_vector_complex_set(r, 1, z1);
-  gsl_vector_complex_set(r, 2, z2);
-  gsl_vector_complex_set(r, 3, z3);
+  r = gsl_vector_complex_alloc(n);
+  switch(n) {
+    case 4: gsl_vector_complex_set(r, 0, z0); /* fall through */
+    case 3: gsl_vector_complex_set(r, 1, z1); /* fall through */
+    case 2: gsl_vector_complex_set(r, 2, z2); /* fall through */
+    case 1: gsl_vector_complex_set(r, 3, z3);
+  }
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, r);
 }
 
@@ -696,7 +718,9 @@ VALUE FUNCTION(rb_gsl_poly,complex_solve)(int argc, VALUE *argv, VALUE obj)
   gsl_vector *a = NULL, *z = NULL;
   gsl_complex c;
   gsl_vector_complex *r = NULL;
-  int status, i, flag = 0;
+  int i, flag = 0;
+  // local variable "status" declared and set, but never used
+  //int status;
 
   switch (argc) {
   case 1:
@@ -747,7 +771,7 @@ VALUE FUNCTION(rb_gsl_poly,complex_solve)(int argc, VALUE *argv, VALUE obj)
     w = gsl_poly_complex_workspace_alloc(size);
     flag = 1;
   }
-  status = gsl_poly_complex_solve(a->data, size, w, z->data);
+  /*status =*/ gsl_poly_complex_solve(a->data, size, w, z->data);
 
   if (flag == 1) gsl_poly_complex_workspace_free(w);
   gsl_vector_free(a);
@@ -783,15 +807,19 @@ static VALUE FUNCTION(rb_gsl_poly,solve_quadratic2)(VALUE obj)
   d = a1*a1 - 4.0*a2*a0;    /* determinant */
   if (d >= 0.0) {
     n = gsl_poly_solve_quadratic(a2, a1, a0, &x0, &x1);
-    r = gsl_vector_alloc(2);
-    gsl_vector_set(r, 0, x0);
-    gsl_vector_set(r, 1, x1);
+    r = gsl_vector_alloc(n);
+    switch(n) {
+      case 2: gsl_vector_set(r, 1, x1); /* fall through */
+      case 1: gsl_vector_set(r, 0, x0);
+    }
     return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, r);
   } else {
     n = gsl_poly_complex_solve_quadratic(a2, a1, a0, &z0, &z1);
-    r2 = gsl_vector_complex_alloc(2);
-    gsl_vector_complex_set(r2, 0, z0);
-    gsl_vector_complex_set(r2, 1, z1);
+    r2 = gsl_vector_complex_alloc(n);
+    switch(n) {
+      case 2: gsl_vector_complex_set(r2, 1, z1); /* fall through */
+      case 1: gsl_vector_complex_set(r2, 0, z0);
+    }
     return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, r2);
   }
 
@@ -803,7 +831,6 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_quadratic2)(VALUE obj)
   GSL_TYPE(gsl_vector) *v = NULL;
   gsl_vector_complex *r = NULL;
   double a2, a1, a0;
-  double d;                /* determinant */
   int n;
   gsl_complex z0, z1;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
@@ -813,11 +840,12 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_quadratic2)(VALUE obj)
   a2 = FUNCTION(gsl_vector,get)(v, 2);   /* coefficients */
   a1 = FUNCTION(gsl_vector,get)(v, 1);
   a0 = FUNCTION(gsl_vector,get)(v, 0);
-  d = a1*a1 - 4.0*a2*a0;    /* determinant */
   n = gsl_poly_complex_solve_quadratic(a2, a1, a0, &z0, &z1);
-  r = gsl_vector_complex_alloc(2);
-  gsl_vector_complex_set(r, 0, z0);
-  gsl_vector_complex_set(r, 1, z1);
+  r = gsl_vector_complex_alloc(n);
+  switch(n) {
+    case 2: gsl_vector_complex_set(r, 1, z1); /* fall through */
+    case 1: gsl_vector_complex_set(r, 0, z0);
+  }
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, r);
 }
 
@@ -839,10 +867,12 @@ static VALUE FUNCTION(rb_gsl_poly,solve_cubic2)(VALUE obj)
   a1 = FUNCTION(gsl_vector,get)(v, 1)/a3;
   a0 = FUNCTION(gsl_vector,get)(v, 0)/a3;
   n = gsl_poly_solve_cubic(a2, a1, a0, &x0, &x1, &x2);
-  r = gsl_vector_alloc(3);
-  gsl_vector_set(r, 0, x0);
-  gsl_vector_set(r, 1, x1);
-  gsl_vector_set(r, 2, x2);
+  r = gsl_vector_alloc(n);
+  switch(n) {
+    case 3: gsl_vector_set(r, 2, x2); /* fall through */
+    case 2: gsl_vector_set(r, 1, x1); /* fall through */
+    case 1: gsl_vector_set(r, 0, x0);
+  }
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, r);
 }
 
@@ -862,10 +892,12 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_cubic2)(VALUE obj)
   a1 = FUNCTION(gsl_vector,get)(v, 1)/a3;
   a0 = FUNCTION(gsl_vector,get)(v, 0)/a3;
   n = gsl_poly_complex_solve_cubic(a2, a1, a0, &z0, &z1, &z2);
-  r = gsl_vector_complex_alloc(3);
-  gsl_vector_complex_set(r, 0, z0);
-  gsl_vector_complex_set(r, 1, z1);
-  gsl_vector_complex_set(r, 2, z2);
+  r = gsl_vector_complex_alloc(n);
+  switch(n) {
+    case 3: gsl_vector_complex_set(r, 2, z2); /* fall through */
+    case 2: gsl_vector_complex_set(r, 1, z1); /* fall through */
+    case 1: gsl_vector_complex_set(r, 0, z0);
+  }
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, r);
 }
 
@@ -934,7 +966,9 @@ VALUE FUNCTION(rb_gsl_poly,complex_solve2)(int argc, VALUE *argv, VALUE obj)
   gsl_poly_complex_workspace *w = NULL;
   gsl_complex c;
   gsl_vector_complex *r = NULL;
-  int n, flag = 0;
+  int flag = 0;
+  // local variable "status" declared and set, but never used
+  //int status;
 
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   size = v->size;
@@ -953,7 +987,7 @@ VALUE FUNCTION(rb_gsl_poly,complex_solve2)(int argc, VALUE *argv, VALUE obj)
     flag = 1;
   }
   
-  n = gsl_poly_complex_solve(a->data, size, w, z->data);
+  /*status =*/ gsl_poly_complex_solve(a->data, size, w, z->data);
 
   r = gsl_vector_complex_alloc(size - 1);
   for (i = 0; i < size - 1; i++) {
@@ -1584,16 +1618,12 @@ static VALUE rb_gsl_poly_wfit(int argc, VALUE *argv, VALUE obj)
   gsl_multifit_linear_workspace *space = NULL;
   gsl_matrix *X = NULL, *cov = NULL;
   gsl_vector *x, *y = NULL, *w, *c = NULL;
-  gsl_vector_view xx, yy, ww;
   size_t order, i, j;
   double chisq, val;
   int status, flag = 0;
   VALUE vc, vcov;
   if (argc != 4 && argc != 5) 
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4 or 5)", argc);
-  x = &xx.vector;
-  w = &ww.vector;
-  y = &yy.vector;
   Data_Get_Vector(argv[0], x);
   Data_Get_Vector(argv[1], w);
   Data_Get_Vector(argv[2], y);
@@ -1615,7 +1645,7 @@ static VALUE rb_gsl_poly_wfit(int argc, VALUE *argv, VALUE obj)
       gsl_matrix_set(X, i, j, val);
     }
   }
-  status = gsl_multifit_linear(X, y, c, cov, &chisq, space);
+  status = gsl_multifit_wlinear(X, w, y, c, cov, &chisq, space);
   if (flag == 1) gsl_multifit_linear_free(space);
   vc = Data_Wrap_Struct(cgsl_poly, 0, gsl_vector_free, c);
   vcov = Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, cov);
