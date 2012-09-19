@@ -33,14 +33,26 @@ x0, x1 = GSL::Poly.solve_quadratic(5.0, 0.0, -20.0).to_a
 test_rel(x0, -2.0, 1e-9, "x0, 5 x^2 = 20")
 test_rel(x1, 2.0, 1e-9, "x1, 5 x^2 = 20")
 
+# Quadratic single real root (technically not a quadratic)
+x0, x1 = GSL::Poly.solve_quadratic(0.0, 1.0, 0.0).to_a
+test_rel(x0, 0.0, 0, "x0, x = 0")
+test2(x1.nil?, "x1, x = 0 is nil")
+
+# Quadratic no real root
+x0, x1 = GSL::Poly.solve_quadratic(1.0, 0.0, 1.0).to_a
+test2(x0.nil?, "x0, x^2 = -1 is nil")
+test2(x1.nil?, "x1, x^2 = -1 is nil")
+
 x0, x1, x2 = GSL::Poly.solve_cubic(0.0, 0.0, -27.0).to_a
 test_rel(x0, 3.0, 1e-9, "x0, x^3 = 27")
 
+# Cubic triple real root
 x0, x1, x2 = GSL::Poly.solve_cubic(-51.0, 867.0, -4913.0).to_a
 test_rel(x0, 17.0, 1e-9, "x0, (x-17)^3=0")
 test_rel(x1, 17.0, 1e-9, "x1, (x-17)^3=0")
 test_rel(x2, 17.0, 1e-9, "x2, (x-17)^3=0")
 
+# Cubic double real root plus single real root
 x0, x1, x2 = GSL::Poly.solve_cubic(-57.0, 1071.0, -6647.0).to_a
 test_rel(x0, 17.0, 1e-9, "x0, (x-17)(x-17)(x-23)=0")
 test_rel(x1, 17.0, 1e-9, "x1, (x-17)(x-17)(x-23)=0")
@@ -60,6 +72,16 @@ x0, x1, x2 = GSL::Poly.solve_cubic(-109.0, 803.0, 50065.0).to_a
 test_rel(x0, -17.0, 1e-9, "x0, (x+17)(x-31)(x-95)=0")
 test_rel(x1, 31.0, 1e-9, "x1, (x+17)(x-31)(x-95)=0")
 test_rel(x2, 95.0, 1e-9, "x2, (x+17)(x-31)(x-95)=0")
+
+# Cubic double real root only is impossible
+
+# Cubic single real root (and two complex roots, not returned)
+x0, x1, x2 = GSL::Poly.solve_cubic(0.0, 0.0, -1.0).to_a
+test_rel(x0, 1.0, 1e-9, "x0, x^3 = 1")
+test2(x1.nil?, "x1, x^3 = 1 is nil")
+test2(x2.nil?, "x2, x^3 = 1 is nil")
+
+# Cubic no real root is impossible
 
 #z0, z1 = GSL::Poly.complex_solve_quadratic(4.0, -20.0, 26.0).to_a
 r = GSL::Poly::Complex.solve_quadratic(4.0, -20.0, 26.0)
@@ -103,6 +125,18 @@ test_rel(z[0].re, 0.0, 1e-9, "z[0].real, 5 x^2 = -20")
 test_rel(z[0].im, -2.0, 1e-9, "z[0].imag, 5 x^2 = -20")
 test_rel(z[1].re, 0.0, 1e-9, "z[1].real, 5 x^2 = -20")
 test_rel(z[1].im, 2.0, 1e-9, "z[1].imag, 5 x^2 = -20")
+
+# Quadratic single complex root (technically not quadratic and root not
+# complex since imaginary component is 0, but the data type is complex)
+z = GSL::Poly.complex_solve_quadratic(0.0, 1.0, -1.0)
+test_rel(z[0].re, 1.0, 1e-9, "z[0].real, x = 1 (complex)")
+test_rel(z[0].im, 0.0, 0.0,  "z[0].imag, x = 1 (complex)")
+test2(x1.nil?, "z[1], x = 0 is nil")
+
+# Quadratic no complex root (technically not quadratic)
+z = GSL::Poly.complex_solve_quadratic(0.0, 0.0, 1.0)
+test2(z[0].nil?, "z[0], 1 = 0 is nil")
+test2(z[1].nil?, "z[1], 1 = 0 is nil")
 
 z = GSL::Poly.complex_solve_cubic(0.0, 0.0, -27.0)
 test_rel(z[0].re, -1.5, 1e-9, "z[0].real, x^3 = 27");
@@ -240,3 +274,17 @@ test_rel(dc[2], 2.0*c[2] + 3.0*2.0*c[3]*x + 4.0*3.0*c[4]*x*x + 5.0*4.0*c[5]*x*x*
 test_rel(dc[3], 3.0*2.0*c[3] + 4.0*3.0*2.0*c[4]*x + 5.0*4.0*3.0*c[5]*x*x , eps,"eval_derivs({+1, -2, +3, -4, +5, -6} deriv 3, -174.0)");
 test_rel(dc[4], 4.0*3.0*2.0*c[4] + 5.0*4.0*3.0*2.0*c[5]*x, eps, "eval_derivs({+1, -2, +3, -4, +5, -6} deriv 4, +480.0)");
 test_rel(dc[5], 5.0*4.0*3.0*2.0*c[5] , eps, "eval_derivs({+1, -2, +3, -4, +5, -6} deriv 5, -720.0)");
+
+# Test Poly::fit and Poly::wfit
+x = GSL::Vector[0, 2, 2]
+y = GSL::Vector[0, 1, -1]
+coef, cov, chisq, status = Poly.fit(x, y, 1)
+test_rel(coef[0], 0.0, 1e-9, "y intercept == 0")
+test_rel(coef[1], 0.0, 1e-9, "slope == 0")
+test_rel(chisq, 2.0, 1e-9, "chisq == 2")
+
+w = GSL::Vector[1, 1, 0]
+coef, cov, chisq, status = Poly.wfit(x, w, y, 1)
+test_rel(coef[0], 0.0, 1e-9, "y intercept == 0")
+test_rel(coef[1], 0.5, 1e-9, "slope == 0.5")
+test_rel(chisq, 0.0, 1e-9, "chisq == 0")
