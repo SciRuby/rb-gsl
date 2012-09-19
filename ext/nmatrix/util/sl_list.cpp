@@ -393,5 +393,53 @@ extern "C" {
     ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
   }
 
+  /*
+   * Sets up a hash with an appropriate default values. That means that if recursions == 0, the default value is default_value,
+   * but if recursions == 1, the default value is going to be a hash with default value of default_value, and if recursions == 2,
+   * the default value is going to be a hash with default value of hash with default value of default_value, and so on.
+   * In other words, it's recursive.
+   */
+  static VALUE empty_list_to_hash(const dtype_t dtype, size_t recursions, VALUE default_value) {
+    VALUE h = rb_hash_new();
+    if (recursions) {
+      RHASH_IFNONE(h) = empty_list_to_hash(dtype, recursions-1, default_value);
+    } else {
+      RHASH_IFNONE(h) = default_value;
+    }
+    return h;
+  }
+
+
+  /*
+   * Copy a list to a Ruby Hash
+   */
+  VALUE nm_list_copy_to_hash(const LIST* l, const dtype_t dtype, size_t recursions, VALUE default_value) {
+
+    // Create a hash with default values appropriately specified for a sparse matrix.
+    VALUE h = empty_list_to_hash(dtype, recursions, default_value);
+
+    if (l->first) {
+      NODE* curr = l->first;
+
+      while (curr) {
+
+        size_t key = curr->key;
+
+        if (recursions == 0) { // content is some kind of value
+          rb_hash_aset(h, INT2FIX(key), rubyobj_from_cval(curr->val, dtype).rval);
+        } else { // content is a list
+          rb_hash_aset(h, INT2FIX(key), nm_list_copy_to_hash(reinterpret_cast<const LIST*>(curr->val), dtype, recursions-1, default_value));
+        }
+
+        curr = curr->next;
+
+      }
+
+    }
+
+    return h;
+  }
+
+
 } // end of extern "C" block
 

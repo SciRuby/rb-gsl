@@ -139,6 +139,17 @@ describe NMatrix do
     NMatrix.new(:list, 4, :float64)[0,0].should == 0.0
   end
 
+  it "should allow conversion of list storage to a Ruby Hash" do
+    n = NMatrix.new(:list, 3, 1, :int64)
+    n[0,1] = 50
+    h = n.to_h
+    h.size.should == 1
+    h[0].size.should == 1
+    h[0][1].should == 50
+    h[0][2].should == 1
+    h[1][0].should == 1
+  end
+
 
   ##TODO: Make this test better. It's not nearly exhaustive enough as is.
   it "list handles recursive removal" do

@@ -431,6 +431,20 @@ STORAGE* nm_list_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, siz
   //return ttable[reinterpret_cast<DENSE_STORAGE*>(casted_storage.left)->dtype](casted_storage, resulting_shape, vector);
 }
 
+
+/*
+ * List storage to Hash conversion. Uses Hashes with default values, so you can continue to pretend
+ * it's a sparse matrix.
+ */
+VALUE nm_list_storage_to_hash(const LIST_STORAGE* s, const dtype_t dtype) {
+
+  // Get the default value for the list storage.
+  VALUE default_value = rubyobj_from_cval(s->default_val, dtype).rval;
+
+  // Recursively copy each dimension of the matrix into a nested hash.
+  return nm_list_copy_to_hash(s->rows, dtype, s->dim - 1, default_value);
+}
+
 /////////////
 // Utility //
 /////////////
@@ -654,30 +668,7 @@ static void* ew_op(LIST* dest, const LIST* left, const void* l_default, const LI
      * matrix.
      */
     LDType* d_default_mem = ALLOC(LDType);
-    switch (op) {
-      case EW_ADD:
-        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) + *reinterpret_cast<const RDType*>(r_default);
-        break;
-
-      case EW_SUB:
-        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) - *reinterpret_cast<const RDType*>(r_default);
-        break;
-
-      case EW_MUL:
-        *d_default_mem = *reinterpret_cast<const LDType*>(l_default) * *reinterpret_cast<const RDType*>(r_default);
-        break;
-
-      case EW_DIV:
-        *d_default_mem = *reinterpret_cast<const LDType*>(l_default); // just use left default to avoid div-by-zero
-        break;
-
-      case EW_MOD:
-        rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
-        break;
-
-      default:
-        rb_raise(rb_eStandardError, "this should not happen");
-    }
+    *d_default_mem = ew_op_switch<op, LDType, RDType>(*reinterpret_cast<const LDType*>(l_default), *reinterpret_cast<const RDType*>(r_default));
 
     // Now that setup is done call the actual elementwise operation function.
     ew_op_prime<op, LDType, RDType>(dest, *reinterpret_cast<const LDType*>(d_default_mem),
@@ -1121,3 +1112,4 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 }
 
 }} // end of namespace nm::list_storage
+

@@ -841,7 +841,7 @@ YALE_STORAGE* ew_op(const YALE_STORAGE* left, const YALE_STORAGE* right, dtype_t
 	// Set the number of non-diagonal non-zero entries in the destination matrix.
 	dest->ndnz = da_index;
 	
-	printf("Number of non-diagonal non-zero entires: %ld\n\n", dest->ndnz);
+	printf("Number of non-diagonal non-zero entires: %ld\n\n", (unsigned long)(dest->ndnz));
 	
 	// Set the capacity of the destination matrix.
 	dest->capacity = dest->shape[0] + dest->ndnz + 1;

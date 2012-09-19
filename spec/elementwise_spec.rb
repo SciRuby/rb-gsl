@@ -39,29 +39,29 @@ describe NMatrix do
       @n[1,1] = 40
     end
 
-    it "adds" do
+    it "should perform element-wise addition" do
       r = NMatrix.new(:dense, 2, [4, 0, 0, 40], :int64).cast(:list, :int64)
       (@n+@m).should == r
     end
 
-    it "subtracts" do
+    it "should perform element-wise subtraction" do
       r = NMatrix.new(:dense, 2, [100, 0, 0, 40], :int64).cast(:list, :int64)
       (@n-@m).should == r
     end
 
-    it "multiplies" do
+    it "should perform element-wise multiplication" do
       r = NMatrix.new(:dense, 2, [-2496, 0, 0, 0], :int64).cast(:list, :int64)
       (@n*@m).should == r
     end
 
-    it "divides" do
+    it "should perform element-wise division" do
       m = NMatrix.new(:list, 2, 1, :int64)
       m[1,1] = 2
       r = NMatrix.new(:dense, 2, [52, 0, 0, 20], :int64).cast(:list, :int64)
       (@n/@m).should == r
     end
 
-    it "modulo"
+    it "should perform element-wise modulo"
 
     it "equals" do
       (@n =~ @m).cast(:dense, :byte).should == NMatrix.new(:dense, 2, [0, 1, 1, 0], :byte)

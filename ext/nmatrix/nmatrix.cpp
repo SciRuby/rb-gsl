@@ -87,6 +87,7 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm);
 static VALUE nm_init_copy(VALUE copy, VALUE original);
 static VALUE nm_init_transposed(VALUE self);
 static VALUE nm_init_cast_copy(VALUE self, VALUE new_stype_symbol, VALUE new_dtype_symbol);
+static VALUE nm_to_hash(VALUE self);
 static VALUE nm_init_yale_from_old_yale(VALUE shape, VALUE dtype, VALUE ia, VALUE ja, VALUE a, VALUE from_dtype, VALUE nm);
 static VALUE nm_alloc(VALUE klass);
 static void  nm_delete(NMATRIX* mat);
@@ -218,6 +219,9 @@ void Init_nmatrix() {
 	rb_define_method(cNMatrix, "is_ref?", (METHOD)nm_is_ref, 0);
 	rb_define_method(cNMatrix, "dimensions", (METHOD)nm_dim, 0);
 
+	rb_define_method(cNMatrix, "to_hash", (METHOD)nm_to_hash, 0);
+	rb_define_alias(cNMatrix,  "to_h",    "to_hash");
+
 	rb_define_method(cNMatrix, "shape", (METHOD)nm_shape, 0);
 	rb_define_method(cNMatrix, "det_exact", (METHOD)nm_det_exact, 0);
 	//rb_define_method(cNMatrix, "transpose!", (METHOD)nm_transpose_self, 0);
@@ -301,6 +305,8 @@ static VALUE nm_alloc(VALUE klass) {
 
   return Data_Wrap_Struct(klass, NULL, nm_delete, mat);
 }
+
+
 
 /*
  * Find the capacity of an NMatrix. The capacity only differs from the size for
@@ -732,6 +738,21 @@ static VALUE nm_init(int argc, VALUE* argv, VALUE nm) {
 
   return nm;
 }
+
+
+/*
+ * Create a Ruby Hash from an NMatrix.
+ *
+ * Currently only works for list storage.
+ */
+static VALUE nm_to_hash(VALUE self) {
+  if (NM_STYPE(self) != LIST_STORE) {
+    rb_raise(rb_eNotImpError, "please cast to :list first");
+  }
+
+  return nm_list_storage_to_hash(NM_STORAGE_LIST(self), NM_DTYPE(self));
+}
+
 
 /*
  * Copy constructor for changing dtypes and stypes.

@@ -186,9 +186,8 @@ void rubyval_to_cval(VALUE val, dtype_t dtype, void* loc) {
 }
 
 /*
- * Documentation goes here.
- *
- * FIXME: The actual constructors still need to be defined.
+ * Create a RubyObject from a regular C value (given a dtype). Does not return a VALUE! To get a VALUE, you need to
+ * look at the rval property of what this function returns.
  */
 nm::RubyObject rubyobj_from_cval(void* val, dtype_t dtype) {
   using namespace nm;
