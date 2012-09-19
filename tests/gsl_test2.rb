@@ -23,9 +23,12 @@ module GSL
 
 # PASS if status == true, FAIL otherwise
     def test2(status, desc)
+      $tests += 1
       if status == true
+        $passed += 1
         printf("PASS: #{desc}\n")
       else
+        $failed += 1
         printf("FAIL: #{desc}\n")
       end
     end
