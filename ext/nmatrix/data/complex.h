@@ -33,6 +33,7 @@
  */
 
 #include <type_traits>
+#include <iostream>
 
 /*
  * Project Includes
@@ -350,6 +351,12 @@ inline bool operator<=(const NativeType left, const Complex<ComplexType>& right)
 template <typename NativeType, typename ComplexType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
 inline bool operator>=(const NativeType left, const Complex<ComplexType>& right) {
 	return Complex<ComplexType>(left) >= right;
+}
+
+template <typename Type>
+inline std::ostream& operator<<(std::ostream& out, const Complex<Type>& rhs) {
+  out << "(" << rhs.r << "," << rhs.i << "i)" << std::flush;
+  return out;
 }
 
 } // end of namespace nm

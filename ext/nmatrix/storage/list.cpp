@@ -32,6 +32,7 @@
 
 #include <ruby.h>
 #include <algorithm> // std::min
+#include <iostream>
 
 /*
  * Project Includes
@@ -341,6 +342,8 @@ bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
  * Element-wise operations for list storage.
  */
 STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
+  rb_raise(rb_eNotImpError, "elementwise operations for list storage currently broken");
+
 	OP_LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_op, void*, LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t dim);
 
   // We may need to upcast our arguments to the same type.
@@ -989,6 +992,7 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 				
 				if (level == last_level) {
 				  tmp_result = ew_op_switch<op, LDType, RDType>(l_default, *reinterpret_cast<RDType*>(r_node->val));
+				  std::cerr << "1. tmp_result = " << tmp_result << std::endl;
 					
 					if (tmp_result != d_default) {
 						dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
@@ -1013,6 +1017,7 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 				
 				if (level == last_level) {
 				  tmp_result = ew_op_switch<op, LDType, RDType>(*reinterpret_cast<LDType*>(l_node->val), r_default);
+				  std::cerr << "2. tmp_result = " << tmp_result << std::endl;
 
 					if (tmp_result != d_default) {
 						dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);
@@ -1038,6 +1043,7 @@ static void ew_op_prime(LIST* dest, LDType d_default, const LIST* left, LDType l
 					
 					if (level == last_level) {
 					  tmp_result = ew_op_switch<op, LDType, RDType>(*reinterpret_cast<LDType*>(l_node->val),*reinterpret_cast<RDType*>(r_node->val));
+					  std::cerr << "3. tmp_result = " << tmp_result << std::endl;
 						
 						if (tmp_result != d_default) {
 							dest_node = nm::list::insert_helper(dest, dest_node, index, tmp_result);

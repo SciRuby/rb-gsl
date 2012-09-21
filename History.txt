@@ -4,7 +4,7 @@
 
   * Initial alpha release
 
-=== 0.0.2 / 2012-08-??
+=== 0.0.2 / 2012-09-21
 
 * Numerous major enhancements
 
@@ -33,3 +33,7 @@
   * `==` operator now used for matrix equality, `=~` and `!~` for element-wise comparisons
 
   * Dense `each` returns an Enumerator when called without a block
+
+  * Sped up list storage item deletion, fixed bugs
+
+* Note: Element-wise list operations current disabled

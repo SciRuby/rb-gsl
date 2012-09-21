@@ -34,6 +34,7 @@
 
 #include <type_traits>
 #include <ruby.h>
+#include <iostream>
 
 /*
  * Project Includes
@@ -399,6 +400,12 @@ template <typename NativeType, typename RationalType, typename = typename std::e
 inline bool operator>=(const NativeType left, const Rational<RationalType>& right) {
 	//return Rational<RationalType>(left) >= right;
 	return (left > right) or (left == right); 
+}
+
+template <typename Type>
+inline std::ostream& operator<<(std::ostream& out, const Rational<Type>& rhs) {
+  out << rhs.n << "/" << rhs.d << std::flush;
+  return out;
 }
 
 } // end of namespace nm
