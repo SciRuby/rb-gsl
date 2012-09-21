@@ -147,7 +147,8 @@ module NMatrix::IO::Matlab
 
           unpacked_real.zip(unpacked_imag).flatten
         else
-          self.real_part.data.unpack(real_unpack_args)
+          length = self.dimensions.inject(1) { |a,b| a * b } # get the product
+          self.real_part.data.unpack(*(real_unpack_args*length))
         end
 
       end
@@ -252,11 +253,11 @@ module NMatrix::IO::Matlab
           # MATLAB always uses :miINT32 for indices according to the spec
           ia_ja                     = repacked_indices(to_itype)
           data_str, repacked_dtype  = repacked_data(dtype)
-          NMatrix.new(:yale, self.dimensions, repacked_dtype, ia_ja[0], ia_ja[1], data_str, repacked_dtype)
+          NMatrix.new(:yale, self.dimensions.reverse, repacked_dtype, ia_ja[0], ia_ja[1], data_str, repacked_dtype)
 
         else
           # Call regular dense constructor.
-          NMatrix.new(:dense, self.dimensions, unpacked_data, dtype)
+          NMatrix.new(:dense, self.dimensions.reverse, unpacked_data, dtype).transpose
         end
       end
 

@@ -27,8 +27,7 @@ are working on a {patch for Ruby/GSL}[https://github.com/SciRuby/rb-gsl].
 
 == Features
 
-The following features exist in the version of NMatrix (0.0.2) currently under development, and may or may not exist in
-0.0.1 (the current gem):
+The following features exist in the current version of NMatrix (0.0.2):
 
 * Matrix storage containers: dense, yale, list (more to come)
 * Data types: uint8, int8, int16, int32, int64, float32, float64, complex64, complex128, rational64, rational128
@@ -45,17 +44,9 @@ The following features exist in the version of NMatrix (0.0.2) currently under d
   * xTRSM
 * LAPACK ATLAS access:
   * xGETRF (experimental)
-
-=== Planned Features (Very Short Term)
-
-These features will exist in our second alpha release, 0.0.2 (incomplete, thus not yet available as a gem):
-
-* Yale matrix slicing and referencing
-* LU decomposition
 * LAPACK internal implementations (no library needed):
   * xGETRF
-
-The estimated release date for 0.0.2 is the end of August 2012.
+* LU decomposition
 
 === Planned Features (Short-to-Medium Term)
 
@@ -99,13 +90,14 @@ If you get errors about clapack.h or cblas.h, figure out where your ATLAS header
 Then, tell your system:
 
     export C_INCLUDE_PATH=/usr/local/atlas/include
+    export CPLUS_INCLUDE_PATH=/usr/local/atlas/include
 
 Finally, try compiling again.
 
 == REQUIREMENTS:
 
 * ATLAS and LAPACK, probably
-* GCC 4.2
+* GCC 4.3
 * Ruby 1.9
 
 == INSTALLATION:

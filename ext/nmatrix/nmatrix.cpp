@@ -1118,7 +1118,7 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 
 static VALUE elementwise_op(nm::ewop_t op, VALUE left_val, VALUE right_val) {
 	STYPE_MARK_TABLE(mark);
-	
+
 	static STORAGE* (*ew_op[nm::NUM_STYPES])(nm::ewop_t, const STORAGE*, const STORAGE*) = {
 		nm_dense_storage_ew_op,
 		nm_list_storage_ew_op,

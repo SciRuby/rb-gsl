@@ -38,6 +38,7 @@
 # NMatrix
 
 require 'nmatrix/nmatrix.rb'
+require 'nmatrix/version.rb'
 require 'nmatrix/nvector.rb'
 require 'nmatrix/blas.rb'
 

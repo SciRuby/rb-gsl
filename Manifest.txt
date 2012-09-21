@@ -11,7 +11,9 @@ spec/nmatrix_spec.rb
 spec/nmatrix_yale_spec.rb
 spec/nvector_spec.rb
 spec/slice_spec.rb
-spec/io_spec.rb
+spec/elementwise_spec.rb
+spec/blas_spec.rb
+spec/lapack_spec.rb
 spec/spec_helper.rb
 lib/nmatrix.rb
 lib/nmatrix/io/mat5_reader.rb
@@ -41,6 +43,7 @@ ext/nmatrix/util/math.h
 ext/nmatrix/util/sl_list.cpp
 ext/nmatrix/util/sl_list.h
 ext/nmatrix/util/util.h
+ext/nmatrix/util/lapack.h
 ext/nmatrix/nmatrix.cpp
 ext/nmatrix/nmatrix.h
 ext/nmatrix/ruby_constants.cpp

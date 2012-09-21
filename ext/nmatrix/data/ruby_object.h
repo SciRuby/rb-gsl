@@ -33,7 +33,7 @@
  */
 
 #include <ruby.h>
-
+#include <iostream>
 #include <type_traits>
 
 /*
@@ -428,6 +428,11 @@ inline bool operator<(const Rational<IntType>& left, const RubyObject& right) {
 template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
 inline bool operator>(const Rational<IntType>& left, const RubyObject& right) {
 	return RubyObject(left) > right;
+}
+
+inline std::ostream& operator<<(std::ostream& out, const RubyObject& rhs) {
+  out << "RUBYOBJECT" << std::flush; // FIXME: Try calling inspect or something on the Ruby object if we really need to debug it.
+  return out;
 }
 
 } // end of namespace nm
