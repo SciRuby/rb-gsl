@@ -215,8 +215,7 @@ void* remove(LIST* list, size_t key) {
   NODE *f, *rm;
   void* val;
 
-  if (!list->first || list->first->key > key) {
-  	// empty list or def. not present
+  if (!list->first || list->first->key > key) { // empty list or def. not present
   	return NULL;
   }
 
@@ -231,8 +230,7 @@ void* remove(LIST* list, size_t key) {
   }
 
   f = find_preceding_from(list->first, key);
-  if (!f || !f->next) {
-  	// not found, end of list
+  if (!f || !f->next) { // not found, end of list
   	return NULL;
   }
 
@@ -244,10 +242,42 @@ void* remove(LIST* list, size_t key) {
     // get the value and free the memory for the node
     val = rm->val;
     free(rm);
+
     return val;
   }
 
   return NULL; // not found, middle of list
+}
+
+
+/*
+ * Recursive removal of lists that may contain sub-lists. Stores the value ultimately removed in rm.
+ *
+ * FIXME: Could be made slightly faster by using a variety of find which also returns the previous node. This way,
+ * FIXME: we can remove directly instead of calling remove() and doing the search over again.
+ */
+bool remove_recursive(LIST* list, const size_t* coords, const size_t* offset, size_t r, const size_t& dim, void* rm) {
+
+  if (r < dim-1) { // nodes here are lists
+    // find the current coordinates in the list
+    NODE* n = find(list, coords[r] + offset[r]);
+
+    if (n) {
+      // from that sub-list, call remove_recursive.
+      bool remove_parent = remove_recursive(reinterpret_cast<LIST*>(n->val), coords, offset, r+1, dim, rm);
+
+      if (remove_parent) { // now empty -- so remove the sub-list
+        free(remove(list, coords[r] + offset[r]));
+      }
+    }
+
+  } else { // nodes here are not lists, but actual values
+    rm = remove(list, coords[r] + offset[r]);
+  }
+
+  if (!list->first) return true; // if current list is now empty, signal its removal
+
+  return false;
 }
 
 ///////////

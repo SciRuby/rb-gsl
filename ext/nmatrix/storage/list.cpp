@@ -306,49 +306,16 @@ void* nm_list_storage_insert(STORAGE* storage, SLICE* slice, void* val) {
 }
 
 /*
- * Documentation goes here.
- *
- * TODO: Speed up removal.
+ * Remove an item from list storage.
  */
 void* nm_list_storage_remove(STORAGE* storage, SLICE* slice) {
   LIST_STORAGE* s = (LIST_STORAGE*)storage;
-  int r;
-  NODE  *n = NULL;
-  LIST*  l = s->rows;
-  void*  rm = NULL;
+  void* rm = NULL;
 
-  // keep track of where we are in the traversals
-  NODE** stack = ALLOC_N( NODE*, s->dim - 1 );
-
-  for (r = (int)(s->dim); r > 1; --r) {
-  	// does this row exist in the matrix?
-    n = list::find(l, s->offset[s->dim - r] + slice->coords[s->dim - r]);
-
-    if (!n) {
-    	// not found
-      free(stack);
-      return NULL;
-      
-    } else {
-    	// found
-      stack[s->dim - r]     = n;
-      l                     = reinterpret_cast<LIST*>(n->val);
-    }
-  }
-
-  rm = list::remove(l, s->offset[s->dim -r] + slice->coords[s->dim - r]);
-
-  // if we removed something, we may now need to remove parent lists
-  if (rm) {
-    for (r = (int)(s->dim) - 2; r >= 0; --r) {
-    	// walk back down the stack
-      
-      if (((LIST*)(stack[r]->val))->first == NULL)
-        free(list::remove(reinterpret_cast<LIST*>(stack[r]->val), s->offset[r] + slice->coords[r]));
-      else break; // no need to continue unless we just deleted one.
-
-    }
-  }
+  // This returns a boolean, which will indicate whether s->rows is empty.
+  // We can safely ignore it, since we never want to delete s->rows until
+  // it's time to destroy the LIST_STORAGE object.
+  list::remove_recursive(s->rows, slice->coords, s->offset, 0, s->dim, rm);
 
   return rm;
 }

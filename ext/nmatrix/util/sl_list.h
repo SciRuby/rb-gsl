@@ -81,6 +81,7 @@ NODE* insert(LIST* list, bool replace, size_t key, void* val);
 NODE* insert_with_copy(LIST *list, size_t key, void *val, size_t size);
 NODE* insert_after(NODE* node, size_t key, void* val);
 void* remove(LIST* list, size_t key);
+bool remove_recursive(LIST* list, const size_t* coords, const size_t* offset, size_t r, const size_t& dim, void* rm);
 
 template <typename Type>
 inline NODE* insert_helper(LIST* list, NODE* node, size_t key, Type val) {
