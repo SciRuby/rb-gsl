@@ -54,16 +54,16 @@ describe NMatrix do
   it "compares two list matrices" do
     n = NMatrix.new(:list, [3,3,3], :int64)
     m = NMatrix.new(:list, [3,3,3], :int64)
-    n.should.eql? m
+    n.should == m
     n[0,0,0] = 5
-    n.should_not.eql? m
+    n.should_not == m
     n[0,0,1] = 52
     n[1,2,1] = -4
 
     m[0,0,0] = 5
     m[0,0,1] = 52
     m[1,2,1] = -4
-    n.should.eql? m
+    n.should == m
   end
 
   it "fills dense Ruby object matrix with nil" do
@@ -137,6 +137,17 @@ describe NMatrix do
   it "list handles missing initialization value" do
     NMatrix.new(:list, 3, :int8)[0,0].should    == 0
     NMatrix.new(:list, 4, :float64)[0,0].should == 0.0
+  end
+
+  it "should allow conversion of list storage to a Ruby Hash" do
+    n = NMatrix.new(:list, 3, 1, :int64)
+    n[0,1] = 50
+    h = n.to_h
+    h.size.should == 1
+    h[0].size.should == 1
+    h[0][1].should == 50
+    h[0][2].should == 1
+    h[1][0].should == 1
   end
 
 
@@ -271,7 +282,7 @@ describe NMatrix do
 
 
   [:dense, :list, :yale].each do |storage_type|
-    context "(storage: #{storage_type})" do
+    context storage_type do
       it "can be duplicated" do
         n = NMatrix.new(storage_type, [2,3], storage_type == :yale ? :float64 : 1.1)
         n.stype.should equal(storage_type)
@@ -311,45 +322,6 @@ describe NMatrix do
         n[0,1].should == 1
       end
 
-      it "#{storage_type} handles elementwise addition" do
-        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3,  4], :int64)
-        m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
-        rcorrect = NMatrix.new(storage_type, [2,2], [-3, 1, 3, 70], :int64)
-        r = n+m
-        r.should.eql? rcorrect
-      end
-      
-      it "#{storage_type} handles elementwise subtraction" do
-        n = NMatrix.new(storage_type, [2,2],  [1,  2, 3,  4], :int64)
-        m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
-        rcorrect = NMatrix.new(storage_type, [2,2], [5, 3, 3, -62], :int64)
-        r = n-m
-        r.should.eql? rcorrect
-      end
-      
-      it "#{storage_type} handles elementwise multiplication" do
-        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3,  4], :int64)
-        m = NMatrix.new(storage_type, [2,2], [-4, -1, 0, 66], :int64)
-        rcorrect = NMatrix.new(storage_type, [2,2], [-8, -2, 0, 264], :int64)
-        r = n*m
-        r.should.eql? rcorrect
-      end
-      
-      it "#{storage_type} handles elementwise division" do
-        n = NMatrix.new(storage_type, [2,2], [ 1,  2, 3, 4], :int64)
-        m = NMatrix.new(storage_type, [2,2], [-4, -1, 3, 2], :int64)
-        rcorrect = NMatrix.new(storage_type, [2,2], [-1, -2, 1, 2], :int64)
-        r = n/m
-        r.should.eql? rcorrect
-      end
-      
-      it "#{storage_type} handles elementwise modulo" do
-        n = NMatrix.new(storage_type, [2,2], [10, 11, 12, 13], :int64)
-        m = NMatrix.new(storage_type, [2,2], [ 2, 10,  5, 10], :int64)
-        rcorrect = NMatrix.new(storage_type, [2,2], [0, 1, 2, 3], :int64)
-        r = n%m
-        r.should.eql? rcorrect
-      end
     end
 
     # dense and list, not yale
@@ -393,4 +365,35 @@ describe NMatrix do
     # FIXME: Actually test that values are correct.
   end
 
+  it "converts from list to yale properly" do
+    m = NMatrix.new(:list, 3, 0)
+    m[0,2] = 333 
+    m[2,2] = 777
+    n = m.cast(:yale, :int32)
+    puts n.capacity
+    n.extend NMatrix::YaleFunctions
+    puts n.yale_ija.inspect
+    puts n.yale_a.inspect
+    n[0,0].should == 0
+    n[0,1].should == 0
+    n[0,2].should == 333
+    n[1,0].should == 0
+    n[1,1].should == 0
+    n[1,2].should == 0
+    n[2,0].should == 0
+    n[2,1].should == 0
+    n[2,2].should == 777
+  end
+
+  it "should return an enumerator when each is called without a block" do
+    a = NMatrix.new(2, 1)
+    b = NMatrix.new(2, [-1,0,1,0])
+    enums = [a.each, b.each]
+
+    begin
+      atans = []
+      atans << Math.atan2(*enums.map(&:next)) while true
+    rescue StopIteration
+    end
+  end
 end

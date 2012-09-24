@@ -33,7 +33,7 @@
  */
 
 #include <ruby.h>
-
+#include <iostream>
 #include <type_traits>
 
 /*
@@ -101,8 +101,8 @@ class RubyObject {
 	inline RubyObject(int32_t other)  : rval(INT2FIX(other)) {}
 	// there is no uint32_t here because that's a Ruby VALUE type, and we need the compiler to treat that as a VALUE.
 	inline RubyObject(int64_t other)  : rval(INT2FIX(other)) {}
-	inline RubyObject(uint64_t other) : rval(INT2FIX(other)) {}
-	
+//	inline RubyObject(uint64_t other) : rval(INT2FIX(other)) {}
+
 	/*
 	 * Float constructor.
 	 *
@@ -115,7 +115,21 @@ class RubyObject {
 	 * Copy constructors.
 	 */
 	inline RubyObject(const RubyObject& other) : rval(other.rval) {}
-	
+
+  /*
+   * Inverse operator.
+   */
+	inline RubyObject inverse() const {
+	  rb_raise(rb_eNotImpError, "RubyObject#inverse needs to be implemented");
+	}
+
+	/*
+	 * Absolute value.
+	 */
+	inline RubyObject abs() const {
+	  return RubyObject(rb_funcall(this->rval, rb_intern("abs"), 0));
+	}
+
 	/*
 	 * Binary operator definitions.
 	 */
@@ -132,6 +146,11 @@ class RubyObject {
 	inline RubyObject operator-(const RubyObject& other) const {
 		return RubyObject(rb_funcall(this->rval, nm_rb_sub, 1, other.rval));
 	}
+
+	inline RubyObject& operator-=(const RubyObject& other) {
+    this->rval = rb_funcall(this->rval, nm_rb_sub, 1, other.rval);
+    return *this;
+	}
 	
 	inline RubyObject operator*(const RubyObject& other) const {
 		return RubyObject(rb_funcall(this->rval, nm_rb_mul, 1, other.rval));
@@ -145,6 +164,11 @@ class RubyObject {
 	inline RubyObject operator/(const RubyObject& other) const {
 		return RubyObject(rb_funcall(this->rval, nm_rb_div, 1, other.rval));
 	}
+
+	inline RubyObject& operator/=(const RubyObject& other) {
+    this->rval = rb_funcall(this->rval, nm_rb_div, 1, other.rval);
+    return *this;
+	}
 	
 	inline RubyObject operator%(const RubyObject& other) const {
 		return RubyObject(rb_funcall(this->rval, nm_rb_percent, 1, other.rval));
@@ -157,21 +181,46 @@ class RubyObject {
 	inline bool operator<(const RubyObject& other) const {
 		return rb_funcall(this->rval, nm_rb_lt, 1, other.rval) == Qtrue;
 	}
+
+	template <typename OtherType>
+	inline bool operator<(const OtherType& other) const {
+		return *this < RubyObject(other);
+	}
 	
 	inline bool operator==(const RubyObject& other) const {
 		return rb_funcall(this->rval, nm_rb_eql, 1, other.rval) == Qtrue;
+	}
+
+	template <typename OtherType>
+	inline bool operator==(const OtherType& other) const {
+		return *this == RubyObject(other);
 	}
 	
 	inline bool operator!=(const RubyObject& other) const {
 		return rb_funcall(this->rval, nm_rb_neql, 1, other.rval) == Qtrue;
 	}
+
+	template <typename OtherType>
+	inline bool operator!=(const OtherType& other) const {
+		return *this != RubyObject(other);
+	}
 	
 	inline bool operator>=(const RubyObject& other) const {
 		return rb_funcall(this->rval, nm_rb_gte, 1, other.rval) == Qtrue;
 	}
+
+	template <typename OtherType>
+	inline bool operator>=(const OtherType& other) const {
+		return *this >= RubyObject(other);
+	}
 	
 	inline bool operator<=(const RubyObject& other) const {
 		return rb_funcall(this->rval, nm_rb_lte, 1, other.rval) == Qtrue;
+	}
+
+	template <typename OtherType>
+	inline bool operator<=(const OtherType& other) const {
+		return *this <= RubyObject(other);
 	}
 
 	////////////////////////////
@@ -276,6 +325,11 @@ class RubyObject {
 ////////////////////////////
 
 template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline RubyObject operator/(const NativeType left, const RubyObject& right) {
+  return RubyObject(left) / right;
+}
+
+template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
 inline bool operator==(const NativeType left, const RubyObject& right) {
   return RubyObject(left) == right;
 }
@@ -283,6 +337,26 @@ inline bool operator==(const NativeType left, const RubyObject& right) {
 template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
 inline bool operator!=(const NativeType left, const RubyObject& right) {
   return RubyObject(left) != right;
+}
+
+template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator<=(const NativeType left, const RubyObject& right) {
+  return RubyObject(left) <= right;
+}
+
+template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator>=(const NativeType left, const RubyObject& right) {
+  return RubyObject(left) >= right;
+}
+
+template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator<(const NativeType left, const RubyObject& right) {
+  return RubyObject(left) < right;
+}
+
+template <typename NativeType, typename = typename std::enable_if<std::is_arithmetic<NativeType>::value>::type>
+inline bool operator>(const NativeType left, const RubyObject& right) {
+  return RubyObject(left) > right;
 }
 
 
@@ -298,6 +372,26 @@ inline bool operator==(const Complex<FloatType>& left, const RubyObject& right) 
 template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
 inline bool operator!=(const Complex<FloatType>& left, const RubyObject& right) {
 	return RubyObject(left) != right;
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator<=(const Complex<FloatType>& left, const RubyObject& right) {
+	return RubyObject(left) <= right;
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator>=(const Complex<FloatType>& left, const RubyObject& right) {
+	return RubyObject(left) >= right;
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator<(const Complex<FloatType>& left, const RubyObject& right) {
+	return RubyObject(left) < right;
+}
+
+template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+inline bool operator>(const Complex<FloatType>& left, const RubyObject& right) {
+	return RubyObject(left) > right;
 }
 
 
@@ -316,6 +410,37 @@ inline bool operator!=(const Rational<IntType>& left, const RubyObject& right) {
 	return RubyObject(left) != right;
 }
 
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator>=(const Rational<IntType>& left, const RubyObject& right) {
+	return RubyObject(left) >= right;
+}
+
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator<=(const Rational<IntType>& left, const RubyObject& right) {
+	return RubyObject(left) <= right;
+}
+
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator<(const Rational<IntType>& left, const RubyObject& right) {
+	return RubyObject(left) < right;
+}
+
+template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+inline bool operator>(const Rational<IntType>& left, const RubyObject& right) {
+	return RubyObject(left) > right;
+}
+
+inline std::ostream& operator<<(std::ostream& out, const RubyObject& rhs) {
+  out << "RUBYOBJECT" << std::flush; // FIXME: Try calling inspect or something on the Ruby object if we really need to debug it.
+  return out;
+}
+
 } // end of namespace nm
+
+namespace std {
+  inline nm::RubyObject abs(const nm::RubyObject& obj) {
+    return obj.abs();
+  }
+}
 
 #endif // RUBY_OBJECT_H

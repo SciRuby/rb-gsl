@@ -33,6 +33,7 @@
  */
 
 #include <type_traits>
+#include <iostream>
 
 /*
  * Project Includes
@@ -83,9 +84,29 @@ class Complex {
 
 	template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
 	inline Complex(const Rational<IntType>& other) : r(Type(other.n) / Type(other.d)), i(0) {}
-	
+
+  /*
+   * Complex conjugate function -- creates a copy, but inverted.
+   */
+  inline Complex<Type> conjugate() const {
+    return Complex<Type>(this->r, -(this->i));
+  }
+
+  /*
+   * Complex inverse function -- creates a copy, but inverted.
+   *
+   * FIXME: Check that this doesn't duplicate functionality of NativeType / Complex<Type>
+   */
+  inline Complex<Type> inverse() const {
+    Complex<Type> conj = conjugate();
+    Type denom = this->r * this->r + this->i * this->i;
+    return Complex<Type>(conj.r / denom, conj.i / denom);
+  }
+
+
+
 	/*
-	 * Binary operator definitions for varous types.
+	 * Binary operator definitions for various types.
 	 */
 	
 	////////////////////////////////
@@ -332,6 +353,20 @@ inline bool operator>=(const NativeType left, const Complex<ComplexType>& right)
 	return Complex<ComplexType>(left) >= right;
 }
 
+template <typename Type>
+inline std::ostream& operator<<(std::ostream& out, const Complex<Type>& rhs) {
+  out << "(" << rhs.r << "," << rhs.i << "i)" << std::flush;
+  return out;
+}
+
 } // end of namespace nm
+
+namespace std {
+  template <typename FloatType, typename = typename std::enable_if<std::is_floating_point<FloatType>::value>::type>
+  nm::Complex<FloatType> abs(const nm::Complex<FloatType>& value) {
+    return nm::Complex<FloatType>(value.r < 0 ? -value.r : value.r,
+                                  value.i < 0 ? -value.i : value.i);
+  }
+}
 
 #endif // COMPLEX_H

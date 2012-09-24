@@ -4,3 +4,36 @@
 
   * Initial alpha release
 
+=== 0.0.2 / 2012-09-21
+
+* Numerous major enhancements
+
+  * Second alpha release
+
+  * Rewrote NMatrix in C++0x and C++11 using templates, namespaces; removed Ruby generators and CAST parser
+
+  * Added preliminary C API
+
+  * Slicing and referencing support for dense and list matrices
+
+  * BLAS level-3 xTRSM algorithm added for rationals and BLAS types
+
+  * LAPACK support added, including partially working xGETRF subroutine
+
+  * Element-wise comparisons now return byte-matrices
+
+  * Element-wise operations on list matrices may alter the default value of the return matrix
+
+  * Element-wise division behaves like Ruby division
+
+  * Improved MATLAB .MAT v5 file reading
+
+  * clang support
+
+  * `==` operator now used for matrix equality, `=~` and `!~` for element-wise comparisons
+
+  * Dense `each` returns an Enumerator when called without a block
+
+  * Sped up list storage item deletion, fixed bugs
+
+* Note: Element-wise list operations current disabled

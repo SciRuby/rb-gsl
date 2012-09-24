@@ -59,6 +59,7 @@
  * Project Includes
  */
 
+
 /*
  * Macros
  */
@@ -86,13 +87,6 @@
 	#endif
  #endif
 #endif
-
-// The definition above is partially overridden by the definition below when size_t is undefined.
-#ifndef HAVE_SIZE_T
- typedef u_int64_t  size_t;
- #define SIZE_T     INT64
-#endif
-
 
 /*
  * == Macros for Concurrent C and C++ Header Maintenance
@@ -125,7 +119,9 @@
     NM_DECL_ENUM(dtype_t, dtype);    \
     size_t  dim;                     \
     size_t* shape;                   \
-    size_t* offset;
+    size_t* offset;                  \
+	  int			count;                   \
+	  STORAGE*		src;
 
   #define NM_DEF_STORAGE_CHILD_STRUCT_PRE(name)    struct name : STORAGE {
   #define NM_DEF_STORAGE_STRUCT_POST(name)         };
@@ -138,7 +134,7 @@
   #define NM_DEF_STRUCT_PRE(name)  struct name {
   #define NM_DEF_STRUCT_POST(name) };
 
-  #define NM_DEF_ENUM(name, ...)         \
+  #define NM_DEF_ENUM(name, ...)          \
     enum name {                           \
       __VA_ARGS__                         \
     };
@@ -148,12 +144,13 @@
   #define NM_DECL_ENUM(enum_type, name)   nm_ ## enum_type name;
   #define NM_DECL_STRUCT(type, name)      NM_ ## type      name;
 
-  #define NM_DEF_STORAGE_ELEMENTS    \
-    NM_DECL_ENUM(dtype_t, dtype);    \
+  #define NM_DEF_STORAGE_ELEMENTS   \
+    NM_DECL_ENUM(dtype_t, dtype);   \
     size_t      dim;                \
-    size_t*     shape;               \
-    size_t*     offset;
-
+    size_t*     shape;              \
+    size_t*     offset;             \
+	  int			    count;              \
+	  STORAGE*		src;              
   #define NM_DEF_STORAGE_CHILD_STRUCT_PRE(name)  typedef struct NM_ ## name { \
                                                     NM_DEF_STORAGE_ELEMENTS;
 
@@ -163,6 +160,7 @@
   typedef struct NM_STORAGE {        \
     NM_DEF_STORAGE_ELEMENTS;         \
   } NM_STORAGE;
+>>>>>>> compile_point
 
   #define NM_DEF_STRUCT_PRE(name)                typedef struct NM_ ## name {
   #define NM_DEF_STRUCT_POST(name)               } NM_ ## name;
@@ -221,8 +219,6 @@ NM_DEF_STORAGE_STRUCT;
 /* Dense Storage */
 NM_DEF_STORAGE_CHILD_STRUCT_PRE(DENSE_STORAGE); // struct DENSE_STORAGE : STORAGE {
 	size_t*	stride;
-	int			count;
-	void*		src;
 	void*		elements;
 NM_DEF_STORAGE_STRUCT_POST(DENSE_STORAGE);     // };
 
@@ -279,6 +275,7 @@ NM_DEF_STRUCT_POST(NMATRIX);  // };
 #endif
 
 #define NM_DENSE_SRC(val)       (NM_STORAGE_DENSE(val)->src)
+#define NM_LIST_SRC(val)        (NM_STORAGE_LIST(val)->src)
 #define NM_DIM(val)             (NM_STORAGE(val)->dim)
 #define NM_DTYPE(val)           (NM_STORAGE(val)->dtype)
 #define NM_ITYPE(val)           (NM_STORAGE_YALE(val)->itype)

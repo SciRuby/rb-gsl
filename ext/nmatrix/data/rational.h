@@ -34,6 +34,7 @@
 
 #include <type_traits>
 #include <ruby.h>
+#include <iostream>
 
 /*
  * Project Includes
@@ -90,22 +91,27 @@ class Rational {
 	  rb_raise(rb_eNotImpError, "cannot convert from complex to rational");
 	}
 
+  /*
+   * Rational inverse function -- creates a copy, but inverted.
+   */
+  inline Rational<Type> inverse() const {
+    return Rational<Type>(this->d, this->n);
+  }
+
 	/*
 	 * Binary operator definitions for varous types.
 	 */
-	
+
 	//////////////////////////////////
 	// Rational-Rational Operations //
 	//////////////////////////////////
 	
 	template <typename OtherType>
 	inline Rational<Type> operator+(const Rational<OtherType>& other) const {
-		long simplify;
-		
 		Rational<Type> result((this->n * other.d) + (other.n * this->d), this->d * other.d);
 		
-		simplify = gcf<Type>(result.n, result.d);
-		
+		long simplify = gcf<Type>(result.n, result.d);
+
 		result.n /= simplify;
 		result.d /= simplify;
 		
@@ -114,12 +120,10 @@ class Rational {
 
 	template <typename OtherType>
 	inline Rational<Type>& operator+=(const Rational<OtherType>& other) {
-    long simplify;
-
     this->n = (this->n * other.d) + (other.n * this->d);
     this->d = this->d * other.d;
 
-    simplify = gcf<Type>(this->n, this->d);
+    long simplify = gcf<Type>(this->n, this->d);
 
     this->n /= simplify;
     this->d /= simplify;
@@ -129,16 +133,27 @@ class Rational {
 	
 	template <typename OtherType>
 	inline Rational<Type> operator-(const Rational<OtherType>& other) const {
-		long simplify;
-		
 		Rational<Type> result((this->n * other.d) - (other.n * this->d), this->d * other.d);
 		
-		simplify = gcf<Type>(result.n, result.d);
+		long simplify = gcf<Type>(result.n, result.d);
 		
 		result.n /= simplify;
 		result.d /= simplify;
 		
 		return result;
+	}
+
+	template <typename OtherType>
+	inline Rational<Type>& operator-=(const Rational<OtherType>& other) {
+    this->n = (this->n * other.d) - (other.n * this->d);
+    this->d = this->d * other.d;
+
+    long simplify = gcf<Type>(this->n, this->d);
+
+    this->n /= simplify;
+    this->d /= simplify;
+
+    return *this;
 	}
 	
 	template <typename OtherType>
@@ -166,14 +181,17 @@ class Rational {
 	inline Rational<Type> operator/(const Rational<OtherType>& other) const {
 		return *this * Rational<OtherType>(other.d, other.n);
 	}
+
+	template <typename OtherType>
+	inline Rational<Type> operator/=(const Rational<OtherType>& other) {
+	  *this *= Rational<OtherType>(other.d, other.n);
+	  return *this;
+	}
 	
 	template <typename OtherType>
 	inline Rational<Type> operator%(const Rational<OtherType>& other) const {
-		long floor_div;
-		Rational<Type> prod;
-		
-		floor_div = (this->n * other.n) / (this->d * other.d);
-		prod			= other * Rational<long>(floor_div, 1);
+		long floor_div      = (this->n * other.n) / (this->d * other.d);
+		Rational<Type> prod	= other * Rational<long>(floor_div, 1);
 		
 		return Rational<long>(this->n, other.n) - prod;
 	}
@@ -384,6 +402,20 @@ inline bool operator>=(const NativeType left, const Rational<RationalType>& righ
 	return (left > right) or (left == right); 
 }
 
+template <typename Type>
+inline std::ostream& operator<<(std::ostream& out, const Rational<Type>& rhs) {
+  out << rhs.n << "/" << rhs.d << std::flush;
+  return out;
+}
+
 } // end of namespace nm
+
+namespace std {
+  template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+  nm::Rational<IntType> abs(const nm::Rational<IntType>& value) {
+    if (value.n >= 0) return value;
+    return nm::Rational<IntType>(-value.n, value.d);
+  }
+}
 
 #endif // RATIONAL_H

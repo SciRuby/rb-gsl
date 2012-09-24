@@ -49,32 +49,31 @@
 #include "list.h"
 #include "yale.h"
 
-namespace nm {
-  const size_t NUM_STYPES = 3;
-}
-
 /*
  * Macros
  */
 
+#define NMATRIX_DTYPE_IS_COMPLEX(s)		((s->dtype == COMPLEX64) or (s->dtype == COMPLEX128))
+#define NMATRIX_DTYPE_IS_FLOAT(s)			((s->dtype == FLOAT32) or (s->dtype == FLOAT64))
+#define NMATRIX_DTYPE_IS_INTEGER(s)		(s->dtype <= INT64)
+#define NMATRIX_DTYPE_IS_RATIONAL(s)	((s->dtype == RATIONAL32) or (s->dtype == RATIONAL64) or (s->dtype == RATIONAL128))
+#define NMATRIX_DTYPE_IS_RUBYOBJ(s)		(s->dtype == RUBYOBJ)
+
+
+/*
+ * Types
+ */
+
+
+/*
+ * Data
+ */
+
+namespace nm {
+	const int NUM_STYPES = 3;
+}
 
 extern "C" {
-
-  #define NMATRIX_DTYPE_IS_COMPLEX(s)		((s->dtype == COMPLEX64) or (s->dtype == COMPLEX128))
-  #define NMATRIX_DTYPE_IS_FLOAT(s)			((s->dtype == FLOAT32) or (s->dtype == FLOAT64))
-  #define NMATRIX_DTYPE_IS_INTEGER(s)		(s->dtype <= INT64)
-  #define NMATRIX_DTYPE_IS_RATIONAL(s)	((s->dtype == RATIONAL32) or (s->dtype == RATIONAL64) or (s->dtype == RATIONAL128))
-  #define NMATRIX_DTYPE_IS_RUBYOBJ(s)		(s->dtype == RUBYOBJ)
-
-
-  /*
-   * Types
-   */
-
-
-  /*
-   * Data
-   */
 
   extern const char* const STYPE_NAMES[nm::NUM_STYPES];
   extern void (* const STYPE_MARK[nm::NUM_STYPES])(void*);
@@ -95,5 +94,6 @@ extern "C" {
   STORAGE*		nm_yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
 
 } // end of extern "C" block
+
 
 #endif // STORAGE_H

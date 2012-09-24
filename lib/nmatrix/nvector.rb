@@ -41,7 +41,7 @@ class NVector < NMatrix
 	def initialize(length, *args)
 		super(:dense, [length, 1], *args)
     orientation
-	end
+  end
 
 	# Orientation defaults to column (e.g., [3,1] is a column of length 3). It
 	# may also be row, e.g., for [1,5].
@@ -50,33 +50,35 @@ class NVector < NMatrix
 	end
 
 	def transpose
-		super().flip
+		t = super()
+    t.flip!
 	end
 
 	def transpose!
 		super()
-		self.flip
+		self.flip!
 	end
 
 	def multiply(m)
-		super(m).flip
+		t = super(m)
+    t.flip!
 	end
 
 	def multiply!(m)
-		super().flip
+		super().flip!
 	end
 
 	def [](i)
 		case @orientation
-		when :row;		super(i, 0)
-		when :column;	super(0, i)
+		when :column;	super(i, 0)
+		when :row;	  super(0, i)
 		end
   end
 
 	def []=(i, val)
 		case @orientation
-		when :row;		super(i, 0, val)
-		when :column;	super(0, i, val)
+		when :column;	super(i, 0, val)
+		when :row;	  super(0, i, val)
 		end
 	end
 
@@ -94,8 +96,8 @@ protected
 		super() << "orientation:#{self.orientation}"
 	end
 	
-	def flip_orientation
+	def flip_orientation!
 		returning(self) { @orientation = @orientation == :row ? :column : :row }
 	end
-	alias :flip :flip_orientation
+	alias :flip! :flip_orientation!
 end

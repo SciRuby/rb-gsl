@@ -38,16 +38,12 @@
 #include "util/math.h"
 
 #include "data/data.h"
-
 #include "common.h"
 #include "dense.h"
 
 /*
  * Macros
  */
-#ifndef NM_CHECK_ALLOC
-#define NM_CHECK_ALLOC(x) if (!x) rb_raise(rb_eNoMemError, "insufficient memory");
-#endif
 
 /*
  * Global Variables
@@ -83,7 +79,7 @@ namespace nm { namespace dense_storage {
 extern "C" {
 
 static size_t* stride(size_t* shape, size_t dim);
-static void slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *src, size_t* lengths, size_t psrc, size_t pdest, size_t n);
+static void slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *src, size_t* lengths, size_t pdest, size_t psrc, size_t n);
 
 /*
  * Functions
@@ -107,8 +103,6 @@ DENSE_STORAGE* nm_dense_storage_create(dtype_t dtype, size_t* shape, size_t dim,
   s->dtype      = dtype;
 
   s->offset     = ALLOC_N(size_t, dim);
-  NM_CHECK_ALLOC(s->offset);
-
   memset(s->offset, 0, sizeof(size_t)*dim);
 
   s->stride     = stride(shape, dim);
@@ -122,7 +116,6 @@ DENSE_STORAGE* nm_dense_storage_create(dtype_t dtype, size_t* shape, size_t dim,
   	
   } else {
     s->elements = ALLOC_N(char, DTYPE_SIZES[dtype]*count);
-    NM_CHECK_ALLOC(s->elements);
 
     size_t copy_length = elements_length;
 
@@ -203,44 +196,26 @@ void nm_dense_storage_mark(void* storage_base) {
 void* nm_dense_storage_get(STORAGE* storage, SLICE* slice) {
   DENSE_STORAGE* s = (DENSE_STORAGE*)storage;
   DENSE_STORAGE* ns;
-  size_t count;
 
   if (slice->single)
     return (char*)(s->elements) + nm_dense_storage_pos(s, slice->coords) * DTYPE_SIZES[s->dtype];
   else { // Make references
-    ns = ALLOC( DENSE_STORAGE );
-
-    NM_CHECK_ALLOC(ns);
-
-    ns->dim        = s->dim;
-    ns->dtype      = s->dtype;
-
-    ns->offset     = ALLOC_N(size_t, ns->dim);
-    NM_CHECK_ALLOC(ns->offset);
-
-    ns->shape      = ALLOC_N(size_t, ns->dim);
-    NM_CHECK_ALLOC(ns->shape);
-
-    for (size_t i = 0; i < ns->dim; ++i) {
-      ns->offset[i] = 0;
-      ns->shape[i]  = slice->lengths[i];
+    size_t *shape      = ALLOC_N(size_t, s->dim);
+    for (size_t i = 0; i < s->dim; ++i) {
+      shape[i]  = slice->lengths[i];
     }
 
-    ns->stride     = stride(ns->shape, ns->dim);
-    ns->count      = 1;
-    ns->src        = ns;
+    ns = nm_dense_storage_create(s->dtype, shape, s->dim, NULL, 0); 
 
-    count          = nm_storage_count_max_elements(s);
-
-    ns->elements   = ALLOC_N(char, DTYPE_SIZES[ns->dtype] * count);
-    NM_CHECK_ALLOC(ns->elements);
-
-    slice_copy(ns, s, slice->lengths, nm_dense_storage_pos(s, slice->coords), 0, 0);
+    slice_copy(ns, 
+        reinterpret_cast<const DENSE_STORAGE*>(s->src), 
+        slice->lengths, 
+        0, 
+        nm_dense_storage_pos(s, slice->coords), 
+        0);
     return ns;
   }
 }
-
-
 
 /*
  * Get a slice or one element by reference (no copy).
@@ -255,16 +230,10 @@ void* nm_dense_storage_ref(STORAGE* storage, SLICE* slice) {
     
   else {
     DENSE_STORAGE* ns = ALLOC( DENSE_STORAGE );
-    NM_CHECK_ALLOC(ns);
-
     ns->dim        = s->dim;
     ns->dtype      = s->dtype;
-
     ns->offset     = ALLOC_N(size_t, ns->dim);
-    NM_CHECK_ALLOC(ns->offset);
-
     ns->shape      = ALLOC_N(size_t, ns->dim);
-    NM_CHECK_ALLOC(ns->shape);
 
     for (size_t i = 0; i < ns->dim; ++i) {
       ns->offset[i] = slice->coords[i] + s->offset[i];
@@ -274,7 +243,7 @@ void* nm_dense_storage_ref(STORAGE* storage, SLICE* slice) {
     ns->stride     = s->stride;
     ns->elements   = s->elements;
     
-    ((DENSE_STORAGE*)((DENSE_STORAGE*)s->src))->count++;
+    s->src->count++;
     ns->src = s->src;
 
     return ns;
@@ -340,7 +309,7 @@ bool nm_dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
  * Dense element-wise operations.
  */
 STORAGE* nm_dense_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
-	OP_LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_op, DENSE_STORAGE*, const DENSE_STORAGE*, const DENSE_STORAGE*);
+	OP_LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_op, DENSE_STORAGE*, const DENSE_STORAGE* left, const DENSE_STORAGE* right);
 
 	return ttable[op][left->dtype][right->dtype](reinterpret_cast<const DENSE_STORAGE*>(left), reinterpret_cast<const DENSE_STORAGE*>(right));
 }
@@ -378,8 +347,6 @@ static size_t* stride(size_t* shape, size_t dim) {
   size_t i, j;
   size_t* stride = ALLOC_N(size_t, dim);
 
-  NM_CHECK_ALLOC(stride);
-
   for (i = 0; i < dim; ++i) {
     stride[i] = 1;
     for (j = i+1; j < dim; ++j) {
@@ -393,11 +360,12 @@ static size_t* stride(size_t* shape, size_t dim) {
 /*
  * Recursive slicing for N-dimensional matrix.
  */
-static void slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *src, size_t* lengths, size_t psrc, size_t pdest, size_t n) {
+static void slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *src, size_t* lengths, size_t pdest, size_t psrc, size_t n) {
   if (src->dim - n > 1) {
     for (size_t i = 0; i < lengths[n]; ++i) {
       slice_copy(dest, src, lengths,
-                                    psrc + src->stride[n]*i, pdest + dest->stride[n]*i,
+                                    pdest + dest->stride[n]*i,
+                                    psrc + src->stride[n]*i, 
                                     n + 1);
     }
   } else {
@@ -425,10 +393,8 @@ STORAGE* nm_dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
  * Copy dense storage without a change in dtype.
  */
 DENSE_STORAGE* nm_dense_storage_copy(const DENSE_STORAGE* rhs) {
-  size_t  count = nm_storage_count_max_elements(rhs);
+  size_t  count = 0;  
   size_t *shape  = ALLOC_N(size_t, rhs->dim);
-
-  NM_CHECK_ALLOC(shape);
 
   // copy shape and offset
   for (size_t i = 0; i < rhs->dim; ++i) {
@@ -436,18 +402,24 @@ DENSE_STORAGE* nm_dense_storage_copy(const DENSE_STORAGE* rhs) {
   }
 
   DENSE_STORAGE* lhs = nm_dense_storage_create(rhs->dtype, shape, rhs->dim, NULL, 0);
+  count = nm_storage_count_max_elements(lhs);
+
 
 	// Ensure that allocation worked before copying.
   if (lhs && count) {
     if (rhs == rhs->src) // not a reference
       memcpy(lhs->elements, rhs->elements, DTYPE_SIZES[rhs->dtype] * count);
-    else // slice whole matrix
+    else { // slice whole matrix
+      size_t *offset = ALLOC_N(size_t, rhs->dim);
+      memset(offset, 0, sizeof(size_t) * rhs->dim);
+
       slice_copy(lhs,
-                 reinterpret_cast<const DENSE_STORAGE*>(rhs->src),
-                 rhs->shape,
-                 nm_dense_storage_pos(reinterpret_cast<const DENSE_STORAGE*>(rhs->src), rhs->offset),
-                 0,
-                 0);
+           reinterpret_cast<const DENSE_STORAGE*>(rhs->src),
+           rhs->shape,
+           0,
+           nm_dense_storage_pos(rhs, offset),
+           0);
+    }
   }
 
   return lhs;
@@ -463,8 +435,6 @@ STORAGE* nm_dense_storage_copy_transposed(const STORAGE* rhs_base) {
   DENSE_STORAGE* rhs = (DENSE_STORAGE*)rhs_base;
 
   size_t *shape = ALLOC_N(size_t, rhs->dim);
-
-  NM_CHECK_ALLOC(shape);
 
   // swap shape and offset
   shape[0] = rhs->shape[1];
@@ -492,13 +462,9 @@ DENSE_STORAGE* cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
   size_t  count = nm_storage_count_max_elements(rhs);
 
   size_t *shape = ALLOC_N(size_t, rhs->dim);
-
-  NM_CHECK_ALLOC(shape); // presumably we couldn't allocate offset if shape allocation failed.
-
   memcpy(shape, rhs->shape, sizeof(size_t) * rhs->dim);
 
   DENSE_STORAGE* lhs			= nm_dense_storage_create(new_dtype, shape, rhs->dim, NULL, 0);
-  memcpy(lhs->offset, rhs->offset, sizeof(size_t) * rhs->dim);
 
   RDType*	rhs_els         = reinterpret_cast<RDType*>(rhs->elements);
   LDType* lhs_els	        = reinterpret_cast<LDType*>(lhs->elements);
@@ -509,10 +475,11 @@ DENSE_STORAGE* cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
       /* Make a copy of a ref to a matrix. */
 
       DENSE_STORAGE* tmp = nm_dense_storage_copy(rhs);
-      NM_CHECK_ALLOC(tmp);
 
       RDType* tmp_els    = reinterpret_cast<RDType*>(tmp->elements);
-      while (count-- > 0)         lhs_els[count] = tmp_els[count];
+      while (count-- > 0)   {
+        lhs_els[count] = tmp_els[count];
+      }
       nm_dense_storage_delete(tmp);
     } else {
       /* Make a regular copy. */
@@ -527,18 +494,41 @@ DENSE_STORAGE* cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype) {
 template <typename LDType, typename RDType>
 bool eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
   size_t index;
-  
+  DENSE_STORAGE *tmp1, *tmp2;
+  tmp1 = NULL; tmp2 = NULL;
+  bool result = true;
   /* FIXME: Very strange behavior! The GC calls the method directly with non-initialized data. */
   if (left->dim != right->dim) return false;
 
+
 	LDType* left_elements	  = (LDType*)left->elements;
-	RDType* right_elements	= (RDType*)right->elements;
-	
+  RDType* right_elements	= (RDType*)right->elements;
+
+  // Copy elements in temp matrix if you have refernce to the right.
+  if (left->src != left) {
+    tmp1 = nm_dense_storage_copy(left);
+    left_elements = (LDType*)tmp1->elements;
+  }
+  if (right->src != right) {
+    tmp2 = nm_dense_storage_copy(right);
+    right_elements = (RDType*)tmp2->elements;
+  }
+  
+
+
 	for (index = nm_storage_count_max_elements(left); index-- > 0;) {
-		if (left_elements[index] != right_elements[index]) return false;
+		if (left_elements[index] != right_elements[index]) {
+      result = false;
+      break;
+    }
 	}
 
-	return true;
+  if (tmp1)
+    free(tmp1);
+  if (tmp2)
+    free(tmp2);
+
+	return result;
 }
 
 template <typename DType>
@@ -579,7 +569,7 @@ bool is_symmetric(const DENSE_STORAGE* mat, int lda) {
 }
 
 /*
- * Templated dense storage element-wise operations.
+ * Templated dense storage element-wise operations which return the same DType.
  */
 template <ewop_t op, typename LDType, typename RDType>
 static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
@@ -587,40 +577,60 @@ static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* righ
 	
 	size_t* new_shape = (size_t*)calloc(left->dim, sizeof(size_t));
 	memcpy(new_shape, left->shape, sizeof(size_t) * left->dim);
-	
-	DENSE_STORAGE* result = nm_dense_storage_create(left->dtype, new_shape, left->dim, NULL, 0);
+
+  // Determine the return dtype. This depends on the type of operation we're doing. Usually, it's going to be
+  // set by the left matrix, but for comparisons, we'll use BYTE (in lieu of boolean).
+  dtype_t new_dtype = static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS ? left->dtype : BYTE;
+
+	DENSE_STORAGE* result = nm_dense_storage_create(new_dtype, new_shape, left->dim, NULL, 0);
 	
 	LDType* l_elems = reinterpret_cast<LDType*>(left->elements);
 	RDType* r_elems = reinterpret_cast<RDType*>(right->elements);
-	
-	LDType* res_elems = reinterpret_cast<LDType*>(result->elements);
 
-	for (count = nm_storage_count_max_elements(result); count-- > 0;) {
-		switch (op) {
-			case EW_ADD:
-				res_elems[count] = l_elems[count] + r_elems[count];
-				break;
-				
-			case EW_SUB:
-				res_elems[count] = l_elems[count] - r_elems[count];
-				break;
-				
-			case EW_MUL:
-				res_elems[count] = l_elems[count] * r_elems[count];
-				break;
-				
-			case EW_DIV:
-				res_elems[count] = l_elems[count] / r_elems[count];
-				break;
-				
-			case EW_MOD:
-				rb_raise(rb_eNotImpError, "Element-wise modulo is currently not supported.");
-				break;
-		}
-	}
+	if (static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS) { // use left-dtype
+
+    for (count = nm_storage_count_max_elements(result); count-- > 0;) {
+      reinterpret_cast<LDType*>(result->elements)[count] = ew_op_switch<op,LDType,RDType>(l_elems[count], r_elems[count]);
+    }
+
+  } else { // new_dtype is BYTE: comparison operators
+    uint8_t* res_elems = reinterpret_cast<uint8_t*>(result->elements);
+
+    for (count = nm_storage_count_max_elements(result); count-- > 0;) {
+      switch (op) {
+        case EW_EQEQ:
+          res_elems[count] = l_elems[count] == r_elems[count];
+          break;
+
+        case EW_NEQ:
+          res_elems[count] = l_elems[count] != r_elems[count];
+          break;
+
+        case EW_LT:
+          res_elems[count] = l_elems[count] < r_elems[count];
+          break;
+
+        case EW_GT:
+          res_elems[count] = l_elems[count] > r_elems[count];
+          break;
+
+        case EW_LEQ:
+          res_elems[count] = l_elems[count] <= r_elems[count];
+          break;
+
+        case EW_GEQ:
+          res_elems[count] = l_elems[count] >= r_elems[count];
+          break;
+
+        default:
+          rb_raise(rb_eStandardError, "this should not happen");
+      }
+    }
+  }
 	
 	return result;
 }
+
 
 /*
  * DType-templated matrix-matrix multiplication for dense storage.
@@ -633,26 +643,21 @@ static DENSE_STORAGE* matrix_multiply(const STORAGE_PAIR& casted_storage, size_t
   // Create result storage.
   DENSE_STORAGE* result = nm_dense_storage_create(left->dtype, resulting_shape, 2, NULL, 0);
 
-  DType *pAlpha = new DType(1),
-        *pBeta  = new DType(0);
+  DType *pAlpha = ALLOCA_N(DType, 1),
+        *pBeta  = ALLOCA_N(DType, 1);
 
+  *pAlpha = 1;
+  *pBeta = 0;
   // Do the multiplication
-  bool succ;
 
-  if (vector) succ = nm::math::gemv<DType>(CblasNoTrans, left->shape[0], left->shape[1], pAlpha,
-                                           reinterpret_cast<DType*>(left->elements), left->shape[1],
-                                           reinterpret_cast<DType*>(right->elements), 1, pBeta,
-                                           reinterpret_cast<DType*>(result->elements), 1);
-  else        succ = nm::math::gemm<DType>(CblasNoTrans, CblasNoTrans, right->shape[1], left->shape[0], left->shape[1], pAlpha,
-                                           reinterpret_cast<DType*>(right->elements), right->shape[1],
-                                           reinterpret_cast<DType*>(left->elements), left->shape[1], pBeta,
-                                           reinterpret_cast<DType*>(result->elements), result->shape[1]);
-
-  delete pAlpha;
-  delete pBeta;
-
-  if (!succ)
-    rb_raise(rb_eStandardError, "gemm/gemv failed for an unknown reason");
+  if (vector) nm::math::gemv<DType>(CblasNoTrans, left->shape[0], left->shape[1], pAlpha,
+                                    reinterpret_cast<DType*>(left->elements), left->shape[1],
+                                    reinterpret_cast<DType*>(right->elements), 1, pBeta,
+                                    reinterpret_cast<DType*>(result->elements), 1);
+  else        nm::math::gemm<DType>(CblasRowMajor, CblasNoTrans, CblasNoTrans, left->shape[0], right->shape[1], left->shape[1],
+                                    pAlpha, reinterpret_cast<DType*>(left->elements), left->shape[1],
+                                    reinterpret_cast<DType*>(right->elements), right->shape[1], pBeta,
+                                    reinterpret_cast<DType*>(result->elements), result->shape[1]);
 
   return result;
 }

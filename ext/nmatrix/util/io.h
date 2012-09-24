@@ -26,7 +26,7 @@
 // Header file for input/output support functions.
 
 #ifndef NMATRIX_IO_H
-  #define NMATRIX_IO_H
+#define NMATRIX_IO_H
 
 /*
  * Project Includes

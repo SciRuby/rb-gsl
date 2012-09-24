@@ -61,8 +61,8 @@ extern "C" {
   /*
    * Macros
    */
+
   #define NM_YALE_MINIMUM(sptr)               (((YALE_STORAGE*)(sptr))->shape[0]*2 + 1) // arbitrarily defined
-  #define NM_YALE_MAX_SIZE(sptr)              (((YALE_STORAGE*)(sptr))->shape[0] * ((YALE_STORAGE*)(sptr))->shape[1] + 1)
 
   #ifndef NM_CHECK_ALLOC
    #define NM_CHECK_ALLOC(x) if (!x) rb_raise(rb_eNoMemError, "insufficient memory");
@@ -112,8 +112,8 @@ extern "C" {
   //////////
   // Math //
   //////////
-
-  STORAGE* nm_yale_storage_ew_multiply(const STORAGE* left, const STORAGE* right);
+	
+	STORAGE* nm_yale_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right);
   STORAGE* nm_yale_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
 
   /////////////
@@ -199,6 +199,9 @@ namespace nm { namespace yale_storage {
     for (size_t i = 0; i < s->shape[0]+1; ++i) // insert Ruby zeros
       a[i] = 0;
   }
+
+  template <typename DType, typename IType>
+  void init(YALE_STORAGE* s);
 
 }} // end of namespace nm::yale_storage
 

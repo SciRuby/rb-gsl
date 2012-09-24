@@ -27,6 +27,39 @@
 //
 // For instructions on adding CBLAS and CLAPACK functions, see the
 // beginning of math.cpp.
+//
+// Some of these functions are from ATLAS. Here is the license for
+// ATLAS:
+//
+/*
+ *             Automatically Tuned Linear Algebra Software v3.8.4
+ *                    (C) Copyright 1999 R. Clint Whaley
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *   1. Redistributions of source code must retain the above copyright
+ *      notice, this list of conditions and the following disclaimer.
+ *   2. Redistributions in binary form must reproduce the above copyright
+ *      notice, this list of conditions, and the following disclaimer in the
+ *      documentation and/or other materials provided with the distribution.
+ *   3. The name of the ATLAS group or the names of its contributers may
+ *      not be used to endorse or promote products derived from this
+ *      software without specific written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE ATLAS GROUP OR ITS CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #ifndef MATH_H
 #define MATH_H
@@ -37,7 +70,7 @@
 
 extern "C" { // These need to be in an extern "C" block or you'll get all kinds of undefined symbol errors.
   #include <cblas.h>
-  #include <clapack.h>
+  //#include <clapack.h>
 }
 
 #include <algorithm> // std::min, std::max
@@ -47,6 +80,7 @@ extern "C" { // These need to be in an extern "C" block or you'll get all kinds 
  * Project Includes
  */
 #include "data/data.h"
+#include "lapack.h"
 
 /*
  * Macros
@@ -96,6 +130,385 @@ template <> struct LongDType<RubyObject> { typedef RubyObject type; };
  * Functions
  */
 
+/* Numeric inverse -- usually just 1 / f, but a little more complicated for complex. */
+template <typename DType>
+inline DType numeric_inverse(const DType& n) {
+  return n.inverse();
+}
+template <> inline float numeric_inverse<float>(const float& n) { return 1 / n; }
+template <> inline double numeric_inverse<double>(const double& n) { return 1 / n; }
+
+/*
+ * This version of trsm doesn't do any error checks and only works on column-major matrices.
+ *
+ * For row major, call trsm<DType> instead. That will handle necessary changes-of-variables
+ * and parameter checks.
+ */
+template <typename DType>
+inline void trsm_nothrow(const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                         const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                         const int m, const int n, const DType alpha, const DType* a,
+                         const int lda, DType* b, const int ldb)
+{
+  if (m == 0 || n == 0) return; /* Quick return if possible. */
+
+  if (alpha == 0) { // Handle alpha == 0
+    for (int j = 0; j < n; ++j) {
+      for (int i = 0; i < m; ++i) {
+        b[i + j * ldb] = 0;
+      }
+    }
+	  return;
+  }
+
+  if (side == CblasLeft) {
+	  if (trans_a == CblasNoTrans) {
+
+      /* Form  B := alpha*inv( A )*B. */
+	    if (uplo == CblasUpper) {
+    		for (int j = 0; j < n; ++j) {
+		      if (alpha != 1) {
+			      for (int i = 0; i < m; ++i) {
+			        b[i + j * ldb] = alpha * b[i + j * ldb];
+			      }
+		      }
+		      for (int k = m-1; k >= 0; --k) {
+			      if (b[k + j * ldb] != 0) {
+			        if (diag == CblasNonUnit) {
+				        b[k + j * ldb] /= a[k + k * lda];
+			        }
+
+              for (int i = 0; i < k-1; ++i) {
+                b[i + j * ldb] -= b[k + j * ldb] * a[i + k * lda];
+              }
+			      }
+  		    }
+		    }
+	    } else {
+    		for (int j = 0; j < n; ++j) {
+		      if (alpha != 1) {
+            for (int i = 0; i < m; ++i) {
+              b[i + j * ldb] = alpha * b[i + j * ldb];
+			      }
+		      }
+  		    for (int k = 0; k < m; ++k) {
+      			if (b[k + j * ldb] != 0.) {
+			        if (diag == CblasNonUnit) {
+				        b[k + j * ldb] /= a[k + k * lda];
+			        }
+    			    for (int i = k+1; i < m; ++i) {
+        				b[i + j * ldb] -= b[k + j * ldb] * a[i + k * lda];
+    			    }
+      			}
+  		    }
+    		}
+	    }
+	  } else { // CblasTrans
+
+      /*           Form  B := alpha*inv( A**T )*B. */
+	    if (uplo == CblasUpper) {
+    		for (int j = 0; j < n; ++j) {
+		      for (int i = 0; i < m; ++i) {
+			      DType temp = alpha * b[i + j * ldb];
+            for (int k = 0; k < i-1; ++k) {
+              temp -= a[k + i * lda] * b[k + j * ldb];
+      			}
+			      if (diag == CblasNonUnit) {
+			        temp /= a[i + i * lda];
+			      }
+			      b[i + j * ldb] = temp;
+  		    }
+    		}
+	    } else {
+    		for (int j = 0; j < n; ++j) {
+		      for (int i = m-1; i >= 0; --i) {
+			      DType temp= alpha * b[i + j * ldb];
+      			for (int k = i+1; k < m; ++k) {
+			        temp -= a[k + i * lda] * b[k + j * ldb];
+      			}
+			      if (diag == CblasNonUnit) {
+			        temp /= a[i + i * lda];
+			      }
+			      b[i + j * ldb] = temp;
+  		    }
+    		}
+	    }
+	  }
+  } else { // right side
+
+	  if (trans_a == CblasNoTrans) {
+
+      /*           Form  B := alpha*B*inv( A ). */
+
+	    if (uplo == CblasUpper) {
+    		for (int j = 0; j < n; ++j) {
+		      if (alpha != 1) {
+      			for (int i = 0; i < m; ++i) {
+			        b[i + j * ldb] = alpha * b[i + j * ldb];
+      			}
+		      }
+  		    for (int k = 0; k < j-1; ++k) {
+	      		if (a[k + j * lda] != 0) {
+    			    for (int i = 0; i < m; ++i) {
+				        b[i + j * ldb] -= a[k + j * lda] * b[i + k * ldb];
+			        }
+			      }
+  		    }
+	  	    if (diag == CblasNonUnit) {
+		      	DType temp = 1 / a[j + j * lda];
+			      for (int i = 0; i < m; ++i) {
+			        b[i + j * ldb] = temp * b[i + j * ldb];
+      			}
+		      }
+    		}
+	    } else {
+		    for (int j = n-1; j >= 0; --j) {
+		      if (alpha != 1) {
+			      for (int i = 0; i < m; ++i) {
+			        b[i + j * ldb] = alpha * b[i + j * ldb];
+      			}
+  		    }
+
+  		    for (int k = j+1; k < n; ++k) {
+	      		if (a[k + j * lda] != 0.) {
+    			    for (int i = 0; i < m; ++i) {
+				        b[i + j * ldb] -= a[k + j * lda] * b[i + k * ldb];
+    			    }
+		      	}
+  		    }
+	  	    if (diag == CblasNonUnit) {
+		      	DType temp = 1 / a[j + j * lda];
+
+			      for (int i = 0; i < m; ++i) {
+			        b[i + j * ldb] = temp * b[i + j * ldb];
+      			}
+		      }
+    		}
+	    }
+	  } else { // CblasTrans
+
+      /*           Form  B := alpha*B*inv( A**T ). */
+
+	    if (uplo == CblasUpper) {
+		    for (int k = n-1; k >= 0; --k) {
+		      if (diag == CblasNonUnit) {
+			      DType temp= 1 / a[k + k * lda];
+	      		for (int i = 0; i < m; ++i) {
+  			      b[i + k * ldb] = temp * b[i + k * ldb];
+      			}
+		      }
+  		    for (int j = 0; j < k-1; ++j) {
+	      		if (a[j + k * lda] != 0.) {
+			        DType temp= a[j + k * lda];
+    			    for (int i = 0; i < m; ++i) {
+		        		b[i + j * ldb] -= temp * b[i + k *	ldb];
+    			    }
+      			}
+  		    }
+	  	    if (alpha != 1) {
+      			for (int i = 0; i < m; ++i) {
+			        b[i + k * ldb] = alpha * b[i + k * ldb];
+      			}
+		      }
+    		}
+	    } else {
+    		for (int k = 0; k < n; ++k) {
+		      if (diag == CblasNonUnit) {
+      			DType temp = 1 / a[k + k * lda];
+			      for (int i = 0; i < m; ++i) {
+			        b[i + k * ldb] = temp * b[i + k * ldb];
+      			}
+		      }
+  		    for (int j = k+1; j < n; ++j) {
+	      		if (a[j + k * lda] != 0.) {
+			        DType temp = a[j + k * lda];
+			        for (int i = 0; i < m; ++i) {
+				        b[i + j * ldb] -= temp * b[i + k * ldb];
+    			    }
+		      	}
+  		    }
+	  	    if (alpha != 1) {
+      			for (int i = 0; i < m; ++i) {
+			        b[i + k * ldb] = alpha * b[i + k * ldb];
+      			}
+  		    }
+    		}
+	    }
+	  }
+  }
+}
+
+
+/*
+ * BLAS' DTRSM function, generalized.
+ */
+template <typename DType, typename = typename std::enable_if<!std::is_integral<DType>::value>::type>
+inline void trsm(const enum CBLAS_ORDER order,
+                 const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const DType alpha, const DType* a,
+                 const int lda, DType* b, const int ldb)
+{
+  int                     num_rows_a = n;
+  if (side == CblasLeft)  num_rows_a = m;
+
+  if (lda < std::max(1,num_rows_a)) {
+    fprintf(stderr, "TRSM: num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
+    rb_raise(rb_eArgError, "TRSM: Expected lda >= max(1, num_rows_a)");
+  }
+
+  // Test the input parameters.
+  if (order == CblasRowMajor) {
+    if (ldb < std::max(1,n)) {
+      fprintf(stderr, "TRSM: M=%d; got ldb=%d\n", m, ldb);
+      rb_raise(rb_eArgError, "TRSM: Expected ldb >= max(1,N)");
+    }
+
+    // For row major, need to switch side and uplo
+    enum CBLAS_SIDE side_ = side == CblasLeft  ? CblasRight : CblasLeft;
+    enum CBLAS_UPLO uplo_ = uplo == CblasUpper ? CblasLower : CblasUpper;
+
+    trsm_nothrow<DType>(side_, uplo_, trans_a, diag, n, m, alpha, a, lda, b, ldb);
+
+  } else { // CblasColMajor
+
+    if (ldb < std::max(1,m)) {
+      fprintf(stderr, "TRSM: M=%d; got ldb=%d\n", m, ldb);
+      rb_raise(rb_eArgError, "TRSM: Expected ldb >= max(1,M)");
+    }
+
+    trsm_nothrow<DType>(side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
+
+  }
+
+}
+
+
+template <>
+inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const float alpha, const float* a,
+                 const int lda, float* b, const int ldb)
+{
+  cblas_strsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
+}
+
+template <>
+inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const double alpha, const double* a,
+                 const int lda, double* b, const int ldb)
+{
+  cblas_dtrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
+}
+
+
+template <>
+inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const Complex64 alpha, const Complex64* a,
+                 const int lda, Complex64* b, const int ldb)
+{
+  cblas_ctrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, (const void*)(&alpha), (const void*)(a), lda, (void*)(b), ldb);
+}
+
+template <>
+inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_DIAG diag,
+                 const int m, const int n, const Complex128 alpha, const Complex128* a,
+                 const int lda, Complex128* b, const int ldb)
+{
+  cblas_ztrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, (const void*)(&alpha), (const void*)(a), lda, (void*)(b), ldb);
+}
+
+
+/*
+ * ATLAS function which performs row interchanges on a general rectangular matrix. Modeled after the LAPACK LASWP function.
+ *
+ * This version is templated for use by template <> getrf().
+ */
+template <typename DType>
+inline void laswp(const int N, DType* A, const int lda, const int K1, const int K2, const int *piv, const int inci) {
+  const int n = K2 - K1;
+
+  int nb = N >> 5;
+
+  const int mr = N - (nb<<5);
+  const int incA = lda << 5;
+
+  if (K2 < K1) return;
+
+  int i1, i2;
+  if (inci < 0) {
+    piv -= (K2-1) * inci;
+    i1 = K2 - 1;
+    i2 = K1;
+  } else {
+    piv += K1 * inci;
+    i1 = K1;
+    i2 = K2-1;
+  }
+
+  if (nb) {
+
+    do {
+      const int* ipiv = piv;
+      int i           = i1;
+      int KeepOn;
+
+      do {
+        int ip = *ipiv; ipiv += inci;
+
+        if (ip != i) {
+          DType *a0 = &(A[i]),
+                *a1 = &(A[ip]);
+
+          for (register int h = 32; h; h--) {
+            DType r   = *a0;
+            *a0       = *a1;
+            *a1       = r;
+
+            a0 += lda;
+            a1 += lda;
+          }
+
+        }
+        if (inci > 0) KeepOn = (++i <= i2);
+        else          KeepOn = (--i >= i2);
+
+      } while (KeepOn);
+      A += incA;
+    } while (--nb);
+  }
+
+  if (mr) {
+    const int* ipiv = piv;
+    int i           = i1;
+    int KeepOn;
+
+    do {
+      int ip = *ipiv; ipiv += inci;
+      if (ip != i) {
+        DType *a0 = &(A[i]),
+              *a1 = &(A[ip]);
+
+        for (register int h = mr; h; h--) {
+          DType r   = *a0;
+          *a0       = *a1;
+          *a1       = r;
+
+          a0 += lda;
+          a1 += lda;
+        }
+      }
+
+      if (inci > 0) KeepOn = (++i <= i2);
+      else          KeepOn = (--i >= i2);
+
+    } while (KeepOn);
+  }
+}
+
 
 /*
  * GEneral Matrix Multiplication: based on dgemm.f from Netlib.
@@ -103,91 +516,54 @@ template <> struct LongDType<RubyObject> { typedef RubyObject type; };
  * This is an extremely inefficient algorithm. Recommend using ATLAS' version instead.
  *
  * Template parameters: LT -- long version of type T. Type T is the matrix dtype.
+ *
+ * This version throws no errors. Use gemm<DType> instead for error checking.
  */
 template <typename DType>
-inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
-          const DType* alpha, const DType* A, const int lda, const DType* B, const int ldb, const DType* beta, DType* C, const int ldc) {
-  int num_rows_a, /*num_cols_a,*/ num_rows_b; // nrowa, ncola, nrowb
+inline void gemm_nothrow(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+                 const DType* alpha, const DType* A, const int lda, const DType* B, const int ldb, const DType* beta, DType* C, const int ldc)
+{
 
   typename LongDType<DType>::type temp;
 
-  // %%= if [:rational,:complex,:value].include?(dtype.type); "#{dtype.long_dtype.sizeof} temp1, temp2;"; end%%
-  int i, j, l;
-
-  if (TransA == CblasNoTrans) num_rows_a = M;
-  else                        num_rows_a = K;
-
-  if (TransB == CblasNoTrans) num_rows_b = K;
-  else                        num_rows_b = N;
-
-  // Test the input parameters
-  if (TransA < 111 || TransA > 113) {
-    rb_raise(rb_eArgError, "GEMM: TransA must be CblasNoTrans, CblasTrans, or CblasConjTrans");
-    return false;
-  } else if (TransB < 111 || TransB > 113) {
-    rb_raise(rb_eArgError, "GEMM: TransB must be CblasNoTrans, CblasTrans, or CblasConjTrans");
-    return false;
-  } else if (M < 0) {
-    rb_raise(rb_eArgError, "GEMM: Expected M >= 0");
-    return false;
-  } else if (N < 0) {
-    rb_raise(rb_eArgError, "GEMM: Expected N >= 0");
-    return false;
-  } else if (K < 0) {
-    rb_raise(rb_eArgError, "GEMM: Expected K >= 0");
-    return false;
-  } else if (lda < std::max(1, num_rows_a)) {
-    fprintf(stderr, "GEMM: num_rows_a = %d; got lda=%d\n", num_rows_a, lda);
-    rb_raise(rb_eArgError, "GEMM: Expected lda >= max(1, num_rows_a)");
-    return false;
-  } else if (ldb < std::max(1, num_rows_b)) {
-    fprintf(stderr, "GEMM: num_rows_b = %d; got ldb=%d\n", num_rows_b, ldb);
-    rb_raise(rb_eArgError, "GEMM: Expected ldb >= max(1, num_rows_b)");
-    return false;
-  } else if (ldc < std::max(1,M)) {
-    fprintf(stderr, "GEMM: M=%d; got ldc=%d\n", M, ldc);
-    rb_raise(rb_eArgError, "GEMM: Expected ldc >= max(1,M)");
-    return false;
-  }
-
   // Quick return if possible
-  if (!M or !N or ((*alpha == 0 or !K) and *beta == 1)) return true;
+  if (!M or !N or ((*alpha == 0 or !K) and *beta == 1)) return;
 
   // For alpha = 0
   if (*alpha == 0) {
     if (*beta == 0) {
-      for (j = 0; j < N; ++j)
-        for (i = 0; i < M; ++i) {
+      for (int j = 0; j < N; ++j)
+        for (int i = 0; i < M; ++i) {
           C[i+j*ldc] = 0;
         }
     } else {
-      for (j = 0; j < N; ++j)
-        for (i = 0; i < M; ++i) {
+      for (int j = 0; j < N; ++j)
+        for (int i = 0; i < M; ++i) {
           C[i+j*ldc] *= *beta;
         }
     }
-    return false;
+    return;
   }
 
   // Start the operations
   if (TransB == CblasNoTrans) {
     if (TransA == CblasNoTrans) {
       // C = alpha*A*B+beta*C
-      for (j = 0; j < N; ++j) {
+      for (int j = 0; j < N; ++j) {
         if (*beta == 0) {
-          for (i = 0; i < M; ++i) {
+          for (int i = 0; i < M; ++i) {
             C[i+j*ldc] = 0;
           }
         } else if (*beta != 1) {
-          for (i = 0; i < M; ++i) {
+          for (int i = 0; i < M; ++i) {
             C[i+j*ldc] *= *beta;
           }
         }
 
-        for (l = 0; l < K; ++l) {
+        for (int l = 0; l < K; ++l) {
           if (B[l+j*ldb] != 0) {
             temp = *alpha * B[l+j*ldb];
-            for (i = 0; i < M; ++i) {
+            for (int i = 0; i < M; ++i) {
               C[i+j*ldc] += A[i+l*lda] * temp;
             }
           }
@@ -197,10 +573,10 @@ inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE T
     } else {
 
       // C = alpha*A**DType*B + beta*C
-      for (j = 0; j < N; ++j) {
-        for (i = 0; i < M; ++i) {
+      for (int j = 0; j < N; ++j) {
+        for (int i = 0; i < M; ++i) {
           temp = 0;
-          for (l = 0; l < K; ++l) {
+          for (int l = 0; l < K; ++l) {
             temp += A[l+i*lda] * B[l+j*ldb];
           }
 
@@ -217,21 +593,21 @@ inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE T
   } else if (TransA == CblasNoTrans) {
 
     // C = alpha*A*B**T + beta*C
-    for (j = 0; j < N; ++j) {
+    for (int j = 0; j < N; ++j) {
       if (*beta == 0) {
-        for (i = 0; i < M; ++i) {
+        for (int i = 0; i < M; ++i) {
           C[i+j*ldc] = 0;
         }
       } else if (*beta != 1) {
-        for (i = 0; i < M; ++i) {
+        for (int i = 0; i < M; ++i) {
           C[i+j*ldc] *= *beta;
         }
       }
 
-      for (l = 0; l < K; ++l) {
+      for (int l = 0; l < K; ++l) {
         if (B[j+l*ldb] != 0) {
           temp = *alpha * B[j+l*ldb];
-          for (i = 0; i < M; ++i) {
+          for (int i = 0; i < M; ++i) {
             C[i+j*ldc] += A[i+l*lda] * temp;
           }
         }
@@ -242,10 +618,10 @@ inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE T
   } else {
 
     // C = alpha*A**DType*B**T + beta*C
-    for (j = 0; j < N; ++j) {
-      for (i = 0; i < M; ++i) {
+    for (int j = 0; j < N; ++j) {
+      for (int i = 0; i < M; ++i) {
         temp = 0;
-        for (l = 0; l < K; ++l) {
+        for (int l = 0; l < K; ++l) {
           temp += A[l+i*lda] * B[j+l*ldb];
         }
 
@@ -259,35 +635,105 @@ inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE T
 
   }
 
-  return true;
+  return;
 }
 
+
+
+template <typename DType>
+inline void gemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+                 const DType* alpha, const DType* A, const int lda, const DType* B, const int ldb, const DType* beta, DType* C, const int ldc)
+{
+  if (Order == CblasRowMajor) {
+    if (TransA == CblasNoTrans) {
+      if (lda < std::max(K,1)) {
+        rb_raise(rb_eArgError, "lda must be >= MAX(K,1): lda=%d K=%d", lda, K);
+      }
+    } else {
+      if (lda < std::max(M,1)) { // && TransA == CblasTrans
+        rb_raise(rb_eArgError, "lda must be >= MAX(M,1): lda=%d M=%d", lda, M);
+      }
+    }
+
+    if (TransB == CblasNoTrans) {
+      if (ldb < std::max(N,1)) {
+        rb_raise(rb_eArgError, "ldb must be >= MAX(N,1): ldb=%d N=%d", ldb, N);
+      }
+    } else {
+      if (ldb < std::max(K,1)) {
+        rb_raise(rb_eArgError, "ldb must be >= MAX(K,1): ldb=%d K=%d", ldb, K);
+      }
+    }
+
+    if (ldc < std::max(N,1)) {
+      rb_raise(rb_eArgError, "ldc must be >= MAX(N,1): ldc=%d N=%d", ldc, N);
+    }
+  } else { // CblasColMajor
+    if (TransA == CblasNoTrans) {
+      if (lda < std::max(M,1)) {
+        rb_raise(rb_eArgError, "lda must be >= MAX(M,1): lda=%d M=%d", lda, M);
+      }
+    } else {
+      if (lda < std::max(K,1)) { // && TransA == CblasTrans
+        rb_raise(rb_eArgError, "lda must be >= MAX(K,1): lda=%d K=%d", lda, K);
+      }
+    }
+
+    if (TransB == CblasNoTrans) {
+      if (ldb < std::max(K,1)) {
+        rb_raise(rb_eArgError, "ldb must be >= MAX(K,1): ldb=%d N=%d", ldb, K);
+      }
+    } else {
+      if (ldb < std::max(N,1)) { // NOTE: This error message is actually wrong in the ATLAS source currently. Or are we wrong?
+        rb_raise(rb_eArgError, "ldb must be >= MAX(N,1): ldb=%d N=%d", ldb, N);
+      }
+    }
+
+    if (ldc < std::max(M,1)) {
+      rb_raise(rb_eArgError, "ldc must be >= MAX(M,1): ldc=%d N=%d", ldc, M);
+    }
+  }
+
+  /*
+   * Call SYRK when that's what the user is actually asking for; just handle beta=0, because beta=X requires
+   * we copy C and then subtract to preserve asymmetry.
+   */
+
+  if (A == B && M == N && TransA != TransB && lda == ldb && beta == 0) {
+    rb_raise(rb_eNotImpError, "syrk and syreflect not implemented");
+    /*syrk<DType>(CblasUpper, (Order == CblasColMajor) ? TransA : TransB, N, K, alpha, A, lda, beta, C, ldc);
+    syreflect(CblasUpper, N, C, ldc);
+    */
+  }
+
+  if (Order == CblasRowMajor)    gemm_nothrow<DType>(TransB, TransA, N, M, K, alpha, B, ldb, A, lda, beta, C, ldc);
+  else                           gemm_nothrow<DType>(TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
+
+}
+
+
 template <>
-inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+inline void gemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const float* alpha, const float* A, const int lda, const float* B, const int ldb, const float* beta, float* C, const int ldc) {
-  cblas_sgemm(CblasRowMajor, TransA, TransB, N, M, K, *alpha, B, ldb, A, lda, *beta, C, ldc);
-  return true;
+  cblas_sgemm(Order, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
 }
 
 template <>
-inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+inline void gemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const double* alpha, const double* A, const int lda, const double* B, const int ldb, const double* beta, double* C, const int ldc) {
-  cblas_dgemm(CblasRowMajor, TransA, TransB, N, M, K, *alpha, B, ldb, A, lda, *beta, C, ldc);
-  return true;
+  cblas_dgemm(Order, TransA, TransB, M, N, K, *alpha, A, lda, B, ldb, *beta, C, ldc);
 }
 
 template <>
-inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+inline void gemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const Complex64* alpha, const Complex64* A, const int lda, const Complex64* B, const int ldb, const Complex64* beta, Complex64* C, const int ldc) {
-  cblas_cgemm(CblasRowMajor, TransA, TransB, N, M, K, alpha, B, ldb, A, lda, beta, C, ldc);
-  return true;
+  cblas_cgemm(Order, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
 }
 
 template <>
-inline bool gemm(const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+inline void gemm(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE TransA, const enum CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
           const Complex128* alpha, const Complex128* A, const int lda, const Complex128* B, const int ldb, const Complex128* beta, Complex128* C, const int ldc) {
-  cblas_zgemm(CblasRowMajor, TransA, TransB, N, M, K, alpha, B, ldb, A, lda, beta, C, ldc);
-  return true;
+  cblas_zgemm(Order, TransA, TransB, M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
 }
 
 
@@ -720,6 +1166,159 @@ void transpose_yale(const size_t n, const size_t m, const void* ia_, const void*
   }
 }
 
+
+/*
+ * Templated version of row-order and column-order getrf, derived from ATL_getrfR.c (from ATLAS 3.8.0).
+ *
+ * 1. Row-major factorization of form
+ *   A = L * U * P
+ * where P is a column-permutation matrix, L is lower triangular (lower
+ * trapazoidal if M > N), and U is upper triangular with unit diagonals (upper
+ * trapazoidal if M < N).  This is the recursive Level 3 BLAS version.
+ *
+ * 2. Column-major factorization of form
+ *   A = P * L * U
+ * where P is a row-permutation matrix, L is lower triangular with unit diagonal
+ * elements (lower trapazoidal if M > N), and U is upper triangular (upper
+ * trapazoidal if M < N).  This is the recursive Level 3 BLAS version.
+ *
+ * Template argument determines whether 1 or 2 is utilized.
+ */
+template <bool RowMajor, typename DType>
+inline int getrf_nothrow(const int M, const int N, DType* A, const int lda, int* ipiv) {
+  const int MN = std::min(M, N);
+  int ierr = 0;
+
+  // Symbols used by ATLAS:
+  // Row   Col      Us
+  // Nup   Nleft    N_ul
+  // Ndown Nright   N_dr
+  // We're going to use N_ul, N_dr
+
+  DType neg_one = -1, one = 1;
+
+  if (MN > 1) {
+    int N_ul = MN >> 1;
+
+    // FIXME: Figure out how ATLAS #defines NB
+#ifdef NB
+    if (N_ul > NB) N_ul = ATL_MulByNB(ATL_DivByNB(N_ul));
+#endif
+
+    int N_dr = M - N_ul;
+
+    int i = RowMajor ? getrf_nothrow<true,DType>(N_ul, N, A, lda, ipiv) : getrf_nothrow<false,DType>(M, N_ul, A, lda, ipiv);
+
+    if (i) if (!ierr) ierr = i;
+
+    DType *Ar, *Ac, *An;
+    if (RowMajor) {
+      Ar = &(A[N_ul * lda]),
+      Ac = &(A[N_ul]);
+      An = &(Ar[N_ul]);
+
+      nm::math::laswp<DType>(N_dr, Ar, lda, 0, N_ul, ipiv, 1);
+
+      nm::math::trsm<DType>(CblasRowMajor, CblasRight, CblasUpper, CblasNoTrans, CblasUnit, N_dr, N_ul, one, A, lda, Ar, lda);
+      nm::math::gemm<DType>(CblasRowMajor, CblasNoTrans, CblasNoTrans, N_dr, N-N_ul, N_ul, &neg_one, Ar, lda, Ac, lda, &one, An, lda);
+
+      i = getrf_nothrow<true,DType>(N_dr, N-N_ul, An, lda, ipiv+N_ul);
+    } else {
+      Ar = NULL;
+      Ac = &(A[N_ul * lda]);
+      An = &(Ac[N_ul]);
+
+      nm::math::laswp<DType>(N_dr, Ac, lda, 0, N_ul, ipiv, 1);
+
+      nm::math::trsm<DType>(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, CblasUnit, N_ul, N_dr, one, A, lda, Ac, lda);
+      nm::math::gemm<DType>(CblasColMajor, CblasNoTrans, CblasNoTrans, M-N_ul, N_dr, N_ul, &neg_one, An, lda, Ac, lda, &one, An, lda);
+
+      i = getrf_nothrow<false,DType>(M-N_ul, N_dr, An, lda, ipiv+N_ul);
+    }
+
+    if (i) if (!ierr) ierr = N_ul + i;
+
+    for (i = N_ul; i != MN; i++) {
+      ipiv[i] += N_ul;
+    }
+
+    nm::math::laswp<DType>(N_ul, A, lda, N_ul, MN, ipiv, 1);  /* apply pivots */
+
+  } else if (MN == 1) { // there's another case for the colmajor version, but i don't know that it's that critical. Calls ATLAS LU2, who knows what that does.
+
+    int i = *ipiv = nm::math::lapack::idamax<DType>(N, A, 1); // cblas_iamax(N, A, 1);
+
+    DType tmp = A[i];
+    if (tmp != 0) {
+
+      nm::math::lapack::scal<DType>((RowMajor ? N : M), nm::math::numeric_inverse(tmp), A, 1);
+      A[i] = *A;
+      *A   = tmp;
+
+    } else ierr = 1;
+
+  }
+  return(ierr);
+}
+
+
+/*
+ * From ATLAS 3.8.0:
+ *
+ * Computes one of two LU factorizations based on the setting of the Order
+ * parameter, as follows:
+ * ----------------------------------------------------------------------------
+ *                       Order == CblasColMajor
+ * Column-major factorization of form
+ *   A = P * L * U
+ * where P is a row-permutation matrix, L is lower triangular with unit
+ * diagonal elements (lower trapazoidal if M > N), and U is upper triangular
+ * (upper trapazoidal if M < N).
+ *
+ * ----------------------------------------------------------------------------
+ *                       Order == CblasRowMajor
+ * Row-major factorization of form
+ *   A = P * L * U
+ * where P is a column-permutation matrix, L is lower triangular (lower
+ * trapazoidal if M > N), and U is upper triangular with unit diagonals (upper
+ * trapazoidal if M < N).
+ *
+ * ============================================================================
+ * Let IERR be the return value of the function:
+ *    If IERR == 0, successful exit.
+ *    If (IERR < 0) the -IERR argument had an illegal value
+ *    If (IERR > 0 && Order == CblasColMajor)
+ *       U(i-1,i-1) is exactly zero.  The factorization has been completed,
+ *       but the factor U is exactly singular, and division by zero will
+ *       occur if it is used to solve a system of equations.
+ *    If (IERR > 0 && Order == CblasRowMajor)
+ *       L(i-1,i-1) is exactly zero.  The factorization has been completed,
+ *       but the factor L is exactly singular, and division by zero will
+ *       occur if it is used to solve a system of equations.
+ */
+template <typename DType>
+inline int getrf(const enum CBLAS_ORDER Order, const int M, const int N, DType* A, int lda, int* ipiv) {
+  if (Order == CblasRowMajor) {
+    if (lda < std::max(1,N)) {
+      rb_raise(rb_eArgError, "GETRF: lda must be >= MAX(N,1): lda=%d N=%d", lda, N);
+      return -6;
+    }
+
+    return getrf_nothrow<true,DType>(M, N, A, lda, ipiv);
+  } else {
+    if (lda < std::max(1,M)) {
+      rb_raise(rb_eArgError, "GETRF: lda must be >= MAX(M,1): lda=%d M=%d", lda, M);
+      return -6;
+    }
+
+    return getrf_nothrow<false,DType>(M, N, A, lda, ipiv);
+    //rb_raise(rb_eNotImpError, "column major getrf not implemented");
+  }
+}
+
+
+
+
 /*
  * Macro for declaring LAPACK specializations of the getrf function.
  *
@@ -728,30 +1327,21 @@ void transpose_yale(const size_t n, const size_t m, const void* ia_, const void*
  */
 #define LAPACK_GETRF(type, call, cast_as)                                     \
 template <>                                                                   \
-inline bool getrf(const int M, const int N, type * A, const int lda, int* ipiv) { \
-  int info = call(CblasRowMajor, M, N, reinterpret_cast<cast_as *>(A), lda, ipiv); \
-  if (!info) return true;                                                     \
+inline int getrf(const enum CBLAS_ORDER Order, const int M, const int N, type * A, const int lda, int* ipiv) { \
+  int info = call(Order, M, N, reinterpret_cast<cast_as *>(A), lda, ipiv);    \
+  if (!info) return info;                                                     \
   else {                                                                      \
     rb_raise(rb_eArgError, "getrf: problem with argument %d\n", info);        \
-    return false;                                                             \
+    return info;                                                              \
   }                                                                           \
 }
 
-/*
- * lapack_?getrf - default implementation
- *
- * TODO: Use f2c to convert getrf and other functions it calls to C code, then implement them here,
- * TODO: as templates, for int, rational, RubyObject, etc.
- */
-template <typename DType>
-inline bool getrf(const int M, const int N, DType* A, const int lda, int* ipiv) {
-  rb_raise(rb_eNotImpError, "only implemented for LAPACK types (float32, float64, complex64, complex128)");
-}
-
-LAPACK_GETRF(float,      clapack_sgetrf, float)
+/* Specialize for ATLAS types */
+/*LAPACK_GETRF(float,      clapack_sgetrf, float)
 LAPACK_GETRF(double,     clapack_dgetrf, double)
 LAPACK_GETRF(Complex64,  clapack_cgetrf, void)
 LAPACK_GETRF(Complex128, clapack_zgetrf, void)
+*/
 
 
 /*
@@ -762,9 +1352,10 @@ LAPACK_GETRF(Complex128, clapack_zgetrf, void)
 * This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
 */
 template <typename DType>
-inline bool clapack_getrf(const int m, const int n, void* a, const int lda, int* ipiv) {
- return  getrf<DType>(m, n, reinterpret_cast<DType*>(a), lda, ipiv);
+inline int clapack_getrf(const enum CBLAS_ORDER order, const int m, const int n, void* a, const int lda, int* ipiv) {
+  return getrf<DType>(order, m, n, reinterpret_cast<DType*>(a), lda, ipiv);
 }
+
 
 }} // end namespace nm::math
 

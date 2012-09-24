@@ -42,7 +42,7 @@ module NMatrix::BLAS
     	end
 
     	# For argument descriptions, see: http://www.netlib.org/blas/dgemm.f
-    	::NMatrix::BLAS.cblas_gemm(transpose_a, transpose_b, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
+    	::NMatrix::BLAS.cblas_gemm(:row, transpose_a, transpose_b, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
 
     	return c
     end

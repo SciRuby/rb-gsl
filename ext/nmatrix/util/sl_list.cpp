@@ -197,6 +197,16 @@ NODE* insert_after(NODE* node, size_t key, void* val) {
 }
 
 /*
+ * Analog functions list_insert but this insert copy of value.
+ */
+NODE* insert_with_copy(LIST *list, size_t key, void *val, size_t size) {
+  void *copy_val = ALLOC_N(char, size);
+  memcpy(copy_val, val, size);
+
+
+  return insert(list, false, key, copy_val);
+}
+/*
  * Returns the value pointer (not the node) for some key. Note that it doesn't
  * free the memory for the value stored in the node -- that pointer gets
  * returned! Only the node is destroyed.
@@ -205,8 +215,7 @@ void* remove(LIST* list, size_t key) {
   NODE *f, *rm;
   void* val;
 
-  if (!list->first || list->first->key > key) {
-  	// empty list or def. not present
+  if (!list->first || list->first->key > key) { // empty list or def. not present
   	return NULL;
   }
 
@@ -221,8 +230,7 @@ void* remove(LIST* list, size_t key) {
   }
 
   f = find_preceding_from(list->first, key);
-  if (!f || !f->next) {
-  	// not found, end of list
+  if (!f || !f->next) { // not found, end of list
   	return NULL;
   }
 
@@ -234,10 +242,42 @@ void* remove(LIST* list, size_t key) {
     // get the value and free the memory for the node
     val = rm->val;
     free(rm);
+
     return val;
   }
 
   return NULL; // not found, middle of list
+}
+
+
+/*
+ * Recursive removal of lists that may contain sub-lists. Stores the value ultimately removed in rm.
+ *
+ * FIXME: Could be made slightly faster by using a variety of find which also returns the previous node. This way,
+ * FIXME: we can remove directly instead of calling remove() and doing the search over again.
+ */
+bool remove_recursive(LIST* list, const size_t* coords, const size_t* offset, size_t r, const size_t& dim, void* rm) {
+
+  if (r < dim-1) { // nodes here are lists
+    // find the current coordinates in the list
+    NODE* n = find(list, coords[r] + offset[r]);
+
+    if (n) {
+      // from that sub-list, call remove_recursive.
+      bool remove_parent = remove_recursive(reinterpret_cast<LIST*>(n->val), coords, offset, r+1, dim, rm);
+
+      if (remove_parent) { // now empty -- so remove the sub-list
+        free(remove(list, coords[r] + offset[r]));
+      }
+    }
+
+  } else { // nodes here are not lists, but actual values
+    rm = remove(list, coords[r] + offset[r]);
+  }
+
+  if (!list->first) return true; // if current list is now empty, signal its removal
+
+  return false;
 }
 
 ///////////
@@ -382,6 +422,54 @@ extern "C" {
 
     ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
   }
+
+  /*
+   * Sets up a hash with an appropriate default values. That means that if recursions == 0, the default value is default_value,
+   * but if recursions == 1, the default value is going to be a hash with default value of default_value, and if recursions == 2,
+   * the default value is going to be a hash with default value of hash with default value of default_value, and so on.
+   * In other words, it's recursive.
+   */
+  static VALUE empty_list_to_hash(const dtype_t dtype, size_t recursions, VALUE default_value) {
+    VALUE h = rb_hash_new();
+    if (recursions) {
+      RHASH_IFNONE(h) = empty_list_to_hash(dtype, recursions-1, default_value);
+    } else {
+      RHASH_IFNONE(h) = default_value;
+    }
+    return h;
+  }
+
+
+  /*
+   * Copy a list to a Ruby Hash
+   */
+  VALUE nm_list_copy_to_hash(const LIST* l, const dtype_t dtype, size_t recursions, VALUE default_value) {
+
+    // Create a hash with default values appropriately specified for a sparse matrix.
+    VALUE h = empty_list_to_hash(dtype, recursions, default_value);
+
+    if (l->first) {
+      NODE* curr = l->first;
+
+      while (curr) {
+
+        size_t key = curr->key;
+
+        if (recursions == 0) { // content is some kind of value
+          rb_hash_aset(h, INT2FIX(key), rubyobj_from_cval(curr->val, dtype).rval);
+        } else { // content is a list
+          rb_hash_aset(h, INT2FIX(key), nm_list_copy_to_hash(reinterpret_cast<const LIST*>(curr->val), dtype, recursions-1, default_value));
+        }
+
+        curr = curr->next;
+
+      }
+
+    }
+
+    return h;
+  }
+
 
 } // end of extern "C" block
 

@@ -78,8 +78,10 @@ void	mark(LIST* list, size_t recursions);
 ///////////////
 
 NODE* insert(LIST* list, bool replace, size_t key, void* val);
+NODE* insert_with_copy(LIST *list, size_t key, void *val, size_t size);
 NODE* insert_after(NODE* node, size_t key, void* val);
 void* remove(LIST* list, size_t key);
+bool remove_recursive(LIST* list, const size_t* coords, const size_t* offset, size_t r, const size_t& dim, void* rm);
 
 template <typename Type>
 inline NODE* insert_helper(LIST* list, NODE* node, size_t key, Type val) {
@@ -247,6 +249,7 @@ void cast_copy_contents(LIST* lhs, const LIST* rhs, size_t recursions);
 
 extern "C" {
   void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
+  VALUE nm_list_copy_to_hash(const LIST* l, const dtype_t dtype, size_t recursions, VALUE default_value);
 } // end of extern "C" block
 
 #endif // SL_LIST_H

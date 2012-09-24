@@ -55,6 +55,6 @@ describe NMatrix::IO do
   it "reads MATLAB .mat file containing a single dense matrix" do
     n = NMatrix::IO::Matlab.load_mat("spec/4x5_dense.mat")
     m = NMatrix.new(:dense, [4,5], [16,17,18,19,20,15,14,13,12,11,6,7,8,9,10,5,4,3,2,1])
-    n.should.eql?(m)
+    n.should == m
   end
 end
