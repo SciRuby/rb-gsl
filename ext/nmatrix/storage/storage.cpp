@@ -385,8 +385,8 @@ LIST_STORAGE* create_from_yale_storage(const YALE_STORAGE* rhs, dtype_t l_dtype)
       }
 
       // Now add the list at the appropriate location
-      if (last_row_added) last_row_added = list::insert_after(last_row_added, i, curr_row);
-      else last_row_added = list::insert(lhs->rows, false, i, curr_row);
+      if (last_row_added)   last_row_added = list::insert_after(last_row_added, i, curr_row);
+      else                  last_row_added = list::insert(lhs->rows, false, i, curr_row);
     }
 
 		// end of walk through rows
