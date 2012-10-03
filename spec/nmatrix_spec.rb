@@ -51,21 +51,6 @@ describe NMatrix do
   end
 
 
-  it "compares two list matrices" do
-    n = NMatrix.new(:list, [3,3,3], :int64)
-    m = NMatrix.new(:list, [3,3,3], :int64)
-    n.should == m
-    n[0,0,0] = 5
-    n.should_not == m
-    n[0,0,1] = 52
-    n[1,2,1] = -4
-
-    m[0,0,0] = 5
-    m[0,0,1] = 52
-    m[1,2,1] = -4
-    n.should == m
-  end
-
   it "fills dense Ruby object matrix with nil" do
     n = NMatrix.new([4,3], :object)
     n[0,0].should == nil
@@ -131,44 +116,6 @@ describe NMatrix do
     m[3,0].should == 5.0
     m[3,1].should == 2.0
     m[3,2].should == 3.0
-  end
-
-
-  it "list handles missing initialization value" do
-    NMatrix.new(:list, 3, :int8)[0,0].should    == 0
-    NMatrix.new(:list, 4, :float64)[0,0].should == 0.0
-  end
-
-  it "should allow conversion of list storage to a Ruby Hash" do
-    n = NMatrix.new(:list, 3, 1, :int64)
-    n[0,1] = 50
-    h = n.to_h
-    h.size.should == 1
-    h[0].size.should == 1
-    h[0][1].should == 50
-    h[0][2].should == 1
-    h[1][0].should == 1
-  end
-
-
-  ##TODO: Make this test better. It's not nearly exhaustive enough as is.
-  it "list handles recursive removal" do
-    n = NMatrix.new(:list, [3,3,3], 0)
-    n[0,0,0] = 2
-    n[1,1,1] = 1
-    n[1,0,0] = 3
-    n[0,0,1] = 4
-
-    n[0,0,0].should == 2
-    n[1,1,1].should == 1
-    n[1,0,0].should == 3
-    n[0,0,1].should == 4
-
-    n[1,1,1] = 0
-    n[0,0,0].should == 2
-    n[1,1,1].should == 0
-    n[1,0,0].should == 3
-    n[0,0,1].should == 4
   end
 
 
