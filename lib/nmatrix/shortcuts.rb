@@ -423,7 +423,7 @@ end
 class NMatrix
   module Shortcuts
     
-    # TODO: Make all the shortcuts available through this module
+    # TODO Make all the shortcuts available through this module
     # and considering whether the user wants a NMatrix or a NVector
     # based on the dimension input.
   end
