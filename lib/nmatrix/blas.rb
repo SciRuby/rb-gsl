@@ -37,8 +37,8 @@ module NMatrix::BLAS
 
     	# NM_COMPLEX64 and NM_COMPLEX128 both require complex alpha and beta.
     	if a.dtype == :complex64 or a.dtype == :complex128
-    		alpha = Complex.new(1.0, 0.0) if alpha == 1.0
-    		beta  = Complex.new(0.0, 0.0) if beta  == 0.0
+    		alpha = Complex(1.0, 0.0) if alpha == 1.0
+    		beta  = Complex(0.0, 0.0) if beta  == 0.0
     	end
 
     	# For argument descriptions, see: http://www.netlib.org/blas/dgemm.f
@@ -57,8 +57,8 @@ module NMatrix::BLAS
 
     	# NM_COMPLEX64 and NM_COMPLEX128 both require complex alpha and beta.
     	if a.dtype == :complex64 or a.dtype == :complex128
-    		alpha = Complex.new(1.0, 0.0) if alpha == 1.0
-    		beta  = Complex.new(0.0, 0.0) if beta  == 0.0
+    		alpha = Complex(1.0, 0.0) if alpha == 1.0
+    		beta  = Complex(0.0, 0.0) if beta  == 0.0
     	end
 
     	::NMatrix::BLAS.cblas_gemv(transpose_a, m, n, alpha, a, lda, x, incx, beta, y, incy)
