@@ -50,9 +50,9 @@ class NMatrix
     def zeros(*params)
       dtype = params.last.is_a?(Symbol) ? params.pop : :float64
       stype = params.first.is_a?(Symbol) ? params.shift : :dense
-      dimension = params.first
+      dim = params.first
 
-      NMatrix.new(stype, dimension, 0, dtype)
+      NMatrix.new(stype, dim, 0, dtype)
     end
 
     alias :zeroes :zeros
@@ -73,9 +73,9 @@ class NMatrix
     
     def ones(*params)
       dtype = params.last.is_a?(Symbol) ? params.pop : :float64
-      dimension = params.first
+      dim = params.first
 
-      NMatrix.new(dimension, 1, dtype)
+      NMatrix.new(dim, 1, dtype)
     end
 
     # identity() or eye()
@@ -104,10 +104,15 @@ class NMatrix
       dtype = params.last.is_a?(Symbol) ? params.pop : :float64
       stype = params.first.is_a?(Symbol) ? params.shift : :dense
 
-      n = params.first
-      matrix = zeros(stype, n, dtype)
-      (0..n-1).each { |i| matrix[i,i] = 1 }
-      matrix
+      dim = params.first
+      
+      # Fill the diagonal with 1's.
+      m = NMatrix.zeros(stype, dim, dtype)
+      (0 .. (dim - 1)).each do |i| 
+        m[i, i] = 1
+      end
+      
+      m
     end
 
     alias :identity :eye
@@ -131,9 +136,9 @@ class NMatrix
       random_values = []
       product.times { |i| random_values << rng.rand }
       
-      dimension = params.first
+      dim = params.first
 
-      NMatrix.new(dimension, random_values, :float64)
+      NMatrix.new(:dense, dim, random_values, :float64)
     end
 
     # seq()
@@ -155,15 +160,24 @@ class NMatrix
     
     def seq(*params)
       dtype = params.last.is_a?(Symbol) ? params.pop : nil
-      dimension = params.first
+      dim = params.first
       
-      product = params.reduce(1) { |prod, n| prod *= n }
-      
-      if dtype
-        NMatrix.new(:dense, dimension, (0..product-1).to_a, dtype)
-      else
-        NMatrix.new(:dense, dimension, (0..product-1).to_a)
+      # Must provide the dimension as an Integer for a square matrix or as an
+      # 2 element array (e.g. [2,4]).
+      unless dim.is_a? Integer || (dim.is_a? Array && dim.size < 3)
+        raise "NMatrix::seq handles only n-by-n matrices."
       end
+      
+      # Construct the values of the final matrix based on the dimension.
+      if dim.is_a? Integer
+        values = (0 .. (dim * dim - 1)).to_a
+      else
+        # Dimensions given by a 2 element array.
+        values = (0 .. (dim.first * dim.last - 1)).to_a
+      end
+      
+      # It'll produce :int32, except if a dtype is provided.
+      NMatrix.new(:dense, dim, values, dtype)
     end
 
     #########################################
@@ -187,19 +201,19 @@ class NMatrix
     #
 
     def indgen(n)
-      seq(n, :int32)
+      NMatrix.seq(n, :int32)
     end
 
     def findgen(n)
-      seq(n, :float32)
+      NMatrix.seq(n, :float32)
     end
 
     def bindgen(n)
-      seq(n, :byte)
+      NMatrix.seq(n, :byte)
     end
 
     def cindgen(n)
-      seq(n, :complex64)
+      NMatrix.seq(n, :complex64)
     end
   end
 end
@@ -224,9 +238,9 @@ class NVector < NMatrix
     
     def zeros(*params)
       dtype = params.last.is_a?(Symbol) ? params.pop : :float64
-      dimension = params.first
+      dim = params.first
 
-      NVector.new(dimension, 0, dtype)
+      NVector.new(dim, 0, dtype)
     end
 
     alias :zeroes :zeros
@@ -246,9 +260,9 @@ class NVector < NMatrix
     
     def ones(*params)
       dtype = params.last.is_a?(Symbol) ? params.pop : :float64
-      dimension = params.first
+      dim = params.first
 
-      NVector.new(dimension, 1, dtype)
+      NVector.new(dim, 1, dtype)
     end
     
     # random()
@@ -269,9 +283,9 @@ class NVector < NMatrix
       random_values = []
       product.times { |i| random_values << rng.rand }
       
-      dimension = params.first
+      dim = params.first
 
-      NVector.new(dimension, random_values, :float64)
+      NVector.new(dim, random_values, :float64)
     end
 
     # seq()
@@ -290,15 +304,13 @@ class NVector < NMatrix
     
     def seq(*params)
       dtype = params.last.is_a?(Symbol) ? params.pop : nil
-      dimension = params.first
       
-      product = params.reduce(1) { |prod, n| prod *= n }
+      # dim is assumed to be an Integer.
+      dim = params.first
+            
+      values = (0 .. (dim - 1)).to_a
       
-      if dtype
-        NVector.new(dimension, (0..product-1).to_a, dtype)
-      else
-        NVector.new(dimension, (0..product-1).to_a)
-      end
+      NVector.new(dim, values, dtype)
     end
 
     #########################################
@@ -322,19 +334,19 @@ class NVector < NMatrix
     #
 
     def indgen(n)
-      seq(n, :int32)
+      NVector.seq(n, :int32)
     end
 
     def findgen(n)
-      seq(n, :float32)
+      NVector.seq(n, :float32)
     end
 
     def bindgen(n)
-      seq(n, :byte)
+      NVector.seq(n, :byte)
     end
 
     def cindgen(n)
-      seq(n, :complex64)
+      NVector.seq(n, :complex64)
     end
    
     # linspace()
@@ -346,18 +358,27 @@ class NVector < NMatrix
     #
     #      linspace( a, b, n )
     #
-    #      This returns a vector with n values equally spaced from a to b.
+    #      This returns a vector with n values equally spaced from a to b,
+    #      inclusive.
+    #      
+    #      Following the MATLAB implementation, if n isn't provided it's
+    #      assumed to be 100.
     #
     # Ex:  x = linspace(0, pi, 1000)
     #      y = sin(x)
     #
 
-    def linspace(a, b, nsteps)
-      #
-      # Algorithm:  seq(n) * (b-a)/(n-1) + a
-      #
-      step = (b-a) * 1.0 / (nsteps - 1)
-      seq(nsteps) * NVector.new(nsteps, step) + NVector.new(nsteps, a)
+    def linspace(a, b, n = 100)
+      # See: http://www.mathworks.com/help/matlab/ref/linspace.html
+      # Formula:  seq(n) * step + a
+      
+      # step = ((b - a) / (n - 1))
+      step = (b - a) * (1.0 / (n - 1))
+      
+      # dtype = :float64 is used to prevent integer coercion.
+      result = NVector.seq(n, :float64) * NVector.new(n, step, :float64)
+      result += NVector.new(n, a, :float64)
+      result
     end
   end
 end
@@ -395,9 +416,7 @@ class N
     def [](*params)
       dtype = params.last.is_a?(Symbol) ? params.pop : nil
 
-      #
       # First find the dimensions of the array.
-      #
       i = 0
       dim = []
       foo = params
@@ -407,14 +426,8 @@ class N
         i += 1
       end
 
-      #
       # Then flatten the array.
-      #
-      if dtype
-        NMatrix.new(dim, params.flatten, dtype)
-      else
-        NMatrix.new(dim, params.flatten)
-      end
+      NMatrix.new(dim, params.flatten, dtype)
     end
   end
 end
