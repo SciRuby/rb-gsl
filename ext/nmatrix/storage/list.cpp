@@ -341,8 +341,12 @@ bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
 /*
  * Element-wise operations for list storage.
  */
-STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
+STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right, VALUE scalar) {
   // rb_raise(rb_eNotImpError, "elementwise operations for list storage currently broken");
+
+  if (!right) {
+    rb_raise(rb_eNotImpError, "matrix-scalar element-wise operations not yet supported for list matrices");
+  }
 
 	OP_LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_op, void*, LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t dim);
 
