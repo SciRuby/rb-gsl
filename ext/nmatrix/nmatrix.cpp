@@ -1119,47 +1119,57 @@ static VALUE nm_xslice(int argc, VALUE* argv, void* (*slice_func)(STORAGE*, SLIC
 static VALUE elementwise_op(nm::ewop_t op, VALUE left_val, VALUE right_val) {
 	STYPE_MARK_TABLE(mark);
 
-	static STORAGE* (*ew_op[nm::NUM_STYPES])(nm::ewop_t, const STORAGE*, const STORAGE*) = {
+	static STORAGE* (*ew_op[nm::NUM_STYPES])(nm::ewop_t, const STORAGE*, const STORAGE*, VALUE scalar) = {
 		nm_dense_storage_ew_op,
 		nm_list_storage_ew_op,
 		nm_yale_storage_ew_op
 //		NULL
 	};
 	
-	NMATRIX* result = ALLOC(NMATRIX);
+	NMATRIX *result = ALLOC(NMATRIX), *left;
 	
 	CheckNMatrixType(left_val);
-	CheckNMatrixType(right_val);
-
-	// Check that the left- and right-hand sides have the same dimensionality.
-	if (NM_DIM(left_val) != NM_DIM(right_val)) {
-		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same dimensionality.");
-	}
-	
-	// Check that the left- and right-hand sides have the same shape.
-	if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_DIM(left_val)) != 0) {
-		rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
-	}
-
-	NMATRIX* left, * right;
 	UnwrapNMatrix(left_val, left);
-	UnwrapNMatrix(right_val, right);
+
+  if (TYPE(right_val) != T_DATA || (RDATA(right_val)->dfree != (RUBY_DATA_FUNC)nm_delete && RDATA(right_val)->dfree != (RUBY_DATA_FUNC)nm_delete_ref)) {
+    // This is a matrix-scalar element-wise operation.
+
+    if (left->stype == DENSE_STORE) {
+      result->storage = ew_op[left->stype](op, reinterpret_cast<STORAGE*>(left->storage), NULL, right_val);
+      result->stype   = left->stype;
+    } else {
+      rb_raise(rb_eNotImpError, "Scalar operations only implemented for dense storage");
+    }
+
+  } else {
+
+    // Check that the left- and right-hand sides have the same dimensionality.
+    if (NM_DIM(left_val) != NM_DIM(right_val)) {
+      rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same dimensionality.");
+    }
+
+    // Check that the left- and right-hand sides have the same shape.
+    if (memcmp(&NM_SHAPE(left_val, 0), &NM_SHAPE(right_val, 0), sizeof(size_t) * NM_DIM(left_val)) != 0) {
+      rb_raise(rb_eArgError, "The left- and right-hand sides of the operation must have the same shape.");
+    }
+
+    NMATRIX* right;
+    UnwrapNMatrix(right_val, right);
 	
-	if (left->stype == right->stype) {
-		
-		if (ew_op[left->stype] == NULL) {
-			rb_raise(rb_eArgError, "Element-wise operations are not currently supported for this data type.");
-		}
-		
-		result->storage	= ew_op[left->stype](op, reinterpret_cast<STORAGE*>(left->storage), reinterpret_cast<STORAGE*>(right->storage));
-		result->stype		= left->stype;
-		
-	} else {
-		rb_raise(rb_eArgError, "Element-wise operations are not currently supported between matrices with differing stypes.");
-	}
+    if (left->stype == right->stype) {
+
+      result->storage	= ew_op[left->stype](op, reinterpret_cast<STORAGE*>(left->storage), reinterpret_cast<STORAGE*>(right->storage), Qnil);
+      result->stype		= left->stype;
+
+    } else {
+      rb_raise(rb_eArgError, "Element-wise operations are not currently supported between matrices with differing stypes.");
+    }
+  }
 
 	return Data_Wrap_Struct(cNMatrix, mark[result->stype], nm_delete, result);
 }
+
+
 
 /*
  * Check to determine whether matrix is a reference to another matrix.
@@ -1209,7 +1219,7 @@ static VALUE is_symmetric(VALUE self, bool hermitian) {
  *
  * TODO: Probably needs some work for Bignum.
  */
-static dtype_t dtype_guess(VALUE v) {
+dtype_t nm_dtype_guess(VALUE v) {
   switch(TYPE(v)) {
   case T_TRUE:
   case T_FALSE:
@@ -1274,7 +1284,7 @@ static dtype_t dtype_guess(VALUE v) {
   	 * TODO: Look at entire array for most specific type.
   	 */
   	
-    return dtype_guess(RARRAY_PTR(v)[0]);
+    return nm_dtype_guess(RARRAY_PTR(v)[0]);
 
   case T_NIL:
   default:
@@ -1370,7 +1380,7 @@ static dtype_t interpret_dtype(int argc, VALUE* argv, stype_t stype) {
   	rb_raise(rb_eArgError, "Yale storage class requires a dtype.");
   	
   } else {
-  	return dtype_guess(argv[0]);
+  	return nm_dtype_guess(argv[0]);
   }
 }
 

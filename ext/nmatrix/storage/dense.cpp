@@ -62,7 +62,7 @@ namespace nm { namespace dense_storage {
 	bool eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
 	
 	template <ewop_t op, typename LDType, typename RDType>
-	static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
+	static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* right, const void* rscalar);
 
   template <typename DType>
   static DENSE_STORAGE* matrix_multiply(const STORAGE_PAIR& casted_storage, size_t* resulting_shape, bool vector);
@@ -306,12 +306,22 @@ bool nm_dense_storage_is_symmetric(const DENSE_STORAGE* mat, int lda) {
 //////////
 
 /*
- * Dense element-wise operations.
+ * Dense matrix-matrix and matrix-scalar element-wise operations.
+ *
+ * right or rscalar should be NULL; they should not both be initialized. If right is NULL, it'll use the scalar value instead.
  */
-STORAGE* nm_dense_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
-	OP_LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_op, DENSE_STORAGE*, const DENSE_STORAGE* left, const DENSE_STORAGE* right);
+STORAGE* nm_dense_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right, VALUE scalar) {
+	OP_LR_DTYPE_TEMPLATE_TABLE(nm::dense_storage::ew_op, DENSE_STORAGE*, const DENSE_STORAGE* left, const DENSE_STORAGE* right, const void*);
 
-	return ttable[op][left->dtype][right->dtype](reinterpret_cast<const DENSE_STORAGE*>(left), reinterpret_cast<const DENSE_STORAGE*>(right));
+	if (right)
+	  return ttable[op][left->dtype][right->dtype](reinterpret_cast<const DENSE_STORAGE*>(left), reinterpret_cast<const DENSE_STORAGE*>(right), NULL);
+	else {
+	  dtype_t r_dtype = nm_dtype_guess(scalar);
+	  void* r_scalar  = ALLOCA_N(char, DTYPE_SIZES[r_dtype]);
+	  rubyval_to_cval(scalar, r_dtype, r_scalar);
+
+    return ttable[op][left->dtype][r_dtype](reinterpret_cast<const DENSE_STORAGE*>(left), NULL, r_scalar);
+	}
 }
 
 /*
@@ -572,7 +582,7 @@ bool is_symmetric(const DENSE_STORAGE* mat, int lda) {
  * Templated dense storage element-wise operations which return the same DType.
  */
 template <ewop_t op, typename LDType, typename RDType>
-static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* right) {
+static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* right, const void* rscalar) {
 	unsigned int count;
 	
 	size_t* new_shape = (size_t*)calloc(left->dim, sizeof(size_t));
@@ -585,46 +595,94 @@ static DENSE_STORAGE* ew_op(const DENSE_STORAGE* left, const DENSE_STORAGE* righ
 	DENSE_STORAGE* result = nm_dense_storage_create(new_dtype, new_shape, left->dim, NULL, 0);
 	
 	LDType* l_elems = reinterpret_cast<LDType*>(left->elements);
-	RDType* r_elems = reinterpret_cast<RDType*>(right->elements);
 
-	if (static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS) { // use left-dtype
+	if (right) { // matrix-matrix operation
+	  RDType* r_elems = reinterpret_cast<RDType*>(right->elements);
 
-    for (count = nm_storage_count_max_elements(result); count-- > 0;) {
-      reinterpret_cast<LDType*>(result->elements)[count] = ew_op_switch<op,LDType,RDType>(l_elems[count], r_elems[count]);
+    if (static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS) { // use left-dtype
+
+      for (count = nm_storage_count_max_elements(result); count-- > 0;) {
+        reinterpret_cast<LDType*>(result->elements)[count] = ew_op_switch<op,LDType,RDType>(l_elems[count], r_elems[count]);
+      }
+
+    } else { // new_dtype is BYTE: comparison operators
+      uint8_t* res_elems = reinterpret_cast<uint8_t*>(result->elements);
+
+      for (count = nm_storage_count_max_elements(result); count-- > 0;) {
+        switch (op) {
+          case EW_EQEQ:
+            res_elems[count] = l_elems[count] == r_elems[count];
+            break;
+
+          case EW_NEQ:
+            res_elems[count] = l_elems[count] != r_elems[count];
+            break;
+
+          case EW_LT:
+            res_elems[count] = l_elems[count] < r_elems[count];
+            break;
+
+          case EW_GT:
+            res_elems[count] = l_elems[count] > r_elems[count];
+            break;
+
+          case EW_LEQ:
+            res_elems[count] = l_elems[count] <= r_elems[count];
+            break;
+
+          case EW_GEQ:
+            res_elems[count] = l_elems[count] >= r_elems[count];
+            break;
+
+          default:
+            rb_raise(rb_eStandardError, "this should not happen");
+        }
+      }
     }
 
-  } else { // new_dtype is BYTE: comparison operators
-    uint8_t* res_elems = reinterpret_cast<uint8_t*>(result->elements);
+  } else { // matrix-scalar operation
+    const RDType* r_elem = reinterpret_cast<const RDType*>(rscalar);
 
-    for (count = nm_storage_count_max_elements(result); count-- > 0;) {
-      switch (op) {
-        case EW_EQEQ:
-          res_elems[count] = l_elems[count] == r_elems[count];
-          break;
+    if (static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS) { // use left-dtype
 
-        case EW_NEQ:
-          res_elems[count] = l_elems[count] != r_elems[count];
-          break;
-
-        case EW_LT:
-          res_elems[count] = l_elems[count] < r_elems[count];
-          break;
-
-        case EW_GT:
-          res_elems[count] = l_elems[count] > r_elems[count];
-          break;
-
-        case EW_LEQ:
-          res_elems[count] = l_elems[count] <= r_elems[count];
-          break;
-
-        case EW_GEQ:
-          res_elems[count] = l_elems[count] >= r_elems[count];
-          break;
-
-        default:
-          rb_raise(rb_eStandardError, "this should not happen");
+      for (count = nm_storage_count_max_elements(result); count-- > 0;) {
+        reinterpret_cast<LDType*>(result->elements)[count] = ew_op_switch<op,LDType,RDType>(l_elems[count], *r_elem);
       }
+
+    } else {
+      uint8_t* res_elems = reinterpret_cast<uint8_t*>(result->elements);
+
+      for (count = nm_storage_count_max_elements(result); count-- > 0;) {
+        switch (op) {
+          case EW_EQEQ:
+            res_elems[count] = l_elems[count] == *r_elem;
+            break;
+
+          case EW_NEQ:
+            res_elems[count] = l_elems[count] != *r_elem;
+            break;
+
+          case EW_LT:
+            res_elems[count] = l_elems[count] < *r_elem;
+            break;
+
+          case EW_GT:
+            res_elems[count] = l_elems[count] > *r_elem;
+            break;
+
+          case EW_LEQ:
+            res_elems[count] = l_elems[count] <= *r_elem;
+            break;
+
+          case EW_GEQ:
+            res_elems[count] = l_elems[count] >= *r_elem;
+            break;
+
+          default:
+            rb_raise(rb_eStandardError, "this should not happen");
+        }
+      }
+
     }
   }
 	

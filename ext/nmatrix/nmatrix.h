@@ -323,6 +323,8 @@ extern "C" {
 	// External API
 	VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t dim, void* elements, size_t length);
 	VALUE rb_nvector_dense_create(dtype_t dtype, void* elements, size_t length);
+
+	dtype_t nm_dtype_guess(VALUE);
 }
 
 #endif // NMATRIX_H

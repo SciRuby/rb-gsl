@@ -1291,7 +1291,7 @@ STORAGE* nm_yale_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, siz
 /*
  * Documentation goes here.
  */
-STORAGE* nm_yale_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right) {
+STORAGE* nm_yale_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right, VALUE scalar) {
 	OP_ITYPE_DTYPE_TEMPLATE_TABLE(nm::yale_storage::ew_op, YALE_STORAGE*, const YALE_STORAGE*, const YALE_STORAGE*, dtype_t);
 	
 	YALE_STORAGE* new_l = NULL, * new_r = NULL;
