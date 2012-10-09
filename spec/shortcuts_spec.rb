@@ -28,7 +28,7 @@
 # Can we use require_relative here instead?
 require File.join(File.dirname(__FILE__), "spec_helper.rb")
 
-describe "NMatrix" do
+describe NMatrix do
     
   it "zeros() creates a matrix of zeros" do
     m = NMatrix.zeros(3)
