@@ -1134,11 +1134,11 @@ static VALUE elementwise_op(nm::ewop_t op, VALUE left_val, VALUE right_val) {
   if (TYPE(right_val) != T_DATA || (RDATA(right_val)->dfree != (RUBY_DATA_FUNC)nm_delete && RDATA(right_val)->dfree != (RUBY_DATA_FUNC)nm_delete_ref)) {
     // This is a matrix-scalar element-wise operation.
 
-    if (left->stype == DENSE_STORE) {
+    if (left->stype != YALE_STORE) {
       result->storage = ew_op[left->stype](op, reinterpret_cast<STORAGE*>(left->storage), NULL, right_val);
       result->stype   = left->stype;
     } else {
-      rb_raise(rb_eNotImpError, "Scalar operations only implemented for dense storage");
+      rb_raise(rb_eNotImpError, "Scalar element-wise operations not implemented for Yale storage yet");
     }
 
   } else {
