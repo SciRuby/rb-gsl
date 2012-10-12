@@ -53,3 +53,12 @@ end
 
 # Monkey patches.
 require 'nmatrix/monkeys'
+
+#############
+# Autoloads #
+#############
+
+autoload :NMatrix, 'nmatrix/nmatrix'
+autoload :NVector, 'nmatrix/nvector'
+
+require "nmatrix/shortcuts.rb"
