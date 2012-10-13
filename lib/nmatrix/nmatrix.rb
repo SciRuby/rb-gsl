@@ -29,6 +29,8 @@
 # Requires #
 ############
 
+require_relative './shortcuts.rb'
+
 #######################
 # Classes and Modules #
 #######################

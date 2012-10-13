@@ -340,31 +340,44 @@ bool nm_list_storage_eqeq(const STORAGE* left, const STORAGE* right) {
 
 /*
  * Element-wise operations for list storage.
+ *
+ * If a scalar is given, a temporary matrix is created with that scalar as a default value.
  */
 STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right, VALUE scalar) {
   // rb_raise(rb_eNotImpError, "elementwise operations for list storage currently broken");
 
-  if (!right) {
-    rb_raise(rb_eNotImpError, "matrix-scalar element-wise operations not yet supported for list matrices");
+  bool cleanup = false;
+  LIST_STORAGE *r, *new_l;
+  const LIST_STORAGE* l = reinterpret_cast<const LIST_STORAGE*>(left);
+
+  if (!right) { // need to build a right-hand matrix temporarily, with default value of 'scalar'
+
+    dtype_t scalar_dtype  = nm_dtype_guess(scalar);
+    void* scalar_init     = rubyobj_to_cval(scalar, scalar_dtype);
+
+    size_t* shape         = ALLOC_N(size_t, l->dim);
+    memcpy(shape, left->shape, sizeof(size_t) * l->dim);
+
+    r = nm_list_storage_create(scalar_dtype, shape, l->dim, scalar_init);
+
+    cleanup = true;
+
+  } else {
+
+    r = reinterpret_cast<LIST_STORAGE*>(const_cast<STORAGE*>(right));
+
   }
 
-	OP_LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_op, void*, LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t dim);
-
   // We may need to upcast our arguments to the same type.
-  dtype_t new_dtype = Upcast[left->dtype][right->dtype];
+  dtype_t new_dtype = Upcast[left->dtype][r->dtype];
 
 	// Make sure we allocate a byte-storing matrix for comparison operations; otherwise, use the argument dtype (new_dtype)
 	dtype_t result_dtype = static_cast<uint8_t>(op) < NUM_NONCOMP_EWOPS ? new_dtype : BYTE;
 
-
-	
-	const LIST_STORAGE* l = reinterpret_cast<const LIST_STORAGE*>(left),
-										* r = reinterpret_cast<const LIST_STORAGE*>(right);
-	
-	LIST_STORAGE* new_l = NULL;
+	OP_LR_DTYPE_TEMPLATE_TABLE(nm::list_storage::ew_op, void*, LIST* dest, const LIST* left, const void* l_default, const LIST* right, const void* r_default, const size_t* shape, size_t dim);
 	
 	// Allocate a new shape array for the resulting matrix.
-	size_t* new_shape = (size_t*)calloc(l->dim, sizeof(size_t));
+	size_t* new_shape = ALLOC_N(size_t, l->dim);
 	memcpy(new_shape, left->shape, sizeof(size_t) * l->dim);
 	
 	// Create the result matrix.
@@ -379,14 +392,19 @@ STORAGE* nm_list_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE
 		new_l = reinterpret_cast<LIST_STORAGE*>(nm_list_storage_cast_copy(l, new_dtype));
 		
 		result->default_val =
-			ttable[op][new_l->dtype][right->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->dim);
+			ttable[op][new_l->dtype][r->dtype](result->rows, new_l->rows, new_l->default_val, r->rows, r->default_val, result->shape, result->dim);
 		
 		// Delete the temporary left-hand side matrix.
 		nm_list_storage_delete(reinterpret_cast<STORAGE*>(new_l));
-			
+
 	} else {
 		result->default_val =
-			ttable[op][left->dtype][right->dtype](result->rows, l->rows, l->default_val, r->rows, r->default_val, result->shape, result->dim);
+			ttable[op][left->dtype][r->dtype](result->rows, l->rows, l->default_val, r->rows, r->default_val, result->shape, result->dim);
+	}
+
+  // If we created a temporary scalar matrix (for matrix-scalar operations), we now need to delete it.
+	if (cleanup) {
+	  nm_list_storage_delete(reinterpret_cast<STORAGE*>(r));
 	}
 	
 	return result;

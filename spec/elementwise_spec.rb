@@ -39,6 +39,17 @@ describe NMatrix do
       @n[1,1] = 40
     end
 
+    it "should perform scalar math" do
+      x = @n * 3
+      x[0,0].should == 52 * 3
+      x[1,1].should == 40 * 3
+      x[0,1].should == 0
+
+      r = NMatrix.new(:list, 3, 1)
+      y = r + 3
+      y[0,0].should == 4
+    end
+
     it "should perform element-wise addition" do
       r = NMatrix.new(:dense, 2, [52, 0, 0, -8], :int64).cast(:list, :int64)
       (@n+@m).should == r
