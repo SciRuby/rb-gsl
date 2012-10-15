@@ -1261,6 +1261,44 @@ inline int getrf_nothrow(const int M, const int N, DType* A, const int lda, int*
   return(ierr);
 }
 
+/*
+ * Solves a system of linear equations A*X = B with a general NxN matrix A using the LU factorization computed by GETRF.
+ *
+ * From ATLAS 3.8.0.
+ */
+template <typename DType>
+void getrs(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans, const int N, const int NRHS, const DType* A,
+           const int lda, const int* ipiv, DType* B, const int ldb)
+{
+  // enum CBLAS_DIAG Lunit, Uunit; // These aren't used. Not sure why they're declared in ATLAS' src.
+
+  if (!N || !NRHS) return;
+
+  DType one = 1;
+
+  if (Order == CblasColMajor) {
+    if (Trans == CblasNoTrans) {
+      nm::math::laswp<DType>(NRHS, B, ldb, 0, N, ipiv, 1);
+      nm::math::trsm<DType>(Order, CblasLeft, CblasLower, CblasNoTrans, CblasUnit, N, NRHS, one, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit, N, NRHS, one, A, lda, B, ldb);
+    } else {
+      nm::math::trsm(Order, CblasLeft, CblasUpper, Trans, CblasNonUnit, N, NRHS, one, A, lda, B, ldb);
+      nm::math::trsm(Order, CblasLeft, CblasLower, Trans, CblasUnit, N, NRHS, one, A, lda, B, ldb);
+      nm::math::laswp(NRHS, B, ldb, 0, N, ipiv, -1);
+    }
+  } else {
+    if (Trans == CblasNoTrans) {
+      nm::math::trsm(Order, CblasRight, CblasLower, CblasTrans, CblasNonUnit, NRHS, N, one, A, lda, B, ldb);
+      nm::math::trsm(Order, CblasRight, CblasUpper, CblasTrans, CblasUnit, NRHS, N, one, A, lda, B, ldb);
+      nm::math::laswp(NRHS, B, ldb, 0, N, ipiv, -1);
+    } else {
+      nm::math::laswp<DType>(NRHS, B, ldb, 0, N, ipiv, 1);
+      nm::math::trsm<DType>(Order, CblasRight, CblasUpper, CblasNoTrans, CblasUnit, NRHS, N, one, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasRight, CblasLower, CblasNoTrans, CblasNonUnit, NRHS, N, one, A, lda, B, ldb);
+    }
+  }
+}
+
 
 /*
  * From ATLAS 3.8.0:
@@ -1354,6 +1392,18 @@ LAPACK_GETRF(Complex128, clapack_zgetrf, void)
 template <typename DType>
 inline int clapack_getrf(const enum CBLAS_ORDER order, const int m, const int n, void* a, const int lda, int* ipiv) {
   return getrf<DType>(order, m, n, reinterpret_cast<DType*>(a), lda, ipiv);
+}
+
+
+/*
+* Function signature conversion for calling LAPACK's getrs functions as directly as possible.
+*
+* This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
+*/
+template <typename DType>
+inline void clapack_getrs(const enum CBLAS_ORDER order, const enum CBLAS_TRANSPOSE trans, const int n, const int nrhs,
+                         const void* a, const int lda, const int* ipiv, void* b, const int ldb) {
+  getrs<DType>(order, trans, n, nrhs, reinterpret_cast<const DType*>(a), lda, ipiv, reinterpret_cast<DType*>(b), ldb);
 }
 
 

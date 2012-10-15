@@ -138,6 +138,8 @@ extern "C" {
 
   static VALUE nm_clapack_getrf(VALUE self, VALUE order, VALUE m, VALUE n, VALUE a, VALUE lda);
 
+  static VALUE nm_clapack_getrs(VALUE self, VALUE order, VALUE trans, VALUE n, VALUE nrhs, VALUE a, VALUE lda, VALUE ipiv, VALUE b, VALUE ldb);
+
   static VALUE nm_clapack_scal(VALUE self, VALUE n, VALUE scale, VALUE vector, VALUE incx);
 
 } // end of extern "C" block
@@ -252,6 +254,7 @@ void nm_math_init_blas() {
 	cNMatrix_LAPACK = rb_define_module_under(cNMatrix, "LAPACK");
 
   rb_define_singleton_method(cNMatrix_LAPACK, "clapack_getrf", (METHOD)nm_clapack_getrf, 5);
+  rb_define_singleton_method(cNMatrix_LAPACK, "clapack_getrs", (METHOD)nm_clapack_getrs, 9);
   rb_define_singleton_method(cNMatrix_LAPACK, "clapack_scal", (METHOD)nm_clapack_scal, 4);
 
   cNMatrix_BLAS = rb_define_module_under(cNMatrix, "BLAS");
@@ -467,7 +470,7 @@ static VALUE nm_clapack_scal(VALUE self, VALUE n, VALUE scale, VALUE vector, VAL
 }
 
 
-/* Call any of the clpack_xgetrf functions as directly as possible.
+/* Call any of the clapack_xgetrf functions as directly as possible.
  *
  * The clapack_getrf functions (dgetrf, sgetrf, cgetrf, and zgetrf) compute an LU factorization of a general M-by-N
  * matrix A using partial pivoting with row interchanges.
@@ -525,6 +528,52 @@ static VALUE nm_clapack_getrf(VALUE self, VALUE order, VALUE m, VALUE n, VALUE a
   }
 
   return ipiv_array;
+}
+
+
+/*
+ * Call any of the clapack_xgetrs functions as directly as possible.
+ */
+static VALUE nm_clapack_getrs(VALUE self, VALUE order, VALUE trans, VALUE n, VALUE nrhs, VALUE a, VALUE lda, VALUE ipiv, VALUE b, VALUE ldb) {
+  static void (*ttable[nm::NUM_DTYPES])(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans, const int N,
+                                       const int NRHS, const void* A, const int lda, const int* ipiv, void* B,
+                                       const int ldb) = {
+      NULL, NULL, NULL, NULL, NULL, // integers not allowed due to division
+      nm::math::clapack_getrs<float>,
+      nm::math::clapack_getrs<double>,
+#ifdef HAVE_CLAPACK_H
+      clapack_cgetrs, clapack_zgetrs, // call directly, same function signature!
+#else // Especially important for Mac OS, which doesn't seem to include the ATLAS clapack interface.
+      nm::math::clapack_getrs<nm::Complex64>,
+      nm::math::clapack_getrs<nm::Complex128>,
+#endif
+      nm::math::clapack_getrs<nm::Rational32>,
+      nm::math::clapack_getrs<nm::Rational64>,
+      nm::math::clapack_getrs<nm::Rational128>,
+      nm::math::clapack_getrs<nm::RubyObject>
+  };
+
+  int N    = FIX2INT(n),
+      NRHS = FIX2INT(nrhs);
+
+  // Allocate the C version of the pivot index array
+  // TODO: Allow for an NVector here also, maybe?
+  int* ipiv_;
+  if (TYPE(ipiv) != T_ARRAY) {
+    rb_raise(rb_eArgError, "ipiv must be of type Array");
+  } else {
+    ipiv_ = ALLOCA_N(int, RARRAY_LEN(ipiv));
+    for (int index = 0; index < RARRAY_LEN(ipiv); ++index) {
+      ipiv_[index] = FIX2INT( RARRAY_PTR(ipiv)[index] );
+    }
+  }
+
+  // Call either our version of getrf or the LAPACK version.
+  ttable[NM_DTYPE(a)](blas_order_sym(order), blas_transpose_sym(trans), N, NRHS, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda),
+                      ipiv_, NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb));
+
+  // b is both returned and modified directly in the argument list.
+  return b;
 }
 
 
