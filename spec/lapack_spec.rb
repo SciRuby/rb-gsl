@@ -46,6 +46,18 @@ describe NMatrix::LAPACK do
         #a[2,2].should == 5.294118
       end
 
+      it "exposes clapack getrs" do
+        a     = NMatrix.new(:dense, 3, [-2,4,-3,3,-2,1,0,-4,3], dtype)
+        ipiv  = NMatrix::LAPACK::clapack_getrf(:row, 3, 3, a, 3)
+        b     = NVector.new(3, [-1, 17, -9], dtype)
+
+        NMatrix::LAPACK::clapack_getrs(:row, false, 3, 1, a, 3, ipiv, b, 3)
+
+        b[0].should == 5
+        b[1].should == -15.quo(2)
+        b[2].should == -13
+      end
+
       it "exposes cblas trsm, with B as a matrix"
     end
   end

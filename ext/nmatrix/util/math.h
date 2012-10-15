@@ -1398,6 +1398,8 @@ inline int clapack_getrf(const enum CBLAS_ORDER order, const int m, const int n,
 /*
 * Function signature conversion for calling LAPACK's getrs functions as directly as possible.
 *
+* For documentation: http://www.netlib.org/lapack/double/dgetrs.f
+*
 * This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
 */
 template <typename DType>
