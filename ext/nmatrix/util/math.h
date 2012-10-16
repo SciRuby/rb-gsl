@@ -1409,6 +1409,20 @@ inline void clapack_getrs(const enum CBLAS_ORDER order, const enum CBLAS_TRANSPO
 }
 
 
+/*
+* Function signature conversion for calling LAPACK's laswp functions as directly as possible.
+*
+* For documentation: http://www.netlib.org/lapack/double/dlaswp.f
+*
+* This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
+*/
+template <typename DType>
+inline void clapack_laswp(const int n, void* a, const int lda, const int k1, const int k2, const int* ipiv, const int incx) {
+  laswp<DType>(n, reinterpret_cast<DType*>(a), lda, k1, k2, ipiv, incx);
+}
+
+
+
 }} // end namespace nm::math
 
 
