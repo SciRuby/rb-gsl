@@ -1282,15 +1282,16 @@ void getrs(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans, const
       nm::math::trsm<DType>(Order, CblasLeft, CblasLower, CblasNoTrans, CblasUnit, N, NRHS, one, A, lda, B, ldb);
       nm::math::trsm<DType>(Order, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit, N, NRHS, one, A, lda, B, ldb);
     } else {
-      nm::math::trsm(Order, CblasLeft, CblasUpper, Trans, CblasNonUnit, N, NRHS, one, A, lda, B, ldb);
-      nm::math::trsm(Order, CblasLeft, CblasLower, Trans, CblasUnit, N, NRHS, one, A, lda, B, ldb);
-      nm::math::laswp(NRHS, B, ldb, 0, N, ipiv, -1);
+      nm::math::trsm<DType>(Order, CblasLeft, CblasUpper, Trans, CblasNonUnit, N, NRHS, one, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasLeft, CblasLower, Trans, CblasUnit, N, NRHS, one, A, lda, B, ldb);
+      nm::math::laswp<DType>(NRHS, B, ldb, 0, N, ipiv, -1);
     }
   } else {
     if (Trans == CblasNoTrans) {
-      nm::math::trsm(Order, CblasRight, CblasLower, CblasTrans, CblasNonUnit, NRHS, N, one, A, lda, B, ldb);
-      nm::math::trsm(Order, CblasRight, CblasUpper, CblasTrans, CblasUnit, NRHS, N, one, A, lda, B, ldb);
-      nm::math::laswp(NRHS, B, ldb, 0, N, ipiv, -1);
+      fprintf(stderr, "simple args: %d, %d, %d, %d\n", NRHS, N, lda, ldb);
+      nm::math::trsm<DType>(Order, CblasRight, CblasLower, CblasTrans, CblasNonUnit, NRHS, N, one, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasRight, CblasUpper, CblasTrans, CblasUnit, NRHS, N, one, A, lda, B, ldb);
+      nm::math::laswp<DType>(NRHS, B, ldb, 0, N, ipiv, -1);
     } else {
       nm::math::laswp<DType>(NRHS, B, ldb, 0, N, ipiv, 1);
       nm::math::trsm<DType>(Order, CblasRight, CblasUpper, CblasNoTrans, CblasUnit, NRHS, N, one, A, lda, B, ldb);

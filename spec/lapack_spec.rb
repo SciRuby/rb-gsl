@@ -64,14 +64,13 @@ describe NMatrix::LAPACK do
         ipiv  = NMatrix::LAPACK::clapack_getrf(:row, 3, 3, a, 3)
         b     = NVector.new(3, [-1, 17, -9], dtype)
 
-        NMatrix::LAPACK::clapack_getrs(:row, false, 3, 1, a, 3, ipiv, b, 1)
+        NMatrix::LAPACK::clapack_getrs(:row, false, 3, 1, a, 3, ipiv, b, 3)
 
         b[0].should == 5
         b[1].should == -15.quo(2)
         b[2].should == -13
       end
 
-      it "exposes cblas trsm, with B as a matrix"
     end
   end
 end

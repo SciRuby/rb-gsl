@@ -431,7 +431,7 @@ static VALUE nm_cblas_trsm(VALUE self,
 {
   static void (*ttable[nm::NUM_DTYPES])(const enum CBLAS_ORDER, const enum CBLAS_SIDE, const enum CBLAS_UPLO,
                                         const enum CBLAS_TRANSPOSE, const enum CBLAS_DIAG,
-                                        const int, const int, const void* alpha, const void* a,
+                                        const int m, const int n, const void* alpha, const void* a,
                                         const int lda, void* b, const int ldb) = {
       NULL, NULL, NULL, NULL, NULL, // integers not allowed due to division
       nm::math::cblas_trsm<float>,
@@ -445,12 +445,12 @@ static VALUE nm_cblas_trsm(VALUE self,
 
   dtype_t dtype = NM_DTYPE(a);
 
-  void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]);
-  rubyval_to_cval(alpha, dtype, pAlpha);
-
-  if (!ttable[NM_DTYPE(a)]) {
+  if (!ttable[dtype]) {
     rb_raise(nm_eDataTypeError, "this matrix operation undefined for integer matrices");
   } else {
+    void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+    rubyval_to_cval(alpha, dtype, pAlpha);
+
     ttable[dtype](blas_order_sym(order), blas_side_sym(side), blas_uplo_sym(uplo), blas_transpose_sym(trans_a), blas_diag_sym(diag), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb));
   }
 
