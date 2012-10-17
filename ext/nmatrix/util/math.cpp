@@ -448,7 +448,11 @@ static VALUE nm_cblas_trsm(VALUE self,
   void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]);
   rubyval_to_cval(alpha, dtype, pAlpha);
 
-  ttable[dtype](blas_order_sym(order), blas_side_sym(side), blas_uplo_sym(uplo), blas_transpose_sym(trans_a), blas_diag_sym(diag), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb));
+  if (!ttable[NM_DTYPE(a)]) {
+    rb_raise(nm_eDataTypeError, "this matrix operation undefined for integer matrices");
+  } else {
+    ttable[dtype](blas_order_sym(order), blas_side_sym(side), blas_uplo_sym(uplo), blas_transpose_sym(trans_a), blas_diag_sym(diag), FIX2INT(m), FIX2INT(n), pAlpha, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb));
+  }
 
   return Qtrue;
 }
@@ -521,8 +525,12 @@ static VALUE nm_clapack_getrf(VALUE self, VALUE order, VALUE m, VALUE n, VALUE a
   size_t ipiv_size = std::min(M,N);
   int* ipiv = ALLOCA_N(int, ipiv_size);
 
-  // Call either our version of getrf or the LAPACK version.
-  ttable[NM_DTYPE(a)](blas_order_sym(order), M, N, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), ipiv);
+  if (!ttable[NM_DTYPE(a)]) {
+    rb_raise(nm_eDataTypeError, "this matrix operation undefined for integer matrices");
+  } else {
+    // Call either our version of getrf or the LAPACK version.
+    ttable[NM_DTYPE(a)](blas_order_sym(order), M, N, NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), ipiv);
+  }
 
   // Result will be stored in a. We return ipiv as an array.
   VALUE ipiv_array = rb_ary_new2(ipiv_size);
@@ -568,9 +576,14 @@ static VALUE nm_clapack_getrs(VALUE self, VALUE order, VALUE trans, VALUE n, VAL
     }
   }
 
-  // Call either our version of getrs or the LAPACK version.
-  ttable[NM_DTYPE(a)](blas_order_sym(order), blas_transpose_sym(trans), FIX2INT(n), FIX2INT(nrhs), NM_STORAGE_DENSE(a)->elements, FIX2INT(lda),
-                      ipiv_, NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb));
+  if (!ttable[NM_DTYPE(a)]) {
+    rb_raise(nm_eDataTypeError, "this matrix operation undefined for integer matrices");
+  } else {
+
+    // Call either our version of getrs or the LAPACK version.
+    ttable[NM_DTYPE(a)](blas_order_sym(order), blas_transpose_sym(trans), FIX2INT(n), FIX2INT(nrhs), NM_STORAGE_DENSE(a)->elements, FIX2INT(lda),
+                        ipiv_, NM_STORAGE_DENSE(b)->elements, FIX2INT(ldb));
+  }
 
   // b is both returned and modified directly in the argument list.
   return b;
@@ -579,10 +592,17 @@ static VALUE nm_clapack_getrs(VALUE self, VALUE order, VALUE trans, VALUE n, VAL
 
 /*
  * Call any of the clapack_xlaswp functions as directly as possible.
+ *
+ * Note that LAPACK's xlaswp functions accept a column-order matrix, but NMatrix uses row-order. Thus, n should be the
+ * number of rows and lda should be the number of columns, no matter what it says in the documentation for dlaswp.f.
  */
 static VALUE nm_clapack_laswp(VALUE self, VALUE n, VALUE a, VALUE lda, VALUE k1, VALUE k2, VALUE ipiv, VALUE incx) {
   static void (*ttable[nm::NUM_DTYPES])(const int n, void* a, const int lda, const int k1, const int k2, const int* ipiv, const int incx) = {
-      NULL, NULL, NULL, NULL, NULL, // integers not allowed due to division
+      nm::math::clapack_laswp<uint8_t>,
+      nm::math::clapack_laswp<int8_t>,
+      nm::math::clapack_laswp<int16_t>,
+      nm::math::clapack_laswp<int32_t>,
+      nm::math::clapack_laswp<int64_t>,
       nm::math::clapack_laswp<float>,
       nm::math::clapack_laswp<double>,
 #ifdef HAVE_CLAPACK_H
