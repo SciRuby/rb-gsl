@@ -49,8 +49,6 @@ describe NMatrix::BLAS do
         b[1].should == 5
         b[2].should == -13
       end
-
-      it "exposes cblas trsm, with B as a matrix"
     end
   end
 end

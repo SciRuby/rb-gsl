@@ -143,6 +143,9 @@ template <> inline double numeric_inverse<double>(const double& n) { return 1 / 
  *
  * For row major, call trsm<DType> instead. That will handle necessary changes-of-variables
  * and parameter checks.
+ *
+ * Note that some of the boundary conditions here may be incorrect. Very little has been tested!
+ * This was converted directly from dtrsm.f using f2c, and then rewritten more cleanly.
  */
 template <typename DType>
 inline void trsm_nothrow(const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
@@ -150,6 +153,9 @@ inline void trsm_nothrow(const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
                          const int m, const int n, const DType alpha, const DType* a,
                          const int lda, DType* b, const int ldb)
 {
+
+  // (row-major) trsm: left upper trans nonunit m=3 n=1 1/1 a 3 b 3
+
   if (m == 0 || n == 0) return; /* Quick return if possible. */
 
   if (alpha == 0) { // Handle alpha == 0
@@ -210,7 +216,7 @@ inline void trsm_nothrow(const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
     		for (int j = 0; j < n; ++j) {
 		      for (int i = 0; i < m; ++i) {
 			      DType temp = alpha * b[i + j * ldb];
-            for (int k = 0; k < i-1; ++k) {
+            for (int k = 0; k < i; ++k) { // limit was i-1. Lots of similar bugs in this code, probably.
               temp -= a[k + i * lda] * b[k + j * ldb];
       			}
 			      if (diag == CblasNonUnit) {
@@ -349,6 +355,9 @@ inline void trsm(const enum CBLAS_ORDER order,
                  const int m, const int n, const DType alpha, const DType* a,
                  const int lda, DType* b, const int ldb)
 {
+  /*using std::cerr;
+  using std::endl;*/
+
   int                     num_rows_a = n;
   if (side == CblasLeft)  num_rows_a = m;
 
@@ -368,6 +377,13 @@ inline void trsm(const enum CBLAS_ORDER order,
     enum CBLAS_SIDE side_ = side == CblasLeft  ? CblasRight : CblasLeft;
     enum CBLAS_UPLO uplo_ = uplo == CblasUpper ? CblasLower : CblasUpper;
 
+/*
+    cerr << "(row-major) trsm: " << (side_ == CblasLeft ? "left " : "right ")
+         << (uplo_ == CblasUpper ? "upper " : "lower ")
+         << (trans_a == CblasTrans ? "trans " : "notrans ")
+         << (diag == CblasNonUnit ? "nonunit " : "unit ")
+         << n << " " << m << " " << alpha << " a " << lda << " b " << ldb << endl;
+*/
     trsm_nothrow<DType>(side_, uplo_, trans_a, diag, n, m, alpha, a, lda, b, ldb);
 
   } else { // CblasColMajor
@@ -376,7 +392,13 @@ inline void trsm(const enum CBLAS_ORDER order,
       fprintf(stderr, "TRSM: M=%d; got ldb=%d\n", m, ldb);
       rb_raise(rb_eArgError, "TRSM: Expected ldb >= max(1,M)");
     }
-
+/*
+    cerr << "(col-major) trsm: " << (side == CblasLeft ? "left " : "right ")
+         << (uplo == CblasUpper ? "upper " : "lower ")
+         << (trans_a == CblasTrans ? "trans " : "notrans ")
+         << (diag == CblasNonUnit ? "nonunit " : "unit ")
+         << m << " " << n << " " << alpha << " a " << lda << " b " << ldb << endl;
+*/
     trsm_nothrow<DType>(side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
 
   }
@@ -399,6 +421,14 @@ inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const
                  const int m, const int n, const double alpha, const double* a,
                  const int lda, double* b, const int ldb)
 {
+/*  using std::cerr;
+  using std::endl;
+  cerr << "(row-major) dtrsm: " << (side == CblasLeft ? "left " : "right ")
+       << (uplo == CblasUpper ? "upper " : "lower ")
+       << (trans_a == CblasTrans ? "trans " : "notrans ")
+       << (diag == CblasNonUnit ? "nonunit " : "unit ")
+       << m << " " << n << " " << alpha << " a " << lda << " b " << ldb << endl;
+*/
   cblas_dtrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
 }
 
