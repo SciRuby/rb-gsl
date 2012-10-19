@@ -44,6 +44,10 @@ class NMatrix
       # contains B on input, is overwritten with the solution X on output.
       #
       # From ATLAS 3.8.0.
+      #
+      # Note: Because this function is implemented in Ruby, the ATLAS lib version is
+      # never called! For float32, float64, complex64, and complex128, the ATLAS lib
+      # versions of getrf and getrs *will* be called.
       def clapack_gesv(order, n, nrhs, a, lda, ipiv, b, ldb)
         clapack_getrf(order, n, n, a, lda, ipiv)
         clapack_getrs(order, :no_transpose, n, nrhs, a, lda, ipiv, b, ldb)

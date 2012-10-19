@@ -85,6 +85,7 @@ extern "C" { // These need to be in an extern "C" block or you'll get all kinds 
 /*
  * Macros
  */
+#define REAL_RECURSE_LIMIT 4
 
 /*
  * Data
@@ -1385,6 +1386,318 @@ inline int getrf(const enum CBLAS_ORDER Order, const int M, const int N, DType* 
   }
 }
 
+
+// This is the old BLAS version of this function. ATLAS has an optimized version, but
+// it's going to be tough to translate.
+template <typename DType>
+static void swap(const int N, DType* X, const int incX, DType* Y, const int incY) {
+  if (N > 0) {
+    int ix = 0, iy = 0;
+    for (int i = 0; i < N; ++i) {
+      DType temp = X[i];
+      X[i]       = Y[i];
+      Y[i]       = temp;
+
+      ix += incX;
+      iy += incY;
+    }
+  }
+}
+
+
+// Copies an upper row-major array from U, zeroing U; U is unit, so diagonal is not copied.
+//
+// From ATLAS 3.8.0.
+template <typename DType>
+static inline void trcpzeroU(const int M, const int N, DType* U, const int ldu, DType* C, const int ldc) {
+
+  for (int i = 0; i != M; ++i) {
+    for (int j = i+1; j < N; ++j) {
+      C[j] = U[j];
+      U[j] = 0;
+    }
+
+    C += ldc;
+    U += ldu;
+  }
+}
+
+
+template <bool RowMajor, bool Upper, typename DType>
+static int trtri_4(const enum CblasDiag Diag, DType* A, const int lda) {
+
+  if (RowMajor) {
+    DType *pA0 = A, *pA1 = A+lda, *pA2 = A+2*lda, *pA3 = A+3*lda;
+    DType tmp;
+    if (Upper) {
+      DType A01 = pA0[1], A02 = pA0[2], A03 = pA0[3],
+                          A12 = pA1[2], A13 = pA1[3],
+                                        A23 = pA2[3];
+
+      if (Diag == CblasNonUnit) {
+        pA0->inverse();
+        (pA1+1)->inverse();
+        (pA2+2)->inverse();
+        (pA3+3)->inverse();
+
+        pA0[1] = -A01 * pA1[1] * pA0[0];
+        pA1[2] = -A12 * pA2[2] * pA1[1];
+        pA2[3] = -A23 * pA3[3] * pA2[2];
+
+        pA0[2] = -(A01 * pA1[2] + A02 * pA2[2]) * pA0[0];
+        pA1[3] = -(A12 * pA2[3] + A13 * pA3[3]) * pA1[1];
+
+        pA0[3] = -(A01 * pA1[3] + A02 * pA2[3] + A03 * pA3[3]) * pA0[0];
+
+      } else {
+
+        pA0[1] = -A01;
+        pA1[2] = -A12;
+        pA2[3] = -A23;
+
+        pA0[2] = -(A01 * pA1[2] + A02);
+        pA1[3] = -(A12 * pA2[3] + A13);
+
+        pA0[3] = -(A01 * pA1[3] + A02 * pA2[3] + A03);
+      }
+
+    } else { // Lower
+      DType A10 = pA1[0],
+            A20 = pA2[0], A21 = pA2[1],
+            A30 = PA3[0], A31 = pA3[1], A32 = pA3[2];
+      DType *B10 = pA1,
+            *B20 = pA2,
+            *B30 = pA3,
+            *B21 = pA2+1,
+            *B31 = pA3+1,
+            *B32 = pA3+2;
+
+
+      if (Diag == CblasNonUnit) {
+        pA0->inverse();
+        (pA1+1)->inverse();
+        (pA2+2)->inverse();
+        (pA3+3)->inverse();
+
+        *B10 = -A10 * pA0[0] * pA1[1];
+        *B21 = -A21 * pA1[1] * pA2[2];
+        *B32 = -A32 * pA2[2] * pA3[3];
+        *B20 = -(A20 * pA0[0] + A21 * (*B10)) * pA2[2];
+        *B31 = -(A31 * pA1[1] + A32 * (*B21)) * pA3[3];
+        *B30 = -(A30 * pA0[0] + A31 * (*B10) + A32 * (*B20)) * pA3;
+      } else {
+        *B10 = -A10;
+        *B21 = -A21;
+        *B32 = -A32;
+        *B20 = -(A20 + A21 * (*B10));
+        *B31 = -(A31 + A32 * (*B21));
+        *B30 = -(A30 + A31 * (*B10) + A32 * (*B20));
+      }
+    }
+
+  } else {
+    rb_raise(rb_eNotImpError, "only row-major implemented at this time");
+  }
+
+  return 0;
+
+}
+
+
+template <bool RowMajor, bool Upper, typename DType>
+static int trtri_3(const enum CblasDiag Diag, DType* A, const int lda) {
+
+  if (RowMajor) {
+
+    DType tmp;
+
+    if (Upper) {
+      DType A01 = pA0[1], A02 = pA0[2], A03 = pA0[3],
+                          A12 = pA1[2], A13 = pA1[3];
+
+      DType *B01 = pA0 + 1,
+            *B02 = pA0 + 2,
+            *B12 = pA1 + 2;
+
+      if (Diag == CblasNonUnit) {
+        pA0->inverse();
+        (pA1+1)->inverse();
+        (pA2+2)->inverse();
+
+        *B01 = -A01 * pA1[1] * pA0[0];
+        *B12 = -A12 * pA2[2] * pA1[1];
+        *B02 = -(A01 * (*B12) + A02 * pA2[2]) * pA0[0];
+      } else {
+        *B01 = -A01;
+        *B12 = -A12;
+        *B02 = -(A01 * (*B12) + A02);
+      }
+
+    } else { // Lower
+      DType *pA0=A, *pA1=A+lda, *pA2=A+2*lda;
+      DType A10=pA1[0],
+            A20=pA2[0], A21=pA2[1];
+
+      DType *B10 = pA1,
+            *B20 = pA2;
+            *B21 = pA2+1;
+
+      if (Diag == CblasNonUnit) {
+        pA0->inverse();
+        (pA1+1)->inverse();
+        (pA2+2)->inverse();
+        *B10 = -A10 * pA0[0] * pA1[1];
+        *B21 = -A21 * pA1[1] * pA2[2];
+        *B20 = -(A20 * pA0[0] + A21 * (*B10)) * pA2[2];
+      } else {
+        *B10 = -A10;
+        *B21 = -A21;
+        *B20 = -(A20 + A21 * (*B10));
+      }
+    }
+
+
+  } else {
+    rb_raise(rb_eNotImpError, "only row-major implemented at this time");
+  }
+
+  return 0;
+
+}
+
+template <bool RowMajor, bool Upper, bool Real, typename DType>
+static void trtri(const enum CblasDiag Diag, const int N, DType* A, const int lda) {
+  DType *Age, *Atr;
+  DType tmp;
+  int Nleft, Nright;
+
+  int ierr = 0;
+
+  static const DType ONE = 1;
+  static const DType MONE -1;
+  static const DType NONE = -1;
+
+  if (RowMajor) {
+
+    // FIXME: Use REAL_RECURSE_LIMIT here for float32 and float64 (instead of 1)
+    if ((Real && N > REAL_RECURSE_LIMIT) || (N > 1)) {
+      Nleft = N >> 1;
+#ifdef NB
+      if (Nleft > NB) NLeft = ATL_MulByNB(ATL_DivByNB(Nleft));
+#endif
+
+      Nright = N - Nleft;
+
+      if (Upper) {
+        Age = A + Nleft;
+        Atr = A + (Nleft * (lda+1));
+
+        nm::math::trsm<DType>(CblasRowMajor, CblasRight, CblasUpper, CblasNoTrans, Diag,
+                              Nleft, Nright, ONE, Atr, lda, Age, lda);
+
+        nm::math::trsm<DType>(CblasRowMajor, CblasLeft, CblasUpper, CblasNoTrans, Diag,
+                              Nleft, Nright, MONE, A, lda, Age, lda);
+
+      } else { // Lower
+        Age = A + ((Nleft*lda));
+        Atr = A + (Nleft * (lda+1));
+
+        nm::math::trsm<DType>(CblasRowMajor, CblasRight, CblasLower, CblasNoTrans, Diag,
+                              Nright, Nleft, ONE, A, lda, Age, lda);
+        nm::math::trsm<DType>(CblasRowMajor, CblasLeft, CblasLower, CblasNoTrans, Diag,
+                              Nright, Nleft, MONE, Atr, lda, Age, lda);
+      }
+
+      ierr = trtri<RowMajor,Upper,Real,DType>(Diag, Nleft, A, lda);
+      if (ierr) return ierr;
+
+      ierr = trtri<RowMajor,Upper,Real,DType>(Diag, Nright, Atr, lda);
+      if (ierr) return ierr + Nleft;
+
+    } else {
+      if (Real) {
+        if (N == 4) {
+          return trtri_4<RowMajor,Upper,Real,DType>(Diag, A, lda);
+        } else if (N == 3) {
+          return trtri_3<RowMajor,Upper,Real,DType>(Diag, A, lda);
+        } else if (N == 2) {
+          if (Diag == CblasNonUnit) {
+            A->inverse();
+            (A+(lda+1))->inverse();
+
+            if (Upper) {
+              *(A+1)     *=   *A;         // TRI_MUL
+              *(A+1)     *=   *(A+lda+1); // TRI_MUL
+            } else {
+              *(A+lda)   *=   *A;         // TRI_MUL
+              *(A+lda)   *=   *(A+lda+1); // TRI_MUL
+            }
+          }
+
+          if (Upper) *(A+1)   = -*(A+1);      // TRI_NEG
+          else       *(A+lda) = -*(A+lda);    // TRI_NEG
+        } else if (Diag == CblasNonUnit) A->inverse();
+      } else { // not real
+        if (Diag == CblasNonUnit) A->inverse();
+      }
+    }
+
+  } else {
+    rb_raise(rb_eNotImpError, "only row-major implemented at this time");
+  }
+
+  return ierr;
+}
+
+
+template <bool RowMajor, bool Real, typename DType>
+int getri(const int N, DType* A, const int lda, const int* ipiv, DType* wrk, const int lwrk) {
+
+  if (!RowMajor) rb_raise(rb_eNotImpError, "only row-major implemented at this time");
+
+  int jb, nb, I, ndown, iret;
+
+  const DType ONE = 1, NONE = -1;
+
+  int iret = trtri<RowMajor,false,Real,DType>(CblasNonUnit, N, A, lda);
+  if (!iret && N > 1) {
+    jb = lwrk / N;
+    if (jb >= NB) nb = ATL_MulByNB(ATL_DivByNB(jb));
+    else if (jb >= ATL_mmMU) nb = (jb/ATL_mmMU)*ATL_mmMU;
+    else nb = jb;
+    if (!nb) return -6; // need at least 1 row of workspace
+
+    // only first iteration will have partial block, unroll it
+
+    jb = N - (N/nb) * nb;
+    if (!jb) jb = nb;
+    I = N - jb;
+    A += lda * I;
+    trcpzeroU<DType>(jb, jb, A+I, lda, wrk, jb);
+    nm::math::trsm<DType>(CblasRowMajor, CblasLeft, CblasUpper, CblasNoTrans, CblasUnit,
+                          jb, N, ONE, wrk, jb, A, lda);
+
+    if (I) {
+      do {
+        I -= nb;
+        A -= nb * lda;
+        ndown = N-I;
+        trcpzeroU<DType>(nb, ndown, A+I, lda, wrk, ndown);
+        nm::math::gemm<DType>(CblasRowMajor, CblasLeft, CblasUpper, CblasNoTrans, CblasUnit,
+                              nb, N, ONE, wrk, ndown, A, lda);
+      } while (I);
+    }
+
+    // Apply row interchanges
+
+    for (I = N - 2; I >= 0; --I) {
+      jb = ipiv[I];
+      if (jb != I) nm::math::swap<DType>(N, A+I*lda, 1, A+jb*lda, 1);
+    }
+  }
+
+  return iret;
+}
 
 
 
