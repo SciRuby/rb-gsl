@@ -49,7 +49,8 @@ class NMatrix
       autoload :MatReader, 'nmatrix/io/mat_reader'
       autoload :Mat5Reader, 'nmatrix/io/mat5_reader'
     end
-	end
+  end
+
 
 	# TODO: Make this actually pretty.
 	def pretty_print(q = nil)
@@ -199,3 +200,5 @@ protected
 		ary
 	end
 end
+
+require_relative "./lapack.rb"

@@ -59,6 +59,7 @@ describe NMatrix::LAPACK do
         #a[2,2].should == 5.294118
       end
 
+      # Together, these calls are basically xGESV from LAPACK: http://www.netlib.org/lapack/double/dgesv.f
       it "exposes clapack getrs" do
         a     = NMatrix.new(:dense, 3, [-2,4,-3,3,-2,1,0,-4,3], dtype)
         ipiv  = NMatrix::LAPACK::clapack_getrf(:row, 3, 3, a, 3)
