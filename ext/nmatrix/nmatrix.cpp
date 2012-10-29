@@ -988,6 +988,8 @@ static VALUE nm_multiply(VALUE left_v, VALUE right_v) {
   return Qnil;
 }
 
+
+
 /*
  * LU factorization of a matrix.
  *

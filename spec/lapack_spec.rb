@@ -72,6 +72,16 @@ describe NMatrix::LAPACK do
         b[2].should == -13
       end
 
+      it "exposes clapack getri" do
+        a = NMatrix.new(:dense, 3, [1,0,4,1,1,6,-3,0,-10], dtype)
+        ipiv = NMatrix::LAPACK::clapack_getrf(:row, 3, 3, a, 3) # get pivot from getrf, use for getri
+        NMatrix::LAPACK::clapack_getri(:row, 3, a, 3, ipiv)
+
+        b = NMatrix.new(:dense, 3, [-5,0,-2,-4,1,-1,1.5,0,0.5], dtype)
+        a.should == b
+      end
+
+
     end
   end
 end

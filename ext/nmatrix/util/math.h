@@ -70,7 +70,10 @@
 
 extern "C" { // These need to be in an extern "C" block or you'll get all kinds of undefined symbol errors.
   #include <cblas.h>
-  //#include <clapack.h>
+
+  #ifdef HAVE_CLAPACK_H
+    #include <clapack.h>
+  #endif
 }
 
 #include <algorithm> // std::min, std::max
@@ -460,7 +463,7 @@ inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const
  */
 template <typename DType>
 inline void laswp(const int N, DType* A, const int lda, const int K1, const int K2, const int *piv, const int inci) {
-  const int n = K2 - K1;
+  //const int n = K2 - K1; // not sure why this is declared. commented it out because it's unused.
 
   int nb = N >> 5;
 
@@ -1298,12 +1301,12 @@ inline int getrf_nothrow(const int M, const int N, DType* A, const int lda, int*
  * From ATLAS 3.8.0.
  */
 template <typename DType>
-void getrs(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans, const int N, const int NRHS, const DType* A,
+int getrs(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans, const int N, const int NRHS, const DType* A,
            const int lda, const int* ipiv, DType* B, const int ldb)
 {
   // enum CBLAS_DIAG Lunit, Uunit; // These aren't used. Not sure why they're declared in ATLAS' src.
 
-  if (!N || !NRHS) return;
+  if (!N || !NRHS) return 0;
 
   DType one = 1;
 
@@ -1329,6 +1332,7 @@ void getrs(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans, const
       nm::math::trsm<DType>(Order, CblasRight, CblasLower, CblasNoTrans, CblasNonUnit, NRHS, N, one, A, lda, B, ldb);
     }
   }
+  return 0;
 }
 
 
@@ -1422,6 +1426,16 @@ static inline void trcpzeroU(const int M, const int N, DType* U, const int ldu, 
   }
 }
 
+
+/*
+ * Un-comment the following lines when we figure out how to calculate NB for each of the ATLAS-derived
+ * functions. This is probably really complicated.
+ *
+ * Also needed: ATL_MulByNB, ATL_DivByNB (both defined in the build process for ATLAS), and ATL_mmMU.
+ *
+ */
+
+/*
 
 template <bool RowMajor, bool Upper, typename DType>
 static int trtri_4(const enum CblasDiag Diag, DType* A, const int lda) {
@@ -1698,6 +1712,7 @@ int getri(const int N, DType* A, const int lda, const int* ipiv, DType* wrk, con
 
   return iret;
 }
+*/
 
 
 
@@ -1747,10 +1762,52 @@ inline int clapack_getrf(const enum CBLAS_ORDER order, const int m, const int n,
 * This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
 */
 template <typename DType>
-inline void clapack_getrs(const enum CBLAS_ORDER order, const enum CBLAS_TRANSPOSE trans, const int n, const int nrhs,
+inline int clapack_getrs(const enum CBLAS_ORDER order, const enum CBLAS_TRANSPOSE trans, const int n, const int nrhs,
                          const void* a, const int lda, const int* ipiv, void* b, const int ldb) {
-  getrs<DType>(order, trans, n, nrhs, reinterpret_cast<const DType*>(a), lda, ipiv, reinterpret_cast<DType*>(b), ldb);
+  return getrs<DType>(order, trans, n, nrhs, reinterpret_cast<const DType*>(a), lda, ipiv, reinterpret_cast<DType*>(b), ldb);
 }
+
+template <typename DType>
+inline int getri(const enum CBLAS_ORDER order, const int n, DType* a, const int lda, const int* ipiv) {
+  rb_raise(rb_eNotImpError, "getri not yet implemented for non-BLAS dtypes");
+  return 0;
+}
+
+#ifdef HAVE_CLAPACK_H
+template <>
+inline int getri(const enum CBLAS_ORDER order, const int n, float* a, const int lda, const int* ipiv) {
+  return clapack_sgetri(order, n, a, lda, ipiv);
+}
+
+template <>
+inline int getri(const enum CBLAS_ORDER order, const int n, double* a, const int lda, const int* ipiv) {
+  return clapack_dgetri(order, n, a, lda, ipiv);
+}
+
+template <>
+inline int getri(const enum CBLAS_ORDER order, const int n, Complex64* a, const int lda, const int* ipiv) {
+  return clapack_cgetri(order, n, reinterpret_cast<void*>(a), lda, ipiv);
+}
+
+template <>
+inline int getri(const enum CBLAS_ORDER order, const int n, Complex128* a, const int lda, const int* ipiv) {
+  return clapack_zgetri(order, n, reinterpret_cast<void*>(a), lda, ipiv);
+}
+#endif
+
+
+/*
+ * Function signature conversion for calling LAPACK's getri functions as directly as possible.
+ *
+ * For documentation: http://www.netlib.org/lapack/double/dgetri.f
+ *
+ * This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
+ */
+template <typename DType>
+inline int clapack_getri(const enum CBLAS_ORDER order, const int n, void* a, const int lda, const int* ipiv) {
+  return getri<DType>(order, n, reinterpret_cast<DType*>(a), lda, ipiv);
+}
+
 
 
 /*

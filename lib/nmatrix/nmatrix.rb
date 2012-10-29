@@ -84,6 +84,25 @@ class NMatrix
 	alias :pp :pretty_print
 
 
+  # Use LAPACK to calculate the inverse of the matrix (in-place).
+  #
+  # Note: If you don't have LAPACK, e.g., on a Mac, this may not work yet.
+  def invert!
+    # Get the pivot array; factor the matrix
+    pivot = NMatrix::LAPACK::clapack_getrf(:row, self.shape[0], self.shape[1], self, self.shape[0])
+
+    # Now calculate the inverse using the pivot array
+    NMatrix::LAPACK::clapack_getri(:row, self.shape[0], self, self.shape[0], pivot)
+
+    self
+  end
+
+  # Make a copy of the matrix, then invert it (requires LAPACK)
+  def invert
+    self.clone.invert!
+  end
+
+
 	# Get the complex conjugate of this matrix. See also complex_conjugate! for
 	# an in-place operation (provided the dtype is already :complex64 or
 	# :complex128).
