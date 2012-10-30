@@ -59,6 +59,20 @@ describe NMatrix::LAPACK do
         #a[2,2].should == 5.294118
       end
 
+      it "exposes clapack potrf" do
+        # first do upper
+        a = NMatrix.new(:dense, 3, [25,15,-5, 0,18,0, 0,0,11], dtype)
+        NMatrix::LAPACK::clapack_potrf(:row, :upper, 3, a, 3)
+        b = NMatrix.new(:dense, 3, [5,3,-1, 0,3,1, 0,0,3], dtype)
+        a.should == b
+
+        # then do lower
+        a = NMatrix.new(:dense, 3, [25,0,0, 15,18,0,-5,0,11], dtype)
+        NMatrix::LAPACK::clapack_potrf(:row, :lower, 3, a, 3)
+        b = NMatrix.new(:dense, 3, [5,0,0, 3,3,0, -1,1,3], dtype)
+        a.should == b
+      end
+
       # Together, these calls are basically xGESV from LAPACK: http://www.netlib.org/lapack/double/dgesv.f
       it "exposes clapack getrs" do
         a     = NMatrix.new(:dense, 3, [-2,4,-3,3,-2,1,0,-4,3], dtype)

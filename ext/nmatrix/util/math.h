@@ -1308,32 +1308,73 @@ int getrs(const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE Trans, const 
 
   if (!N || !NRHS) return 0;
 
-  DType one = 1;
+  const DType ONE = 1;
 
   if (Order == CblasColMajor) {
     if (Trans == CblasNoTrans) {
       nm::math::laswp<DType>(NRHS, B, ldb, 0, N, ipiv, 1);
-      nm::math::trsm<DType>(Order, CblasLeft, CblasLower, CblasNoTrans, CblasUnit, N, NRHS, one, A, lda, B, ldb);
-      nm::math::trsm<DType>(Order, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit, N, NRHS, one, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasLeft, CblasLower, CblasNoTrans, CblasUnit, N, NRHS, ONE, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit, N, NRHS, ONE, A, lda, B, ldb);
     } else {
-      nm::math::trsm<DType>(Order, CblasLeft, CblasUpper, Trans, CblasNonUnit, N, NRHS, one, A, lda, B, ldb);
-      nm::math::trsm<DType>(Order, CblasLeft, CblasLower, Trans, CblasUnit, N, NRHS, one, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasLeft, CblasUpper, Trans, CblasNonUnit, N, NRHS, ONE, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasLeft, CblasLower, Trans, CblasUnit, N, NRHS, ONE, A, lda, B, ldb);
       nm::math::laswp<DType>(NRHS, B, ldb, 0, N, ipiv, -1);
     }
   } else {
     if (Trans == CblasNoTrans) {
-      fprintf(stderr, "simple args: %d, %d, %d, %d\n", NRHS, N, lda, ldb);
-      nm::math::trsm<DType>(Order, CblasRight, CblasLower, CblasTrans, CblasNonUnit, NRHS, N, one, A, lda, B, ldb);
-      nm::math::trsm<DType>(Order, CblasRight, CblasUpper, CblasTrans, CblasUnit, NRHS, N, one, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasRight, CblasLower, CblasTrans, CblasNonUnit, NRHS, N, ONE, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasRight, CblasUpper, CblasTrans, CblasUnit, NRHS, N, ONE, A, lda, B, ldb);
       nm::math::laswp<DType>(NRHS, B, ldb, 0, N, ipiv, -1);
     } else {
       nm::math::laswp<DType>(NRHS, B, ldb, 0, N, ipiv, 1);
-      nm::math::trsm<DType>(Order, CblasRight, CblasUpper, CblasNoTrans, CblasUnit, NRHS, N, one, A, lda, B, ldb);
-      nm::math::trsm<DType>(Order, CblasRight, CblasLower, CblasNoTrans, CblasNonUnit, NRHS, N, one, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasRight, CblasUpper, CblasNoTrans, CblasUnit, NRHS, N, ONE, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasRight, CblasLower, CblasNoTrans, CblasNonUnit, NRHS, N, ONE, A, lda, B, ldb);
     }
   }
   return 0;
 }
+
+
+/*
+ * Solves a system of linear equations A*X = B with a symmetric positive definite matrix A using the Cholesky factorization computed by POTRF.
+ *
+ * From ATLAS 3.8.0.
+ */
+template <typename DType, bool is_complex>
+int potrs(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo, const int N, const int NRHS, const DType* A,
+           const int lda, DType* B, const int ldb)
+{
+  // enum CBLAS_DIAG Lunit, Uunit; // These aren't used. Not sure why they're declared in ATLAS' src.
+
+  CBLAS_TRANSPOSE MyTrans = is_complex ? CblasConjTrans : CblasTrans;
+
+  if (!N || !NRHS) return 0;
+
+  const DType ONE = 1;
+
+  if (Order == CblasColMajor) {
+    if (Uplo == CblasUpper) {
+      nm::math::trsm<DType>(Order, CblasLeft, CblasUpper, MyTrans, CblasNonUnit, N, NRHS, ONE, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit, N, NRHS, ONE, A, lda, B, ldb);
+    } else {
+      nm::math::trsm<DType>(Order, CblasLeft, CblasLower, CblasNoTrans, CblasNonUnit, N, NRHS, ONE, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasLeft, CblasLower, MyTrans, CblasNonUnit, N, NRHS, ONE, A, lda, B, ldb);
+    }
+  } else {
+    // There's some kind of scaling operation that normally happens here in ATLAS. Not sure what it does, so we'll only
+    // worry if something breaks. It probably has to do with their non-templated code and doesn't apply to us.
+
+    if (Uplo == CblasUpper) {
+      nm::math::trsm<DType>(Order, CblasRight, CblasUpper, CblasNoTrans, CblasNonUnit, NRHS, N, ONE, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasRight, CblasUpper, MyTrans, CblasNonUnit, NRHS, N, ONE, A, lda, B, ldb);
+    } else {
+      nm::math::trsm<DType>(Order, CblasRight, CblasLower, MyTrans, CblasNonUnit, NRHS, N, ONE, A, lda, B, ldb);
+      nm::math::trsm<DType>(Order, CblasRight, CblasLower, CblasNoTrans, CblasNonUnit, NRHS, N, ONE, A, lda, B, ldb);
+    }
+  }
+  return 0;
+}
+
 
 
 /*
@@ -1389,6 +1430,73 @@ inline int getrf(const enum CBLAS_ORDER Order, const int M, const int N, DType* 
     //rb_raise(rb_eNotImpError, "column major getrf not implemented");
   }
 }
+
+
+/*
+ * From ATLAS 3.8.0:
+ *
+ * Computes one of two LU factorizations based on the setting of the Order
+ * parameter, as follows:
+ * ----------------------------------------------------------------------------
+ *                       Order == CblasColMajor
+ * Column-major factorization of form
+ *   A = P * L * U
+ * where P is a row-permutation matrix, L is lower triangular with unit
+ * diagonal elements (lower trapazoidal if M > N), and U is upper triangular
+ * (upper trapazoidal if M < N).
+ *
+ * ----------------------------------------------------------------------------
+ *                       Order == CblasRowMajor
+ * Row-major factorization of form
+ *   A = P * L * U
+ * where P is a column-permutation matrix, L is lower triangular (lower
+ * trapazoidal if M > N), and U is upper triangular with unit diagonals (upper
+ * trapazoidal if M < N).
+ *
+ * ============================================================================
+ * Let IERR be the return value of the function:
+ *    If IERR == 0, successful exit.
+ *    If (IERR < 0) the -IERR argument had an illegal value
+ *    If (IERR > 0 && Order == CblasColMajor)
+ *       U(i-1,i-1) is exactly zero.  The factorization has been completed,
+ *       but the factor U is exactly singular, and division by zero will
+ *       occur if it is used to solve a system of equations.
+ *    If (IERR > 0 && Order == CblasRowMajor)
+ *       L(i-1,i-1) is exactly zero.  The factorization has been completed,
+ *       but the factor L is exactly singular, and division by zero will
+ *       occur if it is used to solve a system of equations.
+ */
+template <typename DType>
+inline int potrf(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int N, DType* A, const int lda) {
+#ifdef HAVE_CLAPACK_H
+  rb_raise(rb_eNotImpError, "not yet implemented for non-BLAS dtypes");
+#else
+  rb_raise(rb_eNotImpError, "only LAPACK version implemented thus far");
+#endif
+  return 0;
+}
+
+#ifdef HAVE_CLAPACK_H
+template <>
+inline int potrf(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int N, float* A, const int lda) {
+  return clapack_spotrf(order, uplo, N, A, lda);
+}
+
+template <>
+inline int potrf(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int N, double* A, const int lda) {
+  return clapack_dpotrf(order, uplo, N, A, lda);
+}
+
+template <>
+inline int potrf(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int N, Complex64* A, const int lda) {
+  return clapack_cpotrf(order, uplo, N, reinterpret_cast<void*>(A), lda);
+}
+
+template <>
+inline int potrf(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int N, Complex128* A, const int lda) {
+  return clapack_zpotrf(order, uplo, N, reinterpret_cast<void*>(A), lda);
+}
+#endif
 
 
 // This is the old BLAS version of this function. ATLAS has an optimized version, but
@@ -1755,6 +1863,19 @@ inline int clapack_getrf(const enum CBLAS_ORDER order, const int m, const int n,
 
 
 /*
+* Function signature conversion for calling LAPACK's potrf functions as directly as possible.
+*
+* For documentation: http://www.netlib.org/lapack/double/dpotrf.f
+*
+* This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
+*/
+template <typename DType>
+inline int clapack_potrf(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int n, void* a, const int lda) {
+  return potrf<DType>(order, uplo, n, reinterpret_cast<DType*>(a), lda);
+}
+
+
+/*
 * Function signature conversion for calling LAPACK's getrs functions as directly as possible.
 *
 * For documentation: http://www.netlib.org/lapack/double/dgetrs.f
@@ -1765,6 +1886,19 @@ template <typename DType>
 inline int clapack_getrs(const enum CBLAS_ORDER order, const enum CBLAS_TRANSPOSE trans, const int n, const int nrhs,
                          const void* a, const int lda, const int* ipiv, void* b, const int ldb) {
   return getrs<DType>(order, trans, n, nrhs, reinterpret_cast<const DType*>(a), lda, ipiv, reinterpret_cast<DType*>(b), ldb);
+}
+
+/*
+* Function signature conversion for calling LAPACK's potrs functions as directly as possible.
+*
+* For documentation: http://www.netlib.org/lapack/double/dpotrs.f
+*
+* This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
+*/
+template <typename DType, bool is_complex>
+inline int clapack_potrs(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int n, const int nrhs,
+                         const void* a, const int lda, void* b, const int ldb) {
+  return potrs<DType,is_complex>(order, uplo, n, nrhs, reinterpret_cast<const DType*>(a), lda, reinterpret_cast<DType*>(b), ldb);
 }
 
 template <typename DType>
@@ -1796,6 +1930,35 @@ inline int getri(const enum CBLAS_ORDER order, const int n, Complex128* a, const
 #endif
 
 
+template <typename DType>
+inline int potri(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int n, DType* a, const int lda) {
+  rb_raise(rb_eNotImpError, "potri not yet implemented for non-BLAS dtypes");
+  return 0;
+}
+
+
+#ifdef HAVE_CLAPACK_H
+template <>
+inline int potri(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int n, float* a, const int lda) {
+  return clapack_spotri(order, uplo, n, a, lda);
+}
+
+template <>
+inline int potri(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int n, double* a, const int lda) {
+  return clapack_dpotri(order, uplo, n, a, lda);
+}
+
+template <>
+inline int potri(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int n, Complex64* a, const int lda) {
+  return clapack_cpotri(order, uplo, n, reinterpret_cast<void*>(a), lda);
+}
+
+template <>
+inline int potri(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int n, Complex128* a, const int lda) {
+  return clapack_zpotri(order, uplo, n, reinterpret_cast<void*>(a), lda);
+}
+#endif
+
 /*
  * Function signature conversion for calling LAPACK's getri functions as directly as possible.
  *
@@ -1808,6 +1971,18 @@ inline int clapack_getri(const enum CBLAS_ORDER order, const int n, void* a, con
   return getri<DType>(order, n, reinterpret_cast<DType*>(a), lda, ipiv);
 }
 
+
+/*
+ * Function signature conversion for calling LAPACK's potri functions as directly as possible.
+ *
+ * For documentation: http://www.netlib.org/lapack/double/dpotri.f
+ *
+ * This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
+ */
+template <typename DType>
+inline int clapack_potri(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int n, void* a, const int lda) {
+  return potri<DType>(order, uplo, n, reinterpret_cast<DType*>(a), lda);
+}
 
 
 /*

@@ -52,6 +52,29 @@ class NMatrix
         clapack_getrf(order, n, n, a, lda, ipiv)
         clapack_getrs(order, :no_transpose, n, nrhs, a, lda, ipiv, b, ldb)
       end
+
+      # clapack_posv computes the solution to a real system of linear equations
+      #   A * X = B,
+      # where A is an N-by-N symmetric positive definite matrix and X and B
+      # are N-by-NRHS matrices.
+      #
+      # The Cholesky decomposition is used to factor A as
+      #   A = U**T* U,  if UPLO = 'U', or
+      #   A = L * L**T,  if UPLO = 'L',
+      # where U is an upper triangular matrix and L is a lower triangular
+      # matrix.  The factored form of A is then used to solve the system of
+      # equations A * X = B.
+      #
+      # From ATLAS 3.8.0.
+      #
+      # Note: Because this function is implemented in Ruby, the ATLAS lib version is
+      # never called! For float32, float64, complex64, and complex128, the ATLAS lib
+      # versions of potrf and potrs *will* be called.
+      def clapack_posv(order, uplo, n, nrhs, a, lda, b, ldb)
+        clapack_potrf(order, uplo, n, a, lda)
+        clapack_potrs(order, uplo, n, nrhs, a, lda, b, ldb)
+      end
+
     end
   end
 end
