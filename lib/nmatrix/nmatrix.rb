@@ -84,12 +84,12 @@ class NMatrix
 	alias :pp :pretty_print
 
 
-  # Use LAPACK to calculate the inverse of the matrix (in-place).
+  # Use LAPACK to calculate the inverse of the matrix (in-place). Only works on dense matrices.
   #
   # Note: If you don't have LAPACK, e.g., on a Mac, this may not work yet.
   def invert!
     # Get the pivot array; factor the matrix
-    pivot = NMatrix::LAPACK::clapack_getrf(:row, self.shape[0], self.shape[1], self, self.shape[0])
+    pivot = self.getrf!
 
     # Now calculate the inverse using the pivot array
     NMatrix::LAPACK::clapack_getri(:row, self.shape[0], self, self.shape[0], pivot)
@@ -97,9 +97,50 @@ class NMatrix
     self
   end
 
-  # Make a copy of the matrix, then invert it (requires LAPACK)
+  # Make a copy of the matrix, then invert it (requires LAPACK). Returns a dense matrix.
   def invert
-    self.clone.invert!
+    self.cast(:dense, self.dtype).invert!
+  end
+
+  alias :inverse :invert
+
+  # Calls clapack_getrf and returns the pivot array (dense only).
+  def getrf!
+    raise(StorageTypeError, "ATLAS functions only work on dense matrices") unless self.stype == :dense
+    NMatrix::LAPACK::clapack_getrf(:row, self.shape[0], self.shape[1], self, self.shape[0])
+  end
+
+  # Calculate the determinant by way of LU decomposition. This is accomplished using
+  # clapack_getrf, and then by summing the diagonal elements. There is a risk of
+  # underflow/overflow.
+  #
+  # There are probably also more efficient ways to calculate the determinant. This method
+  # requires making a copy of the matrix, since clapack_getrf modifies its input.
+  #
+  # For smaller matrices, you may be able to use det_exact.
+  #
+  # This function is guaranteed to return the same type of data in the matrix upon which it is called.
+  # In other words, if you call it on a rational matrix, you'll get a rational number back.
+  #
+  # Integer matrices are converted to rational matrices for the purposes of performing the calculation,
+  # as xGETRF can't work on integer matrices.
+  def det
+    raise(NotImplementedError, "determinant can be calculated only for 2D matrices") unless self.dim == 2
+
+    # Cast to a dtype for which getrf is implemented
+    new_dtype = [:byte,:int8,:int16,:int32,:int64].include?(self.dtype) ? :rational128 : self.dtype
+    copy = self.cast(:dense, new_dtype)
+
+    # Need to know the number of permutations. We'll add up the diagonals of the factorized matrix.
+    pivot = copy.getrf!
+
+    prod = pivot.size % 2 == 1 ? -1 : 1 # odd permutations => negative
+    [shape[0],shape[1]].min.times do |i|
+      prod *= copy[i,i]
+    end
+
+    # Convert back to an integer if necessary
+    new_dtype != self.dtype ? prod.to_i : prod
   end
 
 

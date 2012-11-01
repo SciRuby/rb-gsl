@@ -61,4 +61,3 @@
   * Yale-to-list casting
 
   * Now requires packable-1.3.5 or higher, fixing a problem with MATLAB .mat v5 file I/O (specific to doubles)
-  
