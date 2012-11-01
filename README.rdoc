@@ -43,19 +43,22 @@ The following features exist in the current version of NMatrix (0.0.2):
   * xGEMM
   * xTRSM
 * LAPACK ATLAS access:
-  * xGETRF (experimental)
+  * xGETRF, xGETRI, xGETRS, xGESV (Gaussian elimination)
+  * xPOTRF, xPOTRI, xPOTRS, xPOSV (Cholesky factorization)
+  * xLASWP, xSCAL
 * LAPACK internal implementations (no library needed):
   * xGETRF
+  * xLASWP, xSCAL
 * LU decomposition
+* Matrix inversions (requires LAPACK)
 
 === Planned Features (Short-to-Medium Term)
 
 These are features planned for NMatrix 0.1.0, our first beta.
 
 * calculation of determinant, trace, and eigenvalues (characteristic polynomial) (0.1.0)
-* Gaussian elimination
 * exponentials and square roots
-* matrix inversions
+* matrix inversions (LAPACK-free)
 * matrix decomposition/factorization
 * calculation of norms
 * tensor products
@@ -87,6 +90,8 @@ If you get errors about clapack.h or cblas.h, figure out where your ATLAS header
 
     locate clapack.h
 
+If you're a Mac user, we recommend you search for cblas.h instead.
+
 Then, tell your system:
 
     export C_INCLUDE_PATH=/usr/local/atlas/include
@@ -99,6 +104,7 @@ Finally, try compiling again.
 * ATLAS and LAPACK, probably
 * GCC 4.3
 * Ruby 1.9
+* {packable}[http://github.com/marcandre/packable] 1.3.5 (used for I/O)
 
 == INSTALLATION:
 

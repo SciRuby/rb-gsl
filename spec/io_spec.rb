@@ -52,9 +52,15 @@ describe NMatrix::IO do
     n[3,3].should == 0
   end
 
-  it "reads MATLAB .mat file containing a single dense matrix" do
+  it "reads MATLAB .mat file containing a single dense integer matrix" do
     n = NMatrix::IO::Matlab.load_mat("spec/4x5_dense.mat")
     m = NMatrix.new(:dense, [4,5], [16,17,18,19,20,15,14,13,12,11,6,7,8,9,10,5,4,3,2,1])
+    n.should == m
+  end
+
+  it "reads MATLAB .mat file containing a single dense double matrix" do
+    n = NMatrix::IO::Matlab.load_mat("spec/2x2_dense_double.mat")
+    m = NMatrix.new(:dense, 2, [1.1, 2.0, 3.0, 4.0], :float64)
     n.should == m
   end
 end
