@@ -45,12 +45,13 @@ The following features exist in the current version of NMatrix (0.0.2):
 * LAPACK ATLAS access:
   * xGETRF, xGETRI, xGETRS, xGESV (Gaussian elimination)
   * xPOTRF, xPOTRI, xPOTRS, xPOSV (Cholesky factorization)
-  * xLASWP, xSCAL
-* LAPACK internal implementations (no library needed):
+  * xLASWP, xSCAL, xLAUUM
+* LAPACK-less internal implementations (no LAPACK needed and working on non-BLAS dtypes):
   * xGETRF
   * xLASWP, xSCAL
+  * xLAUUM (no LAPACK needed, but BLAS dtypes only)
 * LU decomposition
-* Matrix inversions (requires LAPACK)
+* Matrix inversions (requires LAPACK; BLAS dtypes only)
 
 === Planned Features (Short-to-Medium Term)
 

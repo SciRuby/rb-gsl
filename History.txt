@@ -6,7 +6,7 @@
 
 === 0.0.2 / 2012-09-21
 
-* Numerous major enhancements
+* 15 major enhancements
 
   * Second alpha release
 
@@ -42,21 +42,23 @@
 
 === 0.0.3 / 2012-??-??
 
-* Numerous major enhancements
+* 7 major enhancements
 
   * Matrix-scalar operations (dense, list)
 
   * Shortcuts for matrix creation (by @agarie)
 
-  * Access to most ATLAS-implemented LAPACK functions for those with ATLAS' clapack interface: xGETRF, xGETRI, xGETRS, xGESV, xPOTRF, xPOTRI, xPOTRS, xPOSV, xLASWP, xSCAL
+  * Access to most ATLAS-implemented LAPACK functions for those with ATLAS' clapack interface: xGETRF, xGETRI, xGETRS, xGESV, xPOTRF, xPOTRI, xPOTRS, xPOSV, xLASWP, xSCAL, xLAUUM
 
-  * Non-ATLAS versions of clapack functions: xLASWP, xSCAL
+  * Access to additional ATLAS-implemented BLAS functions: xTRMM, xSYRK, xHERK
 
-  * Matrix inversion (LU and Cholesky; requires LAPACK)
+  * Non-ATLAS versions of CLAPACK functions: xLASWP, xSCAL, xLAUUM
 
-  * LU factoring with and without LAPACK
+  * Matrix inversion (LU and Cholesky; requires CLAPACK)
 
-* Bug fixes:
+  * LU factoring with and without CLAPACK
+
+* 2 bug fixes:
 
   * Yale-to-list casting
 
