@@ -349,6 +349,92 @@ inline void trsm_nothrow(const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
 }
 
 
+template <typename DType>
+inline void syrk(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE Trans, const int N,
+                 const int K, const DType* alpha, const DType* A, const int lda, const DType* beta, DType* C, const int ldc) {
+  rb_raise(rb_eNotImpError, "syrk not yet implemented for non-BLAS dtypes");
+}
+
+template <typename DType>
+inline void herk(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE Trans, const int N,
+                 const int K, const DType* alpha, const DType* A, const int lda, const DType* beta, DType* C, const int ldc) {
+  rb_raise(rb_eNotImpError, "herk not yet implemented for non-BLAS dtypes");
+}
+
+template <>
+inline void syrk(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE Trans, const int N,
+                 const int K, const float* alpha, const float* A, const int lda, const float* beta, float* C, const int ldc) {
+  cblas_ssyrk(Order, Uplo, Trans, N, K, *alpha, A, lda, *beta, C, ldc);
+}
+
+template <>
+inline void syrk(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE Trans, const int N,
+                 const int K, const double* alpha, const double* A, const int lda, const double* beta, double* C, const int ldc) {
+  cblas_dsyrk(Order, Uplo, Trans, N, K, *alpha, A, lda, *beta, C, ldc);
+}
+
+template <>
+inline void syrk(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE Trans, const int N,
+                 const int K, const Complex64* alpha, const Complex64* A, const int lda, const Complex64* beta, Complex64* C, const int ldc) {
+  cblas_csyrk(Order, Uplo, Trans, N, K, alpha, A, lda, beta, C, ldc);
+}
+
+template <>
+inline void syrk(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE Trans, const int N,
+                 const int K, const Complex128* alpha, const Complex128* A, const int lda, const Complex128* beta, Complex128* C, const int ldc) {
+  cblas_zsyrk(Order, Uplo, Trans, N, K, alpha, A, lda, beta, C, ldc);
+}
+
+
+template <>
+inline void herk(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE Trans, const int N,
+                 const int K, const Complex64* alpha, const Complex64* A, const int lda, const Complex64* beta, Complex64* C, const int ldc) {
+  cblas_cherk(Order, Uplo, Trans, N, K, alpha->r, A, lda, beta->r, C, ldc);
+}
+
+template <>
+inline void herk(const enum CBLAS_ORDER Order, const enum CBLAS_UPLO Uplo, const enum CBLAS_TRANSPOSE Trans, const int N,
+                 const int K, const Complex128* alpha, const Complex128* A, const int lda, const Complex128* beta, Complex128* C, const int ldc) {
+  cblas_zherk(Order, Uplo, Trans, N, K, alpha->r, A, lda, beta->r, C, ldc);
+}
+
+
+template <typename DType>
+inline void trmm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE ta, const enum CBLAS_DIAG diag, const int m, const int n, const DType* alpha,
+                 const DType* A, const int lda, DType* B, const int ldb) {
+  rb_raise(rb_eNotImpError, "trmm not yet implemented for non-BLAS dtypes");
+}
+
+template <>
+inline void trmm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE ta, const enum CBLAS_DIAG diag, const int m, const int n, const float* alpha,
+                 const float* A, const int lda, float* B, const int ldb) {
+  cblas_strmm(order, side, uplo, ta, diag, m, n, *alpha, A, lda, B, ldb);
+}
+
+template <>
+inline void trmm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE ta, const enum CBLAS_DIAG diag, const int m, const int n, const double* alpha,
+                 const double* A, const int lda, double* B, const int ldb) {
+  cblas_dtrmm(order, side, uplo, ta, diag, m, n, *alpha, A, lda, B, ldb);
+}
+
+template <>
+inline void trmm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE ta, const enum CBLAS_DIAG diag, const int m, const int n, const Complex64* alpha,
+                 const Complex64* A, const int lda, Complex64* B, const int ldb) {
+  cblas_ctrmm(order, side, uplo, ta, diag, m, n, alpha, A, lda, B, ldb);
+}
+
+template <>
+inline void trmm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const enum CBLAS_UPLO uplo,
+                 const enum CBLAS_TRANSPOSE ta, const enum CBLAS_DIAG diag, const int m, const int n, const Complex128* alpha,
+                 const Complex128* A, const int lda, Complex128* B, const int ldb) {
+  cblas_ztrmm(order, side, uplo, ta, diag, m, n, alpha, A, lda, B, ldb);
+}
+
+
 /*
  * BLAS' DTRSM function, generalized.
  */
@@ -416,7 +502,7 @@ inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const
                  const int m, const int n, const float alpha, const float* a,
                  const int lda, float* b, const int ldb)
 {
-  cblas_strsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
+  cblas_strsm(order, side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
 }
 
 template <>
@@ -433,7 +519,7 @@ inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const
        << (diag == CblasNonUnit ? "nonunit " : "unit ")
        << m << " " << n << " " << alpha << " a " << lda << " b " << ldb << endl;
 */
-  cblas_dtrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
+  cblas_dtrsm(order, side, uplo, trans_a, diag, m, n, alpha, a, lda, b, ldb);
 }
 
 
@@ -443,7 +529,7 @@ inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const
                  const int m, const int n, const Complex64 alpha, const Complex64* a,
                  const int lda, Complex64* b, const int ldb)
 {
-  cblas_ctrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, (const void*)(&alpha), (const void*)(a), lda, (void*)(b), ldb);
+  cblas_ctrsm(order, side, uplo, trans_a, diag, m, n, (const void*)(&alpha), (const void*)(a), lda, (void*)(b), ldb);
 }
 
 template <>
@@ -452,7 +538,7 @@ inline void trsm(const enum CBLAS_ORDER order, const enum CBLAS_SIDE side, const
                  const int m, const int n, const Complex128 alpha, const Complex128* a,
                  const int lda, Complex128* b, const int ldb)
 {
-  cblas_ztrsm(CblasRowMajor, side, uplo, trans_a, diag, m, n, (const void*)(&alpha), (const void*)(a), lda, (void*)(b), ldb);
+  cblas_ztrsm(order, side, uplo, trans_a, diag, m, n, (const void*)(&alpha), (const void*)(a), lda, (void*)(b), ldb);
 }
 
 
@@ -1821,6 +1907,107 @@ int getri(const int N, DType* A, const int lda, const int* ipiv, DType* wrk, con
   return iret;
 }
 */
+
+
+template <bool is_complex, typename DType>
+inline void lauum(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int N, DType* A, const int lda) {
+
+  int Nleft, Nright;
+  const DType ONE = 1;
+  DType *G, *U0 = A, *U1;
+
+  if (N > 1) {
+    Nleft = N >> 1;
+    #ifdef NB
+      if (Nleft > NB) Nleft = ATL_MulByNB(ATL_DivByNB(Nleft));
+    #endif
+
+    Nright = N - Nleft;
+
+    // FIXME: There's a simpler way to write this next block, but I'm way too tired to work it out right now.
+    if (uplo == CblasUpper) {
+      if (order == CblasRowMajor) {
+        G = A + Nleft;
+        U1 = G + Nleft * lda;
+      } else {
+        G = A + Nleft * lda;
+        U1 = G + Nleft;
+      }
+    } else {
+      if (order == CblasRowMajor) {
+        G = A + Nleft * lda;
+        U1 = G + Nleft;
+      } else {
+        G = A + Nleft;
+        U1 = G + Nleft * lda;
+      }
+    }
+
+    lauum<is_complex, DType>(order, uplo, Nleft, U0, lda);
+
+    if (is_complex) {
+
+      nm::math::herk<DType>(order, uplo,
+                            uplo == CblasLower ? CblasConjTrans : CblasNoTrans,
+                            Nleft, Nright, &ONE, G, lda, &ONE, U0, lda);
+
+      nm::math::trmm<DType>(order, CblasLeft, uplo, CblasConjTrans, CblasNonUnit, Nright, Nleft, &ONE, U1, lda, G, lda);
+    } else {
+      nm::math::syrk<DType>(order, uplo,
+                            uplo == CblasLower ? CblasTrans : CblasNoTrans,
+                            Nleft, Nright, &ONE, G, lda, &ONE, U0, lda);
+
+      nm::math::trmm<DType>(order, CblasLeft, uplo, CblasTrans, CblasNonUnit, Nright, Nleft, &ONE, U1, lda, G, lda);
+    }
+    lauum<is_complex, DType>(order, uplo, Nright, U1, lda);
+
+  } else {
+    *A = *A * *A;
+  }
+}
+
+
+#ifdef HAVE_CLAPACK_H
+template <bool is_complex>
+inline void lauum(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int N, float* A, const int lda) {
+  clapack_slauum(order, uplo, N, A, lda);
+}
+
+template <bool is_complex>
+inline void lauum(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int N, double* A, const int lda) {
+  clapack_dlauum(order, uplo, N, A, lda);
+}
+
+template <bool is_complex>
+inline void lauum(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int N, Complex64* A, const int lda) {
+  clapack_clauum(order, uplo, N, A, lda);
+}
+
+template <bool is_complex>
+inline void lauum(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int N, Complex128* A, const int lda) {
+  clapack_zlauum(order, uplo, N, A, lda);
+}
+#endif
+
+
+/*
+* Function signature conversion for calling LAPACK's lauum functions as directly as possible.
+*
+* For documentation: http://www.netlib.org/lapack/double/dlauum.f
+*
+* This function should normally go in math.cpp, but we need it to be available to nmatrix.cpp.
+*/
+template <bool is_complex, typename DType>
+inline int clapack_lauum(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const int n, void* a, const int lda) {
+  if (n < 0)              rb_raise(rb_eArgError, "n cannot be less than zero, is set to %d", n);
+  if (lda < n || lda < 1) rb_raise(rb_eArgError, "lda must be >= max(n,1); lda=%d, n=%d\n", lda, n);
+
+  if (uplo == CblasUpper) lauum<is_complex, DType>(order, uplo, n, reinterpret_cast<DType*>(a), lda);
+  else                    lauum<is_complex, DType>(order, uplo, n, reinterpret_cast<DType*>(a), lda);
+
+  return 0;
+}
+
 
 
 
