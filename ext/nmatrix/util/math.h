@@ -1632,7 +1632,7 @@ static inline void trcpzeroU(const int M, const int N, DType* U, const int ldu, 
 /*
 
 template <bool RowMajor, bool Upper, typename DType>
-static int trtri_4(const enum CblasDiag Diag, DType* A, const int lda) {
+static int trtri_4(const enum CBLAS_DIAG Diag, DType* A, const int lda) {
 
   if (RowMajor) {
     DType *pA0 = A, *pA1 = A+lda, *pA2 = A+2*lda, *pA3 = A+3*lda;
@@ -1713,7 +1713,7 @@ static int trtri_4(const enum CblasDiag Diag, DType* A, const int lda) {
 
 
 template <bool RowMajor, bool Upper, typename DType>
-static int trtri_3(const enum CblasDiag Diag, DType* A, const int lda) {
+static int trtri_3(const enum CBLAS_DIAG Diag, DType* A, const int lda) {
 
   if (RowMajor) {
 
@@ -1774,7 +1774,7 @@ static int trtri_3(const enum CblasDiag Diag, DType* A, const int lda) {
 }
 
 template <bool RowMajor, bool Upper, bool Real, typename DType>
-static void trtri(const enum CblasDiag Diag, const int N, DType* A, const int lda) {
+static void trtri(const enum CBLAS_DIAG Diag, const int N, DType* A, const int lda) {
   DType *Age, *Atr;
   DType tmp;
   int Nleft, Nright;
@@ -1907,6 +1907,76 @@ int getri(const int N, DType* A, const int lda, const int* ipiv, DType* wrk, con
   return iret;
 }
 */
+
+
+// TODO: Test this to see if it works properly on complex. ATLAS has a separate algorithm for complex, which looks like
+// TODO: it may actually be the same one.
+//
+// This function is called ATL_rot in ATLAS 3.8.4.
+template <typename DType>
+inline void rot_helper(const int N, DType* X, const int incX, DType* Y, const int incY, const DType c, const DType s) {
+  if (c != 1 || s != 0) {
+    if (incX == 1 && incY == 1) {
+      for (int i = 0; i != N; ++i) {
+        DType tmp = X[i] * c + Y[i] * s;
+        Y[i]      = Y[i] * c - X[i] * s;
+        X[i]      = tmp;
+      }
+    } else {
+      for (int i = N; i > 0; --i, Y += incY, X += incX) {
+        DType tmp = *X * c + *Y * s;
+        *Y  = *Y * c - *X * s;
+        *X  = tmp;
+      }
+    }
+  }
+}
+
+
+/* Applies a plane rotation. From ATLAS 3.8.4. */
+template <typename DType, typename CSDType>
+inline void rot(const int N, DType* X, const int incX, DType* Y, const int incY, const CSDType c, const CSDType s) {
+  DType *x = X, *y = Y;
+  int incx = incX, incy = incY;
+
+  if (N > 0) {
+    if (incX < 0) {
+      if (incY < 0) { incx = -incx; incy = -incy; }
+      else x += -incX * (N-1);
+    } else if (incY < 0) {
+      incy = -incy;
+      incx = -incx;
+      x += (N-1) * incX;
+    }
+    rot_helper<DType>(N, x, incx, y, incy, c, s);
+  }
+}
+
+template <>
+inline void rot(const int N, float* X, const int incX, float* Y, const int incY, const float c, const float s) {
+  cblas_srot(N, X, incX, Y, incY, (float)c, (float)s);
+}
+
+template <>
+inline void rot(const int N, double* X, const int incX, double* Y, const int incY, const double c, const double s) {
+  cblas_drot(N, X, incX, Y, incY, c, s);
+}
+
+template <>
+inline void rot(const int N, Complex64* X, const int incX, Complex64* Y, const int incY, const float c, const float s) {
+  cblas_csrot(N, X, incX, Y, incY, c, s);
+}
+
+template <>
+inline void rot(const int N, Complex128* X, const int incX, Complex128* Y, const int incY, const double c, const double s) {
+  cblas_zdrot(N, X, incX, Y, incY, c, s);
+}
+
+
+template <typename DType, typename CSDType>
+inline void cblas_rot(const int N, void* X, const int incX, void* Y, const int incY, const void* c, const void* s) {
+  rot<DType,CSDType>(N, reinterpret_cast<DType*>(X), incX, reinterpret_cast<DType*>(Y), incY, *reinterpret_cast<const CSDType*>(c), *reinterpret_cast<const CSDType*>(s));
+}
 
 
 template <bool is_complex, typename DType>

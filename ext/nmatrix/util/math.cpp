@@ -127,6 +127,8 @@ extern "C" {
   #include <clapack.h>
 #endif
 
+  static VALUE nm_cblas_rot(VALUE self, VALUE n, VALUE x, VALUE incx, VALUE y, VALUE incy, VALUE c, VALUE s);
+
   static VALUE nm_cblas_gemm(VALUE self, VALUE order, VALUE trans_a, VALUE trans_b, VALUE m, VALUE n, VALUE k, VALUE vAlpha,
                              VALUE a, VALUE lda, VALUE b, VALUE ldb, VALUE vBeta, VALUE c, VALUE ldc);
   static VALUE nm_cblas_gemv(VALUE self, VALUE trans_a, VALUE m, VALUE n, VALUE vAlpha, VALUE a, VALUE lda,
@@ -304,6 +306,8 @@ void nm_math_init_blas() {
 
   cNMatrix_BLAS = rb_define_module_under(cNMatrix, "BLAS");
 
+  rb_define_singleton_method(cNMatrix_BLAS, "cblas_rot", (METHOD)nm_cblas_rot, 7);
+
 	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 14);
 	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
 	rb_define_singleton_method(cNMatrix_BLAS, "cblas_trsm", (METHOD)nm_cblas_trsm, 12);
@@ -376,6 +380,71 @@ static inline enum CBLAS_ORDER blas_order_sym(VALUE op) {
 }
 
 
+/*
+ * Call any of the cblas_xrot functions as directly as possible.
+ *
+ * xROT is a BLAS level 1 routine (taking two vectors) which applies a plane rotation.
+ *
+ * It's tough to find documentation on xROT. Here are what we think the arguments are for:
+ *  * n     :: number of elements to consider in x and y
+ *  * x     :: a vector (expects an NVector)
+ *  * incx  :: stride of x
+ *  * y     :: a vector (expects an NVector)
+ *  * incy  :: stride of y
+ *  * c     :: cosine of the angle of rotation
+ *  * s     :: sine of the angle of rotation
+ *
+ * Note that c and s will be the same dtype as x and y, except when x and y are complex. If x and y are complex, c and s
+ * will be float for Complex64 or double for Complex128.
+ *
+ * You probably don't want to call this function. Instead, why don't you try rot, which is more flexible
+ * with its arguments?
+ *
+ * This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
+ * handling, so you can easily crash Ruby!
+ */
+static VALUE nm_cblas_rot(VALUE self, VALUE n, VALUE x, VALUE incx, VALUE y, VALUE incy, VALUE c, VALUE s) {
+  static void (*ttable[nm::NUM_DTYPES])(const int N, void*, const int, void*, const int, const void*, const void*) = {
+      NULL, NULL, NULL, NULL, NULL, // can't represent c and s as integers, so no point in having integer operations.
+      nm::math::cblas_rot<float,float>,
+      nm::math::cblas_rot<double,double>,
+      nm::math::cblas_rot<nm::Complex64,float>,
+      nm::math::cblas_rot<nm::Complex128,double>,
+      nm::math::cblas_rot<nm::Rational32,nm::Rational32>,
+      nm::math::cblas_rot<nm::Rational64,nm::Rational64>,
+      nm::math::cblas_rot<nm::Rational128,nm::Rational128>,
+      nm::math::cblas_rot<nm::RubyObject,nm::RubyObject>
+  };
+
+  dtype_t dtype = NM_DTYPE(x);
+
+  void *pC, *pS;
+
+  // We need to ensure the cosine and sine arguments are the correct dtype -- which may differ from the actual dtype.
+  if (dtype == COMPLEX64) {
+    pC = ALLOCA_N(float,1);
+    pS = ALLOCA_N(float,1);
+    rubyval_to_cval(c, FLOAT32, pC);
+    rubyval_to_cval(s, FLOAT32, pS);
+  } else if (dtype == COMPLEX128) {
+    pC = ALLOCA_N(double,1);
+    pS = ALLOCA_N(double,1);
+    rubyval_to_cval(c, FLOAT64, pC);
+    rubyval_to_cval(s, FLOAT64, pS);
+  } else {
+    pC = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+    pS = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+    rubyval_to_cval(c, dtype, pC);
+    rubyval_to_cval(s, dtype, pS);
+  }
+
+
+  ttable[dtype](FIX2INT(n), NM_STORAGE_DENSE(x)->elements, FIX2INT(incx), NM_STORAGE_DENSE(y)->elements, FIX2INT(incy), pC, pS);
+
+  return Qtrue;
+}
+
+
 /* Call any of the cblas_xgemm functions as directly as possible.
  *
  * The cblas_xgemm functions (dgemm, sgemm, cgemm, and zgemm) define the following operation:
@@ -391,7 +460,7 @@ static inline enum CBLAS_ORDER blas_order_sym(VALUE op) {
  * == Arguments
  * See: http://www.netlib.org/blas/dgemm.f
  *
- * You probably don't want to call this function. Instead, why don't you try cblas_gemm, which is more flexible
+ * You probably don't want to call this function. Instead, why don't you try gemm, which is more flexible
  * with its arguments?
  *
  * This function does almost no type checking. Seriously, be really careful when you call it! There's no exception

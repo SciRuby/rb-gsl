@@ -51,4 +51,32 @@ describe NMatrix::BLAS do
       end
     end
   end
+
+  [:rational32,:rational64,:rational128,:complex64,:complex128].each do |dtype|
+    context dtype do
+      it "exposes cblas rot"
+    end
+  end
+
+  [:float32, :float64].each do |dtype|
+    context dtype do
+      it "exposes cblas rot" do
+        x = NVector.new(5, [1,2,3,4,5], dtype)
+        y = NVector.new(5, [-5,-4,-3,-2,-1], dtype)
+        NMatrix::BLAS::cblas_rot(5, x, 1, y, -1, 0.5, Math.sqrt(3)/2)
+
+        x[0].should be_within(1e-4).of(-0.3660254037844386)
+        x[1].should be_within(1e-4).of(-0.7320508075688772)
+        x[2].should be_within(1e-4).of(-1.098076211353316)
+        x[3].should be_within(1e-4).of(-1.4641016151377544)
+        x[4].should be_within(1e-4).of(-1.8301270189221928)
+
+        y[0].should be_within(1e-4).of(-6.830127018922193)
+        y[1].should be_within(1e-4).of(-5.464101615137754)
+        y[2].should be_within(1e-4).of(-4.098076211353316)
+        y[3].should be_within(1e-4).of(-2.732050807568877)
+        y[4].should be_within(1e-4).of(-1.3660254037844386)
+      end
+    end
+  end
 end
