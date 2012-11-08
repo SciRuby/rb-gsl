@@ -56,6 +56,10 @@ describe NMatrix::BLAS do
     context dtype do
       it "exposes cblas rot"
     end
+
+    context dtype do
+      it "exposes cblas rotg"
+    end
   end
 
   [:float32, :float64].each do |dtype|
@@ -77,6 +81,17 @@ describe NMatrix::BLAS do
         y[3].should be_within(1e-4).of(-2.732050807568877)
         y[4].should be_within(1e-4).of(-1.3660254037844386)
       end
+
     end
+  end
+
+  # FIXME: Need a way to force rotg to call :float32 instead of :float64, and :complex64 instead of :complex128
+  # FIXME: Need to write new Rational algorithm, which doesn't choke quite so often on irrational square roots (which often eventually cancel).
+  it "exposes cblas rotg" do
+    a,b,c,s = NMatrix::BLAS::cblas_rotg(6.0, -8.0)
+    a.should be_within(1e-6).of(-10)
+    b.should be_within(1e-6).of(-5.quo(3))
+    c.should be_within(1e-6).of(-3.quo(5))
+    s.should be_within(1e-6).of(4.quo(5))
   end
 end

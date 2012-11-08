@@ -319,6 +319,11 @@ class RubyObject {
 	}
 };
 
+// Negative operator
+RubyObject operator-(const RubyObject& rhs) {
+  return RubyObject(rb_funcall(rhs.rval, nm_rb_negate, 0));
+}
+
 
 ////////////////////////////
 // NATIVE-RUBY OPERATIONS //
@@ -440,6 +445,11 @@ inline std::ostream& operator<<(std::ostream& out, const RubyObject& rhs) {
 namespace std {
   inline nm::RubyObject abs(const nm::RubyObject& obj) {
     return obj.abs();
+  }
+
+  inline nm::RubyObject sqrt(const nm::RubyObject& obj) {
+    VALUE cMath = rb_const_get(rb_cObject, rb_intern("Math"));
+    return nm::RubyObject(rb_funcall(cMath, rb_intern("sqrt"), 1, obj.rval));
   }
 }
 

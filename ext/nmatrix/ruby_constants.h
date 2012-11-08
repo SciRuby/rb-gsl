@@ -74,6 +74,8 @@ extern ID nm_rb_real,
 					nm_rb_sub,
 					nm_rb_mul,
 					nm_rb_div,
+
+					nm_rb_negate,
 		
 					nm_rb_percent,
 					nm_rb_gt,

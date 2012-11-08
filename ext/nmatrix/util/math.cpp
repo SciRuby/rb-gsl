@@ -128,6 +128,7 @@ extern "C" {
 #endif
 
   static VALUE nm_cblas_rot(VALUE self, VALUE n, VALUE x, VALUE incx, VALUE y, VALUE incy, VALUE c, VALUE s);
+  static VALUE nm_cblas_rotg(VALUE self, VALUE a, VALUE b); //, VALUE c, VALUE s);
 
   static VALUE nm_cblas_gemm(VALUE self, VALUE order, VALUE trans_a, VALUE trans_b, VALUE m, VALUE n, VALUE k, VALUE vAlpha,
                              VALUE a, VALUE lda, VALUE b, VALUE ldb, VALUE vBeta, VALUE c, VALUE ldc);
@@ -306,7 +307,8 @@ void nm_math_init_blas() {
 
   cNMatrix_BLAS = rb_define_module_under(cNMatrix, "BLAS");
 
-  rb_define_singleton_method(cNMatrix_BLAS, "cblas_rot", (METHOD)nm_cblas_rot, 7);
+  rb_define_singleton_method(cNMatrix_BLAS, "cblas_rot",  (METHOD)nm_cblas_rot,  7);
+  rb_define_singleton_method(cNMatrix_BLAS, "cblas_rotg", (METHOD)nm_cblas_rotg, 2);
 
 	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemm", (METHOD)nm_cblas_gemm, 14);
 	rb_define_singleton_method(cNMatrix_BLAS, "cblas_gemv", (METHOD)nm_cblas_gemv, 11);
@@ -381,6 +383,74 @@ static inline enum CBLAS_ORDER blas_order_sym(VALUE op) {
 
 
 /*
+ * Call any of the cblas_xrotg functions as directly as possible.
+ *
+ * xROTG computes the elements of a Givens plane rotation matrix such that:
+ *
+ *  |  c s |   | a |   | r |
+ *  | -s c | * | b | = | 0 |
+ *
+ * where r = +- sqrt( a**2 + b**2 ) and c**2 + s**2 = 1.
+ *
+ * The Givens plane rotation can be used to introduce zero elements into a matrix selectively.
+ *
+ * This function differs from most of the other raw BLAS accessors. Instead of providing a, b, c, s as arguments, you
+ * should only provide a and b (the inputs). The outputs [a,b,c,s] will be returned in a Ruby Array at the end.
+ *
+ * The type for b is inferred from a's type, so make sure these are actually the same Ruby object types.
+ *
+ * If you provide rationals, be aware that there's a high probability of an error, since rotg includes a square root --
+ * and most rationals' square roots are irrational. You're better off converting to Float first.
+ *
+ * You probably don't want to call this function. Instead, why don't you try rotg, which is more flexible
+ * with its arguments? Then you don't have to even worry about the above paragraph.
+ *
+ * This function does almost no type checking. Seriously, be really careful when you call it! There's no exception
+ * handling, so you can easily crash Ruby!
+ */
+static VALUE nm_cblas_rotg(VALUE self, VALUE a, VALUE b) {
+  static void (*ttable[nm::NUM_DTYPES])(void* a, void* b, void* c, void* s) = {
+      NULL, NULL, NULL, NULL, NULL, // can't represent c and s as integers, so no point in having integer operations.
+      nm::math::cblas_rotg<float>,
+      nm::math::cblas_rotg<double>,
+      nm::math::cblas_rotg<nm::Complex64>,
+      nm::math::cblas_rotg<nm::Complex128>,
+      nm::math::cblas_rotg<nm::Rational32>,
+      nm::math::cblas_rotg<nm::Rational64>,
+      nm::math::cblas_rotg<nm::Rational128>,
+      nm::math::cblas_rotg<nm::RubyObject>
+  };
+
+  dtype_t dtype = nm_dtype_guess(a);
+
+  if (!ttable[dtype]) {
+    rb_raise(nm_eDataTypeError, "this matrix operation undefined for integer matrices");
+    return Qnil;
+
+  } else {
+    void *pA = ALLOCA_N(char, DTYPE_SIZES[dtype]),
+         *pB = ALLOCA_N(char, DTYPE_SIZES[dtype]),
+         *pC = ALLOCA_N(char, DTYPE_SIZES[dtype]),
+         *pS = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+
+    rubyval_to_cval(a, dtype, pA);
+    rubyval_to_cval(b, dtype, pB);
+    // c and s are output
+
+    ttable[dtype](pA, pB, pC, pS);
+
+    VALUE result = rb_ary_new2(4);
+    rb_ary_store(result, 0, rubyobj_from_cval(pA, dtype).rval);
+    rb_ary_store(result, 1, rubyobj_from_cval(pB, dtype).rval);
+    rb_ary_store(result, 2, rubyobj_from_cval(pC, dtype).rval);
+    rb_ary_store(result, 3, rubyobj_from_cval(pS, dtype).rval);
+
+    return result;
+  }
+}
+
+
+/*
  * Call any of the cblas_xrot functions as directly as possible.
  *
  * xROT is a BLAS level 1 routine (taking two vectors) which applies a plane rotation.
@@ -418,30 +488,36 @@ static VALUE nm_cblas_rot(VALUE self, VALUE n, VALUE x, VALUE incx, VALUE y, VAL
 
   dtype_t dtype = NM_DTYPE(x);
 
-  void *pC, *pS;
 
-  // We need to ensure the cosine and sine arguments are the correct dtype -- which may differ from the actual dtype.
-  if (dtype == COMPLEX64) {
-    pC = ALLOCA_N(float,1);
-    pS = ALLOCA_N(float,1);
-    rubyval_to_cval(c, FLOAT32, pC);
-    rubyval_to_cval(s, FLOAT32, pS);
-  } else if (dtype == COMPLEX128) {
-    pC = ALLOCA_N(double,1);
-    pS = ALLOCA_N(double,1);
-    rubyval_to_cval(c, FLOAT64, pC);
-    rubyval_to_cval(s, FLOAT64, pS);
+  if (!ttable[dtype]) {
+    rb_raise(nm_eDataTypeError, "this matrix operation undefined for integer matrices");
+    return Qfalse;
   } else {
-    pC = ALLOCA_N(char, DTYPE_SIZES[dtype]);
-    pS = ALLOCA_N(char, DTYPE_SIZES[dtype]);
-    rubyval_to_cval(c, dtype, pC);
-    rubyval_to_cval(s, dtype, pS);
+    void *pC, *pS;
+
+    // We need to ensure the cosine and sine arguments are the correct dtype -- which may differ from the actual dtype.
+    if (dtype == COMPLEX64) {
+      pC = ALLOCA_N(float,1);
+      pS = ALLOCA_N(float,1);
+      rubyval_to_cval(c, FLOAT32, pC);
+      rubyval_to_cval(s, FLOAT32, pS);
+    } else if (dtype == COMPLEX128) {
+      pC = ALLOCA_N(double,1);
+      pS = ALLOCA_N(double,1);
+      rubyval_to_cval(c, FLOAT64, pC);
+      rubyval_to_cval(s, FLOAT64, pS);
+    } else {
+      pC = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+      pS = ALLOCA_N(char, DTYPE_SIZES[dtype]);
+      rubyval_to_cval(c, dtype, pC);
+      rubyval_to_cval(s, dtype, pS);
+    }
+
+
+    ttable[dtype](FIX2INT(n), NM_STORAGE_DENSE(x)->elements, FIX2INT(incx), NM_STORAGE_DENSE(y)->elements, FIX2INT(incy), pC, pS);
+
+    return Qtrue;
   }
-
-
-  ttable[dtype](FIX2INT(n), NM_STORAGE_DENSE(x)->elements, FIX2INT(incx), NM_STORAGE_DENSE(y)->elements, FIX2INT(incy), pC, pS);
-
-  return Qtrue;
 }
 
 
