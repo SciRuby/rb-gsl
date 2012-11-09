@@ -48,11 +48,11 @@
 
   * Shortcuts for matrix creation (by @agarie)
 
-  * Access to most ATLAS-implemented LAPACK functions for those with ATLAS' clapack interface: xGETRF, xGETRI, xGETRS, xGESV, xPOTRF, xPOTRI, xPOTRS, xPOSV, xLASWP, xSCAL, xLAUUM
+  * Access to most ATLAS-implemented LAPACK functions for those with ATLAS' CLAPACK interface: xGETRF, xGETRI, xGETRS, xGESV, xPOTRF, xPOTRI, xPOTRS, xPOSV, xLASWP, xSCAL, xLAUUM
 
-  * Access to additional ATLAS-implemented BLAS functions: xTRMM, xSYRK, xHERK
+  * Access to additional ATLAS-implemented BLAS functions: xTRMM, xSYRK, xHERK, xROT, xROTG
 
-  * Non-ATLAS versions of CLAPACK functions: xLASWP, xSCAL, xLAUUM
+  * Non-ATLAS versions of CLAPACK functions: xLASWP, xSCAL, xLAUUM, xROT
 
   * Matrix inversion (LU and Cholesky; requires CLAPACK)
 
