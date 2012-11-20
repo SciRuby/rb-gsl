@@ -320,7 +320,7 @@ class RubyObject {
 };
 
 // Negative operator
-RubyObject operator-(const RubyObject& rhs) {
+inline RubyObject operator-(const RubyObject& rhs) {
   return RubyObject(rb_funcall(rhs.rval, nm_rb_negate, 0));
 }
 
