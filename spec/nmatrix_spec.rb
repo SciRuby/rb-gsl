@@ -35,6 +35,11 @@ describe NMatrix do
     x = a.det_exact
   end
 
+  it "calculates determinants" do
+    m = NMatrix.new(:dense, 3, [-2,2,3,-1,1,3,2,0,-1])
+    m.det.should == 6
+  end
+
   it "allows stype casting of a dim 2 matrix between dense, sparse, and list (different dtypes)" do
     m = NMatrix.new(:dense, [3,3], [0,0,1,0,2,0,3,4,5], :int64).
         cast(:yale, :int32).

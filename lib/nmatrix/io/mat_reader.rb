@@ -42,8 +42,8 @@ module NMatrix::IO::Matlab
 			:miUINT16	=> [Integer, {:signed			=> false,		:bytes => 2}],
 			:miINT32	=> [Integer, {:signed			=> true,		:bytes => 4}],
 			:miUINT32	=> [Integer, {:signed			=> false,		:bytes => 4}],
-			:miSINGLE	=> [Float,   {:precision	=> :single,	:bytes => 4}],
-			:miDOUBLE	=> [Float,   {:precision	=> :double,	:bytes => 8}],
+			:miSINGLE	=> [Float,   {:precision	=> :single,	:bytes => 4, :endian => :native}],
+			:miDOUBLE	=> [Float,   {:precision  => :double, :bytes => 4, :endian => :native}],
 			:miINT64	=> [Integer, {:signed			=> true,		:bytes => 8}],
 			:miUINT64	=> [Integer, {:signed			=> false,		:bytes => 8}]
 		}
@@ -54,10 +54,10 @@ module NMatrix::IO::Matlab
 			:int16			=> [Integer,	{:signed		=> true,		:bytes => 2}],
 			:int32			=> [Integer,	{:signed		=> true,		:bytes => 4}],
 			:int64			=> [Integer,	{:signed		=> true,		:bytes => 8}],
-			:float32		=> [Float,		{:precision	=> :single,	:bytes => 4}],
-			:float64		=> [Float,		{:precision	=> :double,	:bytes => 8}],
-			:complex64	=> [Float,		{:precision	=> :single,	:bytes => 4}], #2x
-			:complex128	=> [Float,		{:precision	=> :double,	:bytes => 8}]
+			:float32		=> [Float,		{:precision	=> :single,	:bytes => 4, :endian => :native}],
+			:float64		=> [Float,		{:precision	=> :double,	:bytes => 8, :endian => :native}],
+			:complex64	=> [Float,		{:precision	=> :single,	:bytes => 4, :endian => :native}], #2x
+			:complex128	=> [Float,		{:precision	=> :double,	:bytes => 8, :endian => :native}]
 		}
 
     ITYPE_PACK_ARGS = {

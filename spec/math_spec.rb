@@ -45,6 +45,15 @@ describe "math" do
         a[2,0].should == 0.375
       end
     end
+
+    context dtype do
+      it "should correctly invert a matrix" do
+        a = NMatrix.new(:dense, 3, [1,0,4,1,1,6,-3,0,-10], dtype)
+        b = NMatrix.new(:dense, 3, [-5,0,-2,-4,1,-1,1.5,0,0.5], dtype)
+        a.invert!
+        a.should == b
+      end
+    end
   end
 
   [:float32, :float64, :complex64, :complex128].each do |dtype|

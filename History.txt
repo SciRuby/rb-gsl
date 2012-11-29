@@ -6,7 +6,7 @@
 
 === 0.0.2 / 2012-09-21
 
-* Numerous major enhancements
+* 15 major enhancements
 
   * Second alpha release
 
@@ -14,7 +14,7 @@
 
   * Added preliminary C API
 
-  * Slicing and referencing support for dense and list matrices
+  * Slicing and referencing support for dense and list matrices (by @flipback)
 
   * BLAS level-3 xTRSM algorithm added for rationals and BLAS types
 
@@ -36,4 +36,30 @@
 
   * Sped up list storage item deletion, fixed bugs
 
+  * List matrix-to-hash conversion with `to_h`
+
 * Note: Element-wise list operations current disabled
+
+=== 0.0.3 / 2012-??-??
+
+* 7 major enhancements
+
+  * Matrix-scalar operations (dense, list)
+
+  * Shortcuts for matrix creation (by @agarie)
+
+  * Access to most ATLAS-implemented LAPACK functions for those with ATLAS' CLAPACK interface: xGETRF, xGETRI, xGETRS, xGESV, xPOTRF, xPOTRI, xPOTRS, xPOSV, xLASWP, xSCAL, xLAUUM
+
+  * Access to additional ATLAS-implemented BLAS functions: xTRMM, xSYRK, xHERK, xROT, xROTG
+
+  * Non-ATLAS versions of CLAPACK functions: xLASWP, xSCAL, xLAUUM, xROT
+
+  * Matrix inversion (LU and Cholesky; requires CLAPACK)
+
+  * LU factoring with and without CLAPACK
+
+* 2 bug fixes:
+
+  * Yale-to-list casting
+
+  * Now requires packable-1.3.5 or higher, fixing a problem with MATLAB .mat v5 file I/O (specific to doubles)

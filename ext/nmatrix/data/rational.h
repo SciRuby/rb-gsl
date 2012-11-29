@@ -304,6 +304,12 @@ class Rational {
 	}
 };
 
+// Negative operator
+template <typename Type, typename = typename std::enable_if<std::is_integral<Type>::value>::type>
+inline Rational<Type> operator-(const Rational<Type>& rhs) {
+  return Rational<Type>(-rhs.n, rhs.d);
+}
+
 ////////////////////////////////
 // Native-Rational Operations //
 ////////////////////////////////
@@ -415,6 +421,13 @@ namespace std {
   nm::Rational<IntType> abs(const nm::Rational<IntType>& value) {
     if (value.n >= 0) return value;
     return nm::Rational<IntType>(-value.n, value.d);
+  }
+
+  template <typename IntType, typename = typename std::enable_if<std::is_integral<IntType>::value>::type>
+  nm::Rational<IntType> sqrt(const nm::Rational<IntType>& value) {
+    nm::Rational<IntType> result(std::sqrt(value.n), std::sqrt(value.d));
+    if (value * value == result)      return result;
+    else                              rb_raise(rb_eArgError, "square root of the given rational is not rational");
   }
 }
 
