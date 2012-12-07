@@ -344,14 +344,14 @@ NODE* find_nearest_from(NODE* prev, size_t key) {
 
   f = find_preceding_from(prev, key);
 
-  if (!f->next) {
+  if (!f->next) { // key exceeds final node; return final node.
   	return f;
   	
-  } else if (key == f->next->key) {
+  } else if (key == f->next->key) { // node already present; return location
   	return f->next;
-  	
+
   } else {
-  	return prev;
+  	return f;
   }
 }
 
