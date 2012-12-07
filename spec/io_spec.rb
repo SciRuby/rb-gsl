@@ -63,4 +63,10 @@ describe NMatrix::IO do
     m = NMatrix.new(:dense, 2, [1.1, 2.0, 3.0, 4.0], :float64)
     n.should == m
   end
+
+  it "loads and saves MatrixMarket .mtx file containing a single large sparse double matrix" do
+    n = NMatrix::IO::Market.load("spec/utm5940.mtx")
+    NMatrix::IO::Market.save(n, "spec/utm5940.saved.mtx")
+    `wc -l spec/utm5940.mtx`.split[0].should == `wc -l spec/utm5940.saved.mtx`.split[0]
+  end
 end
