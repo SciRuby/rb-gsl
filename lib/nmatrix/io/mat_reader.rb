@@ -21,7 +21,7 @@ require "packable"
 #
 # * https://github.com/SciRuby/sciruby/wiki/Contributor-Agreement
 #
-# == io/matlab/mat_reader.rb
+# == io/mat_reader.rb
 #
 # Base class for .mat file reading (Matlab files).
 #

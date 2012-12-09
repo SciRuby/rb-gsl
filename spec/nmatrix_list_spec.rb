@@ -79,5 +79,17 @@ describe NMatrix do
     n[1,0,0].should == 3
     n[0,0,1].should == 4
   end
+
+  it "should correctly insert a value between the middle and last entries of a three-element list" do
+    n = NMatrix.new(:list, 5940, 0, :float64)
+    n[0,0] = -7.0710685196786e-01
+    n[330,0] = 7.0710685196786e-01
+    n[1,0] = -7.0710685196786e-01
+    n[2,0] = -7.0710685196786e-01
+    n[0,0].should_not == 0
+    n[330,0].should_not == 0
+    n[2,0].should_not == 0
+    n[1,0].should_not == 0
+  end
   end
 end
