@@ -2568,9 +2568,9 @@ static VALUE FUNCTION(rb_gsl_vector,compare)(VALUE aa, VALUE bb,
     if (a->size != b->size) 
       rb_raise(rb_eRuntimeError, "Vector size mismatch, %d and %d", (int) a->size, 
 	       (int) b->size);
-    //status = (*cmp)(a, b, c);
+    /*status =*/ (*cmp)(a, b, c);
   } else {
-    //status = (*cmp2)(a, NUMCONV(bb), c);
+    /*status =*/ (*cmp2)(a, NUMCONV(bb), c);
   }
   return Data_Wrap_Struct(cgsl_block_uchar, 0, gsl_block_uchar_free, c);
 }
