@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 require 'rake/rdoctask'
 
 RB_GSL_VERSION = File.readlines('VERSION')[0].chomp
@@ -70,7 +70,7 @@ Rake::PackageTask.new('rb-gsl', RB_GSL_VERSION) do |pkg|
   pkg.package_files = spec.files
 end
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.need_zip = false
   pkg.need_tar = false
 end
