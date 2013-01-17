@@ -56,7 +56,7 @@
 namespace nm { namespace dense_storage {
 
   template <typename LDType, typename RDType>
-  DENSE_STORAGE* cast_copy(const DENSE_STORAGE* rhs, dtype_t new_dtype);
+  DENSE_STORAGE* cast_copy(const DENSE_STORAGE* rhs, nm::dtype_t new_dtype);
 	
 	template <typename LDType, typename RDType>
 	bool eqeq(const DENSE_STORAGE* left, const DENSE_STORAGE* right);
@@ -95,7 +95,7 @@ static void slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *src, size_t* le
  * will be concatenated over and over again into a new elements array. If
  * elements is NULL, the new elements array will not be initialized.
  */
-DENSE_STORAGE* nm_dense_storage_create(dtype_t dtype, size_t* shape, size_t dim, void* elements, size_t elements_length) {
+DENSE_STORAGE* nm_dense_storage_create(nm::dtype_t dtype, size_t* shape, size_t dim, void* elements, size_t elements_length) {
   DENSE_STORAGE* s = ALLOC( DENSE_STORAGE );
 
   s->dim        = dim;
@@ -175,7 +175,7 @@ void nm_dense_storage_delete_ref(STORAGE* s) {
 void nm_dense_storage_mark(void* storage_base) {
   DENSE_STORAGE* storage = (DENSE_STORAGE*)storage_base;
 
-  if (storage && storage->dtype == RUBYOBJ) {
+  if (storage && storage->dtype == nm::RUBYOBJ) {
     VALUE* els = reinterpret_cast<VALUE*>(storage->elements);
 
   	for (size_t index = nm_storage_count_max_elements(storage); index-- > 0;) {
@@ -281,10 +281,10 @@ bool nm_dense_storage_eqeq(const STORAGE* left, const STORAGE* right) {
  * dtype of Complex64 or Complex128 this is the same as testing for symmetry.
  */
 bool nm_dense_storage_is_hermitian(const DENSE_STORAGE* mat, int lda) {
-	if (mat->dtype == COMPLEX64) {
+	if (mat->dtype == nm::COMPLEX64) {
 		return nm::dense_storage::is_hermitian<nm::Complex64>(mat, lda);
 		
-	} else if (mat->dtype == COMPLEX128) {
+	} else if (mat->dtype == nm::COMPLEX128) {
 		return nm::dense_storage::is_hermitian<nm::Complex128>(mat, lda);
 		
 	} else {
@@ -316,7 +316,7 @@ STORAGE* nm_dense_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAG
 	if (right)
 	  return ttable[op][left->dtype][right->dtype](reinterpret_cast<const DENSE_STORAGE*>(left), reinterpret_cast<const DENSE_STORAGE*>(right), NULL);
 	else {
-	  dtype_t r_dtype = nm_dtype_guess(scalar);
+	  nm::dtype_t r_dtype = nm_dtype_guess(scalar);
 	  void* r_scalar  = ALLOCA_N(char, DTYPE_SIZES[r_dtype]);
 	  rubyval_to_cval(scalar, r_dtype, r_scalar);
 
@@ -393,8 +393,8 @@ static void slice_copy(DENSE_STORAGE *dest, const DENSE_STORAGE *src, size_t* le
 /*
  * Copy dense storage, changing dtype if necessary.
  */
-STORAGE* nm_dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
-	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::dense_storage::cast_copy, DENSE_STORAGE*, const DENSE_STORAGE* rhs, dtype_t new_dtype);
+STORAGE* nm_dense_storage_cast_copy(const STORAGE* rhs, nm::dtype_t new_dtype) {
+	NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::dense_storage::cast_copy, DENSE_STORAGE*, const DENSE_STORAGE* rhs, nm::dtype_t new_dtype);
 
 	return (STORAGE*)ttable[new_dtype][rhs->dtype]((DENSE_STORAGE*)rhs, new_dtype);
 }

@@ -88,6 +88,8 @@ char* matlab_cstring_to_dtype_string(size_t& result_len, const char* str, size_t
   return result;
 }
 
+
+
 }} // end of namespace nm::io
 
 extern "C" {
@@ -99,11 +101,11 @@ extern "C" {
 /*
  * Converts a string to a data type.
  */
-dtype_t nm_dtype_from_rbstring(VALUE str) {
+nm::dtype_t nm_dtype_from_rbstring(VALUE str) {
 
   for (size_t index = 0; index < NM_NUM_DTYPES; ++index) {
   	if (!std::strncmp(RSTRING_PTR(str), DTYPE_NAMES[index], RSTRING_LEN(str))) {
-  		return static_cast<dtype_t>(index);
+  		return static_cast<nm::dtype_t>(index);
   	}
   }
 
@@ -114,11 +116,11 @@ dtype_t nm_dtype_from_rbstring(VALUE str) {
 /*
  * Converts a symbol to a data type.
  */
-dtype_t nm_dtype_from_rbsymbol(VALUE sym) {
+nm::dtype_t nm_dtype_from_rbsymbol(VALUE sym) {
 
   for (size_t index = 0; index < NM_NUM_DTYPES; ++index) {
     if (SYM2ID(sym) == rb_intern(DTYPE_NAMES[index])) {
-    	return static_cast<dtype_t>(index);
+    	return static_cast<nm::dtype_t>(index);
     }
   }
 
@@ -129,11 +131,11 @@ dtype_t nm_dtype_from_rbsymbol(VALUE sym) {
 /*
  * Converts a symbol to an index type.
  */
-itype_t nm_itype_from_rbsymbol(VALUE sym) {
+nm::itype_t nm_itype_from_rbsymbol(VALUE sym) {
 
   for (size_t index = 0; index < NM_NUM_ITYPES; ++index) {
     if (SYM2ID(sym) == rb_intern(ITYPE_NAMES[index])) {
-    	return static_cast<itype_t>(index);
+    	return static_cast<nm::itype_t>(index);
     }
   }
 
@@ -144,31 +146,31 @@ itype_t nm_itype_from_rbsymbol(VALUE sym) {
  * Converts a string to a storage type. Only looks at the first three
  * characters.
  */
-stype_t nm_stype_from_rbstring(VALUE str) {
+nm::stype_t nm_stype_from_rbstring(VALUE str) {
 
   for (size_t index = 0; index < NM_NUM_STYPES; ++index) {
     if (!std::strncmp(RSTRING_PTR(str), STYPE_NAMES[index], 3)) {
-    	return static_cast<stype_t>(index);
+    	return static_cast<nm::stype_t>(index);
     }
   }
 
   rb_raise(rb_eArgError, "Invalid storage type string specified");
-  return DENSE_STORE;
+  return nm::DENSE_STORE;
 }
 
 /*
  * Converts a symbol to a storage type.
  */
-stype_t nm_stype_from_rbsymbol(VALUE sym) {
+nm::stype_t nm_stype_from_rbsymbol(VALUE sym) {
 
   for (size_t index = 0; index < NM_NUM_STYPES; ++index) {
     if (SYM2ID(sym) == rb_intern(STYPE_NAMES[index])) {
-    	return static_cast<stype_t>(index);
+    	return static_cast<nm::stype_t>(index);
     }
   }
 
   rb_raise(rb_eArgError, "Invalid storage type symbol specified");
-  return DENSE_STORE;
+  return nm::DENSE_STORE;
 }
 
 
@@ -208,18 +210,18 @@ static VALUE nm_rbstring_matlab_repack(VALUE self, VALUE str, VALUE from, VALUE 
 
   if (RB_HASH_HAS_SYMBOL_KEY(options, "dtype")) { // Hash#has_key?(:dtype)
 
-    dtype_t to_dtype  = nm_dtype_from_rbsymbol(rb_hash_aref(options, ID2SYM(rb_intern("dtype"))));
-    to_type           = static_cast<int8_t>(to_dtype);
+    nm::dtype_t to_dtype  = nm_dtype_from_rbsymbol(rb_hash_aref(options, ID2SYM(rb_intern("dtype"))));
+    to_type               = static_cast<int8_t>(to_dtype);
 
   } else if (RB_HASH_HAS_SYMBOL_KEY(options, "itype")) {
 
-    itype_t to_itype  = nm_itype_from_rbsymbol(rb_hash_aref(options, ID2SYM(rb_intern("itype"))));
+    nm::itype_t to_itype  = nm_itype_from_rbsymbol(rb_hash_aref(options, ID2SYM(rb_intern("itype"))));
 
     // we're going to cheat and use the DTYPE template table. To do this, we just act like uint8_t
     // is a dtype (both are 0, itype and dtype), or we add 1 to the other itypes and treat them as
     // signed.
     to_type           = static_cast<uint8_t>(to_itype);
-    if (to_itype != UINT8) to_type += 1;
+    if (to_itype != nm::UINT8) to_type += 1;
 
 
   } else {
@@ -227,7 +229,7 @@ static VALUE nm_rbstring_matlab_repack(VALUE self, VALUE str, VALUE from, VALUE 
   }
 
   // For next few lines, see explanation above NM_MATLAB_DTYPE_TEMPLATE_TABLE definition in io.h.
-  if (to_type >= static_cast<uint8_t>(COMPLEX64)) {
+  if (to_type >= static_cast<uint8_t>(nm::COMPLEX64)) {
     rb_raise(rb_eArgError, "can only repack into a simple dtype, no complex/rational/VALUE");
   }
 
@@ -256,15 +258,15 @@ static VALUE nm_rbstring_merge(VALUE self, VALUE rb_real, VALUE rb_imaginary, VA
     rb_raise(rb_eArgError, "real and imaginary components do not have same length");
   }
 
-  dtype_t dtype = nm_dtype_from_rbsymbol(rb_dtype);
-  size_t len    = DTYPE_SIZES[dtype];
+  nm::dtype_t dtype = nm_dtype_from_rbsymbol(rb_dtype);
+  size_t len        = DTYPE_SIZES[dtype];
 
-  char *real    = RSTRING_PTR(rb_real),
-       *imag    = RSTRING_PTR(rb_imaginary);
+  char *real        = RSTRING_PTR(rb_real),
+       *imag        = RSTRING_PTR(rb_imaginary);
 
-  char* merge   = ALLOCA_N(char, RSTRING_LEN(rb_real)*2);
+  char* merge       = ALLOCA_N(char, RSTRING_LEN(rb_real)*2);
 
-  size_t merge_pos = 0;
+  size_t merge_pos  = 0;
 
   // Merge the two sequences
   for (size_t i = 0; i < RSTRING_LEN(rb_real); i += len) {

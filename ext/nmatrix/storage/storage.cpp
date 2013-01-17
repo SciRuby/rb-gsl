@@ -531,7 +531,7 @@ namespace yale_storage { // FIXME: Move to yale.cpp
    * Creation of yale storage from list storage.
    */
   template <typename LDType, typename RDType, typename LIType>
-  YALE_STORAGE* create_from_list_storage(const LIST_STORAGE* rhs, dtype_t l_dtype) {
+  YALE_STORAGE* create_from_list_storage(const LIST_STORAGE* rhs, nm::dtype_t l_dtype) {
     if (rhs->dim != 2) rb_raise(nm_eStorageTypeError, "can only convert matrices of dim 2 to yale");
 
     if ((rhs->dtype == RUBYOBJ and (*reinterpret_cast<RubyObject*>(rhs->default_val)) == RubyObject(INT2FIX(0)))
@@ -611,43 +611,43 @@ extern "C" {
 
 
 
-  STORAGE* nm_yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
-    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_dense_storage, YALE_STORAGE*, const DENSE_STORAGE* rhs, dtype_t l_dtype);
+  STORAGE* nm_yale_storage_from_dense(const STORAGE* right, nm::dtype_t l_dtype) {
+    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_dense_storage, YALE_STORAGE*, const DENSE_STORAGE* rhs, nm::dtype_t l_dtype);
 
-    itype_t itype = nm_yale_storage_itype((const YALE_STORAGE*)right);
+    nm::itype_t itype = nm_yale_storage_itype((const YALE_STORAGE*)right);
 
     return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const DENSE_STORAGE*)right, l_dtype);
   }
 
-  STORAGE* nm_yale_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
-    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_list_storage, YALE_STORAGE*, const LIST_STORAGE* rhs, dtype_t l_dtype);
+  STORAGE* nm_yale_storage_from_list(const STORAGE* right, nm::dtype_t l_dtype) {
+    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_list_storage, YALE_STORAGE*, const LIST_STORAGE* rhs, nm::dtype_t l_dtype);
 
-    itype_t itype = nm_yale_storage_itype((const YALE_STORAGE*)right);
+    nm::itype_t itype = nm_yale_storage_itype((const YALE_STORAGE*)right);
 
     return (STORAGE*)ttable[l_dtype][right->dtype][itype]((const LIST_STORAGE*)right, l_dtype);
   }
 
-  STORAGE* nm_dense_storage_from_list(const STORAGE* right, dtype_t l_dtype) {
-    NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::dense_storage::create_from_list_storage, DENSE_STORAGE*, const LIST_STORAGE* rhs, dtype_t l_dtype);
+  STORAGE* nm_dense_storage_from_list(const STORAGE* right, nm::dtype_t l_dtype) {
+    NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::dense_storage::create_from_list_storage, DENSE_STORAGE*, const LIST_STORAGE* rhs, nm::dtype_t l_dtype);
 
     return (STORAGE*)ttable[l_dtype][right->dtype]((const LIST_STORAGE*)right, l_dtype);
   }
 
-  STORAGE* nm_dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
-    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::dense_storage::create_from_yale_storage, DENSE_STORAGE*, const YALE_STORAGE* rhs, dtype_t l_dtype);
+  STORAGE* nm_dense_storage_from_yale(const STORAGE* right, nm::dtype_t l_dtype) {
+    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::dense_storage::create_from_yale_storage, DENSE_STORAGE*, const YALE_STORAGE* rhs, nm::dtype_t l_dtype);
 
     const YALE_STORAGE* casted_right = reinterpret_cast<const YALE_STORAGE*>(right);
     return reinterpret_cast<STORAGE*>(ttable[l_dtype][right->dtype][casted_right->itype](casted_right, l_dtype));
   }
 
-  STORAGE* nm_list_storage_from_dense(const STORAGE* right, dtype_t l_dtype) {
-    NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::create_from_dense_storage, LIST_STORAGE*, const DENSE_STORAGE*, dtype_t);
+  STORAGE* nm_list_storage_from_dense(const STORAGE* right, nm::dtype_t l_dtype) {
+    NAMED_LR_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::create_from_dense_storage, LIST_STORAGE*, const DENSE_STORAGE*, nm::dtype_t);
 
     return (STORAGE*)ttable[l_dtype][right->dtype]((DENSE_STORAGE*)right, l_dtype);
   }
 
-  STORAGE* nm_list_storage_from_yale(const STORAGE* right, dtype_t l_dtype) {
-    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::create_from_yale_storage, LIST_STORAGE*, const YALE_STORAGE* rhs, dtype_t l_dtype);
+  STORAGE* nm_list_storage_from_yale(const STORAGE* right, nm::dtype_t l_dtype) {
+    NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::list_storage::create_from_yale_storage, LIST_STORAGE*, const YALE_STORAGE* rhs, nm::dtype_t l_dtype);
 
     const YALE_STORAGE* casted_right = reinterpret_cast<const YALE_STORAGE*>(right);
 

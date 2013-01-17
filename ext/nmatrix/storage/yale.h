@@ -86,8 +86,8 @@ extern "C" {
   // Lifecycle //
   ///////////////
 
-  YALE_STORAGE* nm_yale_storage_create(dtype_t dtype, size_t* shape, size_t dim, size_t init_capacity);
-  YALE_STORAGE* nm_yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, dtype_t from_dtype);
+  YALE_STORAGE* nm_yale_storage_create(nm::dtype_t dtype, size_t* shape, size_t dim, size_t init_capacity);
+  YALE_STORAGE* nm_yale_storage_create_from_old_yale(nm::dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, nm::dtype_t from_dtype);
   YALE_STORAGE*	nm_yale_storage_create_merged(const YALE_STORAGE* merge_template, const YALE_STORAGE* other);
   void          nm_yale_storage_delete(STORAGE* s);
   void					nm_yale_storage_init(YALE_STORAGE* s);
@@ -101,7 +101,7 @@ extern "C" {
   void*	nm_yale_storage_ref(STORAGE* s, SLICE* slice);
   char  nm_yale_storage_set(STORAGE* storage, SLICE* slice, void* v);
 
-  inline size_t  nm_yale_storage_get_size(const YALE_STORAGE* storage);
+  size_t  nm_yale_storage_get_size(const YALE_STORAGE* storage);
 
   ///////////
   // Tests //
@@ -127,20 +127,20 @@ extern "C" {
    * Useful for creating Yale Storage by other means than NMatrix.new(:yale, ...),
    * e.g., from a MATLAB v5 .mat file.
    */
-  inline itype_t nm_yale_storage_itype_by_shape(const size_t* shape) {
+  inline nm::itype_t nm_yale_storage_itype_by_shape(const size_t* shape) {
     uint64_t yale_max_size = shape[0] * (shape[1]+1);
 
     if (yale_max_size < static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()) - 2) {
-      return UINT8;
+      return nm::UINT8;
 
     } else if (yale_max_size < static_cast<uint64_t>(std::numeric_limits<uint16_t>::max()) - 2) {
-      return UINT16;
+      return nm::UINT16;
 
     } else if (yale_max_size < std::numeric_limits<uint32_t>::max() - 2) {
-      return UINT32;
+      return nm::UINT32;
 
     } else {
-      return UINT64;
+      return nm::UINT64;
     }
   }
 
@@ -150,7 +150,7 @@ extern "C" {
    * because UINTX_MAX and UINTX_MAX-1 are both reserved for sparse matrix
    * multiplication.
    */
-  inline itype_t nm_yale_storage_itype(const YALE_STORAGE* s) {
+  inline nm::itype_t nm_yale_storage_itype(const YALE_STORAGE* s) {
     return nm_yale_storage_itype_by_shape(s->shape);
   }
 
@@ -159,7 +159,7 @@ extern "C" {
   // Copying and Casting //
   /////////////////////////
 
-  STORAGE*      nm_yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
+  STORAGE*      nm_yale_storage_cast_copy(const STORAGE* rhs, nm::dtype_t new_dtype);
   STORAGE*      nm_yale_storage_copy_transposed(const STORAGE* rhs_base);
 
 
@@ -203,6 +203,8 @@ namespace nm { namespace yale_storage {
   template <typename DType, typename IType>
   void init(YALE_STORAGE* s);
 
+  template <typename IType>
+  size_t  get_size(const YALE_STORAGE* storage);
 }} // end of namespace nm::yale_storage
 
 #endif // YALE_H

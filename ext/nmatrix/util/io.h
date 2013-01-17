@@ -73,11 +73,11 @@ extern "C" {
   /*
    * C accessors.
    */
-  dtype_t nm_dtype_from_rbsymbol(VALUE sym);
-  dtype_t nm_dtype_from_rbstring(VALUE str);
-  stype_t nm_stype_from_rbsymbol(VALUE sym);
-  stype_t nm_stype_from_rbstring(VALUE str);
-  itype_t nm_itype_from_rbsymbol(VALUE sym);
+  nm::dtype_t nm_dtype_from_rbsymbol(VALUE sym);
+  nm::dtype_t nm_dtype_from_rbstring(VALUE str);
+  nm::stype_t nm_stype_from_rbsymbol(VALUE sym);
+  nm::stype_t nm_stype_from_rbstring(VALUE str);
+  nm::itype_t nm_itype_from_rbsymbol(VALUE sym);
 
   void nm_init_io(void);
 

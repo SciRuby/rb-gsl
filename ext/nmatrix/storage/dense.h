@@ -69,7 +69,7 @@ extern "C" {
 // Lifecycle //
 ///////////////
 
-DENSE_STORAGE*	nm_dense_storage_create(dtype_t dtype, size_t* shape, size_t dim, void* elements, size_t elements_length);
+DENSE_STORAGE*	nm_dense_storage_create(nm::dtype_t dtype, size_t* shape, size_t dim, void* elements, size_t elements_length);
 void						nm_dense_storage_delete(STORAGE* s);
 void						nm_dense_storage_delete_ref(STORAGE* s);
 void						nm_dense_storage_mark(void*);
@@ -109,7 +109,7 @@ size_t nm_dense_storage_pos(const DENSE_STORAGE* s, const size_t* coords);
 
 DENSE_STORAGE*  nm_dense_storage_copy(const DENSE_STORAGE* rhs);
 STORAGE*        nm_dense_storage_copy_transposed(const STORAGE* rhs_base);
-STORAGE*        nm_dense_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype);
+STORAGE*        nm_dense_storage_cast_copy(const STORAGE* rhs, nm::dtype_t new_dtype);
 
 } // end of extern "C" block
 

@@ -190,7 +190,7 @@ class NMatrix
 		def load_file(file_path)
 			NMatrix::IO::Mat5Reader.new(File.open(file_path, 'rb')).to_ruby
 		end
-		
+
 	end
 
 protected

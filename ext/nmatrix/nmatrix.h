@@ -112,8 +112,8 @@
 
 #ifdef __cplusplus /* These are the C++ versions of the macros. */
 
-  #define NM_DECL_ENUM(enum_type, name)   enum_type name;
-  #define NM_DECL_STRUCT(type, name)      type      name;
+  #define NM_DECL_ENUM(enum_type, name)   nm::enum_type name
+  #define NM_DECL_STRUCT(type, name)      type          name;
 
   #define NM_DEF_STORAGE_ELEMENTS    \
     NM_DECL_ENUM(dtype_t, dtype);    \
@@ -135,13 +135,15 @@
   #define NM_DEF_STRUCT_POST(name) };
 
   #define NM_DEF_ENUM(name, ...)          \
-    enum name {                           \
-      __VA_ARGS__                         \
-    };
+    namespace nm {                        \
+      enum name {                         \
+        __VA_ARGS__                       \
+      };                                  \
+    } // end of namespace nm
 
 #else   /* These are the C versions of the macros. */
 
-  #define NM_DECL_ENUM(enum_type, name)   nm_ ## enum_type name;
+  #define NM_DECL_ENUM(enum_type, name)   nm_ ## enum_type name
   #define NM_DECL_STRUCT(type, name)      NM_ ## type      name;
 
   #define NM_DEF_STORAGE_ELEMENTS   \
@@ -160,7 +162,6 @@
   typedef struct NM_STORAGE {        \
     NM_DEF_STORAGE_ELEMENTS;         \
   } NM_STORAGE;
->>>>>>> compile_point
 
   #define NM_DEF_STRUCT_PRE(name)                typedef struct NM_ ## name {
   #define NM_DEF_STRUCT_POST(name)               } NM_ ## name;
@@ -181,11 +182,9 @@
 #define NM_NUM_ITYPES 4   // data/data.h
 #define NM_NUM_STYPES 3   // storage/storage.h
 
-#ifndef __cplusplus
+//#ifdef __cplusplus
 //namespace nm {
-#else
-
-#endif
+//#endif
 
 /* Storage Type -- Dense or Sparse */
 NM_DEF_ENUM(stype_t,  DENSE_STORE = 0,
@@ -213,6 +212,17 @@ NM_DEF_ENUM(itype_t,  UINT8  = 0,
                       UINT32 = 2,
                       UINT64 = 3);
 
+NM_DEF_ENUM(symm_t,   NONSYMM   = 0,
+                      SYMM      = 1,
+                      SKEW      = 2,
+                      HERM      = 3,
+                      UPPER     = 4,
+                      LOWER     = 5);
+
+//#ifdef __cplusplus
+//}; // end of namespace nm
+//#endif
+
 /* struct STORAGE */
 NM_DEF_STORAGE_STRUCT;
 
@@ -227,7 +237,7 @@ NM_DEF_STORAGE_CHILD_STRUCT_PRE(YALE_STORAGE);
 	void* a;      // should go first
 	size_t ndnz; // Strictly non-diagonal non-zero count!
 	size_t	capacity;
-	itype_t	itype;
+	NM_DECL_ENUM(itype_t, itype);
 	void*		ija;
 NM_DEF_STORAGE_STRUCT_POST(YALE_STORAGE);
 
@@ -321,10 +331,10 @@ extern "C" {
 	void Init_nmatrix();
 	
 	// External API
-	VALUE rb_nmatrix_dense_create(dtype_t dtype, size_t* shape, size_t dim, void* elements, size_t length);
-	VALUE rb_nvector_dense_create(dtype_t dtype, void* elements, size_t length);
+	VALUE rb_nmatrix_dense_create(NM_DECL_ENUM(dtype_t, dtype), size_t* shape, size_t dim, void* elements, size_t length);
+	VALUE rb_nvector_dense_create(NM_DECL_ENUM(dtype_t, dtype), void* elements, size_t length);
 
-	dtype_t nm_dtype_guess(VALUE);
+	NM_DECL_ENUM(dtype_t, nm_dtype_guess(VALUE));   // (This is a function)
 }
 
 #endif // NMATRIX_H

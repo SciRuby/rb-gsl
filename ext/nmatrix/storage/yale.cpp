@@ -76,8 +76,8 @@
  */
 
 extern "C" {
-  static YALE_STORAGE*  nm_copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
-  static YALE_STORAGE*	alloc(dtype_t dtype, size_t* shape, size_t dim);
+  static YALE_STORAGE*  nm_copy_alloc_struct(const YALE_STORAGE* rhs, const nm::dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
+  static YALE_STORAGE*	alloc(nm::dtype_t dtype, size_t* shape, size_t dim);
 
   /* Ruby-accessible functions */
   static VALUE nm_size(VALUE self);
@@ -111,9 +111,6 @@ static void						increment_ia_after(YALE_STORAGE* s, IType ija_size, IType i, IT
 
 template <typename IType>
 static IType				  insert_search(YALE_STORAGE* s, IType left, IType right, IType key, bool* found);
-
-template <typename IType>
-static inline size_t  get_size(const YALE_STORAGE* storage);
 
 template <typename DType, typename IType>
 static char           vector_insert(YALE_STORAGE* s, size_t pos, size_t* j, DType* val, size_t n, bool struct_only);
@@ -1227,8 +1224,8 @@ bool nm_yale_storage_eqeq(const STORAGE* left, const STORAGE* right) {
 /*
  * Copy constructor for changing dtypes. (C accessor)
  */
-STORAGE* nm_yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
-  NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::cast_copy, YALE_STORAGE*, const YALE_STORAGE* rhs, dtype_t new_dtype);
+STORAGE* nm_yale_storage_cast_copy(const STORAGE* rhs, nm::dtype_t new_dtype) {
+  NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::cast_copy, YALE_STORAGE*, const YALE_STORAGE* rhs, nm::dtype_t new_dtype);
 
   const YALE_STORAGE* casted_rhs = reinterpret_cast<const YALE_STORAGE*>(rhs);
 
@@ -1238,7 +1235,7 @@ STORAGE* nm_yale_storage_cast_copy(const STORAGE* rhs, dtype_t new_dtype) {
 /*
  * Returns size of Yale storage as a size_t (no matter what the itype is). (C accessor)
  */
-inline size_t nm_yale_storage_get_size(const YALE_STORAGE* storage) {
+size_t nm_yale_storage_get_size(const YALE_STORAGE* storage) {
   NAMED_ITYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::get_size, size_t, const YALE_STORAGE* storage);
 
   return ttable[storage->itype](storage);
@@ -1247,8 +1244,8 @@ inline size_t nm_yale_storage_get_size(const YALE_STORAGE* storage) {
 /*
  * C accessor for allocating a yale storage object for cast-copying. Copies the IJA vector, does not copy the A vector.
  */
-static YALE_STORAGE* nm_copy_alloc_struct(const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size) {
-  NAMED_ITYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::copy_alloc_struct, YALE_STORAGE*, const YALE_STORAGE* rhs, const dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
+static YALE_STORAGE* nm_copy_alloc_struct(const YALE_STORAGE* rhs, const nm::dtype_t new_dtype, const size_t new_capacity, const size_t new_size) {
+  NAMED_ITYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::copy_alloc_struct, YALE_STORAGE*, const YALE_STORAGE* rhs, const nm::dtype_t new_dtype, const size_t new_capacity, const size_t new_size);
 
   return ttable[rhs->itype](rhs, new_dtype, new_capacity, new_size);
 }
@@ -1292,14 +1289,14 @@ STORAGE* nm_yale_storage_matrix_multiply(const STORAGE_PAIR& casted_storage, siz
  * Documentation goes here.
  */
 STORAGE* nm_yale_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE* right, VALUE scalar) {
-	OP_ITYPE_DTYPE_TEMPLATE_TABLE(nm::yale_storage::ew_op, YALE_STORAGE*, const YALE_STORAGE*, const YALE_STORAGE*, dtype_t);
+	OP_ITYPE_DTYPE_TEMPLATE_TABLE(nm::yale_storage::ew_op, YALE_STORAGE*, const YALE_STORAGE*, const YALE_STORAGE*, nm::dtype_t);
 	
 	YALE_STORAGE* new_l = NULL, * new_r = NULL;
 	YALE_STORAGE* result;
 	
 	const YALE_STORAGE* casted_l, * casted_r;
 	
-	dtype_t new_dtype;
+	nm::dtype_t new_dtype;
 	
 	if (left->dtype != right->dtype) {
 		
@@ -1365,7 +1362,7 @@ STORAGE* nm_yale_storage_ew_op(nm::ewop_t op, const STORAGE* left, const STORAGE
  * create the storage.
  */
 
-YALE_STORAGE* nm_yale_storage_create(dtype_t dtype, size_t* shape, size_t dim, size_t init_capacity) {
+YALE_STORAGE* nm_yale_storage_create(nm::dtype_t dtype, size_t* shape, size_t dim, size_t init_capacity) {
   YALE_STORAGE* s;
   size_t max_capacity;
 
@@ -1427,9 +1424,9 @@ void nm_yale_storage_mark(void* storage_base) {
   YALE_STORAGE* storage = (YALE_STORAGE*)storage_base;
   size_t i;
 
-  if (storage && storage->dtype == RUBYOBJ) {
+  if (storage && storage->dtype == nm::RUBYOBJ) {
   	for (i = storage->capacity; i-- > 0;) {
-      rb_gc_mark(*((VALUE*)((char*)(storage->a) + i*DTYPE_SIZES[RUBYOBJ])));
+      rb_gc_mark(*((VALUE*)((char*)(storage->a) + i*DTYPE_SIZES[nm::RUBYOBJ])));
     }
   }
 }
@@ -1437,7 +1434,7 @@ void nm_yale_storage_mark(void* storage_base) {
 /*
  * Allocates and initializes the basic struct (but not the IJA or A vectors).
  */
-static YALE_STORAGE* alloc(dtype_t dtype, size_t* shape, size_t dim) {
+static YALE_STORAGE* alloc(nm::dtype_t dtype, size_t* shape, size_t dim) {
   YALE_STORAGE* s;
 
   s = ALLOC( YALE_STORAGE );
@@ -1451,14 +1448,14 @@ static YALE_STORAGE* alloc(dtype_t dtype, size_t* shape, size_t dim) {
   return s;
 }
 
-YALE_STORAGE* nm_yale_storage_create_from_old_yale(dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, dtype_t from_dtype) {
+YALE_STORAGE* nm_yale_storage_create_from_old_yale(nm::dtype_t dtype, size_t* shape, void* ia, void* ja, void* a, nm::dtype_t from_dtype) {
 
-  NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_old_yale, YALE_STORAGE*, dtype_t dtype, size_t* shape, void* r_ia, void* r_ja, void* r_a);
+  NAMED_LRI_DTYPE_TEMPLATE_TABLE(ttable, nm::yale_storage::create_from_old_yale, YALE_STORAGE*, nm::dtype_t dtype, size_t* shape, void* r_ia, void* r_ja, void* r_a);
 
   // With C++ templates, we don't want to have a 4-parameter template. That would be LDType, RDType, LIType, RIType.
   // We can prevent that by copying ia and ja into the correct itype (if necessary) before passing them to the yale
   // copy constructor.
-  itype_t to_itype = nm_yale_storage_itype_by_shape(shape);
+  nm::itype_t to_itype = nm_yale_storage_itype_by_shape(shape);
 
   return ttable[dtype][from_dtype][to_itype](dtype, shape, ia, ja, a);
 

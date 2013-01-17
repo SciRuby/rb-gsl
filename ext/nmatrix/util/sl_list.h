@@ -248,8 +248,8 @@ void cast_copy_contents(LIST* lhs, const LIST* rhs, size_t recursions);
 }} // end of namespace nm::list
 
 extern "C" {
-  void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions);
-  VALUE nm_list_copy_to_hash(const LIST* l, const dtype_t dtype, size_t recursions, VALUE default_value);
+  void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, nm::dtype_t lhs_dtype, nm::dtype_t rhs_dtype, size_t recursions);
+  VALUE nm_list_copy_to_hash(const LIST* l, const nm::dtype_t dtype, size_t recursions, VALUE default_value);
 } // end of extern "C" block
 
 #endif // SL_LIST_H

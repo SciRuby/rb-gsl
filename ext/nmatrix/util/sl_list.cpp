@@ -417,7 +417,7 @@ extern "C" {
   /*
    * C access for copying the contents of a list.
    */
-  void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, dtype_t lhs_dtype, dtype_t rhs_dtype, size_t recursions) {
+  void nm_list_cast_copy_contents(LIST* lhs, const LIST* rhs, nm::dtype_t lhs_dtype, nm::dtype_t rhs_dtype, size_t recursions) {
     LR_DTYPE_TEMPLATE_TABLE(nm::list::cast_copy_contents, void, LIST*, const LIST*, size_t);
 
     ttable[lhs_dtype][rhs_dtype](lhs, rhs, recursions);
@@ -429,7 +429,7 @@ extern "C" {
    * the default value is going to be a hash with default value of hash with default value of default_value, and so on.
    * In other words, it's recursive.
    */
-  static VALUE empty_list_to_hash(const dtype_t dtype, size_t recursions, VALUE default_value) {
+  static VALUE empty_list_to_hash(const nm::dtype_t dtype, size_t recursions, VALUE default_value) {
     VALUE h = rb_hash_new();
     if (recursions) {
       RHASH_IFNONE(h) = empty_list_to_hash(dtype, recursions-1, default_value);
@@ -443,7 +443,7 @@ extern "C" {
   /*
    * Copy a list to a Ruby Hash
    */
-  VALUE nm_list_copy_to_hash(const LIST* l, const dtype_t dtype, size_t recursions, VALUE default_value) {
+  VALUE nm_list_copy_to_hash(const LIST* l, const nm::dtype_t dtype, size_t recursions, VALUE default_value) {
 
     // Create a hash with default values appropriately specified for a sparse matrix.
     VALUE h = empty_list_to_hash(dtype, recursions, default_value);

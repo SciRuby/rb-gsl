@@ -69,4 +69,38 @@ describe NMatrix::IO do
     NMatrix::IO::Market.save(n, "spec/utm5940.saved.mtx")
     `wc -l spec/utm5940.mtx`.split[0].should == `wc -l spec/utm5940.saved.mtx`.split[0]
   end
+
+  it "reads and writes NMatrix dense" do
+    n = NMatrix.new(:dense, [4,3], [0,1,2,3,4,5,6,7,8,9,10,11], :int32)
+    n.write("test-out")
+
+    m = NMatrix.read("test-out")
+    n.should == m
+  end
+
+  it "reads and writes NMatrix dense as symmetric" do
+    n = NMatrix.new(:dense, 3, [0,1,2,1,3,4,2,4,5], :rational128)
+    n.write("test-out", :symmetric)
+
+    m = NMatrix.read("test-out")
+    n.should == m
+  end
+
+  it "reads and writes NMatrix dense as skew" do
+    n = NMatrix.new(:dense, 3, [0,1,2,-1,3,4,-2,-4,5], :float64)
+    n.write("test-out", :skew)
+
+    m = NMatrix.read("test-out")
+    n.should == m
+  end
+
+  it "reads and writes NMatrix dense as hermitian" do
+    n = NMatrix.new(:dense, 3, [0,1,2,-1,3,4,-2,-4,5], :complex64)
+    n.write("test-out", :hermitian)
+
+    m = NMatrix.read("test-out")
+    n.should == m
+  end
+
+
 end

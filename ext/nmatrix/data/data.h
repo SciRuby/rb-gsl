@@ -82,7 +82,7 @@ namespace nm {
   };
 
 #define STYPE_CAST_COPY_TABLE(name)                                                   \
-  static STORAGE* (*(name)[nm::NUM_STYPES][nm::NUM_STYPES])(const STORAGE*, dtype_t) = {      \
+  static STORAGE* (*(name)[nm::NUM_STYPES][nm::NUM_STYPES])(const STORAGE*, nm::dtype_t) = {      \
     { nm_dense_storage_cast_copy,  nm_dense_storage_from_list,  nm_dense_storage_from_yale },  \
     { nm_list_storage_from_dense,  nm_list_storage_cast_copy,   nm_list_storage_from_yale  },  \
     { nm_yale_storage_from_dense,  nm_yale_storage_from_list,   nm_yale_storage_cast_copy  }   \
@@ -95,6 +95,22 @@ namespace nm {
 #define DTYPE_TEMPLATE_TABLE(fun, ret, ...) NAMED_DTYPE_TEMPLATE_TABLE(ttable, fun, ret, __VA_ARGS__)
 
 #define NAMED_DTYPE_TEMPLATE_TABLE(name, fun, ret, ...) \
+	static ret (*(name)[nm::NUM_DTYPES])(__VA_ARGS__) =	{ \
+		fun<uint8_t>,																				\
+		fun<int8_t>,																				\
+		fun<int16_t>,																				\
+		fun<int32_t>,																				\
+		fun<int64_t>,																				\
+		fun<float32_t>,																			\
+		fun<float64_t>,																			\
+		fun<nm::Complex64>,																  \
+		fun<nm::Complex128>,																\
+		fun<nm::Rational32>,																\
+		fun<nm::Rational64>,																\
+		fun<nm::Rational128> 																\
+	};
+
+#define NAMED_DTYPE_TEMPLATE_TABLE_NO_ROBJ(name, fun, ret, ...) \
 	static ret (*(name)[nm::NUM_DTYPES])(__VA_ARGS__) =	{			\
 		fun<uint8_t>,																				\
 		fun<int8_t>,																				\
@@ -108,7 +124,6 @@ namespace nm {
 		fun<nm::Rational32>,																\
 		fun<nm::Rational64>,																\
 		fun<nm::Rational128>,																\
-		fun<nm::RubyObject>																	\
 	};
 
 /*
@@ -674,6 +689,22 @@ static ret (*(name)[nm::NUM_DTYPES][nm::NUM_DTYPES][nm::NUM_ITYPES])(__VA_ARGS__
 		{ fun<nm::RubyObject,uint8_t>,fun<nm::RubyObject,uint16_t>,fun<nm::RubyObject,uint32_t>,fun<nm::RubyObject,uint64_t>}				\
 	};
 
+	#define NAMED_LI_DTYPE_TEMPLATE_TABLE_NO_ROBJ(name, fun, ret, ...) 																																			\
+  	static ret (*(name)[nm::NUM_DTYPES][nm::NUM_ITYPES])(__VA_ARGS__) = {																																	\
+  		{ fun<uint8_t,uint8_t>,fun<uint8_t,uint16_t>,fun<uint8_t,uint32_t>,fun<uint8_t,uint64_t> },																	\
+  		{ fun<int8_t,uint8_t>,fun<int8_t,uint16_t>,fun<int8_t,uint32_t>,fun<int8_t,uint64_t> },																			\
+  		{ fun<int16_t,uint8_t>,fun<int16_t,uint16_t>,fun<int16_t,uint32_t>,fun<int16_t,uint64_t> },																	\
+  		{ fun<int32_t,uint8_t>,fun<int32_t,uint16_t>,fun<int32_t,uint32_t>,fun<int32_t,uint64_t> },																	\
+  		{ fun<int64_t,uint8_t>,fun<int64_t,uint16_t>,fun<int64_t,uint32_t>,fun<int64_t,uint64_t> },																	\
+  		{ fun<float32_t,uint8_t>,fun<float32_t,uint16_t>,fun<float32_t,uint32_t>,fun<float32_t,uint64_t> },													\
+  		{ fun<float64_t,uint8_t>,fun<float64_t,uint16_t>,fun<float64_t,uint32_t>,fun<float64_t,uint64_t> },													\
+  		{ fun<nm::Complex64,uint8_t>,fun<nm::Complex64,uint16_t>,fun<nm::Complex64,uint32_t>,fun<nm::Complex64,uint64_t> },					\
+  		{ fun<nm::Complex128,uint8_t>,fun<nm::Complex128,uint16_t>,fun<nm::Complex128,uint32_t>,fun<nm::Complex128,uint64_t> },			\
+  		{ fun<nm::Rational32,uint8_t>,fun<nm::Rational32,uint16_t>,fun<nm::Rational32,uint32_t>,fun<nm::Rational32,uint64_t> },			\
+  		{ fun<nm::Rational64,uint8_t>,fun<nm::Rational64,uint16_t>,fun<nm::Rational64,uint32_t>,fun<nm::Rational64,uint64_t> },			\
+  		{ fun<nm::Rational128,uint8_t>,fun<nm::Rational128,uint16_t>,fun<nm::Rational128,uint32_t>,fun<nm::Rational128,uint64_t> }	\
+  	};
+
 
 extern "C" {
 
@@ -690,17 +721,17 @@ extern const size_t 			DTYPE_SIZES[nm::NUM_DTYPES];
 extern const char* const  ITYPE_NAMES[nm::NUM_ITYPES];
 extern const size_t 			ITYPE_SIZES[nm::NUM_ITYPES];
 
-extern const dtype_t      Upcast[nm::NUM_DTYPES][nm::NUM_DTYPES];
+extern const nm::dtype_t Upcast[nm::NUM_DTYPES][nm::NUM_DTYPES];
 
 /*
  * Functions
  */
 
 
-void*	    			rubyobj_to_cval(VALUE val, dtype_t dtype);
-void  		  		rubyval_to_cval(VALUE val, dtype_t dtype, void* loc);
-nm::RubyObject	rubyobj_from_cval(void* val, dtype_t dtype);
-nm::RubyObject  rubyobj_from_cval_by_itype(void* val, itype_t itype);
+void*	    			rubyobj_to_cval(VALUE val, nm::dtype_t dtype);
+void  		  		rubyval_to_cval(VALUE val, nm::dtype_t dtype, void* loc);
+nm::RubyObject	rubyobj_from_cval(void* val, nm::dtype_t dtype);
+nm::RubyObject  rubyobj_from_cval_by_itype(void* val, nm::itype_t itype);
 
 } // end of extern "C" block
 

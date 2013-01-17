@@ -53,11 +53,11 @@
  * Macros
  */
 
-#define NMATRIX_DTYPE_IS_COMPLEX(s)		((s->dtype == COMPLEX64) or (s->dtype == COMPLEX128))
-#define NMATRIX_DTYPE_IS_FLOAT(s)			((s->dtype == FLOAT32) or (s->dtype == FLOAT64))
-#define NMATRIX_DTYPE_IS_INTEGER(s)		(s->dtype <= INT64)
-#define NMATRIX_DTYPE_IS_RATIONAL(s)	((s->dtype == RATIONAL32) or (s->dtype == RATIONAL64) or (s->dtype == RATIONAL128))
-#define NMATRIX_DTYPE_IS_RUBYOBJ(s)		(s->dtype == RUBYOBJ)
+#define NMATRIX_DTYPE_IS_COMPLEX(s)		((s->dtype == nm::COMPLEX64) or (s->dtype == nm::COMPLEX128))
+#define NMATRIX_DTYPE_IS_FLOAT(s)			((s->dtype == nm::FLOAT32) or (s->dtype == nm::FLOAT64))
+#define NMATRIX_DTYPE_IS_INTEGER(s)		(s->dtype <= nm::INT64)
+#define NMATRIX_DTYPE_IS_RATIONAL(s)	((s->dtype == nm::RATIONAL32) or (s->dtype == nm::RATIONAL64) or (s->dtype == nm::RATIONAL128))
+#define NMATRIX_DTYPE_IS_RUBYOBJ(s)		(s->dtype == nm::RUBYOBJ)
 
 
 /*
@@ -86,12 +86,12 @@ extern "C" {
   // Copying and Casting //
   /////////////////////////
 
-  STORAGE*	  nm_dense_storage_from_list(const STORAGE* right, dtype_t l_dtype);
-  STORAGE*	  nm_dense_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
-  STORAGE*		nm_list_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
-  STORAGE*		nm_list_storage_from_yale(const STORAGE* right, dtype_t l_dtype);
-  STORAGE*		nm_yale_storage_from_list(const STORAGE* right, dtype_t l_dtype);
-  STORAGE*		nm_yale_storage_from_dense(const STORAGE* right, dtype_t l_dtype);
+  STORAGE*	  nm_dense_storage_from_list(const STORAGE* right, nm::dtype_t l_dtype);
+  STORAGE*	  nm_dense_storage_from_yale(const STORAGE* right, nm::dtype_t l_dtype);
+  STORAGE*		nm_list_storage_from_dense(const STORAGE* right, nm::dtype_t l_dtype);
+  STORAGE*		nm_list_storage_from_yale(const STORAGE* right,  nm::dtype_t l_dtype);
+  STORAGE*		nm_yale_storage_from_list(const STORAGE* right,  nm::dtype_t l_dtype);
+  STORAGE*		nm_yale_storage_from_dense(const STORAGE* right, nm::dtype_t l_dtype);
 
 } // end of extern "C" block
 

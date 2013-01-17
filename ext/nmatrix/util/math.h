@@ -99,7 +99,7 @@ extern "C" {
   /*
    * C accessors.
    */
-  void nm_math_det_exact(const int M, const void* elements, const int lda, dtype_t dtype, void* result);
+  void nm_math_det_exact(const int M, const void* elements, const int lda, nm::dtype_t dtype, void* result);
   void nm_math_transpose_generic(const size_t M, const size_t N, const void* A, const int lda, void* B, const int ldb, size_t element_size);
   void nm_math_init_blas(void);
 }

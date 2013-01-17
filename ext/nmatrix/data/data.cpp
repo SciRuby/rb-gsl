@@ -95,20 +95,20 @@ const size_t ITYPE_SIZES[nm::NUM_ITYPES] = {
 	sizeof(uint64_t),
 };
 
-const dtype_t Upcast[nm::NUM_DTYPES][nm::NUM_DTYPES] = {
-  { BYTE, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
-  { INT8, INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
-  { INT16, INT16, INT16, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
-  { INT32, INT32, INT32, INT32, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
-  { INT64, INT64, INT64, INT64, INT64, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
-  { FLOAT32, FLOAT32, FLOAT32, FLOAT32, FLOAT32, FLOAT32, FLOAT64, COMPLEX64, COMPLEX128, FLOAT64, FLOAT64, FLOAT64, RUBYOBJ},
-  { FLOAT64, FLOAT64, FLOAT64, FLOAT64, FLOAT64, FLOAT64, FLOAT64, COMPLEX128, COMPLEX128, FLOAT64, FLOAT64, FLOAT64, RUBYOBJ},
-  { COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX64, COMPLEX128, COMPLEX64, COMPLEX128, COMPLEX64, COMPLEX64, COMPLEX64, RUBYOBJ},
-  { COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, COMPLEX128, RUBYOBJ},
-  { RATIONAL32, RATIONAL32, RATIONAL32, RATIONAL32, RATIONAL32, FLOAT64, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL32, RATIONAL64, RATIONAL128, RUBYOBJ},
-  { RATIONAL64, RATIONAL64, RATIONAL64, RATIONAL64, RATIONAL64, FLOAT64, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL64, RATIONAL64, RATIONAL128, RUBYOBJ},
-  { RATIONAL128, RATIONAL128, RATIONAL128, RATIONAL128, RATIONAL128, FLOAT64, FLOAT64, COMPLEX64, COMPLEX128, RATIONAL128, RATIONAL128, RATIONAL128, RUBYOBJ},
-  { RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ, RUBYOBJ}
+const nm::dtype_t Upcast[nm::NUM_DTYPES][nm::NUM_DTYPES] = {
+  { nm::BYTE, nm::INT8, nm::INT16, nm::INT32, nm::INT64, nm::FLOAT32, nm::FLOAT64, nm::COMPLEX64, nm::COMPLEX128, nm::RATIONAL32, nm::RATIONAL64, nm::RATIONAL128, nm::RUBYOBJ},
+  { nm::INT8, nm::INT8, nm::INT16, nm::INT32, nm::INT64, nm::FLOAT32, nm::FLOAT64, nm::COMPLEX64, nm::COMPLEX128, nm::RATIONAL32, nm::RATIONAL64, nm::RATIONAL128, nm::RUBYOBJ},
+  { nm::INT16, nm::INT16, nm::INT16, nm::INT32, nm::INT64, nm::FLOAT32, nm::FLOAT64, nm::COMPLEX64, nm::COMPLEX128, nm::RATIONAL32, nm::RATIONAL64, nm::RATIONAL128, nm::RUBYOBJ},
+  { nm::INT32, nm::INT32, nm::INT32, nm::INT32, nm::INT64, nm::FLOAT32, nm::FLOAT64, nm::COMPLEX64, nm::COMPLEX128, nm::RATIONAL32, nm::RATIONAL64, nm::RATIONAL128, nm::RUBYOBJ},
+  { nm::INT64, nm::INT64, nm::INT64, nm::INT64, nm::INT64, nm::FLOAT32, nm::FLOAT64, nm::COMPLEX64, nm::COMPLEX128, nm::RATIONAL32, nm::RATIONAL64, nm::RATIONAL128, nm::RUBYOBJ},
+  { nm::FLOAT32, nm::FLOAT32, nm::FLOAT32, nm::FLOAT32, nm::FLOAT32, nm::FLOAT32, nm::FLOAT64, nm::COMPLEX64, nm::COMPLEX128, nm::FLOAT64, nm::FLOAT64, nm::FLOAT64, nm::RUBYOBJ},
+  { nm::FLOAT64, nm::FLOAT64, nm::FLOAT64, nm::FLOAT64, nm::FLOAT64, nm::FLOAT64, nm::FLOAT64, nm::COMPLEX128, nm::COMPLEX128, nm::FLOAT64, nm::FLOAT64, nm::FLOAT64, nm::RUBYOBJ},
+  { nm::COMPLEX64, nm::COMPLEX64, nm::COMPLEX64, nm::COMPLEX64, nm::COMPLEX64, nm::COMPLEX64, nm::COMPLEX128, nm::COMPLEX64, nm::COMPLEX128, nm::COMPLEX64, nm::COMPLEX64, nm::COMPLEX64, nm::RUBYOBJ},
+  { nm::COMPLEX128, nm::COMPLEX128, nm::COMPLEX128, nm::COMPLEX128, nm::COMPLEX128, nm::COMPLEX128, nm::COMPLEX128, nm::COMPLEX128, nm::COMPLEX128, nm::COMPLEX128, nm::COMPLEX128, nm::COMPLEX128, nm::RUBYOBJ},
+  { nm::RATIONAL32, nm::RATIONAL32, nm::RATIONAL32, nm::RATIONAL32, nm::RATIONAL32, nm::FLOAT64, nm::FLOAT64, nm::COMPLEX64, nm::COMPLEX128, nm::RATIONAL32, nm::RATIONAL64, nm::RATIONAL128, nm::RUBYOBJ},
+  { nm::RATIONAL64, nm::RATIONAL64, nm::RATIONAL64, nm::RATIONAL64, nm::RATIONAL64, nm::FLOAT64, nm::FLOAT64, nm::COMPLEX64, nm::COMPLEX128, nm::RATIONAL64, nm::RATIONAL64, nm::RATIONAL128, nm::RUBYOBJ},
+  { nm::RATIONAL128, nm::RATIONAL128, nm::RATIONAL128, nm::RATIONAL128, nm::RATIONAL128, nm::FLOAT64, nm::FLOAT64, nm::COMPLEX64, nm::COMPLEX128, nm::RATIONAL128, nm::RATIONAL128, nm::RATIONAL128, nm::RUBYOBJ},
+  { nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ, nm::RUBYOBJ}
 };
 
 
@@ -123,7 +123,7 @@ const dtype_t Upcast[nm::NUM_DTYPES][nm::NUM_DTYPES] = {
 /*
  * Converts a RubyObject
  */
-void rubyval_to_cval(VALUE val, dtype_t dtype, void* loc) {
+void rubyval_to_cval(VALUE val, nm::dtype_t dtype, void* loc) {
   using namespace nm;
 	switch (dtype) {
 		case BYTE:
@@ -189,7 +189,7 @@ void rubyval_to_cval(VALUE val, dtype_t dtype, void* loc) {
  * Create a RubyObject from a regular C value (given a dtype). Does not return a VALUE! To get a VALUE, you need to
  * look at the rval property of what this function returns.
  */
-nm::RubyObject rubyobj_from_cval(void* val, dtype_t dtype) {
+nm::RubyObject rubyobj_from_cval(void* val, nm::dtype_t dtype) {
   using namespace nm;
 	switch (dtype) {
 		case BYTE:
@@ -238,7 +238,7 @@ nm::RubyObject rubyobj_from_cval(void* val, dtype_t dtype) {
 /*
  * Convert from itype instead of dtype
  */
-nm::RubyObject rubyobj_from_cval_by_itype(void* val, itype_t itype) {
+nm::RubyObject rubyobj_from_cval_by_itype(void* val, nm::itype_t itype) {
   using namespace nm;
 	switch (itype) {
 		case UINT8:
@@ -263,7 +263,7 @@ nm::RubyObject rubyobj_from_cval_by_itype(void* val, itype_t itype) {
  * Allocate and return a piece of data of the correct dtype, converted from a
  * given RubyObject.
  */
-void* rubyobj_to_cval(VALUE val, dtype_t dtype) {
+void* rubyobj_to_cval(VALUE val, nm::dtype_t dtype) {
   size_t size =  DTYPE_SIZES[dtype];
   void* ret_val = ALLOC_N(char, size);
 

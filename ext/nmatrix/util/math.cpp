@@ -418,7 +418,7 @@ static VALUE nm_cblas_rotg(VALUE self, VALUE ab) {
       nm::math::cblas_rotg<nm::RubyObject>
   };
 
-  dtype_t dtype = NM_DTYPE(ab);
+  nm::dtype_t dtype = NM_DTYPE(ab);
 
   if (!ttable[dtype]) {
     rb_raise(nm_eDataTypeError, "this matrix operation undefined for integer matrices");
@@ -480,7 +480,7 @@ static VALUE nm_cblas_rot(VALUE self, VALUE n, VALUE x, VALUE incx, VALUE y, VAL
       nm::math::cblas_rot<nm::RubyObject,nm::RubyObject>
   };
 
-  dtype_t dtype = NM_DTYPE(x);
+  nm::dtype_t dtype = NM_DTYPE(x);
 
 
   if (!ttable[dtype]) {
@@ -490,16 +490,16 @@ static VALUE nm_cblas_rot(VALUE self, VALUE n, VALUE x, VALUE incx, VALUE y, VAL
     void *pC, *pS;
 
     // We need to ensure the cosine and sine arguments are the correct dtype -- which may differ from the actual dtype.
-    if (dtype == COMPLEX64) {
+    if (dtype == nm::COMPLEX64) {
       pC = ALLOCA_N(float,1);
       pS = ALLOCA_N(float,1);
-      rubyval_to_cval(c, FLOAT32, pC);
-      rubyval_to_cval(s, FLOAT32, pS);
-    } else if (dtype == COMPLEX128) {
+      rubyval_to_cval(c, nm::FLOAT32, pC);
+      rubyval_to_cval(s, nm::FLOAT32, pS);
+    } else if (dtype == nm::COMPLEX128) {
       pC = ALLOCA_N(double,1);
       pS = ALLOCA_N(double,1);
-      rubyval_to_cval(c, FLOAT64, pC);
-      rubyval_to_cval(s, FLOAT64, pS);
+      rubyval_to_cval(c, nm::FLOAT64, pC);
+      rubyval_to_cval(s, nm::FLOAT64, pS);
     } else {
       pC = ALLOCA_N(char, DTYPE_SIZES[dtype]);
       pS = ALLOCA_N(char, DTYPE_SIZES[dtype]);
@@ -548,7 +548,7 @@ static VALUE nm_cblas_gemm(VALUE self,
 {
   NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemm, void, const enum CBLAS_ORDER Order, const enum CBLAS_TRANSPOSE trans_a, const enum CBLAS_TRANSPOSE trans_b, int m, int n, int k, void* alpha, void* a, int lda, void* b, int ldb, void* beta, void* c, int ldc);
 
-  dtype_t dtype = NM_DTYPE(a);
+  nm::dtype_t dtype = NM_DTYPE(a);
 
   void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]),
        *pBeta  = ALLOCA_N(char, DTYPE_SIZES[dtype]);
@@ -593,7 +593,7 @@ static VALUE nm_cblas_gemv(VALUE self,
 {
   NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::cblas_gemv, bool, const enum CBLAS_TRANSPOSE trans_a, int m, int n, void* alpha, void* a, int lda, void* x, int incx, void* beta, void* y, int incy);
 
-  dtype_t dtype = NM_DTYPE(a);
+  nm::dtype_t dtype = NM_DTYPE(a);
 
   void *pAlpha = ALLOCA_N(char, DTYPE_SIZES[dtype]),
        *pBeta  = ALLOCA_N(char, DTYPE_SIZES[dtype]);
@@ -627,7 +627,7 @@ static VALUE nm_cblas_trsm(VALUE self,
       nm::math::cblas_trsm<nm::RubyObject>
   };
 
-  dtype_t dtype = NM_DTYPE(a);
+  nm::dtype_t dtype = NM_DTYPE(a);
 
   if (!ttable[dtype]) {
     rb_raise(nm_eDataTypeError, "this matrix operation undefined for integer matrices");
@@ -667,7 +667,7 @@ static VALUE nm_cblas_trmm(VALUE self,
       nm::math::cblas_trmm<nm::RubyObject>*/
   };
 
-  dtype_t dtype = NM_DTYPE(a);
+  nm::dtype_t dtype = NM_DTYPE(a);
 
   if (!ttable[dtype]) {
     rb_raise(nm_eDataTypeError, "this matrix operation not yet defined for non-BLAS dtypes");
@@ -705,7 +705,7 @@ static VALUE nm_cblas_syrk(VALUE self,
       nm::math::cblas_trsm<nm::RubyObject>*/
   };
 
-  dtype_t dtype = NM_DTYPE(a);
+  nm::dtype_t dtype = NM_DTYPE(a);
 
   if (!ttable[dtype]) {
     rb_raise(nm_eDataTypeError, "this matrix operation undefined for integer matrices");
@@ -733,11 +733,11 @@ static VALUE nm_cblas_herk(VALUE self,
                            VALUE c, VALUE ldc)
 {
 
-  dtype_t dtype = NM_DTYPE(a);
+  nm::dtype_t dtype = NM_DTYPE(a);
 
-  if (dtype == COMPLEX64) {
+  if (dtype == nm::COMPLEX64) {
     cblas_cherk(blas_order_sym(order), blas_uplo_sym(uplo), blas_transpose_sym(trans), FIX2INT(n), FIX2INT(k), NUM2DBL(alpha), NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NUM2DBL(beta), NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc));
-  } else if (dtype == COMPLEX128) {
+  } else if (dtype == nm::COMPLEX128) {
     cblas_zherk(blas_order_sym(order), blas_uplo_sym(uplo), blas_transpose_sym(trans), FIX2INT(n), FIX2INT(k), NUM2DBL(alpha), NM_STORAGE_DENSE(a)->elements, FIX2INT(lda), NUM2DBL(beta), NM_STORAGE_DENSE(c)->elements, FIX2INT(ldc));
   } else
     rb_raise(rb_eNotImpError, "this matrix operation undefined for non-complex dtypes");
@@ -753,7 +753,7 @@ static VALUE nm_cblas_herk(VALUE self,
  * In-place modification; returns the modified vector as well.
  */
 static VALUE nm_clapack_scal(VALUE self, VALUE n, VALUE scale, VALUE vector, VALUE incx) {
-  dtype_t dtype = NM_DTYPE(vector);
+  nm::dtype_t dtype = NM_DTYPE(vector);
 
   void* da      = ALLOCA_N(char, DTYPE_SIZES[dtype]);
   rubyval_to_cval(scale, dtype, da);
@@ -1148,7 +1148,7 @@ static VALUE nm_clapack_laswp(VALUE self, VALUE n, VALUE a, VALUE lda, VALUE k1,
 /*
  * C accessor for calculating an exact determinant.
  */
-void nm_math_det_exact(const int M, const void* elements, const int lda, dtype_t dtype, void* result) {
+void nm_math_det_exact(const int M, const void* elements, const int lda, nm::dtype_t dtype, void* result) {
   NAMED_DTYPE_TEMPLATE_TABLE(ttable, nm::math::det_exact, void, const int M, const void* A_elements, const int lda, void* result_arg);
 
   ttable[dtype](M, elements, lda, result);
