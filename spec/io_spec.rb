@@ -79,7 +79,7 @@ describe NMatrix::IO do
   end
 
   it "reads and writes NMatrix dense as symmetric" do
-    n = NMatrix.new(:dense, 3, [0,1,2,1,3,4,2,4,5], :rational128)
+    n = NMatrix.new(:dense, 3, [0,1,2,1,3,4,2,4,5], :int16)
     n.write("test-out", :symmetric)
 
     m = NMatrix.read("test-out")
@@ -95,11 +95,33 @@ describe NMatrix::IO do
   end
 
   it "reads and writes NMatrix dense as hermitian" do
-    n = NMatrix.new(:dense, 3, [0,1,2,-1,3,4,-2,-4,5], :complex64)
+    n = NMatrix.new(:dense, 3, [0,1,2,1,3,4,2,4,5], :complex64)
     n.write("test-out", :hermitian)
 
     m = NMatrix.read("test-out")
     n.should == m
+  end
+
+  it "reads and writes NMatrix dense as upper" do
+    n = NMatrix.new(:dense, 3, [-1,1,2,3,4,5,6,7,8], :int32)
+    n.write("test-out", :upper)
+
+    m = NMatrix.new(:dense, 3, [-1,1,2,0,4,5,0,0,8], :int32) # lower version of the same
+
+    o = NMatrix.read("test-out")
+    o.should == m
+    o.should_not == n
+  end
+
+  it "reads and writes NMatrix dense as lower" do
+    n = NMatrix.new(:dense, 3, [-1,1,2,3,4,5,6,7,8], :int32)
+    n.write("test-out", :lower)
+
+    m = NMatrix.new(:dense, 3, [-1,0,0,3,4,0,6,7,8], :int32) # lower version of the same
+
+    o = NMatrix.read("test-out")
+    o.should == m
+    o.should_not == n
   end
 
 

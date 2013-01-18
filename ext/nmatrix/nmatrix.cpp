@@ -121,11 +121,49 @@ namespace nm {
 
       bytes_written += sizeof(IType);
     }
+  }
 
+  /*
+   * This function is pulled out separately so it can be called for hermitian matrix writing, which also uses it.
+   */
+  template <typename DType>
+  size_t write_padded_dense_elements_upper(std::ofstream& f, DENSE_STORAGE* storage, symm_t symm) {
+    // Write upper triangular portion. Assume 2D square matrix.
+    DType* elements = reinterpret_cast<DType*>(storage->elements);
+    size_t length = storage->shape[0];
+
+    size_t bytes_written = 0;
+
+    for (size_t i = 0; i < length; ++i) { // which row are we on?
+
+      f.write( reinterpret_cast<const char*>( &(elements[ i*(length + 1) ]) ),
+               (length - i) * sizeof(DType) );
+
+      bytes_written += (length - i) * sizeof(DType);
+    }
+    return bytes_written;
   }
 
 
-  /* We need to specialize for Hermitian matrices. The next three functions accomplish that specialization. */
+  /*
+   * We need to specialize for Hermitian matrices. The next six functions accomplish that specialization, basically
+   * by ensuring that non-complex matrices cannot read or write hermitians (which would cause big problems).
+   */
+  template <typename DType>
+  size_t write_padded_dense_elements_herm(std::ofstream& f, DENSE_STORAGE* storage, symm_t symm) {
+    rb_raise(rb_eArgError, "cannot write a non-complex matrix as hermitian");
+  }
+
+  template <>
+  size_t write_padded_dense_elements_herm<Complex64>(std::ofstream& f, DENSE_STORAGE* storage, symm_t symm) {
+    return write_padded_dense_elements_upper<Complex64>(f, storage, symm);
+  }
+
+  template <>
+  size_t write_padded_dense_elements_herm<Complex128>(std::ofstream& f, DENSE_STORAGE* storage, symm_t symm) {
+    return write_padded_dense_elements_upper<Complex128>(f, storage, symm);
+  }
+
   template <typename DType>
   void read_padded_dense_elements_herm(DType* elements, size_t length) {
     rb_raise(rb_eArgError, "cannot read a non-complex matrix as hermitian");
@@ -135,7 +173,7 @@ namespace nm {
   void read_padded_dense_elements_herm(Complex64* elements, size_t length) {
     for (size_t i = 0; i < length; ++i) {
       for (size_t j = i+1; j < length; ++j) {
-        elements[i * length + j] = elements[j * length + i].conjugate();
+        elements[j * length + i] = elements[i * length + j].conjugate();
       }
     }
   }
@@ -144,7 +182,7 @@ namespace nm {
   void read_padded_dense_elements_herm(Complex128* elements, size_t length) {
     for (size_t i = 0; i < length; ++i) {
       for (size_t j = i+1; j < length; ++j) {
-        elements[i * length + j] = elements[j * length + i].conjugate();
+        elements[j * length + i] = elements[i * length + j].conjugate();
       }
     }
   }
@@ -187,7 +225,6 @@ namespace nm {
       size_t length = storage->shape[0];
 
       for (size_t i = 0; i < length; ++i) { // which row?
-
         f.read( reinterpret_cast<char*>(&(elements[i * (length + 1)])), (length - i) * sizeof(DType) );
 
         bytes_read += (length - i) * sizeof(DType);
@@ -196,17 +233,24 @@ namespace nm {
       if (symm == SYMM) {
         for (size_t i = 0; i < length; ++i) {
           for (size_t j = i+1; j < length; ++j) {
-            elements[i * length + j] = elements[j * length + i];
+            elements[j * length + i] = elements[i * length + j];
           }
         }
       } else if (symm == SKEW) {
         for (size_t i = 0; i < length; ++i) {
           for (size_t j = i+1; j < length; ++j) {
-            elements[i * length + j] = -elements[j * length + i];
+            elements[j * length + i] = -elements[i * length + j];
           }
         }
       } else if (symm == HERM) {
         read_padded_dense_elements_herm<DType>(elements, length);
+
+      } else if (symm == UPPER) { // zero-fill the rest of the rows
+        for (size_t i = 0; i < length; ++i) {
+          for(size_t j = i+1; j < length; ++j) {
+            elements[j * length + i] = 0;
+          }
+        }
       }
 
     }
@@ -283,18 +327,10 @@ namespace nm {
 
         bytes_written += (i + 1) * sizeof(DType);
       }
+    } else if (symm == nm::HERM) {
+      bytes_written += write_padded_dense_elements_herm<DType>(f, storage, symm);
     } else { // HERM, UPPER, SYMM, SKEW
-
-      // Write upper triangular portion. Assume 2D square matrix.
-      DType* elements = reinterpret_cast<DType*>(storage->elements);
-      size_t length = storage->shape[0];
-      for (size_t i = 0; i < length; ++i) { // which row are we on?
-
-        f.write( reinterpret_cast<const char*>( &(elements[ i*(length + 1) ]) ),
-                 (length - i) * sizeof(DType) );
-
-        bytes_written += (length - i) * sizeof(DType);
-      }
+      bytes_written += write_padded_dense_elements_upper<DType>(f, storage, symm);
     }
 
     // Padding

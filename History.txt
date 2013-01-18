@@ -40,9 +40,9 @@
 
 * Note: Element-wise list operations current disabled
 
-=== 0.0.3 / 2012-??-??
+=== 0.0.3 / 2013-01-18
 
-* 7 major enhancements
+* 8 major enhancements
 
   * Matrix-scalar operations (dense, list)
 
@@ -57,6 +57,8 @@
   * Matrix inversion (LU and Cholesky; requires CLAPACK)
 
   * LU factoring with and without CLAPACK
+
+  * Native matrix I/O for dense (supporting upper, lower, hermitian, skew, symmetric, and general) and yale (general only); excludes Ruby objects currently
 
 * 2 bug fixes:
 
