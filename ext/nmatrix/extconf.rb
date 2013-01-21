@@ -122,10 +122,12 @@ dir_config("atlas")
 # (substituting in the path of your cblas.h and clapack.h for the path I used). -- JW 8/27/12
 
 find_library("lapack", "clapack_dgetrf", "/usr/local/lib", "/usr/local/atlas/lib")
+find_header("clapack.h", "/usr/local/atlas/include")
 have_header("clapack.h")
 
 find_library("cblas", "cblas_dgemm", "/usr/local/lib", "/usr/local/atlas/lib")
 find_library("atlas", "ATL_dgemmNN", "/usr/local/lib", "/usr/local/atlas/lib", "/usr/lib")
+find_header("cblas.h", "/usr/local/atlas/include")
 have_header("cblas.h")
 
 # Order matters here: ATLAS has to go after LAPACK: http://mail.scipy.org/pipermail/scipy-user/2007-January/010717.html
