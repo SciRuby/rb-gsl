@@ -45,6 +45,7 @@ static VALUE rb_gsl_stats_XXX1(int argc, VALUE *argv, VALUE obj,
 {
   size_t stride, size;
   double *data = NULL;
+  if (argc < 1) rb_raise(rb_eArgError, "too few arguments");
   data = get_vector_stats2(argc, argv, obj, &stride, &size);
   return rb_float_new((*f)(data, stride, size, NUM2DBL(argv[argc-1])));
 }
