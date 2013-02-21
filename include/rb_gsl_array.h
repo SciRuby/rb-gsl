@@ -295,9 +295,9 @@ typedef struct nmatrix {
     STORAGE*    storage;
 } NMATRIX;
 
-//#define NM_STRUCT(val)          ((NMATRIX*)(DATA_PTR(val)))
-//#define NM_STORAGE(val)         (NM_STRUCT(val)->storage)
-//#define NM_DENSE_STORAGE(val)   ((DENSE_STORAGE*)(NM_STORAGE(val)))
+#define NM_STRUCT(val)          ((NMATRIX*)(DATA_PTR(val)))
+#define NM_STORAGE(val)         (NM_STRUCT(val)->storage)
+#define NM_DENSE_STORAGE(val)   ((DENSE_STORAGE*)(NM_STORAGE(val)))
 // end masa
 
 
