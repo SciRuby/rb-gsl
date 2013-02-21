@@ -1520,7 +1520,7 @@ static VALUE rb_gsl_matrix_complex_indgen_singleton(int argc, VALUE *argv, VALUE
 }
 
 
-static int gsl_matrix_complex_equal(const gsl_matrix_complex *m1,
+static int xgsl_matrix_complex_equal(const gsl_matrix_complex *m1,
   const gsl_matrix_complex *m2, double eps)
 {
   gsl_complex z1, z2;
@@ -1555,7 +1555,7 @@ static VALUE rb_gsl_matrix_complex_equal(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, gsl_matrix_complex, m1);
   CHECK_MATRIX_COMPLEX(argv[0]);
   Data_Get_Struct(argv[0], gsl_matrix_complex, m2);
-  ret = gsl_matrix_complex_equal(m1, m2, eps);
+  ret = xgsl_matrix_complex_equal(m1, m2, eps);
   if (ret == 1) return Qtrue;
   else return Qfalse;
 }

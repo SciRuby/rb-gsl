@@ -249,10 +249,10 @@ gsl_vector* make_cvector_from_nvector(VALUE vec)
     rb_raise(rb_eTypeError,
              "wrong argument type %s", rb_class2name(CLASS_OF(vec)));
   else if (!NM_STYPE(vec))
-    rb_raise(nm_eStorageTypeError, "requires dense storage for conversion");
+    rb_raise(nm_eDataTypeError, "requires dense storage for conversion");
 
   length = NM_DENSE_COUNT(vec);
-  v = gsl_vector_alloc(size);
+  v = gsl_vector_alloc(length);
   if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_alloc failed");
 
   if (NM_DTYPE(vec) != NM_FLOAT64)

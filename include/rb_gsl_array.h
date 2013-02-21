@@ -239,4 +239,66 @@ void Init_gsl_block_uchar_init(VALUE module);
 
 void Init_gsl_matrix_nmf(void);
 
+// masa 20130129 add
+typedef enum {
+    NM_BYTE               =  0, // unsigned char
+    NM_INT8               =  1, // char
+    NM_INT16                =  2, // short
+    NM_INT32                =  3, // int
+    NM_INT64                =  4, // long
+    NM_FLOAT32          =  5, // float
+    NM_FLOAT64          =  6, // double
+    NM_COMPLEX64        =  7, // Complex64 class
+    NM_COMPLEX128     =  8, // Complex128 class
+    NM_RATIONAL32     =  9, // Rational32 class
+    NM_RATIONAL64     = 10, // Rational64 class
+    NM_RATIONAL128  = 11, // Rational128 class
+    NM_RUBYOBJ          = 12  // Ruby VALUE type
+} nm_dtype_t;
+
+extern VALUE nm_eDataTypeError;
+
+
+typedef struct nm_dense_storage {
+    nm_dtype_t  dtype;
+    size_t  rank;
+    size_t* shape;
+    size_t* offset;
+
+    size_t* stride;
+    int         count;
+    void*       src;
+    void*       elements;
+} DENSE_STORAGE;
+
+typedef enum {
+  NM_DENSE_STORE,
+  NM_LIST_STORE,
+  NM_YALE_STORE
+} nm_stype_t_old;
+
+
+typedef struct nm_storage {
+    // Common elements found in all storage types. Should not be re-arranged.
+    nm_dtype_t  dtype;
+    size_t  rank;
+    size_t* shape;
+    size_t* offset;
+
+    //virtual void empty(void) = 0;
+} STORAGE;
+
+typedef struct nmatrix {
+    // Method of storage (csc, dense, etc).
+    nm_stype_t_old      stype;
+    // Pointer to storage struct.
+    STORAGE*    storage;
+} NMATRIX;
+
+//#define NM_STRUCT(val)          ((NMATRIX*)(DATA_PTR(val)))
+//#define NM_STORAGE(val)         (NM_STRUCT(val)->storage)
+//#define NM_DENSE_STORAGE(val)   ((DENSE_STORAGE*)(NM_STORAGE(val)))
+// end masa
+
+
 #endif

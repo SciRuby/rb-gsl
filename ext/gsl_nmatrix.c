@@ -9,7 +9,8 @@
 #include "rb_gsl_array.h"
 #include "rb_gsl_with_nmatrix.h"
 
-
+// comment out masa 20130221
+/*
 typedef enum {
 	NM_BYTE				  =  0, // unsigned char
 	NM_INT8				  =  1, // char
@@ -100,18 +101,20 @@ typedef struct nmatrix {
 	STORAGE*	storage;
 } NMATRIX;
 
+*/
+//end masa
 
 // re-define so it doesn't use reinterpret_cast<>
-#define NM_STRUCT(val)          ((NMATRIX*)(DATA_PTR(val)))
+//#define NM_STRUCT(val)          ((NMATRIX*)(DATA_PTR(val)))
 #define NM_STORAGE(val)         (NM_STRUCT(val)->storage)
 #define NM_LIST_STORAGE(val)    ((LIST_STORAGE*)(NM_STORAGE(val)))
 #define NM_YALE_STORAGE(val)    ((YALE_STORAGE*)(NM_STORAGE(val)))
 #define NM_DENSE_STORAGE(val)   ((DENSE_STORAGE*)(NM_STORAGE(val)))
 
-#define NM_DENSE_SRC(val)       (NM_DENSE_STORAGE(val)->src)
+//#define NM_DENSE_SRC(val)       (NM_DENSE_STORAGE(val)->src)
 #define NM_RANK(val)            (NM_STORAGE(val)->rank)
 #define NM_DTYPE(val)           (NM_STORAGE(val)->dtype)
-#define NM_ITYPE(val)           (NM_YALE_STORAGE(val)->itype)
+//#define NM_ITYPE(val)           (NM_YALE_STORAGE(val)->itype)
 #define NM_STYPE(val)           (NM_STRUCT(val)->stype)
 #define NM_SHAPE(val,i)         (NM_STORAGE(val)->shape[(i)])
 #define NM_SHAPE0(val)          (NM_STORAGE(val)->shape[0])
@@ -254,33 +257,31 @@ gsl_matrix_int* nm_to_gm_int(VALUE nm) {
 }
 
 
-static VALUE rb_gsl_nv_to_gsl_vector(VALUE obj, VALUE n) {
+VALUE rb_gsl_nv_to_gsl_vector(VALUE obj, VALUE n) {
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, nv_to_gv(n));
 }
 
-static VALUE rb_gsl_nv_to_gsl_vector_complex(VALUE obj, VALUE n) {
+VALUE rb_gsl_nv_to_gsl_vector_complex(VALUE obj, VALUE n) {
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, nv_to_gv_complex(n));
 }
 
-static VALUE rb_gsl_nv_to_gsl_vector_int(VALUE obj, VALUE n) {
+VALUE rb_gsl_nv_to_gsl_vector_int(VALUE obj, VALUE n) {
   return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free, nv_to_gv_int(n));
 }
 
-
-static VALUE rb_gsl_nm_to_gsl_matrix(VALUE obj, VALUE n) {
+VALUE rb_gsl_nm_to_gsl_matrix(VALUE obj, VALUE n) {
   return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, nm_to_gm(n));
 }
 
-static VALUE rb_gsl_nm_to_gsl_matrix_complex(VALUE obj, VALUE n) {
+VALUE rb_gsl_nm_to_gsl_matrix_complex(VALUE obj, VALUE n) {
   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, nm_to_gm_complex(n));
 }
 
-static VALUE rb_gsl_nm_to_gsl_matrix_int(VALUE obj, VALUE n) {
+VALUE rb_gsl_nm_to_gsl_matrix_int(VALUE obj, VALUE n) {
   return Data_Wrap_Struct(cgsl_matrix_int, 0, gsl_matrix_int_free, nm_to_gm_int(n));
 }
 
-
-static VALUE rb_gsl_nv_to_gsl_vector_method(VALUE nv) {
+VALUE rb_gsl_nv_to_gsl_vector_method(VALUE nv) {
   VALUE v;
 
   if (NM_DTYPE(nv) == NM_COMPLEX64 || NM_DTYPE(nv) == NM_COMPLEX128) {
@@ -303,16 +304,16 @@ void Init_gsl_nmatrix(VALUE module) {
   rb_define_singleton_method(cgsl_vector, "nv_to_gslv", rb_gsl_nv_to_gsl_vector, 1);
   rb_define_singleton_method(cgsl_vector, "nv_to_gv",   rb_gsl_nv_to_gsl_vector, 1);
 
-  rb_define_method(cgsl_vector_complex, "to_nv", rb_gsl_vector_to_nvector_complex, 0);
-  rb_define_alias(cgsl_vector_complex, "to_nm", "to_nv");
+//  rb_define_method(cgsl_vector_complex, "to_nv", rb_gsl_vector_to_nvector_complex, 0);
+//  rb_define_alias(cgsl_vector_complex, "to_nm", "to_nv");
 
   rb_define_singleton_method(cgsl_vector_complex, "to_gslv",    rb_gsl_nv_to_gsl_vector_complex, 1);
   rb_define_singleton_method(cgsl_vector_complex, "to_gv",      rb_gsl_nv_to_gsl_vector_complex, 1);
   rb_define_singleton_method(cgsl_vector_complex, "nv_to_gslv", rb_gsl_nv_to_gsl_vector_complex, 1);
   rb_define_singleton_method(cgsl_vector_complex, "nv_to_gv",   rb_gsl_nv_to_gsl_vector_complex, 1);
 
-  rb_define_method(cgsl_vector_int, "to_nv", rb_gsl_vector_to_nvector_int, 0);
-  rb_define_alias(cgsl_vector_int, "to_nm", "to_nv");
+//  rb_define_method(cgsl_vector_int, "to_nv", rb_gsl_vector_to_nvector_int, 0);
+//  rb_define_alias(cgsl_vector_int, "to_nm", "to_nv");
 
   rb_define_singleton_method(cgsl_vector_int, "to_gslv",    rb_gsl_nv_to_gsl_vector_int, 1);
   rb_define_singleton_method(cgsl_vector_int, "to_gv",      rb_gsl_nv_to_gsl_vector_int, 1);
