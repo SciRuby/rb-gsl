@@ -21,6 +21,7 @@ static VALUE rb_gsl_ieee_fprintf_double(int argc, VALUE *argv, VALUE obj)
 {
 #ifdef RUBY_1_9_LATER
   rb_io_t *fptr = NULL;
+  double ftmp;
 #else
   OpenFile *fptr = NULL;
 #endif
@@ -61,7 +62,8 @@ static VALUE rb_gsl_ieee_fprintf_double(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eTypeError, "wrong argument type %s (Float expected)",
 	     rb_class2name(CLASS_OF(vtmp)));
 #ifdef RUBY_1_9_LATER
-  gsl_ieee_fprintf_double(fp, &(RFLOAT_VALUE(vtmp)));
+  ftmp = RFLOAT_VALUE(vtmp);
+  gsl_ieee_fprintf_double(fp, &ftmp);
 #else
   gsl_ieee_fprintf_double(fp, &(RFLOAT(vtmp)->value));
 #endif
