@@ -239,7 +239,6 @@ void Init_gsl_block_uchar_init(VALUE module);
 
 void Init_gsl_matrix_nmf(void);
 
-// masa 20130129 add
 typedef enum {
     NM_BYTE               =  0, // unsigned char
     NM_INT8               =  1, // char
@@ -254,13 +253,13 @@ typedef enum {
     NM_RATIONAL64     = 10, // Rational64 class
     NM_RATIONAL128  = 11, // Rational128 class
     NM_RUBYOBJ          = 12  // Ruby VALUE type
-} nm_dtype_t;
+} nm_dtype_old_t;
 
 extern VALUE nm_eDataTypeError;
 
 
 typedef struct nm_dense_storage {
-    nm_dtype_t  dtype;
+    nm_dtype_old_t  dtype;
     size_t  rank;
     size_t* shape;
     size_t* offset;
@@ -280,7 +279,7 @@ typedef enum {
 
 typedef struct nm_storage {
     // Common elements found in all storage types. Should not be re-arranged.
-    nm_dtype_t  dtype;
+    nm_dtype_old_t  dtype;
     size_t  rank;
     size_t* shape;
     size_t* offset;
@@ -298,7 +297,6 @@ typedef struct nmatrix {
 #define NM_STRUCT(val)          ((NMATRIX*)(DATA_PTR(val)))
 #define NM_STORAGE(val)         (NM_STRUCT(val)->storage)
 #define NM_DENSE_STORAGE(val)   ((DENSE_STORAGE*)(NM_STORAGE(val)))
-// end masa
 
 
 #endif
