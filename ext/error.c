@@ -38,12 +38,11 @@ static void rb_gsl_my_error_handler(const char *reason, const char *file,
 {
   VALUE vreason, vfile;
   VALUE vline, verrno;
-  VALUE result;
   vreason = rb_str_new2(reason);
   vfile = rb_str_new2(file);
   vline = INT2FIX(line);
   verrno = INT2FIX(gsl_errno);
-  result = rb_funcall(eHandler, RBGSL_ID_call, 4, vreason, vfile, vline, verrno);
+  rb_funcall(eHandler, RBGSL_ID_call, 4, vreason, vfile, vline, verrno);
 }
 
 static VALUE rb_gsl_set_error_handler(int argc, VALUE *argv, VALUE module)

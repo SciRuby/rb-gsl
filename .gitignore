@@ -1,28 +1,14 @@
-*.gem
-*.rbc
-.bundle
-.config
-coverage
-InstalledFiles
-lib/bundler/man
-pkg
-rdoc
-spec/reports
-test/tmp
-test/version_tmp
 ext/*.o
-ext/*.so
 ext/Makefile
 ext/mkmf.log
+ext/rb_gsl.bundle
+ext/rb_gsl.dll
+ext/rb_gsl.dylib
+ext/rb_gsl.so
+ext/tags
+rdoc/
+html/
 include/rb_gsl_config.h
-tmp
 lib/gsl.rb
 lib/rbgsl.rb
-
-# YARD artifacts
-.yardoc
-_yardoc
-doc/
-
-# RubyMine
-.idea/
+pkg/

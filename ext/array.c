@@ -169,21 +169,6 @@ void cvector_set_from_carray(gsl_vector *v, const double *a)
   for (i = 0; i < v->size; i++) gsl_vector_set(v, i, a[i]);
 }
 
-void cvector_set_from_rarrays(gsl_vector *v, VALUE ary)
-{
-  if (CLASS_OF(ary) == rb_cRange) ary = rb_gsl_range2ary(ary);
-  if (TYPE(ary) == T_ARRAY) {
-    return cvector_set_from_rarray(v, ary);
-#ifdef HAVE_NARRAY_H
-  } else if (NA_IsNArray(ary)) {
-    return cvector_set_from_narray(v, ary);
-#endif
-  } else {
-    rb_raise(rb_eTypeError,
-	     "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
-  }
-}
-
 void carray_set_from_cvector(double *a, const gsl_vector *v)
 {
   size_t i;
@@ -270,7 +255,42 @@ void cvector_set_from_nvector(gsl_vector *v, VALUE vec)
              "wrong argument type %s", rb_class2name(CLASS_OF(vec)));
   carray_set_from_nvector(v->data, vec);
 }
-#endif
+#else
+# ifdef HAVE_NARRAY_H
+/* NArray -> CArray */
+void carray_set_from_narray(double *a, VALUE ary)
+{
+  int size;
+  VALUE ary2;
+  if (!NA_IsNArray(ary))
+    rb_raise(rb_eTypeError,
+             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
+  size = NA_TOTAL(ary);
+  if (size == 0) return;
+  ary2 = na_change_type(ary, NA_DFLOAT);
+  memcpy(a, NA_PTR_TYPE(ary2,double*), size*sizeof(double));
+}
+
+/* NArray -> GSL::Vector */
+gsl_vector* make_cvector_from_narray(VALUE ary)
+{
+  gsl_vector *v = NULL;
+  size_t size;
+  VALUE ary2;
+  if (!NA_IsNArray(ary))
+    rb_raise(rb_eTypeError,
+             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
+  size = NA_TOTAL(ary);
+  v = gsl_vector_alloc(size);
+  if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_alloc failed");
+  ary2 = na_change_type(ary, NA_DFLOAT);
+  memcpy(v->data, NA_PTR_TYPE(ary2,double*), size*sizeof(double));
+  /*  cvector_set_from_narray(v, ary);*/
+  return v;
+}
+
+# endif // HAVE_NARRAY_H
+#endif // HAVE_NMATRIX_H #else
 
 gsl_vector_complex* make_vector_complex_clone(const gsl_vector_complex *v)
 {

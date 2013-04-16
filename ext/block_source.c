@@ -547,7 +547,8 @@ static VALUE FUNCTION(rb_gsl_block,compare)(VALUE aa, VALUE bb,
   GSL_TYPE(gsl_block) *a, *b;
   /*  gsl_block_int *c;*/
   gsl_block_uchar *c;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Data_Get_Struct(aa, GSL_TYPE(gsl_block), a);
   c = gsl_block_uchar_alloc(a->size);
   if (BL_P(bb)) {
@@ -555,9 +556,9 @@ static VALUE FUNCTION(rb_gsl_block,compare)(VALUE aa, VALUE bb,
     if (a->size != b->size) 
       rb_raise(rb_eRuntimeError, "Block size mismatch, %d and %d", (int) a->size, 
 	       (int) b->size);
-    status = (*cmp)(a, b, c);
+    /*status =*/ (*cmp)(a, b, c);
   } else {
-    status = (*cmp2)(a, NUMCONV(bb), c);
+    /*status =*/ (*cmp2)(a, NUMCONV(bb), c);
   }
   return Data_Wrap_Struct(cgsl_block_uchar, 0, gsl_block_uchar_free, c);
 }

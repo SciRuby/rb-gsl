@@ -105,7 +105,7 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
         enum FFT_CONV_CORR flag2)
 {
   double *data1, *data2, *data3;
-  size_t stride1, stride2, stride3 = 1, size1, size2;
+  size_t stride1, stride2, size1, size2;
 #ifdef HAVE_NARRAY_H
   int naflag1, naflag2, shape;
 #else
@@ -170,14 +170,12 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
       break;
     }
     data3 = v->data;
-    stride3 = 1;
     break;
   case 1:
 #ifdef HAVE_NARRAY_H
     shape = (int) size1;
     ary = na_make_object(NA_DFLOAT, 1, &shape, cNArray);
     data3 = NA_PTR_TYPE(ary, double*);
-    stride3 = 1;
 #endif
     break;
   default:

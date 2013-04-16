@@ -1986,7 +1986,10 @@ static VALUE rb_gsl_vector_complex_zip(int argc, VALUE *argv, VALUE obj)
   return ary;
 }
 
-static int xgsl_vector_complex_equal(const gsl_vector_complex *v1,
+// Starting with version 1.15, GSL provides a gsl_vector_complex_equal
+// function, but it only determines absolute equality (i.e. is has no epsilon
+// argument).
+static int gsl_vector_complex_equal_eps(const gsl_vector_complex *v1,
   const gsl_vector_complex *v2, double eps)
 {
   gsl_complex z1, z2;
@@ -2019,7 +2022,7 @@ static VALUE rb_gsl_vector_complex_equal(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, gsl_vector_complex, v1);
   CHECK_VECTOR_COMPLEX(argv[0]);
   Data_Get_Struct(argv[0], gsl_vector_complex, v2);
-  ret = xgsl_vector_complex_equal(v1, v2, eps);
+  ret = gsl_vector_complex_equal_eps(v1, v2, eps);
   if (ret == 1) return Qtrue;
   else return Qfalse;
 }

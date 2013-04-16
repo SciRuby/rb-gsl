@@ -267,7 +267,9 @@ static VALUE rb_gsl_integration_qng(int argc, VALUE *argv, VALUE obj)
   double result, abserr;
   size_t neval;
   gsl_function *F = NULL;
-  int status, itmp;
+  int status;
+  // local variable 'itmp' declared and set, but never used
+  //int itmp;
 
   if (argc < 1) rb_raise(rb_eArgError, 
 			 "wrong number of arguments (%d for >= 1)", argc);
@@ -276,10 +278,10 @@ static VALUE rb_gsl_integration_qng(int argc, VALUE *argv, VALUE obj)
   case T_MODULE:  case T_CLASS:  case T_OBJECT:
     CHECK_FUNCTION(argv[0]);
     Data_Get_Struct(argv[0], gsl_function, F);
-    itmp = get_a_b_epsabs_epsrel(argc, argv, 1, &a, &b, &epsabs, &epsrel);
+    /*itmp =*/ get_a_b_epsabs_epsrel(argc, argv, 1, &a, &b, &epsabs, &epsrel);
     break;
   default:
-    itmp = get_a_b_epsabs_epsrel(argc, argv, 0, &a, &b, &epsabs, &epsrel);
+    /*itmp =*/ get_a_b_epsabs_epsrel(argc, argv, 0, &a, &b, &epsabs, &epsrel);
     Data_Get_Struct(obj, gsl_function, F);
     break;
   }

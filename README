@@ -44,9 +44,6 @@ Any bug reports are welcome.
 If you encounter bugs in Ruby/GSL, please e-mail to me, or
 submit reports from http://rubyforge.org/projects/rb-gsl/.
 
-If you find bugs related to NMatrix, please e-mail John Woods
-(see below).
-
 == Authors
 Yoshiki Tsunesada
 y-tsunesada at mm dot em-net dot ne dot jp

@@ -35,11 +35,12 @@ static VALUE rb_gsl_sf_lngamma_sgn_e(VALUE obj, VALUE x)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   double sgn;
   Need_Float(x);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_lngamma_sgn_e(NUM2DBL(x), rslt, &sgn);
+  /*status =*/ gsl_sf_lngamma_sgn_e(NUM2DBL(x), rslt, &sgn);
   return rb_ary_new3(2, v, rb_float_new(sgn));
 }
 
@@ -165,10 +166,11 @@ static VALUE rb_gsl_sf_lnchoose_e(VALUE obj, VALUE n, VALUE m)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   CHECK_FIXNUM(n); CHECK_FIXNUM(m);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_lnchoose_e(FIX2INT(n), FIX2INT(m), rslt);
+  /*status =*/ gsl_sf_lnchoose_e(FIX2INT(n), FIX2INT(m), rslt);
   return v;
 }
 
@@ -197,10 +199,11 @@ static VALUE rb_gsl_sf_lnpoch_sgn_e(VALUE obj, VALUE a, VALUE x)
   gsl_sf_result *rslt = NULL;
   VALUE v;
   double sgn;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Need_Float(a); Need_Float(x);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_lnpoch_sgn_e(NUM2DBL(a), NUM2DBL(x), rslt, &sgn);
+  /*status =*/ gsl_sf_lnpoch_sgn_e(NUM2DBL(a), NUM2DBL(x), rslt, &sgn);
   return rb_ary_new3(2, v, rb_float_new(sgn));
 }
 

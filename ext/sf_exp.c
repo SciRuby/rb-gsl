@@ -30,10 +30,11 @@ static VALUE rb_gsl_sf_exp_e10_e(VALUE obj, VALUE x)
 {
   gsl_sf_result_e10 *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Need_Float(x);
   v = Data_Make_Struct(cgsl_sf_result_e10, gsl_sf_result_e10, 0, free, rslt);
-  status = gsl_sf_exp_e10_e(NUM2DBL(x), rslt);
+  /*status =*/ gsl_sf_exp_e10_e(NUM2DBL(x), rslt);
   return v;
 }
 
@@ -52,10 +53,11 @@ static VALUE rb_gsl_sf_exp_mult_e10_e(VALUE obj, VALUE x, VALUE y)
 {
   gsl_sf_result_e10 *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Need_Float(x);   Need_Float(y);
   v = Data_Make_Struct(cgsl_sf_result_e10, gsl_sf_result_e10, 0, free, rslt);
-  status = gsl_sf_exp_mult_e10_e(NUM2DBL(x), NUM2DBL(y), rslt);
+  /*status =*/ gsl_sf_exp_mult_e10_e(NUM2DBL(x), NUM2DBL(y), rslt);
   return v;
 }
 
@@ -108,10 +110,11 @@ static VALUE rb_gsl_sf_exp_err_e10_e(VALUE obj, VALUE x, VALUE dx)
 {
   gsl_sf_result_e10 *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Need_Float(x);   Need_Float(dx);
   v = Data_Make_Struct(cgsl_sf_result_e10, gsl_sf_result_e10, 0, free, rslt);
-  status = gsl_sf_exp_err_e10_e(NUM2DBL(x), NUM2DBL(dx), rslt);
+  /*status =*/ gsl_sf_exp_err_e10_e(NUM2DBL(x), NUM2DBL(dx), rslt);
   return v;
 }
 
@@ -120,11 +123,12 @@ static VALUE rb_gsl_sf_exp_mult_err_e(VALUE obj, VALUE x, VALUE dx,
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Need_Float(x);   Need_Float(y);
   Need_Float(dx);   Need_Float(dy);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_exp_mult_err_e(NUM2DBL(x), NUM2DBL(dx), NUM2DBL(y), NUM2DBL(dy), rslt);
+  /*status =*/ gsl_sf_exp_mult_err_e(NUM2DBL(x), NUM2DBL(dx), NUM2DBL(y), NUM2DBL(dy), rslt);
   return v;
 }
 
@@ -133,11 +137,12 @@ static VALUE rb_gsl_sf_exp_mult_err_e10_e(VALUE obj, VALUE x, VALUE dx,
 {
   gsl_sf_result_e10 *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Need_Float(x);   Need_Float(y);
   Need_Float(dx);   Need_Float(dy);
   v = Data_Make_Struct(cgsl_sf_result_e10, gsl_sf_result_e10, 0, free, rslt);
-  status = gsl_sf_exp_mult_err_e10_e(NUM2DBL(x), NUM2DBL(dx), NUM2DBL(y), NUM2DBL(dy), rslt);
+  /*status =*/ gsl_sf_exp_mult_err_e10_e(NUM2DBL(x), NUM2DBL(dx), NUM2DBL(y), NUM2DBL(dy), rslt);
   return v;
 }
 

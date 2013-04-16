@@ -33,9 +33,6 @@ static VALUE rb_dirac_commute(VALUE obj, VALUE mm1, VALUE mm2)
 {
   gsl_matrix_complex *m1, *m2;
   gsl_matrix_complex *mnew1, *mnew2;
-  gsl_complex z, z2;
-  z.dat[0] = 1; z.dat[1] = 0;
-  z2.dat[0] = 0; z2.dat[1] = 0;
   CHECK_MATRIX_COMPLEX(mm1);
   CHECK_MATRIX_COMPLEX(mm2);
   Data_Get_Struct(mm1, gsl_matrix_complex, m1);
@@ -54,9 +51,6 @@ static VALUE rb_dirac_anticommute(VALUE obj, VALUE mm1, VALUE mm2)
 {
   gsl_matrix_complex *m1, *m2;
   gsl_matrix_complex *mnew1, *mnew2;
-  gsl_complex z, z2;
-  z.dat[0] = 1; z.dat[1] = 0;
-  z2.dat[0] = 0; z2.dat[1] = 0;
   CHECK_MATRIX_COMPLEX(mm1);
   CHECK_MATRIX_COMPLEX(mm2);
   Data_Get_Struct(mm1, gsl_matrix_complex, m1);

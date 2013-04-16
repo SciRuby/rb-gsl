@@ -35,11 +35,12 @@ static VALUE rb_gsl_sf_hydrogenicR_e(VALUE obj, VALUE n, VALUE l,
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   CHECK_FIXNUM(n); CHECK_FIXNUM(l);
   Need_Float(Z); Need_Float(r);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_hydrogenicR_e(FIX2INT(n), FIX2INT(l),
+  /*status =*/ gsl_sf_hydrogenicR_e(FIX2INT(n), FIX2INT(l),
 			    NUM2DBL(Z), NUM2DBL(r), rslt);
   return v;
 }
@@ -87,7 +88,7 @@ static VALUE rb_gsl_sf_coulomb_wave_FG_array(VALUE obj, VALUE Lmin, VALUE kmax,
 {
   double F_exponent, G_exponent;
   int status;
-  size_t size, stride;
+  size_t size;
   gsl_vector *vf = NULL, *vg = NULL;
   VALUE fary, gary;
   CHECK_FIXNUM(kmax);
@@ -95,7 +96,6 @@ static VALUE rb_gsl_sf_coulomb_wave_FG_array(VALUE obj, VALUE Lmin, VALUE kmax,
   size = FIX2INT(kmax);
   vf = gsl_vector_alloc(size);
   vg = gsl_vector_alloc(size);
-  stride = vf->stride;
 
   status = gsl_sf_coulomb_wave_FG_array(NUM2DBL(Lmin), size, NUM2DBL(eta), 
 				   NUM2DBL(x), vf->data, vg->data,
@@ -112,7 +112,7 @@ static VALUE rb_gsl_sf_coulomb_wave_FGp_array(VALUE obj, VALUE Lmin, VALUE kmax,
 {
   double F_exponent, G_exponent;
   int status;
-  size_t size, stride;
+  size_t size;
   gsl_vector *vf = NULL, *vg = NULL, *vfp = NULL, *vgp = NULL;
   VALUE fary, gary, fpary, gpary;
   CHECK_FIXNUM(kmax);
@@ -122,7 +122,6 @@ static VALUE rb_gsl_sf_coulomb_wave_FGp_array(VALUE obj, VALUE Lmin, VALUE kmax,
   vfp = gsl_vector_alloc(size);
   vg = gsl_vector_alloc(size);
   vgp = gsl_vector_alloc(size);
-  stride = vf->stride;
 
   status = gsl_sf_coulomb_wave_FGp_array(NUM2DBL(Lmin), size, NUM2DBL(eta), 
 				     NUM2DBL(x), vf->data, vfp->data, 
@@ -165,12 +164,13 @@ static VALUE rb_gsl_sf_coulomb_CL_array(VALUE obj, VALUE Lmin, VALUE kmax,
 {
   gsl_vector *v = NULL;
   size_t size;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   CHECK_FIXNUM(kmax);
   Need_Float(Lmin); Need_Float(eta); 
   size = FIX2INT(kmax);
   v = gsl_vector_alloc(size);
-  status = gsl_sf_coulomb_CL_array(NUM2DBL(Lmin), size, NUM2DBL(eta), v->data);
+  /*status =*/ gsl_sf_coulomb_CL_array(NUM2DBL(Lmin), size, NUM2DBL(eta), v->data);
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
 }
 

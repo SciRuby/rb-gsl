@@ -971,6 +971,7 @@ static VALUE rb_gsl_graph_O(VALUE obj)
   return g->O;
 }
 
+#ifdef HAVE_GNU_GRAPH
 static void gsl_graph_set_command(gsl_graph *g, char *command)
 {
   char str[256];
@@ -1200,6 +1201,7 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
   if (g->O == Qtrue)
     sprintf(command, "%s -O", command);
 }
+#endif
 
 static VALUE rb_gsl_graph_graph(int argc, VALUE *argv, VALUE obj)
 {

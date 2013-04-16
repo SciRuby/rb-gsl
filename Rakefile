@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 require 'rake/rdoctask'
 
 RB_GSL_VERSION = File.readlines('VERSION')[0].chomp
@@ -14,7 +14,8 @@ spec = Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.8.1'
   s.requirements << 'GSL (http://www.gnu.org/software/gsl/)'
   # plotlib?
-  s.add_dependency('nmatrix', '>= 0.0.2')
+  s.add_dependency('nmatrix', '>= 0.0.4')
+ #s.add_dependency('narray', '>= 0.5.9')
 
   # About
   s.authors = ['Yoshiki Tsunesada', 'David MacMahon', 'John Woods']
@@ -33,7 +34,8 @@ spec = Gem::Specification.new do |s|
     'THANKS',
     'VERSION',
     'examples/**/*',
-    'ext/*',
+    'ext/extconf.rb',
+    'ext/*.c',
     'lib/**/*',
     'include/*',
     'rdoc/*',
@@ -69,7 +71,7 @@ Rake::PackageTask.new('rb-gsl', RB_GSL_VERSION) do |pkg|
   pkg.package_files = spec.files
 end
 
-Rake::GemPackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.need_zip = false
   pkg.need_tar = false
 end

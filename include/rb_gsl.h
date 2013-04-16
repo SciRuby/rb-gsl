@@ -101,11 +101,13 @@ void Init_gsl_const(VALUE module);
 
 void Init_gsl_ieee(VALUE module);
 
-#ifdef HAVE_NARRAY_H
-void Init_gsl_narray(VALUE module);
-#endif
-
+#ifdef HAVE_NMATRIX_H
 void Init_gsl_nmatrix(VALUE module);
+#else
+# ifdef HAVE_NARRAY_H
+void Init_gsl_narray(VALUE module);
+# endif
+#endif
 
 void Init_wavelet(VALUE module);
 

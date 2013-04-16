@@ -666,7 +666,6 @@ static VALUE rb_gsl_linalg_QR_LQ_decomposition(int argc, VALUE *argv, VALUE obj,
   gsl_vector *tau = NULL;
   int (*fdecomp)(gsl_matrix *, gsl_vector *);
   int itmp, status;
-  size_t size;
   VALUE vtau, mdecomp, omatrix;
 
   switch (TYPE(obj)) {
@@ -712,7 +711,6 @@ static VALUE rb_gsl_linalg_QR_LQ_decomposition(int argc, VALUE *argv, VALUE obj,
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
   }
-  size = m->size1;
   switch (argc - itmp) {
   case 0:
     tau = gsl_vector_alloc(GSL_MIN(mtmp->size1, mtmp->size2));
@@ -931,7 +929,7 @@ static VALUE rb_gsl_linalg_QR_LQ_lssolve(int argc, VALUE *argv, VALUE obj, int f
   gsl_matrix *m = NULL;
   gsl_vector *b = NULL, *x = NULL, *tau = NULL, *r = NULL;
   VALUE omatrix;
-  int flagm = 0, flagt = 0, flagb = 0, flagx = 0, flagr = 0, itmp, status;
+  int flagm = 0, flagt = 0, flagb = 0, itmp, status;
   size_t size;
   int (*fdecomp)(gsl_matrix*, gsl_vector*);
   int (*flssolve)(const gsl_matrix*, const gsl_vector*, const gsl_vector*, gsl_vector*,
@@ -991,22 +989,17 @@ static VALUE rb_gsl_linalg_QR_LQ_lssolve(int argc, VALUE *argv, VALUE obj, int f
   case 2:
     CHECK_VECTOR(argv[argc-2]);
     Data_Get_Struct(argv[argc-2], gsl_vector, x);
-    flagx = 0;
     CHECK_VECTOR(argv[argc-1]);
     Data_Get_Struct(argv[argc-1], gsl_vector, r);
-    flagr = 0;
     break;
   case 1:
     CHECK_VECTOR(argv[argc-1]);
     Data_Get_Struct(argv[argc-1], gsl_vector, x);
-    flagx = 0;
     r = gsl_vector_alloc(x->size);
-    flagr = 1;
     break;
   case 0:
     x = gsl_vector_alloc(m->size1);
     r = gsl_vector_alloc(m->size1);
-    flagx = 1; flagr = 1;
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments");
@@ -2133,7 +2126,7 @@ static VALUE rb_gsl_linalg_QRLQPT_RLsvx(int argc, VALUE *argv, VALUE obj, int fl
   gsl_matrix *QR = NULL;
   gsl_vector *b = NULL;
   gsl_permutation *p = NULL;
-  int itmp, flagb = 0;
+  int itmp;
   VALUE vtmp, klass;
   int (*fsvx)(const gsl_matrix*, const gsl_permutation*, gsl_vector*);
   switch (flag) {
@@ -2174,7 +2167,6 @@ static VALUE rb_gsl_linalg_QRLQPT_RLsvx(int argc, VALUE *argv, VALUE obj, int fl
   itmp++;
   if (TYPE(argv[itmp]) == T_ARRAY) {
     b = make_cvector_from_rarray(argv[itmp]);
-    flagb = 1;
   } else {
     CHECK_VECTOR(argv[itmp]);
     Data_Get_Struct(argv[itmp], gsl_vector, b);
@@ -2853,7 +2845,8 @@ static VALUE rb_gsl_linalg_bidiag_decomp(int argc, VALUE *argv, VALUE obj)
   gsl_matrix *A = NULL, *Atmp = NULL;
   gsl_vector *tau_U = NULL, *tau_V = NULL;
   size_t size0;
-  int status;
+  // local variable "status" was defined and set, but never used
+  //int status;
   VALUE vu, vv, vA;
 
   switch (TYPE(obj)) {
@@ -2870,7 +2863,7 @@ static VALUE rb_gsl_linalg_bidiag_decomp(int argc, VALUE *argv, VALUE obj)
   size0 = GSL_MIN(A->size1, A->size2);
   tau_U = gsl_vector_alloc(size0);
   tau_V = gsl_vector_alloc(size0-1);
-  status = gsl_linalg_bidiag_decomp(A, tau_U, tau_V);
+  /*status =*/ gsl_linalg_bidiag_decomp(A, tau_U, tau_V);
   vA = Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, A);
   vu = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, tau_U);
   vv = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, tau_V);
@@ -3320,9 +3313,10 @@ static VALUE rb_gsl_linalg_balance_columns_bang(int argc, VALUE *argv, VALUE obj
   gsl_matrix *A = NULL;
   gsl_vector *D = NULL;
   VALUE mat, vec;
-  int status;
+  // local variable "status" was defined and set, but never used
+  //int status;
   rb_gsl_linalg_balance_columns_init(argc, argv, obj, &mat, &vec, &A, &D);
-  status = gsl_linalg_balance_columns(A, D);
+  /*status =*/ gsl_linalg_balance_columns(A, D);
   return rb_ary_new3(2, mat, vec);
 }
 
@@ -3331,11 +3325,12 @@ static VALUE rb_gsl_linalg_balance_columns(int argc, VALUE *argv, VALUE obj)
   gsl_matrix *A = NULL, *Anew;
   gsl_vector *D = NULL;
   VALUE mat, vec;
-  int status;
+  // local variable "status" was defined and set, but never used
+  //int status;
   rb_gsl_linalg_balance_columns_init(argc, argv, obj, &mat, &vec, &A, &D);
   Anew = make_matrix_clone(A);
   mat = Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, Anew);
-  status = gsl_linalg_balance_columns(Anew, D);
+  /*status =*/ gsl_linalg_balance_columns(Anew, D);
   return rb_ary_new3(2, mat, vec);
 }
 

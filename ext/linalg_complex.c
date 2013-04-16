@@ -362,7 +362,7 @@ static VALUE rb_gsl_linalg_complex_LU_lndet(int argc, VALUE *argv, VALUE obj)
   gsl_matrix_complex *m = NULL, *mtmp = NULL;
   gsl_permutation *p = NULL;
   double lndet;
-  int flagm = 0, signum, itmp;
+  int flagm = 0, signum;
   switch (TYPE(obj)) {
   case T_MODULE:
   case T_CLASS:
@@ -376,7 +376,6 @@ static VALUE rb_gsl_linalg_complex_LU_lndet(int argc, VALUE *argv, VALUE obj)
     } else {
       mtmp = m;
     }
-    itmp = 1;
     break;
   default:
     Data_Get_Struct(obj, gsl_matrix_complex, m);
@@ -387,7 +386,6 @@ static VALUE rb_gsl_linalg_complex_LU_lndet(int argc, VALUE *argv, VALUE obj)
     } else {
       mtmp = m;
     }
-    itmp = 0;
   }
   if (flagm == 1) {
     p = gsl_permutation_alloc(m->size1);

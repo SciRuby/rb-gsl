@@ -354,14 +354,15 @@ static VALUE rb_gsl_multifit_fdfsolver_gradient(int argc, VALUE *argv, VALUE obj
 {
   gsl_multifit_fdfsolver *solver = NULL;
   gsl_vector *g = NULL;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   Data_Get_Struct(obj, gsl_multifit_fdfsolver, solver);
   if (argc == 1) {
     Data_Get_Vector(argv[0], g);
     return INT2FIX(gsl_multifit_gradient(solver->J, solver->f, g));
   } else {
     g = gsl_vector_alloc(solver->x->size);
-    status = gsl_multifit_gradient(solver->J, solver->f, g);
+    /*status =*/ gsl_multifit_gradient(solver->J, solver->f, g);
     return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, g);
   }
 }
@@ -371,7 +372,8 @@ static VALUE rb_gsl_multifit_fdfsolver_covar(int argc, VALUE *argv, VALUE obj)
   gsl_multifit_fdfsolver *solver = NULL;
   gsl_matrix *covar = NULL;
   double epsrel;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   if (argc < 1) rb_raise(rb_eArgError, "too few arguments");
   Need_Float(argv[0]);
   Data_Get_Struct(obj, gsl_multifit_fdfsolver, solver);
@@ -379,7 +381,7 @@ static VALUE rb_gsl_multifit_fdfsolver_covar(int argc, VALUE *argv, VALUE obj)
   switch (argc) {
   case 1:
     covar = gsl_matrix_alloc(solver->x->size, solver->x->size);
-    status = gsl_multifit_covar(solver->J, epsrel, covar);
+    /*status =*/ gsl_multifit_covar(solver->J, epsrel, covar);
     return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, covar);
     break;
   case 2:
@@ -442,13 +444,14 @@ static VALUE rb_gsl_multifit_gradient(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector *g = NULL, *f = NULL;
   gsl_matrix *J = NULL;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   switch (argc) {
   case 2:
     Data_Get_Matrix(argv[0], J);
     Data_Get_Vector(argv[1], f);  
     g = gsl_vector_alloc(f->size);
-    status = gsl_multifit_gradient(J, f, g);
+    /*status =*/ gsl_multifit_gradient(J, f, g);
     return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, g);
     break;  
   case 3:
@@ -474,7 +477,7 @@ static VALUE rb_gsl_multifit_covar(int argc, VALUE *argv, VALUE obj)
     Data_Get_Matrix(argv[0], J);
     epsrel = NUM2DBL(argv[1]);
     covar = gsl_matrix_alloc(J->size2, J->size2);
-    status = gsl_multifit_covar(J, epsrel, covar);
+    /*status =*/ gsl_multifit_covar(J, epsrel, covar);
     return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, covar);
     break;
   case 3:
@@ -783,10 +786,9 @@ static int Gaussian_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double A, x0, var, xi, yy, wi;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   var = gsl_vector_get(v, 3);
   x0 = gsl_vector_get(v, 2);
@@ -854,10 +856,9 @@ static int Gaussian_2peaks_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double A1, x01, var1, A2, x02, var2, xi, yy, wi;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   A1 = gsl_vector_get(v, 1);
   x01 = gsl_vector_get(v, 2);
@@ -925,10 +926,9 @@ static int Exponential_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double A, b, xi, yy, wi;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   A = gsl_vector_get(v, 1);
   b = gsl_vector_get(v, 2);
@@ -991,10 +991,9 @@ static int DblExponential_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double A1, b1, A2, b2, xi, yy1, yy2, wi;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   A1 = gsl_vector_get(v, 1);
   b1 = gsl_vector_get(v, 2);
@@ -1059,10 +1058,9 @@ static int Lorentzian_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double A, B, x0, xi, yy, wi;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   A = gsl_vector_get(v, 1);
   x0 = gsl_vector_get(v, 2);
@@ -1124,10 +1122,9 @@ static int Sin_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double A, fc, phi, xi, ys, yc, wi;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   A = gsl_vector_get(v, 1);
   fc = gsl_vector_get(v, 2);
@@ -1190,10 +1187,9 @@ static int Hill_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double y0, m, xhalf, r, yy, xi, wi, a;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   y0 = gsl_vector_get(v, 0);
   m = gsl_vector_get(v, 1);
@@ -1257,10 +1253,9 @@ static int Sigmoid_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double m, x0, r, xi, wi, a, yy;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   m = gsl_vector_get(v, 1);
   x0 = gsl_vector_get(v, 2);
@@ -1322,10 +1317,9 @@ static int Power_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double A, r, xi, wi, a;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   A = gsl_vector_get(v, 1);
   r = gsl_vector_get(v, 2);
@@ -1387,10 +1381,9 @@ static int Lognormal_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double A, x0, width, xi, wi, a, b;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   A = gsl_vector_get(v, 1);
   x0 = gsl_vector_get(v, 2);
@@ -1449,10 +1442,9 @@ static int Rayleigh_df(const gsl_vector *v, void *data, gsl_matrix *J)
   double A, var, xi, yy, wi;
   size_t i;
   struct fitting_xydata *xydata;
-  gsl_vector *x, *y, *w;
+  gsl_vector *x, *w;
   xydata = (struct fitting_xydata*) data;
   x = xydata->x;
-  y = xydata->y;
   w = xydata->w;
   var = gsl_vector_get(v, 1);
   A = gsl_vector_get(v, 0);

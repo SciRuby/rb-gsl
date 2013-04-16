@@ -1299,18 +1299,19 @@ VALUE FUNCTION(rb_gsl_vector,to_s)(VALUE obj)
   char buf[32], format[32], format2[32];
   size_t i;
   VALUE str;
-  BASE x, min;
+  BASE x;
   int dig = 8;
 #ifdef BASE_INT
+  BASE min;
   BASE max;
   dig = 1;
 #endif
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   if (v->size == 0) return rb_str_new2("[ ]");
-  min = FUNCTION(gsl_vector,min)(v);
   str = rb_str_new2("[ ");
   if (VEC_COL_P(obj)) {
 #ifdef BASE_INT
+    min = FUNCTION(gsl_vector,min)(v);
     max = gsl_vector_int_max(v);
     dig = (int) GSL_MAX(fabs(max),fabs(min));
     if (dig > 0) dig = ceil(log10(dig+1e-10));
@@ -2559,7 +2560,7 @@ static VALUE FUNCTION(rb_gsl_vector,compare)(VALUE aa, VALUE bb,
   GSL_TYPE(gsl_vector) *a, *b;
   /*  gsl_vector_int *c;*/
   gsl_block_uchar *c;
-  int status;
+  //int status;
   Data_Get_Struct(aa, GSL_TYPE(gsl_vector), a);
   c = gsl_block_uchar_alloc(a->size);
   if (VEC_P(bb)) {
@@ -2567,9 +2568,9 @@ static VALUE FUNCTION(rb_gsl_vector,compare)(VALUE aa, VALUE bb,
     if (a->size != b->size) 
       rb_raise(rb_eRuntimeError, "Vector size mismatch, %d and %d", (int) a->size, 
 	       (int) b->size);
-    status = (*cmp)(a, b, c);
+    /*status =*/ (*cmp)(a, b, c);
   } else {
-    status = (*cmp2)(a, NUMCONV(bb), c);
+    /*status =*/ (*cmp2)(a, NUMCONV(bb), c);
   }
   return Data_Wrap_Struct(cgsl_block_uchar, 0, gsl_block_uchar_free, c);
 }

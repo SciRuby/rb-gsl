@@ -255,12 +255,13 @@ static VALUE rb_gsl_sf_legendre_H3d_e(VALUE obj,VALUE l,  VALUE lambda, VALUE et
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
+  // local variable "status" declared and set, but never used
+  //int status;
   CHECK_FIXNUM(l);
   Need_Float(lambda);
   Need_Float(eta);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = gsl_sf_legendre_H3d_e(FIX2INT(l), NUM2DBL(lambda), NUM2DBL(eta), rslt);
+  /*status =*/ gsl_sf_legendre_H3d_e(FIX2INT(l), NUM2DBL(lambda), NUM2DBL(eta), rslt);
   return v;
 }
 

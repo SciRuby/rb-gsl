@@ -403,14 +403,12 @@ void rb_gsl_multimin_function_fdf_df(const gsl_vector *x, void *p,
 void rb_gsl_multimin_function_fdf_fdf(const gsl_vector *x, void *p, 
 				      double *f, gsl_vector *g)
 {
-  VALUE vx, vf, vg, proc_fdf, proc_f, proc_df, vp, ary, result;
+  VALUE vx, vg, proc_f, proc_df, vp, ary, result;
   vx = Data_Wrap_Struct(cgsl_vector, 0, NULL, (gsl_vector *) x);
   vg = Data_Wrap_Struct(cgsl_vector, 0, NULL, g);
-  vf = rb_float_new(*f);
   ary = (VALUE) p;
   proc_f = rb_ary_entry(ary, 0);
   proc_df = rb_ary_entry(ary, 1);
-  proc_fdf = rb_ary_entry(ary, 2);
   vp = rb_ary_entry(ary, RARRAY_LEN(ary)-1);
   if (NIL_P(vp)) {
     result = rb_funcall(proc_f, RBGSL_ID_call, 1, vx);

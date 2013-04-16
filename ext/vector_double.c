@@ -499,13 +499,16 @@ VALUE rb_gsl_vector_to_i(VALUE obj)
 }
 
 /* singleton */
+#ifdef HAVE_GNU_GRAPH
 static void draw_hist(VALUE obj, FILE *fp);
 static void draw_vector(VALUE obj, FILE *fp);
 static void draw_vector2(VALUE xx, VALUE yy, FILE *fp);
 static void draw_vector_array(VALUE ary, FILE *fp);
 #ifdef HAVE_NARRAY_H
 static void draw_narray(VALUE obj, FILE *fp);
-#endif
+#endif // HAVE_NARRAY_H
+#endif // HAVE_GNU_GRAPH
+
 static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
 {
 #ifdef HAVE_GNU_GRAPH
@@ -621,6 +624,7 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
 #endif
 }
 
+#ifdef HAVE_GNU_GRAPH
 static void draw_vector(VALUE obj, FILE *fp)
 {
   gsl_vector *x = NULL;
@@ -635,7 +639,7 @@ static void draw_vector2(VALUE xx, VALUE yy, FILE *fp)
 {
 #ifdef HAVE_NARRAY_H
   struct NARRAY *nax, *nay;
-#endif
+#endif // HAVE_NARRAY_H
   double *ptr1 = NULL, *ptr2 = NULL;
   gsl_vector *vx, *vy;
   size_t j, n, stridex = 1, stridey = 1;
@@ -650,7 +654,7 @@ static void draw_vector2(VALUE xx, VALUE yy, FILE *fp)
     ptr1 = (double *) nax->ptr;
     n = nax->total;
     stridex = 1;
-#endif
+#endif // HAVE_NARRAY_H
   } else {
     rb_raise(rb_eTypeError, "wrong argument type %s (Vector expected)",
 	     rb_class2name(CLASS_OF(xx)));
@@ -665,7 +669,7 @@ static void draw_vector2(VALUE xx, VALUE yy, FILE *fp)
     GetNArray(yy, nay);
     ptr2 = (double *) nay->ptr;
     stridey = 1;
-#endif
+#endif // HAVE_NARRAY_H
   } else {
     rb_raise(rb_eTypeError, "wrong argument type %s (Vector expected)",
 	     rb_class2name(CLASS_OF(yy)));
@@ -687,7 +691,7 @@ static void draw_narray(VALUE obj, FILE *fp)
     fprintf(fp, "%d %g\n", (int) j, ptr[j]);
   fflush(fp);
 }
-#endif
+#endif // HAVE_NARRAY_H
 
 static void draw_hist(VALUE obj, FILE *fp)
 {
@@ -757,6 +761,7 @@ static void draw_vector_array(VALUE ary, FILE *fp)
   }
   fflush(fp);
 }
+#endif // HAVE_GNU_GRAPH
 
 /* singleton */
 static VALUE rb_gsl_vector_plot2(int argc, VALUE *argv, VALUE obj)
@@ -869,7 +874,7 @@ static VALUE rb_gsl_vector_normalize(int argc, VALUE *argv, VALUE obj)
 static VALUE rb_gsl_vector_normalize_bang(int argc, VALUE *argv, VALUE obj)
 {
   gsl_vector *v = NULL;
-  double mean;  
+  //  double mean;
   double nrm;
   double factor;
   switch (argc) {
@@ -885,9 +890,9 @@ static VALUE rb_gsl_vector_normalize_bang(int argc, VALUE *argv, VALUE obj)
     break;
   }
   Data_Get_Vector(obj, v);
-  mean = gsl_stats_mean(v->data, v->stride, v->size);
-  /*  gsl_vector_add_constant(v, -mean);  
-  sd = gsl_stats_sd(v->data, v->stride, v->size);  
+  /*  mean = gsl_stats_mean(v->data, v->stride, v->size);
+  gsl_vector_add_constant(v, -mean);
+  sd = gsl_stats_sd(v->data, v->stride, v->size);
   gsl_vector_scale(v, sqrt(nrm)/sd);*/
   factor = nrm/gsl_blas_dnrm2(v);
   gsl_vector_scale(v, factor);

@@ -242,17 +242,17 @@ class ConfigTable
       PathItem.new('rbdir', 'path', '$siterubyver',
                    'the directory for ruby scripts'),
       PathItem.new('sodir', 'path', '$siterubyverarch',
-                   'the directory for ruby extensions'),
+                   'the directory for ruby extentions'),
       PathItem.new('rubypath', 'path', rubypath,
                    'the path to set to #! line'),
       ProgramItem.new('rubyprog', 'name', rubypath,
                       'the ruby program using for installation'),
       ProgramItem.new('makeprog', 'name', makeprog,
-                      'the make program to compile ruby extensions'),
+                      'the make program to compile ruby extentions'),
       SelectItem.new('shebang', 'all/ruby/never', 'ruby',
                      'shebang line (#!) editing mode'),
       BoolItem.new('without-ext', 'yes/no', 'no',
-                   'does not compile/install ruby extensions')
+                   'does not compile/install ruby extentions')
     ]
   end
   private :standard_entries
@@ -757,7 +757,7 @@ class ToplevelInstaller
     [ 'all',      'do config, setup, then install' ],
     [ 'config',   'saves your configurations' ],
     [ 'show',     'shows current configuration' ],
-    [ 'setup',    'compiles ruby extensions and others' ],
+    [ 'setup',    'compiles ruby extentions and others' ],
     [ 'install',  'installs files' ],
     [ 'test',     'run all tests in test/' ],
     [ 'clean',    "does `make clean' for each extention" ],
@@ -1352,7 +1352,7 @@ class Installer
 
   def install_dir_ext(rel)
     return unless extdir?(curr_srcdir())
-    install_files rubyextensions('.'),
+    install_files rubyextentions('.'),
                   "#{config('sodir')}/#{File.dirname(rel)}",
                   0555
   end
@@ -1382,7 +1382,7 @@ class Installer
     glob_reject(%w(*.y *.output), targetfiles())
   end
 
-  def rubyextensions(dir)
+  def rubyextentions(dir)
     ents = glob_select("*.#{@config.dllext}", targetfiles())
     if ents.empty?
       setup_rb_error "no ruby extention exists: 'ruby #{$0} setup' first"

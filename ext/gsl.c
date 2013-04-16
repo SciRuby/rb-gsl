@@ -144,11 +144,13 @@ void Init_rb_gsl()
 
   Init_gsl_ieee(mgsl);
 
-#ifdef HAVE_NARRAY_H
-  Init_gsl_narray(mgsl);
-#endif
-
+#ifdef HAVE_NMATRIX_H
   Init_gsl_nmatrix(mgsl);
+#else
+# ifdef HAVE_NARRAY_H
+  Init_gsl_narray(mgsl);
+# endif
+#endif
 
   Init_wavelet(mgsl);
 

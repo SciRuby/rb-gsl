@@ -463,7 +463,9 @@ static VALUE rb_fft_complex_trans(int argc, VALUE *argv, VALUE obj,
 						   gsl_fft_complex_workspace *),
 				  int sss)
 {
-  int flag = 0, status;
+  int flag = 0;
+  // local variable "status" was defined and set, but never used
+  //int status;
   size_t stride, n;
   gsl_complex_packed_array data;
   gsl_vector_complex *vin, *vout;
@@ -473,11 +475,11 @@ static VALUE rb_fft_complex_trans(int argc, VALUE *argv, VALUE obj,
   if (sss == RB_GSL_FFT_COPY) {
     vout = gsl_vector_complex_alloc(n);
     gsl_vector_complex_memcpy(vout, vin);
-    status = (*transform)(vout->data, vout->stride /*1*/, vout->size /*n*/, table, space);
+    /*status =*/ (*transform)(vout->data, vout->stride /*1*/, vout->size /*n*/, table, space);
     gsl_fft_free(flag, (GSL_FFT_Wavetable *) table, (GSL_FFT_Workspace *) space);
     return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vout);
   } else {    /* in-place */
-    status = (*transform)(data, stride, n, table, space);
+    /*status =*/ (*transform)(data, stride, n, table, space);
     gsl_fft_free(flag, (GSL_FFT_Wavetable *) table, (GSL_FFT_Workspace *) space);
     return obj;
   }
@@ -497,7 +499,9 @@ static VALUE rb_gsl_fft_complex_forward2(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_fft_complex_transform(int argc, VALUE *argv, VALUE obj)
 {
-  int flag = 0, status;
+  int flag = 0;
+  // local variable "status" was defined and set, but never used
+  //int status;
   size_t stride, n;
   gsl_vector_complex *vin, *vout;
   gsl_fft_direction sign;
@@ -509,7 +513,7 @@ static VALUE rb_gsl_fft_complex_transform(int argc, VALUE *argv, VALUE obj)
   flag = gsl_fft_get_argv_complex(argc-1, argv, obj, &vin, &data, &stride, &n, &table, &space);
   vout = gsl_vector_complex_alloc(n);
   gsl_vector_complex_memcpy(vout, vin);
-  status = gsl_fft_complex_transform(vout->data, stride, n, table, space, sign);
+  /*status =*/ gsl_fft_complex_transform(vout->data, stride, n, table, space, sign);
   gsl_fft_free(flag, (GSL_FFT_Wavetable *) table, (GSL_FFT_Workspace *) space);
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vout);
 }
@@ -517,7 +521,9 @@ static VALUE rb_gsl_fft_complex_transform(int argc, VALUE *argv, VALUE obj)
 /* in-place */
 static VALUE rb_gsl_fft_complex_transform2(int argc, VALUE *argv, VALUE obj)
 {
-  int flag = 0, status;
+  int flag = 0;
+  // local variable "status" was defined and set, but never used
+  //int status;
   size_t stride, n;
   gsl_fft_direction sign;
   gsl_complex_packed_array data;
@@ -526,7 +532,7 @@ static VALUE rb_gsl_fft_complex_transform2(int argc, VALUE *argv, VALUE obj)
   CHECK_FIXNUM(argv[argc-1]);
   sign = FIX2INT(argv[argc-1]);
   flag = gsl_fft_get_argv_complex(argc-1, argv, obj, NULL, &data, &stride, &n, &table, &space);
-  status = gsl_fft_complex_transform(data, stride, n, table, space, sign);
+  /*status =*/ gsl_fft_complex_transform(data, stride, n, table, space, sign);
   gsl_fft_free(flag, (GSL_FFT_Wavetable *) table, (GSL_FFT_Workspace *) space);
   return obj;
 }
@@ -666,7 +672,9 @@ static VALUE rb_fft_real_trans(int argc, VALUE *argv, VALUE obj,
 					    gsl_fft_real_workspace *),
 			       int sss)
 {
-  int flag = 0, status, naflag = 0;
+  int flag = 0, naflag = 0;
+  // local variable "status" was defined and set, but never used
+  //int status;
   size_t stride, n;
   gsl_vector *vnew;
   gsl_vector_view vv;
@@ -708,9 +716,9 @@ static VALUE rb_fft_real_trans(int argc, VALUE *argv, VALUE obj,
   } else {
     rb_raise(rb_eRuntimeError, "something wrong");
   }
-  status = (*trans)(ptr2, stride, n, table, space);
+  /*status =*/ (*trans)(ptr2, stride, n, table, space);
   gsl_fft_free(flag, (GSL_FFT_Wavetable *) table, (GSL_FFT_Workspace *) space);
-return ary;
+  return ary;
 }
 
 static VALUE rb_gsl_fft_real_transform(int argc, VALUE *argv, VALUE obj)
@@ -730,7 +738,9 @@ static VALUE rb_fft_halfcomplex_trans(int argc, VALUE *argv, VALUE obj,
 						   const gsl_fft_halfcomplex_wavetable *, gsl_fft_real_workspace *),
 				      int sss)
 {
-  int flag = 0, status, naflag = 0;
+  int flag = 0, naflag = 0;
+  // local variable "status" was defined and set, but never used
+  //int status;
   size_t stride, n;
   gsl_vector *vnew;
   gsl_vector_view vv;
@@ -773,7 +783,7 @@ static VALUE rb_fft_halfcomplex_trans(int argc, VALUE *argv, VALUE obj,
   } else {
     rb_raise(rb_eRuntimeError, "something wrong");
   }
-  status = (*trans)(ptr2, stride, n, table, space);
+  /*status =*/ (*trans)(ptr2, stride, n, table, space);
   gsl_fft_free(flag, (GSL_FFT_Wavetable *) table, (GSL_FFT_Workspace *) space);
   return ary;
 }

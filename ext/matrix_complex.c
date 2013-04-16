@@ -199,7 +199,7 @@ static VALUE rb_gsl_matrix_complex_eye(int argc, VALUE *argv, VALUE klass)
 {
   size_t n, i;
   gsl_matrix_complex *m = NULL;
-  gsl_complex z, *p = &z;
+  gsl_complex z, *pz = &z;
   switch (argc) {
   case 1:
     CHECK_FIXNUM(argv[0]);
@@ -223,7 +223,8 @@ static VALUE rb_gsl_matrix_complex_eye(int argc, VALUE *argv, VALUE klass)
       break;
     default:
       if (rb_obj_is_kind_of(argv[1], cgsl_complex)) {
-	Data_Get_Struct(argv[1], gsl_complex, p);
+	Data_Get_Struct(argv[1], gsl_complex, pz);
+        z = *pz;
       } else {
 	rb_raise(rb_eTypeError, 
 		 "wrong argument type %s", rb_class2name(CLASS_OF(argv[1])));
@@ -422,6 +423,7 @@ static VALUE rb_gsl_matrix_complex_set_row(int argc, VALUE *argv, VALUE obj)
     default:
       CHECK_COMPLEX(argv[k]);
       Data_Get_Struct(argv[k], gsl_complex, pz);
+      z = *pz;
       break;
     }
     gsl_matrix_complex_set(A, i, k-1, z);
@@ -448,6 +450,7 @@ static VALUE rb_gsl_matrix_complex_set_col(int argc, VALUE *argv, VALUE obj)
     default:
       CHECK_COMPLEX(argv[k]);
       Data_Get_Struct(argv[k], gsl_complex, pz);
+      z = *pz;
       break;
     }
     gsl_matrix_complex_set(A, k-1, j, z);
@@ -1519,8 +1522,10 @@ static VALUE rb_gsl_matrix_complex_indgen_singleton(int argc, VALUE *argv, VALUE
   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, mnew);
 }
 
-
-static int xgsl_matrix_complex_equal(const gsl_matrix_complex *m1,
+// Starting with version 1.15, GSL provides a gsl_matrix_complex_equal
+// function, but it only determines absolute equality (i.e. is has no epsilon
+// argument).
+static int gsl_matrix_complex_equal_eps(const gsl_matrix_complex *m1,
   const gsl_matrix_complex *m2, double eps)
 {
   gsl_complex z1, z2;
@@ -1555,7 +1560,7 @@ static VALUE rb_gsl_matrix_complex_equal(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, gsl_matrix_complex, m1);
   CHECK_MATRIX_COMPLEX(argv[0]);
   Data_Get_Struct(argv[0], gsl_matrix_complex, m2);
-  ret = xgsl_matrix_complex_equal(m1, m2, eps);
+  ret = gsl_matrix_complex_equal_eps(m1, m2, eps);
   if (ret == 1) return Qtrue;
   else return Qfalse;
 }

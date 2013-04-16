@@ -126,14 +126,19 @@ def check_version(configfile)
 
     if ver >= "1.14"
       configfile.printf("#ifndef GSL_1_14_LATER\n#define GSL_1_14_LATER\n#endif\n")
-    end    
-    
+    end
+
+    if ver >= "1.15"
+      configfile.printf("#ifndef GSL_1_15_LATER\n#define GSL_1_15_LATER\n#endif\n")
+    end
+
   end
 end
 
 #####
 
-$CFLAGS = " -Wall -I../include "
+$CFLAGS ||= ''
+$CFLAGS += " -Wall -I../include "
 
 begin
   RB_GSL_CONFIG = File.open("../include/rb_gsl_config.h", "w")
@@ -237,13 +242,29 @@ rescue
   raise("Check GSL>=0.9.4 is installed, and the command \"gsl-config\" is in search path.")
 end
 
-#narray_config = dir_config("narray")
-#narray_config = dir_config('narray',$sitearchdir,$sitearchdir)
-nmatrix_config = dir_config('nmatrix',$sitearchdir,$sitearchdir)
-# Try to find nmatrix with RubyGems
+narray_config = dir_config('narray',$sitearchdir,$sitearchdir)
+# Try to find narray with RubyGems
 begin
   require 'rubygems'
-  nm_gemspec=Gem.searcher.find('nmatrix.h')
+  na_gemspec=Gem::Specification.find_by_path('narray.h')
+  if na_gemspec
+    narray_config = File.join(na_gemspec.full_gem_path, na_gemspec.require_path)
+    $CPPFLAGS = " -I#{narray_config} "+$CPPFLAGS
+  end
+rescue LoadError
+end
+have_narray_h = have_header("narray.h")
+if narray_config
+  if RUBY_PLATFORM =~ /cygwin|mingw/
+#    have_library("narray") || raise("ERROR: narray import library is not found") 
+  have_library("narray")
+  end
+end
+
+nmatrix_config = dir_config('nmatrix',$sitearchdir,$sitearchdir)
+begin
+  require 'rubygems'
+  nm_gemspec=Gem::Specification.find_by_path('nmatrix.h')
   if nm_gemspec
     nmatrix_config = File.join(nm_gemspec.full_gem_path, nm_gemspec.require_path)
     $CPPFLAGS = " -I#{nmatrix_config} "+$CPPFLAGS
@@ -269,6 +290,8 @@ end
 File.open("../lib/gsl.rb", "w") do |file|
   if have_nmatrix_h
     file.print("require('nmatrix')\n")
+  elsif have_narray_h
+    file.print("require('narray')\n")
   end
 #  file.print("require('rb_gsl')\ninclude GSL\n")
   file.print("require('rb_gsl')\n")  
@@ -278,6 +301,8 @@ end
 File.open("../lib/rbgsl.rb", "w") do |file|
   if have_nmatrix_h
     file.print("require('nmatrix')\n")
+  elsif have_narray_h
+    file.print("require('narray')\n")
   end
   file.print("require('rb_gsl')\n")
   file.print("require('gsl/oper.rb')\n")

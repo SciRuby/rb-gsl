@@ -193,7 +193,9 @@ static VALUE rb_gsl_wavelet_transform0(int argc, VALUE *argv, VALUE obj,
   gsl_vector *v = NULL, *vnew;
   gsl_wavelet_direction dir = forward;
   gsl_wavelet_workspace *work = NULL;
-  int itmp, flag = 0, status;
+  int itmp, flag = 0;
+  // local variable "status" declared and set, but never used
+  //int status;
   double *ptr1, *ptr2;
   size_t n, stride;
   int naflag = 0;
@@ -332,7 +334,7 @@ static VALUE rb_gsl_wavelet_transform0(int argc, VALUE *argv, VALUE obj,
     }
 #endif
   }
-  status = gsl_wavelet_transform(w, ptr2, stride, n, dir, work);
+  /*status =*/ gsl_wavelet_transform(w, ptr2, stride, n, dir, work);
   if (flag) gsl_wavelet_workspace_free(work);
   return ary;
 }
@@ -356,7 +358,9 @@ static VALUE rb_gsl_wavelet_trans(int argc, VALUE *argv, VALUE obj,
   gsl_wavelet *w = NULL;
   gsl_vector *v = NULL, *vnew;
   gsl_wavelet_workspace *work = NULL;
-  int itmp, flag = 0, status, naflag = 0;
+  int itmp, flag = 0, naflag = 0;
+  // local variable "status" declared and set, but never used
+  //int status;
   double *ptr1 = NULL, *ptr2 = NULL;
   size_t n, stride;
   VALUE ary, ret;
@@ -489,7 +493,7 @@ static VALUE rb_gsl_wavelet_trans(int argc, VALUE *argv, VALUE obj,
     }
 #endif
   }
-  status = (*trans)(w, ptr2, stride, n, work);
+  /*status =*/ (*trans)(w, ptr2, stride, n, work);
   if (flag) gsl_wavelet_workspace_free(work);
   return ary;
 }
@@ -530,7 +534,9 @@ static VALUE rb_gsl_wavelet2d(int argc, VALUE *argv, VALUE obj,
   gsl_wavelet_direction dir = forward;
   gsl_wavelet_workspace *work = NULL;
   VALUE ary, ret;
-  int itmp, flag = 0, status;
+  int itmp, flag = 0;
+  // local variable "status" declared and set, but never used
+  //int status;
   switch (TYPE(obj)) {
   case T_MODULE:
   case T_CLASS:
@@ -592,7 +598,7 @@ static VALUE rb_gsl_wavelet2d(int argc, VALUE *argv, VALUE obj,
     mnew = m;
     ary = ret;
   }
-  status = (*trans)(w, mnew, dir, work);
+  /*status =*/ (*trans)(w, mnew, dir, work);
   if (flag) gsl_wavelet_workspace_free(work);
   return ary;
 }
@@ -619,7 +625,9 @@ static VALUE rb_gsl_wavelet2d_trans(int argc, VALUE *argv, VALUE obj,
   gsl_matrix *m = NULL, *mnew;
   gsl_wavelet_workspace *work = NULL;
   VALUE ary, ret;
-  int itmp, flag = 0, status;
+  int itmp, flag = 0;
+  // local variable "status" declared and set, but never used
+  //int status;
   switch (TYPE(obj)) {
   case T_MODULE:
   case T_CLASS:
@@ -668,7 +676,7 @@ static VALUE rb_gsl_wavelet2d_trans(int argc, VALUE *argv, VALUE obj,
     mnew = m;
     ary = ret;
   }
-  status = (*trans)(w, mnew, work);
+  /*status =*/ (*trans)(w, mnew, work);
   if (flag) gsl_wavelet_workspace_free(work);
   return ary;
 }
