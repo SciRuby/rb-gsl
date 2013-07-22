@@ -1,8 +1,6 @@
 lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
-require 'nmatrix/version'
-
 Gem::Specification.new do |gem|
   gem.name = "gsl"
   gem.version = File.readlines('VERSION')[0].chomp
