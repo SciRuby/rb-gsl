@@ -2,7 +2,7 @@ lib = File.expand_path('../lib/', __FILE__)
 $:.unshift lib unless $:.include?(lib)
 
 Gem::Specification.new do |gem|
-  gem.name = "gsl"
+  gem.name = "gsl-nmatrix"
   gem.version = File.readlines('VERSION')[0].chomp
   gem.summary = 'Ruby interface to GNU Scientific Library (NMatrix fork)'
   gem.description = 'Ruby/GSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby'
@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = '>= 1.8.1'
 
-  gem.add_dependency 'nmatrix', ">= 0.0.4"
+  gem.add_dependency 'nmatrix', "> 0.0.9"
   # gem.add_dependency 'narray', '>= 0.5.9'
 
   gem.has_rdoc = true
