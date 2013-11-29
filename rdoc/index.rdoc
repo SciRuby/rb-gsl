@@ -1,0 +1,62 @@
+#
+# = {Ruby/GSL}[link:files/rdoc/index_rdoc.html"target="_parent]
+#
+# Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License.
+#
+# == {}[link:index.html"name="1] Description
+# {Ruby/GSL}[http://rubyforge.org/projects/rb-gsl/"target="_top] is a ruby interface to the {GNU Scientific Library}[http://www.gnu.org/software/gsl/"target="_top] (GSL), for numerical computing with {Ruby}[http://www.ruby-lang.org/en/"target="_top]. 
+#
+# == {}[link:index.html"name="3] Installation
+# === {}[link:index.html"name="3.1] Using the gem command
+# Ruby/GSL may now be installed as a Ruby Gem by simply running
+#
+#   gem install gsl
+#
+# Note that the GSL libraries must already be installed before Ruby/GSL
+# can be installed.
+#
+# === {}[link:index.html"name="3.2] Using the setup.rb command
+# If you prefer, Ruby/GSL may still be installed using setup.rb.
+# 1. Get and install {GSL}[http://www.gnu.org/software/gsl/#downloading"target="_top]. Make sure the command "gsl-config" is in command search path.
+# 1. {Download}[http://rubyforge.org/frs/?group_id=285"target="_top] Ruby/GSL, ungzip and untar the archive <tt>rb-gsl-xxx.tgz</tt>. 
+# 1. <tt> % cd rb-gsl-xxx/</tt>
+# 1. <tt> % ruby setup.rb config</tt>
+# 1. <tt> % ruby setup.rb setup</tt>
+# 1. <tt> % ruby setup.rb install</tt> (as root)
+#
+# * It is recommended to install the
+#   {GNU plotutils}[http://www.gnu.org/software/plotutils/plotutils.html"target="_top]
+#   package.  Some of the example scripts in the 'examples/' directory use the
+#   <tt>graph</tt> utility included in the package to plot the results.
+#   Windows-cygwin binaries of <tt>GNU plotutils</tt> and related packages are
+#   available from {here}[http://rustam.uwp.edu/support"target="_top].
+#
+# == {}[link:index.html"name="4] Screenshot
+#
+# Ruby/GSL can be seen in action in these {screenshots}[link:files/rdoc/screenshot_rdoc.html].
+#
+# == {}[link:index.html"name="5] Reference
+#
+# The {Ruby/GSL reference manual}[link:files/rdoc/ref_rdoc.html] follows and borrows
+# large parts of the GSL reference manual.
+#
+# == {}[link:index.html"name="6] Examples
+# See scripts in <tt>examples/</tt> and <tt>tests/</tt> directories.
+#
+# == {}[link:index.html"name="7] Related Projects
+# * {ruby-gsl:}[http://ruby-gsl.sourceforge.net/"target="_top]
+#   Another Ruby biding, developed by Arno Erpenbeck.
+#
+# == {}[link:index.html"name="8] Licence
+# Ruby/GSL is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License.
+# This library is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY.
+#
+# == {}[link:index.html"name="9] Bug Report
+# If you encounter bugs in Ruby/GSL, please e-mail to me, or
+# submit reports from {RubyForge page}[http://rubyforge.org/projects/rb-gsl/"target="_top].
+#
+# == {}[link:index.html"name="10] Author
+# Yoshiki Tsunesada:: July, 2004
+# David MacMahon:: November, 2010
