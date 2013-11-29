@@ -36,16 +36,21 @@ else
   GSL_CONFIG = "gsl-config"
 end
 
+def gsl_config_arg(arg)
+  yield arg_config("--with-gsl-#{arg}") {
+    IO.popen("#{GSL_CONFIG} --#{arg}") { |f| f.gets.chomp }
+  }
+end
+
 def gsl_config()
   print("checking gsl cflags... ")
-  IO.popen("#{GSL_CONFIG} --cflags") do |f|
-    cflags = f.gets.chomp
+  gsl_config_arg(:cflags) do |cflags|
     puts(cflags)
     $CFLAGS += " " + cflags
   end
   
-  IO.popen("#{GSL_CONFIG} --libs") do |f|
-    libs = f.gets.chomp
+  gsl_config_arg(:libs) do |libs|
+    libs.tr!(File::PATH_SEPARATOR, ' ')
     dir_config("cblas")
     dir_config("atlas")
     if have_library("cblas") and have_library("atlas")
@@ -65,8 +70,8 @@ end
 def check_version(configfile)
   
   print("checking gsl version... ")
-  IO.popen("#{GSL_CONFIG} --version") do |f|
-    ver = GSL::Version.new(f.gets.chomp)
+  gsl_config_arg(:version) do |version|
+    ver = GSL::Version.new(version)
     puts(ver)
     configfile.printf("#ifndef GSL_VERSION\n#define GSL_VERSION \"#{ver}\"\n#endif\n")
 
@@ -197,7 +202,7 @@ begin
   
   begin
     print("checking rb-gsl version...")
-    IO.popen("cat ../VERSION") do |f|
+    File.open("../VERSION") do |f|
       ver = GSL::Version.new(f.gets.chomp)
       puts(ver)
       RB_GSL_CONFIG.printf("#ifndef RUBY_GSL_VERSION\n#define RUBY_GSL_VERSION \"#{ver}\"\n#endif\n")
@@ -251,6 +256,7 @@ begin
   if na_gemspec
     narray_config = File.join(na_gemspec.full_gem_path, na_gemspec.require_path)
     $CPPFLAGS = " -I#{narray_config} "+$CPPFLAGS
+    $LOCAL_LIBS = " -L#{File.join(narray_config, 'src')}" + $LOCAL_LIBS
   end
 rescue LoadError
 end
@@ -262,6 +268,7 @@ if narray_config
   end
 end
 
+unless arg_config('--disable-tamu-anova')
 tamu_anova_config = dir_config('tamu_anova',$sitearchdir,$sitearchdir)
 have_header("tamu_anova/tamu_anova.h")
 if tamu_anova_config
@@ -269,6 +276,7 @@ if tamu_anova_config
 #  if RUBY_PLATFORM =~ /cygwin|mingw/
 #    have_library("tamuanova") || raise("ERROR: tamu_anova import library is not found")
 #  end
+end
 end
 
 File.open("../lib/gsl.rb", "w") do |file|
