@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'rubygems/package_task'
-require 'rake/rdoctask'
+require 'rdoc/task'
 
 RB_GSL_VERSION = File.readlines('VERSION')[0].chomp
 
