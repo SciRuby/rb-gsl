@@ -87,7 +87,7 @@ def test_stepper_linear(type, hstart, base_prec)
   t = 0.0
   s = 0
   while t < 4.0
-    status = stepper.apply(t, h, y, yerr, Rhs_func_lin)
+    _status = stepper.apply(t, h, y, yerr, Rhs_func_lin)
     del = ((y[1] - (t + h))/y[1]).abs
     delmax = MAX_DBL(del, delmax)
     if del > (count + 1.0)*base_prec
@@ -111,7 +111,7 @@ def test_stepper_sin(type, hstart, base_prec)
   s = 0
   while t < M_PI
     sin_th = sin(t + h)
-    status = stepper.apply(t, h, y, yerr, Rhs_func_sin)
+    _status = stepper.apply(t, h, y, yerr, Rhs_func_sin)
     del = ((y[1] - sin_th)/sin_th).abs
     delmax = GSL::MAX_DBL(del, delmax)
     if t < 0.5*M_PI
@@ -138,7 +138,7 @@ def test_stepper_sin(type, hstart, base_prec)
 
   delmax = 0.0
   while t < 3*M_PI
-    status = stepper.apply(t, h, y, yerr, Rhs_func_sin)
+    _status = stepper.apply(t, h, y, yerr, Rhs_func_sin)
     del = (y[1] - sin(t)).abs
     delmax = GSL::MAX_DBL(del, delmax)
     count += 1
@@ -162,7 +162,7 @@ def test_stepper_exp(type, hstart, base_prec)
   t = 0.0
   while t < 5.0
     ex = exp(t + h)
-    status = stepper.apply(t, h, y, yerr, Rhs_func_exp)
+    _status = stepper.apply(t, h, y, yerr, Rhs_func_exp)
     del = ((y[1] - ex)/y[1]).abs
     delmax = GSL::MAX_DBL(del, delmax)
     if del > (count+1.0)*2.0*base_prec
@@ -185,7 +185,7 @@ def test_stepper_stiff(type, hstart, base_prec)
   yerr = GSL::Vector.alloc(2)
   t = 0.0
   while t < 5.0
-    status = stepper.apply(t, h, y, yerr, Rhs_func_stiff)
+    _status = stepper.apply(t, h, y, yerr, Rhs_func_stiff)
     if t > 0.04
       arg = t + h
       e1 = exp(-arg)
@@ -219,7 +219,7 @@ def test_stepper_err(type, hstart, base_prec)
   while t < M_PI
     y1_t = y[1]
     dy_exp = cos(t)*sin(h)-2*sin(t)*pow(sin(h/2),2.0);
-    status = stepper.apply(t, h, y, yerr, Rhs_func_sin)
+    _status = stepper.apply(t, h, y, yerr, Rhs_func_sin)
     dy_t = y[1] - y1_t;
     del = (dy_t - dy_exp).abs
     if t > 0.1 and t < 0.2
@@ -245,7 +245,7 @@ def test_evolve_system_flat(step, sys, t0, t1, hstart, y, yfin, err_target, desc
   t = t0*1.0
   e = GSL::Odeiv::Evolve.alloc(sys.dimension)
   while t < t1
-    t, h, status = e.apply(nil, step, sys, t, t1, h, y)
+    t, h, _status = e.apply(nil, step, sys, t, t1, h, y)
   end
   frac = ((y[1] - yfin[1])/yfin[1]).abs + ((y[0] - yfin[0])/yfin[0]).abs
   if frac > 2.0*e.count*err_target
@@ -263,7 +263,7 @@ def test_evolve_system(type, sys, t0, t1, hstart, y, yfin, err_target, desc)
   c = GSL::Odeiv::Control.standard_alloc(0.0, err_target, 1.0, 1.0)
   e = GSL::Odeiv::Evolve.alloc(sys.dimension)
   while t < t1
-    t, h, status = e.apply(c, step, sys, t, t1, h, y)
+    t, h, _status = e.apply(c, step, sys, t, t1, h, y)
   end
   frac = ((y[1] - yfin[1])/yfin[1]).abs + ((y[0] - yfin[0])/yfin[0]).abs
   if frac > 2.0*e.count*err_target

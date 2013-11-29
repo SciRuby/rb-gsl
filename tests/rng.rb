@@ -12,10 +12,10 @@ GSL::IEEE::env_setup()
 GSL::Rng::env_setup()
 
 def rng_test(type, seed, n, result)
-  r = GSL::Rng.alloc(type)
+  r, k = GSL::Rng.alloc(type), nil
   if seed != 0; r.set(seed); end
 
-  for i in 0...n
+  n.times do
     k = r.get
   end
 
@@ -34,7 +34,7 @@ def rng_float_test(type)
   end while k == 0
 
   c = k/u
-  for i in 0...N2
+  N2.times do
     k = ri.get
     u = rf.get
     if (c*k != u) 
@@ -111,7 +111,7 @@ end
 
 def rng_max_test(r, ran_max)
   max = 0
-  for i in 0...N2
+  N2.times do
     k = r.get
     if k > max; max = k; end
   end
@@ -123,7 +123,7 @@ end
 
 def rng_min_test(r, ran_min, ran_max)
   min = 1000000000
-  for i in 0...N2
+  N2.times do
     k = r.get
     if k < min; min = k; end
   end
@@ -135,7 +135,7 @@ end
 
 def rng_sum_test(r)
   sum = 0.0
-  for i in 0...N2
+  N2.times do
     x = r.uniform - 0.5
     sum += x
   end

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require("gsl")
 require("../gsl_test.rb")
-require("eigen.rb")
+require("./eigen.rb")
 include GSL::Test
 
 def test_eigen_genherm_results(a, b, eval, evec, count, desc, desc2)

@@ -233,7 +233,7 @@ module GSL
       def TEST_SF_2(stat, func, args, val1, tol1, val2, tol2, expect_return) 
         r, = eval("#{func}#{args}") 
         status = 0
-        stat += test_sf_2(r1, val1, tol1, r2, val2, tol2, status, 
+        stat += test_sf_2(r, val1, tol1, r2, val2, tol2, status, 
                           expect_return, "#{func}#{args}")
         return stat
       end

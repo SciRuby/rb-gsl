@@ -2,7 +2,7 @@
 # Ruby/GSL implementation of GSL "eigen/test.c"
 require("gsl")
 require("../gsl_test.rb")
-require("eigen.rb")
+require("./eigen.rb")
 include GSL::Test
 
 def test_eigen_symm(desc, m)

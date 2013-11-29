@@ -6,7 +6,7 @@ include GSL::Test
 include Math
 include GSL::Test::Sf
 s = 0
-m = GSL::MODE_DEFAULT
+_m = GSL::MODE_DEFAULT
   TEST_SF(s, "GSL::Sf::airy_Ai_e", "(-500.0, GSL::MODE_DEFAULT)",              0.0725901201040411396, TEST_TOL4, GSL::SUCCESS)
   TEST_SF(s, "GSL::Sf::airy_Ai_e", "(-5.0, GSL::MODE_DEFAULT)",                0.3507610090241142,    TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s, "GSL::Sf::airy_Ai_e", "(-0.3000000000000094, GSL::MODE_DEFAULT)", 0.4309030952855831,    TEST_TOL0, GSL::SUCCESS)

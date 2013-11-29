@@ -6,7 +6,7 @@ include GSL::Test
 include Math
 include GSL::Test::Sf
 s = 0
-m = GSL::MODE_DEFAULT
+_m = GSL::MODE_DEFAULT
   TEST_SF(s, "GSL::Sf::dilog_e", "(-3.0)",   -1.9393754207667089531,     TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s, "GSL::Sf::dilog_e", "(-0.5)",   -0.4484142069236462024,     TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s, "GSL::Sf::dilog_e", "(-0.001)", -0.0009997501110486510834,  TEST_TOL0, GSL::SUCCESS)

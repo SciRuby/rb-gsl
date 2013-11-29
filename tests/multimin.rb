@@ -106,7 +106,7 @@ Rosenbrock_f = Proc.new { |x|
 
 Rosenbrock_df = Proc.new { |x, df|
   u = x[0]; v = x[1]
-  a = u - 1
+  _ = u - 1
   b = u*u - v
   df[0] = 2 * (u - 1) + 40 * u * b
   df[1] = -20 * b

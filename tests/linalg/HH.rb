@@ -7,7 +7,7 @@ include GSL::Test
 def test_HH_solve_dim(m, actual, eps)
   dim = m.size1
   s = 0
-  perm = GSL::Permutation.alloc(dim)
+  _perm = GSL::Permutation.alloc(dim)
   x = GSL::Vector.indgen(dim) + 1
   hh = m.duplicate
   GSL::Linalg::HH.svx(hh, x)

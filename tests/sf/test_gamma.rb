@@ -6,7 +6,7 @@ include GSL::Test
 include Math
 include GSL::Test::Sf
 s = 0
-m = GSL::MODE_DEFAULT
+_m = GSL::MODE_DEFAULT
   TEST_SF(s,  "GSL::Sf::lngamma_e", "(-0.1)", 2.368961332728788655 , TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::lngamma_e", "(-1.0/256.0)", 5.547444766967471595  , TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::lngamma_e", "(1.0e-08)", 18.420680738180208905 , TEST_TOL0, GSL::SUCCESS)

@@ -6,7 +6,7 @@ include GSL::Test
 include Math
 include GSL::Test::Sf
 s = 0
-m = GSL::MODE_DEFAULT
+_m = GSL::MODE_DEFAULT
   TEST_SF(s, "GSL::Sf::hydrogenicR_1_e", "(3.0, 2.0)",  0.025759948256148471036,  TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s, "GSL::Sf::hydrogenicR_1_e", "(3.0, 10.0)", 9.724727052062819704e-13, TEST_TOL1, GSL::SUCCESS)
   TEST_SF(s, "GSL::Sf::hydrogenicR_e", "(4, 0, 3.0, 2.0)", -0.03623182256981820062,  TEST_TOL2, GSL::SUCCESS)

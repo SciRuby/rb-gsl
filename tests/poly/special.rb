@@ -4,7 +4,7 @@ require("../gsl_test2.rb")
 include GSL::Test
 include Math
 
-eps = 100.0 * GSL::DBL_EPSILON
+_eps = 100.0 * GSL::DBL_EPSILON
 GSL::IEEE::env_setup()
 
 HermitPoly = Array[7]

@@ -9,7 +9,7 @@ def test_lmder(fdf, x, xx, f, cov)
   s.set(fdf, x)
   iter = 0
   begin
-    status = s.iterate
+    _status = s.iterate
     for i in 0...fdf.p
       test_rel(s.x[i], xx[fdf.p*iter+i], 1e-5, "lmsder,  iter=#{iter}, x#{i}")
     end

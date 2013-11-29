@@ -6,7 +6,7 @@ include GSL::Test
 include Math
 include GSL::Test::Sf
 s = 0
-m = GSL::MODE_DEFAULT
+_m = GSL::MODE_DEFAULT
   TEST_SF(s, "GSL::Sf::bessel_J0_e", "(0.1)",     0.99750156206604003230,    TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s, "GSL::Sf::bessel_J0_e", "(2.0)",     0.22389077914123566805,    TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s, "GSL::Sf::bessel_J0_e", "(100.0)",   0.019985850304223122424,   TEST_TOL0, GSL::SUCCESS)

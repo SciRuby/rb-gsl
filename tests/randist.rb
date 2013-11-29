@@ -47,7 +47,7 @@ end
 
 def testMoments(name, a, b, pp)
   count = 0
-  for i in 0...N
+  N.times do
     r = eval("R_global.#{name}")
     if r < b and r > a; count += 1; end
   end

@@ -6,7 +6,7 @@ include GSL::Test
 include Math
 include GSL::Test::Sf
 s = 0
-m = GSL::MODE_DEFAULT
+_m = GSL::MODE_DEFAULT
   TEST_SF(s, "GSL::Sf::hyperg_0F1_e", "(1, 0.5)",     1.5660829297563505373, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s, "GSL::Sf::hyperg_0F1_e", "(5, 0.5)",     1.1042674404828684574, TEST_TOL1, GSL::SUCCESS)
   TEST_SF(s, "GSL::Sf::hyperg_0F1_e", "(100, 30)",    1.3492598639485110176, TEST_TOL2, GSL::SUCCESS)

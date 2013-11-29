@@ -63,7 +63,7 @@ def test_f_e(type, desc, f, lower, mid, upper, min)
   begin
     iterations += 1
     status = s.iterate
-    m = s.x_minimum
+    _ = s.x_minimum
     a = s.x_lower
     b = s.x_upper
     status = GSL::Min.test_interval(a, b, EPSABS, EPSREL)

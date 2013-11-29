@@ -9,7 +9,7 @@ N = 50
 
 def check_trunc(t, expected, desc)
   w = GSL::Sum::Levin_utrunc.alloc(N)
-  sum_accel, err, = w.accel(t)
+  sum_accel, _err = w.accel(t)
   desc2 = sprintf("trunc result, %s", desc)
   GSL::Test::test_rel(sum_accel, expected, 1e-8, desc2)
 end
@@ -92,7 +92,7 @@ check_full(t, result, "Euler's constant")
 
 result = 0.6048986434216305 
 for n in 0...N
-  t[n] = (n%2 == 1 ? -1 : 1) * 1.0 /sqrt(n + 1.0)
+  t[n] = (n%2 == 1 ? -1 : 1) * 1.0 / sqrt(n + 1.0)
 end
 check_trunc(t, result, "eta(1/2)")
 check_full(t, result, "eta(1/2)")

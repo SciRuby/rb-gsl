@@ -100,7 +100,7 @@ def test_TDN_cyc_solve()
   s += f;
   
   actual[0] = -5.0/22.0;
-  qactual[1] = -3.0/22.0;
+  actual[1] = -3.0/22.0;
   actual[2] =  29.0/22.0;
   actual[3] = -9.0/22.0;
   actual[4] =  43.0/22.0;

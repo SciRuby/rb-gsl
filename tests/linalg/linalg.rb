@@ -101,8 +101,8 @@ Vander3  = create_vandermonde_matrix(3)
 Vander4  = create_vandermonde_matrix(4)
 Vander12  = create_vandermonde_matrix(12)
 
-inf5_data = GSL::Vector.alloc(1.0, 0.0, -3.0, 0.0, -5.0)
-m53_lssolution = GSL::Vector.alloc(52.5992295702070, -337.7263113752073, 351.8823436427604)
+_inf5_data = GSL::Vector.alloc(1.0, 0.0, -3.0, 0.0, -5.0)
+_m53_lssolution = GSL::Vector.alloc(52.5992295702070, -337.7263113752073, 351.8823436427604)
 Hilb2_solution = GSL::Vector.alloc(-8.0, 18.0)
 Hilb3_solution = GSL::Vector.alloc(27.0, -192.0, 210.0)
 Hilb4_solution = GSL::Vector.alloc(-64.0, 900.0, -2520.0, 1820.0)
@@ -111,7 +111,7 @@ Hilb12_solution = GSL::Vector.alloc(-1728.0, 245388.0, -8528520.0,
                              -14202796608.0, 27336497760.0, -33921201600.0,
                              26189163000.0, -11437874448.0, 2157916488.0)
 
-c7_solution = GSL::Vector.alloc(2.40717272023734e+01, -9.84612797621247e+00,
+_c7_solution = GSL::Vector.alloc(2.40717272023734e+01, -9.84612797621247e+00,
                          -2.69338853034031e+02, 8.75455232472528e+01,
                          2.96661356736296e+03, -1.02624473923993e+03,
                          -1.82073812124749e+04, 5.67384473042410e+03,
@@ -141,18 +141,16 @@ def test_matmult()
 end
 
 def test_matmult_mod()
-  s = 0
-  a = GSL::Matrix[[10.0, 5.0, 1.0], [1.0, 20.0, 5.0], [1.0, 3.0, 7.0]]
-  b = GSL::Matrix[[10.0, 5.0, 2.0], [1, 3, 2], [1, 3, 2]]
-  d = GSL::Matrix[[10, 5, 1], [1, 20, 5]]
+  GSL::Matrix[[10.0, 5.0, 1.0], [1.0, 20.0, 5.0], [1.0, 3.0, 7.0]]
+  GSL::Matrix[[10.0, 5.0, 2.0], [1, 3, 2], [1, 3, 2]]
+  GSL::Matrix[[10, 5, 1], [1, 20, 5]]
   
 end
 
 def test_LU_solve_dim(m, actual, eps)
   dim = m.size1
-  s = 0
-  perm = Permutation.alloc(dim)
-  rhs = GSL::Vector[1..dim]
-  lu = m.clone
+  _perm = Permutation.alloc(dim)
+  _rhs = GSL::Vector[1..dim]
+  _lu = m.clone
 
 end

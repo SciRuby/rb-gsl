@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require("gsl")
-require("gsl_test.rb")
+require("./gsl_test.rb")
 include GSL::Test
 
 lew = GSL::Vector.alloc(    -213, -564,  -35,  -15,  141,  115, -420, -360,  203, -338, -431,  194,

@@ -6,7 +6,7 @@ include GSL::Test
 include Math
 include GSL::Test::Sf
 s = 0
-m = GSL::MODE_DEFAULT
+_m = GSL::MODE_DEFAULT
 mode = GSL::MODE_DEFAULT
 GSL::set_error_handler_off
   TEST_SF(s,  "GSL::Sf::clausen_e", "(M_PI/20.0)", 0.4478882448133546, TEST_TOL0, GSL::SUCCESS)
@@ -202,8 +202,8 @@ x = 0
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(50, -10.0)", 0.8356287051853286482, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(50, -3.0)", 0.9443881609152163615, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(50, -1.0)", 0.980762245565660617, TEST_TOL0, GSL::SUCCESS)
-  TEST_SF(s,  "GSL::Sf::exprel_n_e", "(50, -1.0e-8)", 1.0 -1.0e-8/51.0, TEST_TOL0, GSL::SUCCESS)
-  TEST_SF(s,  "GSL::Sf::exprel_n_e", "(50,  1.0e-8)", 1.0 +1.0e-8/51.0, TEST_TOL0, GSL::SUCCESS)
+  TEST_SF(s,  "GSL::Sf::exprel_n_e", "(50, -1.0e-8)", 1.0 - 1.0e-8/51.0, TEST_TOL0, GSL::SUCCESS)
+  TEST_SF(s,  "GSL::Sf::exprel_n_e", "(50,  1.0e-8)", 1.0 + 1.0e-8/51.0, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(50,  1.0)", 1.01999216583666790, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(50,  3.0)", 1.0624205757460368307, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(50,  48.0)", 7.499573876877194416, TEST_TOL0, GSL::SUCCESS)
@@ -215,8 +215,8 @@ x = 0
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(500, -10.0)", 0.9804297803131823066, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(500, -3.0)", 0.9940475488850672997, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(500, -1.0)", 0.9980079602383488808, TEST_TOL0, GSL::SUCCESS)
-  TEST_SF(s,  "GSL::Sf::exprel_n_e", "(500, -1.0e-8)", 1.0 -1.0e-8/501.0, TEST_TOL0, GSL::SUCCESS)
-  TEST_SF(s,  "GSL::Sf::exprel_n_e", "(500,  1.0e-8)", 1.0 +1.0e-8/501.0, TEST_TOL0, GSL::SUCCESS)
+  TEST_SF(s,  "GSL::Sf::exprel_n_e", "(500, -1.0e-8)", 1.0 - 1.0e-8/501.0, TEST_TOL0, GSL::SUCCESS)
+  TEST_SF(s,  "GSL::Sf::exprel_n_e", "(500,  1.0e-8)", 1.0 + 1.0e-8/501.0, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(500,  1.0)", 1.0019999920160634252, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(500,  3.0)", 1.0060240236632444934, TEST_TOL0, GSL::SUCCESS)
   TEST_SF(s,  "GSL::Sf::exprel_n_e", "(500,  48.0)", 1.1059355517981272174, TEST_TOL0, GSL::SUCCESS)

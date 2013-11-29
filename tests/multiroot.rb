@@ -22,7 +22,7 @@ def test_fdf(desc, fdf, initpt, factor, type)
     status = GSL::MultiRoot.test_residual(s.f, 0.0000001)
   end while status == GSL::CONTINUE and iter < 1000
 
-  jac, stat = GSL::MultiRoot.fdjacobian(fdf, s.x, s.f, GSL::SQRT_DBL_EPSILON)
+  jac, _stat = GSL::MultiRoot.fdjacobian(fdf, s.x, s.f, GSL::SQRT_DBL_EPSILON)
   r = 0.0
   sum = 0.0
   for i in 0...n

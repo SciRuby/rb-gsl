@@ -38,7 +38,7 @@ test2(m == A, "#{A.class}#LU_solve: matrix not destroyed")
 
 h = GSL::Matrix.hilbert(5)
 invh = GSL::Matrix.invhilbert(5)
-lu, perm, sign = h.LU_decomp
+lu, perm, _sign = h.LU_decomp
 a = Linalg::LU::invert(lu, perm)
 test2(a.equal?(invh, 1e-6), "#{h.class}#LU_invert, Hilbert matrix of order 5")
 a =lu.invert(perm)
