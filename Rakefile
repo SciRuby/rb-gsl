@@ -6,7 +6,7 @@ RB_GSL_VERSION = File.readlines('VERSION')[0].chomp
 
 spec = Gem::Specification.new do |s|
   # Basics
-  s.name = 'gsl'
+  s.name = 'rb-gsl'
   s.version = RB_GSL_VERSION
   s.summary = 'Ruby interface to GNU Scientific Library'
   s.description = 'Ruby/GSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby'

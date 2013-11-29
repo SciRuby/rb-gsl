@@ -10,7 +10,7 @@
 # === {}[link:index.html"name="3.1] Using the gem command
 # Ruby/GSL may now be installed as a Ruby Gem by simply running
 #
-#   gem install gsl
+#   gem install rb-gsl
 #
 # Note that the GSL libraries must already be installed before Ruby/GSL
 # can be installed.
