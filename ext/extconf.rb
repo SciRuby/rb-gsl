@@ -120,7 +120,7 @@ def check_version(configfile)
       configfile.printf("#ifndef GSL_1_11_LATER\n#define GSL_1_11_LATER\n#endif\n")
     end    
 
-   if ver >= "1.12.90"
+    if ver >= "1.12.90"
       configfile.printf("#ifndef GSL_1_13_LATER\n#define GSL_1_13_LATER\n#endif\n")
     end
 
@@ -218,7 +218,7 @@ begin
     flag = 0
     print("checking for GNU graph... ")
     path.each do |dir|    
-      if File.executable?(file = File.join(dir, "graph")) 
+      if File.executable?(File.join(dir, "graph")) 
         puts("yes")
         RB_GSL_CONFIG.printf("#ifndef HAVE_GNU_GRAPH\n#define HAVE_GNU_GRAPH\n#endif\n")
         flag = 1
@@ -263,7 +263,7 @@ if narray_config
 end
 
 tamu_anova_config = dir_config('tamu_anova',$sitearchdir,$sitearchdir)
-have_tamu_anova_h = have_header("tamu_anova/tamu_anova.h")
+have_header("tamu_anova/tamu_anova.h")
 if tamu_anova_config
   have_library("tamuanova")
 #  if RUBY_PLATFORM =~ /cygwin|mingw/
