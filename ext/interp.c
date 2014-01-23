@@ -220,7 +220,7 @@ static VALUE rb_gsl_interp_evaluate(VALUE obj, VALUE xxa, VALUE yya, VALUE xx,
       ptrz = (double*) na->ptr;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(xx));
       ptr = NA_PTR_TYPE(ary, double*);
-      for (i = 0; i < na->total; i++)
+      for (i = 0; (int) i < na->total; i++)
 	ptr[i] = (*eval)(rgi->p, ptrx, ptry, ptrz[i], rgi->a);
       return ary;
     }

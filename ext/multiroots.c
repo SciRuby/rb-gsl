@@ -80,7 +80,7 @@ static VALUE rb_gsl_multiroot_function_new(int argc, VALUE *argv, VALUE klass)
     break;
   case 2:
   case 3:
-    for (i = 0; i < argc; i++) set_function(i, argv, F);
+    for (i = 0; (int) i < argc; i++) set_function(i, argv, F);
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments");
@@ -99,7 +99,7 @@ static void gsl_multiroot_function_mark(gsl_multiroot_function *f)
   size_t i;
   rb_gc_mark((VALUE) f->params);
   //  for (i = 0; i < RARRAY(f->params)->len; i++) 
-  for (i = 0; i < RARRAY_LEN(f->params); i++) 
+  for (i = 0; (int) i < RARRAY_LEN(f->params); i++) 
     rb_gc_mark(rb_ary_entry((VALUE) f->params, i));
 }
 
@@ -161,7 +161,7 @@ static VALUE rb_gsl_multiroot_function_set_f(int argc, VALUE *argv, VALUE obj)
     break;
   case 2:
   case 3:
-    for (i = 0; i < argc; i++) set_function(i, argv, F);
+    for (i = 0; (int) i < argc; i++) set_function(i, argv, F);
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments");
@@ -187,7 +187,7 @@ static VALUE rb_gsl_multiroot_function_set_params(int argc, VALUE *argv, VALUE o
   if (argc == 1) rb_ary_store(ary, 1, argv[0]);
   else {
     ary2 = rb_ary_new2(argc);
-    for (i = 0; i < argc; i++) rb_ary_store(ary2, i, argv[i]);
+    for (i = 0; (int) i < argc; i++) rb_ary_store(ary2, i, argv[i]);
     rb_ary_store(ary, 1, ary2);
   }
   return obj;
@@ -236,7 +236,7 @@ static void gsl_multiroot_function_fdf_mark(gsl_multiroot_function_fdf *f)
   size_t i;
   rb_gc_mark((VALUE) f->params);
   //  for (i = 0; i < RARRAY(f->params)->len; i++) 
-  for (i = 0; i < RARRAY_LEN(f->params); i++) 
+  for (i = 0; (int) i < RARRAY_LEN(f->params); i++) 
     rb_gc_mark(rb_ary_entry((VALUE) f->params, i));
 }
 
@@ -322,7 +322,7 @@ static VALUE rb_gsl_multiroot_function_fdf_set_params(int argc, VALUE *argv, VAL
   if (argc == 1) rb_ary_store(ary, 3, argv[0]);
   else {
     ary2 = rb_ary_new2(argc);
-    for (i = 0; i < argc; i++) rb_ary_store(ary2, i, argv[i]);
+    for (i = 0; (int) i < argc; i++) rb_ary_store(ary2, i, argv[i]);
     rb_ary_store(ary, 3, ary2);
   }
   return obj;
@@ -813,7 +813,7 @@ static VALUE rb_gsl_multiroot_function_solve(int argc, VALUE *argv, VALUE obj)
   case 4:
   case 3:
   case 2:
-    for (i = 1; i < argc; i++) {
+    for (i = 1; (int) i < argc; i++) {
       switch (TYPE(argv[i])) {
       case T_STRING:
 	T = (gsl_multiroot_fsolver_type *) get_fsolver_type(argv[i]);
@@ -830,7 +830,7 @@ static VALUE rb_gsl_multiroot_function_solve(int argc, VALUE *argv, VALUE obj)
   case 1:
     if (TYPE(argv[0]) == T_ARRAY) {
       //      if (RARRAY(argv[0])->len != F->n)
-      if (RARRAY_LEN(argv[0]) != F->n)
+      if (RARRAY_LEN(argv[0]) != (int) F->n)
 	rb_raise(rb_eRangeError, "array size are different.");
       x0 = gsl_vector_alloc(F->n);
       for (i = 0; i < x0->size; i++) 

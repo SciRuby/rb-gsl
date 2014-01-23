@@ -31,7 +31,7 @@ static VALUE rb_gsl_vector_to_narray(VALUE obj, VALUE klass)
     memcpy(NA_PTR_TYPE(nary,double*), v->data, shape[0]*sizeof(double));
   } else {
     int i;
-    for(i=0; i < v->size; i++) {
+    for(i=0; i < (int) v->size; i++) {
       (NA_PTR_TYPE(nary,double*))[i] = gsl_vector_get(v, i);
     }
   }
@@ -50,7 +50,7 @@ static VALUE rb_gsl_vector_complex_to_narray(VALUE obj, VALUE klass)
     memcpy(NA_PTR_TYPE(nary,double*), v->data, shape[0]*2*sizeof(double));
   } else {
     int i;
-    for(i=0; i < 2*v->size; i++) {
+    for(i=0; i < (int) (2*v->size); i++) {
       (NA_PTR_TYPE(nary,gsl_complex*))[i] = gsl_vector_complex_get(v, i);
     }
   }
@@ -170,7 +170,7 @@ static VALUE rb_gsl_vector_int_to_narray(VALUE obj, VALUE klass)
     memcpy(NA_PTR_TYPE(nary,int*), v->data, shape[0]*sizeof(int));
   } else {
     int i;
-    for(i=0; i < v->size; i++) {
+    for(i=0; i < (int) v->size; i++) {
       (NA_PTR_TYPE(nary,int*))[i] = gsl_vector_int_get(v, i);
     }
   }
@@ -357,7 +357,7 @@ static VALUE rb_gsl_matrix_to_narray(VALUE obj, VALUE klass)
   shape[0] = m->size2;
   shape[1] = m->size1;
   nary = na_make_object(NA_DFLOAT, 2, shape, klass);
-  for (i = 0; i < shape[1]; i++) {
+  for (i = 0; (int) i < shape[1]; i++) {
     memcpy(NA_PTR_TYPE(nary,double*)+(i*shape[0]), m->data+(i*m->tda), 
            shape[0]*sizeof(double));
   }
@@ -384,7 +384,7 @@ static VALUE rb_gsl_matrix_int_to_narray(VALUE obj, VALUE klass)
   shape[0] = m->size2;
   shape[1] = m->size1;
   nary = na_make_object(NA_LINT, 2, shape, klass);
-  for (i = 0; i < shape[1]; i++) {
+  for (i = 0; (int) i < shape[1]; i++) {
     memcpy(NA_PTR_TYPE(nary,int*)+(i*shape[0]), m->data+(i*m->tda), 
            shape[0]*sizeof(int));
   }

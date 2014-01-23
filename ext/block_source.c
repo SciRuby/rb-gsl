@@ -230,7 +230,7 @@ static VALUE FUNCTION(rb_gsl_block,get)(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     bnew = FUNCTION(gsl_block,alloc)(argc);
-    for (j = 0; j < argc; j++) {
+    for (j = 0; (int) j < argc; j++) {
       i = FIX2INT(argv[j]);
       if (i < 0) k = b->size + i; else k = i;
       bnew->data[j] = b->data[k];

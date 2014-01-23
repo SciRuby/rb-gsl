@@ -356,7 +356,7 @@ static VALUE rb_gsl_histogram_accumulate(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, gsl_histogram, h);
   if (TYPE(argv[0]) == T_ARRAY) {
     //    for (i = 0; i < RARRAY(argv[0])->len; i++)
-    for (i = 0; i < RARRAY_LEN(argv[0]); i++)
+    for (i = 0; (int) i < RARRAY_LEN(argv[0]); i++)
       gsl_histogram_accumulate(h, NUM2DBL(rb_ary_entry(argv[0], i)), weight);
   } else if (VECTOR_P(argv[0])) {
     Data_Get_Struct(argv[0], gsl_vector, v);
@@ -1557,13 +1557,13 @@ void mygsl_histogram_integrate(const gsl_histogram *h, gsl_histogram *hi,
 {
   size_t i;
   if (iend >= istart) {
-    if (istart < 0) istart = 0;
+    //if (istart < 0) istart = 0;
     if (iend >= h->n) iend = h->n-1;
     hi->bin[istart] = h->bin[istart];
     for (i = istart+1; i <= iend; i++) hi->bin[i] = hi->bin[i-1] + h->bin[i];
   } else {
     if (istart >= h->n) istart = h->n-1;
-    if (iend < 0) iend = 0;
+    //if (iend < 0) iend = 0;
     hi->bin[istart] = h->bin[istart];
     for (i = istart-1; i >= iend; i--) {
       hi->bin[i] = hi->bin[i+1] + h->bin[i];

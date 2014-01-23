@@ -99,7 +99,7 @@ static VALUE rb_gsl_multimin_function_new(int argc, VALUE *argv, VALUE klass)
     break;
   case 2:
   case 3:
-    for (i = 0; i < argc; i++) set_function(i, argv, F);
+    for (i = 0; (int) i < argc; i++) set_function(i, argv, F);
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments");
@@ -172,7 +172,7 @@ static VALUE rb_gsl_multimin_function_set_f(int argc, VALUE *argv, VALUE obj)
     break;
   case 2:
   case 3:
-    for (i = 0; i < argc; i++) set_function(i, argv, F);
+    for (i = 0; (int) i < argc; i++) set_function(i, argv, F);
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments");
@@ -197,7 +197,7 @@ static VALUE rb_gsl_multimin_function_set_params(int argc, VALUE *argv, VALUE ob
   if (argc == 1) rb_ary_store(ary, 1, argv[0]);
   else {
     ary2 = rb_ary_new2(argc);
-    for (i = 0; i < argc; i++) rb_ary_store(ary2, i, argv[i]);
+    for (i = 0; (int) i < argc; i++) rb_ary_store(ary2, i, argv[i]);
     rb_ary_store(ary, 1, ary2);
   }
   return obj;
@@ -358,7 +358,7 @@ static VALUE rb_gsl_multimin_function_fdf_set_params(int argc, VALUE *argv, VALU
 		rb_ary_store(ary, 3, argv[0]);
   } else {
     ary2 = rb_ary_new2(argc);
-    for (i = 0; i < argc; i++) rb_ary_store(ary2, i, argv[i]);
+    for (i = 0; (int) i < argc; i++) rb_ary_store(ary2, i, argv[i]);
     rb_ary_store(ary, 3, ary2);
   }
   return obj;

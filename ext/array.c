@@ -487,7 +487,7 @@ VALUE rb_gsl_range2vector(VALUE obj)
 	     rb_class2name(CLASS_OF(obj)));
   get_range_beg_en_n(obj, &beg, &en, &n, &step);
   v = gsl_vector_alloc(n);
-  for (i = 0; i < n; i++) gsl_vector_set(v, i, (double) (beg+i));
+  for (i = 0; i < (int) n; i++) gsl_vector_set(v, i, (double) (beg+i));
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
 }
 
@@ -502,7 +502,7 @@ VALUE rb_gsl_range2vector_int(VALUE obj)
 	     rb_class2name(CLASS_OF(obj)));
   get_range_int_beg_en_n(obj, &beg, &en, &n, &step);
   v = gsl_vector_int_alloc(n);
-  for (i = 0; i < n; i++) gsl_vector_int_set(v, i, beg+i);
+  for (i = 0; i < (int) n; i++) gsl_vector_int_set(v, i, beg+i);
   return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free, v);
 }
 

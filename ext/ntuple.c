@@ -191,7 +191,7 @@ static VALUE rb_gsl_ntuple_select_fn_set_f(int argc, VALUE *argv, VALUE obj)
     CHECK_PROC(argv[0]);
     rb_ary_store(ary, 0, argv[0]);
     ary2 = rb_ary_new2(argc-1);
-    for (i = 1; i < argc; i++) rb_ary_store(ary2, i-1, argv[i]);
+    for (i = 1; (int) i < argc; i++) rb_ary_store(ary2, i-1, argv[i]);
     rb_ary_store(ary, 1, ary2);
     break;
   }
@@ -236,7 +236,7 @@ static VALUE rb_gsl_ntuple_select_fn_set_params(int argc, VALUE *argv, VALUE obj
     rb_ary_store(ary, 1, argv[0]);
   } else {
     ary2 = rb_ary_new2(argc);
-    for (i = 0; i < argc; i++) rb_ary_store(ary2, i, argv[i]);
+    for (i = 0; (int) i < argc; i++) rb_ary_store(ary2, i, argv[i]);
     rb_ary_store(ary, 1, ary2);
   }
   return obj;
@@ -310,7 +310,7 @@ static VALUE rb_gsl_ntuple_value_fn_set_f(int argc, VALUE *argv, VALUE obj)
     CHECK_PROC(argv[0]);
     rb_ary_store(ary, 0, argv[0]);
     ary2 = rb_ary_new2(argc-1);
-    for (i = 1; i < argc; i++) rb_ary_store(ary2, i-1, argv[i]);
+    for (i = 1; (int) i < argc; i++) rb_ary_store(ary2, i-1, argv[i]);
     rb_ary_store(ary, 1, ary2);
     break;
   }
@@ -353,7 +353,7 @@ static VALUE rb_gsl_ntuple_value_fn_set_params(int argc, VALUE *argv, VALUE obj)
     rb_ary_store(ary, 1, argv[0]);
   } else {
     ary2 = rb_ary_new2(argc);
-    for (i = 0; i < argc; i++) rb_ary_store(ary2, i, argv[i]);
+    for (i = 0; (int) i < argc; i++) rb_ary_store(ary2, i, argv[i]);
     rb_ary_store(ary, 1, ary2);
   }
   return obj;

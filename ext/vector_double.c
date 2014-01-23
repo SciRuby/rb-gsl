@@ -1255,7 +1255,7 @@ static VALUE rb_gsl_vector_clip(int argc, VALUE *argv, VALUE obj)
     x = gsl_vector_get(v, i);
     if (x > hi) x = hi;
     else if (x < lo) x = lo;
-    else;
+    else {};
     gsl_vector_set(vnew, i, x);
   }
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);

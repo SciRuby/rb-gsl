@@ -343,7 +343,7 @@ static VALUE rb_gsl_matrix_complex_set(int argc, VALUE *argv, VALUE obj)
     row_set_argv[0] = INT2FIX(0);
     row_set_argv[1] = INT2FIX(m->size2);
 
-    for(k = 0; k < argc && k < m->size1; k++) {
+    for(k = 0; (int) k < argc && k < m->size1; k++) {
       vv = gsl_matrix_complex_row(m, k);
       rb_gsl_vector_complex_set_subvector(2, row_set_argv, &vv.vector, argv[k]);
     }
@@ -374,7 +374,7 @@ static VALUE rb_gsl_matrix_complex_set(int argc, VALUE *argv, VALUE obj)
         rb_gsl_vector_complex_set_subvector(2, row_set_argv, &vv.vector, other);
       } else {
         // m[...] = [[row0], [row1], ...] # multiple rows
-        if(n1 != RARRAY_LEN(other)) {
+        if((int) n1 != RARRAY_LEN(other)) {
           rb_raise(rb_eRangeError, "row counts do not match (%d != %d)",
 		   (int) n1, (int) RARRAY_LEN(other));
         }
@@ -414,7 +414,7 @@ static VALUE rb_gsl_matrix_complex_set_row(int argc, VALUE *argv, VALUE obj)
   CHECK_FIXNUM(argv[0]);
   Data_Get_Struct(obj, gsl_matrix_complex, A);
   i = FIX2INT(argv[0]);
-  for (k = 1; k < argc; k++) {
+  for (k = 1; (int) k < argc; k++) {
     if (k-1 >= A->size1) break;
     switch (TYPE(argv[k])) {
     case T_ARRAY:
@@ -442,7 +442,7 @@ static VALUE rb_gsl_matrix_complex_set_col(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, gsl_matrix_complex, A);
   j = FIX2INT(argv[0]);
   for (k = 1; k < argc; k++) {
-    if (k-1 >= A->size2) break;
+    if (k-1 >= (int) A->size2) break;
     switch (TYPE(argv[k])) {
     case T_ARRAY:
       z = ary2complex(argv[k]);
@@ -632,13 +632,13 @@ static VALUE rb_gsl_matrix_complex_to_s(int argc, VALUE *argv, VALUE obj)
           "%s[ %4.3e %4.3e ]", (j==0) ? "" : " ", GSL_REAL(z), GSL_IMAG(z));
       rb_str_cat(str, buf, strlen(buf));
       // if too many cols
-      if (j >= max_cols-1 && j != m->size2-1) {
+      if ((int) j >= max_cols-1 && j != m->size2-1) {
         rb_str_cat(str, " ...", 4);
         break;
       }
     }
     // if too many rows
-    if (i >= max_rows-1 && i != m->size1-1) {
+    if ((int) i >= max_rows-1 && i != m->size1-1) {
       rb_str_cat(str, "\n  ...", 6);
       break;
     }

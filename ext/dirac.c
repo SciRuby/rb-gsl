@@ -338,7 +338,7 @@ static VALUE rb_Dirac_matrix_whoami(int argc, VALUE *argv, VALUE obj)
 		      VLambda[0], VLambda[1], VLambda[2], VLambda[3],
 		      VLambda[4], VLambda[5], VLambda[6], VLambda[7]};
 
-  char *name[NUM] = {"Pauli1", "Pauli2", "Pauli3", 
+  const char *name[NUM] = {"Pauli1", "Pauli2", "Pauli3", 
 		     "Gamma0", "Gamma1", "Gamma2", "Gamma3", "Gamma5",
 		     "Eye2", "Eye4", "IEye2", "IEye4", "Lambda1", "Lambda2",
 		     "Lambda3", "Lambda4", "Lambda5", "Lambda6",

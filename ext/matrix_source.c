@@ -349,7 +349,7 @@ static GSL_TYPE(gsl_matrix)* FUNCTION(cr_matrix,from_ranges)(int argc, VALUE *ar
   FUNCTION(get_range,beg_en_n)(argv[0], &beg, &en, &n, &step);
   m = FUNCTION(gsl_matrix,calloc)(argc, n);
   FUNCTION(set_ptr_data,by_range)(m->data, n, argv[0]);
-  for (i = 1; i < argc; i++) {
+  for (i = 1; (int) i < argc; i++) {
     if (CLASS_OF(argv[i]) != rb_cRange) 
       rb_raise(rb_eTypeError, "wrong argument type %s (Range expected)",
 	       rb_class2name(CLASS_OF(argv[i])));
@@ -392,11 +392,11 @@ GSL_TYPE(gsl_matrix)* FUNCTION(gsl_matrix,alloc_from_arrays)(int argc, VALUE *ar
   n = RARRAY_LEN(argv[0]);
   m = FUNCTION(gsl_matrix,alloc)(argc, n);
   if (m == NULL) rb_raise(rb_eNoMemError, "gsl_matrix_alloc failed");
-  for (i = 0; i < argc; i++) {
+  for (i = 0; (int) i < argc; i++) {
     if (CLASS_OF(argv[i]) == rb_cRange) argv[i] = rb_gsl_range2ary(argv[i]);
     else Check_Type(argv[i], T_ARRAY);
     for (j = 0; j < n; j++) {
-      if (j >= RARRAY_LEN(argv[i])) FUNCTION(gsl_matrix,set)(m, i, j, 0);
+      if ((int) j >= RARRAY_LEN(argv[i])) FUNCTION(gsl_matrix,set)(m, i, j, 0);
       else FUNCTION(gsl_matrix,set)(m, i, j, NUMCONV2(rb_ary_entry(argv[i], j)));
     }
   }
@@ -413,7 +413,7 @@ GSL_TYPE(gsl_matrix)* FUNCTION(gsl_matrix,alloc_from_vectors)(int argc, VALUE *a
   Data_Get_Struct(argv[0], GSL_TYPE(gsl_vector), v);
   m = FUNCTION(gsl_matrix,alloc)(argc, v->size);
   if (m == NULL) rb_raise(rb_eNoMemError, "gsl_matrix_alloc failed");
-  for (i = 0; i < argc; i++) {
+  for (i = 0; (int) i < argc; i++) {
     CHECK_VEC(argv[i]);
     Data_Get_Struct(argv[i], GSL_TYPE(gsl_vector), v);
     FUNCTION(gsl_matrix,set_row)(m, i, v);
@@ -432,7 +432,7 @@ GSL_TYPE(gsl_matrix)* FUNCTION(gsl_matrix,alloc_from_colvectors)(int argc, VALUE
 //  m = FUNCTION(gsl_matrix,alloc)(argc, v->size);
   m = FUNCTION(gsl_matrix,alloc)(v->size, argc);  
   if (m == NULL) rb_raise(rb_eNoMemError, "gsl_matrix_alloc failed");
-  for (i = 0; i < argc; i++) {
+  for (i = 0; (int) i < argc; i++) {
     CHECK_VEC(argv[i]);
     Data_Get_Struct(argv[i], GSL_TYPE(gsl_vector), v);
     FUNCTION(gsl_matrix,set_col)(m, i, v);
@@ -547,7 +547,7 @@ static VALUE FUNCTION(rb_gsl_matrix,diagonal_singleton)(int argc, VALUE *argv, V
     break;
   default:
     m = FUNCTION(gsl_matrix,calloc)(argc, argc);
-    for (i = 0; i < argc; i++) {
+    for (i = 0; (int) i < argc; i++) {
       FUNCTION(gsl_matrix,set)(m, i, i, NUMCONV2(argv[i]));
     }
     break;
@@ -799,7 +799,7 @@ static VALUE FUNCTION(rb_gsl_matrix,set)(int argc, VALUE *argv, VALUE obj)
         FUNCTION(rb_gsl_vector,set_subvector)(2, row_set_argv, &vv.vector, other);
       } else {
         // m[...] = [[row0], [row1], ...] # multiple rows
-        if(n1 != RARRAY_LEN(other)) {
+        if((int) n1 != RARRAY_LEN(other)) {
           rb_raise(rb_eRangeError, "row counts do not match (%d != %d)",
 		   (int) n1, (int) RARRAY_LEN(other));
         }
@@ -908,7 +908,7 @@ static VALUE FUNCTION(rb_gsl_matrix,to_s)(VALUE obj)
       else
 	sprintf(buf, format2, x); 
       rb_str_cat(str, buf, strlen(buf));
-      if (j >= (55/dig)) {
+      if ((int) j >= (55/dig)) {
         strcpy(buf, "... ");
         rb_str_cat(str, buf, strlen(buf));
         break;
@@ -1062,7 +1062,7 @@ static VALUE FUNCTION(rb_gsl_matrix,set_row)(VALUE obj, VALUE i, VALUE vv)
   if (CLASS_OF(vv) == rb_cRange) vv = rb_gsl_range2ary(vv);
   if (TYPE(vv) == T_ARRAY) {
     v = FUNCTION(gsl_vector,alloc)(RARRAY_LEN(vv));
-    for (j = 0; j < RARRAY_LEN(vv); j++) {
+    for (j = 0; (int) j < RARRAY_LEN(vv); j++) {
       FUNCTION(gsl_vector,set)(v, j, NUMCONV2(rb_ary_entry(vv, j)));
     }
     flag = 1;
@@ -1086,7 +1086,7 @@ static VALUE FUNCTION(rb_gsl_matrix,set_col)(VALUE obj, VALUE j, VALUE vv)
   if (CLASS_OF(vv) == rb_cRange) vv = rb_gsl_range2ary(vv);
   if (TYPE(vv) == T_ARRAY) {
     v = FUNCTION(gsl_vector,alloc)(RARRAY_LEN(vv));
-    for (i = 0; i < RARRAY_LEN(vv); i++) {
+    for (i = 0; (int) i < RARRAY_LEN(vv); i++) {
       FUNCTION(gsl_vector,set)(v, i, NUMCONV2(rb_ary_entry(vv, i)));
     }
     flag = 1;

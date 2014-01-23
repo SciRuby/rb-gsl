@@ -213,7 +213,7 @@ static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE
     Check_Type(yy, T_ARRAY);
     size = RARRAY_LEN(xx);
     //    if (size != RARRAY(yy)->len) rb_raise(rb_eRuntimeError, "array sizes are different.");
-    if (size != RARRAY_LEN(yy)) rb_raise(rb_eRuntimeError, "array sizes are different.");
+    if ((int) size != RARRAY_LEN(yy)) rb_raise(rb_eRuntimeError, "array sizes are different.");
     ary = rb_ary_new2(size);
     for (i = 0; i < size; i++) {
       x = rb_ary_entry(xx, i);

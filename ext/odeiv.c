@@ -223,7 +223,7 @@ static void set_sys(int argc, VALUE *argv, gsl_odeiv_system *sys)
     break;
   default:
     vparams = rb_ary_new2(argc-itmp);
-    for (i = itmp, j = 0; i < argc; i++, j++) rb_ary_store(vparams, j, argv[i]);
+    for (i = itmp, j = 0; (int) i < argc; i++, j++) rb_ary_store(vparams, j, argv[i]);
   }
   dimension = FIX2INT(dim);
   sys->dimension = dimension;
@@ -251,7 +251,7 @@ static VALUE rb_gsl_odeiv_system_set_params(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     vparams = rb_ary_new2(argc);
-    for (i = 0; i < argc; i++) rb_ary_store(vparams, i, argv[i]);
+    for (i = 0; (int) i < argc; i++) rb_ary_store(vparams, i, argv[i]);
   }
   //  rb_ary_delete_at(ary, 3);
   rb_ary_store(ary, 3, vparams); 

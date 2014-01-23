@@ -250,7 +250,7 @@ void rb_gsl_vector_complex_set_subvector(int argc, VALUE *argv, gsl_vector_compl
     gsl_vector_complex_memcpy(&vv.vector, vother);
   } else if(rb_obj_is_kind_of(other, rb_cArray)) {
     // TODO Support other forms of Array contents as well
-    if(n != RARRAY_LEN(other)) {
+    if((int) n != RARRAY_LEN(other)) {
       rb_raise(rb_eRangeError, "lengths do not match (%d != %d)", (int) n, (int) RARRAY_LEN(other));
     }
     for(i = 0; i < n; i++) {
@@ -335,10 +335,11 @@ static VALUE rb_gsl_vector_complex_reverse_each(VALUE obj)
   gsl_complex * zp;
   size_t i;
   Data_Get_Struct(obj, gsl_vector_complex, v);
-  for (i = v->size-1; i >= 0; i--) {
+  for (i = v->size-1;; i--) {
     vz = Data_Make_Struct(cgsl_complex, gsl_complex, 0, free, zp);
     *zp = gsl_vector_complex_get(v, i);
     rb_yield(vz);
+    if (i == 0) break;
   }
   return obj;
 }
@@ -357,7 +358,7 @@ static VALUE rb_gsl_vector_complex_reverse_each_index(VALUE obj)
   gsl_vector_complex *v = NULL;
   size_t i;
   Data_Get_Struct(obj, gsl_vector_complex, v);
-  for (i = v->size-1; i >= 0; i--) {
+  for (i = v->size-1;; i--) {
     rb_yield(INT2FIX(i));
     if (i == 0) break;
   }
@@ -860,7 +861,7 @@ static VALUE rb_gsl_vector_complex_ifftshift_bang(VALUE obj)
 static VALUE rb_gsl_vector_complex_ifftshift(VALUE obj)
 {
   return rb_gsl_vector_complex_ifftshift_bang(rb_gsl_vector_complex_clone(obj));
-  gsl_vector_complex *v, *vnew;
+  /*gsl_vector_complex *v, *vnew;
   gsl_vector_complex_view vv, vvnew;
   size_t n;
 
@@ -876,7 +877,7 @@ static VALUE rb_gsl_vector_complex_ifftshift(VALUE obj)
   vvnew = gsl_vector_complex_subvector(v, (n+1)/2, n/2);
   gsl_vector_complex_memcpy(&vvnew.vector, &vv.vector);
 
-  return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);  
+  return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);  */
 }
 
 static VALUE rb_gsl_vector_complex_isnull(VALUE obj)
@@ -1961,18 +1962,18 @@ static VALUE rb_gsl_vector_complex_zip(int argc, VALUE *argv, VALUE obj)
     argc2 = argc - 1;
     argv2 = argv + 1;
   }
-  for (i = 0; i < argc2; i++) {
+  for (i = 0; (int) i < argc2; i++) {
     CHECK_VECTOR_COMPLEX(argv2[i]);
   }
   vp = (gsl_vector_complex**) malloc(sizeof(gsl_vector_complex**));
-  for (i = 0; i < argc2; i++) {
+  for (i = 0; (int) i < argc2; i++) {
     Data_Get_Struct(argv2[i], gsl_vector_complex, vp[i]);
   }
   ary = rb_ary_new2(v0->size);
   for (i = 0; i < v0->size; i++) {
     vnew = gsl_vector_complex_alloc(argc2 + 1);
     gsl_vector_complex_set(vnew, 0, gsl_vector_complex_get(v0, i));
-    for (j = 0; j < argc2; j++) {
+    for (j = 0; (int) j < argc2; j++) {
       if (i < vp[j]->size) {
 	gsl_vector_complex_set(vnew, j+1, gsl_vector_complex_get(vp[j], i));
       } else {

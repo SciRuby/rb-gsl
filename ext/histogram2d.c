@@ -857,17 +857,17 @@ static gsl_histogram2d* mygsl_histogram2d_calloc_integrate(const gsl_histogram2d
   if (flag == -1) {
     hi->bin[n-1] = h->bin[n-1];
     i = nx - 1;
-    for (j = ny-2, k = 0; j >= 0; j--, k++) {
+    for (j = ny-2, k = 0;; j--, k++) {
       hi->bin[n-1-k] = gsl_histogram2d_get(hi, i, j+1) + gsl_histogram2d_get(h, i, j);
       if (j == 0) break;
     }
     j = ny - 1;
-    for (i = nx-2; i >= 0; i--) {
+    for (i = nx-2;; i--) {
       hi->bin[i*ny + j] = gsl_histogram2d_get(hi, i+1, j) + gsl_histogram2d_get(h, i, j);
       if (i == 0) break;
     }
-    for (i = nx-2; i >= 0; i--) {
-      for (j = ny-2; j >= 0; j--) {
+    for (i = nx-2;; i--) {
+      for (j = ny-2;; j--) {
 	hi->bin[i*ny+j] = ((gsl_histogram2d_get(hi, i+1, j) 
 			    + gsl_histogram2d_get(hi, i, j+1))
 			   - gsl_histogram2d_get(hi, i+1, j+1))
