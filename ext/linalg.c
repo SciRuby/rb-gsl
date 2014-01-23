@@ -71,7 +71,7 @@ static VALUE rb_gsl_linalg_LU_decomposition(int argc, VALUE *argv, VALUE obj, in
   Data_Get_Struct(omatrix, gsl_matrix, mtmp);
   if (flag == LINALG_DECOMP_BANG) {
     m = mtmp;
-    RBASIC(omatrix)->klass = cgsl_matrix_LU;
+    RBGSL_SET_CLASS(omatrix, cgsl_matrix_LU);
     objm = omatrix;
   } else {
     m = make_matrix_clone(mtmp);
@@ -692,7 +692,7 @@ static VALUE rb_gsl_linalg_QR_LQ_decomposition(int argc, VALUE *argv, VALUE obj,
     fdecomp = &gsl_linalg_QR_decomp;
     m = mtmp;
     mdecomp = omatrix;
-    RBASIC(mdecomp)->klass = cgsl_matrix_QR;
+    RBGSL_SET_CLASS(mdecomp, cgsl_matrix_QR);
     break;
 #ifdef GSL_1_6_LATER
   case LINALG_LQ_DECOMP:
@@ -704,7 +704,7 @@ static VALUE rb_gsl_linalg_QR_LQ_decomposition(int argc, VALUE *argv, VALUE obj,
     fdecomp = &gsl_linalg_LQ_decomp;
     m = mtmp;
     mdecomp = omatrix;
-    RBASIC(mdecomp)->klass = cgsl_matrix_LQ;
+    RBGSL_SET_CLASS(mdecomp, cgsl_matrix_LQ);
     break;
 #endif
   default:
@@ -731,7 +731,7 @@ static VALUE rb_gsl_linalg_QR_LQ_decomposition(int argc, VALUE *argv, VALUE obj,
       vtau = Data_Wrap_Struct(cgsl_vector_tau, 0, gsl_vector_free, tau);
       return rb_ary_new3(2, mdecomp, vtau);
     } else {
-      RBASIC(argv[itmp])->klass = cgsl_vector_tau;
+      RBGSL_SET_CLASS(argv[itmp], cgsl_vector_tau);
       return mdecomp;
     }
     break;
@@ -740,7 +740,7 @@ static VALUE rb_gsl_linalg_QR_LQ_decomposition(int argc, VALUE *argv, VALUE obj,
    if (argc == itmp) {
       return Data_Wrap_Struct(cgsl_vector_tau, 0, gsl_vector_free, tau);
     } else {
-      RBASIC(argv[itmp])->klass = cgsl_vector_tau;
+      RBGSL_SET_CLASS(argv[itmp], cgsl_vector_tau);
       return INT2FIX(status);
     }
     break;
@@ -1628,14 +1628,14 @@ static VALUE rb_gsl_linalg_QRLQPT_decomp_bang(int argc, VALUE *argv, VALUE obj, 
   norm = gsl_vector_alloc(size0);
   switch (flag) {
   case LINALG_QRPT:
-    RBASIC(vA)->klass = cgsl_matrix_QRPT;
+    RBGSL_SET_CLASS(vA, cgsl_matrix_QRPT);
     vtau = Data_Wrap_Struct(cgsl_vector_tau, 0, gsl_vector_free, tau);
     vp = Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p);
     gsl_linalg_QRPT_decomp(A, tau, p, &signum, norm);
     break;
 #ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
-    RBASIC(vA)->klass = cgsl_matrix_PTLQ;
+    RBGSL_SET_CLASS(vA, cgsl_matrix_PTLQ);
     vtau = Data_Wrap_Struct(cgsl_vector_tau, 0, gsl_vector_free, tau);
     vp = Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p);
     gsl_linalg_PTLQ_decomp(A, tau, p, &signum, norm);
