@@ -1060,8 +1060,8 @@ static VALUE rb_gsl_eigen_nonsymmv_narray(int argc, VALUE *argv, VALUE obj);
 static VALUE rb_gsl_eigen_nonsymmv(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *m;
-  gsl_vector_complex *v;
-  gsl_matrix_complex *evec;
+  gsl_vector_complex *v = NULL;
+  gsl_matrix_complex *evec = NULL;
   gsl_eigen_nonsymmv_workspace *w;
   int vflag = 0, wflag = 0;
   int istart = 0;
@@ -1196,9 +1196,9 @@ static VALUE rb_gsl_eigen_nonsymmv_narray(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_eigen_nonsymmv_Z(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_matrix *m, *Z;
-  gsl_vector_complex *v;
-  gsl_matrix_complex *evec;
+  gsl_matrix *m, *Z = NULL;
+  gsl_vector_complex *v = NULL;
+  gsl_matrix_complex *evec = NULL;
   gsl_eigen_nonsymmv_workspace *w;
   int vflag = 0, wflag = 0;
   int istart = 0;
@@ -1571,7 +1571,7 @@ static VALUE rb_gsl_eigen_gensymm(int argc, VALUE *argv, VALUE obj)
 	gsl_vector *eval = NULL;
 	gsl_eigen_gensymm_workspace *w = NULL;
 	int flag;
-	VALUE veval;
+	VALUE veval = NULL;
 	flag = check_argv_gensymm(argc, argv, obj, &A, &B, &eval, &w);
   Atmp = make_matrix_clone(A);
 //  Btmp = make_matrix_clone(B);  
@@ -1606,7 +1606,7 @@ static VALUE rb_gsl_eigen_gensymmv(int argc, VALUE *argv, VALUE obj)
 	gsl_matrix *evec = NULL;
 	gsl_eigen_gensymmv_workspace *w = NULL;
 	int flag;
-	VALUE veval, vevec;
+	VALUE veval = NULL, vevec = NULL;
 	flag = check_argv_gensymmv(argc, argv, obj, &A, &B, &eval, &evec, &w);
   Atmp = make_matrix_clone(A);
 //  Btmp = make_matrix_clone(B);  	
@@ -1645,7 +1645,7 @@ static VALUE rb_gsl_eigen_genherm(int argc, VALUE *argv, VALUE obj)
 	gsl_vector *eval = NULL;
 	gsl_eigen_genherm_workspace *w = NULL;
 	int flag;
-	VALUE veval;
+	VALUE veval = NULL;
 	flag = check_argv_genherm(argc, argv, obj, &A, &B, &eval, &w);
   Atmp = make_matrix_complex_clone(A);
   Btmp = make_matrix_complex_clone(B);  
@@ -1680,7 +1680,7 @@ static VALUE rb_gsl_eigen_genhermv(int argc, VALUE *argv, VALUE obj)
 	gsl_matrix_complex *evec = NULL;
 	gsl_eigen_genhermv_workspace *w = NULL;
 	int flag;
-	VALUE veval, vevec;
+	VALUE veval = NULL, vevec = NULL;
 	flag = check_argv_genhermv(argc, argv, obj, &A, &B, &eval, &evec, &w);
   Atmp = make_matrix_complex_clone(A);
   Btmp = make_matrix_complex_clone(B);  	
@@ -1833,7 +1833,7 @@ static VALUE rb_gsl_eigen_gen(int argc, VALUE *argv, VALUE obj)
 	gsl_vector *beta = NULL;
 	gsl_eigen_gen_workspace *w = NULL;
 	int flag;
-	VALUE valpha, vbeta;
+	VALUE valpha = NULL, vbeta = NULL;
 	flag = check_argv_gen(argc, argv, obj, &A, &B, &alpha, &beta, &w);
 //  Atmp = make_matrix_clone(A);
 //  Btmp = make_matrix_clone(B);  	
@@ -1874,7 +1874,7 @@ static VALUE rb_gsl_eigen_gen_QZ(int argc, VALUE *argv, VALUE obj)
 	gsl_matrix *Q, *Z;
 	gsl_eigen_gen_workspace *w = NULL;
 	int flag;
-	VALUE valpha, vbeta, vQ, vZ;
+	VALUE valpha = NULL, vbeta = NULL, vQ, vZ;
 	flag = check_argv_gen(argc, argv, obj, &A, &B, &alpha, &beta, &w);
 /*  Atmp = make_matrix_clone(A);
   Btmp = make_matrix_clone(B);  	*/
@@ -1987,7 +1987,7 @@ static VALUE rb_gsl_eigen_genv(int argc, VALUE *argv, VALUE obj)
 	gsl_matrix_complex *evec = NULL;
 	gsl_eigen_genv_workspace *w = NULL;
 	int flag;
-	VALUE valpha, vbeta, vevec;
+	VALUE valpha = NULL, vbeta = NULL, vevec = NULL;
 	flag = check_argv_genv(argc, argv, obj, &A, &B, &alpha, &beta, &evec, &w);
 //  Atmp = make_matrix_clone(A);
 //  Btmp = make_matrix_clone(B);  	
@@ -2035,7 +2035,7 @@ static VALUE rb_gsl_eigen_genv_QZ(int argc, VALUE *argv, VALUE obj)
 	gsl_matrix *Q, *Z;
 	gsl_eigen_genv_workspace *w = NULL;
 	int flag;
-	VALUE valpha, vbeta, vevec, vQ, vZ;
+	VALUE valpha = NULL, vbeta = NULL, vevec = NULL, vQ, vZ;
 	flag = check_argv_genv(argc, argv, obj, &A, &B, &alpha, &beta, &evec, &w);
 /*  Atmp = make_matrix_clone(A);
   Btmp = make_matrix_clone(B);  	*/

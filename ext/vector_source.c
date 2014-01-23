@@ -2233,14 +2233,16 @@ static VALUE FUNCTION(rb_gsl_vector,filescan)(VALUE klass, VALUE file)
   sprintf(buf, "sed '/^#/d' %s | wc", filename);
   if ((fp = popen(buf, "r")) == NULL) 
     rb_raise(rb_eIOError, "popen failed.");
-  fgets(buf, 1024, fp);
+  if (fgets(buf, 1024, fp) == NULL)
+    rb_sys_fail(0);
   pclose(fp);
   sscanf(buf, "%d", &nn);
   lines = (size_t) nn;  /*  vector length */
   if ((fp = fopen(filename, "r")) == NULL) 
     rb_raise(rb_eIOError, "cannot open file %s.", filename);
   while (1) {
-	  fgets(buf, 1024, fp);    /* read the first line to count number of columns */
+	  if (fgets(buf, 1024, fp) == NULL)    /* read the first line to count number of columns */
+      rb_sys_fail(0);
 	  if (buf[0] == '#') continue;
 	  else break;
 	}
@@ -2254,7 +2256,8 @@ static VALUE FUNCTION(rb_gsl_vector,filescan)(VALUE klass, VALUE file)
   rewind(fp);
   for (i = 0, ii = 0; ii < lines; i++) {
 		pos = ftell(fp);
-		fgets(buf, 1024, fp);
+		if (fgets(buf, 1024, fp) == NULL)
+      rb_sys_fail(0);
 		if (buf[0] == '#') continue;
 		fseek(fp, pos, SEEK_SET);
     for (j = 0, jj = 0; jj < n; j++) {

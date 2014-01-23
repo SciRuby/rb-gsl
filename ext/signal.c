@@ -104,7 +104,7 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
         enum FFT_CONV_CORR flag1,
         enum FFT_CONV_CORR flag2)
 {
-  double *data1, *data2, *data3;
+  double *data1, *data2, *data3 = NULL;
   size_t stride1, stride2, size1, size2;
 #ifdef HAVE_NARRAY_H
   int naflag1, naflag2, shape;
@@ -118,7 +118,7 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
   int flagt = 0, flagw = 0;
   //  size_t i;
   gsl_vector *vtmp1 = NULL, *vtmp2 = NULL;
-  VALUE ary;
+  VALUE ary = NULL;
   switch (argc) {
   case 3:
     data1 = get_ptr_double3(obj, &size1, &stride1, &naflag1);

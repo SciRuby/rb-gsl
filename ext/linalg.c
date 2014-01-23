@@ -3454,7 +3454,7 @@ static VALUE rb_gsl_linalg_hessenberg_unpack_accum(int argc, VALUE *argv, VALUE 
   gsl_matrix *H = NULL, *V = NULL;
   gsl_vector *tau = NULL;
   size_t i;
-  VALUE val;
+  VALUE val = Qnil;
   switch (argc) {
   case 2:
     /* nothing to do */
@@ -3493,7 +3493,7 @@ static VALUE rb_gsl_linalg_hesstri_decomp(int argc, VALUE *argv, VALUE module)
   gsl_matrix *A = NULL, *B = NULL, *Anew, *Bnew;
   gsl_matrix *U = NULL, *V = NULL;
   gsl_vector *work = NULL;
-  VALUE vH, vR, vU, vV, ary;
+  VALUE vH, vR, vU = Qnil, vV = Qnil, ary;
   int flag = 0;
   switch (argc) {
   case 2:
@@ -3546,7 +3546,7 @@ static VALUE rb_gsl_linalg_hesstri_decomp_bang(int argc, VALUE *argv, VALUE modu
   gsl_matrix *A = NULL, *B = NULL;
   gsl_matrix *U = NULL, *V = NULL;
   gsl_vector *work = NULL;
-  VALUE vH, vR, vU, vV, ary;
+  VALUE vH, vR, vU = Qnil, vV = Qnil, ary;
   int flag = 0;
   switch (argc) {
   case 2:
@@ -3665,6 +3665,9 @@ void Init_gsl_linalg(VALUE module)
   VALUE mgsl_linalg_tridiag;
   VALUE mgsl_linalg_HH;
   VALUE mgsl_linalg_Householder;
+#ifdef GSL_1_9_LATER
+  VALUE mhessen;
+#endif
 
   mgsl_linalg = rb_define_module_under(module, "Linalg");
   mgsl_linalg_LU = rb_define_module_under(mgsl_linalg, "LU");
@@ -4019,7 +4022,6 @@ void Init_gsl_linalg(VALUE module)
 #endif
 
 #ifdef GSL_1_9_LATER
-  VALUE mhessen;
   mhessen = rb_define_module_under(mgsl_linalg, "Hessenberg");
   rb_define_module_function(mhessen, "decomp", rb_gsl_linalg_hessenberg_decomp, 1);
   rb_define_module_function(mgsl_linalg, "heesenberg_decomp", rb_gsl_linalg_hessenberg_decomp, 1);  

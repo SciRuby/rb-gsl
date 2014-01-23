@@ -72,7 +72,7 @@ static VALUE rb_gsl_monte_function_set_f(int argc, VALUE *argv, VALUE obj)
     rb_ary_store(ary, 0, argv[0]);
     F->dim = FIX2INT(argv[1]);
     ary2 = rb_ary_new2(argc-2);
-    for (i = 2; i < argc; i++) rb_ary_store(ary2, i-2, argv[i]);
+    for (i = 2; i < (size_t) argc; i++) rb_ary_store(ary2, i-2, argv[i]);
     rb_ary_store(ary, 1, ary2);
     break;
   }
@@ -164,7 +164,7 @@ static VALUE rb_gsl_monte_function_set_params(int argc, VALUE *argv, VALUE obj)
     rb_ary_store(ary, 1, argv[0]);
   } else {
     ary2 = rb_ary_new2(argc);
-    for (i = 0; i < argc; i++) rb_ary_store(ary2, i, argv[i]);
+    for (i = 0; i < (size_t) argc; i++) rb_ary_store(ary2, i, argv[i]);
     rb_ary_store(ary, 1, ary2);
   }
   return obj;

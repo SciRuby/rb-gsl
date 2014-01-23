@@ -186,7 +186,7 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
 #ifdef GSL_1_11_LATER
 static VALUE rb_gsl_complex_poly_complex_eval(VALUE a, VALUE b)
 {
-  gsl_vector_complex *coef, *zb, *vnew;
+  gsl_vector_complex *coef = NULL, *zb, *vnew;
   gsl_complex *zc;
   gsl_complex z, *zx, *res;
   VALUE ret;

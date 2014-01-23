@@ -101,7 +101,7 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     bnew = gsl_permutation_alloc(argc);
-    for (j = 0; j < argc; j++) {
+    for (j = 0; j < (size_t) argc; j++) {
       i = FIX2INT(argv[j]);
       if (i < 0) k = b->size + i; else k = i;
       bnew->data[j] = b->data[k];

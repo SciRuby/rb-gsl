@@ -118,7 +118,8 @@ static VALUE rb_gsl_histogram_alloc_from_file(VALUE klass, VALUE name)
   sprintf(buf, "wc %s", filename);
   fp = popen(buf, "r");
   if (fp == NULL) rb_raise(rb_eIOError, "popen failed.");
-  fgets(buf, 1024, fp);
+  if (fgets(buf, 1024, fp) == NULL)
+    rb_sys_fail(0);
   pclose(fp);
   sscanf(buf, "%d", &nn);
   n = (size_t) nn;      /* vector length */
@@ -1769,7 +1770,7 @@ static VALUE rb_gsl_histogram_reverse(VALUE obj)
 static double histogram_percentile(const gsl_histogram *h, double f)
 {
   double sum = gsl_histogram_sum(h), sf;
-  double val, s = 0, x;
+  double val = 0, s = 0, x;
   double ri, ri1;
   size_t i;
   sf = sum * f;
@@ -1806,7 +1807,7 @@ static VALUE rb_gsl_histogram_median(VALUE obj)
 static double histogram_percentile_inv(const gsl_histogram *h, double x)
 {
   double sum = gsl_histogram_sum(h);
-  double val, s = 0;
+  double val = 0, s = 0;
   double ri, ri1, q;
   size_t i;
 

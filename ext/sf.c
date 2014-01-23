@@ -775,22 +775,22 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
   VALUE ary, xx;
   size_t i, k, n;
   double val;
-  gsl_mode_t mode;
-  char c;
+  /*gsl_mode_t mode;
+  char c;*/
 #ifdef HAVE_NARRAY_H
   double *ptr1, *ptr2;
   struct NARRAY *na;
 #endif
   switch (TYPE(m)) {
   case T_STRING:
-    c = tolower(NUM2CHR(m));
+    /*c = tolower(NUM2CHR(m));
     if (c == 'd') mode = GSL_PREC_DOUBLE;
     else if (c == 's') mode = GSL_PREC_SINGLE;
     else if (c == 'a') mode = GSL_PREC_APPROX;
-    else mode = GSL_PREC_DOUBLE;
+    else mode = GSL_PREC_DOUBLE;*/
     break;
   case T_FIXNUM:
-    mode = FIX2INT(m);
+    /*mode = FIX2INT(m);*/
     break;
   default:
     rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
@@ -859,19 +859,19 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
   VALUE ary, xx;
   size_t i, k, n;
   double val, xx2;
-  gsl_mode_t mode;
-  char c;
+  /*gsl_mode_t mode;
+  char c;*/
 #ifdef HAVE_NARRAY_H
   double *ptr1, *ptr2;
   struct NARRAY *na;
 #endif
   Need_Float(x2);
   xx2 = NUM2DBL(x2);
-  c = tolower(NUM2CHR(m));
+  /*c = tolower(NUM2CHR(m));
   if (c == 'd') mode = GSL_PREC_DOUBLE;
   else if (c == 's') mode = GSL_PREC_SINGLE;
   else if (c == 'a') mode = GSL_PREC_APPROX;
-  else mode = GSL_PREC_DOUBLE;
+  else mode = GSL_PREC_DOUBLE;*/
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
   switch (TYPE(argv)) {
   case T_FLOAT:
@@ -935,8 +935,8 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
   VALUE ary, xx;
   size_t i, k, n;
   double val, xx2, xx3;
-  gsl_mode_t mode;
-  char c;
+  /*gsl_mode_t mode;
+  char c;*/
 #ifdef HAVE_NARRAY_H
   double *ptr1, *ptr2;
   struct NARRAY *na;
@@ -944,11 +944,11 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
   Need_Float(x2); Need_Float(x3);
   xx2 = NUM2DBL(x2);
   xx3 = NUM2DBL(x3);
-  c = tolower(NUM2CHR(m));
+  /*c = tolower(NUM2CHR(m));
   if (c == 'd') mode = GSL_PREC_DOUBLE;
   else if (c == 's') mode = GSL_PREC_SINGLE;
   else if (c == 'a') mode = GSL_PREC_APPROX;
-  else mode = GSL_PREC_DOUBLE;
+  else mode = GSL_PREC_DOUBLE;*/
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
   switch (TYPE(argv)) {
   case T_FLOAT:
@@ -1013,19 +1013,19 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
   VALUE ary, xx;
   size_t i, k, n;
   double val, xx2, xx3, xx4;
-  gsl_mode_t mode;
-  char c;
+  /*gsl_mode_t mode;
+  char c;*/
 #ifdef HAVE_NARRAY_H
   double *ptr1, *ptr2;
   struct NARRAY *na;
 #endif
   Need_Float(x2); Need_Float(x3); Need_Float(x4);
   xx2 = NUM2DBL(x2);  xx3 = NUM2DBL(x3); xx4 = NUM2DBL(x4);
-  c = tolower(NUM2CHR(m));
+  /*c = tolower(NUM2CHR(m));
   if (c == 'd') mode = GSL_PREC_DOUBLE;
   else if (c == 's') mode = GSL_PREC_SINGLE;
   else if (c == 'a') mode = GSL_PREC_APPROX;
-  else mode = GSL_PREC_DOUBLE;
+  else mode = GSL_PREC_DOUBLE;*/
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
   switch (TYPE(argv)) {
   case T_FLOAT:
@@ -1086,10 +1086,9 @@ VALUE rb_gsl_sf_eval_e(int (*func)(double, gsl_sf_result*), VALUE x)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   Need_Float(x);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(NUM2DBL(x), rslt);
+  (*func)(NUM2DBL(x), rslt);
   return v;
 }
 
@@ -1097,10 +1096,9 @@ VALUE rb_gsl_sf_eval_e_int(int (*func)(int, gsl_sf_result*), VALUE x)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   CHECK_FIXNUM(x);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(NUM2INT(x), rslt);
+  (*func)(NUM2INT(x), rslt);
   return v;
 }
 
@@ -1108,9 +1106,8 @@ VALUE rb_gsl_sf_eval_e_uint(int (*func)(unsigned int, gsl_sf_result*), VALUE x)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(NUM2UINT(x), rslt);
+  (*func)(NUM2UINT(x), rslt);
   return v;
 }
 
@@ -1119,10 +1116,9 @@ VALUE rb_gsl_sf_eval_e_int_uint(int (*func)(int, unsigned int, gsl_sf_result*),
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   CHECK_FIXNUM(n);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(FIX2INT(n), NUM2UINT(x), rslt);
+  (*func)(FIX2INT(n), NUM2UINT(x), rslt);
   return v;
 }
 
@@ -1131,10 +1127,9 @@ VALUE rb_gsl_sf_eval_e_double_uint(int (*func)(double, unsigned int, gsl_sf_resu
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   Need_Float(y);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(NUM2DBL(y), NUM2UINT(x), rslt);
+  (*func)(NUM2DBL(y), NUM2UINT(x), rslt);
   return v;
 }
 
@@ -1143,11 +1138,10 @@ VALUE rb_gsl_sf_eval_e_int_double(int (*func)(int, double, gsl_sf_result*),
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   CHECK_FIXNUM(n);
   Need_Float(x);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(FIX2INT(n), NUM2DBL(x), rslt);
+  (*func)(FIX2INT(n), NUM2DBL(x), rslt);
   return v;
 }
 
@@ -1156,11 +1150,10 @@ VALUE rb_gsl_sf_eval_e_int_double2(int (*func)(int, double, double, gsl_sf_resul
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   CHECK_FIXNUM(n);
   Need_Float(x1); Need_Float(x2);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(FIX2INT(n), NUM2DBL(x1), NUM2DBL(x2), rslt);
+  (*func)(FIX2INT(n), NUM2DBL(x1), NUM2DBL(x2), rslt);
   return v;
 }
 
@@ -1170,11 +1163,10 @@ VALUE rb_gsl_sf_eval_e_int_int_double(int (*func)(int, int, double, gsl_sf_resul
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   CHECK_FIXNUM(n1); CHECK_FIXNUM(n2);
   Need_Float(x);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(FIX2INT(n1), FIX2INT(n2), NUM2DBL(x), rslt);
+  (*func)(FIX2INT(n1), FIX2INT(n2), NUM2DBL(x), rslt);
   return v;
 }
 
@@ -1183,10 +1175,9 @@ VALUE rb_gsl_sf_eval_e_double2(int (*func)(double, double, gsl_sf_result*),
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   Need_Float(x1); Need_Float(x2); 
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(NUM2DBL(x1), NUM2DBL(x2), rslt);
+  (*func)(NUM2DBL(x1), NUM2DBL(x2), rslt);
   return v;
 }
 
@@ -1196,10 +1187,9 @@ VALUE rb_gsl_sf_eval_e_double3(int (*func)(double, double, double, gsl_sf_result
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   Need_Float(x1); Need_Float(x2); Need_Float(x3);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(NUM2DBL(x1), NUM2DBL(x2),NUM2DBL(x3), rslt);
+  (*func)(NUM2DBL(x1), NUM2DBL(x2),NUM2DBL(x3), rslt);
   return v;
 }
 
@@ -1210,7 +1200,6 @@ VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*),
   char c;
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   Need_Float(x);
   switch (TYPE(m)) {
   case T_STRING:
@@ -1229,7 +1218,7 @@ VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*),
     break;
   }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(NUM2DBL(x), mode, rslt);
+  (*func)(NUM2DBL(x), mode, rslt);
   return v;
 }
 
@@ -1241,7 +1230,6 @@ VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_
   char c;
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   Need_Float(x1);  Need_Float(x2);
   switch (TYPE(m)) {
   case T_STRING:
@@ -1260,7 +1248,7 @@ VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_
     break;
   }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(NUM2DBL(x1), NUM2DBL(x2), mode, rslt);
+  (*func)(NUM2DBL(x1), NUM2DBL(x2), mode, rslt);
   return v;
 }
 
@@ -1271,7 +1259,6 @@ VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t,
   char c;
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   Need_Float(x1); Need_Float(x2); Need_Float(x3);
   switch (TYPE(m)) {
   case T_STRING:
@@ -1290,7 +1277,7 @@ VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t,
     break;
   }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(NUM2DBL(x1), NUM2DBL(x2),NUM2DBL(x3), mode, rslt);
+  (*func)(NUM2DBL(x1), NUM2DBL(x2),NUM2DBL(x3), mode, rslt);
   return v;
 }
 
@@ -1302,7 +1289,6 @@ VALUE rb_gsl_sf_eval_e_double4_m(int (*func)(double, double, double, double, gsl
   char c;
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  int status;
   Need_Float(x1); Need_Float(x2); Need_Float(x3); Need_Float(x4);
   switch (TYPE(m)) {
   case T_STRING:
@@ -1321,7 +1307,7 @@ VALUE rb_gsl_sf_eval_e_double4_m(int (*func)(double, double, double, double, gsl
     break;
   }    
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
-  status = (*func)(NUM2DBL(x1), NUM2DBL(x2),NUM2DBL(x3), NUM2DBL(x4), mode, rslt);
+  (*func)(NUM2DBL(x1), NUM2DBL(x2),NUM2DBL(x3), NUM2DBL(x4), mode, rslt);
   return v;
 }
 

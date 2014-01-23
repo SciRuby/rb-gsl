@@ -583,7 +583,7 @@ EXTERN VALUE cgsl_histogram;
 static VALUE rb_gsl_narray_histogram(int argc, VALUE *argv, VALUE obj)
 {
   double *ptr, *ptr_range;
-  gsl_histogram *h;
+  gsl_histogram *h = NULL;
   gsl_vector *ranges;
   gsl_vector_view v;
   double min, max;

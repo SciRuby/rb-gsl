@@ -914,13 +914,15 @@ static VALUE rb_gsl_vector_filescan_na(VALUE klass, VALUE file)
   strcpy(filename, STR2CSTR(file));
   sprintf(buf, "wc %s", filename);
   fp = popen(buf, "r");
-  fgets(buf, 1024, fp);
+  if (fgets(buf, 1024, fp) == NULL)
+    rb_sys_fail(0);
   pclose(fp);
   sscanf(buf, "%d", &nn);
   lines = (size_t) nn;      /* vector length */
   shape[0] = lines;
   fp = fopen(filename, "r");
-  fgets(buf, 1024, fp);
+  if (fgets(buf, 1024, fp) == NULL)
+    rb_sys_fail(0);
   n = count_columns(buf);   /* number of vectors created */
   ptr = (double**) xmalloc(sizeof(double**)*n);
   ary = rb_ary_new2(n);
@@ -934,7 +936,8 @@ static VALUE rb_gsl_vector_filescan_na(VALUE klass, VALUE file)
     else break;
   }
   for (i = 1; i < lines; i++) {
-    fgets(buf, 1024, fp);
+    if (fgets(buf, 1024, fp) == NULL)
+      rb_sys_fail(0);
     p = buf;
     for (j = 0; j < n; j++) {
       p = str_scan_double(p, &val);
