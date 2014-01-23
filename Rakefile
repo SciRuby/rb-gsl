@@ -17,10 +17,9 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('narray', '>= 0.5.9')
 
   # About
-  s.authors = ['Yoshiki Tsunesada', 'David MacMahon']
-  s.email = 'y-tsunesada@mm.em-net.ne.jp'
-  s.homepage = 'http://rb-gsl.rubyforge.org/'
-  s.rubyforge_project = 'rb-gsl' 
+  s.authors = ['Yoshiki Tsunesada', 'David MacMahon', 'Jens Wille']
+  s.email = 'jens.wille@gmail.com'
+  s.homepage = 'http://github.com/blackwinter/rb-gsl'
 
   # Files, Libraries, and Extensions
   s.files = FileList[
