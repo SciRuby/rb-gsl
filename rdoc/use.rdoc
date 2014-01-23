@@ -1,7 +1,7 @@
 #
 # = Using Ruby/GSL
 # == {}[link:index.html"name="1] Installation
-# See {here}[link:files/rdoc/index_rdoc.html].
+# See {here}[link:index.html].
 #
 # == {}[link:index.html"name="2] Load the library
 # Put at the head of your scripts,
@@ -168,10 +168,10 @@
 #     * CGSM (Module)
 #     * NUM (Module)
 #
-# {prev}[link:files/rdoc/intro_rdoc.html]
-# {next}[link:files/rdoc/ehandling_rdoc.html]
+# {prev}[link:rdoc/intro_rdoc.html]
+# {next}[link:rdoc/ehandling_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

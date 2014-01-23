@@ -83,6 +83,6 @@
 # * GSL::Linalg::Complex::LU::LUMatrix#sgndet(signum)
 #
 #
-# {back}[link:files/rdoc/linalg_rdoc.html]
+# {back}[link:rdoc/linalg_rdoc.html]
 #
 #

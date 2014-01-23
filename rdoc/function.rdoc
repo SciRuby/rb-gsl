@@ -90,5 +90,5 @@
 #       1.800e+01 2.700e+01 ]
 #     => #<GSL::Matrix:0x6dd1b4>
 #
-# {back}[link:files/rdoc/index_rdoc.html]
+# {back}[link:index.html]
 #

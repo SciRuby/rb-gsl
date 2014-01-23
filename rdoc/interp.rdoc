@@ -8,14 +8,14 @@
 # functions are available for computing derivatives and integrals of 
 # interpolating functions. 
 #
-# 1. {Interpolation classes}[link:files/rdoc/interp_rdoc.html#1]
-# 1. {Initializing interpolation objects}[link:files/rdoc/interp_rdoc.html#2]
-# 1. {Index Look-up and Acceleration}[link:files/rdoc/interp_rdoc.html#3]
-# 1. {Evaluation of Interpolating Functions}[link:files/rdoc/interp_rdoc.html#4]
-# 1. {Higher level interface: GSL::Spline class}[link:files/rdoc/interp_rdoc.html#5]
-#    1. {Class initialization}[link:files/rdoc/interp_rdoc.html#5.1]
-#    1. {Evaluation}[link:files/rdoc/interp_rdoc.html#5.2]
-#    1. {Finding and acceleration}[link:files/rdoc/interp_rdoc.html#5.3]
+# 1. {Interpolation classes}[link:rdoc/interp_rdoc.html#1]
+# 1. {Initializing interpolation objects}[link:rdoc/interp_rdoc.html#2]
+# 1. {Index Look-up and Acceleration}[link:rdoc/interp_rdoc.html#3]
+# 1. {Evaluation of Interpolating Functions}[link:rdoc/interp_rdoc.html#4]
+# 1. {Higher level interface: GSL::Spline class}[link:rdoc/interp_rdoc.html#5]
+#    1. {Class initialization}[link:rdoc/interp_rdoc.html#5.1]
+#    1. {Evaluation}[link:rdoc/interp_rdoc.html#5.2]
+#    1. {Finding and acceleration}[link:rdoc/interp_rdoc.html#5.3]
 #
 # == {}[link:index.html"name="1] Interpolation Classes
 # * GSL
@@ -221,11 +221,11 @@
 #
 # See also the GSL manual and the examples in <tt>examples/</tt>
 #
-# {prev}[link:files/rdoc/odeiv_rdoc.html]
-# {next}[link:files/rdoc/diff_rdoc.html]
+# {prev}[link:rdoc/odeiv_rdoc.html]
+# {next}[link:rdoc/diff_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #
 #   

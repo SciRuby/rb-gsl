@@ -17,11 +17,11 @@
 # * Ruby (1.8 or later recommended)
 #
 # == {}[link:index.html"name="2] Installation
-# See {here}[link:files/rdoc/index_rdoc.html].
+# See {here}[link:index.html].
 #
-# {next}[link:files/rdoc/use_rdoc.html]
+# {next}[link:rdoc/use_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

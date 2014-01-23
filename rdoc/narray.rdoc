@@ -1,8 +1,8 @@
 #
 # = NArray compatibilities
 # === {}[link:index.html"name="0.1] Contents:
-# 1. {Data type conversions}[link:files/rdoc/narray_rdoc.html#1]
-# 1. {Methods which accepts NArray}[link:files/rdoc/narray_rdoc.html#2]
+# 1. {Data type conversions}[link:rdoc/narray_rdoc.html#1]
+# 1. {Methods which accepts NArray}[link:rdoc/narray_rdoc.html#2]
 #
 # == {}[link:index.html"name="1] Data type conversions
 # === {}[link:index.html"name="1.1] GSL to NArray
@@ -89,7 +89,7 @@
 #
 # === {}[link:index.html"name="2.2] <tt>GSL::Sf</tt> module
 # ---
-# * {Any}[link:files/rdoc/sf_rdoc.html]
+# * {Any}[link:rdoc/sf_rdoc.html]
 #
 # === {}[link:index.html"name="2.3] <tt>GSL::Linalg</tt> module
 # ---
@@ -120,7 +120,7 @@
 #
 # === {}[link:index.html"name="2.5] <tt>GSL::FFT</tt> module
 # ---
-# * {Many}[link:files/rdoc/FFT_rdoc.html]
+# * {Many}[link:rdoc/FFT_rdoc.html]
 #
 # === {}[link:index.html"name="2.6] <tt>GSL::Function</tt> class
 # ---
@@ -135,11 +135,11 @@
 #
 # === {}[link:index.html"name="2.7] <tt>GSL::Ran</tt> and <tt>GSL::Cdf</tt> module
 # ---
-# * {Many}[link:files/rdoc/randist_rdoc.html]
+# * {Many}[link:rdoc/randist_rdoc.html]
 #
 # === {}[link:index.html"name="2.8] <tt>GSL::Stats</tt> module
 # ---
-# * {Any}[link:files/rdoc/stats_rdoc.html]
+# * {Any}[link:rdoc/stats_rdoc.html]
 #
 # === {}[link:index.html"name="2.9] <tt>GSL::Interp</tt> and <tt>GSL::Spline</tt> class
 # ---
@@ -167,11 +167,11 @@
 #
 # === {}[link:index.html"name="2.12] <tt>GSL::Wavelet</tt> class
 # ---
-# * {Many}[link:files/rdoc/wavelet_rdoc.html]
+# * {Many}[link:rdoc/wavelet_rdoc.html]
 #
-# {prev}[link:files/rdoc/tensor_rdoc.html]
+# {prev}[link:rdoc/tensor_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

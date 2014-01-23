@@ -129,9 +129,9 @@
 #        end
 #      end
 #
-# {prev}[link:files/rdoc/const_rdoc.html]
+# {prev}[link:rdoc/const_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

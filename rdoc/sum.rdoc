@@ -2,7 +2,7 @@
 # = Series Acceleration
 # In Ruby/GSL, series acceleration functions are provided as singleton methods
 # for the <tt>GSL::Sum::Levin_u, Levin_utrunc</tt> classes, and methods of
-# an object of the {GSL::Vector}[link:files/rdoc/vector_rdoc.html] class.
+# an object of the {GSL::Vector}[link:rdoc/vector_rdoc.html] class.
 #
 # == {}[link:index.html"name="1] Modules and classes
 # * GSL
@@ -55,11 +55,11 @@
 #   <tt>sum_plain</tt> is the term-by-term sum, and <tt>terms_used</tt> is the number of
 #   terms actually used in the calculation.
 #
-# {prev}[link:files/rdoc/cheb_rdoc.html]
-# {next}[link:files/rdoc/dht_rdoc.html]
+# {prev}[link:rdoc/cheb_rdoc.html]
+# {next}[link:rdoc/dht_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #
 #

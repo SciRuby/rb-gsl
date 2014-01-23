@@ -1,12 +1,12 @@
 #
 # = Combinations
 # Contents:
-# 1. {Combination allocation}[link:files/rdoc/combi_rdoc.html#1]
-# 1. {Methods}[link:files/rdoc/combi_rdoc.html#2]
-#    1. {Accessing combination elements}[link:files/rdoc/combi_rdoc.html#2.1]
-#    1. {Combination properties}[link:files/rdoc/combi_rdoc.html#2.2]
-#    1. {Combination functions}[link:files/rdoc/combi_rdoc.html#2.3]
-#    1. {Reading and writing combinations}[link:files/rdoc/combi_rdoc.html#2.4]
+# 1. {Combination allocation}[link:rdoc/combi_rdoc.html#1]
+# 1. {Methods}[link:rdoc/combi_rdoc.html#2]
+#    1. {Accessing combination elements}[link:rdoc/combi_rdoc.html#2.1]
+#    1. {Combination properties}[link:rdoc/combi_rdoc.html#2.2]
+#    1. {Combination functions}[link:rdoc/combi_rdoc.html#2.3]
+#    1. {Reading and writing combinations}[link:rdoc/combi_rdoc.html#2.4]
 #
 # == {}[link:index.html"name="1] Combination allocation
 # ---
@@ -116,10 +116,10 @@
 #        end while c.next == GSL::SUCCESS
 #      end
 #
-# {prev}[link:files/rdoc/perm_rdoc.html]
-# {next}[link:files/rdoc/multiset_rdoc.html]
+# {prev}[link:rdoc/perm_rdoc.html]
+# {next}[link:rdoc/multiset_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

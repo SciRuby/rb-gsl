@@ -8,13 +8,13 @@
 # and its derivative (hence the name fdf) to be supplied by the user.
 #
 # Contents:
-# 1. {Solver classes}[link:files/rdoc/roots_rdoc.html#1]
-# 1. {Methods}[link:files/rdoc/roots_rdoc.html#2]
-#    1. {Methods to solve equations}[link:files/rdoc/roots_rdoc.html#2.1]
-#    1. {GSL::Function_fdf class: Providing the function to solve}[link:files/rdoc/roots_rdoc.html#2.2]
-#    1. {Search Stopping Parameters}[link:files/rdoc/roots_rdoc.html#2.3]
-# 1. {Higher-level interface}[link:files/rdoc/roots_rdoc.html#3]
-# 1. {Example}[link:files/rdoc/roots_rdoc.html#4]
+# 1. {Solver classes}[link:rdoc/roots_rdoc.html#1]
+# 1. {Methods}[link:rdoc/roots_rdoc.html#2]
+#    1. {Methods to solve equations}[link:rdoc/roots_rdoc.html#2.1]
+#    1. {GSL::Function_fdf class: Providing the function to solve}[link:rdoc/roots_rdoc.html#2.2]
+#    1. {Search Stopping Parameters}[link:rdoc/roots_rdoc.html#2.3]
+# 1. {Higher-level interface}[link:rdoc/roots_rdoc.html#3]
+# 1. {Example}[link:rdoc/roots_rdoc.html#4]
 #
 # == {}[link:index.html"name="1] Solver classes
 #
@@ -51,7 +51,7 @@
 #   This initialize the solver <tt>self</tt> to use the function <tt>f</tt>, 
 #   and the initial search 
 #   interval <tt>xl, xu</tt>. The function to be solved <tt>f</tt> is given 
-#   an instanse of the {GSL::Function}[link:files/rdoc/function_rdoc.html] class.
+#   an instanse of the {GSL::Function}[link:rdoc/function_rdoc.html] class.
 #
 # ---
 # * GSL::Root::FdfSolver#set(fdf, r)
@@ -91,7 +91,7 @@
 #
 # === {}[link:index.html"name="2.2] GSL::Function_fdf class: Providing the function to solve
 # The <tt>FSolver</tt> object require an instance of the 
-# {GSL::Function}[link:files/rdoc/function_rdoc.html] class, which is already introduced elsewhere.
+# {GSL::Function}[link:rdoc/function_rdoc.html] class, which is already introduced elsewhere.
 # The <tt>FdfSolver</tt> which uses the root-polishing algorithm requires not only
 # the function to solve, but also
 # procedures to calculate the derivatives. This is
@@ -296,10 +296,10 @@
 #        printf("%5d %10.7f %+10.7f %10.7f\n", iter, x, x - expected, x - x0)
 #      end while status != GSL::SUCCESS
 #
-# {prev}[link:files/rdoc/dht_rdoc.html]
-# {next}[link:files/rdoc/min_rdoc.html]
+# {prev}[link:rdoc/dht_rdoc.html]
+# {next}[link:rdoc/min_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

@@ -104,9 +104,9 @@
 #   Creates a <tt>GSL::Histogram2d</tt> object by projecting the 3D histogram 
 #   <tt>self</tt> onto the yz-plane over the x-range from <tt>istart</tt> to <tt>iend</tt>.
 #
-# {prev}[link:files/rdoc/hist2d_rdoc.html]
-# {next}[link:files/rdoc/ntuple_rdoc.html]
+# {prev}[link:rdoc/hist2d_rdoc.html]
+# {next}[link:rdoc/ntuple_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #

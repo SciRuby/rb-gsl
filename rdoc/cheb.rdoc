@@ -10,10 +10,10 @@
 # T_0(x) = 1, T_1(x) = x, T_2(x) = 2 x^2 - 1. 
 # For further information see Abramowitz & Stegun, Chapter 22. 
 #
-# 1. {GSL::Cheb class}[link:files/rdoc/cheb_rdoc.html#1]
-# 1. {Chebyshev Series Evaluation}[link:files/rdoc/cheb_rdoc.html#2]
-# 1. {Derivatives and Integrals}[link:files/rdoc/cheb_rdoc.html#3]
-# 1. {Examples}[link:files/rdoc/cheb_rdoc.html#4]
+# 1. {GSL::Cheb class}[link:rdoc/cheb_rdoc.html#1]
+# 1. {Chebyshev Series Evaluation}[link:rdoc/cheb_rdoc.html#2]
+# 1. {Derivatives and Integrals}[link:rdoc/cheb_rdoc.html#3]
+# 1. {Examples}[link:rdoc/cheb_rdoc.html#4]
 #
 # == {}[link:index.html"name="1] <tt>GSL::Cheb</tt> class
 #
@@ -26,7 +26,7 @@
 # ---
 # * GSL::Cheb#init(f, a, b)
 #
-#   This computes the Chebyshev approximation the function <tt>f</tt> over the range (<tt>a,b</tt>) to the previously specified order. Where <tt>f</tt> is a {GSL::Function}[link:files/rdoc/function_rdoc.html] object. The computation of the Chebyshev approximation is an O(n^2) process, and requires <tt>n</tt> function evaluations.
+#   This computes the Chebyshev approximation the function <tt>f</tt> over the range (<tt>a,b</tt>) to the previously specified order. Where <tt>f</tt> is a {GSL::Function}[link:rdoc/function_rdoc.html] object. The computation of the Chebyshev approximation is an O(n^2) process, and requires <tt>n</tt> function evaluations.
 #
 #   * ex: Approximate a step function defined in (0, 1) by a Chebyshev series of order 40.
 #       f = GSL::Function.alloc { |x|
@@ -91,9 +91,9 @@
 #
 # See also the example scripts in <tt>examples/cheb/</tt>.
 #
-# {prev}[link:files/rdoc/diff_rdoc.html]
-# {next}[link:files/rdoc/sum_rdoc.html]
+# {prev}[link:rdoc/diff_rdoc.html]
+# {next}[link:rdoc/sum_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #

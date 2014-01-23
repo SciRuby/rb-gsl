@@ -10,7 +10,7 @@
 #
 # The {Ruby/GSL}[http://rubyforge.org/projects/rb-gsl/"target="_top] is Ruby 
 # bidings for GSL. This provides higher-level interfaces to the GSL functions.
-# See {here}[link:files/rdoc/use_rdoc.html] for installation. To use the library , just put at the head of your scripts <tt>require("gsl")</tt>, or type it from the command line of <tt>irb</tt>.
+# See {here}[link:rdoc/use_rdoc.html] for installation. To use the library , just put at the head of your scripts <tt>require("gsl")</tt>, or type it from the command line of <tt>irb</tt>.
 #
 #
 #

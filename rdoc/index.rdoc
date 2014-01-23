@@ -1,5 +1,5 @@
 #
-# = {Ruby/GSL}[link:files/rdoc/index_rdoc.html"target="_parent]
+# = {Ruby/GSL}[link:doc/rdoc/index_rdoc.html"target="_parent]
 #
 # Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License.
 #
@@ -33,11 +33,11 @@
 #
 # == {}[link:index.html"name="4] Screenshot
 #
-# Ruby/GSL can be seen in action in these {screenshots}[link:files/rdoc/screenshot_rdoc.html].
+# Ruby/GSL can be seen in action in these {screenshots}[link:doc/rdoc/screenshot_rdoc.html].
 #
 # == {}[link:index.html"name="5] Reference
 #
-# The {Ruby/GSL reference manual}[link:files/rdoc/ref_rdoc.html] follows and borrows
+# The {Ruby/GSL reference manual}[link:doc/rdoc/ref_rdoc.html] follows and borrows
 # large parts of the GSL reference manual.
 #
 # == {}[link:index.html"name="6] Examples

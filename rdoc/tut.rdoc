@@ -1,5 +1,5 @@
 #
 # = Ruby/GSL Tutorial
-# 1. {Getting started}[link:files/rdoc/start_rdoc.html]
+# 1. {Getting started}[link:rdoc/start_rdoc.html]
 #
 #

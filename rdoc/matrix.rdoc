@@ -1,22 +1,22 @@
 #
 # = Matrices
 # Contents:
-# 1. {Class methods}[link:files/rdoc/matrix_rdoc.html#1]
-# 1. {Instance methods}[link:files/rdoc/matrix_rdoc.html#2]
-#    1. {Accessing matrix elements}[link:files/rdoc/matrix_rdoc.html#2.1]
-#    1. {Initializing matrix elements}[link:files/rdoc/matrix_rdoc.html#2.2]
-#    1. {IO}[link:files/rdoc/matrix_rdoc.html#2.3]
-#    1. {Matrix views}[link:files/rdoc/matrix_rdoc.html#2.4]
-#    1. {Creating row and column views}[link:files/rdoc/matrix_rdoc.html#2.5]
-#    1. {Iterators}[link:files/rdoc/matrix_rdoc.html#2.6]
-#    1. {Copying matrices}[link:files/rdoc/matrix_rdoc.html#2.7]
-#    1. {Copying rows and columns}[link:files/rdoc/matrix_rdoc.html#2.8]
-#    1. {Exchanging rows and columns}[link:files/rdoc/matrix_rdoc.html#2.9]
-#    1. {Matrix operations}[link:files/rdoc/matrix_rdoc.html#2.10]
-#    1. {Finding maximum and minimum elements of matrices}[link:files/rdoc/matrix_rdoc.html#2.11]
-#    1. {Matrix properties}[link:files/rdoc/matrix_rdoc.html#2.12]
-# 1. {NArray}[link:files/rdoc/matrix_rdoc.html#3]
-# 1. {Special matrices}[link:files/rdoc/matrix_rdoc.html#4]
+# 1. {Class methods}[link:rdoc/matrix_rdoc.html#1]
+# 1. {Instance methods}[link:rdoc/matrix_rdoc.html#2]
+#    1. {Accessing matrix elements}[link:rdoc/matrix_rdoc.html#2.1]
+#    1. {Initializing matrix elements}[link:rdoc/matrix_rdoc.html#2.2]
+#    1. {IO}[link:rdoc/matrix_rdoc.html#2.3]
+#    1. {Matrix views}[link:rdoc/matrix_rdoc.html#2.4]
+#    1. {Creating row and column views}[link:rdoc/matrix_rdoc.html#2.5]
+#    1. {Iterators}[link:rdoc/matrix_rdoc.html#2.6]
+#    1. {Copying matrices}[link:rdoc/matrix_rdoc.html#2.7]
+#    1. {Copying rows and columns}[link:rdoc/matrix_rdoc.html#2.8]
+#    1. {Exchanging rows and columns}[link:rdoc/matrix_rdoc.html#2.9]
+#    1. {Matrix operations}[link:rdoc/matrix_rdoc.html#2.10]
+#    1. {Finding maximum and minimum elements of matrices}[link:rdoc/matrix_rdoc.html#2.11]
+#    1. {Matrix properties}[link:rdoc/matrix_rdoc.html#2.12]
+# 1. {NArray}[link:rdoc/matrix_rdoc.html#3]
+# 1. {Special matrices}[link:rdoc/matrix_rdoc.html#4]
 #
 # == {}[link:index.html"name="1] Class methods
 #
@@ -194,7 +194,7 @@
 #   NOTE: GSL does not provide a matrix copy function that properly copies data
 #   across overlapping memory regions, so watch out if assigning to part of a
 #   Matrix from another part of itself (see <tt>#set</tt> example of
-#   {GSL::Vector}[link:files/rdoc/vector_rdoc.html]).
+#   {GSL::Vector}[link:rdoc/vector_rdoc.html]).
 #
 # ---
 # * GSL::Matrix#get(args)
@@ -1084,10 +1084,10 @@
 #         2 3 4 1 
 #         1 2 3 4 ]
 #
-# {prev}[link:files/rdoc/vector_rdoc.html]
-# {next}[link:files/rdoc/perm_rdoc.html]
+# {prev}[link:rdoc/vector_rdoc.html]
+# {next}[link:rdoc/perm_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #   
 #

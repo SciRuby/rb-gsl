@@ -2,10 +2,10 @@
 # = Basis Splines
 # This chapter describes functions for the computation of smoothing basis splines (B-splines). This is only for GSL-1.9 or later.
 #
-# 1. {Overview}[link:files/rdoc/bspline_rdoc.html#1]
-# 1. {Initializing the B-splines solver}[link:files/rdoc/bspline_rdoc.html#2]
-# 1. {Constructing the knots vector}[link:files/rdoc/bspline_rdoc.html#3]
-# 1. {Evaluation of B-splines}[link:files/rdoc/bspline_rdoc.html#4]
+# 1. {Overview}[link:rdoc/bspline_rdoc.html#1]
+# 1. {Initializing the B-splines solver}[link:rdoc/bspline_rdoc.html#2]
+# 1. {Constructing the knots vector}[link:rdoc/bspline_rdoc.html#3]
+# 1. {Evaluation of B-splines}[link:rdoc/bspline_rdoc.html#4]
 #
 # == {}[link:index.html"name="1] Overview
 #
@@ -34,9 +34,9 @@
 #
 #   This method evaluates all B-spline basis functions at the position <tt>x</tt> and stores them in <tt>B</tt> (if given), so that the ith element of <tt>B</tt> is <tt>B_i(x)</tt>. <tt>B</tt> must be of length <tt>n = nbreak + k - 2</tt>. If <tt>B</tt> is not given, a newly created vector is returned.It is far more efficient to compute all of the basis functions at once than to compute them individually, due to the nature of the defining recurrence relation. 
 #
-# {prev}[link:files/rdoc/nonlinearfit_rdoc.html]
-# {next}[link:files/rdoc/const_rdoc.html]
+# {prev}[link:rdoc/nonlinearfit_rdoc.html]
+# {next}[link:rdoc/const_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #

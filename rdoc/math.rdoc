@@ -1,16 +1,16 @@
 #
 # = Mathematical Functions
 # Contents:
-# 1. {Mathematical Constants}[link:files/rdoc/math_rdoc.html#1]
-#    1. {Infinities and Not-a-number}[link:files/rdoc/math_rdoc.html#2]
-#    1. {Constants}[link:files/rdoc/math_rdoc.html#2.1]
-# 1. {Module functions}[link:files/rdoc/math_rdoc.html#2.2]
-# 1. {Elementary Functions}[link:files/rdoc/math_rdoc.html#3]
-# 1. {Small Integer Powers}[link:files/rdoc/math_rdoc.html#4]
-# 1. {Testing the Sign of Numbers}[link:files/rdoc/math_rdoc.html#5]
-# 1. {Testing for Odd and Even Numbers}[link:files/rdoc/math_rdoc.html#6]
-# 1. {Maximum and Minimum functions}[link:files/rdoc/math_rdoc.html#7]
-# 1. {Approximate Comparison of Floating Point Numbers}[link:files/rdoc/math_rdoc.html#8]
+# 1. {Mathematical Constants}[link:rdoc/math_rdoc.html#1]
+#    1. {Infinities and Not-a-number}[link:rdoc/math_rdoc.html#2]
+#    1. {Constants}[link:rdoc/math_rdoc.html#2.1]
+# 1. {Module functions}[link:rdoc/math_rdoc.html#2.2]
+# 1. {Elementary Functions}[link:rdoc/math_rdoc.html#3]
+# 1. {Small Integer Powers}[link:rdoc/math_rdoc.html#4]
+# 1. {Testing the Sign of Numbers}[link:rdoc/math_rdoc.html#5]
+# 1. {Testing for Odd and Even Numbers}[link:rdoc/math_rdoc.html#6]
+# 1. {Maximum and Minimum functions}[link:rdoc/math_rdoc.html#7]
+# 1. {Approximate Comparison of Floating Point Numbers}[link:rdoc/math_rdoc.html#8]
 #
 # == {}[link:index.html"name="1] Mathematical Constants
 # ---
@@ -267,10 +267,10 @@
 #
 #   Ruby/GSL version
 #
-# {prev}[link:files/rdoc/ehandling_rdoc.html]
-# {next}[link:files/rdoc/complex_rdoc.html]
+# {prev}[link:rdoc/ehandling_rdoc.html]
+# {next}[link:rdoc/complex_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

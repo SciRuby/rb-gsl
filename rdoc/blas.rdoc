@@ -260,10 +260,10 @@
 # * GSL::Blas::Right
 #
 #
-# {prev}[link:files/rdoc/sort_rdoc.html]
-# {next}[link:files/rdoc/linalg_rdoc.html]
+# {prev}[link:rdoc/sort_rdoc.html]
+# {next}[link:rdoc/linalg_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

@@ -225,10 +225,10 @@
 #      end while (vegas.chisq-1.0).abs > 0.5
 #      display_results("vegas final", result, error)
 #
-# {prev}[link:files/rdoc/ntuple_rdoc.html]
-# {next}[link:files/rdoc/siman_rdoc.html]
+# {prev}[link:rdoc/ntuple_rdoc.html]
+# {next}[link:rdoc/siman_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

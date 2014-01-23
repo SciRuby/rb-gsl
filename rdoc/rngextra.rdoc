@@ -1,11 +1,11 @@
 #
 # = rngextra
-# See {Random number generation}[link:files/rdoc/rng_rdoc.html].
+# See {Random number generation}[link:rdoc/rng_rdoc.html].
 #
-# {prev}[link:files/rdoc/graph_rdoc.html]
-# {next}[link:files/rdoc/tensor_rdoc.html]
+# {prev}[link:rdoc/graph_rdoc.html]
+# {next}[link:rdoc/tensor_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

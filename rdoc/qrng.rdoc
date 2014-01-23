@@ -9,11 +9,11 @@
 # to the interface for random number generators.
 #
 # Contents:
-# 1. {Quasi-random number generator initialization}[link:files/rdoc/qrng_rdoc.html#1]
-# 1. {Sampling from a quasi-random number generator}[link:files/rdoc/qrng_rdoc.html#2]
-# 1. {Auxiliary quasi-random number generator functions}[link:files/rdoc/qrng_rdoc.html#3]
-# 1. {Saving and resorting quasi-random number generator state}[link:files/rdoc/qrng_rdoc.html#4]
-# 1. {Quasi-random number generator algorithms}[link:files/rdoc/qrng_rdoc.html#5]
+# 1. {Quasi-random number generator initialization}[link:rdoc/qrng_rdoc.html#1]
+# 1. {Sampling from a quasi-random number generator}[link:rdoc/qrng_rdoc.html#2]
+# 1. {Auxiliary quasi-random number generator functions}[link:rdoc/qrng_rdoc.html#3]
+# 1. {Saving and resorting quasi-random number generator state}[link:rdoc/qrng_rdoc.html#4]
+# 1. {Quasi-random number generator algorithms}[link:rdoc/qrng_rdoc.html#5]
 #
 # == {}[link:index.html"name="1] Quasi-random number generator initialization
 #
@@ -32,7 +32,7 @@
 # ---
 # * GSL::QRng::get(x)
 #
-#   This calculate the next point <tt>x</tt> from the sequence generator. Here <tt>x</tt> is an instance of the {GSL::Vector}[link:files/rdoc/vector_rdoc.html] class. The space available for <tt>x</tt> must match the dimension of the generator. The point <tt>x</tt> will lie in the range 0 < x_i < 1 for each x_i. 
+#   This calculate the next point <tt>x</tt> from the sequence generator. Here <tt>x</tt> is an instance of the {GSL::Vector}[link:rdoc/vector_rdoc.html] class. The space available for <tt>x</tt> must match the dimension of the generator. The point <tt>x</tt> will lie in the range 0 < x_i < 1 for each x_i. 
 #
 #   This is used as
 #     q = QRng.alloc(QRng::SOBOL, dim)
@@ -81,10 +81,10 @@
 #
 #   (GSL-1.11 or later) These generators use the Halton and reverse Halton sequences described in J.H. Halton, Numerische Mathematik 2, 84-90 (1960) and B. Vandewoestyne and R. Cools Computational and Applied Mathematics 189, 1&2, 341-361 (2006). They are valid up to 1229 dimensions.
 #
-# {prev}[link:files/rdoc/rng_rdoc.html]
-# {next}[link:files/rdoc/randist_rdoc.html]
+# {prev}[link:rdoc/rng_rdoc.html]
+# {next}[link:rdoc/randist_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #

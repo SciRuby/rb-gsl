@@ -140,13 +140,17 @@ def check_version(configfile)
   end
 end
 
+def file_path(path = '.')
+  File.expand_path(path, File.dirname(__FILE__))
+end
+
 #####
 
 $CFLAGS ||= ''
-$CFLAGS += " -Wall -I../include "
+$CFLAGS += " -Wall -I#{file_path('../include')} "
 
 begin
-  RB_GSL_CONFIG = File.open("../include/rb_gsl_config.h", "w")
+  RB_GSL_CONFIG = File.open(file_path("../include/rb_gsl_config.h"), "w")
   RB_GSL_CONFIG.printf("#ifndef ___RB_GSL_CONFIG_H___\n")
   RB_GSL_CONFIG.printf("#define ___RB_GSL_CONFIG_H___\n\n")
 
@@ -202,7 +206,7 @@ begin
   
   begin
     print("checking rb-gsl version...")
-    File.open("../VERSION") do |f|
+    File.open(file_path("../VERSION")) do |f|
       ver = GSL::Version.new(f.gets.chomp)
       puts(ver)
       RB_GSL_CONFIG.printf("#ifndef RUBY_GSL_VERSION\n#define RUBY_GSL_VERSION \"#{ver}\"\n#endif\n")
@@ -279,7 +283,7 @@ if tamu_anova_config
 end
 end
 
-File.open("../lib/gsl.rb", "w") do |file|
+File.open(file_path("../lib/gsl.rb"), "w") do |file|
   if have_narray_h
     file.print("require('narray')\n")
   end
@@ -288,7 +292,7 @@ File.open("../lib/gsl.rb", "w") do |file|
   file.print("require('gsl/oper.rb')\n")
 end
 
-File.open("../lib/rbgsl.rb", "w") do |file|
+File.open(file_path("../lib/rbgsl.rb"), "w") do |file|
   if have_narray_h
     file.print("require('narray')\n")
   end
@@ -296,8 +300,10 @@ File.open("../lib/rbgsl.rb", "w") do |file|
   file.print("require('gsl/oper.rb')\n")
 end
 
+Dir.chdir(file_path) {
 srcs = Dir.glob("*.c") - ["vector_source.c", "matrix_source.c", "tensor_source.c", "poly_source.c", "block_source.c"]
 
 $objs = srcs.collect { |f| f.sub(".c", ".o") }
+}
 
 create_makefile("rb_gsl")

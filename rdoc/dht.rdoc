@@ -3,9 +3,9 @@
 # This chapter describes functions for performing Discrete Hankel Transforms 
 # (DHTs). 
 #
-# 1. {Definitions}[link:files/rdoc/dht_rdoc.html#1]
-# 1. {Initialization}[link:files/rdoc/dht_rdoc.html#2]
-# 1. {Methods}[link:files/rdoc/dht_rdoc.html#3]
+# 1. {Definitions}[link:rdoc/dht_rdoc.html#1]
+# 1. {Initialization}[link:rdoc/dht_rdoc.html#2]
+# 1. {Methods}[link:rdoc/dht_rdoc.html#3]
 #
 # == {}[link:index.html"name="1] Definitions
 # The discrete Hankel transform acts on a vector of sampled data, where the 
@@ -113,10 +113,10 @@
 #
 #   Return the (n,m)-th transform coefficient.
 #
-# {prev}[link:files/rdoc/sum_rdoc.html]
-# {next}[link:files/rdoc/roots_rdoc.html]
+# {prev}[link:rdoc/sum_rdoc.html]
+# {next}[link:rdoc/roots_rdoc.html]
 #
-# {Reference index}[link:files/rdoc/ref_rdoc.html]
-# {top}[link:files/rdoc/index_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
 #
 #
