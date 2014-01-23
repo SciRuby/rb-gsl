@@ -38,7 +38,7 @@ spec = Gem::Specification.new do |s|
     'lib/**/*',
     'include/*',
     'rdoc/*',
-    'tests/**/*'
+    'test/**/*'
   ].to_a
   s.require_paths = ['lib', 'lib/gsl', 'lib/ool', 'ext']
   #s.autorequire = nil
@@ -76,6 +76,13 @@ Gem::PackageTask.new(spec) do |pkg|
 end
 
 task :default => [:package, :gem]
+
+require 'rake/testtask'
+
+Rake::TestTask.new do |t|
+  t.libs << 'test'
+  t.test_files = FileList['test/**/*_test.rb'].to_a
+end
 
 # --------------------------------------------------------------------
 # Create a task to build the RDOC documentation tree.
