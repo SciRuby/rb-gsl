@@ -295,13 +295,14 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 
 #ifndef RBGSL_SET_CLASS
 #ifdef RB_OBJ_WRITE
+#define RBGSL_SET_CLASS0(obj0, cls) RB_OBJ_WRITE(obj0, &(RBASIC_CLASS(obj0)), cls)
+#else
+#define RBGSL_SET_CLASS0(obj0, cls) RBASIC(obj0)->klass = cls
+#endif
 #define RBGSL_SET_CLASS(obj, cls) do { \
   VALUE _obj_ = (obj); \
-  RB_OBJ_WRITE(_obj_, &(RBASIC_CLASS(_obj_)), cls); \
+  RBGSL_SET_CLASS0(_obj_, cls); \
 } while (0)
-#else
-#define RBGSL_SET_CLASS(obj, cls) RBASIC(obj)->klass = cls;
-#endif
 #endif
 
 void rb_gsl_error_handler(const char *reason, const char *file,
