@@ -2,7 +2,7 @@
 #define ___RB_GSL_CONFIG_H___
 
 #ifndef GSL_VERSION
-#define GSL_VERSION "1.15"
+#define GSL_VERSION "1.16"
 #endif
 #ifndef GSL_0_9_4_LATER
 #define GSL_0_9_4_LATER
@@ -56,7 +56,7 @@
 #define HAVE_EIGEN_FRANCIS
 #endif
 #ifndef RUBY_GSL_VERSION
-#define RUBY_GSL_VERSION "1.15.3"
+#define RUBY_GSL_VERSION "1.16.0"
 #endif
 #ifndef RUBY_1_8_LATER
 #define RUBY_1_8_LATER
