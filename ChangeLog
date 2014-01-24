@@ -1,3 +1,7 @@
+Fri Jan 24 14:46:30 CET 2014
+  * Ruby/GSL 1.16.0
+	  * GSL-1.16 support.
+
 Fri Jan 24 14:16:30 CET 2014
   * Ruby/GSL 1.15.3.2
 	  * Windows compatibility.

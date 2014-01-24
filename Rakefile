@@ -3,12 +3,14 @@ RB_GSL_VERSION = File.readlines('VERSION')[0].chomp
 begin
   require 'hen'
 
+  note = '[Ruby 2.x and GSL 1.16 compatible fork]'
+
   Hen.lay! {{
     :gem => {
       :name          => %q{rb-gsl},
       :version       => RB_GSL_VERSION,
-      :summary       => %q{Ruby interface to the GNU Scientific Library [Ruby 2.x compatible fork]},
-      :description   => %q{Ruby/GSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby},
+      :summary       => %Q{Ruby interface to the GNU Scientific Library #{note}},
+      :description   => %Q{Ruby/GSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby #{note}},
       :authors       => ['Yoshiki Tsunesada', 'David MacMahon', 'Jens Wille'],
       :email         => %q{jens.wille@gmail.com},
       :license       => %q{GPL-2.0},
