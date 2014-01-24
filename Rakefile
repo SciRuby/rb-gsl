@@ -7,7 +7,7 @@ begin
     :gem => {
       :name          => %q{rb-gsl},
       :version       => RB_GSL_VERSION,
-      :summary       => %q{Ruby interface to GNU Scientific Library},
+      :summary       => %q{Ruby interface to the GNU Scientific Library [Ruby 2.x compatible fork]},
       :description   => %q{Ruby/GSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby},
       :authors       => ['Yoshiki Tsunesada', 'David MacMahon', 'Jens Wille'],
       :email         => %q{jens.wille@gmail.com},
@@ -21,7 +21,8 @@ begin
 
       :extension => {
         :lib_dir => 'lib',
-        :ext_dir => 'ext'
+        :ext_dir => 'ext',
+        :cross_compile => false
       },
 
       :required_ruby_version => '>= 1.8.1'
