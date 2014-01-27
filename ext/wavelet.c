@@ -363,7 +363,7 @@ static VALUE rb_gsl_wavelet_trans(int argc, VALUE *argv, VALUE obj,
   //int status;
   double *ptr1 = NULL, *ptr2 = NULL;
   size_t n, stride;
-  VALUE ary = NULL, ret;
+  VALUE ary = Qnil, ret;
 #ifdef HAVE_NARRAY_H
   struct NARRAY *na;
 #endif

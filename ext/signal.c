@@ -118,7 +118,7 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
   int flagt = 0, flagw = 0;
   //  size_t i;
   gsl_vector *vtmp1 = NULL, *vtmp2 = NULL;
-  VALUE ary = NULL;
+  VALUE ary = Qnil;
   switch (argc) {
   case 3:
     data1 = get_ptr_double3(obj, &size1, &stride1, &naflag1);

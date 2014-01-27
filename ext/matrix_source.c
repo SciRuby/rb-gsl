@@ -1005,7 +1005,7 @@ static VALUE FUNCTION(rb_gsl_matrix,set_diagonal)(VALUE obj, VALUE diag)
     for (i = 0; i < m->size1; i++) FUNCTION(gsl_matrix,set)(m, i, i, x);
     break;
   case T_ARRAY:
-    len = GSL_MIN_INT(m->size1, RARRAY_LEN(diag));
+    len = GSL_MIN_INT((int) m->size1, RARRAY_LEN(diag));
     for (i = 0; i < len; i++) {
       FUNCTION(gsl_matrix,set)(m, i, i, NUMCONV2(rb_ary_entry(diag, i)));
     }
