@@ -205,19 +205,8 @@ begin
   if have_header("alf/alf.h")
     have_library("alf")
   end
-  
-  begin
-    print("checking rb-gsl version...")
-    File.open(file_path("../VERSION")) do |f|
-      ver = GSL::Version.new(f.gets.chomp)
-      puts(ver)
-      RB_GSL_CONFIG.printf("#ifndef RUBY_GSL_VERSION\n#define RUBY_GSL_VERSION \"#{ver}\"\n#endif\n")
-    end
-  end
 
-  if find_executable("graph")
-    RB_GSL_CONFIG.printf("#ifndef HAVE_GNU_GRAPH\n#define HAVE_GNU_GRAPH\n#endif\n")
-  end
+  $defs << '-DHAVE_GNU_GRAPH' if find_executable('graph')
 
   RB_GSL_CONFIG.printf("\n#endif\n")
   RB_GSL_CONFIG.close
@@ -259,6 +248,7 @@ end
 end
 
 File.open(file_path("../lib/gsl.rb"), "w") do |file|
+  file.print("require('gsl/version')\n")
   if have_narray_h
     file.print("require('narray')\n")
   end

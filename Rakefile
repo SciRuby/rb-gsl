@@ -1,4 +1,4 @@
-RB_GSL_VERSION = File.readlines('VERSION')[0].chomp
+require File.expand_path(%q{../lib/gsl/version}, __FILE__)
 
 begin
   require 'hen'
@@ -8,7 +8,7 @@ begin
   Hen.lay! {{
     :gem => {
       :name          => %q{rb-gsl},
-      :version       => RB_GSL_VERSION,
+      :version       => GSL::RB_GSL_VERSION,
       :summary       => %Q{Ruby interface to the GNU Scientific Library #{note}},
       :description   => %Q{Ruby/GSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby #{note}},
       :authors       => ['Yoshiki Tsunesada', 'David MacMahon', 'Jens Wille'],

@@ -213,10 +213,6 @@ static void rb_gsl_define_const(VALUE module)
   rb_define_const(module, "VERSION", rb_str_new2(GSL_VERSION));
   rb_define_const(module, "GSL_VERSION", rb_str_new2(GSL_VERSION));
 #endif
-#ifdef RUBY_GSL_VERSION
-  rb_define_const(module, "RUBY_GSL_VERSION", rb_str_new2(RUBY_GSL_VERSION));
-  rb_define_const(module, "RB_GSL_VERSION", rb_str_new2(RUBY_GSL_VERSION));
-#endif
 
   rb_define_const(module, "DBL_EPSILON", rb_float_new(GSL_DBL_EPSILON));
   rb_define_const(module, "FLT_EPSILON", rb_float_new(GSL_FLT_EPSILON));
