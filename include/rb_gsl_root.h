@@ -13,9 +13,9 @@
 #define ___RB_GSL_ROOT_H___
 
 #include <gsl/gsl_errno.h>
-#include <gsl/gsl_math.h>
 #include <gsl/gsl_roots.h>
 #include "rb_gsl.h"
+
 EXTERN VALUE cgsl_fsolver;
 EXTERN VALUE cgsl_fdfsolver;
 

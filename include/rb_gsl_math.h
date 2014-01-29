@@ -13,7 +13,6 @@
 #ifndef ___RB_GSL_MATH_H___
 #define ___RB_GSL_MATH_H___
 
-#include <gsl/gsl_math.h>
 #include "rb_gsl.h"
 
 #ifndef GSL_1_3_LATER

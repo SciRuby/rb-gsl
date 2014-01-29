@@ -13,9 +13,6 @@
 #ifndef ___RB_GSL_FUNCTION_H___
 #define ___RB_GSL_FUNCTION_H___
 
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_integration.h>
-#include <gsl/gsl_math.h>
 #include "rb_gsl.h"
 
 EXTERN VALUE cgsl_function;

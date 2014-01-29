@@ -14,7 +14,7 @@
 #define ___RB_GSL_COMPLEX_H___
 
 #include <math.h>
-#include "ruby.h"
+#include <ruby.h>
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 

@@ -16,19 +16,19 @@
 #include <stdlib.h>
 #include <gsl/gsl_mode.h>
 #include "rb_gsl_poly.h"
-#include "rb_gsl_math.h"
-#include "rb_gsl_sf.h"
 #include "rb_gsl_linalg.h"
+#include "rb_gsl_math.h"
+#include "rb_gsl_root.h"
+#include "rb_gsl_histogram.h"
+#include "rb_gsl_sf.h"
 #include "rb_gsl_eigen.h"
 #include "rb_gsl_fft.h"
 #include "rb_gsl_integration.h"
 #include "rb_gsl_rng.h"
 #include "rb_gsl_statistics.h"
-#include "rb_gsl_histogram.h"
 #include "rb_gsl_odeiv.h"
 #include "rb_gsl_interp.h"
 #include "rb_gsl_cheb.h"
-#include "rb_gsl_root.h"
 #include "rb_gsl_fit.h"
 #include "rb_gsl_const.h"
 

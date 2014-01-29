@@ -12,9 +12,6 @@
 #define ___RB_GSL_SF_H___
 
 #include <gsl/gsl_sf.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_math.h>
 #include <gsl/gsl_complex.h>
 #include "rb_gsl.h"
 

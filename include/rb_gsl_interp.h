@@ -16,10 +16,6 @@
 #include "rb_gsl.h"
 #include <gsl/gsl_interp.h>
 #include <gsl/gsl_spline.h>
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
-
 
 typedef struct {
   gsl_interp *p;
