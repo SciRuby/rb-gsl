@@ -46,11 +46,7 @@ static VALUE rb_gsl_object_info(VALUE obj)
   char buf[256];
   VALUE s;
   sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-#ifdef RUBY_1_9_LATER
   sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
-#else
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS(CLASS_OF(obj))->super));
-#endif
   s = rb_rescue(rb_gsl_call_name, obj, rb_gsl_call_rescue, obj);
   if (s) sprintf(buf, "%sType:       %s\n", buf, STR2CSTR(s));
   s = rb_rescue(rb_gsl_call_size, obj, rb_gsl_call_rescue, obj);

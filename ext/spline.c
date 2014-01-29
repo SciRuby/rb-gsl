@@ -318,7 +318,7 @@ static VALUE rb_gsl_spline_info(VALUE obj)
   char buf[256];
   Data_Get_Struct(obj, rb_gsl_spline, p);
   sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-  //  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS(CLASS_OF(obj))->super));
+  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
   sprintf(buf, "%sType:       %s\n", buf, gsl_interp_name(p->s->interp));
   sprintf(buf, "%sxmin:       %f\n", buf, p->s->interp->xmin);
   sprintf(buf, "%sxmax:       %f\n", buf, p->s->interp->xmax);

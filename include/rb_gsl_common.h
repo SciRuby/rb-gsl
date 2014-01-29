@@ -323,6 +323,10 @@ int str_head_grep(const char *s0, const char *s1);
 #define STR2CSTR StringValuePtr
 #endif
 
+#ifndef RCLASS_SUPER
+#define RCLASS_SUPER(cls) RCLASS(cls)->super
+#endif
+
 void make_graphcommand(char *command, VALUE hash);
 int rbgsl_complex_equal(const gsl_complex *z1, const gsl_complex *z2, double eps);
 

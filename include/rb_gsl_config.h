@@ -61,8 +61,5 @@
 #ifndef RUBY_1_9_LATER
 #define RUBY_1_9_LATER
 #endif
-#ifndef RUBY_1_9_2_LATER
-#define RUBY_1_9_2_LATER
-#endif
 
 #endif

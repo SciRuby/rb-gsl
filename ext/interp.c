@@ -437,11 +437,7 @@ static VALUE rb_gsl_interp_info(VALUE obj)
   char buf[256];
   Data_Get_Struct(obj, rb_gsl_interp, p);
   sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-#ifdef RUBY_1_9_LATER
   sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
-#else
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS(CLASS_OF(obj))->super));
-#endif
   sprintf(buf, "%sType:       %s\n", buf, gsl_interp_name(p->p));
   sprintf(buf, "%sxmin:       %f\n", buf, p->p->xmin);
   sprintf(buf, "%sxmax:       %f\n", buf, p->p->xmax);

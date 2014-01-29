@@ -450,11 +450,7 @@ static VALUE rb_gsl_odeiv_step_info(VALUE obj)
   char buf[256];
   Data_Get_Struct(obj, gsl_odeiv_step, s);
   sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-#ifdef RUBY_1_9_LATER
   sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
-#else
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS(CLASS_OF(obj))->super));
-#endif
   sprintf(buf, "%sType:       %s\n", buf, gsl_odeiv_step_name(s));
   sprintf(buf, "%sDimension:  %d\n", buf, (int) s->dimension);
   return rb_str_new2(buf);

@@ -188,11 +188,7 @@ void FUNCTION(cvector,set_from_rarray)(GSL_TYPE(gsl_vector) *v, VALUE ary)
   size_t i;
   if (CLASS_OF(ary) == rb_cRange) ary = rb_gsl_range2ary(ary);
   Check_Type(ary, T_ARRAY);
-#ifdef RUBY_1_9_LATER
   if (RARRAY_LEN(ary) == 0) return;
-#else
-  if (RARRAY_LEN(ary) == 0) return;
-#endif
   for (i = 0; i < v->size; i++) FUNCTION(gsl_vector,set)(v, i, NUMCONV(rb_ary_entry(ary, i)));
 }
 

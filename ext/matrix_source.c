@@ -2074,11 +2074,7 @@ static VALUE FUNCTION(rb_gsl_matrix,info)(VALUE obj)
   char buf[256];
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
   sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-#ifdef RUBY_1_9_LATER
   sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
-#else
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS(CLASS_OF(obj))->super));
-#endif
   sprintf(buf, "%sDimension:  %dx%d\n", buf, (int) m->size1, (int) m->size2);
   sprintf(buf, "%sSize:       %d\n", buf, (int) (m->size1*m->size2));
   return rb_str_new2(buf);

@@ -940,7 +940,7 @@ static VALUE FUNCTION(rb_tensor,info)(VALUE obj)
   char buf[256];
   Data_Get_Struct(obj, GSL_TYPE(rbgsl_tensor), t);
   sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-  //  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS(CLASS_OF(obj))->super));
+  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
   sprintf(buf, "%sRank:       %d\n", buf, (int) t->tensor->rank);
   sprintf(buf, "%sDimension:  %d\n", buf, (int) t->tensor->dimension);
   sprintf(buf, "%sSize:       %d\n", buf, (int) t->tensor->size);
