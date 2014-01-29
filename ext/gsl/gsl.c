@@ -60,7 +60,7 @@ static VALUE rb_gsl_not_implemeted(VALUE obj)
   return Qnil;
 }
 
-void Init_rb_gsl()
+void Init_gsl_native()
 {
   VALUE mgsl;
 

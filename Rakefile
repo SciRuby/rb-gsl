@@ -19,11 +19,12 @@ begin
       :requirements  => ['GSL (http://www.gnu.org/software/gsl/)'],
       :require_paths => %w[lib lib/gsl lib/ool ext],
 
-      :extra_files => FileList['examples/**/*', 'include/*', 'rdoc/*'].to_a,
+      :extra_files => FileList['examples/**/*', 'rdoc/*'].to_a,
 
       :extension => {
-        :lib_dir => 'lib',
-        :ext_dir => 'ext',
+        :name          => 'gsl_native',
+        :lib_dir       => 'lib/gsl',
+        :ext_dir       => 'ext/gsl',
         :cross_compile => false
       },
 
@@ -32,7 +33,7 @@ begin
     :rdoc => {
       :title      => 'Ruby/GSL{version: (v%s)}',
       :rdoc_files => FileList['rdoc/*'].to_a,
-      :exclude    => %w[ext include lib],
+      :exclude    => %w[ext lib],
       :main       => 'rdoc/index.rdoc'
     },
     :test => {

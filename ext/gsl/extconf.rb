@@ -25,7 +25,7 @@ def gsl_have_library(func)
   have_func(func) if have_library('gsl', func)
 end
 
-$CFLAGS += " -Wall -I#{gsl_file_path('../include')}"
+$CFLAGS += " -Wall -I#{gsl_file_path('include')}"
 
 gsl_config_arg(:version) { |version, check|
   gsl_def(:GSL_VERSION, check[version])
@@ -126,30 +126,10 @@ if tamu_anova_config
 end
 end
 
-File.open(gsl_file_path("../lib/gsl.rb"), "w") do |file|
-  file.print("require('gsl/version')\n")
-  if have_narray_h
-    file.print("require('narray')\n")
-  end
-#  file.print("require('rb_gsl')\ninclude GSL\n")
-  file.print("require('rb_gsl')\n")  
-  file.print("require('gsl/oper.rb')\n")
-end
-
-File.open(gsl_file_path("../lib/rbgsl.rb"), "w") do |file|
-  if have_narray_h
-    file.print("require('narray')\n")
-  end
-  file.print("require('rb_gsl')\n")
-  file.print("require('gsl/oper.rb')\n")
-end
-
 ####
 
-Dir.chdir(gsl_file_path) {
-  $objs = Dir['*.c'].map { |f| f.sub('.c', '.o') }.sort - %w[
-    block_source.o matrix_source.o poly_source.o tensor_source.o vector_source.o
-  ]
-}
+$objs = Dir.chdir(gsl_file_path) { Dir['*.c'] }.map { |f| f.sub('.c', '.o') }.sort - %w[
+  block_source.o matrix_source.o poly_source.o tensor_source.o vector_source.o
+]
 
-create_makefile('rb_gsl')
+create_makefile('gsl/gsl_native')

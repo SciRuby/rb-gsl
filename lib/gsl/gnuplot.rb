@@ -1,4 +1,4 @@
-require("gnuplot")
+require 'gnuplot'
 
 class Array
   def to_gplot
