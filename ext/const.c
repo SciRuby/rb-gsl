@@ -9,7 +9,6 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_config.h"
 #include "rb_gsl_const.h"
 
 static void rb_gsl_const_mks(VALUE module);
@@ -17,7 +16,7 @@ static void rb_gsl_const_cgs(VALUE module);
 static void rb_gsl_const_num(VALUE module);
 void Init_gsl_const_additional(VALUE mmks, VALUE mcgs, VALUE mnum);
 
-#ifdef GSL_CONST_OLD
+#ifndef GSL_1_4_LATER
 static void rb_gsl_const_mks(VALUE module)
 {
   rb_define_const(module, "SPEED_OF_LIGHT", 

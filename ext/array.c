@@ -9,8 +9,6 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_config.h"
-
 #include "rb_gsl_common.h"
 #include "rb_gsl_array.h"
 #include "rb_gsl_complex.h"

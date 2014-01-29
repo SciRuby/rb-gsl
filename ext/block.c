@@ -14,7 +14,6 @@
   which are provided by the GSL source.
  */
 
-#include "rb_gsl_config.h"
 #include "rb_gsl_array.h"
 #include "rb_gsl_histogram.h"
 #include "rb_gsl_complex.h"

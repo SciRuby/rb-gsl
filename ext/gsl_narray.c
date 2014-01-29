@@ -5,7 +5,6 @@
   Modified by Seiya Nishizawa        14/Apr/2004
  */
 
-#include "rb_gsl_config.h"
 #ifdef HAVE_NARRAY_H
 #include "rb_gsl_array.h"
 #include "narray.h"

@@ -14,7 +14,7 @@
 #define ___RB_GSL_CONST_H___
 
 #include "rb_gsl.h"
-#ifdef GSL_CONST_OLD
+#ifndef GSL_1_4_LATER
 #include <gsl/gsl_const_mks.h>
 #include <gsl/gsl_const_cgs.h>
 #else

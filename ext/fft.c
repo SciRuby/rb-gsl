@@ -9,7 +9,6 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_config.h"
 #include "rb_gsl_fft.h"
 
 VALUE mgsl_fft;

@@ -9,8 +9,8 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_config.h"
 #include "rb_gsl_interp.h"
+
 EXTERN VALUE cgsl_interp_accel;  /* defined in interp.c */
 
 static void rb_gsl_spline_free(rb_gsl_spline *sp);

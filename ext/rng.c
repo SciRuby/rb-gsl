@@ -14,7 +14,6 @@
    Random number generator
 */
 
-#include "rb_gsl_config.h"
 #include "rb_gsl_rng.h"
 #ifdef HAVE_RNGEXTRA_RNGEXTRA_H
 #include "rngextra/rngextra.h"

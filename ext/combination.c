@@ -9,7 +9,6 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_config.h"
 #ifdef GSL_1_1_LATER
 #include "rb_gsl_common.h"
 #include "rb_gsl_array.h"

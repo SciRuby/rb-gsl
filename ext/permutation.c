@@ -8,7 +8,7 @@
   This library is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY.
 */
-#include "rb_gsl_config.h"
+
 #include "rb_gsl_array.h"
 #include <gsl/gsl_permute.h>
 #include <gsl/gsl_permute_vector.h>

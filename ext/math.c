@@ -10,7 +10,6 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#include "rb_gsl_config.h"
 #include "rb_gsl_math.h"
 #include "rb_gsl_complex.h"
 #ifdef HAVE_NARRAY_H

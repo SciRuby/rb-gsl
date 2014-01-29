@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
-#include "rb_gsl_config.h"
+
 #include "rb_gsl_complex.h"
 #include "rb_gsl_array.h"
 

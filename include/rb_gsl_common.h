@@ -12,8 +12,6 @@
 #ifndef ___RB_GSL_COMMON_H___
 #define ___RB_GSL_COMMON_H___
 
-#include "rb_gsl_config.h"
-
 #include <ruby.h>
 #ifdef HAVE_RUBY_IO_H
 #include <ruby/io.h>

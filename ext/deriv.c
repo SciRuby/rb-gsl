@@ -8,7 +8,7 @@
   This library is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY.
 */
-#include "rb_gsl_config.h"
+
 #ifdef GSL_1_4_9_LATER
 #include "rb_gsl_common.h"
 #include "rb_gsl_function.h"

@@ -9,7 +9,6 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_config.h"
 #include "rb_gsl_interp.h"
 
 VALUE cgsl_interp_accel; /* this is used also in spline.c */

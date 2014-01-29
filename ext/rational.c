@@ -8,7 +8,7 @@
   This library is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY.
 */
-#include "rb_gsl_config.h"
+
 #include "rb_gsl_rational.h"
 #include "rb_gsl_array.h"
 

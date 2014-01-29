@@ -17,7 +17,6 @@
 
 #ifdef HAVE_TENSOR_TENSOR_H
 
-#include "rb_gsl_config.h"
 #include "rb_gsl_tensor.h"
 #include "rb_gsl_common.h"
 

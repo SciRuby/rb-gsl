@@ -22,8 +22,6 @@
  *
  */
 
-#include "rb_gsl_config.h"
-
 #ifndef GSL_1_3_LATER
 
 #include <config.h>

@@ -1,221 +1,98 @@
 require 'mkmf'
 
-
-module GSL
-  class Version
-    def initialize(str)
-      @str = str
-      @ary = str.split(".").collect { |elm| elm.to_i }
-    end
-    def to_s; @str; end
-    def inspect; @str; end
-    def >=(ver)
-      ary2 = ver.split(".").collect { |elm| elm.to_i }
-      if @ary[0] > ary2[0]; return true; end			
-      if @ary[0] < ary2[0]; return false; end
-      if @ary[1] > ary2[1]; return true; end
-      if @ary[1] < ary2[1]; return false; end
-      if @ary.size < ary2.size; return false; end
-      if @ary.size == 3 and ary2.size == 3
-        if @ary[2] < ary2[2]; return false; end
-      end		
-      return true
-    end
-    def <(ver)
-      ary2 = ver.split(".").collect { |elm| elm.to_i }
-      if @ary[0] >= ary2[0]; return false; end
-      if @ary[0] >= ary2[0]; return false; end
-      return true
-    end
-  end
-end
-
-if /mingw/ =~ RUBY_PLATFORM
-  GSL_CONFIG = "sh gsl-config"
-else
-  GSL_CONFIG = "gsl-config"
-end
-
 def gsl_config_arg(arg)
   yield arg_config("--with-gsl-#{arg}") {
-    IO.popen("#{GSL_CONFIG} --#{arg}") { |f| f.gets.chomp }
-  }
+    sh = 'sh ' if RUBY_PLATFORM =~ /mingw/
+    IO.popen("#{sh}gsl-config --#{arg}") { |f| f.gets.chomp }
+  }, lambda { |val| puts "checking gsl #{arg}... #{val}"; val }
+rescue => err
+  abort "*** ERROR: missing required library to compile this module: #{err}"
 end
 
-def gsl_config()
-  print("checking gsl cflags... ")
-  gsl_config_arg(:cflags) do |cflags|
-    puts(cflags)
-    $CFLAGS += " " + cflags
-  end
-  
-  gsl_config_arg(:libs) do |libs|
-    libs.tr!(File::PATH_SEPARATOR, ' ')
-    dir_config("cblas")
-    dir_config("atlas")
-    if have_library("cblas") and have_library("atlas")
-      libs.gsub!("-lgslcblas", "-lcblas -latlas")
-      $LOCAL_LIBS += " " + libs.gsub(" -lgslcblas", "")
-      print("checking gsl libs... ")
-      puts(libs)
-    else
-      print("checking gsl libs... ")
-      puts(libs)
-      $LOCAL_LIBS += " " + libs
-    end
-  end
-
-end
-
-def check_version(configfile)
-  
-  print("checking gsl version... ")
-  gsl_config_arg(:version) do |version|
-    ver = GSL::Version.new(version)
-    puts(ver)
-    configfile.printf("#ifndef GSL_VERSION\n#define GSL_VERSION \"#{ver}\"\n#endif\n")
-
-    if ver >= "0.9.4"
-      configfile.printf("#ifndef GSL_0_9_4_LATER\n#define GSL_0_9_4_LATER\n#endif\n")
-    else
-      configfile.close
-      raise("Ruby/GSL requires gsl-0.9.4 or later.")
-    end
-    if ver >= "1.0"
-      configfile.printf("#ifndef GSL_1_0_LATER\n#define GSL_1_0_LATER\n#endif\n")
-    end
-    if ver >= "1.1"
-      configfile.printf("#ifndef GSL_1_1_LATER\n#define GSL_1_1_LATER\n#endif\n")
-    end
-    if ver >= "1.1.1"
-      configfile.printf("#ifndef GSL_1_1_1_LATER\n#define GSL_1_1_1_LATER\n#endif\n")
-    end
-    if ver >= "1.2"
-      configfile.printf("#ifndef GSL_1_2_LATER\n#define GSL_1_2_LATER\n#endif\n")
-    end
-    if ver >= "1.3"
-      configfile.printf("#ifndef GSL_1_3_LATER\n#define GSL_1_3_LATER\n#endif\n")
-    end
-    if ver >= "1.4"
-      configfile.printf("#ifndef GSL_1_4_LATER\n#define GSL_1_4_LATER\n#endif\n")
-    end
-    if ver >= "1.4.90"
-      configfile.printf("#ifndef GSL_1_4_9_LATER\n#define GSL_1_4_9_LATER\n#endif\n")
-    end
-    
-    if ver >= "1.5.90"
-      configfile.printf("#ifndef GSL_1_6_LATER\n#define GSL_1_6_LATER\n#endif\n")
-    end
-
-    if ver >= "1.7.90"
-      configfile.printf("#ifndef GSL_1_8_LATER\n#define GSL_1_8_LATER\n#endif\n")
-    end
-    if ver >= "1.8.90"
-      configfile.printf("#ifndef GSL_1_9_LATER\n#define GSL_1_9_LATER\n#endif\n")
-    end
-
-    if ver >= "1.9.90"
-      configfile.printf("#ifndef GSL_1_10_LATER\n#define GSL_1_10_LATER\n#endif\n")
-    end    
-    if ver < "1.4"
-      configfile.printf("#ifndef GSL_CONST_OLD\n#define GSL_CONST_OLD\n#endif\n")
-    end
-
-    if ver >= "1.11"
-      configfile.printf("#ifndef GSL_1_11_LATER\n#define GSL_1_11_LATER\n#endif\n")
-    end    
-
-    if ver >= "1.12.90"
-      configfile.printf("#ifndef GSL_1_13_LATER\n#define GSL_1_13_LATER\n#endif\n")
-    end
-
-    if ver >= "1.14"
-      configfile.printf("#ifndef GSL_1_14_LATER\n#define GSL_1_14_LATER\n#endif\n")
-    end
-
-    if ver >= "1.15"
-      configfile.printf("#ifndef GSL_1_15_LATER\n#define GSL_1_15_LATER\n#endif\n")
-    end
-
-  end
-end
-
-def file_path(path = '.')
+def gsl_file_path(path = '.')
   File.expand_path(path, File.dirname(__FILE__))
 end
 
-def have_gsl_library(func)
-  if have_library('gsl', func)
-    have_func(func)
-  end
+def gsl_def(const, value = nil)
+  $defs << "-D#{const}#{"=#{value}" if value}"
 end
 
-#####
+def gsl_have_header(library, header)
+  have_library(library) if have_header(header)
+end
 
-$CFLAGS ||= ''
-$CFLAGS += " -Wall -I#{file_path('../include')} "
+def gsl_have_library(func)
+  have_func(func) if have_library('gsl', func)
+end
+
+$CFLAGS += " -Wall -I#{gsl_file_path('../include')}"
+
+gsl_config_arg(:version) { |version, check|
+  gsl_def(:GSL_VERSION, check[version])
+
+  ver = version.split('.').map { |x| x.to_i }
+
+  later = lambda { |other|
+    ary = other.split('.').map { |x| x.to_i }
+
+    gte = ver[0] > ary[0] ? true  :
+          ver[0] < ary[0] ? false :
+          ver[1] > ary[1] ? true  :
+          ver[1] < ary[1] ? false :
+          ver.size < ary.size ? false :
+          ver.size == 3 && ary.size == 3 ? ver[2] >= ary[2] : true
+
+    ary.pop && ary[-1] += 1 if ary.last == 90
+
+    gte && gsl_def("GSL_#{ary.join('_')}_LATER")
+  }
+
+  raise 'Ruby/GSL requires gsl-0.9.4 or later.' unless later['0.9.4']
+
+  gsl_def(:GSL_1_4_9_LATER) if later['1.4.90']
+
+  %w[
+    1.0 1.1 1.1.1 1.2 1.3 1.4 1.5.90 1.7.90
+    1.8.90 1.9.90 1.11 1.12.90 1.14 1.15
+  ].each { |v| later[v] }
+}
+
+gsl_config_arg(:cflags) { |cflags, check|
+  $CFLAGS += ' ' + check[cflags]
+}
+
+gsl_config_arg(:libs) { |libs, check|
+  libs.tr!(File::PATH_SEPARATOR, ' ')
+
+  dir_config('cblas')
+  dir_config('atlas')
+
+  if have_library('cblas') && have_library('atlas')
+    libs.gsub!('-lgslcblas', '-lcblas -latlas')
+  end
+
+  $LOCAL_LIBS += ' ' + check[libs]
+}
 
 have_header('ruby/io.h')
+have_func('round')
 
-begin
-  RB_GSL_CONFIG = File.open(file_path("../include/rb_gsl_config.h"), "w")
-  RB_GSL_CONFIG.printf("#ifndef ___RB_GSL_CONFIG_H___\n")
-  RB_GSL_CONFIG.printf("#define ___RB_GSL_CONFIG_H___\n\n")
+%w[alf qrngextra rngextra tensor].each { |library|
+  gsl_have_header(library, "#{library}/#{library}.h")
+}
 
-  check_version(RB_GSL_CONFIG)
+gsl_have_header('bundle_method', 'gsl/gsl_multimin_fsdf.h')
+gsl_have_header('cqp',           'gsl/gsl_cqp.h')
+gsl_have_header('jacobi',        'jacobi.h')
+gsl_have_header('ndlinear',      'ndlinear/gsl_multifit_ndlinear.h')
+gsl_have_header('ool',           'ool/ool_version.h')
 
-  gsl_config()
+gsl_have_library('gsl_eigen_francis')
+gsl_have_library('gsl_poly_solve_quartic')
 
-  have_func('round')
+gsl_def(:HAVE_GNU_GRAPH) if find_executable('graph')
 
-# Check GSL extensions
-
-  if have_header("rngextra/rngextra.h")
-    have_library("rngextra")
-  end
-
-  if have_header("qrngextra/qrngextra.h")
-    have_library("qrngextra")
-  end
-
-  if have_header("ool/ool_version.h")
-    have_library("ool")
-  end
-  
-  if have_header("tensor/tensor.h")
-    have_library("tensor")
-  end
-
-  if have_header("jacobi.h")
-    have_library("jacobi")
-  end
-  if have_header("gsl/gsl_cqp.h")
-    have_library("cqp")
-  end
-  if have_header("gsl/gsl_multimin_fsdf.h")
-    have_library("bundle_method")
-  end
-
-  have_gsl_library('gsl_poly_solve_quartic')
-  have_gsl_library('gsl_eigen_francis')
-
-  if have_header("ndlinear/gsl_multifit_ndlinear.h")
-    have_library("ndlinear")
-  end
-
-# Added 2009/Apr/20
-  if have_header("alf/alf.h")
-    have_library("alf")
-  end
-
-  $defs << '-DHAVE_GNU_GRAPH' if find_executable('graph')
-
-  RB_GSL_CONFIG.printf("\n#endif\n")
-  RB_GSL_CONFIG.close
-  
-rescue
-  raise("Check GSL>=0.9.4 is installed, and the command \"gsl-config\" is in search path.")
-end
+####
 
 #narray_config = dir_config("narray")
 narray_config = dir_config('narray',$sitearchdir,$sitearchdir)
@@ -249,7 +126,7 @@ if tamu_anova_config
 end
 end
 
-File.open(file_path("../lib/gsl.rb"), "w") do |file|
+File.open(gsl_file_path("../lib/gsl.rb"), "w") do |file|
   file.print("require('gsl/version')\n")
   if have_narray_h
     file.print("require('narray')\n")
@@ -259,7 +136,7 @@ File.open(file_path("../lib/gsl.rb"), "w") do |file|
   file.print("require('gsl/oper.rb')\n")
 end
 
-File.open(file_path("../lib/rbgsl.rb"), "w") do |file|
+File.open(gsl_file_path("../lib/rbgsl.rb"), "w") do |file|
   if have_narray_h
     file.print("require('narray')\n")
   end
@@ -267,10 +144,12 @@ File.open(file_path("../lib/rbgsl.rb"), "w") do |file|
   file.print("require('gsl/oper.rb')\n")
 end
 
-Dir.chdir(file_path) {
-srcs = Dir.glob("*.c") - ["vector_source.c", "matrix_source.c", "tensor_source.c", "poly_source.c", "block_source.c"]
+####
 
-$objs = srcs.collect { |f| f.sub(".c", ".o") }
+Dir.chdir(gsl_file_path) {
+  $objs = Dir['*.c'].map { |f| f.sub('.c', '.o') }.sort - %w[
+    block_source.o matrix_source.o poly_source.o tensor_source.o vector_source.o
+  ]
 }
 
-create_makefile("rb_gsl")
+create_makefile('rb_gsl')

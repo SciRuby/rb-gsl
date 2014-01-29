@@ -9,10 +9,10 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_config.h"
 #include "rb_gsl_array.h"
 #include <gsl/gsl_heapsort.h>
 #include <gsl/gsl_sort.h>
+
 EXTERN ID RBGSL_ID_call;
 EXTERN VALUE cgsl_complex;
 
