@@ -1,10 +1,11 @@
 #ifndef RB_GSL_WITH_NARRAY_H
 #define RB_GSL_WITH_NARRAY_H
 
+#include <gsl/gsl_vector.h>
+
 #ifdef HAVE_NARRAY_H
 
 #include "narray.h"
-#include "gsl/gsl_vector.h"
 
 gsl_vector* make_cvector_from_narray(VALUE);
 void cvector_set_from_narray(gsl_vector*, VALUE);
@@ -25,5 +26,6 @@ extern VALUE cNVector, cNMatrix;
 
 gsl_vector_complex* na_to_gv_complex(VALUE na);
 gsl_vector_complex_view* na_to_gv_complex_view(VALUE na);
+
 #endif // HAVE_NARRAY_H
 #endif // RB_GSL_WITH_NARRAY_H

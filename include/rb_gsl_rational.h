@@ -13,13 +13,6 @@
 #ifndef ___RB_GSL_RATIONAL_H___
 #define ___RB_GSL_RATIONAL_H___
 
-#include "ruby.h"
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_poly.h>
-#include <gsl/gsl_complex.h>
-#include <gsl/gsl_complex_math.h>
-#include "rb_gsl_complex.h"
-#include "rb_gsl_array.h"
 #include "rb_gsl_poly.h"
 
 typedef struct ___gsl_rational 

@@ -13,7 +13,6 @@
 #ifndef ___RB_GSL_MATH_H___
 #define ___RB_GSL_MATH_H___
 
-#include "ruby.h"
 #include <gsl/gsl_math.h>
 #include "rb_gsl.h"
 

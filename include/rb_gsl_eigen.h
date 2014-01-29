@@ -12,6 +12,6 @@
 #ifndef ___RB_GSL_EIGEN_H___
 #define ___RB_GSL_EIGEN_H___
 
-#include "gsl/gsl_eigen.h"
+#include <gsl/gsl_eigen.h>
 
 #endif

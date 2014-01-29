@@ -11,13 +11,11 @@
 #ifndef ___RB_GSL_SF_H___
 #define ___RB_GSL_SF_H___
 
-#include "ruby.h"
 #include <gsl/gsl_sf.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_complex.h>
-#include "rb_gsl_config.h"
 #include "rb_gsl.h"
 
 EXTERN VALUE cgsl_sf_result, cgsl_sf_result_e10;

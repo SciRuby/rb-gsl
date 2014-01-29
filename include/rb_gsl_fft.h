@@ -13,21 +13,11 @@
 #ifndef ___RB_GSL_FFT_H___
 #define ___RB_GSL_FFT_H___
 
-
-#include <stdio.h>
-#include <math.h>
-#include "ruby.h"
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_errno.h>
 #include <gsl/gsl_fft.h>
 #include <gsl/gsl_fft_complex.h>
 #include <gsl/gsl_fft_real.h>
 #include <gsl/gsl_fft_halfcomplex.h>
-#include "rb_gsl_array.h"
 #include "rb_gsl.h"
-
-#include "rb_gsl_complex.h"
-#include "rb_gsl_array.h"
 #ifdef HAVE_NARRAY_H
 #include "narray.h"
 #endif

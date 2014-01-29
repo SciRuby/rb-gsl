@@ -12,7 +12,6 @@
 #ifndef ___RB_GSL_RNG_H___
 #define ___RB_GSL_RNG_H___
 
-#include "ruby.h"
 #include <gsl/gsl_rng.h>
 #include "rb_gsl.h"
 

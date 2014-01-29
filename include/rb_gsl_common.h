@@ -13,20 +13,23 @@
 #define ___RB_GSL_COMMON_H___
 
 #include "rb_gsl_config.h"
-#include "ruby.h"
+
+#include <ruby.h>
+#ifdef RUBY_1_9_LATER
+#include <ruby/io.h>
+#else
+#include <rubyio.h>
+#endif
+
 #include <ctype.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_version.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_complex.h>
-#include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_permutation.h>
 #include <gsl/gsl_ieee_utils.h>
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
 #include "rb_gsl_with_narray.h"
-#endif
 
 EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 

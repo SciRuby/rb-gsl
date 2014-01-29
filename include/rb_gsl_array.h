@@ -13,15 +13,10 @@
 #define ___RB_GSL_ARRAY_H___
 
 #include <math.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_complex.h>
 #include <gsl/gsl_block.h>
-#include <gsl/gsl_vector.h>
 #include <gsl/gsl_vector_complex.h>
 #include <gsl/gsl_vector_complex_double.h>
-#include <gsl/gsl_matrix.h>
 #include <gsl/gsl_matrix_complex_double.h>
-#include <gsl/gsl_permutation.h>
 #include <gsl/gsl_combination.h>
 #include <gsl/gsl_sort.h>
 #include <gsl/gsl_sort_vector.h>
@@ -29,15 +24,6 @@
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_odeiv.h>
 #include <gsl/gsl_blas.h>
-#include "rb_gsl_config.h"
-
-#include "ruby.h"
-#ifdef RUBY_1_9_LATER
-#include "ruby/io.h"
-#else
-#include "rubyio.h"
-#endif
-
 #include "rb_gsl_common.h"
 
 typedef gsl_permutation gsl_index;

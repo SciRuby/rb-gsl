@@ -12,6 +12,6 @@
 #ifndef ___RB_GSL_STATISTICS_H___
 #define ___RB_GSL_STATISTICS_H___
 
-#include "gsl/gsl_statistics.h"
+#include <gsl/gsl_statistics.h>
 
 #endif

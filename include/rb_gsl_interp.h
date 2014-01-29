@@ -13,7 +13,6 @@
 #ifndef ___RB_GSL_INTERP_H___
 #define ___RB_GSL_INTERP_H___
 
-#include "ruby.h"
 #include "rb_gsl.h"
 #include <gsl/gsl_interp.h>
 #include <gsl/gsl_spline.h>

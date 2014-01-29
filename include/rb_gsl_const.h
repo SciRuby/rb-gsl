@@ -13,7 +13,6 @@
 #ifndef ___RB_GSL_CONST_H___
 #define ___RB_GSL_CONST_H___
 
-#include "ruby.h"
 #include "rb_gsl.h"
 #ifdef GSL_CONST_OLD
 #include <gsl/gsl_const_mks.h>

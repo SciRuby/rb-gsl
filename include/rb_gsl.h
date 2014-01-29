@@ -12,17 +12,11 @@
 #ifndef ___RB_GSL_H___
 #define ___RB_GSL_H___
 
-#include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include <stdlib.h>
 #include <gsl/gsl_mode.h>
-#include "rb_gsl_common.h"
-#include "rb_gsl_math.h"
-#include "rb_gsl_complex.h"
-#include "rb_gsl_array.h"
-#include "rb_gsl_function.h"
 #include "rb_gsl_poly.h"
+#include "rb_gsl_math.h"
 #include "rb_gsl_sf.h"
 #include "rb_gsl_linalg.h"
 #include "rb_gsl_eigen.h"
@@ -37,15 +31,6 @@
 #include "rb_gsl_root.h"
 #include "rb_gsl_fit.h"
 #include "rb_gsl_const.h"
-#include "rb_gsl_config.h"
-
-
-#include "ruby.h"
-#ifdef RUBY_1_9_LATER
-#include "ruby/io.h"
-#else
-#include "rubyio.h"
-#endif
 
 void Init_gsl_error(VALUE module);
 void Init_gsl_math(VALUE module);

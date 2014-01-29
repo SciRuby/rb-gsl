@@ -13,11 +13,7 @@
 #ifndef ___RB_GSL_POLY_H___
 #define ___RB_GSL_POLY_H___
 
-#include "ruby.h"
-#include <gsl/gsl_vector.h>
 #include <gsl/gsl_poly.h>
-#include <gsl/gsl_complex.h>
-#include <gsl/gsl_complex_math.h>
 #include "rb_gsl_complex.h"
 #include "rb_gsl_array.h"
 

@@ -12,12 +12,9 @@
 #ifndef ___RB_GSL_LINALG_H___
 #define ___RB_GSL_LINALG_H___
 
-#include "gsl/gsl_linalg.h"
-#include "gsl/gsl_math.h"
-
-#ifdef HAVE_NARRAY_H
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_math.h>
 #include "rb_gsl_with_narray.h"
-#endif
 
 VALUE rb_gsl_linalg_complex_LU_decomp(int argc, VALUE *argv, VALUE obj);
 VALUE rb_gsl_linalg_complex_LU_decomp2(int argc, VALUE *argv, VALUE obj);

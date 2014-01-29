@@ -14,8 +14,6 @@
 #define ___RB_GSL_GRAPH_H___
 
 #include "rb_gsl.h"
-#include "rb_gsl_array.h"
-#include "rb_gsl_common.h"
 
 typedef struct __rb_gsl_plot {
   VALUE xdata, ydata;

@@ -13,9 +13,7 @@
 #ifndef ___RB_GSL_CHEB_H___
 #define ___RB_GSL_CHEB_H___
 
-#include "rb_gsl.h"
 #include "rb_gsl_function.h"
-#include <gsl/gsl_math.h>
 #include <gsl/gsl_chebyshev.h>
 
 #endif

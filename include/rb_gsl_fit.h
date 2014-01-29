@@ -13,8 +13,6 @@
 #ifndef ___RB_GSL_FIT_H___
 #define ___RB_GSL_FIT_H___
 
-#include "ruby.h"
-#include <gsl/gsl_blas.h>
 #include <gsl/gsl_fit.h>
 #include <gsl/gsl_multifit.h>
 #include <gsl/gsl_multifit_nlin.h>

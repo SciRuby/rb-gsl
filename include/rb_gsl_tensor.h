@@ -3,8 +3,6 @@
 
 #ifdef HAVE_TENSOR_TENSOR_H
 #include "rb_gsl.h"
-#include "rb_gsl_common.h"
-//#include <tensor/tensor.h>
 #include <tensor/tensor.h>
 
 EXTERN VALUE cgsl_tensor, cgsl_tensor_int;

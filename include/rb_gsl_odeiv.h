@@ -13,9 +13,6 @@
 #ifndef ___RB_GSL_ODEIV_H___
 #define ___RB_GSL_ODEIV_H___
 
-#include "ruby.h"
-#include <gsl/gsl_odeiv.h>
 #include "rb_gsl.h"
-#include "rb_gsl_array.h"
 
 #endif

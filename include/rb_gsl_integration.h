@@ -12,6 +12,6 @@
 #ifndef ___RB_GSL_INTEGRATION_H___
 #define ___RB_GSL_INTEGRATION_H___
 
-#include "gsl/gsl_integration.h"
+#include <gsl/gsl_integration.h>
 
 #endif
