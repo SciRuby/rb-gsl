@@ -10,8 +10,8 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#include "rb_gsl_complex.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_complex.h"
+#include "include/rb_gsl_array.h"
 
 VALUE cgsl_complex;
 

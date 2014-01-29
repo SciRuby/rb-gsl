@@ -9,8 +9,8 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_array.h"
-#include "rb_gsl_common.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_common.h"
 
 #ifdef GSL_1_6_LATER
 #include <gsl/gsl_wavelet.h>

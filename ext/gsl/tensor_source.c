@@ -17,8 +17,8 @@
 
 #ifdef HAVE_TENSOR_TENSOR_H
 
-#include "rb_gsl_tensor.h"
-#include "rb_gsl_common.h"
+#include "include/rb_gsl_tensor.h"
+#include "include/rb_gsl_common.h"
 
 #ifdef BASE_DOUBLE
 VALUE cgsl_tensor, cgsl_tensor_int;

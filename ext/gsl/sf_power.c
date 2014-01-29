@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl_sf.h"
 
 VALUE rb_gsl_complex_pow(int argc, VALUE *argv, VALUE obj);
 static VALUE rb_gsl_sf_pow_int(VALUE obj, VALUE x, VALUE n)

@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl_sf.h"
 
 static VALUE rb_gsl_sf_lambert_W0(VALUE obj, VALUE x)
 {

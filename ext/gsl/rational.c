@@ -9,8 +9,8 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_rational.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_rational.h"
+#include "include/rb_gsl_array.h"
 
 VALUE cgsl_rational;
 static gsl_rational* gsl_rational_div_poly(const gsl_rational *r1, const gsl_poly *p);

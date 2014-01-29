@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_interp.h"
+#include "include/rb_gsl_interp.h"
 
 EXTERN VALUE cgsl_interp_accel;  /* defined in interp.c */
 

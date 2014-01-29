@@ -9,8 +9,8 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl.h"
-#include "rb_gsl_rng.h"
+#include "include/rb_gsl.h"
+#include "include/rb_gsl_rng.h"
 #include <gsl/gsl_monte_plain.h>
 #include <gsl/gsl_monte_miser.h>
 #include <gsl/gsl_monte_vegas.h>

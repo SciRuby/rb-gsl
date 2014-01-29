@@ -1,6 +1,6 @@
 #ifdef HAVE_GSL_GSL_CQP_H
 
-#include "rb_gsl.h"
+#include "include/rb_gsl.h"
 #include "gsl/gsl_cqp.h"
 
 static const gsl_cqpminimizer_type* type_by_string(VALUE t);

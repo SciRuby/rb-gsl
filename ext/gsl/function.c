@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_function.h"
+#include "include/rb_gsl_function.h"
 #ifdef HAVE_NARRAY_H
 #include "narray.h"
 #endif

@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl_sf.h"
 
 /* Checked with Mathematica. */
 static VALUE rb_gsl_sf_hyperg_0F1(VALUE obj, VALUE c, VALUE x)

@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl_sf.h"
 
 static VALUE rb_gsl_sf_laguerre_X(int argc, VALUE *argv, VALUE obj,
 				  double (*f)(double, double))

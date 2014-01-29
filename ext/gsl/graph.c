@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_graph.h"
+#include "include/rb_gsl_graph.h"
 
 void make_graphcommand(char *command, VALUE hash)
 {

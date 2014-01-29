@@ -9,10 +9,10 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl.h"
-#include "rb_gsl_array.h"
-#include "rb_gsl_function.h"
-#include "rb_gsl_histogram.h"
+#include "include/rb_gsl.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_function.h"
+#include "include/rb_gsl_histogram.h"
 #include <gsl/gsl_ntuple.h>
 
 static VALUE cgsl_ntuple;

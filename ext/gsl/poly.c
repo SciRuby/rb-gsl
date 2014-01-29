@@ -9,9 +9,9 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_poly.h"
-#include "rb_gsl_array.h"
-#include "rb_gsl_common.h"
+#include "include/rb_gsl_poly.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_common.h"
 #ifdef HAVE_NARARY_H
 #include "narray.h"
 #endif
@@ -21,9 +21,9 @@ void Init_gsl_poly_int_init(VALUE module);
 void Init_gsl_poly2(VALUE module);
 
 #define BASE_DOUBLE
-#include "templates_on.h"
+#include "include/templates_on.h"
 #include "poly_source.c"
-#include "templates_off.h"
+#include "include/templates_off.h"
 void Init_gsl_poly(VALUE module)
 {
   Init_gsl_poly_init(module);
@@ -32,9 +32,9 @@ void Init_gsl_poly(VALUE module)
 #undef  BASE_DOUBLE
 
 #define BASE_INT
-#include "templates_on.h"
+#include "include/templates_on.h"
 #include "poly_source.c"
-#include "templates_off.h"
+#include "include/templates_off.h"
 void Init_gsl_poly_int(VALUE module)
 {
   Init_gsl_poly_int_init(module);

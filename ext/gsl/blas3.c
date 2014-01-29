@@ -10,9 +10,9 @@
 */
 
 #include <gsl/gsl_blas.h>
-#include "rb_gsl_common.h"
-#include "rb_gsl_complex.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_common.h"
+#include "include/rb_gsl_complex.h"
+#include "include/rb_gsl_array.h"
 
 static VALUE rb_gsl_blas_dgemm(int argc, VALUE *argv, VALUE obj)
 {

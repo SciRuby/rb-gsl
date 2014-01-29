@@ -14,24 +14,24 @@
   which are provided by the GSL source.
  */
 
-#include "rb_gsl_array.h"
-#include "rb_gsl_histogram.h"
-#include "rb_gsl_complex.h"
-#include "rb_gsl_poly.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_histogram.h"
+#include "include/rb_gsl_complex.h"
+#include "include/rb_gsl_poly.h"
 #ifdef HAVE_NARRAY_H
-#include "rb_gsl_with_narray.h"
+#include "include/rb_gsl_with_narray.h"
 #endif
 
 #define BASE_DOUBLE
-#include "templates_on.h"
+#include "include/templates_on.h"
 #include "vector_source.c"
-#include "templates_off.h"
+#include "include/templates_off.h"
 #undef  BASE_DOUBLE
 
 #define BASE_INT
-#include "templates_on.h"
+#include "include/templates_on.h"
 #include "vector_source.c"
-#include "templates_off.h"
+#include "include/templates_off.h"
 #undef  BASE_INT
 
 

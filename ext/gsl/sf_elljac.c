@@ -10,7 +10,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl_sf.h"
 
 static VALUE rb_gsl_sf_elljac_e(VALUE obj, VALUE n, VALUE m)
 {

@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_array.h"
 #include <gsl/gsl_sum.h>
 
 static VALUE rb_gsl_sum_accel(VALUE obj)

@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl_sf.h"
 
 static VALUE rb_gsl_sf_gegenpoly_1(VALUE obj, VALUE lambda, VALUE x)
 {

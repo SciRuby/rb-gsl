@@ -17,7 +17,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "rb_gsl_histogram.h"
+#include "include/rb_gsl_histogram.h"
 /* determines whether to optimize for linear ranges  */
 #define LINEAR_OPT 1
 

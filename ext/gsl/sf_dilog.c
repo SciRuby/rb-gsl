@@ -10,7 +10,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl_sf.h"
 
 static VALUE rb_gsl_sf_dilog(VALUE obj, VALUE x)
 {

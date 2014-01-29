@@ -9,9 +9,9 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_odeiv.h"
-#include "rb_gsl_array.h"
-#include "rb_gsl_function.h"
+#include "include/rb_gsl_odeiv.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_function.h"
 
 #ifndef CHECK_SYSTEM
 #define CHECK_SYSTEM(x) if(CLASS_OF(x)!=cgsl_odeiv_system)\

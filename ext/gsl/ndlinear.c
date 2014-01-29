@@ -1,4 +1,4 @@
-#include "rb_gsl.h"
+#include "include/rb_gsl.h"
 
 #ifdef HAVE_NDLINEAR_GSL_MULTIFIT_NDLINEAR_H
 #include <gsl/gsl_math.h>

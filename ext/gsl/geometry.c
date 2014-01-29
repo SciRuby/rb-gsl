@@ -1,4 +1,4 @@
-#include "rb_gsl.h"
+#include "include/rb_gsl.h"
 
 /*!
   Counter-clockwise rotation around the X-axis 

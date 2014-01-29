@@ -68,7 +68,7 @@ double gsl_poly_int_eval(const BASE c[], const int len, const double x)
 #endif
 #ifdef BASE_DOUBLE
 #ifdef HAVE_NARRAY_H
-#include "rb_gsl_with_narray.h"
+#include "include/rb_gsl_with_narray.h"
 #endif
 #ifdef GSL_1_11_LATER
 static VALUE rb_gsl_complex_poly_complex_eval(VALUE a, VALUE b);
@@ -1568,7 +1568,7 @@ static VALUE FUNCTION(rb_gsl_poly,info)(VALUE obj)
 }
 
 #ifdef BASE_DOUBLE
-#include "rb_gsl_fit.h"
+#include "include/rb_gsl_fit.h"
 /* singleton */
 static VALUE rb_gsl_poly_fit(int argc, VALUE *argv, VALUE obj)
 {

@@ -1557,7 +1557,7 @@ QUALIFIED_VIEW(gsl_vector,view)* FUNCTION(rb_gsl_make_vector,view)(BASE *data, s
 }
 
 #ifdef HAVE_TENSOR_TENSOR_H
-#include "rb_gsl_tensor.h"
+#include "include/rb_gsl_tensor.h"
 static VALUE FUNCTION(rb_gsl_vector,to_tensor)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_vector) *v = NULL;

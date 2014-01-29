@@ -9,10 +9,10 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_array.h"
-#include "rb_gsl_function.h"
-#include "rb_gsl_integration.h"
-#include "rb_gsl_common.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_function.h"
+#include "include/rb_gsl_integration.h"
+#include "include/rb_gsl_common.h"
 
 #ifndef CHECK_WORKSPACE
 #define CHECK_WORKSPACE(x) if(CLASS_OF(x)!=cgsl_integration_workspace)\

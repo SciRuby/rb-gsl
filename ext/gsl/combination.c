@@ -10,8 +10,8 @@
 */
 
 #ifdef GSL_1_1_LATER
-#include "rb_gsl_common.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_common.h"
+#include "include/rb_gsl_array.h"
 
 static VALUE cgsl_combination_data;
 

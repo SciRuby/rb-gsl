@@ -1626,7 +1626,7 @@ static VALUE FUNCTION(rb_gsl_matrix,equal_singleton)(int argc, VALUE *argv, VALU
 }
 
 #ifdef HAVE_TENSOR_TENSOR_H
-#include "rb_gsl_tensor.h"
+#include "include/rb_gsl_tensor.h"
 static VALUE FUNCTION(rb_gsl_matrix,to_tensor)(VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m;

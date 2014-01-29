@@ -10,9 +10,9 @@
 */
 
 #include <gsl/gsl_blas.h>
-#include "rb_gsl_complex.h"
-#include "rb_gsl_array.h"
-#include "rb_gsl_common.h"
+#include "include/rb_gsl_complex.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_common.h"
 
 static int get_vector1(int argc, VALUE *argv, VALUE obj, gsl_vector **x);
 static int get_vector_complex1(int argc, VALUE *argv, VALUE obj, gsl_vector_complex **x);

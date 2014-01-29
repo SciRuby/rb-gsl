@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_fit.h"
+#include "include/rb_gsl_fit.h"
 
 /* linear fit without weights: y = c0 + c1 x */
 /* This returns 7 elements array */

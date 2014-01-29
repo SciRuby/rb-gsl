@@ -10,12 +10,12 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_array.h"
-#include "rb_gsl_histogram.h"
-#include "rb_gsl_complex.h"
-#include "rb_gsl_poly.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_histogram.h"
+#include "include/rb_gsl_complex.h"
+#include "include/rb_gsl_poly.h"
 #ifdef HAVE_NARRAY_H
-#include "rb_gsl_with_narray.h"
+#include "include/rb_gsl_with_narray.h"
 #endif
 
 VALUE rb_gsl_vector_inner_product(int argc, VALUE *argv, VALUE obj);

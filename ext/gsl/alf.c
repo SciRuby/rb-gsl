@@ -3,7 +3,7 @@
  * Based on ALF-0.1
  */
 #ifdef HAVE_ALF_ALF_H
-#include "rb_gsl.h"
+#include "include/rb_gsl.h"
 
 static VALUE cWspace;
 static VALUE rb_alf_alloc(VALUE klass, VALUE lmax)

@@ -9,9 +9,9 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_poly.h"
-#include "rb_gsl_math.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_poly.h"
+#include "include/rb_gsl_math.h"
+#include "include/rb_gsl_array.h"
 #include <gsl/gsl_sf_gamma.h>
 
 static gsl_poly_int* mygsl_poly_hermite(int n1)

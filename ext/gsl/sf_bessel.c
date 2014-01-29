@@ -10,7 +10,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl_sf.h"
 EXTERN VALUE cgsl_vector;
 
 /* Cylindrical Bessel Functions */

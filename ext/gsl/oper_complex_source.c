@@ -25,7 +25,7 @@
 #include <gsl/gsl_matrix.h>
 
 #define BASE_GSL_COMPLEX
-#include "templates_on.h"
+#include "include/templates_on.h"
 
 int
 FUNCTION (gsl_matrix, add) (GSL_TYPE (gsl_matrix) * a,
@@ -246,6 +246,6 @@ int FUNCTION (gsl_matrix, add_diagonal) (GSL_TYPE (gsl_matrix) * a, const BASE x
 }
 
 
-#include "templates_off.h"
+#include "include/templates_off.h"
 #undef  BASE_GSL_COMPLEX
 #endif

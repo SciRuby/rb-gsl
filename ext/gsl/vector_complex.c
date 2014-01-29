@@ -9,8 +9,8 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_array.h"
-#include "rb_gsl_complex.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_complex.h"
 
 EXTERN VALUE cgsl_complex;
 static VALUE rb_gsl_vector_complex_inner_product(int argc, VALUE *argv, VALUE obj);

@@ -10,9 +10,9 @@
 */
 
 #include <gsl/gsl_math.h>
-#include "rb_gsl_array.h"
-#include "rb_gsl_common.h"
-#include "rb_gsl_linalg.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_common.h"
+#include "include/rb_gsl_linalg.h"
 
 EXTERN VALUE mgsl_linalg;
 EXTERN VALUE cgsl_complex;

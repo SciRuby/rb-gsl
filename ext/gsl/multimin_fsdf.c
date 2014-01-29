@@ -1,5 +1,5 @@
 #ifdef HAVE_GSL_GSL_MULTIMIN_FSDF_H
-#include "rb_gsl.h"
+#include "include/rb_gsl.h"
 #include "gsl/gsl_multimin_fsdf.h"
 
 static VALUE cfsdf;

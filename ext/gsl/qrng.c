@@ -9,8 +9,8 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_rng.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_rng.h"
+#include "include/rb_gsl_array.h"
 #include <gsl/gsl_qrng.h>
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
 #include <qrngextra/qrngextra.h>

@@ -10,8 +10,8 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#include "rb_gsl_sf.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_sf.h"
+#include "include/rb_gsl_array.h"
 
 /* m: precision,  d(double), s(single), a(apporox) */
 static VALUE rb_gsl_sf_airy_Ai(int argc, VALUE *argv, VALUE obj)

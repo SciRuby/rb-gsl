@@ -10,7 +10,7 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl_sf.h"
 
 static VALUE rb_gsl_sf_coupling_3j(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE two_jc, VALUE two_ma, VALUE two_mb, VALUE two_mc) 
 {

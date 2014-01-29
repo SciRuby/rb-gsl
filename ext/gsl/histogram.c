@@ -9,8 +9,8 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_histogram.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_histogram.h"
+#include "include/rb_gsl_array.h"
 #include <gsl/gsl_fit.h>
 #include <gsl/gsl_multifit_nlin.h>
 #include <gsl/gsl_blas.h>

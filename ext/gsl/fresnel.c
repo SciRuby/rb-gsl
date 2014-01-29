@@ -11,8 +11,8 @@
 					2006/Dec/24 Y. TSUNESADA
 */
 #include <math.h>
-#include "rb_gsl.h"
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl.h"
+#include "include/rb_gsl_sf.h"
 
 static const double sqrt_pi_2   = 1.2533141373155002512078826424; /* sqrt(pi/2) */
 static const double sqrt_2_pi   = 0.7978845608028653558798921199; /* sqrt(2/pi) */

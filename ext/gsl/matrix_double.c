@@ -9,10 +9,10 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_array.h"
-#include "rb_gsl_complex.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_complex.h"
 #ifdef HAVE_NARRAY_H
-#include "rb_gsl_with_narray.h"
+#include "include/rb_gsl_with_narray.h"
 #endif
 
 enum {
@@ -465,7 +465,7 @@ static VALUE rb_gsl_matrix_log10(VALUE obj)
 
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
-#include "rb_gsl_rng.h"
+#include "include/rb_gsl_rng.h"
 static VALUE rb_gsl_matrix_randx(int argc, VALUE *argv, VALUE klass,
 				 double (*f)(const gsl_rng*));
 static VALUE rb_gsl_matrix_rand(int argc, VALUE *argv, VALUE klass)

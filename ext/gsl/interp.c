@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_interp.h"
+#include "include/rb_gsl_interp.h"
 
 VALUE cgsl_interp_accel; /* this is used also in spline.c */
 EXTERN VALUE cgsl_vector, cgsl_matrix;

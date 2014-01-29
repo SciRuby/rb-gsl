@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_const.h"
+#include "include/rb_gsl_const.h"
 
 #ifndef GSL_1_4_9_LATER
 #define MKS_STEFAN_BOLTZMANN_CONSTANT (5.6703993443638e-08)

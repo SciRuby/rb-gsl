@@ -10,8 +10,8 @@
 */
 
 #include <gsl/gsl_blas.h>
-#include "rb_gsl_common.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_common.h"
+#include "include/rb_gsl_array.h"
 
 void Init_gsl_blas1(VALUE module);
 void Init_gsl_blas2(VALUE module);

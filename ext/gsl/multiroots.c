@@ -8,10 +8,10 @@
   This library is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY.
 */
-#include "rb_gsl.h"
-#include "rb_gsl_common.h"
-#include "rb_gsl_array.h"
-#include "rb_gsl_function.h"
+#include "include/rb_gsl.h"
+#include "include/rb_gsl_common.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_function.h"
 #include <gsl/gsl_multiroots.h>
 
 #ifndef CHECK_MULTIROOT_FUNCTION

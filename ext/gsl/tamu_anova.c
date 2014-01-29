@@ -1,4 +1,4 @@
-#include "rb_gsl.h"
+#include "include/rb_gsl.h"
 
 #ifdef HAVE_TAMU_ANOVA_TAMU_ANOVA_H
 VALUE rb_tamu_anova_alloc(int argc, VALUE *argv, VALUE klass)

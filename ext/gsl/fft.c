@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_fft.h"
+#include "include/rb_gsl_fft.h"
 
 VALUE mgsl_fft;
 VALUE cgsl_fft_wavetable;

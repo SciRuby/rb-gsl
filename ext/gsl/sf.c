@@ -10,8 +10,8 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#include "rb_gsl_array.h"
-#include "rb_gsl_sf.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_sf.h"
 #ifdef HAVE_NARRAY_H
 #include "narray.h"
 #endif

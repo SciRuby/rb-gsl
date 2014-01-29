@@ -13,7 +13,7 @@
   This source code is created modifying gsl-1.5/histogram/ *2d.c
  */
 
-#include "rb_gsl_histogram.h"
+#include "include/rb_gsl_histogram.h"
 
 mygsl_histogram3d* mygsl_histogram3d_alloc(const size_t nx, const size_t ny,
 					   const size_t nz)

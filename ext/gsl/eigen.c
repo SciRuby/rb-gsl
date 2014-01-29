@@ -9,11 +9,11 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl.h"
+#include "include/rb_gsl_array.h"
 
-#include "rb_gsl_eigen.h"
-#include "rb_gsl_complex.h"
+#include "include/rb_gsl_eigen.h"
+#include "include/rb_gsl_complex.h"
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_math.h>

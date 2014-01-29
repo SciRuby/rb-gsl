@@ -9,8 +9,8 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_array.h"
-#include "rb_gsl_complex.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_complex.h"
 
 enum {
   GSL_MATRIX_COMPLEX_ADD,

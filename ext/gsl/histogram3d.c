@@ -9,9 +9,9 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_histogram.h"
-#include "rb_gsl_common.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_histogram.h"
+#include "include/rb_gsl_common.h"
+#include "include/rb_gsl_array.h"
 
 static VALUE cgsl_histogram3d;
 static VALUE cgsl_histogram3d_view;

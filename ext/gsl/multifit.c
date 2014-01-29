@@ -9,9 +9,9 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_fit.h"
-#include "rb_gsl_function.h"
-#include "rb_gsl_common.h"
+#include "include/rb_gsl_fit.h"
+#include "include/rb_gsl_function.h"
+#include "include/rb_gsl_common.h"
 
 #ifdef HAVE_NDLINEAR_GSL_MULTIFIT_NDLINEAR_H
 #include <ndlinear/gsl_multifit_ndlinear.h>

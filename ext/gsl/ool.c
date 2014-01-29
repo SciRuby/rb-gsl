@@ -1,6 +1,6 @@
 #ifdef HAVE_OOL_OOL_VERSION_H
-#include "rb_gsl.h"
-#include "rb_gsl_array.h"
+#include "include/rb_gsl.h"
+#include "include/rb_gsl_array.h"
 #include <ool/ool_conmin.h>
 
 static VALUE cool_conmin_function;

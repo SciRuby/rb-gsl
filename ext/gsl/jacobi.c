@@ -1,5 +1,5 @@
 #ifdef HAVE_JACOBI_H
-#include "rb_gsl.h"
+#include "include/rb_gsl.h"
 #include "jacobi.h"
 
 static VALUE jac_eval3_e(VALUE x, VALUE a, VALUE b,

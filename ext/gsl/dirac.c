@@ -1,4 +1,4 @@
-#include "rb_gsl_dirac.h"
+#include "include/rb_gsl_dirac.h"
 
 static VALUE cgsl_matrix_complex_const;
 static VALUE cPauli;

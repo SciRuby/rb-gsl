@@ -1,4 +1,4 @@
-#include "rb_gsl.h"
+#include "include/rb_gsl.h"
 #ifdef GSL_1_9_LATER
 
 static VALUE cWorkspace;

@@ -9,9 +9,9 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_array.h"
-#include "rb_gsl_common.h"
-#include "rb_gsl_rng.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_common.h"
+#include "include/rb_gsl_rng.h"
 #include <gsl/gsl_randist.h>
 
 VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double));

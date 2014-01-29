@@ -9,10 +9,6 @@ rescue => err
   abort "*** ERROR: missing required library to compile this module: #{err}"
 end
 
-def gsl_file_path(path = '.')
-  File.expand_path(path, File.dirname(__FILE__))
-end
-
 def gsl_def(const, value = nil)
   $defs << "-D#{const}#{"=#{value}" if value}"
 end
@@ -25,7 +21,11 @@ def gsl_have_library(func)
   have_func(func) if have_library('gsl', func)
 end
 
-$CFLAGS += " -Wall -I#{gsl_file_path('include')}"
+def gsl_dir_config(target)
+  dir_config(target, $sitearchdir, $sitearchdir)
+end
+
+$CFLAGS += ' -Wall -Iinclude'
 
 gsl_config_arg(:version) { |version, check|
   gsl_def(:GSL_VERSION, check[version])
@@ -92,44 +92,26 @@ gsl_have_library('gsl_poly_solve_quartic')
 
 gsl_def(:HAVE_GNU_GRAPH) if find_executable('graph')
 
-####
+narray = gsl_dir_config('narray')
 
-#narray_config = dir_config("narray")
-narray_config = dir_config('narray',$sitearchdir,$sitearchdir)
-# Try to find narray with RubyGems
 begin
   require 'rubygems'
-  na_gemspec=Gem::Specification.find_by_path('narray.h')
-  if na_gemspec
-    narray_config = na_gemspec.full_gem_path
-    $CPPFLAGS = " -I#{File.join(narray_config, na_gemspec.require_path)} "+$CPPFLAGS
-    $LOCAL_LIBS = " -L#{File.join(narray_config, 'src')}" + $LOCAL_LIBS
+
+  if spec = Gem::Specification.find_by_path('narray.h')
+    $LOCAL_LIBS = "-L#{File.join(narray = spec.full_gem_path, 'src')} " + $LOCAL_LIBS
+    $CPPFLAGS   = "-I#{File.join(narray, spec.require_path)} "          + $CPPFLAGS
   end
 rescue LoadError
 end
-have_narray_h = have_header("narray.h")
-if narray_config
-  if RUBY_PLATFORM =~ /cygwin|mingw/
-#    have_library("narray") || raise("ERROR: narray import library is not found") 
-  have_library("narray")
-  end
+
+have_header('narray.h')
+have_library('narray') if narray && RUBY_PLATFORM =~ /cygwin|mingw/
+
+if !arg_config('--disable-tamu-anova') && gsl_dir_config('tamu_anova')
+  gsl_have_header('tamuanova', 'tamu_anova/tamu_anova.h')
 end
 
-unless arg_config('--disable-tamu-anova')
-tamu_anova_config = dir_config('tamu_anova',$sitearchdir,$sitearchdir)
-have_header("tamu_anova/tamu_anova.h")
-if tamu_anova_config
-  have_library("tamuanova")
-#  if RUBY_PLATFORM =~ /cygwin|mingw/
-#    have_library("tamuanova") || raise("ERROR: tamu_anova import library is not found")
-#  end
-end
-end
-
-####
-
-$objs = Dir.chdir(gsl_file_path) { Dir['*.c'] }.map { |f| f.sub('.c', '.o') }.sort - %w[
-  block_source.o matrix_source.o poly_source.o tensor_source.o vector_source.o
-]
+$objs = Dir["#{File.dirname(__FILE__)}/*.c"].map { |f| File.basename(f, '.c') << '.o' }.
+  sort - %w[block matrix poly tensor vector].map { |f| "#{f}_source.o" }
 
 create_makefile('gsl/gsl_native')

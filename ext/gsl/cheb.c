@@ -9,10 +9,10 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl.h"
-#include "rb_gsl_common.h"
-#include "rb_gsl_array.h"
-#include "rb_gsl_function.h"
+#include "include/rb_gsl.h"
+#include "include/rb_gsl_common.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_function.h"
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_chebyshev.h>
 #ifdef HAVE_NARRAY_H

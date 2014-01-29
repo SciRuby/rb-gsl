@@ -11,11 +11,11 @@
 
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_siman.h>
-#include "rb_gsl.h"
-#include "rb_gsl_array.h"
-#include "rb_gsl_function.h"
-#include "rb_gsl_rng.h"
-#include "rb_gsl_common.h"
+#include "include/rb_gsl.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_function.h"
+#include "include/rb_gsl_rng.h"
+#include "include/rb_gsl_common.h"
 
 static VALUE cgsl_siman_Efunc;
 static VALUE cgsl_siman_step;

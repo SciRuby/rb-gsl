@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_const.h"
+#include "include/rb_gsl_const.h"
 
 static void rb_gsl_const_mks(VALUE module);
 static void rb_gsl_const_cgs(VALUE module);

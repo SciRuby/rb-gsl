@@ -6,9 +6,9 @@
  */
 
 #ifdef HAVE_NARRAY_H
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_array.h"
 #include "narray.h"
-#include "rb_gsl_with_narray.h"
+#include "include/rb_gsl_with_narray.h"
 
 static VALUE rb_gsl_na_to_gsl_matrix_method(VALUE nna);
 static VALUE rb_gsl_na_to_gsl_matrix_int_method(VALUE nna);

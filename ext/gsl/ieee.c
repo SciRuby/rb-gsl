@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl.h"
+#include "include/rb_gsl.h"
 
 static VALUE rb_gsl_ieee_env_setup(VALUE obj)
 {

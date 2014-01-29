@@ -16,22 +16,22 @@
 
 #ifdef HAVE_TENSOR_TENSOR_H
 
-#include "rb_gsl_tensor.h"
+#include "include/rb_gsl_tensor.h"
 
 #ifdef HAVE_NARRAY_H
-#include "rb_gsl_with_narray.h"
+#include "include/rb_gsl_with_narray.h"
 #endif
 
 #define BASE_DOUBLE
-#include "templates_on.h"
+#include "include/templates_on.h"
 #include "tensor_source.c"
-#include "templates_off.h"
+#include "include/templates_off.h"
 #undef  BASE_DOUBLE
 
 #define BASE_INT
-#include "templates_on.h"
+#include "include/templates_on.h"
 #include "tensor_source.c"
-#include "templates_off.h"
+#include "include/templates_off.h"
 #undef  BASE_INT
 
 #endif

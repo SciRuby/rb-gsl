@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_fft.h"
+#include "include/rb_gsl_fft.h"
 
 enum FFT_CONV_CORR {
   RB_GSL_FFT_CONVOLVE = 0,

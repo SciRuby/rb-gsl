@@ -10,8 +10,8 @@
 */
 
 #ifdef GSL_1_4_9_LATER
-#include "rb_gsl_common.h"
-#include "rb_gsl_function.h"
+#include "include/rb_gsl_common.h"
+#include "include/rb_gsl_function.h"
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_deriv.h>
 #define RB_GSL_DERIV_H_DEFAULT (1e-8)

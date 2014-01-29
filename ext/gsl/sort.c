@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-#include "rb_gsl_array.h"
+#include "include/rb_gsl_array.h"
 #include <gsl/gsl_heapsort.h>
 #include <gsl/gsl_sort.h>
 

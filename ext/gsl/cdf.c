@@ -10,9 +10,9 @@
 */
 
 #ifdef GSL_1_4_LATER
-#include "rb_gsl_array.h"
-#include "rb_gsl_common.h"
-#include "rb_gsl_rng.h"
+#include "include/rb_gsl_array.h"
+#include "include/rb_gsl_common.h"
+#include "include/rb_gsl_rng.h"
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
 
