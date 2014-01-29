@@ -18,7 +18,7 @@
 
 FILE* rb_gsl_open_writefile(VALUE io, int *flag)
 {
-#ifdef RUBY_1_9_LATER
+#ifdef HAVE_RUBY_IO_H
   rb_io_t *fptr = NULL;
 #else
   OpenFile *fptr = NULL;
@@ -34,14 +34,14 @@ FILE* rb_gsl_open_writefile(VALUE io, int *flag)
   case T_FILE:
     GetOpenFile(io, fptr);
     /*
-#ifdef RUBY_1_9_LATER
+#ifdef HAVE_RUBY_IO_H
     name = STR2CSTR(fptr->pathv);
 #else
     name = fptr->path;
 #endif
     */
     rb_io_check_writable(fptr);
-#ifdef RUBY_1_9_LATER
+#ifdef HAVE_RUBY_IO_H
     fp = rb_io_stdio_file(fptr);
 #else
     fp = GetWriteFile(fptr);
@@ -59,7 +59,7 @@ FILE* rb_gsl_open_writefile(VALUE io, int *flag)
 
 FILE* rb_gsl_open_readfile(VALUE io, int *flag)
 {
-#ifdef RUBY_1_9_LATER
+#ifdef HAVE_RUBY_IO_H
   rb_io_t *fptr = NULL;
 #else
   OpenFile *fptr = NULL;
@@ -75,14 +75,14 @@ FILE* rb_gsl_open_readfile(VALUE io, int *flag)
   case T_FILE:
     GetOpenFile(io, fptr);
     /*
-#ifdef RUBY_1_9_LATER
+#ifdef HAVE_RUBY_IO_H
     name = STR2CSTR(fptr->pathv);
 #else
     name = fptr->path;
 #endif
     */
     rb_io_check_readable(fptr);
-#ifdef RUBY_1_9_LATER
+#ifdef HAVE_RUBY_IO_H
     fp = rb_io_stdio_file(fptr);
 #else
     fp = fptr->f;

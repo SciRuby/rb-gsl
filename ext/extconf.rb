@@ -215,16 +215,8 @@ begin
     end
   end
 
-  RUBY_VERSION2 = GSL::Version.new(RUBY_VERSION)
-  
-  puts("checking ruby version... #{RUBY_VERSION2}")
-
   if find_executable("graph")
     RB_GSL_CONFIG.printf("#ifndef HAVE_GNU_GRAPH\n#define HAVE_GNU_GRAPH\n#endif\n")
-  end
-
-  if RUBY_VERSION2 >= "1.9"
-    RB_GSL_CONFIG.printf("#ifndef RUBY_1_9_LATER\n#define RUBY_1_9_LATER\n#endif\n")
   end
 
   RB_GSL_CONFIG.printf("\n#endif\n")
