@@ -144,6 +144,12 @@ def file_path(path = '.')
   File.expand_path(path, File.dirname(__FILE__))
 end
 
+def have_gsl_library(func)
+  if have_library('gsl', func)
+    have_func(func)
+  end
+end
+
 #####
 
 $CFLAGS ||= ''
@@ -160,7 +166,7 @@ begin
 
   gsl_config()
 
-  have_func("round")
+  have_func('round')
 
 # Check GSL extensions
 
@@ -189,13 +195,9 @@ begin
   if have_header("gsl/gsl_multimin_fsdf.h")
     have_library("bundle_method")
   end
-     
-  if have_library("gsl", "gsl_poly_solve_quartic")
-    RB_GSL_CONFIG.printf("#ifndef HAVE_POLY_SOLVE_QUARTIC\n#define HAVE_POLY_SOLVE_QUARTIC\n#endif\n")
-  end
-  if have_library("gsl", "gsl_eigen_francis")
-    RB_GSL_CONFIG.printf("#ifndef HAVE_EIGEN_FRANCIS\n#define HAVE_EIGEN_FRANCIS\n#endif\n")
-  end
+
+  have_gsl_library('gsl_poly_solve_quartic')
+  have_gsl_library('gsl_eigen_francis')
 
   if have_header("ndlinear/gsl_multifit_ndlinear.h")
     have_library("ndlinear")

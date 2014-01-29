@@ -29,7 +29,7 @@ static VALUE cgsl_eigen_vector;
 static VALUE cgsl_eigen_vector_complex;
 static VALUE cgsl_eigen_herm_vectors;
 
-#ifdef HAVE_EIGEN_FRANCIS
+#ifdef HAVE_GSL_EIGEN_FRANCIS
 static VALUE cgsl_eigen_francis_workspace;
 
 #endif
@@ -600,7 +600,7 @@ static VALUE rb_gsl_eigen_hermv_sort(int argc, VALUE *argv, VALUE obj)
 }
 
 
-#ifdef HAVE_EIGEN_FRANCIS
+#ifdef HAVE_GSL_EIGEN_FRANCIS
 static VALUE rb_gsl_eigen_francis_alloc(VALUE klass)
 {
   gsl_eigen_francis_workspace *w = NULL;
@@ -2121,7 +2121,7 @@ void Init_gsl_eigen(VALUE module)
   VALUE mgsl_eigen_symmv;
   VALUE mgsl_eigen_herm;
   VALUE mgsl_eigen_hermv;
-#ifdef HAVE_EIGEN_FRANCIS
+#ifdef HAVE_GSL_EIGEN_FRANCIS
   VALUE mgsl_eigen_francis;
 #endif
 #ifdef GSL_1_9_LATER
@@ -2211,7 +2211,7 @@ void Init_gsl_eigen(VALUE module)
   rb_define_module_function(mgsl_eigen_hermv, "sort", 
 			     rb_gsl_eigen_hermv_sort, -1);
 
-#ifdef HAVE_EIGEN_FRANCIS
+#ifdef HAVE_GSL_EIGEN_FRANCIS
   mgsl_eigen_francis = rb_define_module_under(mgsl_eigen, "francis");
   cgsl_eigen_francis_workspace = rb_define_class_under(mgsl_eigen_francis, 
 						    "Workspace", cGSL_Object);

@@ -52,8 +52,5 @@
 #ifndef GSL_1_15_LATER
 #define GSL_1_15_LATER
 #endif
-#ifndef HAVE_EIGEN_FRANCIS
-#define HAVE_EIGEN_FRANCIS
-#endif
 
 #endif

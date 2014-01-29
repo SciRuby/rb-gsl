@@ -613,7 +613,7 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_cubic)(int argc, VALUE *argv, VA
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, r);
 }
 
-#ifdef HAVE_POLY_SOLVE_QUARTIC
+#ifdef HAVE_GSL_POLY_SOLVE_QUARTIC
 static VALUE FUNCTION(rb_gsl_poly,solve_quartic)(int argc, VALUE *argv, VALUE obj)
 {
   double x0, x1, x2, x3;
@@ -901,7 +901,7 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_cubic2)(VALUE obj)
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, r);
 }
 
-#ifdef HAVE_POLY_SOLVE_QUARTIC
+#ifdef HAVE_GSL_POLY_SOLVE_QUARTIC
 /* a4 x**4 + a3 x**3 + a2 x**2 + a1 x + a0 = 0 */
 static VALUE FUNCTION(rb_gsl_poly,solve_quartic2)(VALUE obj)
 {
@@ -1753,7 +1753,7 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
 			     FUNCTION(rb_gsl_poly,complex_solve_quadratic), -1);
   rb_define_singleton_method(mgsl_poly_complex, "solve_cubic",
 			     FUNCTION(rb_gsl_poly,complex_solve_cubic), -1);
-#ifdef HAVE_POLY_SOLVE_QUARTIC
+#ifdef HAVE_GSL_POLY_SOLVE_QUARTIC
   rb_define_singleton_method(mgsl_poly_complex, "solve_quartic",
 			     FUNCTION(rb_gsl_poly,complex_solve_quartic), -1);
 #endif
@@ -1773,7 +1773,7 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
 			     FUNCTION(rb_gsl_poly,complex_solve_quadratic), -1);
   rb_define_singleton_method(GSL_TYPE(cgsl_poly), "complex_solve_cubic", 
 			     FUNCTION(rb_gsl_poly,complex_solve_cubic), -1);
-#ifdef HAVE_POLY_SOLVE_QUARTIC
+#ifdef HAVE_GSL_POLY_SOLVE_QUARTIC
   rb_define_singleton_method(GSL_TYPE(cgsl_poly), "solve_quartic",
 			     FUNCTION(rb_gsl_poly,solve_quartic), -1);
 
@@ -1805,7 +1805,7 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_poly), "complex_solve_cubic", 
 		   FUNCTION(rb_gsl_poly,complex_solve_cubic2), 0);
 
-#ifdef HAVE_POLY_SOLVE_QUARTIC
+#ifdef HAVE_GSL_POLY_SOLVE_QUARTIC
   rb_define_method(GSL_TYPE(cgsl_poly), "solve_quartic", 
 		   FUNCTION(rb_gsl_poly,solve_quartic2), 0);
   rb_define_method(GSL_TYPE(cgsl_poly), "complex_solve_quartic", 
