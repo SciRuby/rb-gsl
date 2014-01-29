@@ -58,9 +58,6 @@
 #ifndef RUBY_GSL_VERSION
 #define RUBY_GSL_VERSION "1.16.0"
 #endif
-#ifndef RUBY_1_8_LATER
-#define RUBY_1_8_LATER
-#endif
 #ifndef RUBY_1_9_LATER
 #define RUBY_1_9_LATER
 #endif

@@ -128,7 +128,7 @@ static VALUE rb_gsl_siman_Efunc_set(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, siman_Efunc, se);
   switch (argc) {
   case 0:
-    if (rb_block_given_p()) se->proc = RB_GSL_MAKE_PROC;
+    if (rb_block_given_p()) se->proc = rb_block_proc();
     break;
   case 1:
     if (rb_obj_is_kind_of(argv[0], rb_cProc)) se->proc = argv[0];
@@ -233,7 +233,7 @@ static VALUE rb_gsl_siman_print_set(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, siman_print, se);
   switch (argc) {
   case 0:
-    if (rb_block_given_p()) se->proc = RB_GSL_MAKE_PROC;
+    if (rb_block_given_p()) se->proc = rb_block_proc();
     break;
   case 1:
     if (rb_obj_is_kind_of(argv[0], rb_cProc)) se->proc = argv[0];
@@ -302,7 +302,7 @@ static VALUE rb_gsl_siman_step_set(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, siman_step, se);
   switch (argc) {
   case 0:
-    if (rb_block_given_p()) se->proc = RB_GSL_MAKE_PROC;
+    if (rb_block_given_p()) se->proc = rb_block_proc();
     break;
   case 1:
     if (rb_obj_is_kind_of(argv[0], rb_cProc)) se->proc = argv[0];
@@ -373,7 +373,7 @@ static VALUE rb_gsl_siman_metric_set(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, siman_metric, se);
   switch (argc) {
   case 0:
-    if (rb_block_given_p()) se->proc = RB_GSL_MAKE_PROC;
+    if (rb_block_given_p()) se->proc = rb_block_proc();
     break;
   case 1:
     if (rb_obj_is_kind_of(argv[0], rb_cProc)) se->proc = argv[0];

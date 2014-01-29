@@ -23,7 +23,7 @@ int rb_gsl_comparison_double(const void *aa, const void *bb)
   double *a = NULL, *b = NULL;
   a = (double *) aa;
   b = (double *) bb;
-  return FIX2INT(rb_funcall(RB_GSL_MAKE_PROC, RBGSL_ID_call, 2, rb_float_new(*a), rb_float_new(*b)));
+  return FIX2INT(rb_funcall(rb_block_proc(), RBGSL_ID_call, 2, rb_float_new(*a), rb_float_new(*b)));
 }
 
 int rb_gsl_comparison_complex(const void *aa, const void *bb)
@@ -31,7 +31,7 @@ int rb_gsl_comparison_complex(const void *aa, const void *bb)
   gsl_complex *a = NULL, *b = NULL;
   a = (gsl_complex *) aa;
   b = (gsl_complex *) bb;
-  return FIX2INT(rb_funcall(RB_GSL_MAKE_PROC, RBGSL_ID_call, 2, 
+  return FIX2INT(rb_funcall(rb_block_proc(), RBGSL_ID_call, 2, 
 			    Data_Wrap_Struct(cgsl_complex, 0, NULL, a),
 			    Data_Wrap_Struct(cgsl_complex, 0, NULL, b)));
 }

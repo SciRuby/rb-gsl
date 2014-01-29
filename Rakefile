@@ -27,7 +27,7 @@ begin
         :cross_compile => false
       },
 
-      :required_ruby_version => '>= 1.8.1'
+      :required_ruby_version => '>= 1.8.7'
     },
     :rdoc => {
       :title      => 'Ruby/GSL{version: (v%s)}',

@@ -15,7 +15,7 @@
 #include "rb_gsl_config.h"
 
 #include <ruby.h>
-#ifdef RUBY_1_9_LATER
+#ifdef HAVE_RUBY_IO_H
 #include <ruby/io.h>
 #else
 #include <rubyio.h>
@@ -319,16 +319,7 @@ VALUE rb_gsl_obj_read_only(int argc, VALUE *argv, VALUE obj);
 int str_tail_grep(const char *s0, const char *s1);
 int str_head_grep(const char *s0, const char *s1);
 
-#ifdef RUBY_1_8_LATER
-#define RB_GSL_MAKE_PROC rb_block_proc()
-#define STR2CHARPTR StringValuePtr
-#else
-#define RB_GSL_MAKE_PROC rb_f_lambda()
-#define STR2CHARPTR STR2CSTR
-#endif
-
-// Added 2010/Sep/29
-#ifdef RUBY_1_9_2_LATER
+#ifndef STR2CSTR
 #define STR2CSTR StringValuePtr
 #endif
 

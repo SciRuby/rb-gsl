@@ -195,7 +195,7 @@ static VALUE rb_gsl_ntuple_select_fn_set_f(int argc, VALUE *argv, VALUE obj)
     rb_ary_store(ary, 1, ary2);
     break;
   }
-  if (rb_block_given_p()) rb_ary_store(ary, 0, RB_GSL_MAKE_PROC);
+  if (rb_block_given_p()) rb_ary_store(ary, 0, rb_block_proc());
   return obj;
 }
 
@@ -314,7 +314,7 @@ static VALUE rb_gsl_ntuple_value_fn_set_f(int argc, VALUE *argv, VALUE obj)
     rb_ary_store(ary, 1, ary2);
     break;
   }
-  if (rb_block_given_p()) rb_ary_store(ary, 0, RB_GSL_MAKE_PROC);
+  if (rb_block_given_p()) rb_ary_store(ary, 0, rb_block_proc());
   return obj;
 }
 

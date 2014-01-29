@@ -88,7 +88,7 @@ static VALUE rb_gsl_multimin_function_new(int argc, VALUE *argv, VALUE klass)
   ary = rb_ary_new2(2);
   /*  (VALUE) F->params = ary;*/
   F->params = (void *) ary;
-  if (rb_block_given_p()) rb_ary_store(ary, 0, RB_GSL_MAKE_PROC);
+  if (rb_block_given_p()) rb_ary_store(ary, 0, rb_block_proc());
   else rb_ary_store(ary, 0, Qnil);
   rb_ary_store(ary, 1, Qnil);
   switch (argc) {
@@ -165,7 +165,7 @@ static VALUE rb_gsl_multimin_function_set_f(int argc, VALUE *argv, VALUE obj)
   size_t i;
   Data_Get_Struct(obj, gsl_multimin_function, F);
   ary = (VALUE) F->params;
-  if (rb_block_given_p()) rb_ary_store(ary, 0, RB_GSL_MAKE_PROC);
+  if (rb_block_given_p()) rb_ary_store(ary, 0, rb_block_proc());
   switch (argc) {
   case 1:
     set_function(0, argv, F);

@@ -114,7 +114,7 @@ static VALUE rb_gsl_histogram_alloc_from_file(VALUE klass, VALUE name)
   size_t n, i;
   FILE *fp = NULL;
   double upper;
-  strcpy(filename, STR2CHARPTR(name));
+  strcpy(filename, StringValuePtr(name));
   sprintf(buf, "wc %s", filename);
   fp = popen(buf, "r");
   if (fp == NULL) rb_raise(rb_eIOError, "popen failed.");

@@ -149,6 +149,8 @@ end
 $CFLAGS ||= ''
 $CFLAGS += " -Wall -I#{file_path('../include')} "
 
+have_header('ruby/io.h')
+
 begin
   RB_GSL_CONFIG = File.open(file_path("../include/rb_gsl_config.h"), "w")
   RB_GSL_CONFIG.printf("#ifndef ___RB_GSL_CONFIG_H___\n")
@@ -216,32 +218,13 @@ begin
   RUBY_VERSION2 = GSL::Version.new(RUBY_VERSION)
   
   puts("checking ruby version... #{RUBY_VERSION2}")
-  if RUBY_VERSION2 >= "1.8"
-    RB_GSL_CONFIG.printf("#ifndef RUBY_1_8_LATER\n#define RUBY_1_8_LATER\n#endif\n")
 
-    if find_executable("graph")
-      RB_GSL_CONFIG.printf("#ifndef HAVE_GNU_GRAPH\n#define HAVE_GNU_GRAPH\n#endif\n")
-    end
-  else
-    path = (path || ENV['PATH']).split(File::PATH_SEPARATOR)  
-    flag = 0
-    print("checking for GNU graph... ")
-    path.each do |dir|    
-      if File.executable?(File.join(dir, "graph")) 
-        puts("yes")
-        RB_GSL_CONFIG.printf("#ifndef HAVE_GNU_GRAPH\n#define HAVE_GNU_GRAPH\n#endif\n")
-        flag = 1
-        break
-      end
-    end
-    puts("no") if flag == 0
+  if find_executable("graph")
+    RB_GSL_CONFIG.printf("#ifndef HAVE_GNU_GRAPH\n#define HAVE_GNU_GRAPH\n#endif\n")
   end
+
   if RUBY_VERSION2 >= "1.9"
     RB_GSL_CONFIG.printf("#ifndef RUBY_1_9_LATER\n#define RUBY_1_9_LATER\n#endif\n")
-# Added 2010/Sep/29
-    if RUBY_VERSION2 >= "1.9.2"
-      RB_GSL_CONFIG.printf("#ifndef RUBY_1_9_2_LATER\n#define RUBY_1_9_2_LATER\n#endif\n")
-    end
   end
 
   RB_GSL_CONFIG.printf("\n#endif\n")

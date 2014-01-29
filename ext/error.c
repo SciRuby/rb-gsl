@@ -48,7 +48,7 @@ static void rb_gsl_my_error_handler(const char *reason, const char *file,
 static VALUE rb_gsl_set_error_handler(int argc, VALUE *argv, VALUE module)
 {
   if (rb_block_given_p()) {
-    eHandler = RB_GSL_MAKE_PROC;
+    eHandler = rb_block_proc();
     gsl_set_error_handler(&rb_gsl_my_error_handler);
     return Qtrue;
   }
