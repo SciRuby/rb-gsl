@@ -21,12 +21,7 @@ begin
 
       :extra_files => FileList['examples/**/*', 'rdoc/*'].to_a,
 
-      :extension => {
-        :name          => 'gsl_native',
-        :lib_dir       => 'lib/gsl',
-        :ext_dir       => 'ext/gsl',
-        :cross_compile => false
-      },
+      :extension => { :cross_compile => false },
 
       :required_ruby_version => '>= 1.8.7'
     },
