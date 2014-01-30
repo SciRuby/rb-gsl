@@ -15,15 +15,6 @@
 # Note that the GSL libraries must already be installed before Ruby/GSL
 # can be installed.
 #
-# === {}[link:index.html"name="3.2] Using the setup.rb command
-# If you prefer, Ruby/GSL may still be installed using setup.rb.
-# 1. Get and install {GSL}[http://www.gnu.org/software/gsl/#downloading"target="_top]. Make sure the command "gsl-config" is in command search path.
-# 1. {Download}[http://rubyforge.org/frs/?group_id=285"target="_top] Ruby/GSL, ungzip and untar the archive <tt>rb-gsl-xxx.tgz</tt>. 
-# 1. <tt> % cd rb-gsl-xxx/</tt>
-# 1. <tt> % ruby setup.rb config</tt>
-# 1. <tt> % ruby setup.rb setup</tt>
-# 1. <tt> % ruby setup.rb install</tt> (as root)
-#
 # * It is recommended to install the
 #   {GNU plotutils}[http://www.gnu.org/software/plotutils/plotutils.html"target="_top]
 #   package.  Some of the example scripts in the 'examples/' directory use the
