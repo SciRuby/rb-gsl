@@ -1,32 +1,28 @@
-=begin
 == Description
+
 Ruby/GSL, a ruby interface to GSL (GNU Scientific library)
 
 == Installation
-   (0) Make sure the command "gsl-config" is in search path.
-   (1) % ruby setup.rb config
-   (2) % ruby setup.rb setup
-   (3) % ruby setup.rb install (as root)
 
-See also html/index.html.
+See http://blackwinter.github.io/rb-gsl/.
 
 == Reference
 
-See ((<URL:http://rb-gsl.rubyforge.org/ref.html>)).
+See http://blackwinter.github.io/rb-gsl/rdoc/ref_rdoc.
 
 == Licence
+
 Ruby/GSL is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License.
 This library is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY.
 
-== Bug Report
-Any bug reports are welcome.
-If you encounter bugs in Ruby/GSL, please e-mail to me, or
-submit reports from http://rubyforge.org/projects/rb-gsl/.
+== Bug Reports
 
-== Author
-Yoshiki Tsunesada
-y-tsunesada at mm dot em-net dot ne dot jp
+Any bug reports are welcome. If you encounter bugs in Ruby/GSL, please
+report them on GitHub: https://github.com/blackwinter/rb-gsl/issues.
 
-=end
+== Authors
+
+* Yoshiki Tsunesada <y-tsunesada at mm dot em-net dot ne dot jp> (Original author)
+* Jens Wille <mailto:jens.wille@gmail.com>
