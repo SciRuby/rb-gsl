@@ -64,11 +64,13 @@ gsl_config_arg(:cflags) { |cflags, check|
 gsl_config_arg(:libs) { |libs, check|
   libs.tr!(File::PATH_SEPARATOR, ' ')
 
-  dir_config('cblas')
-  dir_config('atlas')
+  if enable_config('atlas')
+    dir_config('cblas')
+    dir_config('atlas')
 
-  if have_library('cblas') && have_library('atlas')
-    libs.gsub!('-lgslcblas', '-lcblas -latlas')
+    if have_library('cblas') && have_library('atlas')
+      libs.gsub!('-lgslcblas', '-lcblas -latlas')
+    end
   end
 
   $LOCAL_LIBS += ' ' + check[libs]
