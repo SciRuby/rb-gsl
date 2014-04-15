@@ -1,3 +1,9 @@
+Thu Apr 24 16:35:40 CET 2014
+  * Ruby/GSL 1.16.0.1
+	  * Extensive cleanup.
+	  * Fixed linking problems.
+	  * Required Ruby version >= 1.8.7.
+
 Fri Jan 24 14:46:30 CET 2014
   * Ruby/GSL 1.16.0
 	  * GSL-1.16 support.
