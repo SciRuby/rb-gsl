@@ -1,0 +1,27 @@
+language:
+  ruby
+
+rvm:
+  - '1.9.3'
+  - '2.0.0'
+  - '2.1.1'
+  - ruby-head
+  - rbx
+
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+    - rvm: rbx
+
+  fast_finish:
+    true
+
+script:
+  rake test
+
+install:
+  gem install --development rb-gsl
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libgsl0-dev
