@@ -20,7 +20,7 @@ script:
   rake test
 
 install:
-  gem install --development rb-gsl
+  gem install --prerelease --development rb-gsl
 
 before_install:
   - sudo apt-get update -qq
