@@ -21,8 +21,20 @@ def gsl_have_library(func)
   have_func(func) if have_library('gsl', func)
 end
 
-def gsl_dir_config(target)
-  dir_config(target, $sitearchdir, $sitearchdir)
+def gsl_dir_config(target, idir = nil, ldir = idir)
+  dir_config(target, idir || $sitearchdir, ldir || $sitearchdir)
+end
+
+def gsl_gem_config(target, dir = 'ext')
+  path = begin
+    require 'rubygems'
+
+    spec = Gem::Specification.find_by_path("#{target}.h")
+    File.join(spec.full_gem_path, dir) if spec
+  rescue LoadError
+  end
+
+  gsl_dir_config(target, path)
 end
 
 $CFLAGS += ' -Wall -Iinclude'
@@ -94,22 +106,13 @@ gsl_have_library('gsl_poly_solve_quartic')
 
 gsl_def(:HAVE_GNU_GRAPH) if find_executable('graph')
 
-narray = gsl_dir_config('narray')
-
-begin
-  require 'rubygems'
-
-  if spec = Gem::Specification.find_by_path('narray.h')
-    $LOCAL_LIBS = "-L#{File.join(narray = spec.full_gem_path, 'src')} " + $LOCAL_LIBS
-    $CPPFLAGS   = "-I#{File.join(narray, spec.require_path)} "          + $CPPFLAGS
-  end
-rescue LoadError
-end
+gsl_gem_config('narray', 'src')
 
 have_header('narray.h')
-have_library('narray') if narray && RUBY_PLATFORM =~ /cygwin|mingw/
+have_library('narray') if RUBY_PLATFORM =~ /cygwin|mingw/
 
-if !arg_config('--disable-tamu-anova') && gsl_dir_config('tamu_anova')
+unless arg_config('--disable-tamu-anova')
+  gsl_dir_config('tamu_anova')
   gsl_have_header('tamuanova', 'tamu_anova/tamu_anova.h')
 end
 
