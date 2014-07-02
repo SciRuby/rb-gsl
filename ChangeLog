@@ -1,3 +1,7 @@
+Wed Jul  9 2014
+  * Ruby/GSL 1.16.0.2
+	  * Fixed linking problem.
+
 Thu Apr 24 2014
   * Ruby/GSL 1.16.0.1
 	  * Extensive cleanup.
