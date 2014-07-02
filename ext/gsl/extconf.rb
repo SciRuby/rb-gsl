@@ -102,8 +102,6 @@ begin
   if spec = Gem::Specification.find_by_path('narray.h')
     $LOCAL_LIBS = "-L#{File.join(narray = spec.full_gem_path, 'src')} " + $LOCAL_LIBS
     $CPPFLAGS   = "-I#{File.join(narray, spec.require_path)} "          + $CPPFLAGS
-
-    $LOCAL_LIBS += ' -l:narray.so' if RUBY_PLATFORM.include?('linux')
   end
 rescue LoadError
 end
