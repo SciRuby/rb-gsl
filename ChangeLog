@@ -1,14 +1,14 @@
-Thu Apr 24 16:35:40 CET 2014
+Thu Apr 24 2014
   * Ruby/GSL 1.16.0.1
 	  * Extensive cleanup.
 	  * Fixed linking problems.
 	  * Required Ruby version >= 1.8.7.
 
-Fri Jan 24 14:46:30 CET 2014
+Fri Jan 24 2014
   * Ruby/GSL 1.16.0
 	  * GSL-1.16 support.
 
-Fri Jan 24 14:16:30 CET 2014
+Fri Jan 24 2014
   * Ruby/GSL 1.15.3.2
 	  * Windows compatibility.
 	  * Ruby 2.x compatibility.
@@ -16,36 +16,36 @@ Fri Jan 24 14:16:30 CET 2014
 		* Silenced compilation warnings.
 		* Switched to rake-compiler for compilation.
 
-Sat Feb 26 08:18:45 PST 2011
+Sat Feb 26 2011
   * Ruby/GSL 1.14.7
     * Fix conversion of non-DFLOAT NArray to GSL::Vector and
       GSL::Vector::Complex.
 
-Thu Feb 24 10:27:08 PST 2011
+Thu Feb 24 2011
   * Ruby/GSL 1.14.6
     * Add Vector::Complex support to NArray conversions
     * Raise exception when trying to create View from NArray object of
       incompatible type.
 
-Sun Nov 14 17:01:07 PST 2010
+Sun Nov 14 2010
   * Ruby/GSL 1.14.5
     * Convert docs from rdtool to rdoc
     * Fix object id handling bugs on 64-bit systems
     * Fix Vector's handling of Range parameters
 
-Wed Sep 29 00:37:44 BOT 2010
+Wed Sep 29 2010
   * Modification for ruby-1.9.2
     * Replaced STR2CSTR to StringValuePtr
 
-Mon Mar 22 23:54:07 MDT 2010
+Mon Mar 22 2010
   * GSL-1.14 support
     * Added GSL::Multiset class
     * Added GSL::Function#glfixed(a, b table)
 
-Sun Aug 16 19:01:31 BOT 2009
+Sun Aug 16 2009
   * Added Non-negative Matrix Factorization (NMF) support (by Roman Shterenzon)
 
-Sat Aug  8 22:36:24 BOT 2009
+Sat Aug  8 2009
   * Added GSL-1.13 features:
     * Added GSL::Monte::Miser#params_get, GSL::Monte::Vegas#params_get
     * Added GSL::BSpline::greville_abscissa(i)
@@ -53,49 +53,49 @@ Sat Aug  8 22:36:24 BOT 2009
     * Added a new minimization algorithm "quad_golden"
     * Added a new multimin algorithm "nmsimplex2rand"
 
-Tue Jun  9 10:42:30 JST 2009
+Tue Jun  9 2009
   * Fixed bug in linalg.c (bug [#25842])
 
-Thu Feb  2 12:16:38 JST 2009
+Thu Feb  2 2009
   * Fixed a bug in GSL::Histogram.alloc_uniform() (bug [#23040])
   * Fixed a bug in GSL::Vector#/ (bug [#23334])
 
-Thu Nov  6 17:34:18 JST 2008
+Thu Nov  6 2008
   * Match with the tensor extension version 0.99
     * now not compatible for the versions older than tensor-0.97.
 
-Sat Jul 26 08:23:45 JST 2008
+Sat Jul 26 2008
   * GSL::Poly.eval now handles complex numbers (GSL-1.11)
   * Added new quasi-random generators "halton" and "reversehalton"
   * Added a module function GSL::MultiFit::linear_residuals() (GSL-1.11)
-  * Fixed a bug in ODE solver 
+  * Fixed a bug in ODE solver
 
-Mon Jun 30 22:07:24 JST 2008
+Mon Jun 30 2008
   * Fixed GSL::Vector#normalize (#20865)
 
-Mon May 26 19:21:15 JST 2008
+Mon May 26 2008
   * Fixed a bug in GSL::Matrix::to_v (#19757)
   * Fixed a bug in GSL::Vector::Int multiplication (#19924)
 
-Sat Dec  8 23:44:47     2007
+Sat Dec  8 2007
   * Version 1.10.3
 
-Tue Dec  2 16:30:15     2007
+Tue Dec  2 2007
   * Improved GSL::Vector#get for a Range arg
   * Improved GSL::Vector#concat for an Array arg
   * Fixed a bug in GSL::Matrix.alloc with column vector arguments
 
-Thu Dec  2 10:58:37     2007
+Thu Dec  2 2007
   * Added methods GSL::Vector#pow(p), GSL::Vector#pow!(p)
 
-Wed Oct 17 04:04:39     2007
+Wed Oct 17 2007
   * Fixed a bug in poly_source.c
 
-Sun Oct  7 14:18:31     2007
+Sun Oct  7 2007
   * Version 1.10.0
   * ndlinear extension support
 
-Sat Sep 22 01:49:57     2007
+Sat Sep 22 2007
   Added GSL-1.10 features
   * Added generalized eigensystem methods
   * Added method GSL::Stats::correlation(v1, v2) to compute
@@ -110,15 +110,15 @@ Sat Sep 22 01:49:57     2007
     and GSL::Linalg::Chomplex::Cholesky::svx
   * Added method GSL::hypot3(x, y, z)
 
-Sat Aug 11 00:45:48     2007
+Sat Aug 11 2007
   * Modified ext/extconf.rb: Check gsl_stats_correlation()
 
-Sun Aug  5 15:46:51     2007
+Sun Aug  5 2007
   * Improved GSL::Vector::filescan()
-Tue May 15 13:35:49     2007
+Tue May 15 2007
   * Fixed a bug in Vector#get (Thank to Daigo Moriwaki)
 
-Sun Feb 18 00:08:15     2007
+Sun Feb 18 2007
 	* Completed GSL-1.8.90 features
 		* Change names "unsymm" ---> "nonsymm" for non-symmetric eigen systems
 		* Added Mathieu functions
@@ -126,44 +126,44 @@ Sun Feb 18 00:08:15     2007
 		* Added knuthran2002 generator
 		* Added a new minimization method GSL::MultiMin::FdfMinimizer::BFGS2
 
-Sun Dec 31 01:34:29     2006
+Sun Dec 31 2006
   * Remove the module function GSL::equal?, which breaks the Ruby policy.
-    
-Sun Dec 24 16:51:34     2006
+
+Sun Dec 24 2006
 	* Added Basis splines
   * CQP and Bundle extentions support
-  
-Wed Dec 13 01:02:09     2006
+
+Wed Dec 13 2006
   * OOL extension support (OOL version 0.2)
     * OOL: Open Optimization Library
-    
-Mon Dec 11 01:04:19     2006
-  * Add a quasi-random sequence generator hdsobol 
+
+Mon Dec 11 2006
+  * Add a quasi-random sequence generator hdsobol
     (require the qrngextra extension)
-    
-Tue Sep 26 18:58:26 BOT 2006
+
+Tue Sep 26 2006
 	* Fixed a bug in GSL::Vector#*
 
-Sun Sep 24 10:37:49 BOT 2006
+Sun Sep 24 2006
 	* Fixed a bug in GSL::Matrix.vandermonde()
 	* Added methods GSL::Vector#join, zip, cumsum, cumprod
 
-Thu Sep 21 20:03:39 BOT 2006
+Thu Sep 21 2006
 	* Added methods to calculate eigenvectors of nonsymmetric matrices
 	* Added test scripts tests/eigen/unsymm.rb, tests/eigen/unsymmv.rb
 
-Wed Aug 23 00:51:12 BOT 2006
+Wed Aug 23 2006
 	* Added methods to calculate eigenvalues of nonsymmetric matrices
 
-Fri Aug 18 20:47:05 BOT 2006
+Fri Aug 18 2006
 	* Fixed bug in Sf::hypot
 
-Sat Apr 29 12:29:10 JST 2006
+Sat Apr 29 2006
 	* Applied patch provided by Cameron McBride, to fix a bug in
 		randist.c
 	* Applied patched by zunda to fix some test/ scripts.
 
-Thu Apr 13 22:21:02 JST 2006
+Thu Apr 13 2006
 	* Version 1.8.0
 	* Added cumulative distribution functions under the module GSL::Cdf:
 		binomial, poisson, geometric, negative binomial, pascal and hypergeometric.
@@ -177,10 +177,10 @@ Thu Apr 13 22:21:02 JST 2006
 	* Added GSL::Spline#min_size
 	* Added the Debye unit to physical constants.
 
-Fri Dec  2 19:05:30 JST 2005
+Fri Dec  2 2005
 	* Singleton method "new" ---> "alloc"
 
-Sun Nov 27 14:01:12 JST 2005
+Sun Nov 27 2005
 	* Apply patch by zunda to improve multifit.
 	* Fix bug in dirac.c
 
@@ -188,7 +188,7 @@ Tue Apr  3 JST 2005
 	* Added Vector#collect!, Matrix#collect!
 	* Added lib/rbgsl.rb, in which the GSL module is not included by default
 
-Wed Apr 27 21:21:58 JST 2005
+Wed Apr 27 2005
 	* The following Linalg methods now can handle NArray objects:
 		* GSL::Linalg::
 			* LU.decomp(m)
@@ -209,47 +209,47 @@ Wed Apr 27 21:21:58 JST 2005
 			* HH.solve(m, b)
 			* HH.svx(m, bx)
 
-Mon Apr 18 23:27:16 JST 2005
+Mon Apr 18 2005
   * Improved gsl_narray.c (thanks to T. Horinouchi)
 	* Modified extconf.rb
 		* Automatic finding of NArray
 	* Applied a patch by zunda
 
-Thu Apr  7 18:26:08 JST 2005
+Thu Apr  7 2005
 	* Modified extconf.rb
 
-Mon Mar 21 23:17:56 JST 2005
+Mon Mar 21 2005
 	* Version 1.6.2
 
-Sat Mar 19 01:00:15 JST 2005
+Sat Mar 19 2005
 	* Fixed Blas.dgemm, .zgemm
 	* Fixed method re-definitions
 
-Tue Mar 15 23:20:15 JST 2005
+Tue Mar 15 2005
 	* Added class GSL::Block::Byte, GSL::Block::Index
 	* Added NArray-like methods, Vector#eq, ne, gt, where, any? etc.
-	* Added methods Vector#floor, Vector#ceil, 
+	* Added methods Vector#floor, Vector#ceil,
 		and Vector#round (if the system has)
 
-Sat Mar 12 14:49:47 JST 2005
+Sat Mar 12 2005
 	* Fixed Vector#get
 
-Sat Feb 26 11:18:22 JST 2005
+Sat Feb 26 2005
 	* Ruby 1.9.0 support
 
-Sat Feb  5 03:24:28 JST 2005
+Sat Feb  5 2005
 	* Version 1.6.1
 
-Wed Jan 26 23:28:07 JST 2005
+Wed Jan 26 2005
 	* Added in-place FFT methods
         * Fixed FFT document
 
-Thu Jan 20 00:55:26 JST 2005
+Thu Jan 20 2005
 	* Added Vector#decimate, Vector#diff
 	* Added Matrix#rot90
 	* Fixed Matrix::Complex
 
-Thu Jan 06 18:46:02 JST 2005
+Thu Jan 06 2005
 	* Some methods which receive GSL::Vector now can also manipulate
 		NArray objects.
 		* Special functions
@@ -262,18 +262,18 @@ Thu Jan 06 18:46:02 JST 2005
 	* Added method Vector#decimate
 	* Sf::exp now can receive Complex or Vector::Complex
 
-Tue Jan 04 
+Tue Jan 04
 	* Version 1.6.0
 
-Thu Dec 30 04:34:14 JST 2004 Yoshiki Tsunesada
+Thu Dec 30 2004 Yoshiki Tsunesada
 	* Update for GSL-1.5.90
 			* Added Sf::psi_1
 		* Added ODE stepper rk2simp
 		* Added LQ, PTLQ decompositions
 		* Added methods Cdf::exppow_P, Cdf::exppow_Q
 
-Mon Dec 27 22:19:55 JST 2004 Yoshiki Tsunesada 
-	* All Ruby/GSL classes are defined as derivatives of the base class 
+Mon Dec 27 2004 Yoshiki Tsunesada
+	* All Ruby/GSL classes are defined as derivatives of the base class
 	GSL::Object.
 	* Defined the method GSL::Object#info
 	* Added Vector#histogram
@@ -281,35 +281,35 @@ Mon Dec 27 22:19:55 JST 2004 Yoshiki Tsunesada
 	* Modified the methods Histogram#increment, accumulate
 	* Added methods Poly.fit, Poly.wfit, MultiFit.polyfit
 	* Added methods Vector::Complex#abs2, abs, arg
-	* Modified FFT methods: now they return FFTed data as a new vector, 
+	* Modified FFT methods: now they return FFTed data as a new vector,
 		and do not destroy the input vector.
 
-Sat Dec 11 21:45:30 JST 2004 Yoshiki Tsunesada 
+Sat Dec 11 2004 Yoshiki Tsunesada
 	* Modified Histogram#integral
 
-Fri Dec 10 14:28:38 JST 2004 Yoshiki Tsunesada 
+Fri Dec 10 2004 Yoshiki Tsunesada
 	* Added methods Histogram#reverse, Histogram2d#integrate,
 	Histogram2d#normalize
 
-Mon Dec  6 01:15:03 JST 2004 Yoshiki Tsunesada 
+Mon Dec  6 2004 Yoshiki Tsunesada
 	* Version 1.5.4
 
-Fri Dec  3 22:33:46 JST 2004 Yoshiki Tsunesada 
+Fri Dec  3 2004 Yoshiki Tsunesada
 	* Added Histogram#rebin
 
-Fri Nov 26 21:17:17 JST 2004 Yoshiki Tsunesada 
+Fri Nov 26 2004 Yoshiki Tsunesada
 	* Added method Vector#to_m
 	* Added methods Matrix#reverse_rows, Matrix#reverse_columns
 
-Tue Nov 16 23:35:27 JST 2004 Yoshiki Tsunesada 
-	* The method Matrix#** is now obsolete, use "*" 
+Tue Nov 16 2004 Yoshiki Tsunesada
+	* The method Matrix#** is now obsolete, use "*"
           for matrix multiplication instead.
 	* Improved Matrix#* and Vetor#*
-	* Added methods Vector#to_m_diagonal, Vector#to_m_circulant, 
+	* Added methods Vector#to_m_diagonal, Vector#to_m_circulant,
 	Vector#collect
 	* Added methods Matrix.hilbert, Matrix.invhilbert, Matrix.pascal,
 		Matrix.vandermonde, Matrix.toeplitz, Matrix.circulant
-	* Added methods Vector.indgen, Vector#indgen, 
+	* Added methods Vector.indgen, Vector#indgen,
 		Matrix.indgen, Matrix#indgen (mimics NArray)
 	* Added class GSL::Histogram3d
 	* Checked GSL lower version compatibilities
@@ -318,110 +318,110 @@ Tue Nov 16 23:35:27 JST 2004 Yoshiki Tsunesada
 		* gsl-0.9.3 or older: not tested
 		* gsl-1.6 (development version, CVS Nov2004): OK
 	
-Sun Nov  7 00:56:11 JST 2004 Yoshiki Tsunesada 
+Sun Nov  7 2004 Yoshiki Tsunesada
 	* Support the gsl_tensor package
 		* http://sources.redhat.com/ml/gsl-discuss/2004-q4/msg00053.html
 		* Added class GSL::Tensor, GSL::Tensor::Int
 	* The methods Vector#get, Vector#[] now receive multiple
 		arguments, or an Array, or a Range object.
 
-Thu Nov  4 21:13:38 JST 2004 Yoshiki Tsunesada 
-	* Added class GSL::Histogram::Integral, which represents the 
+Thu Nov  4 2004 Yoshiki Tsunesada
+	* Added class GSL::Histogram::Integral, which represents the
 		cumulative distribution.
 	* Added method GSL::Histogram#integrate, which creates a
 		GSL::Histogram::Integral object.
 	* Added methods GSL::Histogram2d#xproject, yproject, normalize, increment2.
 
-Sun Oct 31 02:34:28 JST 2004 Yoshiki Tsunesada 
+Sun Oct 31 2004 Yoshiki Tsunesada
 	* Fix the document for Polynomials
 	* Added methods Poly::hermite(n), Poly::cheb(n), and Poly::cheb_II(n) etc..
 	* Added method Poly#compan, which returns the companion matrix.
 	* The method Matrix#/ is improved: if a Vector is given, this method
 		solves the linear system.
 
-Mon Oct 25 01:25:12 JST 2004 Yoshiki Tsunesada 
+Mon Oct 25 2004 Yoshiki Tsunesada
         * Split the source file "randist.c" into "randist.c" and "cdf.c"
         * Split the source file "diff.c" into "diff.c" and "deriv.c"
 	* Split the source file "interp.c" into "interp.c" and "spline.c"
 	* Added methods Vector#abs, sqrt, square, normalize
 	* Added sample scripts odeiv/frei1.rb, fft/frei2.rb
-		and eigen/qhoscillator.rb, which deal with quantum mechanical 
-		calculations. These are translated from the C++ code in the 
-		Harald Wiedemann's textbook "Numerische Physik" 
+		and eigen/qhoscillator.rb, which deal with quantum mechanical
+		calculations. These are translated from the C++ code in the
+		Harald Wiedemann's textbook "Numerische Physik"
 		(Springer 2004, ISBN 3-540-40774-X).
 		
-Sat Oct 23 19:08:02 JST 2004 Yoshiki Tsunesada 
+Sat Oct 23 2004 Yoshiki Tsunesada
         * Added a method GSL::Vector#logspace2. The following two are
 		equivalent:
 			 v1 = Vector.logspace(1, 3, 5)
 			 v2 = Vector.logspace2(10, 1000, 5)
 
-Tue Oct 19 23:23:38 JST 2004 Yoshiki Tsunesada 
+Tue Oct 19 2004 Yoshiki Tsunesada
         * Support the rngextra package
 		* http://www.network-theory.co.uk/download/rngextra/
           * Added two random number generators "rngextra_rng1" and "rngextra_rng2"
         * Fixed a bug in the method Vector#subvector_with_stride
 
-Mon Oct 18 22:22:21 JST 2004 Yoshiki Tsunesada 
+Mon Oct 18 2004 Yoshiki Tsunesada
         * Added a sample script dht.rb
 
-Fri Oct  8 23:09:00 JST 2004 Yoshiki Tsunesada 
+Fri Oct  8 2004 Yoshiki Tsunesada
         * Version 1.5.3
 
-Thu Oct  7 22:47:59 JST 2004 Yoshiki Tsunesada 
+Thu Oct  7 2004 Yoshiki Tsunesada
         * The methods Vector.graph and GSL::graph improved.
 	* Added sample scripts of special functions and probability distribution
 		functions.
 
-Sat Oct  2 23:13:49 JST 2004 Yoshiki Tsunesada 
+Sat Oct  2 2004 Yoshiki Tsunesada
         * Discrete wavelet transform (experimental)
-        * Presently this is only for CVS trackers, 
+        * Presently this is only for CVS trackers,
           since DWT is not supported in the latest version GSL-1.5.
         * Added methods Vector.connect, Vector#connect
 
-Thu Sep 30 22:56:47 JST 2004 Yoshiki Tsunesada 
-        * The methods Vector#[] and Vector#[]= accept an index of 
-		negative integer. For example, v[-1] returns the last element 
+Thu Sep 30 2004 Yoshiki Tsunesada
+        * The methods Vector#[] and Vector#[]= accept an index of
+		negative integer. For example, v[-1] returns the last element
 		of the vector v, v[-2] does the second last, and so on.
 
-Fri Sep 24 21:52:06 JST 2004 Yoshiki Tsunesada 
+Fri Sep 24 2004 Yoshiki Tsunesada
         * Fixed bug in Sf::legendre_Ql
 
-Wed Sep  1 19:02:42 JST 2004 Yoshiki Tsunesada 
+Wed Sep  1 2004 Yoshiki Tsunesada
         * Version 1.5.2
 
-Fri Aug 27 03:18:46 JST 2004 Yoshiki Tsunesada 
+Fri Aug 27 2004 Yoshiki Tsunesada
         * Experimental implementation of GNU plotutils graph and GNUPLOT interfaces
         * Added unary minus operators for GSL::Vector, GSL::Matrix
 
-Thu Aug 19 14:28:08 JST 2004 Yoshiki Tsunesada 
+Thu Aug 19 2004 Yoshiki Tsunesada
         * Added class GSL::Matrix::Int
         * Correct descriptions of GSL::Matrix#get_row, get_col
         * Changed behaviour of methods NArray#to_gv, NArray#to_gm,
           added methods NArray#to_gv_view, NArray#to_gm_view
 
-Wed Aug 18 02:38:20 JST 2004
+Wed Aug 18 2004
         * Added method GSL::set_error_handler
 
-Tue Aug 17 20:59:39 JST 2004
+Tue Aug 17 2004
         * Version 1.5.1
 
-Sat Aug 14 16:27:05 JST 2004 Yoshiki Tsunesada 
+Sat Aug 14 2004 Yoshiki Tsunesada
         * Changed behaviour of the methods Odeiv::Evolve#apply, Odeiv::Solver#apply
         * Fixed bug in GSL::Histogram#get
         * Fixed buf in GSL::Vector#matrix_view_with_tda
         * Added class GSL::Vector::Int
         * Added test suite
 
-Wed Aug 11 14:39:17 JST 2004 Yoshiki Tsunesada 
+Wed Aug 11 2004 Yoshiki Tsunesada
         * Fixed bug in GSL::Sf::legendle_Ql_e
         * Fixed bug in GSL::MultiFit.linear
 
-Tue Aug 10 10:31:21 JST 2004 Yoshiki Tsunesada 
+Tue Aug 10 2004 Yoshiki Tsunesada
         * Fixed bugs in GSL::Cdf::gumbel2_P, gumbel2_Q
         * Version 1.5.0
 
-Fri Aug  6 00:58:29 JST 2004 Yoshiki Tsunesada
+Fri Aug  6 2004 Yoshiki Tsunesada
         * Fixed bug in Histogram2d.new_uniform
 
 4.Aug.2004
@@ -429,7 +429,7 @@ Fri Aug  6 00:58:29 JST 2004 Yoshiki Tsunesada
 
 2.Aug.2004
         * Added methods GSL::Vector#dot (inner product)
-        * Added classes GSL::Vector::Col < GSL::Vector, 
+        * Added classes GSL::Vector::Col < GSL::Vector,
 		GSL::Vector::Col::View < GSL::Vector::Col
 
 1.Aug.2004
@@ -453,7 +453,7 @@ Fri Aug  6 00:58:29 JST 2004 Yoshiki Tsunesada
 
 20.Jul.2004
         * Added methods GSL::heapsort, Vector#heapsort, Vector::Complex#heapsort
-        * Added methods GSL::heapsort_index, Vector#heapsort_index, 
+        * Added methods GSL::heapsort_index, Vector#heapsort_index,
 		Vector::Complex#heapsort_index
         * version 0.9.4
 
@@ -497,7 +497,7 @@ Fri Aug  6 00:58:29 JST 2004 Yoshiki Tsunesada
        * Fixed a bug in the method GSL::Sf::bessel_sequence_Jnu_e
 
 5.Jul.2004
-       * Compile test with -Wall option: 
+       * Compile test with -Wall option:
          * remove unused variables, check missing prototype declarations
        * Fixed a bug in the method GSL::Multimin::test_size (wrong binding)
 
@@ -530,7 +530,7 @@ Fri Aug  6 00:58:29 JST 2004 Yoshiki Tsunesada
 
 09.Jun.2004
        * ver 0.4.1
-       * Add random number generators  borosh13, coveyou, fishman18, 
+       * Add random number generators  borosh13, coveyou, fishman18,
 	 fishman20, fishman2x, knuthran, knuthran2, lecuyer21, waterman14.
        * Correct the documentation on random number generators
        * Add functions expint_E1_scaled,expint_E2_scaled, and others
@@ -565,10 +565,10 @@ Fri Aug  6 00:58:29 JST 2004 Yoshiki Tsunesada
 
 13.Apr.2004
        * Poly divided-difference reporesentation, Taylor expansion
-       * Apply patch by S. Nishizawa, for type checks in C code, 
+       * Apply patch by S. Nishizawa, for type checks in C code,
          and some modifications in sample scripts
 
-12.Apr.2004, version 0.3.7 
+12.Apr.2004, version 0.3.7
        * Add mathematical functions ldexp, frexp
        * Add gsl_sf_hazard function
        * QRng bug fix
@@ -582,4 +582,4 @@ version 0.3.3 Nonlinear least-squared fitting
 versoin 0.3.2 Least-squared fitting
 version 0.3.1 One dimensional root-finding
 version 0.3.0 FFTs, Ordinary differential equations
-2002 version 0.2.5 
+2002 version 0.2.5
