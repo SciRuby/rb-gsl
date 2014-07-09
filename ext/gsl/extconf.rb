@@ -36,8 +36,9 @@ def gsl_gem_config(target, dir = 'ext')
 
   gsl_dir_config(target, path)
 
-  $LOCAL_LIBS += " -l:#{target}.so" if arg_config("--force-link-#{target}") ||
-                                       $CFLAGS.include?('-Wl,--no-undefined')
+  $LOCAL_LIBS += " -l:#{target}.so" if arg_config("--force-link-#{target}")   ||
+                                       $CFLAGS.include?('-Wl,--no-undefined') ||
+                                       $LDFLAGS.include?('-Wl,--no-undefined')
 end
 
 $CFLAGS += ' -Wall -Iinclude'
