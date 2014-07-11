@@ -17,9 +17,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib", "lib/gsl", "lib/ool", "ext"]
 
   gem.required_ruby_version = '>= 1.8.1'
-
-  gem.add_dependency 'nmatrix', "> 0.0.9"
-  # gem.add_dependency 'narray', '>= 0.5.9'
+  gem.add_dependency 'nmatrix', '~>0.1.0.rc1'  # gem.add_dependency 'narray', '>= 0.5.9'
 
   gem.has_rdoc = true
   gem.rdoc_options = [
