@@ -14,6 +14,7 @@
 #include "rb_gsl_array.h"
 #include "rb_gsl_common.h"
 #include "rb_gsl_linalg.h"
+#include "porting.h"
 
 EXTERN VALUE mgsl_linalg;
 EXTERN VALUE cgsl_complex;
@@ -51,8 +52,8 @@ VALUE rb_gsl_linalg_complex_LU_decomp(int argc, VALUE *argv, VALUE obj)
   case 0:
     p = gsl_permutation_alloc(size);
     gsl_linalg_complex_LU_decomp(m, p, &signum);
-    if (itmp == 1) RBASIC(argv[0])->klass = cgsl_matrix_complex_LU;
-    else RBASIC(obj)->klass = cgsl_matrix_complex_LU;
+    if (itmp == 1) rb_obj_reveal(argv[0], cgsl_matrix_complex_LU);
+    else rb_obj_reveal(obj, cgsl_matrix_complex_LU);
     obj2 = Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p);
     return rb_ary_new3(2, obj2, INT2FIX(signum));
     break;
@@ -60,8 +61,8 @@ VALUE rb_gsl_linalg_complex_LU_decomp(int argc, VALUE *argv, VALUE obj)
     CHECK_PERMUTATION(argv[itmp]);
     Data_Get_Struct(argv[itmp], gsl_permutation, p);
     gsl_linalg_complex_LU_decomp(m, p, &signum);
-    if (itmp == 1) RBASIC(argv[0])->klass = cgsl_matrix_complex_LU;
-    else RBASIC(obj)->klass = cgsl_matrix_complex_LU;
+    if (itmp == 1) rb_obj_reveal(argv[0], cgsl_matrix_complex_LU);
+    else rb_obj_reveal(obj, cgsl_matrix_complex_LU);
     return INT2FIX(signum);
     break;
   default:

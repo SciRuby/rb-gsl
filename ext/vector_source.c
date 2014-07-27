@@ -36,6 +36,8 @@
 #define VEC_VIEW_P VECTOR_INT_VIEW_P
 #endif
 
+#include "porting.h"
+
 void FUNCTION(get_range,beg_en_n)(VALUE range, BASE *beg, BASE *en, size_t *n, int *step);
 
 void get_range_beg_en_n_for_size(VALUE range,
@@ -673,15 +675,15 @@ static VALUE FUNCTION(rb_gsl_vector,trans)(VALUE obj)
 static VALUE FUNCTION(rb_gsl_vector,trans_bang)(VALUE obj)
 {
 #ifdef BASE_DOUBLE
-  if (CLASS_OF(obj) == cgsl_vector) RBASIC(obj)->klass = cgsl_vector_col;
-  else if (CLASS_OF(obj) == cgsl_vector_col) RBASIC(obj)->klass = cgsl_vector;
+  if (CLASS_OF(obj) == cgsl_vector) rb_obj_reveal(obj, cgsl_vector_col);
+  else if (CLASS_OF(obj) == cgsl_vector_col) rb_obj_reveal(obj, cgsl_vector);
   else {
     rb_raise(rb_eRuntimeError, "method trans! for %s is not permitted.",
 	     rb_class2name(CLASS_OF(obj)));
   }	
 #elif defined(BASE_INT)
-  if (CLASS_OF(obj) == cgsl_vector_int) RBASIC(obj)->klass = cgsl_vector_int_col;
-  else if (CLASS_OF(obj) == cgsl_vector_int_col) RBASIC(obj)->klass = cgsl_vector_int;
+  if (CLASS_OF(obj) == cgsl_vector_int) rb_obj_reveal(obj, cgsl_vector_int_col);
+  else if (CLASS_OF(obj) == cgsl_vector_int_col) rb_obj_reveal(obj, cgsl_vector_int);
   else {
     rb_raise(rb_eRuntimeError, "method trans! for %s is not permitted.",
 	     rb_class2name(CLASS_OF(obj)));

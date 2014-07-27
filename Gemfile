@@ -1,4 +1,4 @@
 source "http://rubygems.org"
 
-gem "nmatrix"
+gem "nmatrix", ">=0.0.9"
 gem "rake"
