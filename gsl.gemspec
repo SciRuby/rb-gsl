@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = '>= 1.8.1'
 
-  gem.add_dependency 'nmatrix', '~>0.1', '>=0.1.0.rc5'
+  gem.add_dependency 'nmatrix', '~>0.1.rc1', '>=0.1.0.rc5'
 
   gem.has_rdoc = true
   gem.rdoc_options = [
