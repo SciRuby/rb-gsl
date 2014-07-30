@@ -12,3 +12,4 @@ include/rb_gsl_config.h
 lib/gsl.rb
 lib/rbgsl.rb
 pkg/
+.config
