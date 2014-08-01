@@ -13,3 +13,7 @@ lib/gsl.rb
 lib/rbgsl.rb
 pkg/
 .config
+InstalledFiles
+
+# Remove this ignore if contributors are having trouble matching dependency versions:
+Gemfile.lock
