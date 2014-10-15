@@ -1,12 +1,12 @@
 #
 # = Interpolation
-# This chapter describes functions for performing interpolation. 
-# The library provides a variety of interpolation methods, including 
-# Cubic splines and Akima splines. The interpolation types are interchangeable, 
-# allowing different methods to be used without recompiling. Interpolations can 
-# be defined for both normal and periodic boundary conditions. Additional 
-# functions are available for computing derivatives and integrals of 
-# interpolating functions. 
+# This chapter describes functions for performing interpolation.
+# The library provides a variety of interpolation methods, including
+# Cubic splines and Akima splines. The interpolation types are interchangeable,
+# allowing different methods to be used without recompiling. Interpolations can
+# be defined for both normal and periodic boundary conditions. Additional
+# functions are available for computing derivatives and integrals of
+# interpolating functions.
 #
 # 1. {Interpolation classes}[link:rdoc/interp_rdoc.html#1]
 # 1. {Initializing interpolation objects}[link:rdoc/interp_rdoc.html#2]
@@ -22,7 +22,7 @@
 #   * Interp (class)
 #     * Accel (class)
 #   * Spline (class)
-#   
+#
 # == {}[link:index.html"name="2] Initializing interpolation objects
 #
 # ---
@@ -30,15 +30,15 @@
 # * GSL::Interp.alloc(T, x, y)
 # * GSL::Interp.alloc(x, y)
 #
-#   These methods create an  interpolation object of type <tt>T</tt> for <tt>n</tt> 
+#   These methods create an  interpolation object of type <tt>T</tt> for <tt>n</tt>
 #   data-points.
 #
-#   The library provides six types, which are specifiled by an identifier of a 
+#   The library provides six types, which are specifiled by an identifier of a
 #   constant or a string:
 #
 #   * Interp::LINEAR or "linear"
 #
-#     Linear interpolation. This interpolation method does not require any additional memory.   
+#     Linear interpolation. This interpolation method does not require any additional memory.
 #   * Interp::POLYNOMIAL or "polynomial"
 #
 #     Polynomial interpolation. This method should only be used for interpolating small numbers of points because polynomial interpolation introduces large oscillations, even for well-behaved datasets. The number of terms in the interpolating polynomial is equal to the number of points.
@@ -49,24 +49,24 @@
 #   * Interp::CSPLINE_PERIODIC or "gsl_cspline_periodic" or "cspline_periodic"
 #
 #     Cubic spline with periodic boundary conditions
-#   * Interp::AKIMA or "akima"    
+#   * Interp::AKIMA or "akima"
 #
 #     Non-rounded Akima spline with natural boundary conditions. This method uses the non-rounded corner algorithm of Wodicka.
-#   * Interp::AKIMA_PERIODIC or "akima_periodic"    
+#   * Interp::AKIMA_PERIODIC or "akima_periodic"
 #
 #     Non-rounded Akima spline with periodic boundary conditions. This method uses the non-rounded corner algorithm of Wodicka.
-#   
+#
 #     * ex: For cubic spline for 10 points,
 #         sp = Interp.alloc("cspline", 10)
 #
 # ---
 # * GSL::Interp#init(xa, ya)
 #
-#   This method initializes the interpolation object interp for the data 
-#   <tt>(xa,ya)</tt> where <tt>xa</tt> and <tt>ya</tt> are vectors. 
-#   The interpolation object (<tt>GSL::Interp</tt>) does not save the data 
-#   vectors <tt>xa, ya</tt> and only stores the static state computed from the data. 
-#   The <tt>xa</tt> vector is always assumed to be strictly ordered; the behavior 
+#   This method initializes the interpolation object interp for the data
+#   <tt>(xa,ya)</tt> where <tt>xa</tt> and <tt>ya</tt> are vectors.
+#   The interpolation object (<tt>GSL::Interp</tt>) does not save the data
+#   vectors <tt>xa, ya</tt> and only stores the static state computed from the data.
+#   The <tt>xa</tt> vector is always assumed to be strictly ordered; the behavior
 #   for other arrangements is not defined.
 #
 #
@@ -80,27 +80,27 @@
 # ---
 # * GSL::Interp#min_size
 #
-#   This returns the minimum number of points required by the interpolation 
-#   type of <tt>self</tt>. For example, Akima spline interpolation requires 
+#   This returns the minimum number of points required by the interpolation
+#   type of <tt>self</tt>. For example, Akima spline interpolation requires
 #   a minimum of 5 points.
 #
-# == {}[link:index.html"name="3] Index Look-up and Acceleration 
+# == {}[link:index.html"name="3] Index Look-up and Acceleration
 # ---
 # * GSL::Interp.bsearch(xa, x, index_lo, index_hi)
 #
-#   This returns the index i of the vector <tt>xa</tt> such that 
-#   <tt>xa[i] <= x < x[i+1]</tt>. The index is searched for in the range 
+#   This returns the index i of the vector <tt>xa</tt> such that
+#   <tt>xa[i] <= x < x[i+1]</tt>. The index is searched for in the range
 #   <tt>[index_lo,index_hi]</tt>.
 #
 #
 # ---
 # * GSL::Interp#accel
 #
-#   In C level, the library requires a <tt>gsl_interp_accel</tt> object, 
-#   but it is hidden in Ruby/GSL. It is automatically allocated 
-#   when a <tt>GSL::Interp</tt> object is created, stored in it, 
-#   and destroyed when the <tt>Interp</tt> object 
-#   is cleaned by the Ruby GC. 
+#   In C level, the library requires a <tt>gsl_interp_accel</tt> object,
+#   but it is hidden in Ruby/GSL. It is automatically allocated
+#   when a <tt>GSL::Interp</tt> object is created, stored in it,
+#   and destroyed when the <tt>Interp</tt> object
+#   is cleaned by the Ruby GC.
 #   This method is used to access to the <tt>Interp::Accel</tt> object
 #   stored in <tt>self</tt>.
 #
@@ -109,43 +109,43 @@
 # * GSL::Interp#accel_find(xa, x)
 # * GSL::Interp::Accel#find(xa, x)
 #
-#   This method performs a lookup action on the data array <tt>xa</tt>. 
-#   This is how lookups are performed during evaluation 
-#   of an interpolation. The function returns an index <tt>i</tt> such that 
+#   This method performs a lookup action on the data array <tt>xa</tt>.
+#   This is how lookups are performed during evaluation
+#   of an interpolation. The function returns an index <tt>i</tt> such that
 #   <tt>xa[i] <= x < xa[i+1]</tt>.
 #
 #
-# == {}[link:index.html"name="4] Evaluation of Interpolating Functions 
+# == {}[link:index.html"name="4] Evaluation of Interpolating Functions
 #
 # ---
 # * GSL::Interp#eval(xa, ya, x)
 # * GSL::Interp#eval_e(xa, ya, x)
 #
-#   These methods return the interpolated value for a given point <tt>x</tt>, 
+#   These methods return the interpolated value for a given point <tt>x</tt>,
 #   using the interpolation object <tt>self</tt>, data vectors <tt>xa</tt> and <tt>ya</tt>.
 #   The data <tt>x</tt> can be a <tt>Numeric, Vector, Matrix</tt> or an <tt>NArray</tt>.
 # ---
 # * GSL::Interp#eval_deriv(xa, ya, x)
 # * GSL::Interp#eval_deriv_e(xa, ya, x)
 #
-#   These methods return the derivative of an interpolated function for a 
-#   given point <tt>x</tt>, using the interpolation object <tt>self</tt>, 
+#   These methods return the derivative of an interpolated function for a
+#   given point <tt>x</tt>, using the interpolation object <tt>self</tt>,
 #   data vectors <tt>xa</tt> and <tt>ya</tt>.
 #
 # ---
 # * GSL::Interp#eval_deriv2(xa, ya, x)
 # * GSL::Interp#eval_deriv2_e(xa, ya, x)
 #
-#   These methods return the second derivative of an interpolated function 
-#   for a given point <tt>x</tt>, using the interpolation object <tt>self</tt>, 
+#   These methods return the second derivative of an interpolated function
+#   for a given point <tt>x</tt>, using the interpolation object <tt>self</tt>,
 #   data vectors <tt>xa</tt> and <tt>ya</tt>.
 #
 # ---
 # * GSL::Interp#eval_integ(xa, ya, a, b)
 # * GSL::Interp#eval_integ_e(xa, ya, a, b)
 #
-#   These methods return the numerical integral result of an interpolated 
-#   function over the range <tt>[a, b]</tt>, using the interpolation object <tt>self</tt>, 
+#   These methods return the numerical integral result of an interpolated
+#   function over the range <tt>[a, b]</tt>, using the interpolation object <tt>self</tt>,
 #   data vectors <tt>xa</tt> and <tt>ya</tt>.
 #
 # == {}[link:index.html"name="5] Higher level interface: GSL::Spline class
@@ -156,7 +156,7 @@
 # * GSL::Spline.alloc(T, x, y)
 # * GSL::Spline.alloc(x, y, T)
 #
-#   This creates a <tt>GSL::Spline</tt> object of type <tt>T</tt> for <tt>n</tt> 
+#   This creates a <tt>GSL::Spline</tt> object of type <tt>T</tt> for <tt>n</tt>
 #   data-points. The type <tt>T</tt> is the same as <tt>GSL::Interp</tt> class.
 #
 #   These two are equivalent.
@@ -170,8 +170,8 @@
 # ---
 # * GSL::Spline#init(xa, ya)
 #
-#   This initializes a <tt>GSL::Spline</tt> object <tt>self</tt> for the data 
-#   (<tt>xa, ya</tt>) where <tt>xa</tt> and <tt>ya</tt> are Ruby arrays of equal sizes 
+#   This initializes a <tt>GSL::Spline</tt> object <tt>self</tt> for the data
+#   (<tt>xa, ya</tt>) where <tt>xa</tt> and <tt>ya</tt> are Ruby arrays of equal sizes
 #   or <tt>GSL::Vector</tt>.
 #
 # ---
@@ -188,10 +188,10 @@
 #
 #   NOTE: In a GSL-C program, a <tt>gsl_interp_accel</tt> object is required to use
 #   the function <tt>gsl_spline_eval</tt>.
-#   In Ruby/GSL, the <tt>gsl_interp_accel</tt> is hidden, it is automatically 
-#   allocated when a <tt>GSL::Spline</tt> object is created, 
-#   and also destroyed when the <tt>Spline</tt> object 
-#   is cleaned by the Ruby GC. The accel object can be accessed via the method 
+#   In Ruby/GSL, the <tt>gsl_interp_accel</tt> is hidden, it is automatically
+#   allocated when a <tt>GSL::Spline</tt> object is created,
+#   and also destroyed when the <tt>Spline</tt> object
+#   is cleaned by the Ruby GC. The accel object can be accessed via the method
 #   <tt>GSL::Spline#accel</tt>.
 #
 # ---
@@ -214,9 +214,9 @@
 # * GSL::Spline#find(xa, x)
 # * GSL::Spline#accel_find(xa, x)
 #
-#   This method performs a lookup action on the data array <tt>xa</tt>. 
-#   This is how lookups are performed during evaluation 
-#   of an interpolation. The function returns an index <tt>i</tt> such that 
+#   This method performs a lookup action on the data array <tt>xa</tt>.
+#   This is how lookups are performed during evaluation
+#   of an interpolation. The function returns an index <tt>i</tt> such that
 #   <tt>xa[i] <= x < xa[i+1]</tt>.
 #
 # See also the GSL manual and the examples in <tt>examples/</tt>
@@ -228,4 +228,4 @@
 # {top}[link:index.html]
 #
 #
-#   
+#

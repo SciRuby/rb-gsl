@@ -1,62 +1,62 @@
 #
 # = Random Number Distributions
-# This chapter describes functions for generating random variates and computing 
-# their probability distributions. Samples from the distributions described 
-# in this chapter can be obtained using any of the random number generators 
-# in the library as an underlying source of randomness. 
+# This chapter describes functions for generating random variates and computing
+# their probability distributions. Samples from the distributions described
+# in this chapter can be obtained using any of the random number generators
+# in the library as an underlying source of randomness.
 #
-# In the simplest cases a non-uniform distribution can be obtained analytically 
-# from the uniform distribution of a random number generator by applying an 
+# In the simplest cases a non-uniform distribution can be obtained analytically
+# from the uniform distribution of a random number generator by applying an
 # appropriate transformation. This method uses one call to the random number
-# generator. More complicated distributions are created by the 
+# generator. More complicated distributions are created by the
 # acceptance-rejection method, which compares the desired distribution against
-# a distribution which is similar and known analytically. This usually requires 
-# several samples from the generator. 
+# a distribution which is similar and known analytically. This usually requires
+# several samples from the generator.
 #
-# The library also provides cumulative distribution functions and inverse 
-# cumulative distribution functions, sometimes referred to as quantile 
-# functions. The cumulative distribution functions and their inverses are 
-# computed separately for the upper and lower tails of the distribution, 
-# allowing full accuracy to be retained for small results. 
+# The library also provides cumulative distribution functions and inverse
+# cumulative distribution functions, sometimes referred to as quantile
+# functions. The cumulative distribution functions and their inverses are
+# computed separately for the upper and lower tails of the distribution,
+# allowing full accuracy to be retained for small results.
 #
 # Contents:
 # 1. {Introduction}[link:rdoc/randist_rdoc.html#1]
 # 1. {The Gaussian Distribution}[link:rdoc/randist_rdoc.html#2]
 # 1. {The Gaussian Tail Distribution}[link:rdoc/randist_rdoc.html#3]
 #  ...
-# and more, see {the GSL reference}[http://www.gnu.org/software/gsl/manual/"target="_top]
+# and more, see {the GSL reference}[https://gnu.org/software/gsl/manual/]
 # 1. {Shuffling and Sampling}[link:rdoc/randist_rdoc.html#7]
 #
 # == {}[link:index.html"name="1] Introduction
-# Continuous random number distributions are defined by a probability density 
-# function, p(x), such that the probability of x occurring in the 
-# infinitesimal range x to x+dx is p dx. 
+# Continuous random number distributions are defined by a probability density
+# function, p(x), such that the probability of x occurring in the
+# infinitesimal range x to x+dx is p dx.
 #
-# The cumulative distribution function for the lower tail P(x) is defined by the 
-# integral, and gives the probability of a variate taking a value less than x. 
+# The cumulative distribution function for the lower tail P(x) is defined by the
+# integral, and gives the probability of a variate taking a value less than x.
 #
-# The cumulative distribution function for the upper tail Q(x) is defined by the 
-# integral, and gives the probability of a variate taking a value greater than 
-# x. 
+# The cumulative distribution function for the upper tail Q(x) is defined by the
+# integral, and gives the probability of a variate taking a value greater than
+# x.
 #
-# The upper and lower cumulative distribution functions are related 
-# by P(x) + Q(x) = 1 and satisfy 0 <= P(x) <= 1, 0 <= Q(x) <= 1. 
+# The upper and lower cumulative distribution functions are related
+# by P(x) + Q(x) = 1 and satisfy 0 <= P(x) <= 1, 0 <= Q(x) <= 1.
 #
-# The inverse cumulative distributions, x=P^{-1}(P) and x=Q^{-1}(Q) give the 
-# values of x which correspond to a specific value of P or Q. They can be used 
-# to find confidence limits from probability values. 
+# The inverse cumulative distributions, x=P^{-1}(P) and x=Q^{-1}(Q) give the
+# values of x which correspond to a specific value of P or Q. They can be used
+# to find confidence limits from probability values.
 #
-# For discrete distributions the probability of sampling the integer value k is 
-# given by p(k), where \sum_k p(k) = 1. The cumulative distribution for the 
-# lower tail P(k) of a discrete distribution is defined as, where the sum is 
-# over the allowed range of the distribution less than or equal to k. 
+# For discrete distributions the probability of sampling the integer value k is
+# given by p(k), where \sum_k p(k) = 1. The cumulative distribution for the
+# lower tail P(k) of a discrete distribution is defined as, where the sum is
+# over the allowed range of the distribution less than or equal to k.
 #
 # The cumulative distribution for the upper tail of a discrete distribution Q(k)
-# is defined as giving the sum of probabilities for all values greater than k. 
-# These two definitions satisfy the identity P(k)+Q(k)=1. 
+# is defined as giving the sum of probabilities for all values greater than k.
+# These two definitions satisfy the identity P(k)+Q(k)=1.
 #
-# If the range of the distribution is 1 to n inclusive then P(n)=1, Q(n)=0 
-# while P(1) = p(1), Q(1)=1-p(1). 
+# If the range of the distribution is 1 to n inclusive then P(n)=1, Q(n)=0
+# while P(1) = p(1), Q(1)=1-p(1).
 #
 #
 #
@@ -67,13 +67,13 @@
 # * GSL::Rng#ugaussian
 # * GSL::Ran::ugaussian
 #
-#   These return a Gaussian random variate, with mean zero and standard 
-#   deviation <tt>sigma</tt>. 
+#   These return a Gaussian random variate, with mean zero and standard
+#   deviation <tt>sigma</tt>.
 #
 # ---
 # * GSL::Ran::gaussian_pdf(x, sigma = 1)
 #
-#   Computes the probability density p(x) at <tt>x</tt> for a Gaussian distribution 
+#   Computes the probability density p(x) at <tt>x</tt> for a Gaussian distribution
 #   with standard deviation <tt>sigma</tt>.
 #
 # ---
@@ -92,8 +92,8 @@
 # * GSL::Cdf::ugaussian_Pinv(P)
 # * GSL::Cdf::ugaussian_Qinv(Q)
 #
-#   These methods compute the cumulative distribution functions P(x), Q(x) 
-#   and their inverses for the Gaussian distribution with standard 
+#   These methods compute the cumulative distribution functions P(x), Q(x)
+#   and their inverses for the Gaussian distribution with standard
 #   deviation <tt>sigma</tt>.
 #
 # == {}[link:index.html"name="3] The Gaussian Tail Distribution
@@ -103,16 +103,16 @@
 # * GSL::Rng#ugaussian_tail(a)
 # * GSL::Ran#ugaussian_tail(rng)
 #
-#   These methods provide random variates from the upper tail of a Gaussian 
-#   distribution with standard deviation <tt>sigma</tt>. 
+#   These methods provide random variates from the upper tail of a Gaussian
+#   distribution with standard deviation <tt>sigma</tt>.
 #   The values returned are larger than the lower limit <tt>a</tt>, which must be positive.
 #
 # ---
 # * GSL::Ran::gaussian_tail_pdf(x, a, sigma = 1)
 # * GSL::Ran::ugaussian_tail_pdf(x, a)
 #
-#   These methods compute the probability density p(x) at <tt>x</tt> for a Gaussian 
-#   tail distribution with standard deviation <tt>sigma</tt> 
+#   These methods compute the probability density p(x) at <tt>x</tt> for a Gaussian
+#   tail distribution with standard deviation <tt>sigma</tt>
 #   and lower limit <tt>a</tt>.
 #
 # == {}[link:index.html"name="4] The Bivariate Gaussian Distribution
@@ -120,15 +120,15 @@
 # * GSL::Rng#bivariate_gaussian(sigma_x, sigma_y, rho)
 # * GSL::Ran::bivariate_gaussian(rng, sigma_x, sigma_y, rho)
 #
-#   These methods generate a pair of correlated gaussian variates, 
-#   with mean zero, correlation coefficient <tt>rho</tt> and standard deviations 
+#   These methods generate a pair of correlated gaussian variates,
+#   with mean zero, correlation coefficient <tt>rho</tt> and standard deviations
 #   <tt>sigma_x</tt> and <tt>sigma_y</tt> in the x and y directions.
 #
 # ---
 # * GSL::Ran::bivariate_gaussian_pdf(x, y, sigma_x, sigma_y, rho)
 #
-#   This method computes the probability density p(x,y) at <tt>(x,y)</tt> 
-#   for a bivariate gaussian distribution with standard deviations 
+#   This method computes the probability density p(x,y) at <tt>(x,y)</tt>
+#   for a bivariate gaussian distribution with standard deviations
 #   <tt>sigma_x, sigma_y</tt> and correlation coefficient <tt>rho</tt>.
 #
 # == {}[link:index.html"name="5] The Exponential Distribution
@@ -136,13 +136,13 @@
 # * GSL::Rng#exponential(mu)
 # * GSL::Ran::exponential(rng, mu)
 #
-#   These methods return a random variate from the exponential 
+#   These methods return a random variate from the exponential
 #   distribution with mean <tt>mu</tt>.
 #
 # ---
 # * GSL::Ran::exponential_pdf(x, mu)
 #
-#   This method computes the probability density p(x) at <tt>x</tt> 
+#   This method computes the probability density p(x) at <tt>x</tt>
 #   for an exponential distribution with mean <tt>mu</tt>.
 #
 # ---
@@ -151,7 +151,7 @@
 # * GSL::Cdf::exponential_Pinv(P, mu)
 # * GSL::Cdf::exponential_Qinv(Q, mu)
 #
-#   These methods compute the cumulative distribution functions P(x), Q(x) 
+#   These methods compute the cumulative distribution functions P(x), Q(x)
 #   and their inverses for the exponential distribution with mean <tt>mu</tt>.
 #
 # == {}[link:index.html"name="6] The Laplace Distribution
@@ -159,13 +159,13 @@
 # * GSL::Rng#laplace(a)
 # * GSL::Ran::laplace(rng, a)
 #
-#   These methods return a random variate from the Laplace distribution 
+#   These methods return a random variate from the Laplace distribution
 #   with width <tt>a</tt>.
 #
 # ---
 # * GSL::Ran::laplace_pdf(x, a)
 #
-#   This method computes the probability density p(x) at <tt>x</tt> 
+#   This method computes the probability density p(x) at <tt>x</tt>
 #   for a Laplace distribution with width <tt>a</tt>.
 #
 # ---
@@ -174,7 +174,7 @@
 # * GSL::Cdf::laplace_Pinv(P, a)
 # * GSL::Cdf::laplace_Qinv(Q, a)
 #
-#   These methods compute the cumulative distribution functions P(x), Q(x) 
+#   These methods compute the cumulative distribution functions P(x), Q(x)
 #   and their inverses for the Laplace distribution with width <tt>a</tt>.
 #
 # ---
@@ -198,30 +198,30 @@
 #
 # ...
 #
-# and more, see {the GSL reference}[http://www.gnu.org/software/gsl/manual/gsl-ref_19.html#SEC286"target="_top].
+# and more, see {the GSL reference}[https://gnu.org/software/gsl/manual/gsl-ref_19.html#SEC286].
 #
 # == {}[link:index.html"name="7] Shuffling and Sampling
 # ---
 # * GSL::Rng#shuffle(v, n)
 #
-#   This randomly shuffles the order of <tt>n</tt> objects, 
-#   stored in the {GSL::Vector}[link:rdoc/vector_rdoc.html] object <tt>v</tt>. 
+#   This randomly shuffles the order of <tt>n</tt> objects,
+#   stored in the {GSL::Vector}[link:rdoc/vector_rdoc.html] object <tt>v</tt>.
 # ---
 # * GSL::Rng#choose(v, k)
 #
-#   This returns a {GSL::Vector}[link:rdoc/vector_rdoc.html] object with <tt>k</tt> objects 
-#   taken randomly from the {GSL::Vector}[link:rdoc/vector_rdoc.html] object <tt>v</tt>. 
+#   This returns a {GSL::Vector}[link:rdoc/vector_rdoc.html] object with <tt>k</tt> objects
+#   taken randomly from the {GSL::Vector}[link:rdoc/vector_rdoc.html] object <tt>v</tt>.
 #
-#   The objects are sampled without replacement, thus each object can only 
-#   appear once in the returned vector. It is required that <tt>k</tt> be less 
-#   than or equal to the length of the vector <tt>v</tt>. 
+#   The objects are sampled without replacement, thus each object can only
+#   appear once in the returned vector. It is required that <tt>k</tt> be less
+#   than or equal to the length of the vector <tt>v</tt>.
 #
 # ---
 # * GSL::Rng#sample(v, k)
 #
-#   This method is like the method <tt>choose</tt> but samples <tt>k</tt> items 
-#   from the original vector <tt>v</tt> with replacement, so the same object 
-#   can appear more than once in the output sequence. There is no requirement 
+#   This method is like the method <tt>choose</tt> but samples <tt>k</tt> items
+#   from the original vector <tt>v</tt> with replacement, so the same object
+#   can appear more than once in the output sequence. There is no requirement
 #   that <tt>k</tt> be less than the length of <tt>v</tt>.
 #
 # {prev}[link:rdoc/qrng_rdoc.html]
@@ -229,5 +229,5 @@
 #
 # {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
-#   
+#
 #

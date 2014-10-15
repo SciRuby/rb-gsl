@@ -2,10 +2,10 @@
 # = Quasi-Random Sequences
 #
 # This chapter describes the quasi-random sequence generator <tt>GSL::QRng</tt>
-# of arbitrary dimensions. A quasi-random sequence progressively covers 
-# a d-dimensional space with a set of points that are uniformly distributed. 
+# of arbitrary dimensions. A quasi-random sequence progressively covers
+# a d-dimensional space with a set of points that are uniformly distributed.
 # Quasi-random sequences are also known as low-discrepancy sequences.
-# The quasi-random sequence generators use an interface that is similar 
+# The quasi-random sequence generators use an interface that is similar
 # to the interface for random number generators.
 #
 # Contents:
@@ -20,19 +20,19 @@
 # ---
 # * GSL::QRng.alloc(T, d)
 #
-#   This returns a GSL::QRng object, a quasi-random sequence generator of type <tt>T</tt> and dimension <tt>d</tt>. 
+#   This returns a GSL::QRng object, a quasi-random sequence generator of type <tt>T</tt> and dimension <tt>d</tt>.
 #
 # ---
 # * GSL::QRng::init
 #
-#   This reinitializes the generator to its starting point. 
+#   This reinitializes the generator to its starting point.
 #
-# == {}[link:index.html"name="2] Sampling from a quasi-random number generator 
+# == {}[link:index.html"name="2] Sampling from a quasi-random number generator
 #
 # ---
 # * GSL::QRng::get(x)
 #
-#   This calculate the next point <tt>x</tt> from the sequence generator. Here <tt>x</tt> is an instance of the {GSL::Vector}[link:rdoc/vector_rdoc.html] class. The space available for <tt>x</tt> must match the dimension of the generator. The point <tt>x</tt> will lie in the range 0 < x_i < 1 for each x_i. 
+#   This calculate the next point <tt>x</tt> from the sequence generator. Here <tt>x</tt> is an instance of the {GSL::Vector}[link:rdoc/vector_rdoc.html] class. The space available for <tt>x</tt> must match the dimension of the generator. The point <tt>x</tt> will lie in the range 0 < x_i < 1 for each x_i.
 #
 #   This is used as
 #     q = QRng.alloc(QRng::SOBOL, dim)
@@ -42,7 +42,7 @@
 #       printf("%.5f %.5f\n", v[0], v[1])
 #     end
 #
-# == {}[link:index.html"name="3] Auxiliary quasi-random number generator functions 
+# == {}[link:index.html"name="3] Auxiliary quasi-random number generator functions
 #
 # ---
 # * GSL::QRng::name
@@ -60,7 +60,7 @@
 #
 #   Return a newly created generator which is an exact copy of the generator <tt>self</tt>.
 # == {}[link:index.html"name="5] Quasi-random number generator algorithms
-# In creating a generator by the method <tt>GSL::QRng.alloc(T, d)</tt>, 
+# In creating a generator by the method <tt>GSL::QRng.alloc(T, d)</tt>,
 # the algorithm type <tt>T</tt> is given by a String or a Fixnum constant.
 # The following quasi-random sequence algorithms are available,
 #

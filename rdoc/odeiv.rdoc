@@ -1,11 +1,11 @@
 #
 # = Ordinary Differential Equations
-# This chapter describes functions for solving ordinary differential equation 
-# (ODE) initial value problems. The library provides a variety of low-level 
-# methods, such as Runge-Kutta and Bulirsch-Stoer routines, and higher-level 
-# components for adaptive step-size control. The components can be combined 
-# by the user to achieve the desired solution, with full access to any 
-# intermediate steps. 
+# This chapter describes functions for solving ordinary differential equation
+# (ODE) initial value problems. The library provides a variety of low-level
+# methods, such as Runge-Kutta and Bulirsch-Stoer routines, and higher-level
+# components for adaptive step-size control. The components can be combined
+# by the user to achieve the desired solution, with full access to any
+# intermediate steps.
 #
 #
 # Contents:
@@ -41,12 +41,12 @@
 # * GSL::Odeiv::System.alloc(func, dim)
 #
 #   Constructor. This defines a general ODE system with the dimension <tt>dim</tt>.
-#   
+#
 #       # t: variable (scalar)
 #       # y: vector
 #       # dydt: vector
 #       # params: scalar or an array
-#  
+#
 #       func = Proc.new { |t, y, dydt, params|
 #         mu = params
 #         dydt[0] = y[1]
@@ -66,12 +66,12 @@
 #         dfdy.set(1, 1, -mu*(y[0]*y[0] - 1.0))
 #         dfdt[0] = 0.0
 #         dfdt[1] = 0.0
-#       }     
+#       }
 #
 #      sys = GSL:Odeiv::System.alloc(func, jac, dim)   # for "BSIMP" algorithm
 #
-#   Note that some of the simpler solver algorithms do not make use of the 
-#   Jacobian matrix, so it is not always strictly necessary to provide it. 
+#   Note that some of the simpler solver algorithms do not make use of the
+#   Jacobian matrix, so it is not always strictly necessary to provide it.
 #   Thus the constructor is as
 #      sys = GSL:Odeiv::System.alloc(func, nil, dim)   # for others, replaced by nil
 #      sys = GSL:Odeiv::System.alloc(func, dim)        # or omit
@@ -105,8 +105,8 @@
 # ---
 # * GSL::Odeiv::Step.alloc(T, dim)
 #
-#   Constructor for a stepping function of an algorithm type <tt>T</tt> for a system of 
-#   dimension <tt>dim</tt>. The algorithms are specified by one of the constants under the 
+#   Constructor for a stepping function of an algorithm type <tt>T</tt> for a system of
+#   dimension <tt>dim</tt>. The algorithms are specified by one of the constants under the
 #   <tt>GSL::Odeiv::Step</tt> class, as
 #
 #   1. <tt>GSL::Odeiv::Step::RK2</tt>, Embedded 2nd order Runge-Kutta with 3rd order error estimate.
@@ -121,7 +121,7 @@
 #   1. <tt>GSL::Odeiv::Step::GEAR2</tt>, M=2 implicit Gear method
 #   1. <tt>GSL::Odeiv::Step::RK2SIMP</tt> (GSL-1.6)
 #
-#   * Ex: 
+#   * Ex:
 #       step = Odeiv::Step.alloc(Odeiv::Step::RKF45, 2)
 #
 #   The algorithm types can also be given by a String, same as the C struct name,
@@ -138,14 +138,14 @@
 #   1. "<tt>gear2</tt>" or "<tt>gsl_odeiv_step_gear2</tt>"
 #   1. "<tt>rk2simp</tt>" or "<tt>gsl_odeiv_step_rk2simp</tt>" (GSL-1.6)
 #
-#   * Ex: 
+#   * Ex:
 #       step = Odeiv::Step.alloc("bsimp", 4)
 #       step2 = Odeiv::Step.alloc("gsl_odeiv_step_rkck", 3)
 #
 # ---
 # * GSL::Odeiv::Step#reset
 #
-#   This method resets the stepper. It should be used whenever the next use 
+#   This method resets the stepper. It should be used whenever the next use
 #   of s will not be a continuation of a previous step.
 #
 # ---
@@ -163,7 +163,7 @@
 # ---
 # * GSL::Odeiv::Step#order
 #
-#   Returns the order of the stepper on the previous step. 
+#   Returns the order of the stepper on the previous step.
 #   This order can vary if the stepper itself is adaptive.
 #
 # ---
@@ -171,16 +171,16 @@
 # * GSL::Odeiv::Step#apply(t, h, y, yerr, dydt_in, sys)
 # * GSL::Odeiv::Step#apply(t, h, y, yerr, sys)
 #
-#   This method applies the stepper to the system of equations defined by 
-#   <tt>dydt</tt>, using the step size <tt>h</tt> to advance the system from time 
-#   <tt>t</tt> and state <tt>y</tt> to time <tt>t+h</tt>. The new state of the system 
-#   is stored in <tt>y</tt> on output, with an estimate of the absolute error in 
-#   each component stored in <tt>yerr</tt>. If the argument <tt>dydt_in</tt> is not 
-#   <tt>nil</tt> it should be a {GSL::Vector}[link:rdoc/vector_rdoc.html] object 
-#   containing the derivatives for the system at time <tt>t</tt> on input. 
-#   This is optional as the derivatives will be computed internally if they 
-#   are not provided, but allows the reuse of existing derivative information. 
-#   On output the new derivatives of the system at time <tt>t+h</tt> will be 
+#   This method applies the stepper to the system of equations defined by
+#   <tt>dydt</tt>, using the step size <tt>h</tt> to advance the system from time
+#   <tt>t</tt> and state <tt>y</tt> to time <tt>t+h</tt>. The new state of the system
+#   is stored in <tt>y</tt> on output, with an estimate of the absolute error in
+#   each component stored in <tt>yerr</tt>. If the argument <tt>dydt_in</tt> is not
+#   <tt>nil</tt> it should be a {GSL::Vector}[link:rdoc/vector_rdoc.html] object
+#   containing the derivatives for the system at time <tt>t</tt> on input.
+#   This is optional as the derivatives will be computed internally if they
+#   are not provided, but allows the reuse of existing derivative information.
+#   On output the new derivatives of the system at time <tt>t+h</tt> will be
 #   stored in <tt>dydt_out</tt> if it is not nil.
 #
 # === {}[link:index.html"name="2.3] GSL::Odeiv::Control
@@ -188,69 +188,69 @@
 # * GSL::Odeiv::Control.standard_new(epsabs, epsrel, a_y, a_dydt)
 # * GSL::Odeiv::Control.alloc(epsabs, epsrel, a_y, a_dydt)
 #
-#   The standard control object is a four parameter heuristic based on 
-#   absolute and relative errors <tt>epsabs</tt> and <tt>epsrel</tt>, and 
-#   scaling factors <tt>a_y</tt> and <tt>a_dydt</tt> for the system state 
+#   The standard control object is a four parameter heuristic based on
+#   absolute and relative errors <tt>epsabs</tt> and <tt>epsrel</tt>, and
+#   scaling factors <tt>a_y</tt> and <tt>a_dydt</tt> for the system state
 #   <tt>y(t)</tt> and derivatives <tt>y'(t)</tt> respectively.
 #
 # ---
 # * GSL::Odeiv::Control.y_new(epsabs, epsrel)
 #
-#   This method creates a new control object which will keep the local error 
-#   on each step within an absolute error of <tt>epsabs</tt> and relative error 
-#   of <tt>epsrel</tt> with respect to the solution <tt>y_i(t)</tt>. 
-#   This is equivalent to the standard control object with <tt>a_y=1</tt> 
+#   This method creates a new control object which will keep the local error
+#   on each step within an absolute error of <tt>epsabs</tt> and relative error
+#   of <tt>epsrel</tt> with respect to the solution <tt>y_i(t)</tt>.
+#   This is equivalent to the standard control object with <tt>a_y=1</tt>
 #   and <tt>a_dydt=0</tt>.
 #
 # ---
 # * GSL::Odeiv::Control.yp_new(epsabs, epsrel)
 #
-#   This method creates a new control object which will keep the local 
-#   error on each step within an absolute error of <tt>epsabs</tt> and 
-#   relative error of <tt>epsrel</tt> with respect to the derivatives of the 
-#   solution <tt>y'_i(t)</tt>. 
-#   This is equivalent to the standard control object with <tt>a_y=0</tt> 
+#   This method creates a new control object which will keep the local
+#   error on each step within an absolute error of <tt>epsabs</tt> and
+#   relative error of <tt>epsrel</tt> with respect to the derivatives of the
+#   solution <tt>y'_i(t)</tt>.
+#   This is equivalent to the standard control object with <tt>a_y=0</tt>
 #   and <tt>a_dydt=1</tt>.
 #
 # ---
 # * GSL::Odeiv::Control.alloc(epsabs, epsrel, a_y, a_dydt, vscale, dim)
 #
-#   This creates a new control object which uses the same algorithm as 
-#   <tt>GSL::Odeiv::Control.standard_new</tt> but with an absolute error which 
+#   This creates a new control object which uses the same algorithm as
+#   <tt>GSL::Odeiv::Control.standard_new</tt> but with an absolute error which
 #   is scaled for each component by the <tt>GSL::Vector</tt> object <tt>vscale</tt>.
 #
 # ---
 # * GSL::Odeiv::Control#init(epsabs, epsrel, a_y, a_dydt)
 #
-#   This method initializes the controler with the parameters <tt>epsabs</tt> 
-#   (absolute error),  <tt>epsrel</tt> (relative error), <tt>a_y</tt> 
+#   This method initializes the controler with the parameters <tt>epsabs</tt>
+#   (absolute error),  <tt>epsrel</tt> (relative error), <tt>a_y</tt>
 #   (scaling factor for y) and <tt>a_dydt</tt> (scaling factor for derivatives).
 #
 # ---
 # * GSL::Odeiv::Control#name
 # * GSL::Odeiv::Control#hadjust(step, y0, yerr, dydt, h)
 #
-#   This method adjusts the step-size <tt>h</tt> using the control function 
-#   object, and the current values of <tt>y</tt>,  <tt>yerr</tt> and <tt>dydt</tt>. 
-#   The stepping function <tt>step</tt> is also needed to determine the order 
+#   This method adjusts the step-size <tt>h</tt> using the control function
+#   object, and the current values of <tt>y</tt>,  <tt>yerr</tt> and <tt>dydt</tt>.
+#   The stepping function <tt>step</tt> is also needed to determine the order
 #   of the method. On output, an array of two elements [<tt>hadj, status</tt>]
-#   is returned: If the error in the y-values  <tt>yerr</tt> is found to be 
-#   too large then the step-size <tt>h</tt> is reduced and the method returns 
-#   [<tt>hadj, status</tt>=<tt>GSL::ODEIV::HADJ_DEC</tt>]. 
-#   If the error is sufficiently small then 
-#   <tt>h</tt> may be increased and [<tt>hadj, status</tt>=<tt>GSL::ODEIV::HADJ_INC</tt>] 
-#   is returned. 
-#   The method returns [<tt>hadj, status</tt>=<tt>GSL::ODEIV::HADJ_NIL</tt>] if the step-size is 
-#   unchanged. The goal of the method is to estimate the largest step-size 
-#   which satisfies the user-specified accuracy requirements for the current 
+#   is returned: If the error in the y-values  <tt>yerr</tt> is found to be
+#   too large then the step-size <tt>h</tt> is reduced and the method returns
+#   [<tt>hadj, status</tt>=<tt>GSL::ODEIV::HADJ_DEC</tt>].
+#   If the error is sufficiently small then
+#   <tt>h</tt> may be increased and [<tt>hadj, status</tt>=<tt>GSL::ODEIV::HADJ_INC</tt>]
+#   is returned.
+#   The method returns [<tt>hadj, status</tt>=<tt>GSL::ODEIV::HADJ_NIL</tt>] if the step-size is
+#   unchanged. The goal of the method is to estimate the largest step-size
+#   which satisfies the user-specified accuracy requirements for the current
 #   point.
 #
 # === {}[link:index.html"name="2.4] GSL::Odeiv::Evolve
-# The higher level of the system is the <tt>GSL::Evolve</tt> class which combines the 
-# results of a stepper and controler to reliably advance the solution forward 
-# over an interval <tt>(t_0, t_1)</tt>. If the controler signals that the step-size 
-# should be decreased the <tt>GSL::Evolve</tt> object backs out of the current step and 
-# tries the proposed smaller step-size. This process is continued until an 
+# The higher level of the system is the <tt>GSL::Evolve</tt> class which combines the
+# results of a stepper and controler to reliably advance the solution forward
+# over an interval <tt>(t_0, t_1)</tt>. If the controler signals that the step-size
+# should be decreased the <tt>GSL::Evolve</tt> object backs out of the current step and
+# tries the proposed smaller step-size. This process is continued until an
 # acceptable step-size is found.
 #
 # ---
@@ -261,20 +261,20 @@
 # ---
 # * GSL::Odeiv::Evolve#reset
 #
-#   This method resets the GSL::Evolve object. It should be used whenever 
+#   This method resets the GSL::Evolve object. It should be used whenever
 #   the next use of e will not be a continuation of a previous step.
 #
 # ---
 # * GSL::Odeiv::Evolve#apply(evolve, control, step, sys, t, t1, h, y)
 #
-#   This method advances the system <tt>sys</tt> from time <tt>t</tt> and position 
-#   <tt>y</tt> using the stepping function <tt>step</tt>. The initial step-size is 
-#   taken as <tt>h</tt>. The maximum time <tt>t1</tt> is guaranteed not to be exceeded by 
+#   This method advances the system <tt>sys</tt> from time <tt>t</tt> and position
+#   <tt>y</tt> using the stepping function <tt>step</tt>. The initial step-size is
+#   taken as <tt>h</tt>. The maximum time <tt>t1</tt> is guaranteed not to be exceeded by
 #   the time-step. On output, an array of three elements is returned,
-#   [<tt>tnext, hnext, status</tt>], where <tt>tnext</tt> is the time advanced, 
+#   [<tt>tnext, hnext, status</tt>], where <tt>tnext</tt> is the time advanced,
 #   <tt>hnext</tt> is the step-size
 #   for the next step, and <tt>status</tt> is an error code retunred by <tt>gsl_odeiv_evolve_apply()</tt> function.
-#   On the final time-step the value of <tt>tnext</tt> will be set to 
+#   On the final time-step the value of <tt>tnext</tt> will be set to
 #   <tt>t1</tt> exactly.
 #
 # ---
@@ -282,7 +282,7 @@
 #
 #
 # === {}[link:index.html"name="2.5] GSL::Odeiv::Solver
-# This is the highest level interface to solve ODE system, 
+# This is the highest level interface to solve ODE system,
 # which contains System, Step, Control, and Evolve classes.
 #
 # ---
@@ -332,7 +332,7 @@
 # == {}[link:index.html"name="3] Example
 #
 # The following program solves the second-order nonlinear Van der Pol oscillator equation,
-# as found in the GSL manual, x"(t) + \mu x'(t) (x(t)^2 - 1) + x(t) = 0, 
+# as found in the GSL manual, x"(t) + \mu x'(t) (x(t)^2 - 1) + x(t) = 0,
 #
 # This can be converted into a first order system suitable for use with the routines described in this chapter by introducing a separate variable for the velocity, y = x'(t),
 #

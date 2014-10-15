@@ -1,14 +1,14 @@
 #
 # = Least-Squares Fitting
-# This chapter describes routines for performing least squares fits to 
-# experimental data using linear combinations of functions. The data may be 
-# weighted or unweighted, i.e. with known or unknown errors. For weighted data 
-# the functions compute the best fit parameters and their associated covariance 
-# matrix. For unweighted data the covariance matrix is estimated from the 
-# scatter of the points, giving a variance-covariance matrix. 
+# This chapter describes routines for performing least squares fits to
+# experimental data using linear combinations of functions. The data may be
+# weighted or unweighted, i.e. with known or unknown errors. For weighted data
+# the functions compute the best fit parameters and their associated covariance
+# matrix. For unweighted data the covariance matrix is estimated from the
+# scatter of the points, giving a variance-covariance matrix.
 #
-# The functions are divided into separate versions for simple one- or 
-# two-parameter regression and multiple-parameter fits. 
+# The functions are divided into separate versions for simple one- or
+# two-parameter regression and multiple-parameter fits.
 #
 # Contents:
 # 1. {Overview}[link:rdoc/fit_rdoc.html#1]
@@ -26,67 +26,67 @@
 #    1. {Multi-parameter fitting}[link:rdoc/fit_rdoc.html#5.3]
 #
 # == {}[link:index.html"name="1] Overview
-# Least-squares fits are found by minimizing \chi^2 (chi-squared), the weighted 
-# sum of squared residuals over n experimental datapoints (x_i, y_i) for the 
+# Least-squares fits are found by minimizing \chi^2 (chi-squared), the weighted
+# sum of squared residuals over n experimental datapoints (x_i, y_i) for the
 # model Y(c,x), The p parameters of the model are c = {c_0, c_1, ...}. The
 # weight factors w_i are given by w_i = 1/\sigma_i^2, where \sigma_i is the
 # experimental error on the data-point y_i. The errors are assumed to be
 # gaussian and uncorrelated. For unweighted data the chi-squared sum is
 # computed without any weight factors.
 #
-# The fitting routines return the best-fit parameters c and their p \times p 
-# covariance matrix. The covariance matrix measures the statistical errors on 
-# the best-fit parameters resulting from the errors on the data, \sigma_i, and 
-# is defined as C_{ab} = <\delta c_a \delta c_b> where < > denotes an average 
-# over the gaussian error distributions of the underlying datapoints. 
+# The fitting routines return the best-fit parameters c and their p \times p
+# covariance matrix. The covariance matrix measures the statistical errors on
+# the best-fit parameters resulting from the errors on the data, \sigma_i, and
+# is defined as C_{ab} = <\delta c_a \delta c_b> where < > denotes an average
+# over the gaussian error distributions of the underlying datapoints.
 #
-# The covariance matrix is calculated by error propagation from the data errors 
-# \sigma_i. The change in a fitted parameter \delta c_a caused by a small change 
+# The covariance matrix is calculated by error propagation from the data errors
+# \sigma_i. The change in a fitted parameter \delta c_a caused by a small change
 # in the data \delta y_i is given by allowing the covariance matrix to be written
-# in terms of the errors on the data, For uncorrelated data the fluctuations of 
-# the underlying datapoints satisfy 
-# <\delta y_i \delta y_j> = \sigma_i^2 \delta_{ij}, giving a corresponding 
-# parameter covariance matrix of When computing the covariance matrix for 
-# unweighted data, i.e. data with unknown errors, the weight factors w_i in this 
-# sum are replaced by the single estimate w = 1/\sigma^2, where \sigma^2 is the 
-# computed variance of the residuals about the 
-# best-fit model, \sigma^2 = \sum (y_i - Y(c,x_i))^2 / (n-p). 
-# This is referred to as the variance-covariance matrix. 
+# in terms of the errors on the data, For uncorrelated data the fluctuations of
+# the underlying datapoints satisfy
+# <\delta y_i \delta y_j> = \sigma_i^2 \delta_{ij}, giving a corresponding
+# parameter covariance matrix of When computing the covariance matrix for
+# unweighted data, i.e. data with unknown errors, the weight factors w_i in this
+# sum are replaced by the single estimate w = 1/\sigma^2, where \sigma^2 is the
+# computed variance of the residuals about the
+# best-fit model, \sigma^2 = \sum (y_i - Y(c,x_i))^2 / (n-p).
+# This is referred to as the variance-covariance matrix.
 #
-# The standard deviations of the best-fit parameters are given by the square 
-# root of the corresponding diagonal elements of the covariance matrix, 
-# \sigma_{c_a} = \sqrt{C_{aa}}. The correlation coefficient of the fit 
-# parameters c_a and c_b is given by \rho_{ab} = C_{ab} / \sqrt{C_{aa} C_{bb}}. 
+# The standard deviations of the best-fit parameters are given by the square
+# root of the corresponding diagonal elements of the covariance matrix,
+# \sigma_{c_a} = \sqrt{C_{aa}}. The correlation coefficient of the fit
+# parameters c_a and c_b is given by \rho_{ab} = C_{ab} / \sqrt{C_{aa} C_{bb}}.
 #
 #
 # == {}[link:index.html"name="2] Linear regression
-# The functions described in this section can be used to perform least-squares 
-# fits to a straight line model, Y = c_0 + c_1 X. For weighted data the best-fit 
+# The functions described in this section can be used to perform least-squares
+# fits to a straight line model, Y = c_0 + c_1 X. For weighted data the best-fit
 # is found by minimizing the weighted sum of squared residuals, chi^2,
 #
 # chi^2 = sum_i w_i (y_i - (c0 + c1 x_i))^2
 #
-# for the parameters <tt>c0, c1</tt>. For unweighted data the sum is computed with 
+# for the parameters <tt>c0, c1</tt>. For unweighted data the sum is computed with
 # <tt>w_i = 1</tt>.
 #
 # === {}[link:index.html"name="2.1] Module functions for linear regression
 # ---
 # * GSL::Fit::linear(x, y)
 #
-#   This function computes the best-fit linear regression coefficients (c0,c1) 
-#   of the model Y = c0 + c1 X for the datasets <tt>(x, y)</tt>, two vectors of 
-#   equal length with stride 1. This returns an array of 7 elements, 
+#   This function computes the best-fit linear regression coefficients (c0,c1)
+#   of the model Y = c0 + c1 X for the datasets <tt>(x, y)</tt>, two vectors of
+#   equal length with stride 1. This returns an array of 7 elements,
 #   <tt>[c0, c1, cov00, cov01, cov11, chisq, status]</tt>, where <tt>c0, c1</tt> are the
-#   estimated parameters, <tt>cov00, cov01, cov11</tt> are the variance-covariance 
+#   estimated parameters, <tt>cov00, cov01, cov11</tt> are the variance-covariance
 #   matrix elements, <tt>chisq</tt> is the sum of squares of the residuals, and
 #   <tt>status</tt> is the return code from the GSL function <tt>gsl_fit_linear()</tt>.
 #
 # ---
 # * GSL::Fit::wlinear(x, w, y)
 #
-#   This function computes the best-fit linear regression coefficients (c0,c1) 
-#   of the model Y = c_0 + c_1 X for the weighted datasets <tt>(x, y)</tt>. 
-#   The vector <tt>w</tt>, specifies the weight of each datapoint, which is the 
+#   This function computes the best-fit linear regression coefficients (c0,c1)
+#   of the model Y = c_0 + c_1 X for the weighted datasets <tt>(x, y)</tt>.
+#   The vector <tt>w</tt>, specifies the weight of each datapoint, which is the
 #   reciprocal of the variance for each datapoint in <tt>y</tt>. This returns an
 #   array of 7 elements, same as the method <tt>linear</tt>.
 #
@@ -94,8 +94,8 @@
 # * GSL::Fit::linear_est(x, c0, c1, c00, c01, c11)
 # * GSL::Fit::linear_est(x, [c0, c1, c00, c01, c11])
 #
-#   This function uses the best-fit linear regression coefficients <tt>c0,c1</tt> and 
-#   their estimated covariance <tt>cov00,cov01,cov11</tt> to compute the fitted function 
+#   This function uses the best-fit linear regression coefficients <tt>c0,c1</tt> and
+#   their estimated covariance <tt>cov00,cov01,cov11</tt> to compute the fitted function
 #   and its standard deviation for the model Y = c_0 + c_1 X at the point <tt>x</tt>.
 #   The returned value is an array of <tt>[y, yerr]</tt>.
 #
@@ -103,27 +103,27 @@
 # ---
 # * GSL::Fit::mul(x, y)
 #
-#   This function computes the best-fit linear regression coefficient <tt>c1</tt> 
-#   of the model Y = c1 X for the datasets <tt>(x, y)</tt>, two vectors of 
-#   equal length with stride 1. This returns an array of 4 elements, 
+#   This function computes the best-fit linear regression coefficient <tt>c1</tt>
+#   of the model Y = c1 X for the datasets <tt>(x, y)</tt>, two vectors of
+#   equal length with stride 1. This returns an array of 4 elements,
 #   <tt>[c1, cov11, chisq, status]</tt>.
 #
 # ---
 # * GSL::Fit::wmul(x, w, y)
 #
-#   This function computes the best-fit linear regression coefficient <tt>c1</tt> 
-#   of the model Y = c_1 X for the weighted datasets <tt>(x, y)</tt>. The vector 
-#   <tt>w</tt> specifies the weight of each datapoint. The weight is the reciprocal 
+#   This function computes the best-fit linear regression coefficient <tt>c1</tt>
+#   of the model Y = c_1 X for the weighted datasets <tt>(x, y)</tt>. The vector
+#   <tt>w</tt> specifies the weight of each datapoint. The weight is the reciprocal
 #   of the variance for each datapoint in <tt>y</tt>.
 #
 # ---
 # * GSL::Fit::mul_est(x, c1, c11)
 # * GSL::Fit::mul_est(x, [c1, c11])
 #
-#   This function uses the best-fit linear regression coefficient <tt>c1</tt> 
-#   and its estimated covariance <tt>cov11</tt> to compute the fitted function 
-#   <tt>y</tt> and its standard deviation <tt>y_err</tt> 
-#   for the model Y = c_1 X at the point <tt>x</tt>.  
+#   This function uses the best-fit linear regression coefficient <tt>c1</tt>
+#   and its estimated covariance <tt>cov11</tt> to compute the fitted function
+#   <tt>y</tt> and its standard deviation <tt>y_err</tt>
+#   for the model Y = c_1 X at the point <tt>x</tt>.
 #   The returned value is an array of <tt>[y, yerr]</tt>.
 #
 # == {}[link:index.html"name="4] Multi-parameter fitting
@@ -131,7 +131,7 @@
 # ---
 # * GSL::MultiFit::Workspace.alloc(n, p)
 #
-#   This creates a workspace for fitting a model to <tt>n</tt> 
+#   This creates a workspace for fitting a model to <tt>n</tt>
 #   observations using <tt>p</tt> parameters.
 #
 # === {}[link:index.html"name="4.2] Module functions
@@ -139,37 +139,37 @@
 # * GSL::MultiFit::linear(X, y, work)
 # * GSL::MultiFit::linear(X, y)
 #
-#   This function computes the best-fit parameters <tt>c</tt> of the model <tt>y = X c</tt> 
-#   for the observations <tt>y</tt> and the matrix of predictor variables <tt>X</tt>. 
-#   The variance-covariance matrix of the model parameters <tt>cov</tt> is estimated 
-#   from the scatter of the observations about the best-fit. The sum of squares 
+#   This function computes the best-fit parameters <tt>c</tt> of the model <tt>y = X c</tt>
+#   for the observations <tt>y</tt> and the matrix of predictor variables <tt>X</tt>.
+#   The variance-covariance matrix of the model parameters <tt>cov</tt> is estimated
+#   from the scatter of the observations about the best-fit. The sum of squares
 #   of the residuals from the best-fit is also calculated. The returned value is
 #   an array of 4 elements, <tt>[c, cov, chisq, status]</tt>, where <tt>c</tt> is a
 #   {GSL::Vector}[link:rdoc/vector_rdoc.html] object which contains the best-fit parameters,
-#   and <tt>cov</tt> is the variance-covariance matrix as a 
+#   and <tt>cov</tt> is the variance-covariance matrix as a
 #   {GSL::Matrix}[link:rdoc/matrix_rdoc.html] object.
 #
-#   The best-fit is found by singular value decomposition of the matrix <tt>X</tt> 
+#   The best-fit is found by singular value decomposition of the matrix <tt>X</tt>
 #   using the workspace provided in <tt>work</tt> (optional, if not given, it is allocated
-#   internally). 
-#   The modified Golub-Reinsch SVD algorithm is used, with column scaling to improve 
-#   the accuracy of the singular values. Any components which have zero singular 
+#   internally).
+#   The modified Golub-Reinsch SVD algorithm is used, with column scaling to improve
+#   the accuracy of the singular values. Any components which have zero singular
 #   value (to machine precision) are discarded from the fit.
 #
 # ---
 # * GSL::MultiFit::wlinear(X, w, y, work)
 # * GSL::MultiFit::wlinear(X, w, y)
 #
-#   This function computes the best-fit parameters <tt>c</tt> of the model 
-#   <tt>y = X c</tt>  for the observations <tt>y</tt> and the matrix of predictor 
-#   variables <tt>X</tt>.  The covariance matrix of the model parameters 
+#   This function computes the best-fit parameters <tt>c</tt> of the model
+#   <tt>y = X c</tt>  for the observations <tt>y</tt> and the matrix of predictor
+#   variables <tt>X</tt>.  The covariance matrix of the model parameters
 #   <tt>cov</tt> is estimated from the  weighted data. The weighted sum of
-#   squares of the residuals from the best-fit is also calculated. 
-#   The returned value is an array of 4 elements, 
+#   squares of the residuals from the best-fit is also calculated.
+#   The returned value is an array of 4 elements,
 #   <tt>[c: Vector, cov: Matrix, chisq: Float, status: Fixnum]</tt>.
-#   The best-fit is found by singular value decomposition of the matrix <tt>X</tt> 
-#   using the workspace provided in <tt>work</tt> (optional). Any components 
-#   which have 
+#   The best-fit is found by singular value decomposition of the matrix <tt>X</tt>
+#   using the workspace provided in <tt>work</tt> (optional). Any components
+#   which have
 #   zero singular value (to machine precision) are discarded from the fit.
 #
 # ---
@@ -186,7 +186,7 @@
 # ---
 # * GSL::MultiFit::polyfit(x, y, order)
 #
-#   Finds the coefficient of a polynomial of order <tt>order</tt> 
+#   Finds the coefficient of a polynomial of order <tt>order</tt>
 #   that fits the vector data (<tt>x, y</tt>) in a least-square sense.
 #
 #   Example:
@@ -196,7 +196,7 @@
 #     x = Vector[1, 2, 3, 4, 5]
 #     y = Vector[5.5, 43.1, 128, 290.7, 498.4]
 #     # The results are stored in a polynomial "coef"
-#     coef, err, chisq, status = MultiFit.polyfit(x, y, 3) 
+#     coef, err, chisq, status = MultiFit.polyfit(x, y, 3)
 #
 #     x2 = Vector.linspace(1, 5, 20)
 #     graph([x, y], [x2, coef.eval(x2)], "-C -g 3 -S 4")
@@ -220,7 +220,7 @@
 #
 #      printf("# best fit: Y = %g + %g X\n", c0, c1);
 #      printf("# covariance matrix:\n");
-#      printf("# [ %g, %g\n#   %g, %g]\n", 
+#      printf("# [ %g, %g\n#   %g, %g]\n",
 #              cov00, cov01, cov01, cov11);
 #      printf("# chisq = %g\n", chisq);
 #
@@ -251,7 +251,7 @@
 #      include GSL::MultiFit
 #
 #      Rng.env_setup()
-#   
+#
 #      r = GSL::Rng.alloc(Rng::DEFAULT)
 #      n = 19
 #      dim = 3

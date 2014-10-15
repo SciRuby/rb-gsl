@@ -2,14 +2,14 @@
 # = Graphics
 #
 # The GSL library itself does not include any utilities to visualize computation results.
-# Some examples found in the GSL manual use 
-# {GNU graph}[http://www.gnu.org/software/plotutils/plotutils.html"target="_top] 
+# Some examples found in the GSL manual use
+# {GNU graph}[https://gnu.org/software/plotutils/plotutils.html]
 # to show the results: the data are stored in data files, and then
 # displayed by using <tt>GNU graph</tt>.
 # Ruby/GSL provides simple interfaces to <tt>GNU graph</tt>
 # to plot vectors or histograms directly without storing them in data files.
-# Although the methods described below do not cover all the functionalities 
-# of <tt>GNU graph</tt>, these are useful to check calculations and get some 
+# Although the methods described below do not cover all the functionalities
+# of <tt>GNU graph</tt>, these are useful to check calculations and get some
 # speculations on the data.
 #
 #
@@ -25,7 +25,7 @@
 # * GSL::graph([x1, y1], [x2, y2], ...., options)
 #
 #   These methods use the <tt>GNU graph</tt> utility to plot vectors.
-#   The options <tt>options</tt> given by a <tt>String</tt>. If <tt>nil</tt> is 
+#   The options <tt>options</tt> given by a <tt>String</tt>. If <tt>nil</tt> is
 #   given for <tt>ARGV[0]</tt>, auto-generated abscissa are used.
 #
 #   Ex:
@@ -44,10 +44,10 @@
 # * GSL::Vector#graph(options)
 # * GSL::Vector#graph(x[, options])
 #
-#   These methods plot the vector using the GNU <tt>graph</tt> 
+#   These methods plot the vector using the GNU <tt>graph</tt>
 #   command. The options for the <tt>graph</tt> command are given by a <tt>String</tt>.
 #
-#   Ex1:  
+#   Ex1:
 #        >> x = Vector[1..5]
 #        [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 ]
 #        >> x.graph("-m 2")      # dotted line
@@ -60,7 +60,7 @@
 #        >> c = Sf::cos(x)
 #        >> c.graph(x, "-T X -C -g 3 -L 'cos(x)'")
 #
-# == {}[link:index.html"name="2] Drawing histogram 
+# == {}[link:index.html"name="2] Drawing histogram
 # ---
 # * GSL::Histogram#graph(options)
 #
@@ -101,14 +101,14 @@
 #
 #      Gnuplot.open do |gp|
 #        Gnuplot::Plot.new( gp ) do |plot|
-#   
+#
 #          plot.xrange "[0:10]"
 #          plot.yrange "[-1.5:1.5]"
 #          plot.title  "Sin Wave Example"
 #          plot.xlabel "x"
 #          plot.ylabel "sin(x)"
 #          plot.pointsize 3
-#          plot.grid 
+#          plot.grid
 #
 #          x = GSL::Vector[0..10]
 #          y = GSL::Sf::sin(x)
@@ -119,7 +119,7 @@
 #              ds.title = "String function"
 #              ds.linewidth = 4
 #            },
-#         
+#
 #            Gnuplot::DataSet.new( [x, y] ) { |ds|
 #              ds.with = "linespoints"
 #              ds.title = "Array data"

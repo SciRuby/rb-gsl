@@ -55,12 +55,12 @@
 # * GSL::Complex#add(b)
 # * GSL::Complex#+(b)
 #
-#   Return the sum of the complex numbers <tt>self</tt> and <tt>b</tt>. 
+#   Return the sum of the complex numbers <tt>self</tt> and <tt>b</tt>.
 # ---
 # * GSL::Complex#sub(b)
 # * GSL::Complex#-(b)
 #
-#   Return the difference of the complex numbers <tt>self</tt> and <tt>b</tt>. 
+#   Return the difference of the complex numbers <tt>self</tt> and <tt>b</tt>.
 # ---
 # * GSL::Complex#mul(b)
 # * GSL::Complex#*(b)

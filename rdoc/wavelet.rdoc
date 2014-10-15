@@ -1,31 +1,31 @@
 #
 # = Discrete Wavelet Transforms
-# This chapter describes functions for performing Discrete Wavelet Transforms 
-# (DWTs). 
-# The library includes wavelets for real data in both one and two dimensions. 
+# This chapter describes functions for performing Discrete Wavelet Transforms
+# (DWTs).
+# The library includes wavelets for real data in both one and two dimensions.
 #
 # Contents:
-# 1. {Definitions}[link:rdoc/rdoc/wavelet_rdoc.html#1]
-# 1. {Initialization}[link:rdoc/rdoc/wavelet_rdoc.html#2]
-# 1. {Transform methods}[link:rdoc/rdoc/wavelet_rdoc.html#3]
-#    1. {Wavelet transforms in one dimension}[link:rdoc/rdoc/wavelet_rdoc.html#3.1]
-#    1. {Wavelet transforms in two dimension}[link:rdoc/rdoc/wavelet_rdoc.html#3.2]
-# 1. {Examples}[link:rdoc/rdoc/wavelet_rdoc.html#4]
+# 1. {Definitions}[link:rdoc/wavelet_rdoc.html#1]
+# 1. {Initialization}[link:rdoc/wavelet_rdoc.html#2]
+# 1. {Transform methods}[link:rdoc/wavelet_rdoc.html#3]
+#    1. {Wavelet transforms in one dimension}[link:rdoc/wavelet_rdoc.html#3.1]
+#    1. {Wavelet transforms in two dimension}[link:rdoc/wavelet_rdoc.html#3.2]
+# 1. {Examples}[link:rdoc/wavelet_rdoc.html#4]
 #
 # == {}[link:index.html"name="1] Definitions
 #
 # The continuous wavelet transform and its inverse are defined by the relations,
 # and,
-# where the basis functionspsi_{s,tau} are obtained by scaling and translation 
+# where the basis functionspsi_{s,tau} are obtained by scaling and translation
 # from a single function, referred to as the mother wavelet.
 #
-# The discrete version of the wavelet transform acts on evenly sampled data, 
-# with fixed scaling and translation steps (s, tau). The frequency and time 
-# axes are sampled dyadically on scales of 2^j through a level parameter j. 
-# The resulting family of functions {psi_{j,n}} constitutes an orthonormal 
+# The discrete version of the wavelet transform acts on evenly sampled data,
+# with fixed scaling and translation steps (s, tau). The frequency and time
+# axes are sampled dyadically on scales of 2^j through a level parameter j.
+# The resulting family of functions {psi_{j,n}} constitutes an orthonormal
 # basis for square-integrable signals.
 #
-# The discrete wavelet transform is an O(N) algorithm, and is also referred to as 
+# The discrete wavelet transform is an O(N) algorithm, and is also referred to as
 # the fast wavelet transform.
 #
 # == {}[link:index.html"name="2] Initialization
@@ -34,8 +34,8 @@
 # * GSL::Wavelet.alloc(type, k)
 # * GSL::Wavelet.alloc(type, k)
 #
-#   This function allocates and initializes a wavelet object of type <tt>type</tt>. 
-#   The parameter <tt>k</tt> selects the specific member of the wavelet family. 
+#   This function allocates and initializes a wavelet object of type <tt>type</tt>.
+#   The parameter <tt>k</tt> selects the specific member of the wavelet family.
 #
 #   The wavelet types are given by a constant (Fixnum) or a string as followings.
 #
@@ -46,8 +46,8 @@
 #   * <tt>GSL::Wavelet::BSPLINE</tt>, or <tt>"bspline"</tt>
 #   * <tt>GSL::Wavelet::BSPLINE_CENTERED</tt>, or <tt>"bspline_centered"</tt>
 #
-#   The centered forms of the wavelets align the coefficients of the various 
-#   sub-bands on edges. Thus the resulting visualization of the coefficients 
+#   The centered forms of the wavelets align the coefficients of the various
+#   sub-bands on edges. Thus the resulting visualization of the coefficients
 #   of the wavelet transform in the phase plane is easier to understand.
 #
 # ---
@@ -58,12 +58,12 @@
 # ---
 # * GSL::Wavelet::Workspace.alloc(n)
 #
-#   The GSL::Wavelet::Workspace object contains scratch space of the same size as 
+#   The GSL::Wavelet::Workspace object contains scratch space of the same size as
 #   the input data, for holding intermediate results during the transform.
-#   This method allocates a workspace for the discrete wavelet transform. 
-#   To perform a one-dimensional transform on <tt>n</tt> elements, a workspace of 
-#   size <tt>n</tt> must be provided. For two-dimensional transforms of n-by-n 
-#   matrices it is sufficient to allocate a workspace of size <tt>n</tt>, 
+#   This method allocates a workspace for the discrete wavelet transform.
+#   To perform a one-dimensional transform on <tt>n</tt> elements, a workspace of
+#   size <tt>n</tt> must be provided. For two-dimensional transforms of n-by-n
+#   matrices it is sufficient to allocate a workspace of size <tt>n</tt>,
 #   since the transform operates on individual rows and columns.
 #
 # == {}[link:index.html"name="3] Transform Methods
@@ -90,20 +90,20 @@
 # * GSL::Vector#wavelet_transform_forward(w, ...)
 # * GSL::Vector#wavelet_transform_inverse(w, ...)
 #
-#   These methods compute forward and inverse discrete wavelet transforms 
-#   of the vector <tt>v</tt>. The length of the transform is restricted to powers 
-#   of two. For the transform version of the function the argument dir can be 
-#   either GSL::Wavelet::FORWARD (+1) or GSL::Wavelet::BACKWARD (-1). 
+#   These methods compute forward and inverse discrete wavelet transforms
+#   of the vector <tt>v</tt>. The length of the transform is restricted to powers
+#   of two. For the transform version of the function the argument dir can be
+#   either GSL::Wavelet::FORWARD (+1) or GSL::Wavelet::BACKWARD (-1).
 #   A workspace <tt>work</tt> can be omitted.
-#   
+#
 #   If <tt>v</tt> is a <tt>GSL::Matrix</tt> object, methods for 2d-transforms
 #   are called.
 #
-#   For the forward transform, the elements of the original vector are replaced by 
-#   the discrete wavelet transform f_i -> w_{j,k} in a packed triangular storage 
-#   layout, where j is the index of the level j = 0 ... J-1 and k is the index of 
-#   the coefficient within each level, k = 0 ... (2^j)-1. The total number of 
-#   levels is J = log_2(n). 
+#   For the forward transform, the elements of the original vector are replaced by
+#   the discrete wavelet transform f_i -> w_{j,k} in a packed triangular storage
+#   layout, where j is the index of the level j = 0 ... J-1 and k is the index of
+#   the coefficient within each level, k = 0 ... (2^j)-1. The total number of
+#   levels is J = log_2(n).
 #
 #   These methods return a transformed data, and the input vector is not changed.
 #
@@ -168,7 +168,7 @@
 #
 #   n = 256
 #   nc = 20
-#  
+#
 #   data = Vector.alloc(n)
 #   data.fscanf("ecg.dat")
 #
@@ -194,7 +194,7 @@
 #   i = 0
 #   while (i + nc) < n
 #     data2[perm[i]] = 0.0
-#     i += 1  
+#     i += 1
 #   end
 #
 #   #data3 = w.transform(data2, Wavelet::BACKWARD, work)
@@ -210,9 +210,9 @@
 #
 #   #If you have GNU graph utility...
 #   GSL::graph(nil, data, data3, "-T X -C -g 3")
-#   
-# {prev}[link:rdoc/rdoc/fft_rdoc.html]
-# {next}[link:rdoc/rdoc/integration_rdoc.html]
 #
-# {back}[link:rdoc/rdoc/index_rdoc.html]
+# {prev}[link:rdoc/fft_rdoc.html]
+# {next}[link:rdoc/integration_rdoc.html]
+#
+# {back}[link:index.html]
 #

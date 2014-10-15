@@ -1,46 +1,46 @@
 #
 # === Cholesky decomposition (>= GSL-1.10)
-# A symmetric, positive definite square matrix <tt>A</tt> has 
-# a Cholesky decomposition into a product of a lower triangular matrix 
+# A symmetric, positive definite square matrix <tt>A</tt> has
+# a Cholesky decomposition into a product of a lower triangular matrix
 # <tt>L</tt> and its transpose <tt>L^T</tt>.
-# This is sometimes referred to as taking the square-root of a matrix. 
-# The Cholesky decomposition can only be carried out when all the eigenvalues 
-# of the matrix are positive. This decomposition can be used to convert the 
-# linear system <tt>A x = b</tt> into a pair of triangular systems 
+# This is sometimes referred to as taking the square-root of a matrix.
+# The Cholesky decomposition can only be carried out when all the eigenvalues
+# of the matrix are positive. This decomposition can be used to convert the
+# linear system <tt>A x = b</tt> into a pair of triangular systems
 # <tt>L y = b, L^T x = y</tt>,
-# which can be solved by forward and back-substitution. 
+# which can be solved by forward and back-substitution.
 #
 # ---
 # * GSL::Linalg::Complex::Cholesky::decomp(A)
 # * GSL::Linalg::Complex::cholesky_decomp(A)
 #
-#   Factorize the positive-definite square matrix <tt>A</tt> into the 
+#   Factorize the positive-definite square matrix <tt>A</tt> into the
 #   Cholesky decomposition <tt>A = L L^H</tt>.
-#   On input only the diagonal and lower-triangular part of the matrix <tt>A</tt> 
+#   On input only the diagonal and lower-triangular part of the matrix <tt>A</tt>
 #   are needed. The diagonal and lower triangular part of the returned matrix
-#   contain the matrix <tt>L</tt>. The upper triangular part of the 
+#   contain the matrix <tt>L</tt>. The upper triangular part of the
 #   returned matrix contains L^T, and
-#   the diagonal terms being identical for both L and L^T. 
-#   If the input matrix is not positive-definite then the decomposition 
-#   will fail, returning the error code <tt>GSL::EDOM</tt>. 
+#   the diagonal terms being identical for both L and L^T.
+#   If the input matrix is not positive-definite then the decomposition
+#   will fail, returning the error code <tt>GSL::EDOM</tt>.
 #
 # ---
 # * GSL::Linalg::Complex::Cholesky::solve(chol, b, x)
 # * GSL::Linalg::Complex::cholesky_solve(chol, b, x)
 #
-#   Solve the system <tt>A x = b</tt> using the Cholesky decomposition 
-#   of <tt>A</tt> into the matrix <tt>chol</tt> given by 
+#   Solve the system <tt>A x = b</tt> using the Cholesky decomposition
+#   of <tt>A</tt> into the matrix <tt>chol</tt> given by
 #   <tt>GSL::Linalg::Complex::Cholesky::decomp</tt>.
 #
 # ---
 # * GSL::Linalg::Complex::Cholesky::svx(chol, x)
 # * GSL::Linalg::Complex::cholesky_svx(chol, x)
 #
-#   Solve the system <tt>A x = b</tt> in-place using the Cholesky decomposition 
-#   of <tt>A</tt> into the matrix <tt>chol</tt> given by 
-#   <tt>GSL::Linalg::Complex::Cholesky::decomp</tt>. On input <tt>x</tt> 
-#   should contain the right-hand side <tt>b</tt>, 
-#   which is replaced by the solution on output. 
+#   Solve the system <tt>A x = b</tt> in-place using the Cholesky decomposition
+#   of <tt>A</tt> into the matrix <tt>chol</tt> given by
+#   <tt>GSL::Linalg::Complex::Cholesky::decomp</tt>. On input <tt>x</tt>
+#   should contain the right-hand side <tt>b</tt>,
+#   which is replaced by the solution on output.
 #
 # {back}[link:rdoc/linalg_rdoc.html]
 #

@@ -5,14 +5,14 @@
 #
 # == {}[link:index.html"name="2] Load the library
 # Put at the head of your scripts,
-#     
+#
 #     require 'rubygems' # if installed via RubyGems
 #     require 'gsl'
 #
 # == {}[link:index.html"name="3] Naming conventions, C Structs and Ruby Classes
 #
-# Most of the GSL data types, functions or constants are named as <tt>gsl_xxx</tt> or <tt>GSL_XXX</tt>. 
-# In Ruby/GSL, the prefix <tt>gsl_</tt> is replaced by the module identifier <tt>GSL::</tt>, 
+# Most of the GSL data types, functions or constants are named as <tt>gsl_xxx</tt> or <tt>GSL_XXX</tt>.
+# In Ruby/GSL, the prefix <tt>gsl_</tt> is replaced by the module identifier <tt>GSL::</tt>,
 # where <tt>GSL</tt> is the top level module of Ruby/GSL,
 # and the Ruby classes are defined for each of the GSL C structs under the <tt>GSL</tt> module.
 # According to the Ruby manner, the name of each class begins with a capital. For example,
@@ -36,36 +36,36 @@
 # See the directories "examples/" and "tests/".
 #
 # Some of the examples use the <tt>graph</tt> utility to show the results. The <tt>graph</tt>
-# utility is included in the {GNU plotutils}[http://www.gnu.org/software/plotutils/plotutils.html"target="_top] package. Windows-cygwin binaries of <tt>GNU plotutils</tt> and 
-# related packages are available from 
-# {here}[http://rustam.uwp.edu/support"target="_top].
+# utility is included in the {GNU plotutils}[https://gnu.org/software/plotutils/plotutils.html] package. Windows-cygwin binaries of <tt>GNU plotutils</tt> and
+# related packages are available from
+# {here}[http://gnuwin32.sourceforge.net/packages/plotutils.htm].
 #
 # == {}[link:index.html"name="5] Modules and Classes
 # The following is the list of Ruby/GSL modules and classes, <Name> (<Module or Class>)
 #
-# * GSL (Module) 
-#   * Complex (Class) 
-#   * Poly (Class) 
+# * GSL (Module)
+#   * Complex (Class)
+#   * Poly (Class)
 #     * Workspace (Class)
 #     * DividedDifferenceRepresentation (Class)
 #     * Taylor (Class)
-#   * Sf (Module) 
+#   * Sf (Module)
 #     * Result (Class)
 #   * Block (Class)
 #     * Int (Class)
 #     * Byte (Class)
 #     * Index < Permutation
-#   * Vector (Class) 
+#   * Vector (Class)
 #     * View < Vector
 #     * Complex (Class)
 #       * View < Vector::Complex
-#   * Matrix (Class) 
+#   * Matrix (Class)
 #     * View < Matrix (Class)
 #     * Complex (Class)
 #       * View < Matrix::Complex
-#   * Permutation (Class) 
-#   * Combination (Class) 
-#   * Linalg (Module) 
+#   * Permutation (Class)
+#   * Combination (Class)
+#   * Linalg (Module)
 #     * LU (Module)
 #     * QR (Module)
 #     * QRPT (Module)
@@ -90,12 +90,12 @@
 #       * Workspace (Class)
 #     * Hermv (Module)
 #       * Workspace (Class)
-#   * FFT (Module) 
+#   * FFT (Module)
 #     * ComplexWavetable (Class)
 #     * ComplexWorkspace (Class)
 #     * HalfComplexWavetable (Class)
 #     * RealWavetable (Class)
-#     * RealWorkspace (Class)      
+#     * RealWorkspace (Class)
 #   * Wavelet (Class)
 #     * Wavelet2d < Wavelet
 #   * Function (Class)
@@ -104,15 +104,15 @@
 #     * Workspace
 #     * QAWS_Table
 #     * QAWO_Table
-#   * Rng (Class) 
+#   * Rng (Class)
 #   * QRng (Class)
 #   * Ran (Module)
-#   * Stats (Module) 
-#   * Histogram (Class) 
+#   * Stats (Module)
+#   * Histogram (Class)
 #     * Integral < Histogram
 #     * Pdf (Class)
 #   * Histogram2d (Class)
-#   * N-tuples 
+#   * N-tuples
 #     * SelectFn (Class)
 #     * ValueFn (Class)
 #   * Monte (Module)
@@ -135,35 +135,35 @@
 #   * Interp (Class)
 #     * Accel (Class)
 #   * Spline (Class)
-#   * Diff (Module) 
+#   * Diff (Module)
 #   * Deriv (Module)
-#   * Cheb (Class) 
-#   * Sum (Module) 
+#   * Cheb (Class)
+#   * Sum (Module)
 #     * Levin_u (Class)
 #     * Levin_utrunc (Class)
-#   * Dht (Class) 
+#   * Dht (Class)
 #   * Root (Module)
 #     * Solver (Class)
 #     * FdfSolver (Class)
-#   * Min(Module) 
+#   * Min(Module)
 #     * FMinimizer (Class)
 #   * MultiRoot (Module)
 #     * Function (Class)
 #     * FSolver (Class)
 #     * Function_fdf (Class)
 #     * FdfSolver (Class)
-#   * MultiMin (Module) 
+#   * MultiMin (Module)
 #     * Function (Class)
 #     * FMinimizer (Class)
 #     * Function_fdf (Class)
 #     * FdfMinimizer (Class)
-#   * Fit (Module) 
+#   * Fit (Module)
 #   * MultiFit (Module)
 #     * Workspace (Class)
 #     * Solver (Class)
 #     * Function_fdf (Class)
 #     * FdfSolver (Class)
-#   * CONST (Module) 
+#   * CONST (Module)
 #     * MKSA (Module)
 #     * CGSM (Module)
 #     * NUM (Module)

@@ -49,7 +49,7 @@
 #   must have enough length to store all the values for the polynomial
 #   P_l^m(x), and the length required can be known using
 #   <tt>ALF::array_size(lmax)</tt>. If a vector is not given, a new vector is
-#   created and returned. 
+#   created and returned.
 #
 #   The indices of <tt>result</tt> (and <tt>deriv</tt> corresponding to the
 #   associated Legendre function of degree <tt>l</tt> and order <tt>m</tt> can
@@ -61,7 +61,7 @@
 # * GSL::ALF::Workspace#Plm_deriv_array(lmax, x, result, deriv)
 #
 #   Compute all associated Legendre polynomials P_l^m(x) and their first
-#   derivatives dP_l^m(x)/dx for 0 <= l <= lmax, 0 <= m <= l. 
+#   derivatives dP_l^m(x)/dx for 0 <= l <= lmax, 0 <= m <= l.
 #
 # ---
 # * GSL::ALF::array_size(lmax)

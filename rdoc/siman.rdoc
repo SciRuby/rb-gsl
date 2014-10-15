@@ -16,23 +16,23 @@
 # ---
 # * GSL::Siman.solve(rng, x0_p, efunc, stepper, metric, printer, params)
 #
-#   This performs a simulated annealing search through a given space. 
-#   The space is specified by providing the functions <tt>efunc</tt> and <tt>metric</tt>. 
-#   The simulated annealing steps are generated using the random number generator 
-#   <tt>rng</tt> and the function <tt>stepper</tt>. The starting configuration of the 
+#   This performs a simulated annealing search through a given space.
+#   The space is specified by providing the functions <tt>efunc</tt> and <tt>metric</tt>.
+#   The simulated annealing steps are generated using the random number generator
+#   <tt>rng</tt> and the function <tt>stepper</tt>. The starting configuration of the
 #   system should be given by a <tt>Vector</tt> object <tt>x0_p</tt>.
-#   
-#   The parameter <tt>params</tt> controls the run by providing the temperature 
+#
+#   The parameter <tt>params</tt> controls the run by providing the temperature
 #   schedule and other tunable parameters to the algorithm.
 #
-#   On exit the best result achieved during the search is placed in <tt>x0_p</tt>. 
-#   If the annealing process has been successful this should be a good approximation 
+#   On exit the best result achieved during the search is placed in <tt>x0_p</tt>.
+#   If the annealing process has been successful this should be a good approximation
 #   to the optimal point in the space.
 #
-#   If the function <tt>printer</tt> is not <tt>nil</tt>, a debugging log will be printed 
+#   If the function <tt>printer</tt> is not <tt>nil</tt>, a debugging log will be printed
 #   to stdout with the following columns:
 #       number_of_iterations   temperature    x    x-(x0_p)   efunc(x)
-#   and the output of <tt>printer</tt> itself. If <tt>printer</tt> is <tt>nil</tt> 
+#   and the output of <tt>printer</tt> itself. If <tt>printer</tt> is <tt>nil</tt>
 #   then no information is printed.
 #
 # == {}[link:index.html"name="3] Example

@@ -18,7 +18,7 @@
 #       }
 #       dim = 2
 #       mf = Monte::Function.alloc(proc_f, dim)
-#       mf.set_params([3, 2, 1])    
+#       mf.set_params([3, 2, 1])
 #
 # ---
 # * GSL::Munte::Function#set(proc, dim, params)
@@ -32,7 +32,7 @@
 # * GSL::Munte::Function#call
 #
 #
-# == {}[link:index.html"name="2] Monte Carlo plans, alrgorithms 
+# == {}[link:index.html"name="2] Monte Carlo plans, alrgorithms
 # === {}[link:index.html"name="2.1] PLAIN Monte Carlo
 # ---
 # * GSL::Monte::Plain.alloc(dim)
@@ -56,10 +56,10 @@
 # * GSL:Monte::Function#integrate(xl, xu, calls, rng, s)
 # * GSL:Monte::Function#integrate(xl, xu, calls, s)
 #
-#   This method performs Monte-Carlo integration of the function <tt>self</tt> 
-#   using the algorithm <tt>s</tt>, over the <tt>dim</tt>-dimensional hypercubic 
-#   region defined by the lower and upper 
-#   limits in the arrays <tt>xl</tt> and <tt>xu</tt>, each of size <tt>dim</tt>. 
+#   This method performs Monte-Carlo integration of the function <tt>self</tt>
+#   using the algorithm <tt>s</tt>, over the <tt>dim</tt>-dimensional hypercubic
+#   region defined by the lower and upper
+#   limits in the arrays <tt>xl</tt> and <tt>xu</tt>, each of size <tt>dim</tt>.
 #   The integration uses a fixed number of function calls <tt>calls</tt>.
 #   The argument <tt>rng</tt> is a random number generator (optional). If it is not
 #   given, a new generator is created internally and freed when the calculation
@@ -220,7 +220,7 @@
 #      puts("converging...");
 #      begin
 #        result, error = G.integrate(xl, xu, dim, calls/5, r, vegas)
-#        printf("result = % .6f sigma = % .6f chisq/dof = %.1f\n", 
+#        printf("result = % .6f sigma = % .6f chisq/dof = %.1f\n",
 #                result, error, vegas.chisq)
 #      end while (vegas.chisq-1.0).abs > 0.5
 #      display_results("vegas final", result, error)

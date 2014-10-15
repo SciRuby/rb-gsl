@@ -1,15 +1,15 @@
 #
 # = Getting started
 #
-# The GNU Scientific Library ({GSL}[http://sources.redhat.com/gsl/"target="_top]) 
-# is a collection of routines for numerical computing. 
-# The routines have been written from scratch in C, and present a modern Applications 
-# Programming Interface (API) for C programmers, allowing wrappers to be 
-# written for very  high level languages. The source code is distributed 
+# The GNU Scientific Library ({GSL}[https://gnu.org/software/gsl/])
+# is a collection of routines for numerical computing.
+# The routines have been written from scratch in C, and present a modern Applications
+# Programming Interface (API) for C programmers, allowing wrappers to be
+# written for very  high level languages. The source code is distributed
 # under the GNU General Public License.
 #
-# The {Ruby/GSL}[http://rubyforge.org/projects/rb-gsl/"target="_top] is Ruby 
-# bidings for GSL. This provides higher-level interfaces to the GSL functions.
+# The {Ruby/GSL}[https://blackwinter.github.com/rb-gsl] is Ruby
+# bindings for GSL. This provides higher-level interfaces to the GSL functions.
 # See {here}[link:rdoc/use_rdoc.html] for installation. To use the library , just put at the head of your scripts <tt>require("gsl")</tt>, or type it from the command line of <tt>irb</tt>.
 #
 #

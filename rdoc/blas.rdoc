@@ -1,7 +1,7 @@
 #
 # = BLAS Support
 # The following is the list of the methods defined in <tt>GSL::Blas</tt> module.
-# See {GSL reference}[http://www.gnu.org/software/gsl/manual/gsl-ref_12.html#SEC212"target="_top] for details.
+# See {GSL reference}[https://gnu.org/software/gsl/manual/gsl-ref_12.html#SEC212] for details.
 #
 # == {}[link:index.html"name="1] Level 1
 # ---

@@ -2,17 +2,17 @@
 # = Physical Constants
 #
 # The GSL physical constants are defined as Ruby constants under the
-# modules 
+# modules
 # * <tt>GSL::CONST::MKSA</tt> (MKSA unit)
 # * <tt>GSL::CONST:CGSM</tt>  (CGSM unit)
 # * <tt>GSL::CONST:NUM</tt>   (Dimension-less constants)
-# For example, the GSL C constant 
+# For example, the GSL C constant
 # <tt>GSL_CONST_MKSA_SPEED_OF_LIGHT</tt> is represented by a Ruby constant,
 #       GSL_CONST_MKSA_SPEED_OF_LIGHT  ---> GSL::CONST::MKSA::SPEED_OF_LIGHT
 #
 # The following lists a part of the constants. Most of the constants are
 # defined both in the modules <tt>GSL::CONST::MKSA</tt> and <tt>GSL::CONST::CGSM</tt>.
-# See also the {GSL reference}[http://www.gnu.org/software/gsl/manual/gsl-ref_37.html#SEC479"target="_top]
+# See also the {GSL reference}[https://gnu.org/software/gsl/manual/gsl-ref_37.html#SEC479]
 #
 # Contents:
 # 1. {Fundamental Constants}[link:rdoc/const_rdoc.html#1]
@@ -39,7 +39,7 @@
 #
 #   The speed of light in vacuum, c.
 # ---
-# * GSL::CONST::MKSA::VACUUM_PERMEABILITY 
+# * GSL::CONST::MKSA::VACUUM_PERMEABILITY
 #
 #   The permeability of free space, \mu (not defined in GSL::CONST::CGSM).
 # ---
@@ -510,8 +510,8 @@
 #   10^-24
 #
 # == {}[link:index.html"name="17] Example
-# The following program demonstrates the use of the physical constants in a 
-# calculation. In this case, the goal is to calculate the range of light-travel 
+# The following program demonstrates the use of the physical constants in a
+# calculation. In this case, the goal is to calculate the range of light-travel
 # times from Earth to Mars.
 #
 #      require("gsl")
@@ -523,8 +523,8 @@
 #      au = ASTRONOMICAL_UNIT;
 #      minutes = MINUTE;
 #
-#      # distance stored in meters 
-#      r_earth = 1.00 * au;  
+#      # distance stored in meters
+#      r_earth = 1.00 * au;
 #      r_mars  = 1.52 * au;
 #
 #      t_min = (r_mars - r_earth) / c;

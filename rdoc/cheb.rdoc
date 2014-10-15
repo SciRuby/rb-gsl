@@ -1,14 +1,14 @@
 #
 # = Chebyshev Approximations
-# This chapter describes routines for computing Chebyshev approximations to 
-# univariate functions. A Chebyshev approximation is a truncation of the series 
-# f(x) = \sum c_n T_n(x), 
-# where the Chebyshev polynomials T_n(x) = \cos(n \arccos x) 
-# provide an orthogonal basis of polynomials on the interval [-1,1] 
-# with the weight function 1 / \sqrt{1-x^2}. 
-# The first few Chebyshev polynomials are, 
-# T_0(x) = 1, T_1(x) = x, T_2(x) = 2 x^2 - 1. 
-# For further information see Abramowitz & Stegun, Chapter 22. 
+# This chapter describes routines for computing Chebyshev approximations to
+# univariate functions. A Chebyshev approximation is a truncation of the series
+# f(x) = \sum c_n T_n(x),
+# where the Chebyshev polynomials T_n(x) = \cos(n \arccos x)
+# provide an orthogonal basis of polynomials on the interval [-1,1]
+# with the weight function 1 / \sqrt{1-x^2}.
+# The first few Chebyshev polynomials are,
+# T_0(x) = 1, T_1(x) = x, T_2(x) = 2 x^2 - 1.
+# For further information see Abramowitz & Stegun, Chapter 22.
 #
 # 1. {GSL::Cheb class}[link:rdoc/cheb_rdoc.html#1]
 # 1. {Chebyshev Series Evaluation}[link:rdoc/cheb_rdoc.html#2]
@@ -18,7 +18,7 @@
 # == {}[link:index.html"name="1] <tt>GSL::Cheb</tt> class
 #
 # ---
-# * GSL::Cheb.alloc(n) 
+# * GSL::Cheb.alloc(n)
 #
 #   This create an instance of the GSL::Cheb class for a Chebyshev series of order n.
 #
@@ -51,7 +51,7 @@
 #
 #   This evaluates the Chebyshev series at a given point <tt>x</tt>, to (at most) the given order <tt>n</tt>.
 #
-# == {}[link:index.html"name="3] Derivatives and Integrals 
+# == {}[link:index.html"name="3] Derivatives and Integrals
 #
 # ---
 # * GSL::Cheb#calc_deriv()

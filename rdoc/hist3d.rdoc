@@ -89,19 +89,19 @@
 # ---
 # * GSL::Histogram3d#xyproject(kstart = 0, kend = nz-1)
 #
-#   Creates a <tt>GSL::Histogram2d</tt> object by projecting the 3D histogram 
+#   Creates a <tt>GSL::Histogram2d</tt> object by projecting the 3D histogram
 #   <tt>self</tt> onto the xy-plane over the z-range from <tt>kstart</tt> to <tt>kend</tt>.
 #
 # ---
 # * GSL::Histogram3d#xzproject(jstart = 0, jend = ny-1)
 #
-#   Creates a <tt>GSL::Histogram2d</tt> object by projecting the 3D histogram 
+#   Creates a <tt>GSL::Histogram2d</tt> object by projecting the 3D histogram
 #   <tt>self</tt> onto the xz-plane over the y-range from <tt>jstart</tt> to <tt>jend</tt>.
 #
 # ---
 # * GSL::Histogram3d#yzproject(istart = 0, iend = nx-1)
 #
-#   Creates a <tt>GSL::Histogram2d</tt> object by projecting the 3D histogram 
+#   Creates a <tt>GSL::Histogram2d</tt> object by projecting the 3D histogram
 #   <tt>self</tt> onto the yz-plane over the x-range from <tt>istart</tt> to <tt>iend</tt>.
 #
 # {prev}[link:rdoc/hist2d_rdoc.html]

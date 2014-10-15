@@ -1,8 +1,8 @@
 #
 # = Numerical Differentiation
-# The functions described in this chapter compute numerical derivatives by 
-# finite differencing. An adaptive algorithm is used to find the best choice 
-# of finite difference and to estimate the error in the derivative. 
+# The functions described in this chapter compute numerical derivatives by
+# finite differencing. An adaptive algorithm is used to find the best choice
+# of finite difference and to estimate the error in the derivative.
 #
 # Contentes:
 # 1. {Deriv methods}[link:rdoc/diff_rdoc.html#1]
@@ -18,53 +18,53 @@
 # * GSL::Deriv.central(f, x, h = 1e-8)
 # * GSL::Function#deriv_central(x, h = 1e-8)
 #
-#   These methods compute the numerical derivative of the function <tt>f</tt> 
-#   at the point <tt>x</tt> using an adaptive central difference algorithm with a 
-#   step-size of <tt>h</tt>. If a scalar <tt>x</tt> is given, the derivative and an 
+#   These methods compute the numerical derivative of the function <tt>f</tt>
+#   at the point <tt>x</tt> using an adaptive central difference algorithm with a
+#   step-size of <tt>h</tt>. If a scalar <tt>x</tt> is given, the derivative and an
 #   estimate of its absolute error are returned as an array, [<tt>result, abserr, status</tt>].
 #   If a vector/matrix/array <tt>x</tt> is given, an array of two elements are returned,
 #   [<tt>result, abserr</tt>], here each them is also a vector/matrix/array of the same
 #   dimension of <tt>x</tt>.
 #
-#   The initial value of <tt>h</tt> is used to estimate an optimal step-size, 
-#   based on the scaling of the truncation error and round-off error in the 
-#   derivative calculation. The derivative is computed using a 5-point rule for 
-#   equally spaced abscissae at x-h, x-h/2, x, x+h/2, x, with an error estimate 
-#   taken from the difference between the 5-point rule and the corresponding 3-point 
-#   rule x-h, x, x+h. Note that the value of the function at x does not contribute 
+#   The initial value of <tt>h</tt> is used to estimate an optimal step-size,
+#   based on the scaling of the truncation error and round-off error in the
+#   derivative calculation. The derivative is computed using a 5-point rule for
+#   equally spaced abscissae at x-h, x-h/2, x, x+h/2, x, with an error estimate
+#   taken from the difference between the 5-point rule and the corresponding 3-point
+#   rule x-h, x, x+h. Note that the value of the function at x does not contribute
 #   to the derivative calculation, so only 4-points are actually used.
 #
 # ---
 # * GSL::Deriv.forward(f, x, h = 1e-8)
 # * GSL::Function#deriv_forward(x, h = 1e-8)
 #
-#   These methods compute the numerical derivative of the function <tt>f</tt> at 
-#   the point <tt>x</tt> using an adaptive forward difference algorithm with a step-size 
-#   of <tt>h</tt>. The function is evaluated only at points greater than <tt>x</tt>, 
-#   and never at <tt>x</tt> itself. The derivative and an estimate of its absolute error 
-#   are returned as an array, [<tt>result, abserr</tt>]. 
-#   These methods should be used if f(x) has a 
+#   These methods compute the numerical derivative of the function <tt>f</tt> at
+#   the point <tt>x</tt> using an adaptive forward difference algorithm with a step-size
+#   of <tt>h</tt>. The function is evaluated only at points greater than <tt>x</tt>,
+#   and never at <tt>x</tt> itself. The derivative and an estimate of its absolute error
+#   are returned as an array, [<tt>result, abserr</tt>].
+#   These methods should be used if f(x) has a
 #   discontinuity at <tt>x</tt>, or is undefined for values less than <tt>x</tt>.
 #
-#   The initial value of <tt>h</tt> is used to estimate an optimal step-size, based on the 
-#   scaling of the truncation error and round-off error in the derivative calculation. 
-#   The derivative at x is computed using an "open" 4-point rule for equally spaced 
-#   abscissae at x+h/4, x+h/2, x+3h/4, x+h, with an error estimate taken from the 
+#   The initial value of <tt>h</tt> is used to estimate an optimal step-size, based on the
+#   scaling of the truncation error and round-off error in the derivative calculation.
+#   The derivative at x is computed using an "open" 4-point rule for equally spaced
+#   abscissae at x+h/4, x+h/2, x+3h/4, x+h, with an error estimate taken from the
 #   difference between the 4-point rule and the corresponding 2-point rule x+h/2, x+h.
 #
 # ---
 # * GSL::Deriv.backward(f, x, h)
 # * GSL::Function#deriv_backward(x, h)
 #
-#   These methods compute the numerical derivative of the function <tt>f</tt> at the 
-#   point <tt>x</tt> using an adaptive backward difference algorithm with a step-size 
-#   of <tt>h</tt>. The function is evaluated only at points less than <tt>x</tt>, 
-#   and never at <tt>x</tt> itself. The derivative and an estimate of its absolute error 
-#   are returned as an array, [<tt>result, abserr</tt>]. 
-#   This function should be used if f(x) has a discontinuity at <tt>x</tt>, 
+#   These methods compute the numerical derivative of the function <tt>f</tt> at the
+#   point <tt>x</tt> using an adaptive backward difference algorithm with a step-size
+#   of <tt>h</tt>. The function is evaluated only at points less than <tt>x</tt>,
+#   and never at <tt>x</tt> itself. The derivative and an estimate of its absolute error
+#   are returned as an array, [<tt>result, abserr</tt>].
+#   This function should be used if f(x) has a discontinuity at <tt>x</tt>,
 #   or is undefined for values greater than <tt>x</tt>.
 #
-#   These methods are equivalent to calling the method <tt>forward</tt> 
+#   These methods are equivalent to calling the method <tt>forward</tt>
 #   with a negative step-size.
 #
 # == {}[link:index.html"name="2] Diff Methods (obsolete)
@@ -73,21 +73,21 @@
 # * GSL::Diff.central(f, x)
 # * GSL::Function#diff_central(x)
 #
-#   These compute the numerical derivative of the function <tt>f</tt> ( {GSL::Function}[link:rdoc/function_rdoc.html] object) at the point <tt>x</tt> 
-#   using an adaptive central difference algorithm. The result is returned as an array 
+#   These compute the numerical derivative of the function <tt>f</tt> ( {GSL::Function}[link:rdoc/function_rdoc.html] object) at the point <tt>x</tt>
+#   using an adaptive central difference algorithm. The result is returned as an array
 #   which contains the derivative and an estimate of its absolute error.
 #
 # ---
 # * GSL::Diff.forward(f, x)
 # * GSL::Function#diff_forward(x)
 #
-#   These compute the numerical derivative of the function at the point x using an adaptive forward difference algorithm. 
+#   These compute the numerical derivative of the function at the point x using an adaptive forward difference algorithm.
 #
 # ---
 # * GSL::Diff.backward(f, x)
 # * GSL::Function#diff_backward(x)
 #
-#   These compute the numerical derivative of the function at the point x using an adaptive backward difference algorithm. 
+#   These compute the numerical derivative of the function at the point x using an adaptive backward difference algorithm.
 #
 # == {}[link:index.html"name="3] Example
 #

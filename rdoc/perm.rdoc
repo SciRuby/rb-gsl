@@ -14,26 +14,26 @@
 # ---
 # * GSL::Permutation.alloc(n)
 #
-#   These functions create a new permutation of size <tt>n</tt>. 
-#   The permutation is not initialized and its elements are undefined. 
-#   Use <tt>GSL::Permutation.calloc</tt> if you want to create a permutation 
-#   which is initialized to the identity. 
+#   These functions create a new permutation of size <tt>n</tt>.
+#   The permutation is not initialized and its elements are undefined.
+#   Use <tt>GSL::Permutation.calloc</tt> if you want to create a permutation
+#   which is initialized to the identity.
 #
 # ---
 # * GSL::Permutation.calloc(n)
 #
-#   This creates a new permutation of size <tt>n</tt> and initializes it to the identity. 
+#   This creates a new permutation of size <tt>n</tt> and initializes it to the identity.
 #
 # == {}[link:index.html"name="2] Methods
 # ---
 # * GSL::Permutation#init()
 #
-#   This initializes the permutation to the identity, i.e. (0,1,2,...,n-1). 
+#   This initializes the permutation to the identity, i.e. (0,1,2,...,n-1).
 #
 # ---
 # * GSL::Permutation.memcpy(dest, src)
 #
-#   This method copies the elements of the permutation <tt>src</tt> 
+#   This method copies the elements of the permutation <tt>src</tt>
 #   into the permutation <tt>dest</tt>. The two permutations must have the same size.
 #
 # ---
@@ -46,7 +46,7 @@
 # ---
 # * GSL::Permutation#get(i)
 #
-#   Returns the value of the <tt>i</tt>-th element of the permutation. 
+#   Returns the value of the <tt>i</tt>-th element of the permutation.
 #
 # ---
 # * GSL::Permutation#swap(i, j)
@@ -61,7 +61,7 @@
 # ---
 # * GSL::Permutation#valid
 #
-#   This checks that the permutation <tt>self</tt> is valid. 
+#   This checks that the permutation <tt>self</tt> is valid.
 #   The n elements should contain each of the numbers 0 .. n-1 once and only once.
 #
 # ---
@@ -84,17 +84,17 @@
 # ---
 # * GSL::Permutation#next
 #
-#   This method advances the permutation <tt>self</tt> to the next permutation in 
-#   lexicographic order and returns <tt>GSL::SUCCESS</tt>. If no further permutations 
-#   are available it returns <tt>GSL::FAILURE</tt> and leaves <tt>self</tt> unmodified. 
-#   Starting with the identity permutation and repeatedly applying this function 
+#   This method advances the permutation <tt>self</tt> to the next permutation in
+#   lexicographic order and returns <tt>GSL::SUCCESS</tt>. If no further permutations
+#   are available it returns <tt>GSL::FAILURE</tt> and leaves <tt>self</tt> unmodified.
+#   Starting with the identity permutation and repeatedly applying this function
 #   will iterate through all possible permutations of a given order.
 # ---
 # * GSL::Permutation#prev
 #
-#   This method steps backwards from the permutation <tt>self</tt> to the previous 
-#   permutation in lexicographic order, returning <tt>GSL_SUCCESS</tt>. 
-#   If no previous permutation is available it returns <tt>GSL_FAILURE</tt> 
+#   This method steps backwards from the permutation <tt>self</tt> to the previous
+#   permutation in lexicographic order, returning <tt>GSL_SUCCESS</tt>.
+#   If no previous permutation is available it returns <tt>GSL_FAILURE</tt>
 #   and leaves <tt>self</tt> unmodified.
 #
 # === {}[link:index.html"name="2.4] Reading and writing permutations
@@ -110,106 +110,106 @@
 #
 #
 # === {}[link:index.html"name="2.5] Permutations in cyclic Form
-# A permutation can be represented in both <tt>linear</tt> and 
-# <tt>cyclic</tt> notations. The functions described in this section convert 
-# between the two forms. The linear notation is an index mapping, and has 
-# already been described above. The cyclic notation expresses a 
-# permutation as a series of circular rearrangements of groups 
-# of elements, or <tt>cycles</tt>. 
+# A permutation can be represented in both <tt>linear</tt> and
+# <tt>cyclic</tt> notations. The functions described in this section convert
+# between the two forms. The linear notation is an index mapping, and has
+# already been described above. The cyclic notation expresses a
+# permutation as a series of circular rearrangements of groups
+# of elements, or <tt>cycles</tt>.
 #
-# For example, under the cycle (1 2 3), 1 is replaced by 2, 2 is replaced 
-# by 3 and 3 is replaced by 1 in a circular fashion. Cycles of different 
-# sets of elements can be combined independently, for example (1 2 3) (4 5) 
-# combines the cycle (1 2 3) with the cycle (4 5), which is an exchange of 
-# elements 4 and 5. A cycle of length one represents an element which is 
-# unchanged by the permutation and is referred to as a <tt>singleton</tt>. 
+# For example, under the cycle (1 2 3), 1 is replaced by 2, 2 is replaced
+# by 3 and 3 is replaced by 1 in a circular fashion. Cycles of different
+# sets of elements can be combined independently, for example (1 2 3) (4 5)
+# combines the cycle (1 2 3) with the cycle (4 5), which is an exchange of
+# elements 4 and 5. A cycle of length one represents an element which is
+# unchanged by the permutation and is referred to as a <tt>singleton</tt>.
 #
-# It can be shown that every permutation can be decomposed into combinations 
-# of cycles. The decomposition is not unique, but can always be rearranged 
-# into a standard <tt>canonical form</tt> by a reordering of elements. 
-# The library uses the canonical form defined in Knuth's 
-# <tt>Art of Computer Programming</tt> (Vol 1, 3rd Ed, 1997) Section 1.3.3, p.178. 
+# It can be shown that every permutation can be decomposed into combinations
+# of cycles. The decomposition is not unique, but can always be rearranged
+# into a standard <tt>canonical form</tt> by a reordering of elements.
+# The library uses the canonical form defined in Knuth's
+# <tt>Art of Computer Programming</tt> (Vol 1, 3rd Ed, 1997) Section 1.3.3, p.178.
 #
-# The procedure for obtaining the canonical form given by Knuth is, 
+# The procedure for obtaining the canonical form given by Knuth is,
 #
 #
-# 1. Write all singleton cycles explicitly 
-# 1. Within each cycle, put the smallest number first 
-# 1. Order the cycles in decreasing order of the first number in the cycle. 
+# 1. Write all singleton cycles explicitly
+# 1. Within each cycle, put the smallest number first
+# 1. Order the cycles in decreasing order of the first number in the cycle.
 #
-# For example, the linear representation (2 4 3 0 1) is represented as 
-# (1 4) (0 2 3) in canonical form. The permutation corresponds to an 
-# exchange of elements 1 and 4, and rotation of elements 0, 2 and 3. 
+# For example, the linear representation (2 4 3 0 1) is represented as
+# (1 4) (0 2 3) in canonical form. The permutation corresponds to an
+# exchange of elements 1 and 4, and rotation of elements 0, 2 and 3.
 #
-# The important property of the canonical form is that it can be reconstructed 
-# from the contents of each cycle without the brackets. In addition, by removing 
-# the brackets it can be considered as a linear representation of a different 
-# permutation. In the example given above the permutation (2 4 3 0 1) would 
-# become (1 4 0 2 3). This mapping has many applications in the theory of 
-# permutations. 
+# The important property of the canonical form is that it can be reconstructed
+# from the contents of each cycle without the brackets. In addition, by removing
+# the brackets it can be considered as a linear representation of a different
+# permutation. In the example given above the permutation (2 4 3 0 1) would
+# become (1 4 0 2 3). This mapping has many applications in the theory of
+# permutations.
 #
 # ---
 # * GSL::Permutation#linear_to_canonical
 # * GSL::Permutation#to_canonical
 #
-#   Computes the canonical form of the permutation <tt>self</tt> and 
+#   Computes the canonical form of the permutation <tt>self</tt> and
 #   returns it as a new <tt>GSL::Permutation</tt>.
 #
 # ---
 # * GSL::Permutation#canonical_to_linear
 # * GSL::Permutation#to_linear
 #
-#   Converts a permutation <tt>self</tt> in canonical form back into linear 
+#   Converts a permutation <tt>self</tt> in canonical form back into linear
 #   form and returns it as a new <tt>GSL::Permutation</tt>.
 #
 #
 # ---
 # * GSL::Permutation#inversions
 #
-#   Counts the number of inversions in the permutation <tt>self</tt>. 
-#   An inversion is any pair of elements that are not in order. 
+#   Counts the number of inversions in the permutation <tt>self</tt>.
+#   An inversion is any pair of elements that are not in order.
 #   For example, the permutation 2031 has three inversions, corresponding
-#   to the pairs (2,0) (2,1) and (3,1). 
-#   The identity permutation has no inversions. 
+#   to the pairs (2,0) (2,1) and (3,1).
+#   The identity permutation has no inversions.
 #
 # ---
 # * GSL::Permutation#linear_cycles
 #
-#   Counts the number of cycles in the permutation <tt>self</tt>, 
-#   given in linear form. 
+#   Counts the number of cycles in the permutation <tt>self</tt>,
+#   given in linear form.
 #
 # ---
 # * GSL::Permutation#canonical_cycles
 #
-#   Counts the number of cycles in the permutation <tt>self</tt>, 
-#   given in canonical form. 
+#   Counts the number of cycles in the permutation <tt>self</tt>,
+#   given in canonical form.
 #
 # == {}[link:index.html"name="3] Applying Permutations
 # ---
 # * GSL::Permutation::permute(v)
 #
-#   Applies the permutation <tt>self</tt> to the elements of the vector <tt>v</tt>, 
-#   considered as a row-vector acted on by a permutation matrix from the 
-#   right, v' = v P. The j-th column of the permutation matrix P is 
-#   given by the p_j-th column of the identity matrix. 
+#   Applies the permutation <tt>self</tt> to the elements of the vector <tt>v</tt>,
+#   considered as a row-vector acted on by a permutation matrix from the
+#   right, v' = v P. The j-th column of the permutation matrix P is
+#   given by the p_j-th column of the identity matrix.
 #   The permutation <tt>self</tt> and the vector <tt>v</tt> must have the same length.
 # ---
 # * GSL::Permutation::permute_inverse(v)
 #
-#   Applies the inverse of the permutation <tt>self</tt> to the elements of 
-#   the vector <tt>v</tt>, considered as a row-vector acted on by an inverse 
-#   permutation matrix from the right, v' = v P^T. 
-#   Note that for permutation matrices the inverse is the same as the 
-#   transpose. The j-th column of the permutation matrix P is given by 
-#   the p_j-th column of the identity matrix. 
+#   Applies the inverse of the permutation <tt>self</tt> to the elements of
+#   the vector <tt>v</tt>, considered as a row-vector acted on by an inverse
+#   permutation matrix from the right, v' = v P^T.
+#   Note that for permutation matrices the inverse is the same as the
+#   transpose. The j-th column of the permutation matrix P is given by
+#   the p_j-th column of the identity matrix.
 #   The permutation <tt>self</tt> and the vector <tt>v</tt> must have the same length.
 # ---
 # * GSL::Permutation.mul(pa, pb)
 #
-#   Combines the two permutations <tt>pa</tt> and <tt>pb</tt> into a single 
-#   permutation <tt>p</tt> and returns it. 
-#   The permutation <tt>p</tt> is equivalent to applying <tt>pb</tt> first 
-#   and then <tt>pa</tt>. 
+#   Combines the two permutations <tt>pa</tt> and <tt>pb</tt> into a single
+#   permutation <tt>p</tt> and returns it.
+#   The permutation <tt>p</tt> is equivalent to applying <tt>pb</tt> first
+#   and then <tt>pa</tt>.
 #
 #
 # {prev}[link:rdoc/matrix_rdoc.html]

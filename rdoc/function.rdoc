@@ -7,7 +7,7 @@
 # * GSL::Function.alloc
 #
 #   Constructor.
-#    
+#
 #   * ex:
 #      require("gsl")
 #      f = GSL::Function.alloc { |x| sin(x) }
@@ -18,12 +18,12 @@
 #
 #   The function can have parameters of arbitrary numbers. Here is an
 #   example in case of exponential function <tt>f(x; a, b) = a*exp(-b*x)</tt>.
-#     
+#
 #      f = GSL::Function.alloc { |x, params|    # x: a scalar, params: an array
 #        a = params[0]; b = params[1]
 #        a*exp(-b*x)
 #      }
-#   To evaluate the function <tt>f(x) = 2*exp(-3*x)</tt>, 
+#   To evaluate the function <tt>f(x) = 2*exp(-3*x)</tt>,
 #      f.set_params([2, 3])
 #      f.eval(x)
 #
@@ -33,7 +33,7 @@
 # * GSL::Function#eval(x)
 # * GSL::Function#call(x)
 # * GSL::Function#at(x)
-# * GSL::Function#[x]
+# * \GSL::Function#[x]
 #
 #   These methods return a value of the function at <tt>x</tt>.
 #     p f.eval(2.5)
@@ -75,7 +75,7 @@
 #
 #     >> require("gsl")
 #     => true
-#     >> f = Function.alloc { |x, param| x*x + param[0]*x + param[1] } 
+#     >> f = Function.alloc { |x, param| x*x + param[0]*x + param[1] }
 #     => #<GSL::Function:0x6e8eb0>
 #     >> f.set_params(2, 3)
 #     => #<GSL::Function:0x6e8eb0>
@@ -86,7 +86,7 @@
 #     >> f.eval([1, 2, 3])                     <--- Array
 #     => [6.0, 11.0, 18.0]
 #     >> f.eval(Matrix.alloc([1, 2], [3, 4]))    <--- GSL::Matrix
-#     [ 6.000e+00 1.100e+01 
+#     [ 6.000e+00 1.100e+01
 #       1.800e+01 2.700e+01 ]
 #     => #<GSL::Matrix:0x6dd1b4>
 #

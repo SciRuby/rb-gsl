@@ -15,13 +15,13 @@
 # 1. {QAWF adaptive integration for Fourier integrals}[link:rdoc/integration_rdoc.html#10]
 #
 # == {}[link:index.html"name="1] Introduction
-# This section describes how to compute numerical integration of a function 
-# in one dimension. In Ruby/GSL, all the GSL routines for numerical integration 
+# This section describes how to compute numerical integration of a function
+# in one dimension. In Ruby/GSL, all the GSL routines for numerical integration
 # is provided as methods of {GSL::Function}[link:rdoc/function_rdoc.html] objects.
-# For example, a <tt>GSL::Function</tt> object which represents the sine function 
+# For example, a <tt>GSL::Function</tt> object which represents the sine function
 # <tt>sin(x)</tt> can be expressed as
 #   f = GSL::Function.alloc { |x| sin(x) }
-# To compute numerical integration of <tt>sin(x)</tt> over the range <tt>(a, b)</tt>, 
+# To compute numerical integration of <tt>sin(x)</tt> over the range <tt>(a, b)</tt>,
 # one can use the methods <tt>integrate_xxx</tt> or simply <tt>xxx</tt>, as
 # * <tt>f.integrate_xxx([a, b])</tt>, or <tt>f.xxx([a, b])</tt>
 # * <tt>f.integrate_xxx(a, b)</tt>, or <tt>f.xxx(a, b)</tt>
@@ -32,15 +32,15 @@
 # * GSL::Function#qng(...)
 # * GSL::Integration::qng(...)
 #
-#   These methods apply the Gauss-Kronrod integration rules in succession until 
-#   an estimate of the integral of the reciever function (a <tt>GSL::Function</tt> 
-#   object) over <tt>(a,b)</tt> is achieved within the desired absolute and relative 
+#   These methods apply the Gauss-Kronrod integration rules in succession until
+#   an estimate of the integral of the reciever function (a <tt>GSL::Function</tt>
+#   object) over <tt>(a,b)</tt> is achieved within the desired absolute and relative
 #   error limits, <tt>epsabs</tt> and <tt>epsrel</tt> (these are optional, the default
 #   values are 0,0 and 1e-10 respectively). These methods return an array of
-#   four elements <tt>[result, err, neval, status]</tt>, those are the final 
-#   approximation 
-#   of the integration, an estimate of the absolute error, the number of function 
-#   evaluation, and the status which is returned by the GSL 
+#   four elements <tt>[result, err, neval, status]</tt>, those are the final
+#   approximation
+#   of the integration, an estimate of the absolute error, the number of function
+#   evaluation, and the status which is returned by the GSL
 #   <tt>integration_qng()</tt> function.
 #
 #   * Ex: Integrate sin(x) over <tt>x = 0 -- 2</tt> with accuracies <tt>epsabs = 0, epsrel = 1.0e-7</tt>.
@@ -54,19 +54,19 @@
 #   For all the methods described in this section, the arguments <tt>[epsabs, epsrel]</tt> are optional, and the default values are <tt>[epsabs = 0.0, epsrel = 1e-10]</tt>.
 #
 # == {}[link:index.html"name="3] QAG adaptive integration
-# The QAG algorithm is a simple adaptive integration procedure. 
-# The integration region is divided into subintervals, and on each iteration 
-# the subinterval with the largest estimated error is bisected. 
+# The QAG algorithm is a simple adaptive integration procedure.
+# The integration region is divided into subintervals, and on each iteration
+# the subinterval with the largest estimated error is bisected.
 # This reduces the overall error rapidly, as the subintervals become concentrated
-# around local difficulties in the integrand. These subintervals are managed by 
-# a GSL::Integration::Workspace object, which handles the memory for the 
+# around local difficulties in the integrand. These subintervals are managed by
+# a GSL::Integration::Workspace object, which handles the memory for the
 # subinterval ranges, results and error estimates.
 #
 # === {}[link:index.html"name="3.1] GSL::Integration::Workspace class
 # ---
 # * GSL::Integration::Workspace.alloc(n = 1000)
 #
-#   This creates a workspace sufficient to hold n double precision intervals, 
+#   This creates a workspace sufficient to hold n double precision intervals,
 #   their integration results and error estimates.
 #
 # ---
@@ -76,9 +76,9 @@
 #
 # ==== {}[link:index.html"name="3.1.1] Algorithms which require the workspace
 # The algorithms described below require <tt>gsl_integration_workspace</tt> struct
-# in C. In Ruby/GSL, the corresponding methods require 
+# in C. In Ruby/GSL, the corresponding methods require
 # a <tt>GSL::Integration::Workspace</tt> object in their arguments. But it is also
-# possible to use these methods without workspace arguments: if it 
+# possible to use these methods without workspace arguments: if it
 # is not given, a workspace is created/destroyed internally. Thus
 # method calls are as
 #
@@ -89,8 +89,8 @@
 #           w = GSL::Integration::Workspace.alloc(limit)
 #           p f.qag([a, b], w)
 #
-# Explicit uses of a <tt>Workspace</tt> object reduce C function calls for memory 
-# allocations of workspace objects. 
+# Explicit uses of a <tt>Workspace</tt> object reduce C function calls for memory
+# allocations of workspace objects.
 #
 # === {}[link:index.html"name="3.2] Methods
 # ---
@@ -102,15 +102,15 @@
 # * GSL::Function#qag(...)
 # * GSL::Integration::qag(...)
 #
-#   These methods apply an integration rule adaptively until an estimate of the 
-#   integral of the reciever function over <tt>(a,b)</tt> is achieved within the 
+#   These methods apply an integration rule adaptively until an estimate of the
+#   integral of the reciever function over <tt>(a,b)</tt> is achieved within the
 #   desired absolute and relative error limits, <tt>epsabs</tt> and <tt>epsrel</tt>.
 #   One can give a <tt>GSL::Integration::Workspace</tt> object <tt>w</tt> with the
 #   last argument (option: if not given, the workspace is internally allocated and
-#   freed). The method returns an array with four elements 
-#   <tt>[result, err, neval, status]</tt>. 
-#   The integration rule is determined by the value of key, which should be 
-#   chosen from the following symbolic names, 
+#   freed). The method returns an array with four elements
+#   <tt>[result, err, neval, status]</tt>.
+#   The integration rule is determined by the value of key, which should be
+#   chosen from the following symbolic names,
 #
 #      GSL::Integration::GAUSS15  (key = 1)
 #      GSL::Integration::GAUSS21  (key = 2)
@@ -119,18 +119,18 @@
 #      GSL::Integration::GAUSS51  (key = 5)
 #      GSL::Integration::GAUSS61  (key = 6)
 #
-#   corresponding to the 15, 21, 31, 41, 51 and 61 point Gauss-Kronrod rules. The 
-#   higher-order rules give better accuracy for smooth functions, 
-#   while lower-order rules save time when the function contains local 
-#   difficulties, such as discontinuities. 
+#   corresponding to the 15, 21, 31, 41, 51 and 61 point Gauss-Kronrod rules. The
+#   higher-order rules give better accuracy for smooth functions,
+#   while lower-order rules save time when the function contains local
+#   difficulties, such as discontinuities.
 #
 # == {}[link:index.html"name="4] QAGS adaptive integration with singularities
-# The presence of an integrable singularity in the integration region causes 
-# an adaptive routine to concentrate new subintervals around the singularity. 
-# As the subintervals decrease in size the successive approximations to the 
-# integral converge in a limiting fashion. This approach to the limit can be 
-# accelerated using an extrapolation procedure. 
-# The QAGS algorithm combines adaptive bisection with the Wynn epsilon-algorithm 
+# The presence of an integrable singularity in the integration region causes
+# an adaptive routine to concentrate new subintervals around the singularity.
+# As the subintervals decrease in size the successive approximations to the
+# integral converge in a limiting fashion. This approach to the limit can be
+# accelerated using an extrapolation procedure.
+# The QAGS algorithm combines adaptive bisection with the Wynn epsilon-algorithm
 # to speed up the integration of many types of integrable singularities.
 #
 # ---
@@ -140,12 +140,12 @@
 # * GSL::Function#qags(...)
 # * GSL::Integration::qags(...)
 #
-#   These methods apply the Gauss-Kronrod 21-point integration rule 
-#   adaptively until an estimate of the integral over <tt>(a,b)</tt> is 
-#   achieved within the desired absolute and relative error limits, 
-#   <tt>epsabs</tt> and <tt>epsrel</tt>. The results are extrapolated using the 
-#   epsilon-algorithm, which accelerates the convergence of the integral 
-#   in the presence of discontinuities and integrable singularities. 
+#   These methods apply the Gauss-Kronrod 21-point integration rule
+#   adaptively until an estimate of the integral over <tt>(a,b)</tt> is
+#   achieved within the desired absolute and relative error limits,
+#   <tt>epsabs</tt> and <tt>epsrel</tt>. The results are extrapolated using the
+#   epsilon-algorithm, which accelerates the convergence of the integral
+#   in the presence of discontinuities and integrable singularities.
 #   The maximum number of subintervals is given by <tt>limit</tt>.
 #
 #   * ex:
@@ -155,7 +155,7 @@
 #       }
 #
 #       # create the function, with the parameter alpha = 1.0
-#       f = GSL::Function.alloc(proc, 1.0) 
+#       f = GSL::Function.alloc(proc, 1.0)
 #
 #       p f.integration_qags(0, 1)
 #
@@ -165,12 +165,12 @@
 # * GSL::Function#qagp(...)
 # * GSL::Integration::qagp(...)
 #
-#   These methods apply the adaptive integration algorithm QAGS taking 
-#   account of the user-supplied locations of singular points. The array 
-#   <tt>pts</tt> (a Ruby array or a GSL::Vector object) should contain the 
+#   These methods apply the adaptive integration algorithm QAGS taking
+#   account of the user-supplied locations of singular points. The array
+#   <tt>pts</tt> (a Ruby array or a GSL::Vector object) should contain the
 #   endpoints of the integration ranges defined by the integration region a
-#   nd locations of the singularities. For example, to integrate over the 
-#   region <tt>(a,b)</tt> with break-points at x_1, x_2, x_3 
+#   nd locations of the singularities. For example, to integrate over the
+#   region <tt>(a,b)</tt> with break-points at x_1, x_2, x_3
 #   (where a < x_1 < x_2 < x_3 < b) the following <tt>pts</tt> array should be used
 #
 #         pts[0] = a
@@ -197,12 +197,12 @@
 # * GSL::Function#qagi(...)
 # * GSL::Integration::qagi(...)
 #
-#   These methods compute the integral of the function over the infinite 
+#   These methods compute the integral of the function over the infinite
 #   interval (-infty,+infty). The integral is mapped onto the interval
-#   (0,1] using the transformation x = (1-t)/t. It is then integrated using 
-#   the QAGS algorithm. The normal 21-point Gauss-Kronrod rule of QAGS is 
-#   replaced by a 15-point rule, because the transformation can generate an 
-#   integrable singularity at the origin. In this case a lower-order rule is 
+#   (0,1] using the transformation x = (1-t)/t. It is then integrated using
+#   the QAGS algorithm. The normal 21-point Gauss-Kronrod rule of QAGS is
+#   replaced by a 15-point rule, because the transformation can generate an
+#   integrable singularity at the origin. In this case a lower-order rule is
 #   more efficient.
 #
 #   * ex
@@ -220,9 +220,9 @@
 # * GSL::Function#qagiu(...)
 # * GSL::Integration::qagiu(...)
 #
-#   These methods compute the integral of the function over the 
+#   These methods compute the integral of the function over the
 #   semi-infinite interval (a,+infty).
-#   
+#
 # ---
 # * GSL::Function#integration_qagil(b, epsabs = 0.0, epsrel = 1e-10, limit = 1000)
 # * GSL::Function#integration_qagil(b, epsabs = 0.0, epsrel = 1e-10, w)
@@ -230,7 +230,7 @@
 # * GSL::Function#qagil(...)
 # * GSL::Integration::qagil(...)
 #
-#   These methods compute the integral of the function over the 
+#   These methods compute the integral of the function over the
 #   semi-infinite interval (-infty,b).
 #
 # == {}[link:index.html"name="7] QAWC adaptive integration for Cauchy principal values
@@ -239,13 +239,13 @@
 # * GSL::Function#qawc(...)
 # * GSL::Function#qawc(...)
 #
-#   These methods compute the Cauchy principal value of the integral over 
-#   <tt>(a,b)</tt>, with a singularity at <tt>c</tt>. The adaptive bisection algorithm 
-#   of QAG is used, with modifications to ensure that subdivisions do not occur 
-#   at the singular point <tt>x = c</tt>. When a subinterval contains the point 
-#   <tt>x = c</tt> or is close to it then a special 25-point modified 
-#   Clenshaw-Curtis rule is used to control the singularity. Further away from 
-#   the singularity the algorithm uses an ordinary 15-point Gauss-Kronrod 
+#   These methods compute the Cauchy principal value of the integral over
+#   <tt>(a,b)</tt>, with a singularity at <tt>c</tt>. The adaptive bisection algorithm
+#   of QAG is used, with modifications to ensure that subdivisions do not occur
+#   at the singular point <tt>x = c</tt>. When a subinterval contains the point
+#   <tt>x = c</tt> or is close to it then a special 25-point modified
+#   Clenshaw-Curtis rule is used to control the singularity. Further away from
+#   the singularity the algorithm uses an ordinary 15-point Gauss-Kronrod
 #   integration rule.
 #
 #   * ex:
@@ -255,9 +255,9 @@
 #        p f459.qawc([-1.0, 5.0], 0, [0.0, 1e-3]) # Expect: log(125/631)/18
 #
 # == {}[link:index.html"name="8] QAWS adaptive integration for singular functions
-# The QAWS algorithm is designed for integrands with algebraic-logarithmic 
-# singularities at the end-points of an integration region. 
-# In order to work efficiently the algorithm requires a precomputed 
+# The QAWS algorithm is designed for integrands with algebraic-logarithmic
+# singularities at the end-points of an integration region.
+# In order to work efficiently the algorithm requires a precomputed
 # table of Chebyshev moments.
 #
 # ---
@@ -266,8 +266,8 @@
 # * GSL::Function#qaws(...)
 # * GSL::Integration::qaws(...)
 #
-#   These methods compute the integral of the function over the interval 
-#   <tt>(a,b)</tt> with the singular weight function 
+#   These methods compute the integral of the function over the interval
+#   <tt>(a,b)</tt> with the singular weight function
 #      (x-a)^alpha (b-x)^beta log^mu (x-a) log^nu (b-x)
 #   The parameters <tt>[alpha, beta, mu, nu]</tt> is given by a Ruby array
 #   <tt>table</tt>, or by a <tt>GSL::Integration::QAWS_Table</tt> object.
@@ -293,8 +293,8 @@
 #        p f458.qaws([0.0, 1.0], table, [0.0, 1e-10])
 #
 # == {}[link:index.html"name="9] QAWO adaptive integration for oscillatory functions
-# The QAWO algorithm is designed for integrands with an oscillatory factor, 
-# sin(omega x) or cos(omega x). In order to work efficiently the algorithm 
+# The QAWO algorithm is designed for integrands with an oscillatory factor,
+# sin(omega x) or cos(omega x). In order to work efficiently the algorithm
 # requires a table of Chebyshev moments.
 #
 #
@@ -303,7 +303,7 @@
 # * GSL::Function#qawo(...)
 # * GSL::Integration::qawo(...)
 #
-#   This method uses an adaptive algorithm to compute the integral over 
+#   This method uses an adaptive algorithm to compute the integral over
 #   <tt>[a,b]</tt> with the weight function sin(omega x) or cos(omega x) defined by
 #   the table <tt>table</tt>.
 #
@@ -334,14 +334,14 @@
 # * GSL::Function#qawf(...)
 # * GSL::Integration::qawf(...)
 #
-#   This method attempts to compute a Fourier integral of the function over 
+#   This method attempts to compute a Fourier integral of the function over
 #   the semi-infinite interval [a,+infty).
 #
 #       I = \int_a^{+infty} dx f(x) sin(omega x)
 #       I = \int_a^{+infty} dx f(x) cos(omega x)
 #
-#   The parameter omega is taken from the table <tt>table</tt> (the length <tt>L|</tt> 
-#   can take any value, since it is overridden by this function to a value 
+#   The parameter omega is taken from the table <tt>table</tt> (the length <tt>L|</tt>
+#   can take any value, since it is overridden by this function to a value
 #   appropriate for the fourier integration).
 #
 #   * ex:
@@ -380,8 +380,8 @@
 # ---
 # * GSL::Integration::Glfixed_table.alloc(n)
 #
-#   Determines the Gauss-Legendre abscissae and weights necessary for an <tt>n</tt>-point fixed order 
-#   integration scheme. If possible, high precision precomputed coefficients are used. 
+#   Determines the Gauss-Legendre abscissae and weights necessary for an <tt>n</tt>-point fixed order
+#   integration scheme. If possible, high precision precomputed coefficients are used.
 #   If precomputed weights are not available, lower precision coefficients are computed on the fly.
 #
 # ---

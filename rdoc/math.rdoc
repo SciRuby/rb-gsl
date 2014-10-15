@@ -88,12 +88,12 @@
 # ---
 # * GSL::POSINF
 #
-#   The IEEE representation of positive infinity, 
+#   The IEEE representation of positive infinity,
 #   computed from the expression +1.0/0.0.
 # ---
 # * GSL::NEGINF
 #
-#   The IEEE representation of negative infinity, 
+#   The IEEE representation of negative infinity,
 #   computed from the expression -1.0/0.0.
 # ---
 # * GSL::NAN
@@ -113,59 +113,59 @@
 # ---
 # * GSL::isinf(x)
 #
-#   This returns +1 if <tt>x</tt>  is positive infinity, 
+#   This returns +1 if <tt>x</tt>  is positive infinity,
 #   -1 if <tt>x</tt>  is negative infinity and 0 otherwise.
 #   NOTE: In Darwin9.5.0-gcc4.0.1, this method returns 1 for -inf.
 # ---
 # * GSL::isinf?(x)
 #
-#   This returns <tt>true</tt> if <tt>x</tt> is positive or negative infinity, 
+#   This returns <tt>true</tt> if <tt>x</tt> is positive or negative infinity,
 #   and <tt>false</tt> otherwise.
 # ---
 # * GSL::finite(x)
 #
-#   This returns 1 if <tt>x</tt> is a real number, 
+#   This returns 1 if <tt>x</tt> is a real number,
 #   and 0 if it is infinite or not-a-number.
 # ---
 # * GSL::finite?(x)
 #
-#   This returns <tt>true</tt> if <tt>x</tt> is a real number, 
+#   This returns <tt>true</tt> if <tt>x</tt> is a real number,
 #   and <tt>false</tt> if it is infinite or not-a-number.
 #
 # == {}[link:index.html"name="3] Elementary Functions
 # ---
 # * GSL::log1p(x)
 #
-#   This method computes the value of log(1+x) 
-#   in a way that is accurate for small <tt>x</tt>. It provides an alternative 
+#   This method computes the value of log(1+x)
+#   in a way that is accurate for small <tt>x</tt>. It provides an alternative
 #   to the BSD math function log1p(x).
 # ---
 # * GSL::expm1(x)
 #
-#   This method computes the value of exp(x)-1 
-#   in a way that is accurate for small <tt>x</tt>. It provides an alternative 
+#   This method computes the value of exp(x)-1
+#   in a way that is accurate for small <tt>x</tt>. It provides an alternative
 #   to the BSD math function expm1(x).
 # ---
 # * GSL::hypot(x, y)
 #
-#   This method computes the value of sqrt{x^2 + y^2} in a way that 
+#   This method computes the value of sqrt{x^2 + y^2} in a way that
 #   avoids overflow.
 # ---
-# * GSL::hypot3(x, y, z) 
+# * GSL::hypot3(x, y, z)
 #
-#   Computes the value of sqrt{x^2 + y^2 + z^2} in a way that avoids overflow. 
+#   Computes the value of sqrt{x^2 + y^2 + z^2} in a way that avoids overflow.
 # ---
 # * GSL::acosh(x)
 #
-#   This method computes the value of arccosh(x). 
+#   This method computes the value of arccosh(x).
 # ---
 # * GSL::asinh(x)
 #
-#   This method computes the value of arcsinh(x). 
+#   This method computes the value of arcsinh(x).
 # ---
 # * GSL::atanh(x)
 #
-#   This method computes the value of arctanh(x). 
+#   This method computes the value of arctanh(x).
 #
 #   These methods above can take argument <tt>x</tt> of
 #   Integer, Float, Array, Vector or Matrix.
@@ -173,22 +173,22 @@
 # ---
 # * GSL::ldexp(x)
 #
-#   This method computes the value of x * 2^e. 
+#   This method computes the value of x * 2^e.
 # ---
 # * GSL::frexp(x)
 #
-#   This method splits the number <tt>x</tt> into its normalized fraction 
-#   f and exponent e, such that x = f * 2^e and 0.5 <= f < 1. 
-#   The method returns f and the exponent e as an array, [f, e]. 
-#   If <tt>x</tt> is zero, both f and e are set to zero. 
+#   This method splits the number <tt>x</tt> into its normalized fraction
+#   f and exponent e, such that x = f * 2^e and 0.5 <= f < 1.
+#   The method returns f and the exponent e as an array, [f, e].
+#   If <tt>x</tt> is zero, both f and e are set to zero.
 #
 # == {}[link:index.html"name="4] Small Integer Powers
 # ---
 # * GSL::pow_int(x, n)
 #
-#   This routine computes the power <tt>x^n</tt> for integer <tt>n</tt>. 
-#   The power is computed efficiently -- for example, x^8 is computed as 
-#   ((x^2)^2)^2, requiring only 3 multiplications. 
+#   This routine computes the power <tt>x^n</tt> for integer <tt>n</tt>.
+#   The power is computed efficiently -- for example, x^8 is computed as
+#   ((x^2)^2)^2, requiring only 3 multiplications.
 #
 # ---
 # * GSL::pow_2(x)
@@ -200,7 +200,7 @@
 # * GSL::pow_8(x)
 # * GSL::pow_9(x)
 #
-#   These methods can be used to compute small integer powers x^2, x^3, etc. 
+#   These methods can be used to compute small integer powers x^2, x^3, etc.
 #   efficiently.
 #
 # == {}[link:index.html"name="5] Testing the Sign of Numbers
@@ -208,9 +208,9 @@
 # * GSL::SIGN(x)
 # * GSL::sign(x)
 #
-#   Return the sign of <tt>x</tt>. 
-#   It is defined as ((x) >= 0 ? 1 : -1). 
-#   Note that with this definition the sign of zero is positive 
+#   Return the sign of <tt>x</tt>.
+#   It is defined as ((x) >= 0 ? 1 : -1).
+#   Note that with this definition the sign of zero is positive
 #   (regardless of its IEEE sign bit).
 #
 # == {}[link:index.html"name="6] Testing for Odd and Even Numbers
@@ -218,7 +218,7 @@
 # * GSL::is_odd(n)
 # * GSL::IS_ODD(n)
 #
-#   Evaluate to 1 if <tt>n</tt> is odd and 0 if <tt>n</tt> is even. 
+#   Evaluate to 1 if <tt>n</tt> is odd and 0 if <tt>n</tt> is even.
 #   The argument <tt>n</tt> must be of Fixnum type.
 # ---
 # * GSL::is_odd?(n)
@@ -229,7 +229,7 @@
 # * GSL::is_even(n)
 # * GSL::IS_EVEN(n)
 #
-#   Evaluate to 1 if <tt>n</tt> is even and 0 if <tt>n</tt> is odd. 
+#   Evaluate to 1 if <tt>n</tt> is even and 0 if <tt>n</tt> is odd.
 #   The argument <tt>n</tt> must be of Fixnum type.
 # ---
 # * GSL::is_even?(n)
@@ -244,12 +244,12 @@
 # * GSL::min(a, b)
 # * GSL::MIN(a, b)
 #
-#   
+#
 # == {}[link:index.html"name="8] Approximate Comparison of Floating Point Numbers
 # ---
 # * GSL::fcmp(a, b, epsilon = 1e-10)
 #
-#   This method determines whether <tt>x</tt> and <tt>y</tt> are approximately equal to a 
+#   This method determines whether <tt>x</tt> and <tt>y</tt> are approximately equal to a
 #   relative accuracy <tt>epsilon</tt>.
 # ---
 # * GSL::equal?(a, b, epsilon = 1e-10)

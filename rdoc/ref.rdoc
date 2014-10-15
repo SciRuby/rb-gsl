@@ -1,11 +1,11 @@
 #
-# = {Ruby/GSL Reference}[link:rdoc/ref_rdoc.html"target="_parent]
-# (See also {Gnu Scientific Library -- Reference Manual}[http://www.gnu.org/software/gsl/manual/html_node/"target="_top])
+# = {Ruby/GSL Reference}[link:rdoc/ref_rdoc.html]
+# (See also {Gnu Scientific Library -- Reference Manual}[https://gnu.org/software/gsl/manual/html_node/])
 #
 # == {}[link:index.html"name="1] Front Matter
 # This document describes the modules, classes and the methods of Ruby/GSL.  This
 # includes cut-and-paste from the
-# {GNU Scientific Library -- Reference Manual}[http://www.gnu.org/software/gsl/manual/html_node/"target="_top],
+# {GNU Scientific Library -- Reference Manual}[https://gnu.org/software/gsl/manual/html_node/],
 # and documents of the extention libraries.
 #
 # === {}[link:index.html"name="1.1] Copyright of the GSL Reference
@@ -38,7 +38,7 @@
 # 1. {Complex Numbers}[link:rdoc/complex_rdoc.html]
 # 1. {Polynomials}[link:rdoc/poly_rdoc.html]
 # 1. {Special Functions}[link:rdoc/sf_rdoc.html]
-# 1. {Vectors}[link:rdoc/vector_rdoc.html] and {Matrices}[link:files/rdoc/matrix_rdoc.html]
+# 1. {Vectors}[link:rdoc/vector_rdoc.html] and {Matrices}[link:rdoc/matrix_rdoc.html]
 # 1. {Permutations}[link:rdoc/perm_rdoc.html]
 # 1. {Combinations}[link:rdoc/combi_rdoc.html]
 --
@@ -54,7 +54,7 @@
 # 1. {Quasi-Random Sequences}[link:rdoc/qrng_rdoc.html]
 # 1. {Random Number Distributions}[link:rdoc/randist_rdoc.html]
 # 1. {Statistics}[link:rdoc/stats_rdoc.html]
-# 1. {1d-Histograms}[link:rdoc/hist_rdoc.html], {2d-Histograms}[link:files/rdoc/hist2d_rdoc.html] and {3d-Histograms}[link:files/rdoc/hist3d_rdoc.html]
+# 1. {1d-Histograms}[link:rdoc/hist_rdoc.html], {2d-Histograms}[link:rdoc/hist2d_rdoc.html] and {3d-Histograms}[link:rdoc/hist3d_rdoc.html]
 # 1. {N-tuples}[link:rdoc/ntuple_rdoc.html]
 # 1. {Monte-Carlo Integration}[link:rdoc/monte_rdoc.html]
 # 1. {Simulated Annealing}[link:rdoc/siman_rdoc.html]
@@ -71,11 +71,11 @@
 # 1. {Multidimensional Minimization}[link:rdoc/multimin_rdoc.html]
 # 1. {Least-Squares Fitting}[link:rdoc/fit_rdoc.html]
 # 1. {Nonlinear Least-Squares Fitting}[link:rdoc/nonlinearfit_rdoc.html]
-# 1. {Basis Splines}[link:rdoc/bspline_rdoc.html]  
+# 1. {Basis Splines}[link:rdoc/bspline_rdoc.html]
 # 1. {Physical Constants}[link:rdoc/const_rdoc.html]
 # 1. {Graphics}[link:rdoc/graph_rdoc.html]
 # 1. Supported GSL add-on packages
-#    1. {rngextra}[link:rdoc/rngextra_rdoc.html]
+#    1. {rngextra}[link:rdoc/rng_rdoc.html#3]
 #    1. {Tensor manipulations}[link:rdoc/tensor_rdoc.html]
 #    1. OOL: Open Optimization library (see examples/ool/*.rb)
 #    1. CQP and Bundle (see examples/multimin/cqp.rb, bundle.rb)
@@ -85,7 +85,7 @@
 #    1. {ALF: associated Legendre polynomials}[link:rdoc/alf_rdoc.html]
 # 1. {NArray compatibilities}[link:rdoc/narray_rdoc.html]
 # 1. {Changes since Ruby/GSL 1.10.3}[link:rdoc/changes_rdoc.html]
-# 1. {GNU Free Documentation Licence}[http://www.gnu.org/software/gsl/manual/html_node/GNU-Free-Documentation-License.html"target="_top]
+# 1. {GNU Free Documentation Licence}[https://gnu.org/software/gsl/manual/html_node/GNU-Free-Documentation-License.html]
 #
 # {next}[link:rdoc/intro_rdoc.html]
 #

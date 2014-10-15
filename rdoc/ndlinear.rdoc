@@ -1,9 +1,9 @@
 #
-# = NDLINAR: multi-linear, multi-parameter least squares fitting 
+# = NDLINAR: multi-linear, multi-parameter least squares fitting
 #
 # The multi-dimension fitting library NDLINEAR is not included in GSL,
 # but is provided as an extension library. This is available at the
-# {Patric Alken's page}[http://ucsu.colorado.edu/~alken/gsl/"target="_top].
+# {Patrick Alken's page}[http://ucsu.colorado.edu/~alken/gsl/].
 #
 # Contents:
 # 1. {Introduction}[link:rdoc/ndlinear_rdoc.html#1]
@@ -11,23 +11,23 @@
 # 1. {Examples}[link:rdoc/ndlinear_rdoc.html#3]
 #
 # == {}[link:index.html"name="1] Introduction
-# The NDLINEAR extension provides support for general linear least squares 
-# fitting to data which is a function of more than one variable (multi-linear or 
-# multi-dimensional least squares fitting). This model has the form where 
-# <tt>x</tt> is a vector of independent variables, a_i are the fit coefficients, 
-# and F_i are the basis functions of the fit. This GSL extension computes the 
-# design matrix X_{ij = F_j(x_i) in the special case that the basis functions 
-# separate: Here the superscript value j indicates the basis function 
-# corresponding to the independent variable x_j. The subscripts (i_1, i_2, i_3, 
+# The NDLINEAR extension provides support for general linear least squares
+# fitting to data which is a function of more than one variable (multi-linear or
+# multi-dimensional least squares fitting). This model has the form where
+# <tt>x</tt> is a vector of independent variables, a_i are the fit coefficients,
+# and F_i are the basis functions of the fit. This GSL extension computes the
+# design matrix X_{ij = F_j(x_i) in the special case that the basis functions
+# separate: Here the superscript value j indicates the basis function
+# corresponding to the independent variable x_j. The subscripts (i_1, i_2, i_3,
 # ...) refer to which basis function to use from the complete set. These
-# subscripts are related to the index i in a complex way, which is the main 
-# problem this extension addresses. The model then becomes where n is the 
-# dimension of the fit and N_i is the number of basis functions for the variable 
-# x_i. Computationally, it is easier to supply the individual basis functions 
-# u^{(j) than the total basis functions F_i(x). However the design matrix X is 
-# easiest to construct given F_i(x). Therefore the routines below allow the user 
-# to specify the individual basis functions u^{(j) and then automatically 
-# construct the design matrix X. 
+# subscripts are related to the index i in a complex way, which is the main
+# problem this extension addresses. The model then becomes where n is the
+# dimension of the fit and N_i is the number of basis functions for the variable
+# x_i. Computationally, it is easier to supply the individual basis functions
+# u^{(j) than the total basis functions F_i(x). However the design matrix X is
+# easiest to construct given F_i(x). Therefore the routines below allow the user
+# to specify the individual basis functions u^{(j) and then automatically
+# construct the design matrix X.
 #
 #
 # == {}[link:index.html"name="2] Class and Methods
@@ -35,22 +35,22 @@
 # * GSL::MultiFit::Ndlinear.alloc(n_dim, N, u, params)
 # * GSL::MultiFit::Ndlinear::Workspace.alloc(n_dim, N, u, params)
 #
-#   Creates a workspace for solving multi-parameter, multi-dimensional linear 
-#   least squares problems. <tt>n_dim</tt> specifies the dimension of the fit 
-#   (the number of independent variables in the model). The array <tt>N</tt> of 
-#   length <tt>n_dim</tt> specifies the number of terms in each sum, so that 
+#   Creates a workspace for solving multi-parameter, multi-dimensional linear
+#   least squares problems. <tt>n_dim</tt> specifies the dimension of the fit
+#   (the number of independent variables in the model). The array <tt>N</tt> of
+#   length <tt>n_dim</tt> specifies the number of terms in each sum, so that
 #   <tt>N[i]</tt>
-#   specifies the number of terms in the sum of the i-th independent variable. 
-#   The array of <tt>Proc</tt> objects <tt>u</tt> of length <tt>n_dim</tt> specifies 
-#   the basis functions for each independent fit variable, so that <tt>u[i]</tt> 
-#   is a procedure to calculate the basis function for the i-th 
+#   specifies the number of terms in the sum of the i-th independent variable.
+#   The array of <tt>Proc</tt> objects <tt>u</tt> of length <tt>n_dim</tt> specifies
+#   the basis functions for each independent fit variable, so that <tt>u[i]</tt>
+#   is a procedure to calculate the basis function for the i-th
 #   independent variable.
-#   Each of the procedures <tt>u</tt> takes three block parameters: a point 
-#   <tt>x</tt> at which to evaluate the basis function, an array y of length 
-#   <tt>N[i]</tt> which is filled on output with the basis function values at 
-#   <tt>x</tt> for all i, and a params argument which contains parameters needed 
+#   Each of the procedures <tt>u</tt> takes three block parameters: a point
+#   <tt>x</tt> at which to evaluate the basis function, an array y of length
+#   <tt>N[i]</tt> which is filled on output with the basis function values at
+#   <tt>x</tt> for all i, and a params argument which contains parameters needed
 #   by the basis function. These parameters are supplied in the <tt>params</tt>
-#   argument to this method. 
+#   argument to this method.
 #
 #   Ex)
 #
@@ -93,18 +93,18 @@
 # * GSL::MultiFit::Ndlinear::Workspace#design(vars)
 #
 #   Construct the least squares design matrix <tt>X</tt> from the input <tt>vars</tt>
-#   and the previously specified basis functions. vars is a ndata-by-n_dim 
-#   matrix where the ith row specifies the n_dim independent variables for the 
-#   ith observation. 
+#   and the previously specified basis functions. vars is a ndata-by-n_dim
+#   matrix where the ith row specifies the n_dim independent variables for the
+#   ith observation.
 #
 # ---
 # * GSL::MultiFit::Ndlinear.est(x, c, cov, w)
 # * GSL::MultiFit::Ndlinear::Workspace#est(x, c, cov)
 #
-#   After the least squares problem is solved via <tt>GSL::MultiFit::linear</tt>, 
-#   this method can be used to evaluate the model at the data point <tt>x</tt>. 
-#   The coefficient vector <tt>c</tt> and covariance matrix <tt>cov</tt> are 
-#   outputs from <tt>GSL::MultiFit::linear</tt>. The model output value and 
+#   After the least squares problem is solved via <tt>GSL::MultiFit::linear</tt>,
+#   this method can be used to evaluate the model at the data point <tt>x</tt>.
+#   The coefficient vector <tt>c</tt> and covariance matrix <tt>cov</tt> are
+#   outputs from <tt>GSL::MultiFit::linear</tt>. The model output value and
 #   its error [<tt>y, yerr</tt>] are returned as an array.
 #
 # ---
@@ -117,11 +117,11 @@
 #   value.
 #
 # == {}[link:index.html"name="3] Examples
-# This example program generates data from the 3D isotropic harmonic oscillator 
-# wavefunction (real part) and then fits a model to the data using B-splines in 
-# the r coordinate, Legendre polynomials in theta, and sines/cosines in phi. 
-# The exact form of the solution is (neglecting the normalization constant for 
-# simplicity) The example program models psi by default. 
+# This example program generates data from the 3D isotropic harmonic oscillator
+# wavefunction (real part) and then fits a model to the data using B-splines in
+# the r coordinate, Legendre polynomials in theta, and sines/cosines in phi.
+# The exact form of the solution is (neglecting the normalization constant for
+# simplicity) The example program models psi by default.
 #
 #  #!/usr/bin/env ruby
 #  require("gsl")
@@ -133,7 +133,7 @@
 #  R_MAX = 3.0
 #
 #  def psi_real_exact(k, l, m, r, theta, phi)
-#     rr = GSL::pow(r, l)*Math::exp(-r*r)*GSL::Sf::laguerre_n(k, l + 0.5, 2 * r * r)	 
+#     rr = GSL::pow(r, l)*Math::exp(-r*r)*GSL::Sf::laguerre_n(k, l + 0.5, 2 * r * r)
 #     tt = GSL::Sf::legendre_sphPlm(l, m, Math::cos(theta))
 #     pp = Math::cos(m*phi)
 #     rr*tt*pp
@@ -191,7 +191,7 @@
 #
 #    vars[i][0] = r
 #    vars[i][1] = theta
-#    vars[i][2] = phi		
+#    vars[i][2] = phi
 #
 #    data[i] = psi + dpsi
 #  end

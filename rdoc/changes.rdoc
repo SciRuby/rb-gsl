@@ -10,11 +10,6 @@
 # The changes that could break old scripts are described below.  They are
 # followed by highlights of the other enhancements and new features.
 #
-# A complete log of changes since Ruby/GSL version 1.10.3 can be obtained by
-# using Subversion's log command to look at the repository...
-#
-#   svn log http://rb-gsl.rubyforge.org/svn/trunk/rb-gsl
-#
 # == {}[link:index.html"name="1] Backwards incompatibilities introduced in Ruby/GSL 1.11.2
 #
 # * FFT interface has been extensively changed.
@@ -44,8 +39,8 @@
 # * Now distributed and installable as a Ruby Gem.
 #
 # * Allow nil for real and/or imag in GSL::Vector::Complex#set(i,re,im) to NOT
-#   set that component.  For example, "z=GSL::Vector::Complex[1]; z[0] = [nil,
-#   1]" will set z[0] to GSL::Complex[0,1].
+#   set that component.  For example, <tt>z=GSL::Vector::Complex[1]; z[0] = [nil,
+#   1]</tt> will set \z[0] to \GSL::Complex[0,1].
 #
 # * Added GSL::Vector::Complex#to_s method.
 #

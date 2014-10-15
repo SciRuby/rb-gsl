@@ -13,13 +13,13 @@
 #   1. With sizes
 #         >> h2 = GSL::Histogram2d.alloc(2, 3)  # size 6
 #         >> h2.xrange
-#         => GSL::Histogram::Range: 
+#         => GSL::Histogram::Range:
 #         [ 0.000e+00 1.000e+00 2.000e+00 ]
 #         >> h2.yrange
-#         => GSL::Histogram::Range: 
+#         => GSL::Histogram::Range:
 #         [ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 ]
 #         >> h2.bin
-#         => GSL::Histogram::Bin: 
+#         => GSL::Histogram::Bin:
 #         [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
 #         >> h2.xrange.class.superclass
 #         => GSL::Vector::View::ReadOnly
@@ -29,22 +29,22 @@
 #   1. With ranges
 #          >> h2 = Histogram2d.alloc([3, 6, 7], [2, 3, 8])
 #          >> h2.xrange
-#          => GSL::Histogram::Range: 
+#          => GSL::Histogram::Range:
 #          [ 3.000e+00 6.000e+00 7.000e+00 ]
 #          >> h2.yrange
-#          => GSL::Histogram::Range: 
+#          => GSL::Histogram::Range:
 #          [ 2.000e+00 3.000e+00 8.000e+00 ]
 #          >> h2.bin
-#          => GSL::Histogram::Bin: 
+#          => GSL::Histogram::Bin:
 #          [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
 #
 #   1. With sizes and ranges
 #          >> h2 = Histogram2d.alloc(4, [0, 4], 3, [1, 5])
 #          >> h2.xrange
-#          => GSL::Histogram::Range: 
+#          => GSL::Histogram::Range:
 #          [ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 4.000e+00 ]
 #          >> h2.yrange
-#          => GSL::Histogram::Range: 
+#          => GSL::Histogram::Range:
 #          [ 1.000e+00 2.333e+00 3.667e+00 5.000e+00 ]
 #
 # ---
@@ -56,21 +56,21 @@
 # ---
 # * GSL::Histogram2d#set_ranges(vx, vy)
 #
-#   This sets the ranges of the existing histogram using 
+#   This sets the ranges of the existing histogram using
 #   two {GSL::Vector}[link:rdoc/vector_rdoc.html] objects or arrays.
 # ---
 # * GSL::Histogram2d#set_ranges_uniform(xmin, xmax, ymin, ymax)
 # * GSL::Histogram2d#set_ranges_uniform([xmin, xmax], [ymin, ymax])
 #
-#   This sets the ranges of the existing histogram <tt>self</tt> to cover 
-#   the ranges <tt>xmin</tt> to <tt>xmax</tt> and <tt>ymin</tt> to <tt>ymax</tt> uniformly. 
+#   This sets the ranges of the existing histogram <tt>self</tt> to cover
+#   the ranges <tt>xmin</tt> to <tt>xmax</tt> and <tt>ymin</tt> to <tt>ymax</tt> uniformly.
 #   The values of the histogram bins are reset to zero.
 #
 # ---
 # * GSL::Histogram2d#clone
 # * GSL::Histogram2d#duplicate
 #
-#   Returns a newly created histogram which is an exact copy of the 
+#   Returns a newly created histogram which is an exact copy of the
 #   histogram <tt>self</tt>.
 #
 # ---
@@ -78,10 +78,10 @@
 # * GSL::Histogram2d#accumulate(x, y, weight = 1)
 # * GSL::Histogram2d#fill(x, y, weight = 1)
 #
-#   These method update the histogram <tt>self</tt> by adding <tt>weight</tt> 
+#   These method update the histogram <tt>self</tt> by adding <tt>weight</tt>
 #   to the bin whose <tt>x</tt> and <tt>y</tt> ranges contain the coordinates (x,y).
-#   If (x,y) lies outside the limits of the histogram then none of the 
-#   bins are modified. 
+#   If (x,y) lies outside the limits of the histogram then none of the
+#   bins are modified.
 #
 # ---
 # * GSL::Histogram2d#increment2(x, y, weight = 1)
@@ -97,16 +97,16 @@
 # * GSL::Histogram2d#get([i, j])
 # * GSL::Histogram2d#[i, j]
 #
-#   Return the contents of the <tt>(i,j)</tt>-th bin of the histogram <tt>self</tt>. 
+#   Return the contents of the <tt>(i,j)</tt>-th bin of the histogram <tt>self</tt>.
 #
 # ---
 # * GSL::Histogram2d#get_xrange(i)
 # * GSL::Histogram2d#get_yrange(j)
 #
-#   These methods find the upper and lower range limits of the <tt>i</tt>-th 
+#   These methods find the upper and lower range limits of the <tt>i</tt>-th
 #   and <tt>j</tt>-th bins in the x and y directions of the histogram <tt>self</tt>.
 #
-#   Ex: 
+#   Ex:
 #      >> h2 = Histogram2d.alloc(2, [0, 2], 3, [1, 4])
 #      >> h2.get_xrange(1)
 #      => [1.0, 2.0]
@@ -127,7 +127,7 @@
 # * GSL::Histogram2d#nx
 # * GSL::Histogram2d#ny
 #
-#   These methodss return the maximum upper and minimum lower range limits 
+#   These methodss return the maximum upper and minimum lower range limits
 #   and the number of bins for the x and y directions of the histogram <tt>self</tt>.
 #
 # ---
@@ -138,7 +138,7 @@
 # ---
 # * GSL::Histogram2d#find(x, y)
 #
-#   Finds the indices i and j to the to the bin which covers the 
+#   Finds the indices i and j to the to the bin which covers the
 #   coordinates (<tt>x,y</tt>).
 #
 # ---
@@ -149,7 +149,7 @@
 # ---
 # * GSL::Histogram2d#max_bin
 #
-#   Returns the indices (i,j) of the bin containing the maximum value in 
+#   Returns the indices (i,j) of the bin containing the maximum value in
 #   the histogram <tt>self</tt>.
 #
 # ---
@@ -165,36 +165,36 @@
 # ---
 # * GSL::Histogram2d#xmean
 #
-#   Returns the mean of the histogrammed x variable, where the histogram 
-#   is regarded as a probability distribution. 
+#   Returns the mean of the histogrammed x variable, where the histogram
+#   is regarded as a probability distribution.
 #   Negative bin values are ignored for the purposes of this calculation.
 #
 # ---
 # * GSL::Histogram2d#xsigma
 #
-#   Returns the standard deviation of the histogrammed x variable, 
-#   where the histogram is regarded as a probability distribution. 
+#   Returns the standard deviation of the histogrammed x variable,
+#   where the histogram is regarded as a probability distribution.
 #   Negative bin values are ignored for the purposes of this calculation.
 #
 # ---
 # * GSL::Histogram2d#ymean
 #
-#   Returns the mean of the histogrammed y variable, where the histogram 
-#   is regarded as a probability distribution. Negative bin values are 
+#   Returns the mean of the histogrammed y variable, where the histogram
+#   is regarded as a probability distribution. Negative bin values are
 #   ignored for the purposes of this calculation.
 #
 # ---
 # * GSL::Histogram2d#ysigma
 #
-#   Returns the standard deviation of the histogrammed y variable, 
-#   where the histogram is regarded as a probability distribution. 
+#   Returns the standard deviation of the histogrammed y variable,
+#   where the histogram is regarded as a probability distribution.
 #   Negative bin values are ignored for the purposes of this calculation.
 #
 # ---
 # * GSL::Histogram2d#cov
 #
-#   Returns the covariance of the histogrammed x and y variables, 
-#   where the histogram is regarded as a probability distribution. 
+#   Returns the covariance of the histogrammed x and y variables,
+#   where the histogram is regarded as a probability distribution.
 #   Negative bin values are ignored for the purposes of this calculation.
 #
 # ---
@@ -222,13 +222,13 @@
 # ---
 # * GSL::Histogram2d#xproject(jstart = 0, jend = ny-1)
 #
-#   Creates a <tt>GSL::Histogram</tt> object by projecting the 2D histogram 
+#   Creates a <tt>GSL::Histogram</tt> object by projecting the 2D histogram
 #   <tt>self</tt> onto the x-axis over the y-range from <tt>jstart</tt> to <tt>jend</tt>.
 #
 # ---
 # * GSL::Histogram2d#yproject(istart = 0, iend = nx-1)
 #
-#   Creates a <tt>GSL::Histogram</tt> object by projecting the 2D histogram 
+#   Creates a <tt>GSL::Histogram</tt> object by projecting the 2D histogram
 #   <tt>self</tt> onto the y-axis over the x-range from <tt>istart</tt> to <tt>iend</tt>.
 #
 # == {}[link:index.html"name="3] GSL::Histogram2d::Pdf class

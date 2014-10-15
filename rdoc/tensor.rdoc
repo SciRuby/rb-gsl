@@ -1,7 +1,7 @@
 #
 # = Tensor manipulations
-# The tensor library is developed by J. Burguet and distributed 
-# as an add-on package of GSL. See {here}[http://sources.redhat.com/ml/gsl-discuss/2004-q4/msg00053.html"target="_top] and {here}[http://sources.redhat.com/ml/gsl-discuss/2004-q4/msg00055.html"target="_top].
+# The tensor library is developed by J. Burguet and distributed
+# as an add-on package of GSL. See {here}[https://sourceware.org/ml/gsl-discuss/2004-q4/msg00053.html] and {here}[https://sourceware.org/ml/gsl-discuss/2004-q4/msg00055.html].
 #
 # == {}[link:index.html"name="1] Class methods
 # ---
@@ -16,7 +16,7 @@
 #
 #   Creates a tensor of rank <tt>rank</tt> and dimension <tt>dimention</tt>,
 #   and initializes all the elements to zero.
-#  
+#
 # ---
 # * GSL::Tensor.copy(tensor)
 #
@@ -45,13 +45,13 @@
 #   Sets all the element of the tensor <tt>self</tt> to <tt>x</tt>.
 # ---
 # * GSL::Tensor#set(indices, x)
-# * GSL::Tensor#[indices]=x
+# * \GSL::Tensor#[indices]=x
 #
 #   Sets the element of the given indices to <tt>x</tt>.
 #
 # ---
 # * GSL::Tensor#get(indices)
-# * GSL::Tensor#[indices]
+# * \GSL::Tensor#[indices]
 #
 #   Returns the tensor element. If the number of indices given is smaller than the
 #   rank of the tensor, the method GSL::Tensor#subtensor is called.
@@ -70,31 +70,31 @@
 #
 # ---
 # * GSL::Tensor#subtensor(indices)
-# * GSL::Tensor#[indices]
+# * \GSL::Tensor#[indices]
 #
 #   Return a subtensor.
-#  
+#
 #   Ex:
 #       >> require("gsl")
 #       => true
 #       >> t = Vector[1..125].to_tensor(3, 5)
-#       => GSL::Tensor: 
+#       => GSL::Tensor:
 #       [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 6.000e+00 7.000e+00 ... ]
 #       >> t[0]
-#       => GSL::Tensor::View: 
-#       [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 
-#         6.000e+00 7.000e+00 8.000e+00 9.000e+00 1.000e+01 
-#         1.100e+01 1.200e+01 1.300e+01 1.400e+01 1.500e+01 
-#         1.600e+01 1.700e+01 1.800e+01 1.900e+01 2.000e+01 
+#       => GSL::Tensor::View:
+#       [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00
+#         6.000e+00 7.000e+00 8.000e+00 9.000e+00 1.000e+01
+#         1.100e+01 1.200e+01 1.300e+01 1.400e+01 1.500e+01
+#         1.600e+01 1.700e+01 1.800e+01 1.900e+01 2.000e+01
 #         2.100e+01 2.200e+01 2.300e+01 2.400e+01 2.500e+01 ]
 #       >> t[0,2]
-#       => GSL::Tensor::View: 
+#       => GSL::Tensor::View:
 #       [ 1.100e+01 1.200e+01 1.300e+01 1.400e+01 1.500e+01 ]
 #       >> t[3,1]
-#       => GSL::Tensor::View: 
+#       => GSL::Tensor::View:
 #       [ 8.100e+01 8.200e+01 8.300e+01 8.400e+01 8.500e+01 ]
 #       >> t[1][2]
-#       => GSL::Tensor::View: 
+#       => GSL::Tensor::View:
 #       [ 3.600e+01 3.700e+01 3.800e+01 3.900e+01 4.000e+01 ]
 #
 # ---
@@ -115,7 +115,7 @@
 # * GSL::Tensor#to_matrix
 #
 #   Converts the tensor of rank 2 into a <tt>GSL::Matrix::View</tt> object.
-#   
+#
 # === {}[link:index.html"name="2.2] IO
 # ---
 # * GSL::Tensor#fwrite(io)
@@ -160,7 +160,7 @@
 # ---
 # * GSL::Tensor#mul_elements(b)
 #
-#   This calculate element-by-element multiplication of <tt>self</tt> and <tt>b</tt>, 
+#   This calculate element-by-element multiplication of <tt>self</tt> and <tt>b</tt>,
 #   and returns a new tensor.
 # ---
 # * GSL::Tensor#mul_elements!(b)
@@ -170,7 +170,7 @@
 # * GSL::Tensor#div_elements(b)
 # * GSL::Tensor#/(b)
 #
-#   This calculate element-by-element division of <tt>self</tt> and <tt>b</tt>, 
+#   This calculate element-by-element division of <tt>self</tt> and <tt>b</tt>,
 #   and returns a new tensor.
 #   Multiplies the elements of tensor <tt>b</tt> to the elements of <tt>self</tt> , <tt>in-place</tt>.
 # ---
@@ -216,7 +216,7 @@
 # * GSL::Tensor#==(b)
 #
 #   Returns <tt>true</tt> if the tensors have same size and elements
-#   equal to absolute accurary <tt>eps</tt> for all the indices, 
+#   equal to absolute accurary <tt>eps</tt> for all the indices,
 #   and <tt>false</tt> otherwise.
 #
 # === {}[link:index.html"name="2.5] Tensor properties
@@ -242,7 +242,7 @@
 #
 #   Returns the size
 #
-# {prev}[link:rdoc/rngextra_rdoc.html]
+# {prev}[link:rdoc/rng_rdoc.html#3]
 # {next}[link:rdoc/narray_rdoc.html]
 #
 # {Reference index}[link:rdoc/ref_rdoc.html]

@@ -12,7 +12,7 @@
 # * GSL::Vector::Complex#heapsort
 # * GSL.heapsort(v)
 #
-#   These method sort the elements of the vector <tt>self</tt> 
+#   These method sort the elements of the vector <tt>self</tt>
 #   using the comparison function given by a block, and return the result
 #   as a new vector object. The vector <tt>self</tt> is not changed.
 #
@@ -34,36 +34,36 @@
 # * GSL::Vector::Complex#heapsort_index
 # * GSL.heapsort_index(v)
 #
-#   These method indirectly sort the elements of the vector <tt>self</tt> 
-#   using the comparison 
+#   These method indirectly sort the elements of the vector <tt>self</tt>
+#   using the comparison
 #   function given by a block, and return the result
 #   as a permutation object. The vector itself is not changed.
-#   
+#
 # == {}[link:index.html"name="2] Sorting vectors
 # ---
 # * GSL::Vector#sort!
 #
-#   This method sorts the elements of the vector <tt>self</tt> into 
+#   This method sorts the elements of the vector <tt>self</tt> into
 #   ascending numerical order. The vector itself is changed.
 #
 # ---
 # * GSL::Vector#sort
 #
-#   This returns a new vector whose elements are sorted into ascending 
+#   This returns a new vector whose elements are sorted into ascending
 #   numerical order. The vector <tt>self</tt> is not changed.
 #
 # ---
 # * GSL::Vector#sort_index
 #
-#   This method indirectly sorts the elements of the vector <tt>self</tt> 
-#   into ascending order, 
-#   and returns the result as a <tt>GSL::Permutation</tt> object. 
-#   The elements of the returned permutation give the index of the vector 
+#   This method indirectly sorts the elements of the vector <tt>self</tt>
+#   into ascending order,
+#   and returns the result as a <tt>GSL::Permutation</tt> object.
+#   The elements of the returned permutation give the index of the vector
 #   element which would
-#   have been stored in that position if the vector had been sorted in place. 
-#   The first element of the permutation gives the index of the least element 
-#   in <tt>self</tt>,  and the last element of the permutation gives the index 
-#   of the greatest element in 
+#   have been stored in that position if the vector had been sorted in place.
+#   The first element of the permutation gives the index of the least element
+#   in <tt>self</tt>,  and the last element of the permutation gives the index
+#   of the greatest element in
 #   <tt>self</tt>. The vector <tt>self</tt> is not changed.
 #
 # == {}[link:index.html"name="3] Selecting the k smallest or largest elements
@@ -71,21 +71,21 @@
 # * GSL::Vector#sort_smallest(k)
 # * GSL::Vector#sort_largest(k)
 #
-#   These functions return a new vector of the <tt>k</tt> smallest or 
-#   largest elements  of the vector <tt>self</tt>. 
-#   The argument <tt>k</tt> must be less than or equal to the length 
-#   of the vector <tt>self</tt>. 
+#   These functions return a new vector of the <tt>k</tt> smallest or
+#   largest elements  of the vector <tt>self</tt>.
+#   The argument <tt>k</tt> must be less than or equal to the length
+#   of the vector <tt>self</tt>.
 #
 # ---
 # * GSL::Vector#sort_smallest_index(k)
 # * GSL::Vector#sort_largest_index(k)
 #
-#   These functions return a new <tt>GSL::Permutation</tt> object of the indices of the 
-#   <tt>k</tt> smallest or largest elements of the vector <tt>self</tt>. 
+#   These functions return a new <tt>GSL::Permutation</tt> object of the indices of the
+#   <tt>k</tt> smallest or largest elements of the vector <tt>self</tt>.
 #   <tt>k</tt> must be less than or equal to the length of the vector.
 #
 #
-# {prev}[link:rdoc/multiset_rdoc.html]
+# {prev}[link:rdoc/combi_rdoc.html]
 # {next}[link:rdoc/blas_rdoc.html]
 #
 # {Reference index}[link:rdoc/ref_rdoc.html]

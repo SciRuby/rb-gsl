@@ -12,37 +12,37 @@
 # ---
 # * GSL::Combination.alloc(n, k)
 #
-#   These create a new combination with parameters <tt>n, k</tt>. 
-#   The combination is not initialized and its elements are undefined. 
-#   Use the method <tt>GSL::Combination.calloc</tt> if you want to create a 
-#   combination which is initialized to the lexicographically first combination. 
+#   These create a new combination with parameters <tt>n, k</tt>.
+#   The combination is not initialized and its elements are undefined.
+#   Use the method <tt>GSL::Combination.calloc</tt> if you want to create a
+#   combination which is initialized to the lexicographically first combination.
 #
 # ---
 # * GSL::Combination.calloc(n, k)
 #
-#   This creates a new combination with parameters <tt>n, k</tt> and initializes 
-#   it to the lexicographically first combination. 
+#   This creates a new combination with parameters <tt>n, k</tt> and initializes
+#   it to the lexicographically first combination.
 #
 # == {}[link:index.html"name="2] Methods
 #
 # ---
 # * GSL::Combination#init_first
 #
-#   This method initializes the combination <tt>self</tt> to the lexicographically 
+#   This method initializes the combination <tt>self</tt> to the lexicographically
 #   first combination, i.e. (0,1,2,...,k-1).
 #
 # ---
 # * GSL::Combination#init_last
 #
-#   This method initializes the combination <tt>self</tt> to the lexicographically last 
+#   This method initializes the combination <tt>self</tt> to the lexicographically last
 #   combination, i.e. (n-k,n-k+1,...,n-1).
 #
 # === {}[link:index.html"name="2.1] Accessing combination elements
 # ---
 # * GSL::Combination#get(i)
-# * GSL::Combination#[i]
+# * \GSL::Combination#[i]
 #
-#   This returns the value of the <tt>i</tt>-th element of the combination <tt>self</tt>. 
+#   This returns the value of the <tt>i</tt>-th element of the combination <tt>self</tt>.
 #
 # === {}[link:index.html"name="2.2] Combination properties
 # ---
@@ -63,8 +63,8 @@
 # ---
 # * GSL::Combination#valid
 #
-#   This method checks that the combination <tt>self</tt> is valid. 
-#   The <tt>k</tt> elements should contain numbers from range 0 .. n-1, 
+#   This method checks that the combination <tt>self</tt> is valid.
+#   The <tt>k</tt> elements should contain numbers from range 0 .. n-1,
 #   each number at most once. The numbers have to be in increasing order.
 #
 # ---
@@ -76,18 +76,18 @@
 # ---
 # * GSL::Combination#next
 #
-#   This method advances the combination <tt>self</tt> to the next combination in 
-#   lexicographic order and returns <tt>GSL::SUCCESS</tt>. If no further combinations are 
-#   available it returns <tt>GSL::FAILURE</tt> and leaves <tt>self</tt> unmodified. 
-#   Starting with the first combination and repeatedly applying this function will 
+#   This method advances the combination <tt>self</tt> to the next combination in
+#   lexicographic order and returns <tt>GSL::SUCCESS</tt>. If no further combinations are
+#   available it returns <tt>GSL::FAILURE</tt> and leaves <tt>self</tt> unmodified.
+#   Starting with the first combination and repeatedly applying this function will
 #   iterate through all possible combinations of a given order.
 #
 # ---
 # * GSL::Combination#prev
 #
-#   This method steps backwards from the combination <tt>self</tt> to the previous 
-#   combination in lexicographic order, returning <tt>GSL::SUCCESS</tt>. 
-#   If no previous combination is available it returns <tt>GSL::FAILURE</tt> 
+#   This method steps backwards from the combination <tt>self</tt> to the previous
+#   combination in lexicographic order, returning <tt>GSL::SUCCESS</tt>.
+#   If no previous combination is available it returns <tt>GSL::FAILURE</tt>
 #   and leaves <tt>self</tt> unmodified.
 #
 # === {}[link:index.html"name="2.4] Reading and writing combinations
@@ -117,7 +117,7 @@
 #      end
 #
 # {prev}[link:rdoc/perm_rdoc.html]
-# {next}[link:rdoc/multiset_rdoc.html]
+# {next}[link:rdoc/sort_rdoc.html]
 #
 # {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]

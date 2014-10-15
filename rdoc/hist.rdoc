@@ -22,7 +22,7 @@
 # * GSL::Histogram.alloc(array)
 # * GSL::Histogram.alloc(vector)
 #
-#   Constructor for a histogram object with <tt>n</tt> bins. 
+#   Constructor for a histogram object with <tt>n</tt> bins.
 #
 #   Examples:
 #
@@ -33,24 +33,24 @@
 #                  [ bin[0] )[ bin[1] )[ bin[2] )[ bin[3] )
 #                  |---------|---------|---------|---------|
 #               range[0]  range[1]  range[2]  range[3]  range[4]
-#   
+#
 #   1. With an array or a vector:
 #        h = Histogram.alloc([1, 3, 7, 9, 20])  <--- Histogram of 4 bins.
 #                                                  The range is initialized as
 #                                                  range[0] = 1, range[1] = 3, ..., range[4] = 20.
-#    
+#
 #   1. With size and the range [min, max]:
 #
 #         >> h = Histogram.alloc(5, [0, 5])
 #         >> h.range
-#         => GSL::Histogram::Range: 
+#         => GSL::Histogram::Range:
 #         [ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 ]
 #         >> h.bin
-#         => GSL::Histogram::Bin: 
+#         => GSL::Histogram::Bin:
 #         [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 ]
 #         >> h.increment(2.5)
 #         >> h.bin
-#         => GSL::Histogram::Bin: 
+#         => GSL::Histogram::Bin:
 #         [ 0.000e+00 0.000e+00 1.000e+00 0.000e+00 0.000e+00 ]
 #
 # ---
@@ -59,13 +59,13 @@
 # * GSL::Histogram.equal_bins_p(h1, h2)
 # * GSL::Histogram.equal_bins(h1, h2)
 #
-#   Return 1 if the all of the individual bin ranges of the two histograms 
+#   Return 1 if the all of the individual bin ranges of the two histograms
 #   are identical, and 0 otherwise.
 # ---
 # * GSL::Histogram.equal_bins_p?(h1, h2)
 # * GSL::Histogram.equal_bins?(h1, h2)
 #
-#   Return <tt>true</tt> if the all of the individual bin ranges of the two histograms 
+#   Return <tt>true</tt> if the all of the individual bin ranges of the two histograms
 #   are identical, and <tt>false</tt> otherwise.
 #
 # ---
@@ -76,9 +76,9 @@
 # * GSL::Histogram#set_ranges_uniform(xmin, xmax)
 # * GSL::Histogram#set_ranges_uniform([xmin, xmax])
 #
-#   This method sets the ranges of the existing histogram <tt>self</tt> 
-#   to cover the range <tt>xmin</tt> to <tt>xmax</tt> uniformly. 
-#   The values of the histogram bins are reset to zero. 
+#   This method sets the ranges of the existing histogram <tt>self</tt>
+#   to cover the range <tt>xmin</tt> to <tt>xmax</tt> uniformly.
+#   The values of the histogram bins are reset to zero.
 #   The bin ranges are shown as below,
 #      bin[0] corresponds to xmin <= x < xmin + d
 #      bin[1] corresponds to xmin + d <= x < xmin + 2 d
@@ -90,13 +90,13 @@
 # ---
 # * GSL::Histogram.memcpy(dest, src)
 #
-#   Copies the histogram <tt>src</tt> into the pre-existing histogram <tt>dest</tt>, 
-#   making dest into an exact copy of <tt>src</tt>. 
-#   The two histograms must be of the same size. 
+#   Copies the histogram <tt>src</tt> into the pre-existing histogram <tt>dest</tt>,
+#   making dest into an exact copy of <tt>src</tt>.
+#   The two histograms must be of the same size.
 # ---
 # * GSL::Histogram#clone
 #
-#   Returns a newly created histogram which is an exact copy of the histogram 
+#   Returns a newly created histogram which is an exact copy of the histogram
 #   <tt>self</tt>.
 #
 # == {}[link:index.html"name="3] Updating and accessing histogram elements
@@ -107,10 +107,10 @@
 #
 #   These methods updates the histogram <tt>self</tt> by adding <tt>weight</tt>
 #   (default = 1) to the bin whose range contains the coordinate <tt>x</tt>.
-#   If <tt>x</tt> is an instance of <tt>GSL::Vector</tt> or <tt>Array</tt>, 
+#   If <tt>x</tt> is an instance of <tt>GSL::Vector</tt> or <tt>Array</tt>,
 #   all the elements are filled into the histogram.
-#   If <tt>x</tt> is less than (greater than) the lower limit (upper limit) 
-#   of the histogram then none of bins are modified. 
+#   If <tt>x</tt> is less than (greater than) the lower limit (upper limit)
+#   of the histogram then none of bins are modified.
 #
 # ---
 # * GSL::Histogram#increment2(x, weight = 1)
@@ -118,27 +118,27 @@
 # * GSL::Histogram#accumulate2(x, weight = 1)
 #
 #   These methods updates the histogram <tt>self</tt> by adding <tt>weight</tt>
-#   to the bin whose range contains the coordinate <tt>x</tt>.    
+#   to the bin whose range contains the coordinate <tt>x</tt>.
 #   If <tt>x</tt> is less than the lower limit, the lowest bin is incremented.
 #   If <tt>x</tt> is greater than the upper limit, the highest bin is incremented.
 #
 # ---
 # * GSL::Histogram#get(i)
-# * GSL::Histogram#[i]
+# * \GSL::Histogram#[i]
 #
-#   These methods return the contents of the <tt>i</tt>-th bin of the histogram 
+#   These methods return the contents of the <tt>i</tt>-th bin of the histogram
 #   <tt>self</tt>.
 #
 # ---
 # * GSL::Hiatogram#get_range(i)
 #
-#   This method finds the upper and lower range limits of the <tt>i</tt>-th bin 
+#   This method finds the upper and lower range limits of the <tt>i</tt>-th bin
 #   of the histogram <tt>self</tt>, and returns an array [<tt>lower, upper</tt>].
 #
 # ---
 # * GSL::Histogram#range
 #
-#   This returns a <tt>Vector::View</tt> object as a reference to the pointer 
+#   This returns a <tt>Vector::View</tt> object as a reference to the pointer
 #   <tt>double *range</tt> in the <tt>gsl_histogram</tt> struct.
 #
 # ---
@@ -151,7 +151,7 @@
 # * GSL::Histogram#min
 # * GSL::Histogram#bins
 #
-#   These methods return the maximum upper and minimum lower range 
+#   These methods return the maximum upper and minimum lower range
 #   limits and the number of bins of the histogram <tt>self</tt>.
 #
 # ---
@@ -159,14 +159,14 @@
 #
 #   This method resets all the bins in the histogram <tt>self</tt> to zero.
 #
-# == {}[link:index.html"name="4] Searching histogram ranges 
+# == {}[link:index.html"name="4] Searching histogram ranges
 # ---
 # * GSL::Histogram#find(x)
 #
-#   This method finds and sets the index i to the bin number which 
+#   This method finds and sets the index i to the bin number which
 #   covers the coordinate <tt>x</tt> in the histogram <tt>self</tt>.
 #
-# == {}[link:index.html"name="5] Histogram Statistics 
+# == {}[link:index.html"name="5] Histogram Statistics
 # ---
 # * GSL::Histogram#max_val
 #
@@ -175,8 +175,8 @@
 # ---
 # * GSL::Histogram#max_bin
 #
-#   This returns the index of the bin containing the maximum value. 
-#   In the case where several bins contain the same maximum value the 
+#   This returns the index of the bin containing the maximum value.
+#   In the case where several bins contain the same maximum value the
 #   smallest index is returned.
 #
 # ---
@@ -187,24 +187,24 @@
 # ---
 # * GSL::Histogram#min_bin
 #
-#   This returns the index of the bin containing the minimum value. 
-#   In the case where several bins contain the same maximum value 
+#   This returns the index of the bin containing the minimum value.
+#   In the case where several bins contain the same maximum value
 #   the smallest index is returned.
 #
 # ---
 # * GSL::Histogram#mean
 #
-#   This returns the mean of the histogrammed variable, 
-#   where the histogram is regarded as a probability distribution. 
-#   Negative bin values are ignored for the purposes of this calculation. 
+#   This returns the mean of the histogrammed variable,
+#   where the histogram is regarded as a probability distribution.
+#   Negative bin values are ignored for the purposes of this calculation.
 #   The accuracy of the result is limited by the bin width.
 #
 # ---
 # * GSL::Histogram#sigma
 #
-#   This function returns the standard deviation of the histogrammed variable, 
-#   where the histogram is regarded as a probability distribution. 
-#   Negative bin values are ignored for the purposes of this calculation. 
+#   This function returns the standard deviation of the histogrammed variable,
+#   where the histogram is regarded as a probability distribution.
+#   Negative bin values are ignored for the purposes of this calculation.
 #   The accuracy of the result is limited by the bin width.
 #
 # ---
@@ -250,43 +250,43 @@
 # * GSL::Histogram#rebin(m = 2)
 #
 #   This method creates a new histogram merging <tt>m</tt> bins in one in the
-#   histogram <tt>self</tt>. This method cannot be used for histograms of 
-#   non-uniform bin size. If <tt>m</tt> is not an exact divider of the number 
+#   histogram <tt>self</tt>. This method cannot be used for histograms of
+#   non-uniform bin size. If <tt>m</tt> is not an exact divider of the number
 #   of bins of <tt>self</tt>, the range of the rebinned histogram is extended
 #   not to lose the entries in the last <tt>m-1</tt> (at most) bins.
 #
 #   Example: a histogram <tt>h</tt> of size 5 with the range [0, 5), binned as
 #
-#       GSL::Histogram::Range: 
+#       GSL::Histogram::Range:
 #       [ 0.000e+00 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 ]
-#       GSL::Histogram::Bin: 
+#       GSL::Histogram::Bin:
 #       [ 0.000e+00 3.000e+00 1.000e+00 1.000e+00 3.000e+00 ]
-#  
-#   When a new histogram is created merging two bins into one as 
+#
+#   When a new histogram is created merging two bins into one as
 #   <tt>h2 = h.rebin</tt>, then <tt>h2</tt> looks like
 #
-#       GSL::Histogram::Range: 
+#       GSL::Histogram::Range:
 #       [ 0.000e+00 2.000e+00 4.000e+00 6.000e+00 ]
-#       GSL::Histogram::Bin: 
+#       GSL::Histogram::Bin:
 #       [ 3.000e+00 2.000e+00 3.000e+00 ]
 #
 # ---
 # * GSL::Histogram#reverse
 #
-#   This method create a new histogram reversing the order of the range and the bin of 
+#   This method create a new histogram reversing the order of the range and the bin of
 #   histogram <tt>self</tt>.
-#   
+#
 # ---
 # * GSL::Histogram#integrate(istart = 0, iend = n-1)
 # * GSL::Histogram#integrate([istart, iend])
 # * GSL::Histogram#integrate(direction = 1 or -1)
 #
 #   This method calculates cumulative counts of the histogram <tt>self</tt>
-#   from the <tt>istart</tt>-th bin to the <tt>iend</tt>-th bin (<tt>iend</tt> inclusive), 
-#   and returns a <tt>GSL::Histogram::Integral</tt> 
-#   object. If <tt>istart <= iend</tt> (or <tt>direction == 1</tt>), 
-#   the <tt>i</tt>-th bin value of a 
-#   <tt>GSL::Histogram::Integral</tt> object <tt>hi</tt> created from a 
+#   from the <tt>istart</tt>-th bin to the <tt>iend</tt>-th bin (<tt>iend</tt> inclusive),
+#   and returns a <tt>GSL::Histogram::Integral</tt>
+#   object. If <tt>istart <= iend</tt> (or <tt>direction == 1</tt>),
+#   the <tt>i</tt>-th bin value of a
+#   <tt>GSL::Histogram::Integral</tt> object <tt>hi</tt> created from a
 #   <tt>GSL::Histogram</tt> <tt>h</tt> is given by <tt>hi[i] = hi[i-1] + h[i]</tt>.
 #   If <tt>istart > iend</tt> (or <tt>direction == -1</tt>), <tt>hi[i] = hi[i+1] = h[i]</tt>.
 #
@@ -305,8 +305,8 @@
 # ---
 # * GSL::Histogram#fit_exponential(binstart = 0, binend = n-1)
 #
-#   This method fits the histogram <tt>self</tt> to an exponential model 
-#   <tt>h[n] = a exp(b x[n])</tt> using  the bins of indices from <tt>binstart</tt> 
+#   This method fits the histogram <tt>self</tt> to an exponential model
+#   <tt>h[n] = a exp(b x[n])</tt> using  the bins of indices from <tt>binstart</tt>
 #   to <tt>binend</tt>. The result is returned as an Array of 6 elements,
 #   <tt>[a, b, erra, errb, sumsq, dof]</tt>, where
 #   * <tt>a</tt>: scale factor
@@ -318,8 +318,8 @@
 # ---
 # * GSL::Histogram#fit_power(binstart = 0, binend = n-1)
 #
-#   This method fits the histogram <tt>self</tt> to a power-law model 
-#   <tt>h[n] = a x[n]^b</tt> using  the bins of indices from <tt>binstart</tt> 
+#   This method fits the histogram <tt>self</tt> to a power-law model
+#   <tt>h[n] = a x[n]^b</tt> using  the bins of indices from <tt>binstart</tt>
 #   to <tt>binend</tt>. The result is returned as an Array of 6 elements,
 #   <tt>[a, b, erra, errb, sumsq, dof]</tt>.
 #
@@ -328,8 +328,8 @@
 #
 #   This method fits the histogram <tt>self</tt> to Gaussian distribution
 #   using the bins of indices from <tt>binstart</tt> to <tt>binend</tt>,
-#   and returns an Array of 8 elements, 
-#   <tt>[sigma, mean, height, errsig, errmean, errhei, sumsq, dof]</tt>. 
+#   and returns an Array of 8 elements,
+#   <tt>[sigma, mean, height, errsig, errmean, errhei, sumsq, dof]</tt>.
 #
 #   Example:
 #     #!/usr/bin/env ruby
@@ -349,15 +349,15 @@
 #     GSL::graph(h, [x, y], "-T X -C -g 3")
 #
 # == {}[link:index.html"name="9] The histogram probability distribution
-# The probability distribution function for a histogram consists of a set of bins 
-# which measure the probability of an event falling into a given range of 
+# The probability distribution function for a histogram consists of a set of bins
+# which measure the probability of an event falling into a given range of
 # a continuous variable x. A probability distribution function is defined
-# by the following class, which actually stores the cumulative probability 
-# distribution function. This is the natural quantity for generating samples 
-# via the inverse transform method, because there is a one-to-one mapping 
-# between the cumulative probability distribution and the range [0,1]. 
-# It can be shown that by taking a uniform random number in this 
-# range and finding its corresponding coordinate in the cumulative probability 
+# by the following class, which actually stores the cumulative probability
+# distribution function. This is the natural quantity for generating samples
+# via the inverse transform method, because there is a one-to-one mapping
+# between the cumulative probability distribution and the range [0,1].
+# It can be shown that by taking a uniform random number in this
+# range and finding its corresponding coordinate in the cumulative probability
 # distribution we obtain samples with the desired probability distribution.
 #
 # === {}[link:index.html"name="9.1] GSL::Histogram::Pdf class
@@ -365,23 +365,23 @@
 # * GSL::Histogram::Pdf.alloc(n)
 # * GSL::Histogram::Pdf.alloc(h)
 #
-#   Constructors. If a histogram <tt>h</tt> is given, 
+#   Constructors. If a histogram <tt>h</tt> is given,
 #   the probability distribution is initialized with the contents of <tt>h</tt>.
 #
 # ---
 # * GSL::Histogram::Pdf#init(h)
 #
-#   This initializes the probability distribution <tt>self</tt> with the contents 
-#   of the histogram <tt>h</tt>. 
+#   This initializes the probability distribution <tt>self</tt> with the contents
+#   of the histogram <tt>h</tt>.
 #
 # ---
 # * GSL::Histogram::Pdf#sample(r)
 #
-#   This method uses <tt>r</tt>, a uniform random number between zero and one, 
-#   to compute a single random sample from the probability distribution <tt>self</tt>. 
+#   This method uses <tt>r</tt>, a uniform random number between zero and one,
+#   to compute a single random sample from the probability distribution <tt>self</tt>.
 #   The algorithm used to compute the sample s is given by the following formula,
 #      s = range[i] + delta * (range[i+1] - range[i])
-#   where i is the index which satisfies 
+#   where i is the index which satisfies
 #   <tt>sum[i] <= r < sum[i+1]</tt> and <tt>delta</tt> is <tt>(r - sum[i])/(sum[i+1] - sum[i])</tt>.
 #
 # ---
@@ -392,12 +392,12 @@
 # ---
 # * GSL::Histogram:Pdf#range
 #
-#   This returns a <tt>Vector::View</tt> object as a reference to the pointer 
+#   This returns a <tt>Vector::View</tt> object as a reference to the pointer
 #   <tt>double *range</tt> in the <tt>gsl_histogram_pdf</tt> struct.
 # ---
 # * GSL::Histogram:Pdf#sum
 #
-#   This returns a <tt>Vector::View</tt> object as a reference to the pointer 
+#   This returns a <tt>Vector::View</tt> object as a reference to the pointer
 #   <tt>double *sum</tt> in the <tt>gsl_histogram_pdf</tt> struct.
 #
 # {prev}[link:rdoc/stats_rdoc.html]

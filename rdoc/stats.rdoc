@@ -23,7 +23,7 @@
 #        >> require("gsl")
 #        => true
 #        >> v = Vector[1..7]
-#        => GSL::Vector: 
+#        => GSL::Vector:
 #        [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 6.000e+00 7.000e+00 ]
 #        >> v.mean
 #        => 4.0
@@ -43,27 +43,27 @@
 #
 # ---
 # * GSL::Stats::variance_m(v[, mean])
-# * GSL::Vector#variance_m([mean])
+# * \GSL::Vector#variance_m([mean])
 #
 #   Variance of <tt>v</tt> relative to the given value of <tt>mean</tt>.
 #
 # ---
 # * GSL::Stats::sd(v[, mean])
-# * GSL::Vector#sd([mean])
+# * \GSL::Vector#sd([mean])
 #
 #   Standard deviation.
 #
 # ---
 # * GSL::Stats::tss(v[, mean])
-# * GSL::Vector#tss([mean])
+# * \GSL::Vector#tss([mean])
 #
-#   (GSL-1.11 or later) These methods return the total sum of squares (TSS) of data about the mean.	
+#   (GSL-1.11 or later) These methods return the total sum of squares (TSS) of data about the mean.
 #
 # ---
 # * GSL::Stats::variance_with_fixed_mean(v, mean)
 # * GSL::Vector#variance_with_fixed_mean(mean)
 #
-#   Unbiased estimate of the variance of <tt>v</tt> when the population mean 
+#   Unbiased estimate of the variance of <tt>v</tt> when the population mean
 #   <tt>mean</tt> of the underlying distribution is known <tt>a priori</tt>.
 #
 # ---
@@ -72,34 +72,34 @@
 # * GSL::Stats::sd_with_fixed_mean(v, mean)
 # * GSL::Vector#sd_with_fixed_mean(mean)
 #
-#   Unbiased estimate of the variance of <tt>v</tt> when the population mean 
+#   Unbiased estimate of the variance of <tt>v</tt> when the population mean
 #   <tt>mean</tt> of the underlying distribution is known <tt>a priori</tt>.
 #
-# == {}[link:index.html"name="2] Absolute deviation 
+# == {}[link:index.html"name="2] Absolute deviation
 # ---
 # * GSL::Stats::absdev(v[, mean])
-# * GSL::Vector#absdev([mean])
+# * \GSL::Vector#absdev([mean])
 #
 #   Compute the absolute deviation (from the mean <tt>mean</tt> if given).
 #
-# == {}[link:index.html"name="3] Higher moments (skewness and kurtosis) 
+# == {}[link:index.html"name="3] Higher moments (skewness and kurtosis)
 #
 # ---
 # * GSL::Stats::skew(v[, mean, sd])
-# * GSL::Vector#skew([mean, sd])
+# * \GSL::Vector#skew([mean, sd])
 #
 #   Skewness
 #
 # ---
 # * GSL::Stats::kurtosis(v[, mean, sd])
-# * GSL::Vector#kurtosis([mean, sd])
+# * \GSL::Vector#kurtosis([mean, sd])
 #
 #   Kurtosis
 #
 # == {}[link:index.html"name="4] Autocorrelation
 # ---
 # * GSL::Stats::lag1_autocorrelation(v[, mean])
-# * GSL::Vector#lag1_autocorrelation([mean])
+# * \GSL::Vector#lag1_autocorrelation([mean])
 #
 #   The lag-1 autocorrelation
 #
@@ -126,7 +126,7 @@
 # * GSL::Vector#wkurtosis(w)
 #
 #
-# == {}[link:index.html"name="8] Maximum and Minimum values 
+# == {}[link:index.html"name="8] Maximum and Minimum values
 # ---
 # * GSL::Stats::max(data)
 # * GSL::Vector#max
@@ -149,46 +149,46 @@
 # * GSL::Stats::max_index(data)
 # * GSL::Vector#max_index
 #
-#   Return the index of the maximum value in <tt>data</tt>. 
-#   The maximum value is defined as the value of the element x_i 
-#   which satisfies x_i >= x_j for all j. 
-#   When there are several equal maximum elements then the first one is chosen. 
+#   Return the index of the maximum value in <tt>data</tt>.
+#   The maximum value is defined as the value of the element x_i
+#   which satisfies x_i >= x_j for all j.
+#   When there are several equal maximum elements then the first one is chosen.
 # ---
 # * GSL::Stats::min_index(data)
 # * GSL::Vector#min_index
 #
-#   Returns the index of the minimum value in <tt>data</tt>. 
-#   The minimum value is defined as the value of the element x_i 
-#   which satisfies x_i >= x_j for all j. 
-#   When there are several equal minimum elements then the first one is 
-#   chosen. 
+#   Returns the index of the minimum value in <tt>data</tt>.
+#   The minimum value is defined as the value of the element x_i
+#   which satisfies x_i >= x_j for all j.
+#   When there are several equal minimum elements then the first one is
+#   chosen.
 #
 # ---
 # * GSL::Stats::minmax_index(data)
 # * GSL::Vector#minmax_index
 #
-#   Return the indexes of the minimum and maximum values in <tt>data</tt> 
-#   in a single pass. 
+#   Return the indexes of the minimum and maximum values in <tt>data</tt>
+#   in a single pass.
 #
 #
-# == {}[link:index.html"name="9] Median and Percentiles 
+# == {}[link:index.html"name="9] Median and Percentiles
 #
 # ---
 # * GSL::Stats::median_from_sorted_data(v)
 # * GSL::Vector#median_from_sorted_data
 #
-#   Return the median value. The elements of the data must be 
-#   in ascending numerical order. There are no checks to see whether 
-#   the data are sorted, so the method <tt>GSL::Vector#sort</tt> 
+#   Return the median value. The elements of the data must be
+#   in ascending numerical order. There are no checks to see whether
+#   the data are sorted, so the method <tt>GSL::Vector#sort</tt>
 #   should always be used first.
 #
 # ---
 # * GSL::Stats::quantile_from_sorted_data(v)
 # * GSL::Vector#quantile_from_sorted_data
 #
-#   Return the quantile value. The elements of the data must be 
-#   in ascending numerical order. There are no checks to see whether 
-#   the data are sorted, so the method <tt>GSL::Vector#sort</tt> 
+#   Return the quantile value. The elements of the data must be
+#   in ascending numerical order. There are no checks to see whether
+#   the data are sorted, so the method <tt>GSL::Vector#sort</tt>
 #   should always be used first.
 #
 # == {}[link:index.html"name="10] Example

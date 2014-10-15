@@ -24,14 +24,14 @@
 # ---
 # * GSL::Vector::Complex.calloc(n)
 #
-#   Creates a complex vector of length <tt>n</tt> and initializes all 
+#   Creates a complex vector of length <tt>n</tt> and initializes all
 #   the elements of the vector to zero.
 #
 # == {}[link:index.html"name="2] Instance methods
 # === {}[link:index.html"name="2.1] Accessing vector elements
 # ---
 # * GSL::Vector::Complex#get(args)
-# * GSL::Vector::Complex#[args]
+# * \GSL::Vector::Complex#[args]
 #
 #   Returns elements(s) of the complex vector <tt>self</tt> if <tt>args</tt> is a
 #   single Fixnum, a single Array of Fixnums, or a single GSL::Permutation (or
@@ -54,7 +54,7 @@
 #
 # ---
 # * GSL::Vector::Complex#set(args, val)
-# * GSL::Vector::Complex#[args]=val
+# * \GSL::Vector::Complex#[args]=val
 #
 #   If <tt>args</tt> is empty, behaves as <tt>#set_all</tt> and <tt>val</tt> must be a
 #   <tt>[re,im]</tt> <tt>Array</tt>, <tt>Float</tt>, <tt>Integer</tt>, or

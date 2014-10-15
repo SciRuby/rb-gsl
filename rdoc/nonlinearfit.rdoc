@@ -1,13 +1,13 @@
 #
 # = Nonlinear Least-Squares Fitting
-# This chapter describes functions for multidimensional nonlinear least-squares 
-# fitting. The library provides low level components for a variety of iterative 
-# solvers and convergence tests. These can be combined by the user to achieve 
-# the desired solution, with full access to the intermediate steps of the 
-# iteration. Each class of methods uses the same framework, so that you can 
-# switch between solvers at runtime without needing to recompile your program. 
-# Each instance of a solver keeps track of its own state, allowing the solvers 
-# to be used in multi-threaded programs. 
+# This chapter describes functions for multidimensional nonlinear least-squares
+# fitting. The library provides low level components for a variety of iterative
+# solvers and convergence tests. These can be combined by the user to achieve
+# the desired solution, with full access to the intermediate steps of the
+# iteration. Each class of methods uses the same framework, so that you can
+# switch between solvers at runtime without needing to recompile your program.
+# Each instance of a solver keeps track of its own state, allowing the solvers
+# to be used in multi-threaded programs.
 #
 # Contents:
 # 1. {Overview}[link:rdoc/nonlinearfit_rdoc.html#1]
@@ -24,37 +24,37 @@
 #    1. {Fitting to built-in functions}[link:rdoc/nonlinearfit_rdoc.html#8.2]
 #
 # == {}[link:index.html"name="1] Overview
-# The problem of multidimensional nonlinear least-squares fitting requires the 
-# minimization of the squared residuals of n functions, f_i, in p parameters, 
-# x_i, All algorithms proceed from an initial guess using the linearization, 
-# where x is the initial point, p is the proposed step and J is the Jacobian 
-# matrix J_{ij} = d f_i / d x_j. Additional strategies are used to enlarge the 
-# region of convergence. These include requiring a decrease in the norm ||F|| 
-# on each step or using a trust region to avoid steps which fall outside the 
-# linear regime. 
+# The problem of multidimensional nonlinear least-squares fitting requires the
+# minimization of the squared residuals of n functions, f_i, in p parameters,
+# x_i, All algorithms proceed from an initial guess using the linearization,
+# where x is the initial point, p is the proposed step and J is the Jacobian
+# matrix J_{ij} = d f_i / d x_j. Additional strategies are used to enlarge the
+# region of convergence. These include requiring a decrease in the norm ||F||
+# on each step or using a trust region to avoid steps which fall outside the
+# linear regime.
 #
-# To perform a weighted least-squares fit of a nonlinear model Y(x,t) to data 
-# (t_i, y_i) with independent gaussian errors \sigma_i, use function components 
-# of the following form, Note that the model parameters are denoted by x in this 
-# chapter since the non-linear least-squares algorithms are described 
-# geometrically (i.e. finding the minimum of a surface). The independent 
-# variable of any data to be fitted is denoted by t. 
+# To perform a weighted least-squares fit of a nonlinear model Y(x,t) to data
+# (t_i, y_i) with independent gaussian errors \sigma_i, use function components
+# of the following form, Note that the model parameters are denoted by x in this
+# chapter since the non-linear least-squares algorithms are described
+# geometrically (i.e. finding the minimum of a surface). The independent
+# variable of any data to be fitted is denoted by t.
 #
-# With the definition above the Jacobian is 
-# J_{ij} =(1 / \sigma_i) d Y_i / d x_j, where Y_i = Y(x,t_i). 
+# With the definition above the Jacobian is
+# J_{ij} =(1 / \sigma_i) d Y_i / d x_j, where Y_i = Y(x,t_i).
 #
-# == {}[link:index.html"name="2] Initializing the Solver 
+# == {}[link:index.html"name="2] Initializing the Solver
 #
 # === {}[link:index.html"name="2.1] GSL::MultiFit::FdfSolver class
 # ---
 # * GSL::MultiFit::FdfSolver.alloc(T, n, p)
 #
-#   This creates an instance of the <tt>GSL::MultiFit::FdfSolver</tt> class of 
+#   This creates an instance of the <tt>GSL::MultiFit::FdfSolver</tt> class of
 #   type <tt>T</tt> for <tt>n</tt> observations and <tt>p</tt> parameters. The type <tt>T</tt>
-#   is given by a <tt>Fixnum</tt> constant or a <tt>String</tt>, 
+#   is given by a <tt>Fixnum</tt> constant or a <tt>String</tt>,
 #   * <tt>GSL::MultiFit::LMSDER</tt> or <tt>"lmsder"</tt>
 #   * <tt>GSL::MultiFit::LMDER</tt> or <tt>"lmder"</tt>
-#   For example, the following code creates an instance of a Levenberg-Marquardt 
+#   For example, the following code creates an instance of a Levenberg-Marquardt
 #   solver for 100 data points and 3 parameters,
 #
 #       solver = MultiFit::FdfSolver.alloc(MultiFit::LMDER, 100, 3)
@@ -62,7 +62,7 @@
 # ---
 # * GSL::MultiFit::FdfSolver#set(f, x)
 #
-#   This method initializes, or reinitializes, an existing solver <tt>self</tt> 
+#   This method initializes, or reinitializes, an existing solver <tt>self</tt>
 #   to use the function <tt>f</tt> and the initial guess <tt>x</tt>. The function <tt>f</tt>
 #   is an instance of the <tt>GSL::MultiFit::Function_fdf</tt> class (see below). The
 #   initial guess of the parameters <tt>x</tt> is given by a {GSL::Vector}[link:rdoc/vector_rdoc.html] object.
@@ -91,8 +91,8 @@
 # * GSL::MultiFit::Function_fdf.alloc(f, df, fdf, p)
 #
 #   Constructor for the <tt>Function_fdf</tt> class, to a
-#   function with <tt>p</tt> parameters, The first two or three arguments are Ruby Proc objects 
-#   to evaluate the function to minimize and its derivative (Jacobian). 
+#   function with <tt>p</tt> parameters, The first two or three arguments are Ruby Proc objects
+#   to evaluate the function to minimize and its derivative (Jacobian).
 #
 # ---
 # * GSL::MultiFit::Function_fdf#set_procs(f, df, p)
@@ -106,20 +106,20 @@
 # * GSL::MultiFit::Function_fdf#set_data(t, y, sigma)
 #
 #   This sets the data <tt>t, y, sigma</tt> of length <tt>n</tt>, to the function <tt>self</tt>.
-#       
+#
 # == {}[link:index.html"name="4] Iteration
 # ---
 # * GSL::MultiFit::FdfSolver#iterate
 #
-#   THis performs a single iteration of the solver <tt>self</tt>. If the iteration 
-#   encounters an unexpected problem then an error code will be returned. 
-#   The solver maintains a current estimate of the best-fit parameters at all 
+#   THis performs a single iteration of the solver <tt>self</tt>. If the iteration
+#   encounters an unexpected problem then an error code will be returned.
+#   The solver maintains a current estimate of the best-fit parameters at all
 #   times. This information can be accessed with the method <tt>position</tt>.
 #
 # ---
 # * GSL::MultiFit::FdfSolver#position
 #
-#   This returns the current position (i.e. best-fit parameters) of the solver 
+#   This returns the current position (i.e. best-fit parameters) of the solver
 #   <tt>self</tt>, as a <tt>GSL::Vector</tt> object.
 #
 #
@@ -134,9 +134,9 @@
 # ---
 # * GSL::MultiFit::FdfSolver#test_delta(epsabs, epsrel)
 #
-#   This method tests for the convergence of the sequence by comparing the last 
-#   step with the absolute error <tt>epsabs</tt> and relative error (<tt>epsrel</tt> 
-#   to the current position. The test returns <tt>GSL::SUCCESS</tt> if the following 
+#   This method tests for the convergence of the sequence by comparing the last
+#   step with the absolute error <tt>epsabs</tt> and relative error (<tt>epsrel</tt>
+#   to the current position. The test returns <tt>GSL::SUCCESS</tt> if the following
 #   condition is achieved,
 #     |dx_i| < epsabs + epsrel |x_i|
 #   for each component of <tt>x</tt> and returns <tt>GSL::CONTINUE</tt> otherwise.
@@ -145,19 +145,19 @@
 # * GSL::MultiFit::FdfSolver#test_gradient(g, epsabs)
 # * GSL::MultiFit::FdfSolver#test_gradient(epsabs)
 #
-#   This function tests the residual gradient <tt>g</tt> against the absolute error 
-#   bound <tt>epsabs</tt>. If <tt>g</tt> is not given, it is calculated internally. 
-#   Mathematically, the gradient should be exactly zero at the minimum. 
+#   This function tests the residual gradient <tt>g</tt> against the absolute error
+#   bound <tt>epsabs</tt>. If <tt>g</tt> is not given, it is calculated internally.
+#   Mathematically, the gradient should be exactly zero at the minimum.
 #   The test returns <tt>GSL::SUCCESS</tt> if the following condition is achieved,
 #     \sum_i |g_i| < epsabs
-#   and returns <tt>GSL::CONTINUE</tt> otherwise. This criterion is suitable for 
-#   situations where the precise location of the minimum, x, is unimportant provided 
+#   and returns <tt>GSL::CONTINUE</tt> otherwise. This criterion is suitable for
+#   situations where the precise location of the minimum, x, is unimportant provided
 #   a value can be found where the gradient is small enough.
 #
 # ---
 # * GSL::MultiFit::FdfSolver#gradient
 #
-#   This method returns the gradient g of \Phi(x) = (1/2) ||F(x)||^2 from the 
+#   This method returns the gradient g of \Phi(x) = (1/2) ||F(x)||^2 from the
 #   Jacobian matrix and the function values, using the formula g = J^T f.
 #
 # ---
@@ -175,18 +175,18 @@
 # * GSL::MultiFit.covar(J, epsrel)
 # * GSL::MultiFit.covar(J, epsrel, covar)
 #
-#   This method uses the Jacobian matrix <tt>J</tt> to compute the covariance 
+#   This method uses the Jacobian matrix <tt>J</tt> to compute the covariance
 #   matrix of the best-fit parameters. If an existing matrix <tt>covar</tt> is given,
-#   it is overwritten, and if not, this method returns a new matrix. 
-#   The parameter <tt>epsrel</tt> is used to remove linear-dependent columns when 
+#   it is overwritten, and if not, this method returns a new matrix.
+#   The parameter <tt>epsrel</tt> is used to remove linear-dependent columns when
 #   <tt>J</tt> is rank deficient.
 #
 #   The covariance matrix is given by,
 #      covar = (J^T J)^{-1}
-#   and is computed by QR decomposition of <tt>J</tt> with column-pivoting. 
+#   and is computed by QR decomposition of <tt>J</tt> with column-pivoting.
 #   Any columns of R which satisfy
 #     |R_{kk}| <= epsrel |R_{11}|
-#   are considered linearly-dependent and are excluded from the covariance matrix 
+#   are considered linearly-dependent and are excluded from the covariance matrix
 #   (the corresponding rows and columns of the covariance matrix are set to zero).
 #
 # == {}[link:index.html"name="7] Higher level interfaces
@@ -195,33 +195,33 @@
 # * GSL::MultiFit::FdfSolver.fit(x, w, y, type[, guess])
 #
 #   This method uses <tt>FdfSolver</tt> with the LMSDER algorithm to fit the data
-#   <tt>[x, y]</tt> to a function of type <tt>type</tt>. The returned value is 
+#   <tt>[x, y]</tt> to a function of type <tt>type</tt>. The returned value is
 #   an array of 4 elements, <tt>[coef, err, chisq, dof]</tt>,
 #   where <tt>coef</tt> is an array of the fitting coefficients, <tt>err</tt> contains
-#   errors in estimating <tt>coef</tt>, <tt>chisq</tt> is the 
-#   chi-squared, and <tt>dof</tt> is the degree-of-freedom in the fitting 
+#   errors in estimating <tt>coef</tt>, <tt>chisq</tt> is the
+#   chi-squared, and <tt>dof</tt> is the degree-of-freedom in the fitting
 #   which equals to (data length - number of fitting coefficients). The optional
 #   argument <tt>guess</tt> is an array of initial guess of the coefficients.
 #   The fitting type <tt>type</tt> is given by a <tt>String</tt> as follows.
-#   * <tt>"gaussian"</tt>: Gaussian fit, 
+#   * <tt>"gaussian"</tt>: Gaussian fit,
 #     <tt>y = y0 + A exp(-(x-x0)^2/2/var)</tt>, <tt>coef = [y0, A, x0, var]</tt>
 #   * <tt>"gaussian_2peaks"</tt>: 2-peak Gaussian fit,
 #     <tt>y = y0 + A1 exp(-(x-x1)^2/2/var1) + A2 exp(-(x-x2)^2/2/var2)</tt>, <tt>coef = [y0, A1, x1, var1, A2, x2, var2]</tt>
-#   * <tt>"exp"</tt>: Exponential fit, 
+#   * <tt>"exp"</tt>: Exponential fit,
 #     <tt>y = y0 + A exp(-b x)</tt>, <tt>coef = [y0, A, b]</tt>
-#   * <tt>"dblexp"</tt>: Double exponential fit, 
+#   * <tt>"dblexp"</tt>: Double exponential fit,
 #     <tt>y = y0 + A1 exp(-b1 x) + A2 exp(-b2 x)</tt>, <tt>coef = [y0, A1, b1, A2, b2]</tt>
-#   * <tt>"sin"</tt>: Sinusoidal fit, 
+#   * <tt>"sin"</tt>: Sinusoidal fit,
 #     <tt>y = y0 + A sin(f x + phi)</tt>, <tt>coef = [y0, A, f, phi]</tt>
-#   * <tt>"lor"</tt>: Lorentzian peak fit, 
+#   * <tt>"lor"</tt>: Lorentzian peak fit,
 #     <tt>y = y0 + A/((x-x0)^2 + B)</tt>, <tt>coef = [y0, A, x0, B]</tt>
-#   * <tt>"hill"</tt>: Hill's equation fit, 
+#   * <tt>"hill"</tt>: Hill's equation fit,
 #     <tt>y = y0 + (m - y0)/(1 + (xhalf/x)^r)</tt>, <tt>coef = [y0, n, xhalf, r]</tt>
-#   * <tt>"sigmoid"</tt>: Sigmoid (Fermi-Dirac) function fit, 
+#   * <tt>"sigmoid"</tt>: Sigmoid (Fermi-Dirac) function fit,
 #     <tt>y = y0 + m/(1 + exp((x0-x)/r))</tt>, <tt>coef = [y0, m, x0, r]</tt>
-#   * <tt>"power"</tt>: Power-law fit, 
+#   * <tt>"power"</tt>: Power-law fit,
 #     <tt>y = y0 + A x^r</tt>, <tt>coef = [y0, A, r]</tt>
-#   * <tt>"lognormal"</tt>: Lognormal peak fit, 
+#   * <tt>"lognormal"</tt>: Lognormal peak fit,
 #     <tt>y = y0 + A exp[ -(log(x/x0)/width)^2 ]</tt>, <tt>coef = [y0, A, x0, width]</tt>
 #
 #   See {Linear fitting}[link:rdoc/fit_rdoc.html#2.3] for linear and polynomical fittings.
@@ -229,12 +229,12 @@
 # == {}[link:index.html"name="8] Examples
 # === {}[link:index.html"name="8.1] Fitting to user-defined functions
 #
-# The following example program fits a weighted exponential model with background 
-# to experimental data, Y = A exp(-lambda t) + b. The first part of the program sets 
-# up the functions <tt>procf</tt> and <tt>procdf</tt> to calculate the model and its Jacobian. 
+# The following example program fits a weighted exponential model with background
+# to experimental data, Y = A exp(-lambda t) + b. The first part of the program sets
+# up the functions <tt>procf</tt> and <tt>procdf</tt> to calculate the model and its Jacobian.
 # The appropriate fitting function is given by,
 #   f_i = ((A exp(-lambda t_i) + b) - y_i)/sigma_i
-# where we have chosen t_i = i. The Jacobian matrix <tt>jac</tt> is the derivative of 
+# where we have chosen t_i = i. The Jacobian matrix <tt>jac</tt> is the derivative of
 # these functions with respect to the three parameters (A, lambda, b). It is given by,
 #   J_{ij} = d f_i / d x_j
 # where x_0 = A, x_1 = lambda and x_2 = b.

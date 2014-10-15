@@ -34,7 +34,7 @@
 #     => GSL::Vector::Int
 #     [ 0 1 2 3 4 5 ]
 #     >> na = v.to_nvector_ref
-#     => NVector(ref).int(6): 
+#     => NVector(ref).int(6):
 #     [ 0, 1, 2, 3, 4, 5 ]
 #     >> na[3] = 999
 #     => 999
@@ -56,12 +56,12 @@
 # * NArray#to_gv_view
 # * NArray#to_gm_view
 #
-#   Create <tt>GSL::Vector::View</tt> or <tt>GSL::Matrix::View</tt> objects from NArray. 
+#   Create <tt>GSL::Vector::View</tt> or <tt>GSL::Matrix::View</tt> objects from NArray.
 #   The memory block of the NArray objects are shared with the View objects.
 #
 #   Example:
 #     >> na = NArray[0, 1, 2, 3, 4, 5]
-#     => NArray.int(6): 
+#     => NArray.int(6):
 #     [ 0, 1, 2, 3, 4, 5 ]
 #     >> b = na.to_gv_int_view
 #     => GSL::Vector::Int::View
@@ -69,7 +69,7 @@
 #     >> b[2] = -99
 #     => -99
 #     >> na
-#     => NArray.int(6): 
+#     => NArray.int(6):
 #     [ 0, 1, -99, 3, 4, 5 ]
 #
 # == {}[link:index.html"name="2] Methods which accepts NArray
@@ -100,7 +100,7 @@
 # * GSL::Linalg::LU.lndet(lu)
 # * GSL::Linalg::LU.invert(lu, perm)
 # * GSL::Linalg::QR.decomp(m)
-# * GSL::Linalg::QR.solve(qr, tau, b)	
+# * GSL::Linalg::QR.solve(qr, tau, b)
 # * GSL::Linalg::QR.svx(qr, tau, bx)
 # * GSL::Linalg::SV.decomp(m)
 # * GSL::Linalg::SV.solve(u, v, s, b)
@@ -120,7 +120,7 @@
 #
 # === {}[link:index.html"name="2.5] <tt>GSL::FFT</tt> module
 # ---
-# * {Many}[link:rdoc/FFT_rdoc.html]
+# * {Many}[link:rdoc/fft_rdoc.html]
 #
 # === {}[link:index.html"name="2.6] <tt>GSL::Function</tt> class
 # ---

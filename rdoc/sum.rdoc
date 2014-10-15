@@ -20,16 +20,16 @@
 # ---
 # * GSL::Sum::Levin_u.accel(v)
 #
-#   This method takes the terms of a series in vector <tt>v</tt> and computes 
+#   This method takes the terms of a series in vector <tt>v</tt> and computes
 #   the extrapolated limit of the series using a Levin u-transform. This returns
 #   an array of <tt>[sum, abserr, sum_plain, terms_used]</tt>,
-#   where <tt>sum</tt> is the extrapolated sum, <tt>abserr</tt> is an estimate of the 
+#   where <tt>sum</tt> is the extrapolated sum, <tt>abserr</tt> is an estimate of the
 #   absolute error, and <tt>sum_plain</tt> is the actual term-by-term sum.
 #
 # ---
 # * GSL::Sum::Levin_utrunc.accel(v)
 #
-#   This method takes the terms of a series in vector <tt>v</tt> and computes 
+#   This method takes the terms of a series in vector <tt>v</tt> and computes
 #   the extrapolated limit of the series using a Levin u-transform. This returns
 #   an array of <tt>[sum, abserr_trunc, sum_plain, terms_used]</tt>.
 #
@@ -48,8 +48,8 @@
 # * GSL::Vector#sum_accel
 # * GSL::Vector#sum
 #
-#   These calculate the "extrapolated" sum of the terms contained in a 
-#   GSL::Vector object, using a Levin u-transform. The returned values is a 
+#   These calculate the "extrapolated" sum of the terms contained in a
+#   GSL::Vector object, using a Levin u-transform. The returned values is a
 #   Ruby array with 4 elements, as [<tt>sum_accel, err, sum_plain, terms_used</tt>],
 #   where <tt>sum_accel</tt> is the extraplated sum, <tt>err</tt> is the absolute error,
 #   <tt>sum_plain</tt> is the term-by-term sum, and <tt>terms_used</tt> is the number of
