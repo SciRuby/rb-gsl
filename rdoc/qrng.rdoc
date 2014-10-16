@@ -9,13 +9,13 @@
 # to the interface for random number generators.
 #
 # Contents:
-# 1. {Quasi-random number generator initialization}[link:qrng_rdoc.html#1]
-# 1. {Sampling from a quasi-random number generator}[link:qrng_rdoc.html#2]
-# 1. {Auxiliary quasi-random number generator functions}[link:qrng_rdoc.html#3]
-# 1. {Saving and resorting quasi-random number generator state}[link:qrng_rdoc.html#4]
-# 1. {Quasi-random number generator algorithms}[link:qrng_rdoc.html#5]
+# 1. {Quasi-random number generator initialization}[link:qrng_rdoc.html#label-Quasi-random+number+generator+initialization]
+# 1. {Sampling from a quasi-random number generator}[link:qrng_rdoc.html#label-Sampling+from+a+quasi-random+number+generator]
+# 1. {Auxiliary quasi-random number generator functions}[link:qrng_rdoc.html#label-Auxiliary+quasi-random+number+generator+functions]
+# 1. {Saving and resorting quasi-random number generator state}[link:qrng_rdoc.html#label-Saving+and+resorting+quasi-random+number+generator+state]
+# 1. {Quasi-random number generator algorithms}[link:qrng_rdoc.html#label-Quasi-random+number+generator+algorithms]
 #
-# == {}[link:index.html"name="1] Quasi-random number generator initialization
+# == Quasi-random number generator initialization
 #
 # ---
 # * GSL::QRng.alloc(T, d)
@@ -27,7 +27,7 @@
 #
 #   This reinitializes the generator to its starting point.
 #
-# == {}[link:index.html"name="2] Sampling from a quasi-random number generator
+# == Sampling from a quasi-random number generator
 #
 # ---
 # * GSL::QRng::get(x)
@@ -42,7 +42,7 @@
 #       printf("%.5f %.5f\n", v[0], v[1])
 #     end
 #
-# == {}[link:index.html"name="3] Auxiliary quasi-random number generator functions
+# == Auxiliary quasi-random number generator functions
 #
 # ---
 # * GSL::QRng::name
@@ -53,13 +53,13 @@
 # * GSL::QRng::size
 #
 #
-# == {}[link:index.html"name="4] Saving and resorting quasi-random number generator state
+# == Saving and resorting quasi-random number generator state
 # ---
 # * GSL::QRng::clone
 # * GSL::QRng::duplicate
 #
 #   Return a newly created generator which is an exact copy of the generator <tt>self</tt>.
-# == {}[link:index.html"name="5] Quasi-random number generator algorithms
+# == Quasi-random number generator algorithms
 # In creating a generator by the method <tt>GSL::QRng.alloc(T, d)</tt>,
 # the algorithm type <tt>T</tt> is given by a String or a Fixnum constant.
 # The following quasi-random sequence algorithms are available,

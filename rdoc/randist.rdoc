@@ -20,14 +20,14 @@
 # allowing full accuracy to be retained for small results.
 #
 # Contents:
-# 1. {Introduction}[link:randist_rdoc.html#1]
-# 1. {The Gaussian Distribution}[link:randist_rdoc.html#2]
-# 1. {The Gaussian Tail Distribution}[link:randist_rdoc.html#3]
+# 1. {Introduction}[link:randist_rdoc.html#label-Introduction]
+# 1. {The Gaussian Distribution}[link:randist_rdoc.html#label-The+Gaussian+Distribution]
+# 1. {The Gaussian Tail Distribution}[link:randist_rdoc.html#label-The+Gaussian+Tail+Distribution]
 #  ...
 # and more, see {the GSL reference}[https://gnu.org/software/gsl/manual/]
-# 1. {Shuffling and Sampling}[link:randist_rdoc.html#7]
+# 1. {Shuffling and Sampling}[link:randist_rdoc.html#label-Shuffling+and+Sampling]
 #
-# == {}[link:index.html"name="1] Introduction
+# == Introduction
 # Continuous random number distributions are defined by a probability density
 # function, p(x), such that the probability of x occurring in the
 # infinitesimal range x to x+dx is p dx.
@@ -60,7 +60,7 @@
 #
 #
 #
-# == {}[link:index.html"name="2] The Gaussian Distribution
+# == The Gaussian Distribution
 # ---
 # * GSL::Rng#gaussian(sigma = 1)
 # * GSL::Ran::gaussian(rng, sigma = 1)
@@ -96,7 +96,7 @@
 #   and their inverses for the Gaussian distribution with standard
 #   deviation <tt>sigma</tt>.
 #
-# == {}[link:index.html"name="3] The Gaussian Tail Distribution
+# == The Gaussian Tail Distribution
 # ---
 # * GSL::Rng#gaussian_tail(a, sigma = 1)
 # * GSL::Ran#gaussian_tail(rng, a, sigma = 1)
@@ -115,7 +115,7 @@
 #   tail distribution with standard deviation <tt>sigma</tt>
 #   and lower limit <tt>a</tt>.
 #
-# == {}[link:index.html"name="4] The Bivariate Gaussian Distribution
+# == The Bivariate Gaussian Distribution
 # ---
 # * GSL::Rng#bivariate_gaussian(sigma_x, sigma_y, rho)
 # * GSL::Ran::bivariate_gaussian(rng, sigma_x, sigma_y, rho)
@@ -131,7 +131,7 @@
 #   for a bivariate gaussian distribution with standard deviations
 #   <tt>sigma_x, sigma_y</tt> and correlation coefficient <tt>rho</tt>.
 #
-# == {}[link:index.html"name="5] The Exponential Distribution
+# == The Exponential Distribution
 # ---
 # * GSL::Rng#exponential(mu)
 # * GSL::Ran::exponential(rng, mu)
@@ -154,7 +154,7 @@
 #   These methods compute the cumulative distribution functions P(x), Q(x)
 #   and their inverses for the exponential distribution with mean <tt>mu</tt>.
 #
-# == {}[link:index.html"name="6] The Laplace Distribution
+# == The Laplace Distribution
 # ---
 # * GSL::Rng#laplace(a)
 # * GSL::Ran::laplace(rng, a)
@@ -200,7 +200,7 @@
 #
 # and more, see {the GSL reference}[https://gnu.org/software/gsl/manual/gsl-ref_19.html#SEC286].
 #
-# == {}[link:index.html"name="7] Shuffling and Sampling
+# == Shuffling and Sampling
 # ---
 # * GSL::Rng#shuffle(v, n)
 #

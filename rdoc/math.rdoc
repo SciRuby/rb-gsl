@@ -1,18 +1,18 @@
 #
 # = Mathematical Functions
 # Contents:
-# 1. {Mathematical Constants}[link:math_rdoc.html#1]
-#    1. {Infinities and Not-a-number}[link:math_rdoc.html#2]
-#    1. {Constants}[link:math_rdoc.html#2.1]
-# 1. {Module functions}[link:math_rdoc.html#2.2]
-# 1. {Elementary Functions}[link:math_rdoc.html#3]
-# 1. {Small Integer Powers}[link:math_rdoc.html#4]
-# 1. {Testing the Sign of Numbers}[link:math_rdoc.html#5]
-# 1. {Testing for Odd and Even Numbers}[link:math_rdoc.html#6]
-# 1. {Maximum and Minimum functions}[link:math_rdoc.html#7]
-# 1. {Approximate Comparison of Floating Point Numbers}[link:math_rdoc.html#8]
+# 1. {Mathematical Constants}[link:math_rdoc.html#label-Mathematical+Constants]
+#    1. {Infinities and Not-a-number}[link:math_rdoc.html#label-Infinities+and+Not-a-number]
+#    1. {Constants}[link:math_rdoc.html#label-Constants]
+# 1. {Module functions}[link:math_rdoc.html#label-Module+functions]
+# 1. {Elementary Functions}[link:math_rdoc.html#label-Elementary+Functions]
+# 1. {Small Integer Powers}[link:math_rdoc.html#label-Small+Integer+Powers]
+# 1. {Testing the Sign of Numbers}[link:math_rdoc.html#label-Testing+the+Sign+of+Numbers]
+# 1. {Testing for Odd and Even Numbers}[link:math_rdoc.html#label-Testing+for+Odd+and+Even+Numbers]
+# 1. {Maximum and Minimum functions}[link:math_rdoc.html#label-Maximum+and+Minimum+functions]
+# 1. {Approximate Comparison of Floating Point Numbers}[link:math_rdoc.html#label-Approximate+Comparison+of+Floating+Point+Numbers]
 #
-# == {}[link:index.html"name="1] Mathematical Constants
+# == Mathematical Constants
 # ---
 # * GSL::M_E
 #
@@ -82,9 +82,9 @@
 #
 #   Euler's constant
 #
-# == {}[link:index.html"name="2] Infinities and Not-a-number
+# == Infinities and Not-a-number
 #
-# === {}[link:index.html"name="2.1] Constants
+# === Constants
 # ---
 # * GSL::POSINF
 #
@@ -101,7 +101,7 @@
 #   The IEEE representation of the Not-a-Number symbol,
 #   computed from the ratio 0.0/0.0.
 #
-# === {}[link:index.html"name="2.2] Module functions
+# === Module functions
 # ---
 # * GSL::isnan(x)
 #
@@ -132,7 +132,7 @@
 #   This returns <tt>true</tt> if <tt>x</tt> is a real number,
 #   and <tt>false</tt> if it is infinite or not-a-number.
 #
-# == {}[link:index.html"name="3] Elementary Functions
+# == Elementary Functions
 # ---
 # * GSL::log1p(x)
 #
@@ -182,7 +182,7 @@
 #   The method returns f and the exponent e as an array, [f, e].
 #   If <tt>x</tt> is zero, both f and e are set to zero.
 #
-# == {}[link:index.html"name="4] Small Integer Powers
+# == Small Integer Powers
 # ---
 # * GSL::pow_int(x, n)
 #
@@ -203,7 +203,7 @@
 #   These methods can be used to compute small integer powers x^2, x^3, etc.
 #   efficiently.
 #
-# == {}[link:index.html"name="5] Testing the Sign of Numbers
+# == Testing the Sign of Numbers
 # ---
 # * GSL::SIGN(x)
 # * GSL::sign(x)
@@ -213,7 +213,7 @@
 #   Note that with this definition the sign of zero is positive
 #   (regardless of its IEEE sign bit).
 #
-# == {}[link:index.html"name="6] Testing for Odd and Even Numbers
+# == Testing for Odd and Even Numbers
 # ---
 # * GSL::is_odd(n)
 # * GSL::IS_ODD(n)
@@ -237,7 +237,7 @@
 #
 #   Return <tt>true</tt> if <tt>n</tt> is even and <tt>false</tt> if odd.
 #
-# == {}[link:index.html"name="7] Maximum and Minimum functions
+# == Maximum and Minimum functions
 # ---
 # * GSL::max(a, b)
 # * GSL::MAX(a, b)
@@ -245,7 +245,7 @@
 # * GSL::MIN(a, b)
 #
 #
-# == {}[link:index.html"name="8] Approximate Comparison of Floating Point Numbers
+# == Approximate Comparison of Floating Point Numbers
 # ---
 # * GSL::fcmp(a, b, epsilon = 1e-10)
 #
@@ -255,7 +255,7 @@
 # * GSL::equal?(a, b, epsilon = 1e-10)
 #
 #
-# == {}[link:index.html"name="9] Module Constants
+# == Module Constants
 # ---
 # * GSL::VERSION
 #

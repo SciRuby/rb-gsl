@@ -1,17 +1,17 @@
 #
 # = Statistics
-# 1. {Mean, Standard Deviation and Variance}[link:stats_rdoc.html#1]
-# 1. {Absolute deviation}[link:stats_rdoc.html#2]
-# 1. {Higher moments (skewness and kurtosis)}[link:stats_rdoc.html#3]
-# 1. {Autocorrelation}[link:stats_rdoc.html#4]
-# 1. {Covariance}[link:stats_rdoc.html#5]
-# 1. {Correlation}[link:stats_rdoc.html#6]
-# 1. {Weighted samples}[link:stats_rdoc.html#7]
-# 1. {Maximum and minimum values}[link:stats_rdoc.html#8]
-# 1. {Median and percentiles}[link:stats_rdoc.html#9]
-# 1. {Examples}[link:stats_rdoc.html#10]
+# 1. {Mean, Standard Deviation and Variance}[link:stats_rdoc.html#label-Mean%2C+Standard+Deviation+and+Variance]
+# 1. {Absolute deviation}[link:stats_rdoc.html#label-Absolute+deviation]
+# 1. {Higher moments (skewness and kurtosis)}[link:stats_rdoc.html#label-Higher+moments+%28skewness+and+kurtosis%29]
+# 1. {Autocorrelation}[link:stats_rdoc.html#label-Autocorrelation]
+# 1. {Covariance}[link:stats_rdoc.html#label-Covariance]
+# 1. {Correlation}[link:stats_rdoc.html#label-Correlation]
+# 1. {Weighted samples}[link:stats_rdoc.html#label-Weighted+samples]
+# 1. {Maximum and minimum values}[link:stats_rdoc.html#label-Maximum+and+Minimum+values]
+# 1. {Median and percentiles}[link:stats_rdoc.html#label-Median+and+Percentiles]
+# 1. {Examples}[link:stats_rdoc.html#label-Example]
 #
-# == {}[link:index.html"name="1] Mean, Standard Deviation and Variance
+# == Mean, Standard Deviation and Variance
 #
 # ---
 # * GSL::Stats::mean(v)
@@ -75,14 +75,14 @@
 #   Unbiased estimate of the variance of <tt>v</tt> when the population mean
 #   <tt>mean</tt> of the underlying distribution is known <tt>a priori</tt>.
 #
-# == {}[link:index.html"name="2] Absolute deviation
+# == Absolute deviation
 # ---
 # * GSL::Stats::absdev(v[, mean])
 # * \GSL::Vector#absdev([mean])
 #
 #   Compute the absolute deviation (from the mean <tt>mean</tt> if given).
 #
-# == {}[link:index.html"name="3] Higher moments (skewness and kurtosis)
+# == Higher moments (skewness and kurtosis)
 #
 # ---
 # * GSL::Stats::skew(v[, mean, sd])
@@ -96,27 +96,27 @@
 #
 #   Kurtosis
 #
-# == {}[link:index.html"name="4] Autocorrelation
+# == Autocorrelation
 # ---
 # * GSL::Stats::lag1_autocorrelation(v[, mean])
 # * \GSL::Vector#lag1_autocorrelation([mean])
 #
 #   The lag-1 autocorrelation
 #
-# == {}[link:index.html"name="5] Covariance
+# == Covariance
 # ---
 # * GSL::Stats::covariance(v1, v2)
 # * GSL::Stats::covariance_m(v1, v2, mean1, mean2)
 #
 #   Covariance of vectors <tt>v1, v2</tt>.
 #
-# == {}[link:index.html"name="6] Correlation
+# == Correlation
 # ---
 # * GSL::Stats::correlation(v1, v2)
 #
 #   This efficiently computes the Pearson correlation coefficient between the vectors <tt>v1, v2</tt>. (>= GSL-1.10)
 #
-# == {}[link:index.html"name="7] Weighted samples
+# == Weighted samples
 # ---
 # * GSL::Vector#wmean(w)
 # * GSL::Vector#wvariance(w)
@@ -126,7 +126,7 @@
 # * GSL::Vector#wkurtosis(w)
 #
 #
-# == {}[link:index.html"name="8] Maximum and Minimum values
+# == Maximum and Minimum values
 # ---
 # * GSL::Stats::max(data)
 # * GSL::Vector#max
@@ -171,7 +171,7 @@
 #   in a single pass.
 #
 #
-# == {}[link:index.html"name="9] Median and Percentiles
+# == Median and Percentiles
 #
 # ---
 # * GSL::Stats::median_from_sorted_data(v)
@@ -191,7 +191,7 @@
 #   the data are sorted, so the method <tt>GSL::Vector#sort</tt>
 #   should always be used first.
 #
-# == {}[link:index.html"name="10] Example
+# == Example
 #
 #      #!/usr/bin/env ruby
 #      require 'gsl'

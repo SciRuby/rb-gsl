@@ -13,7 +13,7 @@
 # speculations on the data.
 #
 #
-# == {}[link:index.html"name="1] Plotting vectors
+# == Plotting vectors
 # ---
 # * Vector.graph(y[,  options])
 # * Vector.graph(nil, y[, y2, y3, ...,  options])
@@ -60,13 +60,13 @@
 #        >> c = Sf::cos(x)
 #        >> c.graph(x, "-T X -C -g 3 -L 'cos(x)'")
 #
-# == {}[link:index.html"name="2] Drawing histogram
+# == Drawing histogram
 # ---
 # * GSL::Histogram#graph(options)
 #
 #   This method uses the GNU plotutils <tt>graph</tt> to draw a histogram.
 #
-# == {}[link:index.html"name="3] Plotting Functions
+# == Plotting Functions
 # ---
 # * GSL::Function#graph(x[, options])
 #
@@ -78,7 +78,7 @@
 #        x = Vector.linspace(0, 2*M_PI, 50)
 #        f.graph(x, "-T X -g 3 -C -L 'sin(x)'")
 #
-# == {}[link:index.html"name="4] Other way
+# == Other way
 # The code below uses <tt>GNUPLOT</tt> directly to plot vectors.
 #
 #        #!/usr/bin/env ruby

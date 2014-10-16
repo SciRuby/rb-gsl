@@ -3,7 +3,7 @@
 # The following is the list of the methods defined in <tt>GSL::Blas</tt> module.
 # See {GSL reference}[https://gnu.org/software/gsl/manual/gsl-ref_12.html#SEC212] for details.
 #
-# == {}[link:index.html"name="1] Level 1
+# == Level 1
 # ---
 # * GSL::Blas::ddot(x, y)
 # * GSL::Vector#blas_ddot(y)
@@ -134,7 +134,7 @@
 # * GSL::Blas::drotm!(x, y, p)
 #
 #
-# == {}[link:index.html"name="2] Level 2
+# == Level 2
 # ---
 # * GSL::Blas::dgemv(trans, a, A, x, b, y)
 # * GSL::Blas::dgemv!(trans, a, A, x, b, y)
@@ -186,7 +186,7 @@
 # * GSL::Blas::zher2!(uplo, a, x, y, A)
 #
 #
-# == {}[link:index.html"name="3] Level 3
+# == Level 3
 # ---
 # * GSL::Blas::dgemm(transA, transB, alpha, A, B, beta, C)
 # * GSL::Blas::dgemm(A, B)
@@ -234,7 +234,7 @@
 # * GSL::Blas::zher2k(uplo, trans, diag, alpha, A, B, beta, C)
 #
 #
-# == {}[link:index.html"name="4] Constants
+# == Constants
 # ---
 # * GSL::Blas::CblasRowMajor
 # * GSL::Blas::RowMajor

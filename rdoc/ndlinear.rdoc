@@ -6,11 +6,11 @@
 # {Patrick Alken's page}[http://ucsu.colorado.edu/~alken/gsl/].
 #
 # Contents:
-# 1. {Introduction}[link:ndlinear_rdoc.html#1]
-# 1. {Class and methods}[link:ndlinear_rdoc.html#2]
-# 1. {Examples}[link:ndlinear_rdoc.html#3]
+# 1. {Introduction}[link:ndlinear_rdoc.html#label-Introduction]
+# 1. {Class and methods}[link:ndlinear_rdoc.html#label-Class+and+Methods]
+# 1. {Examples}[link:ndlinear_rdoc.html#label-Examples]
 #
-# == {}[link:index.html"name="1] Introduction
+# == Introduction
 # The NDLINEAR extension provides support for general linear least squares
 # fitting to data which is a function of more than one variable (multi-linear or
 # multi-dimensional least squares fitting). This model has the form where
@@ -30,7 +30,7 @@
 # construct the design matrix X.
 #
 #
-# == {}[link:index.html"name="2] Class and Methods
+# == Class and Methods
 # ---
 # * GSL::MultiFit::Ndlinear.alloc(n_dim, N, u, params)
 # * GSL::MultiFit::Ndlinear::Workspace.alloc(n_dim, N, u, params)
@@ -116,7 +116,7 @@
 #   <tt>x</tt>  using the coefficient vector <tt>c</tt> and returns the model
 #   value.
 #
-# == {}[link:index.html"name="3] Examples
+# == Examples
 # This example program generates data from the 3D isotropic harmonic oscillator
 # wavefunction (real part) and then fits a model to the data using B-splines in
 # the r coordinate, Legendre polynomials in theta, and sines/cosines in phi.

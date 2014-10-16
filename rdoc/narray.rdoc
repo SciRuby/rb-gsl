@@ -1,11 +1,11 @@
 #
 # = NArray compatibilities
-# === {}[link:index.html"name="0.1] Contents:
-# 1. {Data type conversions}[link:narray_rdoc.html#1]
-# 1. {Methods which accepts NArray}[link:narray_rdoc.html#2]
+# === Contents:
+# 1. {Data type conversions}[link:narray_rdoc.html#label-Data+type+conversions]
+# 1. {Methods which accepts NArray}[link:narray_rdoc.html#label-Methods+which+accepts+NArray]
 #
-# == {}[link:index.html"name="1] Data type conversions
-# === {}[link:index.html"name="1.1] GSL to NArray
+# == Data type conversions
+# === GSL to NArray
 #
 # ---
 # * GSL::Vector#to_na
@@ -42,7 +42,7 @@
 #     => GSL::Vector::Int
 #     [ 0 1 2 999 4 5 ]
 #
-# === {}[link:index.html"name="1.2] NArray to GSL
+# === NArray to GSL
 # ---
 # * NArray#to_gv
 # * NArray#to_gm
@@ -72,8 +72,8 @@
 #     => NArray.int(6):
 #     [ 0, 1, -99, 3, 4, 5 ]
 #
-# == {}[link:index.html"name="2] Methods which accepts NArray
-# === {}[link:index.html"name="2.1] <tt>GSL</tt> module
+# == Methods which accepts NArray
+# === <tt>GSL</tt> module
 # ---
 # * GSL::graph()
 # * GSL::log1p(x)
@@ -87,11 +87,11 @@
 # * GSL::pow_2(x), ..., GSL::pow_9(x)
 #
 #
-# === {}[link:index.html"name="2.2] <tt>GSL::Sf</tt> module
+# === <tt>Sf</tt> module
 # ---
 # * {Any}[link:sf_rdoc.html]
 #
-# === {}[link:index.html"name="2.3] <tt>GSL::Linalg</tt> module
+# === <tt>Linalg</tt> module
 # ---
 # * GSL::Linalg::LU.decomp(na)
 # * GSL::Linalg::LU.solve(lu, b)
@@ -112,17 +112,17 @@
 # * GSL::Linalg::HH.svx(m, bx)
 #
 #
-# === {}[link:index.html"name="2.4] <tt>GSL::Eigen</tt> module
+# === <tt>Eigen</tt> module
 # ---
 # * GSL::Eigen::symm(na)
 # * GSL::Eigen::symmv(na)
 #
 #
-# === {}[link:index.html"name="2.5] <tt>GSL::FFT</tt> module
+# === <tt>FFT</tt> module
 # ---
 # * {Many}[link:fft_rdoc.html]
 #
-# === {}[link:index.html"name="2.6] <tt>GSL::Function</tt> class
+# === <tt>Function</tt> class
 # ---
 # * GSL::Function#eval
 # * GSL::Function#deriv_central(x, h)
@@ -133,15 +133,15 @@
 # * GSL::Function#diff_backward(x, h)
 #
 #
-# === {}[link:index.html"name="2.7] <tt>GSL::Ran</tt> and <tt>GSL::Cdf</tt> module
+# === <tt>Ran</tt> and <tt>Cdf</tt> module
 # ---
 # * {Many}[link:randist_rdoc.html]
 #
-# === {}[link:index.html"name="2.8] <tt>GSL::Stats</tt> module
+# === <tt>Stats</tt> module
 # ---
 # * {Any}[link:stats_rdoc.html]
 #
-# === {}[link:index.html"name="2.9] <tt>GSL::Interp</tt> and <tt>GSL::Spline</tt> class
+# === <tt>Interp</tt> and <tt>Spline</tt> class
 # ---
 # * GSL::Interp#init
 # * GSL::Interp#eval
@@ -149,7 +149,7 @@
 # * GSL::Spline#eval
 #
 #
-# === {}[link:index.html"name="2.10] <tt>GSL::Deriv</tt> and <tt>GSL::Diff</tt> module
+# === <tt>Deriv</tt> and <tt>Diff</tt> module
 # ---
 # * GSL::Deriv.central(f, x, h)
 # * GSL::Deriv.forward(f, x, h)
@@ -159,13 +159,13 @@
 # * GSL::Diff.backward(f, x, h)
 #
 #
-# === {}[link:index.html"name="2.11] <tt>GSL::Cheb</tt> class
+# === <tt>Cheb</tt> class
 # ---
 # * GSL::Cheb#eval(x)
 # * GSL::Cheb#eval_n(n, x)
 #
 #
-# === {}[link:index.html"name="2.12] <tt>GSL::Wavelet</tt> class
+# === <tt>Wavelet</tt> class
 # ---
 # * {Many}[link:wavelet_rdoc.html]
 #

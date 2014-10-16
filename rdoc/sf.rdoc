@@ -1,41 +1,41 @@
 #
 # = Special Functions
 #
-# === {}[link:index.html"name="0.1] Contents:
-# 1. {Usage:}[link:sf_rdoc.html#1]
-# 1. {GSL::Sf::Result class}[link:sf_rdoc.html#2]
-# 1. {Modes}[link:sf_rdoc.html#3]
-# 1. {Airy functions}[link:sf_rdoc.html#4]
-# 1. {Bessel functins}[link:sf_rdoc.html#5]
-# 1. {Clausen functins}[link:sf_rdoc.html#6]
-# 1. {Coulomb functins}[link:sf_rdoc.html#7]
-# 1. {Coupling coefficients}[link:sf_rdoc.html#8]
-# 1. {Dawson coefficients}[link:sf_rdoc.html#9]
-# 1. {Debye coefficients}[link:sf_rdoc.html#10]
-# 1. {Dilogarithm}[link:sf_rdoc.html#11]
-# 1. {Elementary operations}[link:sf_rdoc.html#12]
-# 1. {Elliptic integrals}[link:sf_rdoc.html#13]
-# 1. {Elliptic functions}[link:sf_rdoc.html#14]
-# 1. {Error functions}[link:sf_rdoc.html#15]
-# 1. {Exponential functions}[link:sf_rdoc.html#16]
-# 1. {Exponential integrals}[link:sf_rdoc.html#17]
-# 1. {Fermi-Dirac function}[link:sf_rdoc.html#18]
-# 1. {Gamma function}[link:sf_rdoc.html#19]
-# 1. {Gegenbauer functions}[link:sf_rdoc.html#20]
-# 1. {Hypergeometric functions}[link:sf_rdoc.html#21]
-# 1. {Laguerre functions}[link:sf_rdoc.html#22]
-# 1. {Lambert W functions}[link:sf_rdoc.html#23]
-# 1. {Legendre functions and spherical harmonics}[link:sf_rdoc.html#24]
-# 1. {Logarithm and related functions}[link:sf_rdoc.html#25]
-# 1. {Mathieu functions}[link:sf_rdoc.html#26]
-# 1. {Power function}[link:sf_rdoc.html#27]
-# 1. {Psi (digamma) function}[link:sf_rdoc.html#28]
-# 1. {Synchrotron functions}[link:sf_rdoc.html#29]
-# 1. {Transport functions}[link:sf_rdoc.html#30]
-# 1. {Trigonometric functions}[link:sf_rdoc.html#31]
-# 1. {Zeta functions}[link:sf_rdoc.html#32]
+# === Contents:
+# 1. {Usage:}[link:sf_rdoc.html#label-Usage]
+# 1. {GSL::Sf::Result class}[link:sf_rdoc.html#label-Result+class]
+# 1. {Modes}[link:sf_rdoc.html#label-Modes]
+# 1. {Airy functions}[link:sf_rdoc.html#label-Airy+Functions+and+Derivatives]
+# 1. {Bessel functins}[link:sf_rdoc.html#label-Bessel+Functions]
+# 1. {Clausen functins}[link:sf_rdoc.html#label-Clausen+Functions]
+# 1. {Coulomb functins}[link:sf_rdoc.html#label-Coulomb+Functions]
+# 1. {Coupling coefficients}[link:sf_rdoc.html#label-Coupling+Coefficients]
+# 1. {Dawson coefficients}[link:sf_rdoc.html#label-Dawson+Function]
+# 1. {Debye coefficients}[link:sf_rdoc.html#label-Debye+Functions]
+# 1. {Dilogarithm}[link:sf_rdoc.html#label-Dilogarithm]
+# 1. {Elementary operations}[link:sf_rdoc.html#label-Elementary+Operations]
+# 1. {Elliptic integrals}[link:sf_rdoc.html#label-Elliptic+Integrals]
+# 1. {Elliptic functions}[link:sf_rdoc.html#label-Elliptic+Functions+%28Jacobi%29]
+# 1. {Error functions}[link:sf_rdoc.html#label-Error+Functions]
+# 1. {Exponential functions}[link:sf_rdoc.html#label-Exponential+Functions]
+# 1. {Exponential integrals}[link:sf_rdoc.html#label-Exponential+Integrals]
+# 1. {Fermi-Dirac function}[link:sf_rdoc.html#label-Fermi-Dirac+Functions]
+# 1. {Gamma function}[link:sf_rdoc.html#label-Gamma+Function]
+# 1. {Gegenbauer functions}[link:sf_rdoc.html#label-Gegenbauer+Functions]
+# 1. {Hypergeometric functions}[link:sf_rdoc.html#label-Hypergeometric+Functions]
+# 1. {Laguerre functions}[link:sf_rdoc.html#label-Laguerre+Functions]
+# 1. {Lambert W functions}[link:sf_rdoc.html#label-Lambert+W+Functions]
+# 1. {Legendre functions and spherical harmonics}[link:sf_rdoc.html#label-Legendre+Functions+and+Spherical+Harmonics]
+# 1. {Logarithm and related functions}[link:sf_rdoc.html#label-Logarithm+and+Related+Functions]
+# 1. {Mathieu functions}[link:sf_rdoc.html#label-Mathieu+functions]
+# 1. {Power function}[link:sf_rdoc.html#label-Power+Functions]
+# 1. {Psi (digamma) function}[link:sf_rdoc.html#label-Psi+%28Digamma%29+Function]
+# 1. {Synchrotron functions}[link:sf_rdoc.html#label-Synchrotron+Functions]
+# 1. {Transport functions}[link:sf_rdoc.html#label-Transport+Functions]
+# 1. {Trigonometric functions}[link:sf_rdoc.html#label-Trigonometric+Functions]
+# 1. {Zeta functions}[link:sf_rdoc.html#label-Zeta+Functions]
 #
-# == {}[link:index.html"name="1] Usage
+# == Usage
 # Ruby/GSL provides all the (documented) GSL special functions as module functions
 # under the <tt>GSL::Sf</tt> module.
 # The prefix <tt>gsl_sf_</tt> in C functions is replaced by the module
@@ -76,12 +76,12 @@
 #   => NArray.float(4):
 #   [ 0.765198, 0.223891, -0.260052, -0.39715 ]
 #
-# == {}[link:index.html"name="2] <tt>GSL::Sf::Result</tt> Class
+# == <tt>Result</tt> class
 # The Ruby methods as wrappers of GSL functions with the suffix "<tt>_e</tt>" return
 # <tt>GSL::Sf::Result</tt> objects which contain the function values as well as
 # error information.
 #
-# === <tt>GSL::Sf::Result</tt> instance methods
+# === <tt>Result</tt> instance methods
 #
 # ---
 # * GSL::Sf::Result#val
@@ -96,7 +96,7 @@
 # * GSL::Sf::Result_e10#err
 #   Returns the error.
 #
-# == {}[link:index.html"name="3] Modes
+# == Modes
 # The goal of the library is to achieve double precision accuracy wherever possible.
 # However the cost of evaluating some special functions to double precision can
 # be significant, particularly where very high order terms are required.
@@ -113,7 +113,7 @@
 #
 # The approximate mode provides the fastest evaluation at the lowest accuracy.
 #
-# == {}[link:index.html"name="4] Airy Functions and Derivatives
+# == Airy Functions and Derivatives
 # ---
 # * GSL::Sf::airy_Ai(x, mode = GSL::PREC_DOUBLE)
 #
@@ -133,7 +133,7 @@
 #   Computes a scaled version of the Airy function S_B(x) Bi(x).
 #   For x>0 the scaling factor S_B(x) is exp(-(2/3) x^(3/2)), and is 1 for x<0.
 #
-# === {}[link:index.html"name="4.1] Derivatives of Airy Functions
+# === Derivatives of Airy Functions
 # ---
 # * GSL::Sf::airy_Ai_deriv(x, mode = GSL::PREC_DOUBLE)
 #
@@ -153,7 +153,7 @@
 #
 #   Computes the derivative of the scaled Airy function S_B(x) Bi(x).
 #
-# === {}[link:index.html"name="4.2] Zeros of Airy Functions
+# === Zeros of Airy Functions
 # ---
 # * GSL::Sf::airy_zero_Ai(s)
 #
@@ -163,7 +163,7 @@
 #
 #   Computes the location of the <tt>s</tt>-th zero of the Airy function Bi(x).
 #
-# === {}[link:index.html"name="4.3] Zeros of Derivatives of Airy Functions
+# === Zeros of Derivatives of Airy Functions
 # ---
 # * GSL::Sf::airy_zero_Ai_deriv(s)
 #
@@ -176,8 +176,8 @@
 #   derivative Bi'(x).
 #
 #
-# == {}[link:index.html"name="5] Bessel Functions
-# === {}[link:index.html"name="5.1] Regular Cylindrical Bessel Functions
+# == Bessel Functions
+# === Regular Cylindrical Bessel Functions
 # ---
 # * GSL::Sf::bessel_J0(x)
 #
@@ -198,7 +198,7 @@
 #   results as a <tt>GSL::Vector</tt> object.
 #   The values are computed using recurrence relations, for efficiency,
 #   and therefore may differ slightly from the exact values.
-# === {}[link:index.html"name="5.2] Irregular Cylindrical Bessel Functions
+# === Irregular Cylindrical Bessel Functions
 # ---
 # * GSL::Sf::bessel_Y0(x)
 #
@@ -220,7 +220,7 @@
 #   The values are computed using recurrence relations, for efficiency,
 #   and therefore may differ slightly from the exact values.
 #
-# === {}[link:index.html"name="5.3] Regular Modified Cylindrical Bessel Functions
+# === Regular Modified Cylindrical Bessel Functions
 # ---
 # * GSL::Sf::bessel_I0(x)
 #
@@ -269,7 +269,7 @@
 #   recurrence relations,  for efficiency, and therefore may differ slightly
 #   from the exact values.
 #
-# === {}[link:index.html"name="5.4] Irregular Modified Cylindrical Bessel Functions
+# === Irregular Modified Cylindrical Bessel Functions
 # ---
 # * GSL::Sf::bessel_K0(x)
 #
@@ -321,7 +321,7 @@
 #   using recurrence relations, for efficiency,
 #   and therefore may differ slightly from the exact values.
 #
-# === {}[link:index.html"name="5.5] Regular Spherical Bessel Functions
+# === Regular Spherical Bessel Functions
 # ---
 # * GSL::Sf::bessel_j0(x)
 #
@@ -360,7 +360,7 @@
 #   Comp. Phys. Comm. 21, 297 (1981). Steed's method is more stable than the
 #   recurrence used in the other functions but is also slower.
 #
-# === {}[link:index.html"name="5.6] Irregular Spherical Bessel Functions
+# === Irregular Spherical Bessel Functions
 # ---
 # * GSL::Sf::bessel_y0(x)
 #
@@ -390,7 +390,7 @@
 #   The values are computed using recurrence relations, for efficiency,
 #   and therefore may differ slightly from the exact values.
 #
-# === {}[link:index.html"name="5.7] Regular Modified Spherical Bessel Functions
+# === Regular Modified Spherical Bessel Functions
 # ---
 # * GSL::Sf::bessel_i0_scaled(x)
 #
@@ -420,7 +420,7 @@
 #   The values are computed using recurrence relations, for efficiency,
 #   and therefore may differ slightly from the exact values.
 #
-# === {}[link:index.html"name="5.8] Irregular Modified Spherical Bessel Functions
+# === Irregular Modified Spherical Bessel Functions
 # ---
 # * GSL::Sf::bessel_k0_scaled(x)
 #
@@ -450,7 +450,7 @@
 #   The values are computed using recurrence relations, for efficiency,
 #   and therefore may differ slightly from the exact values.
 #
-# === {}[link:index.html"name="5.9] Regular Bessel Function - Fractional Order
+# === Regular Bessel Function - Fractional Order
 # ---
 # * GSL::Sf::bessel_Jnu(nu, x)
 #
@@ -465,14 +465,14 @@
 #   contains the x values. They are assumed to be strictly ordered and positive.
 #   The vector is over-written with the values of J_nu(x_i).
 #
-# === {}[link:index.html"name="5.10] Irregular Bessel Functions - Fractional Order
+# === Irregular Bessel Functions - Fractional Order
 # ---
 # * GSL::Sf::bessel_Ynu(nu, x)
 #
 #   Computes the irregular cylindrical Bessel function of fractional order <tt>nu</tt>,
 #   Y_nu(x).
 #
-# === {}[link:index.html"name="5.11] Regular Modified Bessel Functions - Fractional Order
+# === Regular Modified Bessel Functions - Fractional Order
 # ---
 # * GSL::Sf::bessel_Inu(nu, x)
 #
@@ -484,7 +484,7 @@
 #   Computes the scaled regular modified Bessel function of fractional order <tt>nu</tt>,
 #   exp(-|x|) I_nu(x) for x>0, nu>0.
 #
-# === {}[link:index.html"name="5.12] Irregular Modified Bessel Functions - Fractional Order
+# === Irregular Modified Bessel Functions - Fractional Order
 # ---
 # * GSL::Sf::bessel_Knu(nu, x)
 #
@@ -501,7 +501,7 @@
 #   Computes the scaled irregular modified Bessel function of fractional order <tt>nu</tt>,
 #   exp(+|x|) K_nu(x) for x>0, nu>0.
 #
-# === {}[link:index.html"name="5.13] Zeros of Regular Bessel Functions
+# === Zeros of Regular Bessel Functions
 # ---
 # * GSL::Sf::bessel_zero_J0(s)
 #
@@ -516,7 +516,7 @@
 #   Computes the location of the <tt>s</tt>-th positive zero of the Bessel function
 #   J_nu(x). The current implementation does not support negative values of <tt>nu</tt>.
 #
-# == {}[link:index.html"name="6] Clausen Functions
+# == Clausen Functions
 # ---
 # * GSL::Sf::clausen(x)
 #
@@ -525,7 +525,7 @@
 #   It is related to the dilogarithm by Cl_2(theta) = Im Li_2(exp(i theta)).
 #
 #
-# == {}[link:index.html"name="7] Coulomb Functions
+# == Coulomb Functions
 # ---
 # * GSL::Sf::hydrogenicR_1(Z, r)
 #
@@ -539,7 +539,7 @@
 #   The normalization is chosen such that the wavefunction psi is given by
 #   psi(n,l,r) = R_n Y_{lm}.
 #
-# === {}[link:index.html"name="7.1] Coulomb Wave Functions
+# === Coulomb Wave Functions
 # ---
 # * GSL::Sf::coulomb_wave_FG_e(eta, x, L, k)
 #
@@ -589,7 +589,7 @@
 #   This function reduces to spherical Bessel functions in the limit
 #   <tt>eta</tt> to 0.
 #
-# === {}[link:index.html"name="7.2] Coulomb Wave Function Normalization Constant
+# === Coulomb Wave Function Normalization Constant
 # ---
 # * GSL::Sf::coulomb_CL_e(L, eta)
 #
@@ -601,7 +601,7 @@
 #   This method computes the coulomb wave function normalization constant
 #   C_L(eta) for L = Lmin ... Lmin + kmax, Lmin > -1.
 #
-# == {}[link:index.html"name="8] Coupling Coefficients
+# == Coupling Coefficients
 # The Wigner 3-j, 6-j and 9-j symbols give the coupling coefficients
 # for combined angular momentum vectors. Since the arguments of the standard
 # coupling coefficient functions are integer or half-integer, the arguments
@@ -637,7 +637,7 @@
 #   where the arguments are given in half-integer units,
 #   <tt>ja = two_ja/2, ma = two_ma/2</tt>, etc.
 #
-# == {}[link:index.html"name="9] Dawson Function
+# == Dawson Function
 # The Dawson integral is defined by exp(-x^2) int_0^x dt exp(t^2).
 # A table of Dawson's integral can be found in Abramowitz & Stegun, Table 7.5.
 # ---
@@ -645,7 +645,7 @@
 #
 #   This method computes the value of Dawson's integral for <tt>x</tt>.
 #
-# == {}[link:index.html"name="10] Debye Functions
+# == Debye Functions
 # The Debye functions are defined by the integral
 # D_n(x) = n/x^n int_0^x dt (t^n/(e^t - 1)).
 # For further information see Abramowitz & Stegun, Section 27.1.
@@ -657,8 +657,8 @@
 #
 #   These methods Compute the n-th order Debye functions.
 #
-# == {}[link:index.html"name="11] Dilogarithm
-# === {}[link:index.html"name="11.1] Real Argument
+# == Dilogarithm
+# === Real Argument
 # ---
 # * GSL::Sf::dilog(x)
 #
@@ -668,7 +668,7 @@
 #   Li_2(x) = - Re int_0^x ds log(1-s) / s.
 #   Note that Im(Li_2(x)) = 0 for x <= 1, and -pi log(x) for x > 1.
 #
-# === {}[link:index.html"name="11.2] Complex Argument
+# === Complex Argument
 # ---
 # * GSL::Sf::complex_dilog_e(r, theta)
 #
@@ -677,7 +677,7 @@
 #   The result is returned as an array of 2 elements, <tt>[re, im]</tt>,
 #   each of them is a <tt>GSL::Sf::Result</tt> object.
 #
-# == {}[link:index.html"name="12] Elementary Operations
+# == Elementary Operations
 # The following methods allow for the propagation of errors when
 # combining quantities by multiplication.
 # ---
@@ -692,8 +692,8 @@
 #   errors <tt>dx</tt> and <tt>dy</tt>,  and returns
 #   the product as a <tt>GSL::Sf::Result</tt> object.
 #
-# == {}[link:index.html"name="13] Elliptic Integrals
-# === {}[link:index.html"name="13.1] Legendre Form of Complete Elliptic Integrals
+# == Elliptic Integrals
+# === Legendre Form of Complete Elliptic Integrals
 # ---
 # * GSL::Sf::ellint_Kcomp(k, mode = GSL::PREC_DOUBLE)
 #
@@ -704,7 +704,7 @@
 #
 #   Computes the complete elliptic integral E(k)
 #   to the accuracy specified by the mode variable <tt>mode</tt>.
-# === {}[link:index.html"name="13.2] Legendre Form of Incomplete Elliptic Integrals
+# === Legendre Form of Incomplete Elliptic Integrals
 # ---
 # * GSL::Sf::ellint_F(phi, k, mode = GSL::PREC_DOUBLE)
 #
@@ -721,7 +721,7 @@
 #   Computes the incomplete elliptic integral D(phi, k, n)
 #   which is defined through the Carlson form RD(x, y, z) by the following relation,
 #      D(phi, k, n) = RD (1-sin^2(phi), 1-k^2 sin^2(phi), 1).
-# === {}[link:index.html"name="13.3] Carlson Forms
+# === Carlson Forms
 # ---
 # * GSL::Sf::ellint_RC(x, y, mode = GSL::PREC_DOUBLE)
 #
@@ -743,7 +743,7 @@
 #   Computes the incomplete elliptic integral RJ(x, y, z, p)
 #   to the accuracy specified by the mode variable <tt>mode</tt>.
 #
-# == {}[link:index.html"name="14] Elliptic Functions (Jacobi)
+# == Elliptic Functions (Jacobi)
 # ---
 # * GSL::Sf::gsl_sf_elljac(u, m)
 # * GSL::Sf::gsl_sf_elljac_e(u, m)
@@ -752,7 +752,7 @@
 #   sn(u|m), cn(u|m), dn(u|m) by descending Landen transformations,
 #   and returns the result as an array of 3 elements.
 #
-# == {}[link:index.html"name="15] Error Functions
+# == Error Functions
 # ---
 # * GSL::Sf::erf(x)
 #
@@ -765,7 +765,7 @@
 # * GSL::Sf::log_erfc(x)
 #
 #   Computes the logarithm of the complementary error function log(erfc(x)).
-# === {}[link:index.html"name="15.1] Probability functions
+# === Probability functions
 # ---
 # * GSL::Sf::erf_Z(x)
 #
@@ -785,7 +785,7 @@
 #   It decreases rapidly as x approaches -infty and asymptotes to h(x) sim x
 #   as x approaches +infty.
 #
-# == {}[link:index.html"name="16] Exponential Functions
+# == Exponential Functions
 # ---
 # * GSL::Sf::exp(x)
 # * GSL::Sf::exp_e(x)
@@ -807,7 +807,7 @@
 #   Exponentiate <tt>x</tt> and multiply by the factor
 #   <tt>y</tt> to return the product y exp(x).
 #
-# === {}[link:index.html"name="16.1] Relative Exponential Functions
+# === Relative Exponential Functions
 # ---
 # * GSL::Sf::expm1(x)
 #
@@ -837,7 +837,7 @@
 #                  = 1 + x/(N+1) + x^2/((N+1)(N+2)) + ...
 #                  = 1F1 (1,1+N,x)
 #
-# === {}[link:index.html"name="16.2] Exponentiation With Error Estimate
+# === Exponentiation With Error Estimate
 # ---
 # * GSL::Sf::exp_err_e(x, dx)
 #
@@ -860,8 +860,8 @@
 #   with associated absolute errors <tt>dx, dy</tt>  using the
 #   <tt>GSL::Sf::Result_e10</tt> type to return a result with extended range.
 #
-# == {}[link:index.html"name="17] Exponential Integrals
-# === {}[link:index.html"name="17.1] Exponential Integral
+# == Exponential Integrals
+# === Exponential Integral
 # ---
 # * GSL::Sf::expint_E1(x)
 #
@@ -877,14 +877,14 @@
 #
 #   Computes the exponential integral E_n(n, x) of order <tt>n</tt>. (>= GSL-1.10)
 #
-# === {}[link:index.html"name="17.2] Ei(x)
+# === Ei(x)
 # ---
 # * GSL::Sf::expint_Ei(x)
 #
 #   Computes the exponential integral E_i(x),
 #        Ei(x) := - PV(int_{-x}^infty dt exp(-t)/t)
 #   where PV denotes the principal value of the integral.
-# === {}[link:index.html"name="17.3] Hyperbolic Integrals
+# === Hyperbolic Integrals
 # ---
 # * GSL::Sf::Shi(x)
 #
@@ -896,12 +896,12 @@
 #      Chi(x) := Re[ gamma_E + log(x) + int_0^x dt (cosh[t]-1)/t] ,
 #   where gamma_E is the Euler constant
 #   (available as the constant <tt>GSL::M_EULER</tt>).
-# === {}[link:index.html"name="17.4] Ei_3(x)
+# === Ei_3(x)
 # ---
 # * GSL::Sf::expint_3(x)
 #
 #   Computes the exponential integral Ei_3(x) = int_0^x dt exp(-t^3) for x >= 0
-# === {}[link:index.html"name="17.5] Trigonometric Integrals
+# === Trigonometric Integrals
 # ---
 # * GSL::Sf::Si(x)
 #
@@ -910,14 +910,14 @@
 # * GSL::Sf::Ci(x)
 #
 #   Computes the Cosine integral Ci(x) = -int_x^infty dt cos(t)/t for x > 0.
-# === {}[link:index.html"name="17.6] Arctangent Integral
+# === Arctangent Integral
 # ---
 # * GSL::Sf::atanint(x)
 #
 #   Computes the Arctangent integral AtanInt(x) = int_0^x dt arctan(t)/t.
 #
-# == {}[link:index.html"name="18] Fermi-Dirac Functions
-# === {}[link:index.html"name="18.1] Complete Fermi-Dirac Integrals
+# == Fermi-Dirac Functions
+# === Complete Fermi-Dirac Integrals
 # The complete Fermi-Dirac integral F_j(x) is given by,
 #     F_j(x)   := (1/r Gamma(j+1)) int_0^infty dt (t^j / (exp(t-x) + 1))
 #
@@ -958,14 +958,14 @@
 # * GSL::Sf::fermi_dirac_3half(x)
 #
 #   Computes the complete Fermi-Dirac integral F_{3/2}(x).
-# === {}[link:index.html"name="18.2] Incomplete Fermi-Dirac Integrals
+# === Incomplete Fermi-Dirac Integrals
 # ---
 # * GSL::Sf::fermi_dirac_inc_0(x, b)
 #
 #   Computes the incomplete Fermi-Dirac integral with an index of zero,
 #   F_0(x,b) = ln(1 + e^{b-x}) - (b-x).
 #
-# == {}[link:index.html"name="19] Gamma Function
+# == Gamma Function
 # The Gamma function is defined by the following integral,
 #    Gamma(x) = int_0^infty dt  t^{x-1} exp(-t)
 # Further information on the Gamma function can be found in
@@ -1105,7 +1105,7 @@
 #   Computes the normalize incomplete Beta function
 #   B_x(a,b)/B(a,b) for a > 0, b > 0, and 0 <= x <= 1.
 #
-# == {}[link:index.html"name="20] Gegenbauer Functions
+# == Gegenbauer Functions
 # ---
 # * GSL::Sf::gegenpoly_1(lambda, x)
 # * GSL::Sf::gegenpoly_2(lambda, x)
@@ -1126,7 +1126,7 @@
 #   for n = 0, 1, 2, ..., nmax, subject to lambda > -1/2, nmax >= 0.
 #   The result is returned as a <tt>GSL::Vector</tt> object.
 #
-# == {}[link:index.html"name="21] Hypergeometric Functions
+# == Hypergeometric Functions
 # ---
 # * GSL::Sf::hyperg_0F1(c, x)
 #
@@ -1192,7 +1192,7 @@
 #   The series representation is a divergent hypergeometric series.
 #   However, for x < 0 we have 2F0(a,b,x) = (-1/x)^a U(a,1+a-b,-1/x).
 #
-# == {}[link:index.html"name="22] Laguerre Functions
+# == Laguerre Functions
 # The Laguerre polynomials are defined in terms of confluent hypergeometric
 # functions as L^a_n(x) = ((a+1)_n / n!) 1F1(-n,a+1,x).
 # ---
@@ -1207,7 +1207,7 @@
 #
 #   This evaluates the generalized Laguerre polynomials L^a_n(x) for a > -1, n >= 0.
 #
-# == {}[link:index.html"name="23] Lambert W Functions
+# == Lambert W Functions
 # Lambert's W functions, W(x), are defined to be solutions of the equation
 # W(x) exp(W(x)) = x. This function has multiple branches for x < 0;
 # however, it has only two real-valued branches.
@@ -1223,8 +1223,8 @@
 #
 #   This computes the secondary real-valued branch of the Lambert W function, W_{-1}(x).
 #
-# == {}[link:index.html"name="24] Legendre Functions and Spherical Harmonics
-# === {}[link:index.html"name="24.1] Legendre Polynomials
+# == Legendre Functions and Spherical Harmonics
+# === Legendre Polynomials
 # ---
 # * GSL::Sf::legendre_P1(x)
 # * GSL::Sf::legendre_P2(x)
@@ -1255,7 +1255,7 @@
 #
 #   This computes the Legendre function Q_l(x) for x > -1, x != 1 and l >= 0.
 #
-# === {}[link:index.html"name="24.2] Associated Legendre Polynomials and Spherical Harmonics
+# === Associated Legendre Polynomials and Spherical Harmonics
 # The following functions compute the associated Legendre Polynomials P_l^m(x).
 # Note that this function grows combinatorially with <tt>l</tt> and can overflow for
 # <tt>l</tt> larger than about 150. There is no trouble for small <tt>m</tt>,
@@ -1298,7 +1298,7 @@
 #   This returns the size of resulting array needed for the array versions
 #   of P_l^m(x), lmax - m + 1.
 #
-# === {}[link:index.html"name="24.3] Conical Functions
+# === Conical Functions
 # The Conical Functions P^mu_{-(1/2)+i lambda}(x), Q^mu_{-(1/2)+i lambda}
 # are described in Abramowitz & Stegun, Section 8.12.
 #
@@ -1329,7 +1329,7 @@
 #   Computes the Regular Cylindrical Conical Function
 #   P^{-m}_{-1/2 + i lambda}(x) for x > -1, m >= -1.
 #
-# === {}[link:index.html"name="24.4] Radial Functions for Hyperbolic Space
+# === Radial Functions for Hyperbolic Space
 # The following spherical functions are specializations of Legendre functions which
 # give the regular eigenfunctions of the Laplacian on a 3-dimensional hyperbolic space
 # H3d. Of particular interest is the flat limit, lambda to infty, eta to 0, lambda eta fixed.
@@ -1359,7 +1359,7 @@
 #   This method computes radial eigenfunctions L^{H3d}_l(lambda, eta) for 0 <= l <= lmax,
 #   and returns the result as a <tt>GSL::Vector</tt> object.
 #
-# == {}[link:index.html"name="25] Logarithm and Related Functions
+# == Logarithm and Related Functions
 # ---
 # * GSL::Sf::log(x)
 #
@@ -1384,21 +1384,21 @@
 #
 #   Computes log(1 + x) - x for x > -1 using an algorithm that is accurate for small x.
 #
-# == {}[link:index.html"name="26] Mathieu functions
+# == Mathieu functions
 # The methods described in this section compute the angular and radial Mathieu functions, and their characteristic values. Mathieu functions are the solutions of the following two differential equations: The angular Mathieu functions ce_r(x,q), se_r(x,q) are the even and odd periodic solutions of the first equation, which is known as Mathieu's equation. These exist only for the discrete sequence of characteristic values a=a_r(q) (even-periodic) and a=b_r(q) (odd-periodic).
 #
 # The radial Mathieu functions Mc^{(j)}_{r}(z,q), Ms^{(j)}_{r}(z,q) are the solutions of the second equation, which is referred to as Mathieu's modified equation. The radial Mathieu functions of the first, second, third and fourth kind are denoted by the parameter <tt>j</tt>, which takes the value 1, 2, 3 or 4.
 #
 # For more information on the Mathieu functions, see Abramowitz and Stegun, Chapter 20.
 #
-# === {}[link:index.html"name="26.1] Mathieu Function Workspace
+# === Mathieu Function Workspace
 # The Mathieu functions can be computed for a single order or for multiple orders, using array-based routines.
 # ---
 # * GSL::Sf::Mathieu.alloc(n, qmax)
 #
 #   This method returns a workspace for the array versions of the Mathieu routines. The arguments <tt>n</tt> and <tt>qmax</tt> specify the maximum order and q-value of Mathieu functions which can be computed with this workspace.
 #
-# === {}[link:index.html"name="26.2] Mathieu Function Characteristic Values
+# === Mathieu Function Characteristic Values
 # ---
 # * GSL::Sf::mathieu_a(n, q)
 # * GSL::Sf::mathieu_a_e(n, q)
@@ -1413,7 +1413,7 @@
 #
 #   These methods compute a series of Mathieu characteristic values a_n(q), b_n(q) for n from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and return the results as a <tt>GSL::Vector</tt> object.
 #
-# === {}[link:index.html"name="26.3] Angular Mathieu Functions
+# === Angular Mathieu Functions
 # ---
 # * GSL::Sf::mathieu_ce(n, q, x)
 # * GSL::Sf::mathieu_ce_e(n, q, x)
@@ -1428,7 +1428,7 @@
 #
 #   These methods compute a series of the angular Mathieu functions ce_n(q,x) and se_n(q,x) of order n from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and return the results as a <tt>GSL::Vector</tt> object.
 #
-# === {}[link:index.html"name="26.4] Radial Mathieu Functions
+# === Radial Mathieu Functions
 # ---
 # * GSL::Sf::mathieu_Mc(j, n, q, x)
 # * GSL::Sf::mathieu_Mc_e(j, n, q, x)
@@ -1445,7 +1445,7 @@
 #
 #   These methods compute a series of the radial Mathieu functions of kind <tt>j</tt>, with order from <tt>nmin</tt> to <tt>nmax</tt> inclusive, and return the results as a <tt>GSL::Vector</tt> object.
 #
-# == {}[link:index.html"name="27] Power Functions
+# == Power Functions
 # ---
 # * GSL::Sf::pow_int(x, n)
 # * GSL::Sf::pow_int_e(x, n)
@@ -1455,12 +1455,12 @@
 #   ((x^2)^2)^2, requiring only 3 multiplications. For reasons of efficiency,
 #   these functions do not check for overflow or underflow conditions.
 #
-# == {}[link:index.html"name="28] Psi (Digamma) Function
+# == Psi (Digamma) Function
 # The polygamma functions of order <tt>m</tt> defined by
 # psi^{(m)}(x) = (d/dx)^m psi(x) = (d/dx)^{m+1} log(Gamma(x)),
 # where psi(x) = Gamma'(x)/Gamma(x) is known as the digamma function.
 #
-# === {}[link:index.html"name="28.1] Digamma Function
+# === Digamma Function
 # ---
 # * GSL::Sf::psi_int(n)
 #
@@ -1475,7 +1475,7 @@
 #
 #   Computes the real part of the digamma function on the line 1+i y, Re[psi(1 + i y)].
 #
-# === {}[link:index.html"name="28.2] Trigamma Function
+# === Trigamma Function
 # ---
 # * GSL::Sf::psi_1_int(n)
 #
@@ -1485,13 +1485,13 @@
 #
 #   Computes the Trigamma function psi'(x) for general <tt>x</tt>.
 #
-# === {}[link:index.html"name="28.3] Polygamma Function
+# === Polygamma Function
 # ---
 # * GSL::Sf::psi_n(m, x)
 #
 #   Computes the polygamma function psi^{(m)}(x) for m >= 0, x > 0.
 #
-# == {}[link:index.html"name="29] Synchrotron Functions
+# == Synchrotron Functions
 # ---
 # * GSL::Sf::synchrotron_1(x)
 #
@@ -1502,7 +1502,7 @@
 #
 #   Computes the second synchrotron function x K_{2/3}(x) for x >= 0.
 #
-# == {}[link:index.html"name="30] Transport Functions
+# == Transport Functions
 # The transport functions J(n,x) are defined by the integral representations
 # J(n,x) := int_0^x dt t^n e^t /(e^t - 1)^2.
 #
@@ -1514,8 +1514,8 @@
 #
 #   These methods compute the transport function J(n, x), for n = 2, 3, 4, and 5.
 #
-# == {}[link:index.html"name="31] Trigonometric Functions
-# === {}[link:index.html"name="31.1] Circular Trigonometric Functions
+# == Trigonometric Functions
+# === Circular Trigonometric Functions
 # ---
 # * GSL::Sf::sin(x)
 # * GSL::Sf::cos(x)
@@ -1527,7 +1527,7 @@
 #
 #   sinc(x) = sin(pi x) / (pi x)
 #
-# === {}[link:index.html"name="31.2] Trigonometric Functions for Complex Arguments
+# === Trigonometric Functions for Complex Arguments
 # ---
 # * GSL::Sf::complex_sin_e(zr, zi)
 # * GSL::Sf::complex_sin_e(z)
@@ -1537,19 +1537,19 @@
 # * GSL::Sf::complex_logsin_e(z)
 #
 #
-# === {}[link:index.html"name="31.3] Hyperbolic Trigonometric Functions
+# === Hyperbolic Trigonometric Functions
 # ---
 # * GSL::Sf::lnsinh(x)
 # * GSL::Sf::lncosh(x)
 #
 #
-# === {}[link:index.html"name="31.4] Conversion Functions
+# === Conversion Functions
 # ---
 # * GSL::Sf::polar_to_rect(r, theta)
 # * GSL::Sf::rect_to_polar(x, y)
 #
 #
-# === {}[link:index.html"name="31.5] Restriction Functions
+# === Restriction Functions
 # ---
 # * GSL::Sf::angle_restrict_symm(theta)
 #
@@ -1559,7 +1559,7 @@
 #
 #   This forces the angle <tt>theta</tt> to lie in the range [0, 2pi).
 #
-# === {}[link:index.html"name="31.6] Trigonometric Functions With Error Estimates
+# === Trigonometric Functions With Error Estimates
 # ---
 # * GSL::Sf::sin_err(x, dx)
 #
@@ -1571,8 +1571,8 @@
 #   Computes the cosine of an angle <tt>x</tt> with an associated absolute error <tt>dx</tt>,
 #   cos(x +- dx).
 #
-# == {}[link:index.html"name="32] Zeta Functions
-# === {}[link:index.html"name="32.1] Riemann Zeta Function
+# == Zeta Functions
+# === Riemann Zeta Function
 # The Riemann zeta function is defined by the infinite sum
 # zeta(s) = sum_{k=1}^infty k^{-s}.
 #
@@ -1585,7 +1585,7 @@
 #
 #   Computes the Riemann zeta function zeta(s) for arbitrary s, s != 1.
 #
-# === {}[link:index.html"name="32.2] Riemann Zeta Function Minus One
+# === Riemann Zeta Function Minus One
 # ---
 # * GSL::Sf::zetam1_int(n)
 #
@@ -1595,14 +1595,14 @@
 #
 #   Computes zeta(s) - 1 for arbitrary s, s != 1.
 #
-# === {}[link:index.html"name="32.3] Hurwitz Zeta Function
+# === Hurwitz Zeta Function
 # The Hurwitz zeta function is defined by zeta(s,q) = sum_0^infty (k+q)^{-s}.
 # ---
 # * GSL::Sf::hzeta(s, q)
 #
 #   Computes the Hurwitz zeta function zeta(s,q) for s > 1, q > 0.
 #
-# === {}[link:index.html"name="32.4] Eta Function
+# === Eta Function
 # The eta function is defined by eta(s) = (1-2^{1-s}) zeta(s).
 # ---
 # * GSL::Sf::eta_int(n)

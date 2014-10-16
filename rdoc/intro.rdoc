@@ -11,12 +11,12 @@
 # {Ruby/GSL}[https://blackwinter.github.com/rb-gsl] is a Ruby
 # extension for GSL. This provides higher-level interfaces to the GSL functions.
 #
-# == {}[link:index.html"name="1] Requirements
+# == Requirements
 # * GSL (1.4 or later recommended)
 # * ANSI C compiler
 # * Ruby (1.8 or later recommended)
 #
-# == {}[link:index.html"name="2] Installation
+# == Installation
 # See {here}[link:index.html].
 #
 # {next}[link:use_rdoc.html]

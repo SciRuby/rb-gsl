@@ -3,11 +3,11 @@
 #
 # Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License.
 #
-# == {}[link:index.html"name="1] Description
+# == Description
 # {Ruby/GSL}[https://blackwinter.github.com/rb-gsl] is a ruby interface to the {GNU Scientific Library}[https://gnu.org/software/gsl/] (GSL), for numerical computing with {Ruby}[http://www.ruby-lang.org/en/].
 #
-# == {}[link:index.html"name="3] Installation
-# === {}[link:index.html"name="3.1] Using the gem command
+# == Installation
+# === Using the gem command
 # Ruby/GSL may now be installed as a Ruby Gem by simply running
 #
 #   gem install rb-gsl
@@ -22,29 +22,29 @@
 #   Windows-cygwin binaries of <tt>GNU plotutils</tt> and related packages are
 #   available from {here}[http://gnuwin32.sourceforge.net/packages/plotutils.htm].
 #
-# == {}[link:index.html"name="5] Reference
+# == Reference
 #
 # The {Ruby/GSL reference manual}[link:ref_rdoc.html] follows and borrows
 # large parts of the GSL reference manual.
 #
-# == {}[link:index.html"name="6] Examples
+# == Examples
 # See scripts in <tt>examples/</tt> and <tt>tests/</tt> directories.
 #
-# == {}[link:index.html"name="7] Related Projects
+# == Related Projects
 # * {ruby-gsl:}[http://ruby-gsl.sourceforge.net/]
 #   Another Ruby binding, developed by Arno Erpenbeck.
 #
-# == {}[link:index.html"name="8] Licence
+# == Licence
 # Ruby/GSL is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License.
 # This library is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY.
 #
-# == {}[link:index.html"name="9] Bug Report
+# == Bug Report
 # If you encounter bugs in Ruby/GSL, please e-mail to me, or
 # submit reports on {GitHub}[https://github.com/blackwinter/rb-gsl/issues].
 #
-# == {}[link:index.html"name="10] Authors
+# == Authors
 # Yoshiki Tsunesada:: July, 2004
 # David MacMahon:: November, 2010
 # Jens Wille:: November, 2013

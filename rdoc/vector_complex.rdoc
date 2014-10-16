@@ -1,7 +1,7 @@
 #
 # = GSL::Vector::Complex
 #
-# == {}[link:index.html"name="1] Class methods
+# == Class methods
 # ---
 # * GSL::Vector::Complex.alloc(size)
 # * GSL::Vector::Complex.alloc(re, im)
@@ -27,8 +27,8 @@
 #   Creates a complex vector of length <tt>n</tt> and initializes all
 #   the elements of the vector to zero.
 #
-# == {}[link:index.html"name="2] Instance methods
-# === {}[link:index.html"name="2.1] Accessing vector elements
+# == Instance methods
+# === Accessing vector elements
 # ---
 # * GSL::Vector::Complex#get(args)
 # * \GSL::Vector::Complex#[args]
@@ -75,7 +75,7 @@
 #   Vector from another part of itself (see <tt>#set</tt> example of
 #   {GSL::Vector}[link:vector_rdoc.html]).
 #
-# === {}[link:index.html"name="2.2] Initializing vector elements
+# === Initializing vector elements
 # ---
 # * GSL::Vector::Complex#set_all(z)
 #
@@ -101,7 +101,7 @@
 #   <tt>x</tt>.  Currently, <tt>x</tt> must be a scalar, but a future Ruby GSL
 #   version could accept a GSL::Vector.
 #
-# === {}[link:index.html"name="2.3] Vector Properties
+# === Vector Properties
 # ---
 # * GSL::Vector::Complex#size
 # * GSL::Vector::Complex#len
@@ -114,7 +114,7 @@
 #
 #   Return the vector stride.
 #
-# === {}[link:index.html"name="2.4] Iterators
+# === Iterators
 # ---
 # * GSL::Vector::Complex#each
 # * GSL::Vector::Complex#each_index
@@ -124,10 +124,10 @@
 # * GSL::Vector::Complex#map!
 #
 #
-# === {}[link:index.html"name="2.5] Reordering Elements
+# === Reordering Elements
 # <tt>GSL::Vector::Complex</tt> provides four methods for shifting the frequency
 # domain data between <b>FFT order</b>, shown in the table in the {Overview of
-# complex data FFTs}[link:fft_rdoc.html#2.1], and <b>natural order</b>, which has
+# complex data FFTs}[link:fft_rdoc.html#label-Overview+of+complex+data+FFTs], and <b>natural order</b>, which has
 # the most negative freqeuncy component first, the zero frequency component in the
 # middle, and the most positive frequency component last.  For more information
 # on Ruby/GSL and FFTs, see {Fast Fourier Transforms}[link:fft_rdoc.html].
@@ -154,7 +154,7 @@
 #   <tt>self</tt>.  Note that <tt>#fftshift</tt> and <tt>#ifftshift</tt> are equivalent
 #   for even lengths, but not for odd lengths.
 #
-# === {}[link:index.html"name="2.6] Arithmetic
+# === Arithmetic
 # ---
 # * GSL::Vector::Complex#+(other)
 # * GSL::Vector::Complex#-(other)
@@ -185,7 +185,7 @@
 #   parameter may be a scalar, <tt>{GSL::Vector}[link:vector_rdoc.html]</tt>, or
 #   <tt>GSL::Vector::Complex</tt>.
 #
-# === {}[link:index.html"name="2.7] Reading and writing vectors
+# === Reading and writing vectors
 # ---
 # * GSL::Vector::Complex#fwite(io)
 # * GSL::Vector::Complex#fread(io)
@@ -193,7 +193,7 @@
 # * GSL::Vector::Complex#fscanf(io)
 #
 #
-# === {}[link:index.html"name="2.8] Functions
+# === Functions
 # ---
 # * GSL::Vector::Complex#conj
 # * GSL::Vector::Complex#conjugate
@@ -272,7 +272,7 @@
 # * GSL::Vector::Complex#arccoth
 #
 #
-# === {}[link:index.html"name="2.9] Statistics
+# === Statistics
 # ---
 # * GSL::Vector::Complex#sum
 #
@@ -324,7 +324,7 @@
 #   Returns the standard deviation of <tt>self</tt> around the fixed mean
 #   <tt>mean</tt>.  This is a real number, i.e. a <tt>Float</tt>.
 #
-# == {}[link:index.html"name="3] Data Conversions
+# == Data Conversions
 # ---
 # * GSL::Vector#to_complex
 # * GSL::Vector#to_complex2

@@ -2,24 +2,24 @@
 # = Basis Splines
 # This chapter describes functions for the computation of smoothing basis splines (B-splines). This is only for GSL-1.9 or later.
 #
-# 1. {Overview}[link:bspline_rdoc.html#1]
-# 1. {Initializing the B-splines solver}[link:bspline_rdoc.html#2]
-# 1. {Constructing the knots vector}[link:bspline_rdoc.html#3]
-# 1. {Evaluation of B-splines}[link:bspline_rdoc.html#4]
+# 1. {Overview}[link:bspline_rdoc.html#label-Overview]
+# 1. {Initializing the B-splines solver}[link:bspline_rdoc.html#label-Initializing+the+B-splines+solver]
+# 1. {Constructing the knots vector}[link:bspline_rdoc.html#label-Constructing+the+knots+vector]
+# 1. {Evaluation of B-splines}[link:bspline_rdoc.html#label-Evaluation+of+B-splines]
 #
-# == {}[link:index.html"name="1] Overview
+# == Overview
 #
 # B-splines are commonly used as basis functions to fit smoothing curves to large data sets. To do this, the abscissa axis is broken up into some number of intervals, where the endpoints of each interval are called breakpoints. These breakpoints are then converted to knots by imposing various continuity and smoothness conditions at each interface. Given a nondecreasing knot vector t = \{t_0, t_1, \dots, t_{n+k-1\, the n basis splines of order k are defined by for i = 0, \dots, n-1. The common case of cubic B-splines is given by k = 4. The above recurrence relation can be evaluated in a numerically stable way by the de Boor algorithm.
 #
 # If we define appropriate knots on an interval [a,b] then the B-spline basis functions form a complete set on that interval. Therefore we can expand a smoothing function as given enough (x_j, f(x_j)) data pairs. The c_i can be readily obtained from a least-squares fit.
 #
-# == {}[link:index.html"name="2] Initializing the B-splines solver
+# == Initializing the B-splines solver
 # ---
 # * GSL::BSpline.alloc(k, nbreak)
 #
 #   This method creates a workspace for computing B-splines of order <tt>k</tt>. The number of breakpoints is given by <tt>nbreak</tt>. This leads to <tt>n = nbreak + k - 2</tt> basis functions. Cubic B-splines are specified by <tt>k = 4</tt>. The size of the workspace is <tt>O(5k + nbreak)</tt>.
 #
-# == {}[link:index.html"name="3] Constructing the knots vector
+# == Constructing the knots vector
 # ---
 # * GSL::BSpline#knots(breakpts)
 #
@@ -28,7 +28,7 @@
 # * GSL::BSpline#knots_uniform(a, b)
 #
 #   This method assumes uniformly spaced breakpoints on [<tt>a,b</tt>] and constructs the corresponding knot vector using the previously specified <tt>nbreak</tt> parameter.
-# == {}[link:index.html"name="4] Evaluation of B-splines
+# == Evaluation of B-splines
 # ---
 # * GSL::BSpline#eval(x[, B])
 #

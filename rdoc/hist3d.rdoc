@@ -1,7 +1,7 @@
 #
 # = GSL::Histogram3d class
 #
-# == {}[link:index.html"name="1] Class methods
+# == Class methods
 # ---
 # * GSL::Histogram3d.alloc(nx, ny, nz)
 # * GSL::Histogram3d.alloc(xrange, yrange, zrange)
@@ -16,7 +16,7 @@
 # * GSL::Histogram3d.equal_bins_?p(h1, h2)
 #
 #
-# == {}[link:index.html"name="2] Methods
+# == Methods
 # ---
 # * GSL::Histogram3d#set_ranges(xrange, yrange, zrange)
 # * GSL::Histogram3d#set_ranges_uniform(xmin, xmax, ymin, ymax, zmin, zmax)

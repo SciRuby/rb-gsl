@@ -1,7 +1,7 @@
 #
 # = Monte Carlo Integration
 #
-# == {}[link:index.html"name="1] The GSL::Monte::Function class
+# == The Function class
 # The function to be integrated has its own datatype, the <tt>GSL::Monte::Function</tt> class.
 #
 # ---
@@ -32,24 +32,24 @@
 # * GSL::Munte::Function#call
 #
 #
-# == {}[link:index.html"name="2] Monte Carlo plans, alrgorithms
-# === {}[link:index.html"name="2.1] PLAIN Monte Carlo
+# == Monte Carlo plans, alrgorithms
+# === PLAIN Monte Carlo
 # ---
 # * GSL::Monte::Plain.alloc(dim)
 # * GSL::Monte::Plain#init
 #
-# === {}[link:index.html"name="2.2] Miser
+# === Miser
 # ---
 # * GSL::Monte::Miser.alloc(dim)
 # * GSL::Monte::Miser#init
 #
-# === {}[link:index.html"name="2.3] Vegas
+# === Vegas
 # ---
 # * GSL::Monte::Vegas.alloc(dim)
 # * GSL::Monte::Vegas#init
 #
 #
-# == {}[link:index.html"name="3] Integration
+# == Integration
 # ---
 # * GSL:Monte::Function#integrate(xl, xu, dim, calls, rng, s)
 # * GSL:Monte::Function#integrate(xl, xu, dim, calls, s)
@@ -67,7 +67,7 @@
 #
 #   See sample scripts <tt>sample/monte*.rb</tt> for more details.
 #
-# == {}[link:index.html"name="4] Accessing internal state of the Monte Carlo classes
+# == Accessing internal state of the Monte Carlo classes
 # ---
 # * GSL::Monte::Miser#estimate_frac
 # * GSL::Monte::Miser#estimate_frac=
@@ -102,7 +102,7 @@
 # * GSL::Monte::Vegas#verbose=
 #
 #
-# == {}[link:index.html"name="5] Miser Parameters (GSL-1.13 or later)
+# == Miser Parameters (GSL-1.13 or later)
 # ---
 # * GSL::Monte::Miser#params_get
 #
@@ -111,7 +111,7 @@
 # * GSL::Monte::Miser#params_set(params)
 #
 #   Sets the integrator parameters based on values provided in an object of the <tt>GSL::Monte::Miser::Params</tt> class <tt>params</tt>.
-# === {}[link:index.html"name="5.1] Accessors of <tt>GSL::Monte::Miser::Params</tt>
+# === Accessors of Miser <tt>Params</tt>
 # ---
 # * GSL::Monte::Miser::Params#estimate_frac
 # * GSL::Monte::Miser::Params#estimate_frac=
@@ -138,7 +138,7 @@
 #
 # This parameter introduces a random fractional variation of size dither into each bisection, which can be used to break the symmetry of integrands which are concentrated near the exact center of the hypercubic integration region. The default value of dither is zero, so no variation is introduced. If needed, a typical value of dither is 0.1.
 #
-# == {}[link:index.html"name="6] Vegas Parameters (GSL-1.13 or later)
+# == Vegas Parameters (GSL-1.13 or later)
 # ---
 # * GSL::Monte::Vegas#params_get
 #
@@ -148,7 +148,7 @@
 #
 #   Sets the integrator parameters based on values provided in an object of the <tt>GSL::Monte::Vegas::Params</tt> class <tt>params</tt>.
 #
-# === {}[link:index.html"name="6.1] Accessors of <tt>GSL::Monte::Vegas::Params</tt>
+# === Accessors of Vegas <tt>Params</tt>
 # ---
 # * GSL::Monte::Vegas::Params#alpha
 # * GSL::Monte::Vegas::Params#alpha=
@@ -175,7 +175,7 @@
 #
 #   Set the level of information printed by VEGAS. All information is written to the stream ostream. The default setting of verbose is -1, which turns off all output. A verbose value of 0 prints summary information about the weighted average and final result, while a value of 1 also displays the grid coordinates. A value of 2 prints information from the rebinning procedure for each iteration.
 #
-# == {}[link:index.html"name="7] Example
+# == Example
 #
 #      #!/usr/bin/env ruby
 #      require("gsl")

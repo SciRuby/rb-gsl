@@ -10,7 +10,7 @@
 # The changes that could break old scripts are described below.  They are
 # followed by highlights of the other enhancements and new features.
 #
-# == {}[link:index.html"name="1] Backwards incompatibilities introduced in Ruby/GSL 1.11.2
+# == Backwards incompatibilities introduced in Ruby/GSL 1.11.2
 #
 # * FFT interface has been extensively changed.
 #
@@ -34,7 +34,7 @@
 #
 # * GSL::Complex objects are now immutable.
 #
-# == {}[link:index.html"name="2] Enhancements and features introduced in Ruby/GSL 1.11.2
+# == Enhancements and features introduced in Ruby/GSL 1.11.2
 #
 # * Now distributed and installable as a Ruby Gem.
 #

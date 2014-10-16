@@ -1,14 +1,14 @@
 #
 # = Combinations
 # Contents:
-# 1. {Combination allocation}[link:combi_rdoc.html#1]
-# 1. {Methods}[link:combi_rdoc.html#2]
-#    1. {Accessing combination elements}[link:combi_rdoc.html#2.1]
-#    1. {Combination properties}[link:combi_rdoc.html#2.2]
-#    1. {Combination functions}[link:combi_rdoc.html#2.3]
-#    1. {Reading and writing combinations}[link:combi_rdoc.html#2.4]
+# 1. {Combination allocation}[link:combi_rdoc.html#label-Combination+allocation]
+# 1. {Methods}[link:combi_rdoc.html#label-Methods]
+#    1. {Accessing combination elements}[link:combi_rdoc.html#label-Accessing+combination+elements]
+#    1. {Combination properties}[link:combi_rdoc.html#label-Combination+properties]
+#    1. {Combination functions}[link:combi_rdoc.html#label-Combination+functions]
+#    1. {Reading and writing combinations}[link:combi_rdoc.html#label-Reading+and+writing+combinations]
 #
-# == {}[link:index.html"name="1] Combination allocation
+# == Combination allocation
 # ---
 # * GSL::Combination.alloc(n, k)
 #
@@ -23,7 +23,7 @@
 #   This creates a new combination with parameters <tt>n, k</tt> and initializes
 #   it to the lexicographically first combination.
 #
-# == {}[link:index.html"name="2] Methods
+# == Methods
 #
 # ---
 # * GSL::Combination#init_first
@@ -37,14 +37,14 @@
 #   This method initializes the combination <tt>self</tt> to the lexicographically last
 #   combination, i.e. (n-k,n-k+1,...,n-1).
 #
-# === {}[link:index.html"name="2.1] Accessing combination elements
+# === Accessing combination elements
 # ---
 # * GSL::Combination#get(i)
 # * \GSL::Combination#[i]
 #
 #   This returns the value of the <tt>i</tt>-th element of the combination <tt>self</tt>.
 #
-# === {}[link:index.html"name="2.2] Combination properties
+# === Combination properties
 # ---
 # * GSL::Combination#n
 #
@@ -72,7 +72,7 @@
 #
 #   Thie returns true if the combination is valid, and false otherwise.
 #
-# === {}[link:index.html"name="2.3] Combination functions
+# === Combination functions
 # ---
 # * GSL::Combination#next
 #
@@ -90,7 +90,7 @@
 #   If no previous combination is available it returns <tt>GSL::FAILURE</tt>
 #   and leaves <tt>self</tt> unmodified.
 #
-# === {}[link:index.html"name="2.4] Reading and writing combinations
+# === Reading and writing combinations
 # ---
 # * GSL::Combination#fwrite(filename)
 # * GSL::Combination#fwrite(io)
@@ -102,7 +102,7 @@
 # * GSL::Combination#fscanf(io)
 #
 #
-# == {}[link:index.html"name="3] Example
+# == Example
 #      #!/usr/bin/env ruby
 #      require("gsl")
 #

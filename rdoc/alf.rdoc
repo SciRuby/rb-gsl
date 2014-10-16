@@ -5,18 +5,18 @@
 #
 # The class and method descriptions below are based on references from the document of ALF (alf-1.0/doc/alf.texi) by P.Alken.
 #
-# == {}[link:index.html"name="1] Module structure
+# == Module structure
 # * GSL::ALF (module)
 #   * GSL::ALF::Workspace (Class)
 #
-# == {}[link:index.html"name="2] Creating ALF workspace
+# == Creating ALF workspace
 # ---
 # * GSL::ALF::Workspace.alloc(lmax)
 # * GSL::ALF.alloc(lmax)
 #
 # Creates a workspace for computing associated Legendre polynomials (ALFs). The maximum ALF degree is specified by lmax. The size of this workspace is O(lmax).
 #
-# == {}[link:index.html"name="3] Methods
+# == Methods
 # ---
 # * GSL::ALF::Workspace#params(csphase, cnorm, norm)
 #

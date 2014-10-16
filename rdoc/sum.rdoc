@@ -4,13 +4,13 @@
 # for the <tt>GSL::Sum::Levin_u, Levin_utrunc</tt> classes, and methods of
 # an object of the {GSL::Vector}[link:vector_rdoc.html] class.
 #
-# == {}[link:index.html"name="1] Modules and classes
+# == Modules and classes
 # * GSL
 #   * Sum (Module)
 #     * Levin_u (Class)
 #     * Levin_utrunc (Class)
 #
-# == {}[link:index.html"name="2] Methods
+# == Methods
 #
 # ---
 # * GSL::Sum::Levin_u.alloc(size)

@@ -6,13 +6,13 @@
 #
 #
 # Contents:
-# 1. {Introduction}[link:min_rdoc.html#1]
-# 1. {GSL::Min::FMinimizer class}[link:min_rdoc.html#2]
-# 1. {Iteration}[link:min_rdoc.html#3]
-# 1. {Stopping Parameters}[link:min_rdoc.html#4]
-# 1. {Examples}[link:min_rdoc.html#5]
+# 1. {Introduction}[link:min_rdoc.html#label-Introduction]
+# 1. {GSL::Min::FMinimizer class}[link:min_rdoc.html#label-Minimizer+class]
+# 1. {Iteration}[link:min_rdoc.html#label-Iteration]
+# 1. {Stopping Parameters}[link:min_rdoc.html#label-Stopping+Parameters]
+# 1. {Examples}[link:min_rdoc.html#label-Example]
 #
-# == {}[link:index.html"name="1] Introduction
+# == Introduction
 #
 # The minimization algorithms begin with a bounded region known to contain
 # a minimum. The region is described by <tt>a</tt> lower bound a and an upper bound
@@ -44,7 +44,7 @@
 # The function to minimize is given as an instance of the {GSL::Function}[link:function_rdoc.html] class to the minimizer.
 #
 #
-# == {}[link:index.html"name="2] GSL::Min::FMinimizer class
+# == FMinimizer class
 # ---
 # * GSL::Min::FMinimizer.alloc(t)
 #
@@ -85,7 +85,7 @@
 #
 #   This returns the name of the minimizer.
 #
-# == {}[link:index.html"name="3] Iteration
+# == Iteration
 # ---
 # * GSL::Min::FMinimizer#iterate
 #
@@ -122,7 +122,7 @@
 #   minimum and at the upper and lower bounds of interval
 #   for the minimizer <tt>self</tt>.
 #
-# == {}[link:index.html"name="4] Stopping Parameters
+# == Stopping Parameters
 # ---
 # * GSL::Min::FMinimizer#test_interval(epsabs, epsrel)
 # * GSL::Min.test_interval(xlow, xup, epsabs, epsrel)
@@ -144,7 +144,7 @@
 #     |x_m - x_m^*| < epsabs + epsrel x_m^*
 #   assuming that the true minimum x_m^* is contained within the interval.
 #
-# == {}[link:index.html"name="5] Example
+# == Example
 # To find the minimum of the function f(x) = cos(x) + 1.0:
 #
 #      #!/usr/bin/env ruby

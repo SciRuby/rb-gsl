@@ -5,14 +5,14 @@
 # The library includes wavelets for real data in both one and two dimensions.
 #
 # Contents:
-# 1. {Definitions}[link:wavelet_rdoc.html#1]
-# 1. {Initialization}[link:wavelet_rdoc.html#2]
-# 1. {Transform methods}[link:wavelet_rdoc.html#3]
-#    1. {Wavelet transforms in one dimension}[link:wavelet_rdoc.html#3.1]
-#    1. {Wavelet transforms in two dimension}[link:wavelet_rdoc.html#3.2]
-# 1. {Examples}[link:wavelet_rdoc.html#4]
+# 1. {Definitions}[link:wavelet_rdoc.html#label-Definitions]
+# 1. {Initialization}[link:wavelet_rdoc.html#label-Initialization]
+# 1. {Transform methods}[link:wavelet_rdoc.html#label-Transform+Methods]
+#    1. {Wavelet transforms in one dimension}[link:wavelet_rdoc.html#label-Wavelet+transforms+in+one+dimension]
+#    1. {Wavelet transforms in two dimension}[link:wavelet_rdoc.html#label-Wavelet+transforms+in+two+dimension]
+# 1. {Examples}[link:wavelet_rdoc.html#label-Example]
 #
-# == {}[link:index.html"name="1] Definitions
+# == Definitions
 #
 # The continuous wavelet transform and its inverse are defined by the relations,
 # and,
@@ -28,7 +28,7 @@
 # The discrete wavelet transform is an O(N) algorithm, and is also referred to as
 # the fast wavelet transform.
 #
-# == {}[link:index.html"name="2] Initialization
+# == Initialization
 #
 # ---
 # * GSL::Wavelet.alloc(type, k)
@@ -66,8 +66,8 @@
 #   matrices it is sufficient to allocate a workspace of size <tt>n</tt>,
 #   since the transform operates on individual rows and columns.
 #
-# == {}[link:index.html"name="3] Transform Methods
-# === {}[link:index.html"name="3.1] Wavelet transforms in one dimension
+# == Transform Methods
+# === Wavelet transforms in one dimension
 #
 # ---
 # * GSL::Wavelet.transform(w, v, dir = GSL::Wavelet::FORWARD, work)
@@ -107,7 +107,7 @@
 #
 #   These methods return a transformed data, and the input vector is not changed.
 #
-# === {}[link:index.html"name="3.2] Wavelet transforms in two dimension
+# === Wavelet transforms in two dimension
 # ---
 # * GSL::Wavelet.transform(same as the methods for one dimensional transforms)
 # * GSL::Wavelet.transform_matrix()
@@ -162,7 +162,7 @@
 # * GSL::Wavelet2d#nstransform_inverse()
 #
 #
-# == {}[link:index.html"name="4] Example
+# == Example
 #   #!/usr/bin/env ruby
 #   require("gsl")
 #

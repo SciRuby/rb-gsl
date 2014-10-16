@@ -1,16 +1,16 @@
 #
 # = Complex Numbers
 # Contents:
-# 1. {Class methods}[link:complex_rdoc.html#1]
-# 1. {Properties of Complex Numbers}[link:complex_rdoc.html#2]
-# 1. {Complex Arithmetic Operators}[link:complex_rdoc.html#3]
-# 1. {Elementary Complex Functions}[link:complex_rdoc.html#4]
-# 1. {Complex Trigonometric Functions}[link:complex_rdoc.html#5]
-# 1. {Inverse Complex Trigonometric Functions}[link:complex_rdoc.html#6]
-# 1. {Complex Hyperbolic Functions}[link:complex_rdoc.html#7]
-# 1. {Inverse Complex Hyperbolic Functions}[link:complex_rdoc.html#8]
+# 1. {Class methods}[link:complex_rdoc.html#label-Class+Methods]
+# 1. {Properties of Complex Numbers}[link:complex_rdoc.html#label-Properties+of+complex+numbers]
+# 1. {Complex Arithmetic Operators}[link:complex_rdoc.html#label-Complex+arithmetic+operators]
+# 1. {Elementary Complex Functions}[link:complex_rdoc.html#label-Elementary+Complex+Functions]
+# 1. {Complex Trigonometric Functions}[link:complex_rdoc.html#label-Complex+Trigonometric+Functions]
+# 1. {Inverse Complex Trigonometric Functions}[link:complex_rdoc.html#label-Inverse+Complex+Trigonometric+Functions]
+# 1. {Complex Hyperbolic Functions}[link:complex_rdoc.html#label-Complex+Hyperbolic+Functions]
+# 1. {Inverse Complex Hyperbolic Functions}[link:complex_rdoc.html#label-Inverse+Complex+Hyperbolic+Functions]
 #
-# == {}[link:index.html"name="1] Class Methods
+# == Class Methods
 # ---
 # * GSL::Complex.alloc(re, im)
 # * GSL::Complex.rect(re, im)
@@ -23,7 +23,7 @@
 #
 #   This returns a GSL::Complex object in polar representation, with the amplitude <tt>r</tt> and the phase (argument) <tt>theta</tt>.
 #
-# == {}[link:index.html"name="2] Properties of complex numbers
+# == Properties of complex numbers
 # ---
 # * GSL::Complex#real
 # * GSL::Complex#re
@@ -50,7 +50,7 @@
 #
 #   Returns the magnitude, squared magnitude, and the logarithm of the magnitude
 #
-# == {}[link:index.html"name="3] Complex arithmetic operators
+# == Complex arithmetic operators
 # ---
 # * GSL::Complex#add(b)
 # * GSL::Complex#+(b)
@@ -97,7 +97,7 @@
 #
 #   Returns the negative of the complex number <tt>self</tt>.
 #
-# == {}[link:index.html"name="4] Elementary Complex Functions
+# == Elementary Complex Functions
 # ---
 # * GSL::Complex#sqrt
 # * GSL::Complex#pow(az)
@@ -119,7 +119,7 @@
 # * GSL::Complex.log_b(z, b)
 #
 #
-# == {}[link:index.html"name="5] Complex Trigonometric Functions
+# == Complex Trigonometric Functions
 # ---
 # * GSL::Complex#sin
 # * GSL::Complex#cos
@@ -138,7 +138,7 @@
 # * GSL::Complex.cot(z)
 #
 #
-# == {}[link:index.html"name="6] Inverse Complex Trigonometric Functions
+# == Inverse Complex Trigonometric Functions
 # ---
 # * GSL::Complex#arcsin
 # * GSL::Complex#arccos
@@ -161,7 +161,7 @@
 # * GSL::Complex.arccot(z)
 #
 #
-# == {}[link:index.html"name="7] Complex Hyperbolic Functions
+# == Complex Hyperbolic Functions
 # ---
 # * GSL::Complex#sinh
 # * GSL::Complex#cosh
@@ -180,7 +180,7 @@
 # * GSL::Complex.coth(z)
 #
 #
-# == {}[link:index.html"name="8] Inverse Complex Hyperbolic Functions
+# == Inverse Complex Hyperbolic Functions
 # ---
 # * GSL::Complex#arcsinh
 # * GSL::Complex#arccosh

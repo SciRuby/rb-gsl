@@ -2,13 +2,13 @@
 # = {Ruby/GSL Reference}[link:ref_rdoc.html]
 # (See also {Gnu Scientific Library -- Reference Manual}[https://gnu.org/software/gsl/manual/html_node/])
 #
-# == {}[link:index.html"name="1] Front Matter
+# == Front Matter
 # This document describes the modules, classes and the methods of Ruby/GSL.  This
 # includes cut-and-paste from the
 # {GNU Scientific Library -- Reference Manual}[https://gnu.org/software/gsl/manual/html_node/],
 # and documents of the extention libraries.
 #
-# === {}[link:index.html"name="1.1] Copyright of the GSL Reference
+# === Copyright of the GSL Reference
 #
 # Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
 # 2007, 2008 The GSL Team.
@@ -22,14 +22,14 @@
 # Free Documentation License".  (a) The Back-Cover Text is: "You have the freedom
 # to copy and modify this GNU Manual."
 #
-# === {}[link:index.html"name="1.2] Copyright of this reference
+# === Copyright of this reference
 #
 # 2009,2010 Yoshiki Tsunesada, David MacMahon
 #
 # Permission is granted to copy, distribute and/or modify this document under
 # the terms of the GNU Free Documentation License.
 #
-# == {}[link:index.html"name="2] Ruby/GSL Reference
+# == Ruby/GSL Reference
 #
 # 1. {Introduction}[link:intro_rdoc.html]
 # 1. {Using Ruby/GSL}[link:use_rdoc.html]
@@ -75,7 +75,7 @@
 # 1. {Physical Constants}[link:const_rdoc.html]
 # 1. {Graphics}[link:graph_rdoc.html]
 # 1. Supported GSL add-on packages
-#    1. {rngextra}[link:rng_rdoc.html#3]
+#    1. {rngextra}[link:rng_rdoc.html#label-Random+number+generator+initialization]
 #    1. {Tensor manipulations}[link:tensor_rdoc.html]
 #    1. OOL: Open Optimization library (see examples/ool/*.rb)
 #    1. CQP and Bundle (see examples/multimin/cqp.rb, bundle.rb)

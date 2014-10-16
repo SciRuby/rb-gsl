@@ -2,23 +2,23 @@
 # = Linear Algebra
 #
 # Contents:
-# 1. {LU Decomposition}[link:linalg_rdoc.html#1]
-# 1. {QR Decomposition}[link:linalg_rdoc.html#2]
-# 1. {QR Decomposition with Column Pivoting}[link:linalg_rdoc.html#3]
-# 1. {Singular Value Decomposition}[link:linalg_rdoc.html#4]
-# 1. {Cholesky Decomposition}[link:linalg_rdoc.html#5]
-# 1. {Tridiagonal Decomposition of Real Symmetric Matrices}[link:linalg_rdoc.html#6]
-# 1. {Tridiagonal Decomposition of Hermitian Matrices}[link:linalg_rdoc.html#7]
-# 1. {Hessenberg Decomposition of Real Matrices}[link:linalg_rdoc.html#8]
-# 1. {Hessenberg-Triangular Decomposition of Real Matrices}[link:linalg_rdoc.html#9]
-# 1. {Bidiagonalization}[link:linalg_rdoc.html#10]
-# 1. {Householder Transformations}[link:linalg_rdoc.html#11]
-# 1. {Householder solver for linear systems}[link:linalg_rdoc.html#12]
-# 1. {Tridiagonal Systems}[link:linalg_rdoc.html#13]
-# 1. {Balancing}[link:linalg_rdoc.html#14]
-# 1. {NArray}[link:linalg_rdoc.html#15]
+# 1. {LU Decomposition}[link:linalg_rdoc.html#label-LU+Decomposition]
+# 1. {QR Decomposition}[link:linalg_rdoc.html#label-QR+decomposition]
+# 1. {QR Decomposition with Column Pivoting}[link:linalg_rdoc.html#label-QR+Decomposition+with+Column+Pivoting]
+# 1. {Singular Value Decomposition}[link:linalg_rdoc.html#label-Singular+Value+Decomposition]
+# 1. {Cholesky Decomposition}[link:linalg_rdoc.html#label-Cholesky+Decomposition]
+# 1. {Tridiagonal Decomposition of Real Symmetric Matrices}[link:linalg_rdoc.html#label-Tridiagonal+Decomposition+of+Real+Symmetric+Matrices]
+# 1. {Tridiagonal Decomposition of Hermitian Matrices}[link:linalg_rdoc.html#label-Tridiagonal+Decomposition+of+Hermitian+Matrices]
+# 1. {Hessenberg Decomposition of Real Matrices}[link:linalg_rdoc.html#label-Hessenberg+Decomposition+of+Real+Matrices]
+# 1. {Hessenberg-Triangular Decomposition of Real Matrices}[link:linalg_rdoc.html#label-Hessenberg-Triangular+Decomposition+of+Real+Matrices]
+# 1. {Bidiagonalization}[link:linalg_rdoc.html#label-Bidiagonalization]
+# 1. {Householder Transformations}[link:linalg_rdoc.html#label-Householder+Transformations]
+# 1. {Householder solver for linear systems}[link:linalg_rdoc.html#label-Householder+solver+for+linear+systems]
+# 1. {Tridiagonal Systems}[link:linalg_rdoc.html#label-Tridiagonal+Systems]
+# 1. {Balancing}[link:linalg_rdoc.html#label-Balancing]
+# 1. {NArray}[link:linalg_rdoc.html#label-NArray]
 #
-# == {}[link:index.html"name="1] LU Decomposition
+# == LU Decomposition
 # ---
 # * GSL::Linalg::LU.decomp(A)
 # * GSL::Matrix#LU_decomp
@@ -102,9 +102,9 @@
 #
 #   These methods return the determinant of the matrix.
 #
-# === {}[link:index.html"name="1.1] {Complex LU decomposition}[link:linalg_complex_rdoc.html]
+# === {Complex LU decomposition}[link:linalg_complex_rdoc.html]
 #
-# == {}[link:index.html"name="2] QR decomposition
+# == QR decomposition
 #
 # ---
 # * GSL::Linalg::QR_decomp(A)
@@ -180,7 +180,7 @@
 #   It can be used when the QR decomposition of a matrix is available
 #   in unpacked form as <tt>Q,R</tt>.
 #
-# == {}[link:index.html"name="3] QR Decomposition with Column Pivoting
+# == QR Decomposition with Column Pivoting
 # ---
 # * GSL::Linalg::QRPT.decomp(A)
 # * GSL::Matrix#QRPT_decomp
@@ -257,7 +257,7 @@
 # * GSL::Linalg::QRPTMatrix#Rsvx(perm, b)
 #
 #
-# == {}[link:index.html"name="4] Singular Value Decomposition
+# == Singular Value Decomposition
 # ---
 # * GSL::Linalg::SV.decomp(A[, work])
 # * \GSL::Matrix#SV_decomp([work])
@@ -322,7 +322,7 @@
 #   * Ex3:
 #       x = m.SV_solve(b)
 #
-# == {}[link:index.html"name="6] Cholesky Decomposition
+# == Cholesky Decomposition
 # A symmetric, positive definite square matrix <tt>A</tt> has a Cholesky decomposition
 # into a product of a lower triangular matrix L and its transpose L^T,
 # as <tt>A = L L^T</tt>. This is sometimes referred to as taking the square-root of a
@@ -366,9 +366,9 @@
 #   These methods solve the system <tt>A x = b</tt> using the Cholesky decomposition
 #   of <tt>A</tt> into the matrix <tt>cholesky</tt> given by <tt>GSL::Linalg::Cholesky.decomp</tt>.
 #
-# === {}[link:index.html"name="5.1] {Complex Cholesky decomposition}[link:cholesky_complex_rdoc.html]
+# === {Complex Cholesky decomposition}[link:cholesky_complex_rdoc.html]
 #
-# == {}[link:index.html"name="6] Tridiagonal Decomposition of Real Symmetric Matrices
+# == Tridiagonal Decomposition of Real Symmetric Matrices
 # ---
 # * GSL::Linalg::Symmtd::decomp(A)
 #
@@ -396,7 +396,7 @@
 #   <tt>GSL::Linalg::Symmtd::decomp</tt> into the vectors
 #   <tt>diag</tt> and <tt>subdiag</tt>.
 #
-# == {}[link:index.html"name="7] Tridiagonal Decomposition of Hermitian Matrices
+# == Tridiagonal Decomposition of Hermitian Matrices
 # ---
 # * GSL::Linalg::Hermtd::decomp(A)
 #
@@ -427,7 +427,7 @@
 #   <tt>GSL::Linalg::Hermtd::decomp</tt>
 #   into the real vectors <tt>diag</tt> and <tt>subdiag</tt>.
 #
-# == {}[link:index.html"name="8] Hessenberg Decomposition of Real Matrices
+# == Hessenberg Decomposition of Real Matrices
 # ---
 # * GSL::Linalg::Hessenberg::decomp(A)
 # * GSL::Linalg::hessenberg_decomp(A)
@@ -469,7 +469,7 @@
 #   It is useful for clearing out the Householder vectors after calling
 #   <tt>GSL::Linalg::Hessenberg::decomp</tt>.
 #
-# == {}[link:index.html"name="9] Hessenberg-Triangular Decomposition of Real Matrices
+# == Hessenberg-Triangular Decomposition of Real Matrices
 # ---
 # * GSL::Linalg::hesstri_decomp(A, B)
 # * GSL::Linalg::hesstri_decomp(A, B, work)
@@ -495,7 +495,7 @@
 #   transformations are stored in them. <tt>work</tt> is an additional workspace
 #   of length <tt>N</tt>.
 #
-# == {}[link:index.html"name="10] Bidiagonalization
+# == Bidiagonalization
 # ---
 # * GSL::Linalg::Bidiag::decomp!(A)
 # * GSL::Linalg::bidiag_decomp!(A)
@@ -512,7 +512,7 @@
 # * GSL::Linalg::bidiag_unpack_B
 #
 #
-# == {}[link:index.html"name="11] Householder Transformations
+# == Householder Transformations
 # ---
 # * GSL::Linalg::Householder::transform(v)
 # * GSL::Linalg::HH::transform(v)
@@ -547,7 +547,7 @@
 #   <tt>tau</tt> and the vector <tt>v</tt> to the vector <tt>w</tt>.
 #   On output the result P w is stored in <tt>w</tt>.
 #
-# == {}[link:index.html"name="12] Householder solver for linear systems
+# == Householder solver for linear systems
 # ---
 # * GSL::Linalg::HH.solve(A, b)
 # * GSL::Matrix#HH_solve(b)
@@ -569,7 +569,7 @@
 #   These methods solve the system <tt>A x = b</tt> in-place directly using Householder
 #   transformations. The input vector <tt>b</tt> is replaced by the solution.
 #
-# == {}[link:index.html"name="13] Tridiagonal Systems
+# == Tridiagonal Systems
 # ---
 # * GSL::Linglg::solve_tridiag(diag, e, f, b)
 # * GSL::Linglg::Tridiag::solve(diag, e, f, b)
@@ -622,7 +622,7 @@
 #            (  0  e_1 d_2 e_2 )
 #            ( e_3  0  e_2 d_3 )
 #
-# == {}[link:index.html"name="14] Balancing
+# == Balancing
 # The process of balancing a matrix applies similarity transformations to
 # make the rows and columns have comparable norms. This is useful,
 # for example, to reduce roundoff errors in the solution of eigenvalue problems.
@@ -646,7 +646,7 @@
 #   the vector <tt>D</tt>.
 #
 #
-# == {}[link:index.html"name="15] NArray
+# == NArray
 # The following Linalg methods can handle NArray objects:
 # * GSL::Linalg::
 #   * LU::

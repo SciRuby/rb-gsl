@@ -1,19 +1,19 @@
 #
 # = Histograms
-# 1. {Histogram allocation}[link:hist_rdoc.html#1]
-# 1. {Copying histograms}[link:hist_rdoc.html#2]
-# 1. {Updating and accessing histogram elements}[link:hist_rdoc.html#3]
-# 1. {Searching histogram ranges}[link:hist_rdoc.html#4]
-# 1. {Histogram Statistics}[link:hist_rdoc.html#5]
-# 1. {Histogram Operations}[link:hist_rdoc.html#6]
-# 1. {Reading and writing histograms}[link:hist_rdoc.html#7]
-# 1. {Extensions}[link:hist_rdoc.html#8]
-#    1. {Histogram Operations}[link:hist_rdoc.html#8.1]
-#    1. {Graph interface}[link:hist_rdoc.html#8.2]
-#    1. {Histogram Fittings}[link:hist_rdoc.html#8.3]
-# 1. {The histogram probability distribution}[link:hist_rdoc.html#9]
+# 1. {Histogram allocation}[link:hist_rdoc.html#label-Histogram+allocation]
+# 1. {Copying histograms}[link:hist_rdoc.html#label-Copying+Histograms]
+# 1. {Updating and accessing histogram elements}[link:hist_rdoc.html#label-Updating+and+accessing+histogram+elements]
+# 1. {Searching histogram ranges}[link:hist_rdoc.html#label-Searching+histogram+ranges]
+# 1. {Histogram Statistics}[link:hist_rdoc.html#label-Histogram+Statistics]
+# 1. {Histogram Operations}[link:hist_rdoc.html#label-Histogram+Operations]
+# 1. {Reading and writing histograms}[link:hist_rdoc.html#label-Reading+and+writing+histograms]
+# 1. {Extensions}[link:hist_rdoc.html#label-Extentions]
+#    1. {Histogram Operations}[link:hist_rdoc.html#label-Histogram+operations]
+#    1. {Graph interface}[link:hist_rdoc.html#label-Graphics]
+#    1. {Histogram Fittings}[link:hist_rdoc.html#label-Fitting]
+# 1. {The histogram probability distribution}[link:hist_rdoc.html#label-The+histogram+probability+distribution]
 #
-# == {}[link:index.html"name="1] Histogram allocation
+# == Histogram allocation
 # ---
 # * GSL::Histogram.alloc(n)
 # * GSL::Histogram.alloc(n, [xmin, xmax])
@@ -86,7 +86,7 @@
 #      bin[n-1] corresponds to xmin + (n-1)d <= x < xmax
 #   where d is the bin spacing, d = (xmax-xmin)/n.
 #
-# == {}[link:index.html"name="2] Copying Histograms
+# == Copying Histograms
 # ---
 # * GSL::Histogram.memcpy(dest, src)
 #
@@ -99,7 +99,7 @@
 #   Returns a newly created histogram which is an exact copy of the histogram
 #   <tt>self</tt>.
 #
-# == {}[link:index.html"name="3] Updating and accessing histogram elements
+# == Updating and accessing histogram elements
 # ---
 # * GSL::Histogram#increment(x, weight = 1)
 # * GSL::Histogram#fill(x, weight = 1)
@@ -159,14 +159,14 @@
 #
 #   This method resets all the bins in the histogram <tt>self</tt> to zero.
 #
-# == {}[link:index.html"name="4] Searching histogram ranges
+# == Searching histogram ranges
 # ---
 # * GSL::Histogram#find(x)
 #
 #   This method finds and sets the index i to the bin number which
 #   covers the coordinate <tt>x</tt> in the histogram <tt>self</tt>.
 #
-# == {}[link:index.html"name="5] Histogram Statistics
+# == Histogram Statistics
 # ---
 # * GSL::Histogram#max_val
 #
@@ -214,7 +214,7 @@
 #   to the <tt>iend</tt>-th bin.
 #
 #
-# == {}[link:index.html"name="6] Histogram Operations
+# == Histogram Operations
 #
 # ---
 # * GSL::Histogram#add(h2)
@@ -226,7 +226,7 @@
 #
 #
 #
-# == {}[link:index.html"name="7] Reading and writing histograms
+# == Reading and writing histograms
 # ---
 # * GSL::Histogram#fwrite(io)
 # * GSL::Histogram#fwrite(filename)
@@ -238,8 +238,8 @@
 # * GSL::Histogram#fscanf(filename)
 #
 #
-# == {}[link:index.html"name="8] Extentions
-# === {}[link:index.html"name="8.1] Histogram operations
+# == Extentions
+# === Histogram operations
 # ---
 # * GSL::Histogram#normalize
 #
@@ -294,14 +294,14 @@
 # * GSL::Histogram::Integral#differentiate
 # * GSL::Histogram::Integral#diff
 #
-# === {}[link:index.html"name="8.2] Graphics
+# === Graphics
 # ---
 # * GSL::Histogram#graph(options)
 #
 #   This method uses the GNU plotutils <tt>graph</tt> to draw the histogram <tt>self</tt>.
 #   The options as "-T X -C -l x" etc are given by a String.
 #
-# === {}[link:index.html"name="8.3] Fitting
+# === Fitting
 # ---
 # * GSL::Histogram#fit_exponential(binstart = 0, binend = n-1)
 #
@@ -348,7 +348,7 @@
 #     y = height*Ran::gaussian_pdf(x-mean, sigma)
 #     GSL::graph(h, [x, y], "-T X -C -g 3")
 #
-# == {}[link:index.html"name="9] The histogram probability distribution
+# == The histogram probability distribution
 # The probability distribution function for a histogram consists of a set of bins
 # which measure the probability of an event falling into a given range of
 # a continuous variable x. A probability distribution function is defined
@@ -360,7 +360,7 @@
 # range and finding its corresponding coordinate in the cumulative probability
 # distribution we obtain samples with the desired probability distribution.
 #
-# === {}[link:index.html"name="9.1] GSL::Histogram::Pdf class
+# === Pdf class
 # ---
 # * GSL::Histogram::Pdf.alloc(n)
 # * GSL::Histogram::Pdf.alloc(h)

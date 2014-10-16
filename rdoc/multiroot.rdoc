@@ -10,18 +10,18 @@
 # a solver keeps track of its own state, allowing the solvers to be used in
 # multi-threaded programs.
 #
-# 1. {Overview}[link:multiroot_rdoc.html#1]
-# 1. {Initializing the Solver}[link:multiroot_rdoc.html#2]
-# 1. {Providing the function to solve}[link:multiroot_rdoc.html#3]
-# 1. {Iteration}[link:multiroot_rdoc.html#4]
-# 1. {Search Stopping Parameters}[link:multiroot_rdoc.html#5]
-# 1. {Higher Level Interface}[link:multiroot_rdoc.html#6]
-# 1. {Examples}[link:multiroot_rdoc.html#7]
-#    1. {FSolver}[link:multiroot_rdoc.html#7.1]
-#    1. {FdfSolver}[link:multiroot_rdoc.html#7.2]
+# 1. {Overview}[link:multiroot_rdoc.html#label-Overview]
+# 1. {Initializing the Solver}[link:multiroot_rdoc.html#label-Initializing+the+Solver]
+# 1. {Providing the function to solve}[link:multiroot_rdoc.html#label-Providing+the+function+to+solve]
+# 1. {Iteration}[link:multiroot_rdoc.html#label-Iteration]
+# 1. {Search Stopping Parameters}[link:multiroot_rdoc.html#label-Search+Stopping+Parameters]
+# 1. {Higher Level Interface}[link:multiroot_rdoc.html#label-Higher+Level+Interface]
+# 1. {Examples}[link:multiroot_rdoc.html#label-Example]
+#    1. {FSolver}[link:multiroot_rdoc.html#label-FSolver]
+#    1. {FdfSolver}[link:multiroot_rdoc.html#label-FdfSolver]
 #
 #
-# == {}[link:index.html"name="1] Overview
+# == Overview
 # The problem of multidimensional root finding requires the simultaneous
 # solution of n equations, f_i, in n variables, x_i, In general there are no
 # bracketing methods available for n dimensional systems, and no way of knowing
@@ -57,7 +57,7 @@
 # or J^{-1} by approximate methods.
 #
 #
-# == {}[link:index.html"name="2] Initializing the Solver
+# == Initializing the Solver
 # Two types of solvers are available. The solver itself depends only on the
 # dimension of the problem and the algorithm and can be reused for different problems.
 # The <tt>FdfSolver</tt> requires derivatives of the function to solve.
@@ -102,7 +102,7 @@
 # * GSL::MultiRoot::FdfSolver#name
 #
 #
-# == {}[link:index.html"name="3] Providing the function to solve
+# == Providing the function to solve
 # ---
 # * GSL::MultiRoot:Function.alloc(proc, dim, params)
 #
@@ -151,7 +151,7 @@
 #     x = [-10.0, -5.0]
 #     fdfsolver.set(func_fdf, x)
 #
-# == {}[link:index.html"name="4] Iteration
+# == Iteration
 # ---
 # * GSL::MultiRoot::FSolver#interate
 # * GSL::MultiRoot::FdfSolver#interate
@@ -185,7 +185,7 @@
 #
 #   These method return the last step <tt>dx</tt> (Vector) taken by the solver <tt>self</tt>.
 #
-# == {}[link:index.html"name="5] Search Stopping Parameters
+# == Search Stopping Parameters
 # ---
 # * GSL::MultiRoot::FSolver#test_delta(epsabs, epsrel)
 # * GSL::MultiRoot::FdfSolver#test_delta(epsabs, epsrel)
@@ -209,7 +209,7 @@
 #   situations where the precise location of the root, <tt>x</tt>, is unimportant
 #   provided a value can be found where the residual is small enough.
 #
-# == {}[link:index.html"name="6] Higher Level Interface
+# == Higher Level Interface
 # ---
 # * GSL::MultiRoot::Function#solve(x0, max_iter = 1000, eps = 1e-7, type = "hybrids")
 # * GSL::MultiRoot::FSolver#solve(max_iter = 1000, eps = 1e-7)
@@ -217,9 +217,9 @@
 #
 # See sample script <tt>examples/multiroot/fsolver3.rb</tt>.
 #
-# == {}[link:index.html"name="7] Example
+# == Example
 #
-# === {}[link:index.html"name="7.1] FSolver
+# === FSolver
 #
 #      proc = Proc.new { |x, params, f|
 #        a = params[0];  b = params[1]
@@ -246,7 +246,7 @@
 #        status = fsolver.test_residual(1e-7)
 #      end while status == GSL::CONTINUE and iter < 1000
 #
-# === {}[link:index.html"name="7.2] FdfSolver
+# === FdfSolver
 #      n = 2
 #
 #      procf = Proc.new { |x, params, f|

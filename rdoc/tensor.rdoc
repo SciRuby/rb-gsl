@@ -3,7 +3,7 @@
 # The tensor library is developed by J. Burguet and distributed
 # as an add-on package of GSL. See {here}[https://sourceware.org/ml/gsl-discuss/2004-q4/msg00053.html] and {here}[https://sourceware.org/ml/gsl-discuss/2004-q4/msg00055.html].
 #
-# == {}[link:index.html"name="1] Class methods
+# == Class methods
 # ---
 # * GSL::Tensor.new(rank, dimention)
 # * GSL::Tensor.alloc(rank, dimention)
@@ -33,8 +33,8 @@
 #
 #   Exchanges the elements of the tensor <tt>a</tt> and <tt>b</tt>.
 #
-# == {}[link:index.html"name="2] Instance methods
-# === {}[link:index.html"name="2.1] Accessing tensor elements
+# == Instance methods
+# === Accessing tensor elements
 # ---
 # * GSL::Tensor#set_zero
 #
@@ -116,7 +116,7 @@
 #
 #   Converts the tensor of rank 2 into a <tt>GSL::Matrix::View</tt> object.
 #
-# === {}[link:index.html"name="2.2] IO
+# === IO
 # ---
 # * GSL::Tensor#fwrite(io)
 # * GSL::Tensor#fwrite(filename)
@@ -128,7 +128,7 @@
 # * GSL::Tensor#fscanf(filename)
 #
 #
-# === {}[link:index.html"name="2.3] Max, min
+# === Max, min
 # ---
 # * GSL::Tensor#max
 # * GSL::Tensor#min
@@ -138,7 +138,7 @@
 # * GSL::Tensor#minmax_index
 #
 #
-# === {}[link:index.html"name="2.4] Tensor operations
+# === Tensor operations
 # ---
 # * GSL::Tensor#add(b)
 # * GSL::Tensor#+(b)
@@ -219,7 +219,7 @@
 #   equal to absolute accurary <tt>eps</tt> for all the indices,
 #   and <tt>false</tt> otherwise.
 #
-# === {}[link:index.html"name="2.5] Tensor properties
+# === Tensor properties
 # ---
 # * GSL::Tensor#isnull
 #
@@ -242,7 +242,7 @@
 #
 #   Returns the size
 #
-# {prev}[link:rng_rdoc.html#3]
+# {prev}[link:rng_rdoc.html#label-Random+number+generator+initialization]
 # {next}[link:narray_rdoc.html]
 #
 # {Reference index}[link:ref_rdoc.html]

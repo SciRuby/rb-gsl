@@ -1,7 +1,7 @@
 #
 # = GSL::Histogram2d class
 #
-# == {}[link:index.html"name="1] Class methods
+# == Class methods
 # ---
 # * GSL::Histogram2d.alloc(nx, ny)
 # * GSL::Histogram2d.alloc(xrange, yrange)
@@ -52,7 +52,7 @@
 # * GSL::Histogram2d.equal_bins_p(h1, h2)
 #
 #
-# == {}[link:index.html"name="2] Methods
+# == Methods
 # ---
 # * GSL::Histogram2d#set_ranges(vx, vy)
 #
@@ -231,7 +231,7 @@
 #   Creates a <tt>GSL::Histogram</tt> object by projecting the 2D histogram
 #   <tt>self</tt> onto the y-axis over the x-range from <tt>istart</tt> to <tt>iend</tt>.
 #
-# == {}[link:index.html"name="3] GSL::Histogram2d::Pdf class
+# == Pdf class
 # ---
 # * GSL::Histogram2d::Pdf.alloc(nx, ny)
 #
@@ -246,7 +246,7 @@
 # * GSL::Histogram2d::Pdf#sample(r1, r2)
 #
 #
-# == {}[link:index.html"name="4] Example
+# == Example
 #   #!/usr/bin/env ruby
 #   require("gsl")
 #

@@ -16,7 +16,7 @@
 # be included in the subset to be analyzed or not. The value function computes
 # the entry to be added to the histogram for each event.
 #
-# == {}[link:index.html"name="1] The <tt>GSL::Ntuple</tt> class
+# == The <tt>Ntuple</tt> class
 # ---
 # * GSL::Ntuple.create(filename, v)
 # * GSL::Ntuple.alloc(filename, v)
@@ -32,7 +32,7 @@
 #   This opens an existing ntuple file <tt>filename</tt> for reading. A preexisting
 # <tt>Vector</tt> object <tt>v</tt> for the current ntuple data must be supplied.
 #
-# == {}[link:index.html"name="2] Writing and reading ntuples
+# == Writing and reading ntuples
 # ---
 # * GSL::Ntuple#write
 # * GSL::Ntuple#bookdata
@@ -44,7 +44,7 @@
 #
 #   This method reads the current row of the ntuple file.
 #
-# == {}[link:index.html"name="3] Histogramming ntuple values
+# == Histogramming ntuple values
 # Once an ntuple has been created its contents can be histogrammed in various ways using
 # the function gsl_ntuple_project. Two user-defined functions must be provided, a function
 # to select events and a function to compute scalar values. The selection function and the

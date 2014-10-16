@@ -11,21 +11,21 @@
 # two-parameter regression and multiple-parameter fits.
 #
 # Contents:
-# 1. {Overview}[link:fit_rdoc.html#1]
-# 1. {Linear regression}[link:fit_rdoc.html#2]
-#    1. {Module functions for linear regression}[link:fit_rdoc.html#2.1]
-# 1. {Linear fitting without a constant term}[link:fit_rdoc.html#3]
-# 1. {Multi-parameter fitting}[link:fit_rdoc.html#4]
-#    1. {GSL::MultiFit::Workspace class}[link:fit_rdoc.html#4.1]
-#    1. {Module functions}[link:fit_rdoc.html#4.2]
-#    1. {Higer level interface}[link:fit_rdoc.html#4.3]
+# 1. {Overview}[link:fit_rdoc.html#label-Overview]
+# 1. {Linear regression}[link:fit_rdoc.html#label-Linear+regression]
+#    1. {Module functions for linear regression}[link:fit_rdoc.html#label-Module+functions+for+linear+regression]
+# 1. {Linear fitting without a constant term}[link:fit_rdoc.html#label-Linear+fitting+without+a+constant+term]
+# 1. {Multi-parameter fitting}[link:fit_rdoc.html#label-Multi-parameter+fitting]
+#    1. {GSL::MultiFit::Workspace class}[link:fit_rdoc.html#label-Workspace+class]
+#    1. {Module functions}[link:fit_rdoc.html#label-Module+functions]
+#    1. {Higer level interface}[link:fit_rdoc.html#label-Higer+level+interface]
 #    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:ndlinear_rdoc.html] (GSL extension)
-# 1. {Examples}[link:fit_rdoc.html#5]
-#    1. {Linear regression}[link:fit_rdoc.html#5.1]
-#    1. {Exponential fitting}[link:fit_rdoc.html#5.2]
-#    1. {Multi-parameter fitting}[link:fit_rdoc.html#5.3]
+# 1. {Examples}[link:fit_rdoc.html#label-Examples]
+#    1. {Linear regression}[link:fit_rdoc.html#label-Linear+regression]
+#    1. {Exponential fitting}[link:fit_rdoc.html#label-Exponential+fitting]
+#    1. {Multi-parameter fitting}[link:fit_rdoc.html#label-Multi-parameter+fitting]
 #
-# == {}[link:index.html"name="1] Overview
+# == Overview
 # Least-squares fits are found by minimizing \chi^2 (chi-squared), the weighted
 # sum of squared residuals over n experimental datapoints (x_i, y_i) for the
 # model Y(c,x), The p parameters of the model are c = {c_0, c_1, ...}. The
@@ -59,7 +59,7 @@
 # parameters c_a and c_b is given by \rho_{ab} = C_{ab} / \sqrt{C_{aa} C_{bb}}.
 #
 #
-# == {}[link:index.html"name="2] Linear regression
+# == Linear regression
 # The functions described in this section can be used to perform least-squares
 # fits to a straight line model, Y = c_0 + c_1 X. For weighted data the best-fit
 # is found by minimizing the weighted sum of squared residuals, chi^2,
@@ -69,7 +69,7 @@
 # for the parameters <tt>c0, c1</tt>. For unweighted data the sum is computed with
 # <tt>w_i = 1</tt>.
 #
-# === {}[link:index.html"name="2.1] Module functions for linear regression
+# === Module functions for linear regression
 # ---
 # * GSL::Fit::linear(x, y)
 #
@@ -99,7 +99,7 @@
 #   and its standard deviation for the model Y = c_0 + c_1 X at the point <tt>x</tt>.
 #   The returned value is an array of <tt>[y, yerr]</tt>.
 #
-# == {}[link:index.html"name="3] Linear fitting without a constant term
+# == Linear fitting without a constant term
 # ---
 # * GSL::Fit::mul(x, y)
 #
@@ -126,15 +126,15 @@
 #   for the model Y = c_1 X at the point <tt>x</tt>.
 #   The returned value is an array of <tt>[y, yerr]</tt>.
 #
-# == {}[link:index.html"name="4] Multi-parameter fitting
-# === {}[link:index.html"name="4.1] GSL::MultiFit::Workspace class
+# == Multi-parameter fitting
+# === Workspace class
 # ---
 # * GSL::MultiFit::Workspace.alloc(n, p)
 #
 #   This creates a workspace for fitting a model to <tt>n</tt>
 #   observations using <tt>p</tt> parameters.
 #
-# === {}[link:index.html"name="4.2] Module functions
+# === Module functions
 # ---
 # * GSL::MultiFit::linear(X, y, work)
 # * GSL::MultiFit::linear(X, y)
@@ -181,7 +181,7 @@
 #
 #   (GSL-1.11 or later) This method computes the vector of residuals <tt>r = y - X c</tt> for the observations <tt>y</tt>, coefficients <tt>c</tt> and matrix of predictor variables <tt>X</tt>, and returns <tt>r</tt>.
 #
-# === {}[link:index.html"name="4.3] Higer level interface
+# === Higer level interface
 #
 # ---
 # * GSL::MultiFit::polyfit(x, y, order)
@@ -201,8 +201,8 @@
 #     x2 = Vector.linspace(1, 5, 20)
 #     graph([x, y], [x2, coef.eval(x2)], "-C -g 3 -S 4")
 #
-# == {}[link:index.html"name="5] Examples
-# === {}[link:index.html"name="5.1] Linear regression
+# == Examples
+# === Linear regression
 #      #!/usr/bin/env ruby
 #      require("gsl")
 #      include GSL::Fit
@@ -224,7 +224,7 @@
 #              cov00, cov01, cov01, cov11);
 #      printf("# chisq = %g\n", chisq);
 #
-# === {}[link:index.html"name="5.2] Exponential fitting
+# === Exponential fitting
 #     #!/usr/bin/env ruby
 #     require("gsl")
 #
@@ -245,7 +245,7 @@
 #     printf("Result: a = %f, b = %f\n", A, b2)
 #     graph([x, y], [x2, A*Sf::exp(b2*x2)], "-C -g 3 -S 4")
 #
-# === {}[link:index.html"name="5.3] Multi-parameter fitting
+# === Multi-parameter fitting
 #      #!/usr/bin/env ruby
 #      require("gsl")
 #      include GSL::MultiFit

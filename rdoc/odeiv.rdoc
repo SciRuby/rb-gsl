@@ -9,16 +9,16 @@
 #
 #
 # Contents:
-# 1. {Classes for ODE solver}[link:odeiv_rdoc.html#1]
-# 1. {Class Descriptions}[link:odeiv_rdoc.html#2]
-#    1. {GSL::Odeiv::System : Defining the ODE System}[link:odeiv_rdoc.html#2.1]
-#    1. {GSL::Odeiv::Step : Stepping Algorithms}[link:odeiv_rdoc.html#2.2]
-#    1. {GSL::Odeiv::Control : Adaptive Step-size Control}[link:odeiv_rdoc.html#2.3]
-#    1. {GSL::Odeiv::Evolve : Evolution}[link:odeiv_rdoc.html#2.4]
-#    1. {GSL::Odeiv::Solver : Higher level interface}[link:odeiv_rdoc.html#2.5]
-# 1. {Examples}[link:odeiv_rdoc.html#3]
+# 1. {Classes for ODE solver}[link:odeiv_rdoc.html#label-Classes+for+ODE+solver]
+# 1. {Class Descriptions}[link:odeiv_rdoc.html#label-Class+Descriptions]
+#    1. {GSL::Odeiv::System : Defining the ODE System}[link:odeiv_rdoc.html#label-System]
+#    1. {GSL::Odeiv::Step : Stepping Algorithms}[link:odeiv_rdoc.html#label-Step]
+#    1. {GSL::Odeiv::Control : Adaptive Step-size Control}[link:odeiv_rdoc.html#label-Control]
+#    1. {GSL::Odeiv::Evolve : Evolution}[link:odeiv_rdoc.html#label-Evolve]
+#    1. {GSL::Odeiv::Solver : Higher level interface}[link:odeiv_rdoc.html#label-Solver]
+# 1. {Examples}[link:odeiv_rdoc.html#label-Example]
 #
-# == {}[link:index.html"name="1] Classes for ODE solver
+# == Classes for ODE solver
 #
 # ---
 # * GSL::Odeiv::System
@@ -33,9 +33,9 @@
 #
 #   Another higher-level interface to ODE system classes.
 #
-# == {}[link:index.html"name="2] Class Descriptions
+# == Class Descriptions
 #
-# === {}[link:index.html"name="2.1] GSL::Odeiv::System
+# === System
 # ---
 # * GSL::Odeiv::System.alloc(func, jac, dim)
 # * GSL::Odeiv::System.alloc(func, dim)
@@ -99,7 +99,7 @@
 # * GSL::Odeiv::System#dim
 #
 #
-# === {}[link:index.html"name="2.2] GSL::Odeiv::Step
+# === Step
 # The lowest level components are the stepping functions which advance a solution from time <tt>t</tt> to <tt>t+h</tt> for a fixed step-size <tt>h</tt> and estimate the resulting local error.
 #
 # ---
@@ -183,7 +183,7 @@
 #   On output the new derivatives of the system at time <tt>t+h</tt> will be
 #   stored in <tt>dydt_out</tt> if it is not nil.
 #
-# === {}[link:index.html"name="2.3] GSL::Odeiv::Control
+# === Control
 # ---
 # * GSL::Odeiv::Control.standard_new(epsabs, epsrel, a_y, a_dydt)
 # * GSL::Odeiv::Control.alloc(epsabs, epsrel, a_y, a_dydt)
@@ -245,7 +245,7 @@
 #   which satisfies the user-specified accuracy requirements for the current
 #   point.
 #
-# === {}[link:index.html"name="2.4] GSL::Odeiv::Evolve
+# === Evolve
 # The higher level of the system is the <tt>GSL::Evolve</tt> class which combines the
 # results of a stepper and controler to reliably advance the solution forward
 # over an interval <tt>(t_0, t_1)</tt>. If the controler signals that the step-size
@@ -281,7 +281,7 @@
 # * GSL::Odeiv::Evolve#count
 #
 #
-# === {}[link:index.html"name="2.5] GSL::Odeiv::Solver
+# === Solver
 # This is the highest level interface to solve ODE system,
 # which contains System, Step, Control, and Evolve classes.
 #
@@ -329,7 +329,7 @@
 #
 #   This method advances the system from time <tt>t</tt> and position <tt>y</tt> (<tt>GSL::Vector</tt> object) using the stepping function. On output, the new time and position are returned as an array [<tt>tnext, hnext, status</tt>], i.e. <tt>t, y</tt> themselves are not modified by this method. The maximum time <tt>t1</tt> is guaranteed not to be exceeded by the time-step. On the final time-step the value of <tt>tnext</tt> will be set to <tt>t1</tt> exactly.
 #
-# == {}[link:index.html"name="3] Example
+# == Example
 #
 # The following program solves the second-order nonlinear Van der Pol oscillator equation,
 # as found in the GSL manual, x"(t) + \mu x'(t) (x(t)^2 - 1) + x(t) = 0,

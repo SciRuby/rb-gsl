@@ -1,7 +1,7 @@
 #
 # = GSL::Function class
 #
-# == {}[link:index.html"name="1] Class Methods
+# == Class Methods
 #
 # ---
 # * GSL::Function.alloc
@@ -27,7 +27,7 @@
 #      f.set_params([2, 3])
 #      f.eval(x)
 #
-# == {}[link:index.html"name="2] Methods
+# == Methods
 #
 # ---
 # * GSL::Function#eval(x)
@@ -57,7 +57,7 @@
 #
 #   This set the constant parameters of the function.
 #
-# == {}[link:index.html"name="3] Graph
+# == Graph
 # ---
 # * GSL::Function#graph(x[, options])
 #
@@ -70,7 +70,7 @@
 #        f.graph(x, "-T X -g 3 -C -L 'sin(x)'")
 #
 #
-# == {}[link:index.html"name="4] Example
+# == Example
 # A quadratic function, f(x) = x^2 + 2x + 3.
 #
 #     >> require("gsl")

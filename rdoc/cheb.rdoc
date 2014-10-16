@@ -10,12 +10,12 @@
 # T_0(x) = 1, T_1(x) = x, T_2(x) = 2 x^2 - 1.
 # For further information see Abramowitz & Stegun, Chapter 22.
 #
-# 1. {GSL::Cheb class}[link:cheb_rdoc.html#1]
-# 1. {Chebyshev Series Evaluation}[link:cheb_rdoc.html#2]
-# 1. {Derivatives and Integrals}[link:cheb_rdoc.html#3]
-# 1. {Examples}[link:cheb_rdoc.html#4]
+# 1. {GSL::Cheb class}[link:cheb_rdoc.html#label-Cheb+class]
+# 1. {Chebyshev Series Evaluation}[link:cheb_rdoc.html#label-Chebyshev+Series+Evaluation]
+# 1. {Derivatives and Integrals}[link:cheb_rdoc.html#label-Derivatives+and+Integrals]
+# 1. {Examples}[link:cheb_rdoc.html#label-Example]
 #
-# == {}[link:index.html"name="1] <tt>GSL::Cheb</tt> class
+# == <tt>Cheb</tt> class
 #
 # ---
 # * GSL::Cheb.alloc(n)
@@ -40,7 +40,7 @@
 #       cs = GSL::Cheb.alloc(40)
 #       cs.init(f, 0, 1)
 #
-# == {}[link:index.html"name="2] Chebyshev Series Evaluation
+# == Chebyshev Series Evaluation
 # ---
 # * GSL::Cheb#eval(x)
 #
@@ -51,7 +51,7 @@
 #
 #   This evaluates the Chebyshev series at a given point <tt>x</tt>, to (at most) the given order <tt>n</tt>.
 #
-# == {}[link:index.html"name="3] Derivatives and Integrals
+# == Derivatives and Integrals
 #
 # ---
 # * GSL::Cheb#calc_deriv()
@@ -65,7 +65,7 @@
 #
 #   This computes the integral of the series, and returns a new GSL::Cheb object which contains the computed integral coefficients. The reciever is not changed.
 #
-# == {}[link:index.html"name="4] Example
+# == Example
 #    #!/usr/bin/env ruby
 #    require("gsl")
 #

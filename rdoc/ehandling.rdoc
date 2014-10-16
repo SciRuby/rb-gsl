@@ -1,7 +1,7 @@
 #
 # = Error Handling
 #
-# == {}[link:index.html"name="1] Error codes
+# == Error codes
 # The GSL routines report an error whenever they cannot perform the task
 # requested of them. For example, a root-finding function would return a
 # non-zero error code if could not converge to the requested accuracy,
@@ -30,7 +30,7 @@
 #   kinds of problems with passing the wrong argument to a library function
 #   (like <tt>EINVAL</tt> in the C library).
 #
-# == {}[link:index.html"name="2] Error handler
+# == Error handler
 # In Ruby/GSL, the default GSL error handler is replaced by an other one which calls
 # <tt>rb_raise()</tt>. Thus whenever a GSL routine reports a fatal error,
 # a Ruby Exception is generated.

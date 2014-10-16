@@ -11,17 +11,17 @@
 # programs.
 #
 # Contents:
-# 1. {Overview}[link:multimin_rdoc.html#1]
-# 1. {Caveats}[link:multimin_rdoc.html#2]
-# 1. {Initializing the Multidimensional Minimizer}[link:multimin_rdoc.html#3]
-# 1. {Providing a function to minimize}[link:multimin_rdoc.html#4]
-# 1. {Iteration}[link:multimin_rdoc.html#5]
-# 1. {Stopping Criteria}[link:multimin_rdoc.html#6]
-# 1. {Examples}[link:multimin_rdoc.html#7]
-#    1. {FdfMinimizer}[link:multimin_rdoc.html#7.1]
-#    1. {FMinimizer}[link:multimin_rdoc.html#7.2]
+# 1. {Overview}[link:multimin_rdoc.html#label-Overview]
+# 1. {Caveats}[link:multimin_rdoc.html#label-Caveats]
+# 1. {Initializing the Multidimensional Minimizer}[link:multimin_rdoc.html#label-Initializing+the+Multidimensional+Minimizer]
+# 1. {Providing a function to minimize}[link:multimin_rdoc.html#label-Providing+a+function+to+minimize]
+# 1. {Iteration}[link:multimin_rdoc.html#label-Iteration]
+# 1. {Stopping Criteria}[link:multimin_rdoc.html#label-Stopping+Criteria]
+# 1. {Examples}[link:multimin_rdoc.html#label-Examples]
+#    1. {FdfMinimizer}[link:multimin_rdoc.html#label-FdfMinimizer]
+#    1. {FMinimizer}[link:multimin_rdoc.html#label-FMinimizer]
 #
-# == {}[link:index.html"name="1] Overview
+# == Overview
 # The problem of multidimensional minimization requires finding a point x such
 # that the scalar function, takes a value which is lower than at any neighboring
 # point. For smooth functions the gradient g = \nabla f vanishes at the minimum.
@@ -55,7 +55,7 @@
 # state for the minimizers is held in a <tt>GSL::MultiMin::FdfMinimizer</tt> or
 # a <tt>GSL::MultiMin::FMinimizer</tt> object.
 #
-# == {}[link:index.html"name="2] Caveats
+# == Caveats
 # Note that the minimization algorithms can only search for one local minimum
 # at a time. When there are several local minima in the search area, the first
 # minimum to be found will be returned; however it is difficult to predict which
@@ -67,7 +67,7 @@
 # the function in question.
 #
 #
-# == {}[link:index.html"name="3] Initializing the Multidimensional Minimizer
+# == Initializing the Multidimensional Minimizer
 # ---
 # * GSL::MultiMin::FdfMinimizer.alloc(type, n)
 # * GSL::MultiMin::FMinimizer.alloc(type, n)
@@ -112,7 +112,7 @@
 #
 #   These return the name of the minimizer <tt>self</tt>.
 #
-# == {}[link:index.html"name="4] Providing a function to minimize
+# == Providing a function to minimize
 # You must provide a parametric function of <tt>n</tt> variables for the minimizers to
 # operate on. You may also need to provide a routine which calculates the gradient of the
 # function. In order to allow for general parameters the functions are defined by the
@@ -166,7 +166,7 @@
 #     my_func = Function.alloc(my_f, np)
 #     my_func.set_params([1.0, 2.0])      # parameters
 #
-# == {}[link:index.html"name="5] Iteration
+# == Iteration
 # ---
 # * GSL::MultiMin::FdfMinimizer#iterate
 # * GSL::MultiMin::FMinimizer#iterate
@@ -194,7 +194,7 @@
 #   This method resets the minimizer <tt>self</tt> to use the current point as a new
 #   starting point.
 #
-# == {}[link:index.html"name="6] Stopping Criteria
+# == Stopping Criteria
 # A minimization procedure should stop when one of the following conditions is true:
 # * A minimum has been found to within the user-specified precision.
 # * A user-specified maximum number of iterations has been reached.
@@ -223,9 +223,9 @@
 #   The tests return (<tt>GSL::SUCCESS</tt> if the size is smaller than tolerance,
 #   otherwise <tt>GSL::CONTINUE</tt> is returned.
 #
-# == {}[link:index.html"name="7] Examples
+# == Examples
 #
-# === {}[link:index.html"name="7.1] FdfMinimizer
+# === FdfMinimizer
 #      #!/usr/bin/env ruby
 #      require("gsl")
 #      include GSL::MultiMin
@@ -264,7 +264,7 @@
 #        printf("%5d %.5f %.5f %10.5f\n", iter, x[0], x[1], f)
 #      end while status == GSL::CONTINUE and iter < 100
 #
-# === {}[link:index.html"name="7.2] FMinimizer
+# === FMinimizer
 #      #!/usr/bin/env ruby
 #      require("gsl")
 #      include GSL::MultiMin

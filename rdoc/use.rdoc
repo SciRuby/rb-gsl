@@ -1,15 +1,15 @@
 #
 # = Using Ruby/GSL
-# == {}[link:index.html"name="1] Installation
+# == Installation
 # See {here}[link:index.html].
 #
-# == {}[link:index.html"name="2] Load the library
+# == Load the library
 # Put at the head of your scripts,
 #
 #     require 'rubygems' # if installed via RubyGems
 #     require 'gsl'
 #
-# == {}[link:index.html"name="3] Naming conventions, C Structs and Ruby Classes
+# == Naming conventions, C Structs and Ruby Classes
 #
 # Most of the GSL data types, functions or constants are named as <tt>gsl_xxx</tt> or <tt>GSL_XXX</tt>.
 # In Ruby/GSL, the prefix <tt>gsl_</tt> is replaced by the module identifier <tt>GSL::</tt>,
@@ -32,7 +32,7 @@
 #       * Singleton method <tt>GSL::Linalg::LU.decomp</tt>
 #   * Method <tt>GSL::Matrix#LU_decomp</tt>
 #
-# == {}[link:index.html"name="4] Examples
+# == Examples
 # See the directories "examples/" and "tests/".
 #
 # Some of the examples use the <tt>graph</tt> utility to show the results. The <tt>graph</tt>
@@ -40,7 +40,7 @@
 # related packages are available from
 # {here}[http://gnuwin32.sourceforge.net/packages/plotutils.htm].
 #
-# == {}[link:index.html"name="5] Modules and Classes
+# == Modules and Classes
 # The following is the list of Ruby/GSL modules and classes, <Name> (<Module or Class>)
 #
 # * GSL (Module)

@@ -1,8 +1,8 @@
 #
 # = Simulated Annealing
-# === {}[link:index.html"name="0.1] Library
+# === Library
 #
-# == {}[link:index.html"name="1] Module and classes
+# == Module and classes
 # * GSL::
 #   * Siman::  (Module)
 #     * Params (Class)
@@ -11,8 +11,8 @@
 #     * Metric (Class)
 #     * Print (Class)
 #
-# == {}[link:index.html"name="2] <tt>Siman</tt> Module
-# === {}[link:index.html"name="2.1] Singleton method
+# == <tt>Siman</tt> Module
+# === Singleton method
 # ---
 # * GSL::Siman.solve(rng, x0_p, efunc, stepper, metric, printer, params)
 #
@@ -35,7 +35,7 @@
 #   and the output of <tt>printer</tt> itself. If <tt>printer</tt> is <tt>nil</tt>
 #   then no information is printed.
 #
-# == {}[link:index.html"name="3] Example
+# == Example
 #
 #      #!/usr/bin/env ruby
 #      require("gsl")

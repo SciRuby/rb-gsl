@@ -2,30 +2,30 @@
 # = GSL::Vector class
 #
 # Contents:
-# 1. {Class methods}[link:vector_rdoc.html#1]
-# 1. {Notes}[link:vector_rdoc.html#2]
-# 1. {Methods}[link:vector_rdoc.html#3]
-#    1. {Accessing vector elements}[link:vector_rdoc.html#3.1]
-#    1. {Initializing vector elements}[link:vector_rdoc.html#3.2]
-#    1. {Iterators}[link:vector_rdoc.html#3.3]
-#    1. {IO}[link:vector_rdoc.html#3.4]
-#    1. {Copying vectors}[link:vector_rdoc.html#3.5]
-#    1. {Vector views}[link:vector_rdoc.html#3.6]
-#    1. {Vector operations}[link:vector_rdoc.html#3.7]
-#    1. {Vector operations with size changes}[link:vector_rdoc.html#3.8]
-#    1. {Finding maximum and minimum elements of vectors}[link:vector_rdoc.html#3.9]
-#    1. {Vector properties}[link:vector_rdoc.html#3.10]
-#    1. {Element-wise vector comparison}[link:vector_rdoc.html#3.11]
-#    1. {Histogram}[link:vector_rdoc.html#3.12]
-#    1. {Sorting}[link:vector_rdoc.html#3.13]
-#    1. {BLAS methods}[link:vector_rdoc.html#3.14]
-#    1. {Data type conversions}[link:vector_rdoc.html#3.15]
-# 1. {NArray}[link:vector_rdoc.html#3.16]
-# 1. {GNU graph interface}[link:vector_rdoc.html#3.17]
+# 1. {Class methods}[link:vector_rdoc.html#label-Class+methods]
+# 1. {Notes}[link:vector_rdoc.html#label-NOTE%3A]
+# 1. {Methods}[link:vector_rdoc.html#label-Methods]
+#    1. {Accessing vector elements}[link:vector_rdoc.html#label-Accessing+vector+elements]
+#    1. {Initializing vector elements}[link:vector_rdoc.html#label-Initializing+vector+elements]
+#    1. {Iterators}[link:vector_rdoc.html#label-Iterators]
+#    1. {IO}[link:vector_rdoc.html#label-IO]
+#    1. {Copying vectors}[link:vector_rdoc.html#label-Copying+vectors]
+#    1. {Vector views}[link:vector_rdoc.html#label-Vector+views]
+#    1. {Vector operations}[link:vector_rdoc.html#label-Vector+operations]
+#    1. {Vector operations with size changes}[link:vector_rdoc.html#label-Vector+operations+with+size+changes]
+#    1. {Finding maximum and minimum elements of vectors}[link:vector_rdoc.html#label-Finding+maximum+and+minimum+elements+of+vectors]
+#    1. {Vector properties}[link:vector_rdoc.html#label-Vector+Properties]
+#    1. {Element-wise vector comparison}[link:vector_rdoc.html#label-Element-wise+vector+comparison]
+#    1. {Histogram}[link:vector_rdoc.html#label-Histogram]
+#    1. {Sorting}[link:vector_rdoc.html#label-Sorting]
+#    1. {BLAS methods}[link:vector_rdoc.html#label-BLAS+Methods]
+#    1. {Data type conversions}[link:vector_rdoc.html#label-Data+type+conversions]
+# 1. {NArray}[link:vector_rdoc.html#label-NArray+conversions]
+# 1. {GNU graph interface}[link:vector_rdoc.html#label-Graphics]
 #
 # See also {GSL::Vector::Complex}[link:vector_complex_rdoc.html].
 #
-# == {}[link:index.html"name="1] Class methods
+# == Class methods
 #
 # ---
 # * GSL::Vector.alloc(ary)
@@ -123,7 +123,7 @@
 #     c = [6, 6, 7]
 #     d = [5, 7, 9]
 #
-# === {}[link:index.html"name="1.1] NArray Extension
+# === NArray Extension
 # If an <tt>NArray</tt> object is given, a newly allocated vector is created.
 #
 # Ex:
@@ -134,15 +134,15 @@
 #         p v                 <----- [ 1 2 3 4 5 ]
 #
 #
-# See also {here}[link:vector_rdoc.html#3.16].
+# See also {here}[link:vector_rdoc.html#label-NArray+conversions].
 #
-# == {}[link:index.html"name="2] NOTE:
+# == NOTE:
 # In Ruby/GSL, vector length is limited within the range of Fixnum.
 # For 32-bit CPU, the maximum of vector length is 2^30 ~ 1e9.
 #
-# == {}[link:index.html"name="3] Methods
+# == Methods
 #
-# === {}[link:index.html"name="3.1] Accessing vector elements
+# === Accessing vector elements
 # ---
 # * GSL::Vector#get(args)
 # * \GSL::Vector#[args]
@@ -211,7 +211,7 @@
 #       [ 0.000e+00 0.000e+00 0.000e+00 0.000e+00 0.000e+00 1.230e+02 ]
 #
 #
-# === {}[link:index.html"name="3.2] Initializing vector elements
+# === Initializing vector elements
 # ---
 # * GSL::Vector#set_all(x)
 #
@@ -247,7 +247,7 @@
 #
 #   Mimics NArray#indgen!.
 #
-# === {}[link:index.html"name="3.3] Iterators
+# === Iterators
 # ---
 # * GSL::Vector#each
 # * GSL::Vector#reverse_each
@@ -297,7 +297,7 @@
 #     => GSL::Vector::Int
 #     [ 0 1 4 9 16 25 ]
 #
-# === {}[link:index.html"name="3.4] IO
+# === IO
 # ---
 # * GSL::Vector#print
 # * GSL::Vector#fprintf(io, format = "%e")
@@ -312,14 +312,14 @@
 #   Methods for writing or reading the vector.
 #   The first argument is an <tt>IO</tt> or a <tt>String</tt> object.
 #
-# === {}[link:index.html"name="3.5] Copying vectors
+# === Copying vectors
 # ---
 # * GSL::Vector#clone
 # * GSL::Vector#duplicate
 #
 #   Create a new vector of the same elements.
 #
-# === {}[link:index.html"name="3.6] Vector views
+# === Vector views
 # The <tt>GSL::Vector::View</tt> class is defined to be used as "references" to
 # vectors. Since the <tt>Vector::View</tt> class is a subclass of <tt>Vector</tt>,
 # an instance of the <tt>View</tt> class created by slicing a <tt>Vector</tt> object
@@ -389,7 +389,7 @@
 #       => GSL::Vector::Int:
 #       [ 1 2 3 4 5 99 7 8 9 ]
 #
-# === {}[link:index.html"name="3.7] Vector operations
+# === Vector operations
 #
 # ---
 # * GSL::Vector#swap_elements(i, j)
@@ -720,7 +720,7 @@
 #   <tt>x</tt>, which must be an <tt>Array</tt>, <tt>Fixnum</tt>, <tt>Bignum</tt>,
 #   <tt>Float</tt>, <tt>Range</tt>, or <tt>GSL::Vector</tt>.
 #
-# === {}[link:index.html"name="3.8] Vector operations with size changes
+# === Vector operations with size changes
 # The methods below change vector length of <tt>self</tt>.  A Vector's length may
 # not extend past its original allocation.  Use of these methods is discouraged.
 # Existing Views may still refer to elements beyond the end of the shortened
@@ -742,7 +742,7 @@
 #   Deletes every element of <tt>self</tt> for which block evaluates to <tt>true</tt>
 #   and returns <tt>self</tt>.
 #
-# === {}[link:index.html"name="3.9] Finding maximum and minimum elements of vectors
+# === Finding maximum and minimum elements of vectors
 #
 # ---
 # * GSL::Vector#max
@@ -778,7 +778,7 @@
 #   This method returns an array of two elements which has the indices
 #   of the minimum and the maximum values in the vector <tt>self</tt>.
 #
-# === {}[link:index.html"name="3.10] Vector Properties
+# === Vector Properties
 # ---
 # * GSL::Vector#size
 # * GSL::Vector#len
@@ -887,7 +887,7 @@
 #   equal to absolute accurary <tt>eps</tt> for all the indices,
 #   and <tt>false</tt> otherwise.
 #
-# === {}[link:index.html"name="3.11] Element-wise vector comparison
+# === Element-wise vector comparison
 # ---
 # * GSL::Vector#eq(other)
 # * GSL::Vector#ne(other)
@@ -956,7 +956,7 @@
 #     >> a.where
 #     => nil
 #
-# === {}[link:index.html"name="3.12] Histogram
+# === Histogram
 # ---
 # * GSL::Vector#histogram(n)
 # * GSL::Vector#histogram(ranges)
@@ -980,7 +980,7 @@
 #      h = Histogram.alloc(50, [-4, 4])
 #      h.increment(v)
 #
-# === {}[link:index.html"name="3.13] Sorting
+# === Sorting
 #
 # ---
 # * GSL::Vector#sort
@@ -1023,7 +1023,7 @@
 #       => GSL::Vector::Int:
 #       [ 1 2 3 ]
 #
-# === {}[link:index.html"name="3.14] BLAS Methods
+# === BLAS Methods
 # ---
 # * GSL::Vector#nrm2
 # * GSL::Vector#dnrm2
@@ -1036,7 +1036,7 @@
 #
 #   Compute the absolute sum \sum |x_i| of the elements of the vector.
 #
-# === {}[link:index.html"name="3.15] Data type conversions
+# === Data type conversions
 # ---
 # * GSL::Vector#to_a
 #
@@ -1124,7 +1124,7 @@
 # * GSL::Vector#to_tensor(rank, dimension)
 #
 #
-# === {}[link:index.html"name="3.16] GSL::Vector <---> NArray
+# === NArray conversions
 #
 # ---
 # * GSL::Vector#to_na
@@ -1216,7 +1216,7 @@
 #      => NArray.float(6):
 #      [ 1.0, 2.0, 3.0, 4.0, 5.0, 9.0 ]
 #
-# === {}[link:index.html"name="3.17] Graphics
+# === Graphics
 # ---
 # * GSL::Vector.graph(y)
 # * GSL::Vector.graph(y, options)

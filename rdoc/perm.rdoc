@@ -1,16 +1,16 @@
 #
 # = Permutations
 # Contents:
-# 1. {Permuation allocations}[link:perm_rdoc.html#1]
-# 1. {Methods}[link:perm_rdoc.html#2]
-#    1. {Accessing permutation elements}[link:perm_rdoc.html#2.1]
-#    1. {Permuation properties}[link:perm_rdoc.html#2.2]
-#    1. {Permuation functions}[link:perm_rdoc.html#2.3]
-#    1. {Reading and writing permutations}[link:perm_rdoc.html#2.4]
-# 1. {Permutations in cyclic form}[link:perm_rdoc.html#2.5]
-# 1. {Applying Permutations}[link:perm_rdoc.html#3]
+# 1. {Permuation allocations}[link:perm_rdoc.html#label-Permuation+allocations]
+# 1. {Methods}[link:perm_rdoc.html#label-Methods]
+#    1. {Accessing permutation elements}[link:perm_rdoc.html#label-Accessing+permutation+elements]
+#    1. {Permuation properties}[link:perm_rdoc.html#label-Permutation+properties]
+#    1. {Permuation functions}[link:perm_rdoc.html#label-Permutation+functions]
+#    1. {Reading and writing permutations}[link:perm_rdoc.html#label-Reading+and+writing+permutations]
+# 1. {Permutations in cyclic form}[link:perm_rdoc.html#label-Permutations+in+cyclic+Form]
+# 1. {Applying Permutations}[link:perm_rdoc.html#label-Applying+Permutations]
 #
-# == {}[link:index.html"name="1] Permuation allocations
+# == Permuation allocations
 # ---
 # * GSL::Permutation.alloc(n)
 #
@@ -24,7 +24,7 @@
 #
 #   This creates a new permutation of size <tt>n</tt> and initializes it to the identity.
 #
-# == {}[link:index.html"name="2] Methods
+# == Methods
 # ---
 # * GSL::Permutation#init()
 #
@@ -41,7 +41,7 @@
 #
 #   This creates a new permutation with the same elements of <tt>self</tt>.
 #
-# === {}[link:index.html"name="2.1] Accessing permutation elements
+# === Accessing permutation elements
 #
 # ---
 # * GSL::Permutation#get(i)
@@ -53,7 +53,7 @@
 #
 #   This exchanges the <tt>i</tt>-th and <tt>j</tt>-th elements of the permutation.
 #
-# === {}[link:index.html"name="2.2] Permutation properties
+# === Permutation properties
 # ---
 # * GSL::Permutation#size
 #
@@ -69,7 +69,7 @@
 #
 #   This returns true if the permutation <tt>self</tt> is valid, and false otherwise.
 #
-# === {}[link:index.html"name="2.3] Permutation functions
+# === Permutation functions
 #
 # ---
 # * GSL::Permutation#reverse
@@ -97,7 +97,7 @@
 #   If no previous permutation is available it returns <tt>GSL_FAILURE</tt>
 #   and leaves <tt>self</tt> unmodified.
 #
-# === {}[link:index.html"name="2.4] Reading and writing permutations
+# === Reading and writing permutations
 # ---
 # * GSL::Permutation#fwrite(io)
 # * GSL::Permutation#fwrite(filename)
@@ -109,7 +109,7 @@
 # * GSL::Permutation#fscanf(filename)
 #
 #
-# === {}[link:index.html"name="2.5] Permutations in cyclic Form
+# === Permutations in cyclic Form
 # A permutation can be represented in both <tt>linear</tt> and
 # <tt>cyclic</tt> notations. The functions described in this section convert
 # between the two forms. The linear notation is an index mapping, and has
@@ -184,7 +184,7 @@
 #   Counts the number of cycles in the permutation <tt>self</tt>,
 #   given in canonical form.
 #
-# == {}[link:index.html"name="3] Applying Permutations
+# == Applying Permutations
 # ---
 # * GSL::Permutation::permute(v)
 #

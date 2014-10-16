@@ -3,11 +3,11 @@
 # This chapter describes functions for performing Discrete Hankel Transforms
 # (DHTs).
 #
-# 1. {Definitions}[link:dht_rdoc.html#1]
-# 1. {Initialization}[link:dht_rdoc.html#2]
-# 1. {Methods}[link:dht_rdoc.html#3]
+# 1. {Definitions}[link:dht_rdoc.html#label-Definitions]
+# 1. {Initialization}[link:dht_rdoc.html#label-Initialization]
+# 1. {Methods}[link:dht_rdoc.html#label-Methods]
 #
-# == {}[link:index.html"name="1] Definitions
+# == Definitions
 # The discrete Hankel transform acts on a vector of sampled data, where the
 # samples are assumed to have been taken at points related to the zeroes of a
 # Bessel function of fixed order; compare this to the case of the discrete
@@ -36,7 +36,7 @@
 # eigenfunctions of the Dirichlet problem for the Bessel differential equation.
 #
 #
-# == {}[link:index.html"name="2] Initialization
+# == Initialization
 #
 # ---
 # * GSL::Dht.alloc(size)
@@ -52,7 +52,7 @@
 #
 #   This initializes the transform <tt>self</tt> for the given values of <tt>nu</tt> and <tt>xmax</tt>.
 #
-# == {}[link:index.html"name="3] Methods
+# == Methods
 # ---
 # * GSL::Dht#apply(vin, vout)
 # * GSL::Dht#apply(vin)

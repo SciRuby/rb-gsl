@@ -1,21 +1,21 @@
 #
 # = Polynomials
 # Contents:
-# 1. {Polynomial Evaluation}[link:poly_rdoc.html#1]
-# 1. {Solving polynomial equations}[link:poly_rdoc.html#2]
-#    1. {Quadratic Equations}[link:poly_rdoc.html#2.1]
-#    1. {Cubic Equations}[link:poly_rdoc.html#2.2]
-#    1. {General Polynomial Equations}[link:poly_rdoc.html#2.3]
-# 1. {GSL::Poly Class}[link:poly_rdoc.html#3]
-#    1. {Constructors}[link:poly_rdoc.html#3.1]
-#    1. {Methods}[link:poly_rdoc.html#3.2]
-# 1. {Polynomial Fitting}[link:poly_rdoc.html#4]
-# 1. {Divided-difference representations}[link:poly_rdoc.html#5]
-# 1. {Extensions}[link:poly_rdoc.html#6]
-#    1. {Special Polynomials}[link:poly_rdoc.html#6.1]
-#    1. {Polynomial Operations}[link:poly_rdoc.html#6.2]
+# 1. {Polynomial Evaluation}[link:poly_rdoc.html#label-Polynomial+Evaluation]
+# 1. {Solving polynomial equations}[link:poly_rdoc.html#label-Solving+polynomial+equations]
+#    1. {Quadratic Equations}[link:poly_rdoc.html#label-Quadratic+Equations]
+#    1. {Cubic Equations}[link:poly_rdoc.html#label-Cubic+Equations]
+#    1. {General Polynomial Equations}[link:poly_rdoc.html#label-General+Polynomial+Equations]
+# 1. {GSL::Poly class}[link:poly_rdoc.html#label-Poly+class]
+#    1. {Constructors}[link:poly_rdoc.html#label-Constructors]
+#    1. {Methods}[link:poly_rdoc.html#label-Instance+Methods]
+# 1. {Polynomial Fitting}[link:poly_rdoc.html#label-Polynomial+fitting]
+# 1. {Divided-difference representations}[link:poly_rdoc.html#label-Divided-difference+representations]
+# 1. {Extensions}[link:poly_rdoc.html#label-Extensions]
+#    1. {Special Polynomials}[link:poly_rdoc.html#label-Special+Polynomials]
+#    1. {Polynomial Operations}[link:poly_rdoc.html#label-Polynomial+Operations]
 #
-# == {}[link:index.html"name="1] Polynomial Evaluation
+# == Polynomial Evaluation
 # ---
 # * GSL::Poly.eval(c, x)
 #
@@ -79,8 +79,8 @@
 #    => GSL::Poly
 #    [ 6.000e+00 8.000e+00 6.000e+00 ]
 #
-# == {}[link:index.html"name="2] Solving polynomial equations
-# === {}[link:index.html"name="2.1] Quadratic Equations
+# == Solving polynomial equations
+# === Quadratic Equations
 # ---
 # * GSL::Poly::solve_quadratic(a, b, c)
 # * GSL::Poly::solve_quadratic([a, b, c])
@@ -116,7 +116,7 @@
 #      => GSL::Vector::View:
 #      [ 1.000e+00 2.000e+00 ]
 #
-# === {}[link:index.html"name="2.2] Cubic Equations
+# === Cubic Equations
 # ---
 # * GSL::Poly::solve_cubic(same as solve_quadratic)
 #
@@ -129,7 +129,7 @@
 #   This method finds the complex roots of the cubic equation,
 #     z^3 + a z^2 + b z + c = 0
 #
-# === {}[link:index.html"name="2.3] General Polynomial Equations
+# === General Polynomial Equations
 # ---
 # * GSL::Poly::complex_solve(c0, c1, c2,,, )
 # * GSL::Poly::solve(c0, c1, c2,,, )
@@ -142,10 +142,10 @@
 #        [ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] ]
 #        => #<GSL::Vector::Complex:0x75e614>
 #
-# == {}[link:index.html"name="3] GSL::Poly Class
+# == Poly class
 # This class expresses polynomials of arbitrary orders.
 #
-# === {}[link:index.html"name="3.1] Constructors
+# === Constructors
 # ---
 # * GSL::Poly.alloc(c0, c1, c2, ....)
 # * GSL::Poly[c0, c1, c2, ....]
@@ -158,7 +158,7 @@
 #   * Ex: x^2 - 3 x + 2
 #       poly = GSL::Poly.alloc([2, -3, 1])
 #
-# === {}[link:index.html"name="3.2] Instance Methods
+# === Instance Methods
 # ---
 # * GSL::Poly#eval(x)
 # * GSL::Poly#at(x)
@@ -202,7 +202,7 @@
 #       [ [1.000e+00 0.000e+00] [2.000e+00 0.000e+00] ]
 #       => #<GSL::Vector::Complex:0x35db28>
 #
-# == {}[link:index.html"name="4] Polynomial fitting
+# == Polynomial fitting
 # ---
 # * GSL::Poly.fit(x, y, order)
 # * GSL::Poly.wfit(x, w, y, order)
@@ -224,7 +224,7 @@
 #     x2 = GSL::Vector.linspace(1, 5, 20)
 #     graph([x, y], [x2, coef.eval(x2)], "-C -g 3 -S 4")
 #
-# == {}[link:index.html"name="5] Divided-difference representations
+# == Divided-difference representations
 #
 # ---
 # * GSL::Poly::dd_init(xa, ya)
@@ -245,8 +245,8 @@
 #   to a Taylor expansion. On output the Taylor coefficients of the polynomial
 #   expanded about the point <tt>xp</tt> are returned.
 #
-# == {}[link:index.html"name="6] Extensions
-# === {}[link:index.html"name="6.1] Special Polynomials
+# == Extensions
+# === Special Polynomials
 # ---
 # * GSL::Poly.hermite(n)
 #
@@ -315,7 +315,7 @@
 #        => GSL::Poly::Int:
 #        [ 24 -96 72 -16 1 ]                <--- (x^4 - 16x^3 + 72x^2 - 96x + 24)/4!
 #
-# === {}[link:index.html"name="6.2] Polynomial Operations
+# === Polynomial Operations
 # ---
 # * GSL::Poly#conv
 # * GSL::Poly#deconv

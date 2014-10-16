@@ -8,15 +8,15 @@
 # and its derivative (hence the name fdf) to be supplied by the user.
 #
 # Contents:
-# 1. {Solver classes}[link:roots_rdoc.html#1]
-# 1. {Methods}[link:roots_rdoc.html#2]
-#    1. {Methods to solve equations}[link:roots_rdoc.html#2.1]
-#    1. {GSL::Function_fdf class: Providing the function to solve}[link:roots_rdoc.html#2.2]
-#    1. {Search Stopping Parameters}[link:roots_rdoc.html#2.3]
-# 1. {Higher-level interface}[link:roots_rdoc.html#3]
-# 1. {Example}[link:roots_rdoc.html#4]
+# 1. {Solver classes}[link:roots_rdoc.html#label-Solver+classes]
+# 1. {Methods}[link:roots_rdoc.html#label-Methods]
+#    1. {Methods to solve equations}[link:roots_rdoc.html#label-Methods+to+solve+equations]
+#    1. {GSL::Function_fdf class: Providing the function to solve}[link:roots_rdoc.html#label-Function_fdf+class]
+#    1. {Search Stopping Parameters}[link:roots_rdoc.html#label-Search+Stopping+Parameters]
+# 1. {Higher-level interface}[link:roots_rdoc.html#label-High-level+interface]
+# 1. {Example}[link:roots_rdoc.html#label-Example]
 #
-# == {}[link:index.html"name="1] Solver classes
+# == Solver classes
 #
 # ---
 # * GSL::Root::FSolver.alloc(T)
@@ -43,7 +43,7 @@
 #   * <tt>"secant"</tt> or <tt>GSL::Root::FdfSolver::SECANT</tt>
 #   * <tt>"steffenson"</tt> or <tt>GSL::Root::FdfSolver::STEFFENSON</tt>.
 #
-# == {}[link:index.html"name="2] Methods
+# == Methods
 #
 # ---
 # * GSL::Root::FSolver#set(f, xl, xu)
@@ -61,7 +61,7 @@
 #   Here <tt>fdf</tt> is a <tt>GSL::Function_fdf</tt> object (see below).
 #
 #
-# === {}[link:index.html"name="2.1] Methods to solve equations
+# === Methods to solve equations
 #
 # ---
 # * GSL::Root::FSolver#iterate
@@ -89,7 +89,7 @@
 #
 #   Return the current bracketing interval for the solver.
 #
-# === {}[link:index.html"name="2.2] GSL::Function_fdf class: Providing the function to solve
+# === Function_fdf class
 # The <tt>FSolver</tt> object require an instance of the
 # {GSL::Function}[link:function_rdoc.html] class, which is already introduced elsewhere.
 # The <tt>FdfSolver</tt> which uses the root-polishing algorithm requires not only
@@ -143,7 +143,7 @@
 #
 #       function_fdf.set_params([1, 0, -5])
 #
-# === {}[link:index.html"name="2.3] Search Stopping Parameters
+# === Search Stopping Parameters
 #
 # ---
 # * GSL::Root::test_interval(xl, xu, epsrel, epsabs)
@@ -184,7 +184,7 @@
 #   situations where the precise location of the root, x, is unimportant provided a
 #   value can be found where the residual, |f(x)|, is small enough.
 #
-# == {}[link:index.html"name="3] High-level interface
+# == High-level interface
 # ---
 # * GSL::Root:FSolver.solve(func, [xl, xu], [epsabs = 0, epsrel = 1e-6])
 #
@@ -211,7 +211,7 @@
 #       f = Function.alloc { |x| x*x - 5 }
 #       f.fsolve([0, 5])             <----- 2.23606797749979
 #
-# == {}[link:index.html"name="4] Example
+# == Example
 # This example is equivalent to the one found in the GSL manual,
 # using the Brent's algorithm to solve the equation x^2 - 5 = 0.
 #

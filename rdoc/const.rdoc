@@ -15,25 +15,25 @@
 # See also the {GSL reference}[https://gnu.org/software/gsl/manual/gsl-ref_37.html#SEC479]
 #
 # Contents:
-# 1. {Fundamental Constants}[link:const_rdoc.html#1]
-# 1. {Astronomy and Astrophysics}[link:const_rdoc.html#2]
-# 1. {Atomic and Nuclear Physics}[link:const_rdoc.html#3]
-# 1. {Measurement of Time}[link:const_rdoc.html#4]
-# 1. {Imperial Units}[link:const_rdoc.html#5]
-# 1. {Nautical Units}[link:const_rdoc.html#6]
-# 1. {Printers Units}[link:const_rdoc.html#7]
-# 1. {Volume}[link:const_rdoc.html#8]
-# 1. {Mass and Weight}[link:const_rdoc.html#9]
-# 1. {Thermal Energy and Power}[link:const_rdoc.html#10]
-# 1. {Pressure}[link:const_rdoc.html#11]
-# 1. {Viscosity}[link:const_rdoc.html#12]
-# 1. {Light and Illumination}[link:const_rdoc.html#13]
-# 1. {Radioactivity}[link:const_rdoc.html#14]
-# 1. {Force and Energy}[link:const_rdoc.html#15]
-# 1. {Prefixes}[link:const_rdoc.html#16]
-# 1. {Examples}[link:const_rdoc.html#17]
+# 1. {Fundamental Constants}[link:const_rdoc.html#label-Fundamental+Constants]
+# 1. {Astronomy and Astrophysics}[link:const_rdoc.html#label-Astronomy+and+Astrophysics]
+# 1. {Atomic and Nuclear Physics}[link:const_rdoc.html#label-Atomic+and+Nuclear+Physics]
+# 1. {Measurement of Time}[link:const_rdoc.html#label-Measurement+of+Time]
+# 1. {Imperial Units}[link:const_rdoc.html#label-Imperial+Units]
+# 1. {Nautical Units}[link:const_rdoc.html#label-Nautical+Units]
+# 1. {Printers Units}[link:const_rdoc.html#label-Printers+Units]
+# 1. {Volume}[link:const_rdoc.html#label-Volume]
+# 1. {Mass and Weight}[link:const_rdoc.html#label-Mass+and+Weight]
+# 1. {Thermal Energy and Power}[link:const_rdoc.html#label-Thermal+Energy+and+Power]
+# 1. {Pressure}[link:const_rdoc.html#label-Pressure]
+# 1. {Viscosity}[link:const_rdoc.html#label-Viscosity]
+# 1. {Light and Illumination}[link:const_rdoc.html#label-Light+and+Illumination]
+# 1. {Radioactivity}[link:const_rdoc.html#label-Radioactivity]
+# 1. {Force and Energy}[link:const_rdoc.html#label-Force+and+Energy]
+# 1. {Prefixes}[link:const_rdoc.html#label-Prefixes]
+# 1. {Examples}[link:const_rdoc.html#label-Example]
 #
-# == {}[link:index.html"name="1] Fundamental Constants
+# == Fundamental Constants
 # ---
 # * GSL::CONST::MKSA::SPEED_OF_LIGHT
 #
@@ -83,7 +83,7 @@
 #
 #   The magnetic field of 1 Gauss.
 #
-# == {}[link:index.html"name="2] Astronomy and Astrophysics
+# == Astronomy and Astrophysics
 # ---
 # * GSL::CONST::MKSA::ASTRONOMICAL_UNIT
 #
@@ -109,7 +109,7 @@
 #
 #   The mass of the Sun.
 #
-# == {}[link:index.html"name="3] Atomic and Nuclear Physics
+# == Atomic and Nuclear Physics
 # ---
 # * GSL::CONST::MKSA::ELECTRON_CHARGE
 #
@@ -183,7 +183,7 @@
 #
 #   The magnetic moment of the proton, mu_p.
 #
-# == {}[link:index.html"name="4] Measurement of Time
+# == Measurement of Time
 # ---
 # * GSL::CONST::MKSA::MINUTE
 #
@@ -201,7 +201,7 @@
 #
 #   The number of seconds in 1 week.
 #
-# == {}[link:index.html"name="5] Imperial Units
+# == Imperial Units
 # ---
 # * GSL::CONST::MKSA::INCH
 #
@@ -223,7 +223,7 @@
 #
 #   The length of 1 mil (1/1000th of an inch).
 #
-# == {}[link:index.html"name="6] Nautical Units
+# == Nautical Units
 # ---
 # * GSL::CONST::MKSA::NAUTICAL_MILE
 #
@@ -237,7 +237,7 @@
 #
 #   The speed of 1 knot.
 #
-# == {}[link:index.html"name="7] Printers Units
+# == Printers Units
 # ---
 # * GSL::CONST::MKSA::POINT
 #
@@ -247,7 +247,7 @@
 #
 #   The length of 1 TeX point (1/72.27 inch).
 #
-# == {}[link:index.html"name="8] Volume
+# == Volume
 # ---
 # * GSL::CONST::MKSA::ACRE
 #
@@ -277,7 +277,7 @@
 #
 #   The volume of 1 pint.
 #
-# == {}[link:index.html"name="9] Mass and Weight
+# == Mass and Weight
 # ---
 # * GSL::CONST::MKSA::POUND_MASS
 #
@@ -323,7 +323,7 @@
 #
 #   The force of 1 poundal.
 #
-# == {}[link:index.html"name="10] Thermal Energy and Power
+# == Thermal Energy and Power
 # ---
 # * GSL::CONST::MKSA::CALORIE
 #
@@ -341,7 +341,7 @@
 #
 #   The power of 1 horsepower.
 #
-# == {}[link:index.html"name="11] Pressure
+# == Pressure
 # ---
 # * GSL::CONST::MKSA::BAR
 #
@@ -371,7 +371,7 @@
 #
 #   The pressure of 1 pound per square inch.
 #
-# == {}[link:index.html"name="12] Viscosity
+# == Viscosity
 # ---
 # * GSL::CONST::MKSA::POISE
 #
@@ -381,7 +381,7 @@
 #
 #   The kinematic viscosity of 1 stokes.
 #
-# == {}[link:index.html"name="13] Light and Illumination
+# == Light and Illumination
 # ---
 # * GSL::CONST::MKSA::STILB
 #
@@ -411,7 +411,7 @@
 #
 #   The luminance of 1 footlambert.
 #
-# == {}[link:index.html"name="14] Radioactivity
+# == Radioactivity
 # ---
 # * GSL::CONST::MKSA::CURIE
 #
@@ -425,7 +425,7 @@
 #
 #   The absorbed dose of 1 rad.
 #
-# == {}[link:index.html"name="15] Force and Energy
+# == Force and Energy
 # ---
 # * GSL::CONST::MKSA::NEWTON
 #
@@ -443,7 +443,7 @@
 #
 #   The energy 1 erg = 10^-7 Joule.
 #
-# == {}[link:index.html"name="16] Prefixes
+# == Prefixes
 # ---
 # * GSL::CONST::NUM::YOTTA
 #
@@ -509,7 +509,7 @@
 #
 #   10^-24
 #
-# == {}[link:index.html"name="17] Example
+# == Example
 # The following program demonstrates the use of the physical constants in a
 # calculation. In this case, the goal is to calculate the range of light-travel
 # times from Earth to Mars.

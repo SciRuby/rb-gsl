@@ -1,20 +1,20 @@
 #
 # = Numerical Integration
 # Contents:
-# 1. {Introduction}[link:integration_rdoc.html#1]
-# 1. {QNG non-adaptive Gauss-Kronrod integration}[link:integration_rdoc.html#2]
-# 1. {QAG adaptive integration}[link:integration_rdoc.html#3]
-#    1. {GSL::Integration::Workspace class}[link:integration_rdoc.html#3.1]
-#    1. {Methods}[link:integration_rdoc.html#3.2]
-# 1. {QAGS adaptive integration with singularities}[link:integration_rdoc.html#4]
-# 1. {QAGP adaptive integration with known singular points}[link:integration_rdoc.html#5]
-# 1. {QAGI adaptive integration on infinite intervals}[link:integration_rdoc.html#6]
-# 1. {QAWC adaptive integration for Cauchy principal values}[link:integration_rdoc.html#7]
-# 1. {QAWS adaptive integration for singular functions}[link:integration_rdoc.html#8]
-# 1. {QAWO adaptive integration for oscillatory functions}[link:integration_rdoc.html#9]
-# 1. {QAWF adaptive integration for Fourier integrals}[link:integration_rdoc.html#10]
+# 1. {Introduction}[link:integration_rdoc.html#label-Introduction]
+# 1. {QNG non-adaptive Gauss-Kronrod integration}[link:integration_rdoc.html#label-QNG+non-adaptive+Gauss-Kronrod+integration]
+# 1. {QAG adaptive integration}[link:integration_rdoc.html#label-QAG+adaptive+integration]
+#    1. {GSL::Integration::Workspace class}[link:integration_rdoc.html#label-Workspace+class]
+#    1. {Methods}[link:integration_rdoc.html#label-Methods]
+# 1. {QAGS adaptive integration with singularities}[link:integration_rdoc.html#label-QAGS+adaptive+integration+with+singularities]
+# 1. {QAGP adaptive integration with known singular points}[link:integration_rdoc.html#label-QAGP+adaptive+integration+with+known+singular+points]
+# 1. {QAGI adaptive integration on infinite intervals}[link:integration_rdoc.html#label-QAGI+adaptive+integration+on+infinite+intervals]
+# 1. {QAWC adaptive integration for Cauchy principal values}[link:integration_rdoc.html#label-QAWC+adaptive+integration+for+Cauchy+principal+values]
+# 1. {QAWS adaptive integration for singular functions}[link:integration_rdoc.html#label-QAWS+adaptive+integration+for+singular+functions]
+# 1. {QAWO adaptive integration for oscillatory functions}[link:integration_rdoc.html#label-QAWO+adaptive+integration+for+oscillatory+functions]
+# 1. {QAWF adaptive integration for Fourier integrals}[link:integration_rdoc.html#label-QAWF+adaptive+integration+for+Fourier+integrals]
 #
-# == {}[link:index.html"name="1] Introduction
+# == Introduction
 # This section describes how to compute numerical integration of a function
 # in one dimension. In Ruby/GSL, all the GSL routines for numerical integration
 # is provided as methods of {GSL::Function}[link:function_rdoc.html] objects.
@@ -26,7 +26,7 @@
 # * <tt>f.integrate_xxx([a, b])</tt>, or <tt>f.xxx([a, b])</tt>
 # * <tt>f.integrate_xxx(a, b)</tt>, or <tt>f.xxx(a, b)</tt>
 #
-# == {}[link:index.html"name="2] QNG non-adaptive Gauss-Kronrod integration
+# == QNG non-adaptive Gauss-Kronrod integration
 # ---
 # * GSL::Function#integration_qng([a, b], [epsabs = 0.0, epsrel = 1e-10])
 # * GSL::Function#qng(...)
@@ -53,7 +53,7 @@
 #
 #   For all the methods described in this section, the arguments <tt>[epsabs, epsrel]</tt> are optional, and the default values are <tt>[epsabs = 0.0, epsrel = 1e-10]</tt>.
 #
-# == {}[link:index.html"name="3] QAG adaptive integration
+# == QAG adaptive integration
 # The QAG algorithm is a simple adaptive integration procedure.
 # The integration region is divided into subintervals, and on each iteration
 # the subinterval with the largest estimated error is bisected.
@@ -62,7 +62,7 @@
 # a GSL::Integration::Workspace object, which handles the memory for the
 # subinterval ranges, results and error estimates.
 #
-# === {}[link:index.html"name="3.1] GSL::Integration::Workspace class
+# === Workspace class
 # ---
 # * GSL::Integration::Workspace.alloc(n = 1000)
 #
@@ -74,7 +74,7 @@
 # * GSL::Integration::Workspace#size
 #
 #
-# ==== {}[link:index.html"name="3.1.1] Algorithms which require the workspace
+# ==== Algorithms which require the workspace
 # The algorithms described below require <tt>gsl_integration_workspace</tt> struct
 # in C. In Ruby/GSL, the corresponding methods require
 # a <tt>GSL::Integration::Workspace</tt> object in their arguments. But it is also
@@ -92,7 +92,7 @@
 # Explicit uses of a <tt>Workspace</tt> object reduce C function calls for memory
 # allocations of workspace objects.
 #
-# === {}[link:index.html"name="3.2] Methods
+# === Methods
 # ---
 # * GSL::Function#integration_qag([a, b], key = GSL::Integration::GAUSS61)
 # * GSL::Function#integration_qag([a, b], key, w)
@@ -124,7 +124,7 @@
 #   while lower-order rules save time when the function contains local
 #   difficulties, such as discontinuities.
 #
-# == {}[link:index.html"name="4] QAGS adaptive integration with singularities
+# == QAGS adaptive integration with singularities
 # The presence of an integrable singularity in the integration region causes
 # an adaptive routine to concentrate new subintervals around the singularity.
 # As the subintervals decrease in size the successive approximations to the
@@ -159,7 +159,7 @@
 #
 #       p f.integration_qags(0, 1)
 #
-# == {}[link:index.html"name="5] QAGP adaptive integration with known singular points
+# == QAGP adaptive integration with known singular points
 # ---
 # * GSL::Function#integration_qagp(pts, [epsabs = 0.0, epsrel = 1e-10], limit = 1000, w)
 # * GSL::Function#qagp(...)
@@ -191,7 +191,7 @@
 #      p f454.qagp(pts, 0.0, 1e-3)  # <---- [52.7408061167272, 0.000175570384826074, 20, 0]
 #                                   # Expect: 61 log(2) + (77/4) log(7) - 27 = 52.7408061167272
 #
-# == {}[link:index.html"name="6] QAGI adaptive integration on infinite intervals
+# == QAGI adaptive integration on infinite intervals
 # ---
 # * GSL::Function#integration_qagi([epsabs = 0.0, epsrel = 1e-10], limit = 1000, w)
 # * GSL::Function#qagi(...)
@@ -233,7 +233,7 @@
 #   These methods compute the integral of the function over the
 #   semi-infinite interval (-infty,b).
 #
-# == {}[link:index.html"name="7] QAWC adaptive integration for Cauchy principal values
+# == QAWC adaptive integration for Cauchy principal values
 # ---
 # * GSL::Function#integration_qawc([a, b], c, [epsabs = 0.0, epsrel = 1e-10], limit. 1000)
 # * GSL::Function#qawc(...)
@@ -254,7 +254,7 @@
 #
 #        p f459.qawc([-1.0, 5.0], 0, [0.0, 1e-3]) # Expect: log(125/631)/18
 #
-# == {}[link:index.html"name="8] QAWS adaptive integration for singular functions
+# == QAWS adaptive integration for singular functions
 # The QAWS algorithm is designed for integrands with algebraic-logarithmic
 # singularities at the end-points of an integration region.
 # In order to work efficiently the algorithm requires a precomputed
@@ -292,7 +292,7 @@
 #        table = Integration::QAWS_Table.alloc(0.0, 0.0, 1, 0)
 #        p f458.qaws([0.0, 1.0], table, [0.0, 1e-10])
 #
-# == {}[link:index.html"name="9] QAWO adaptive integration for oscillatory functions
+# == QAWO adaptive integration for oscillatory functions
 # The QAWO algorithm is designed for integrands with an oscillatory factor,
 # sin(omega x) or cos(omega x). In order to work efficiently the algorithm
 # requires a table of Chebyshev moments.
@@ -324,7 +324,7 @@
 #         table = Integration::QAWO_Table.alloc(10.0*Math::PI, 1.0, Integration::SINE, 1000)
 #         p f456.qawo(0.0, [0.0, 1e-10], table)
 #
-# == {}[link:index.html"name="10] QAWF adaptive integration for Fourier integrals
+# == QAWF adaptive integration for Fourier integrals
 # ---
 # * GSL::Function#integration_qawf(a, epsabs = 1e-10, limit = 1000, w, wc, table)
 # * GSL::Function#integration_qawf(a, epsabs = 1e-10, limit = 1000, table)
@@ -373,7 +373,7 @@
 #        p f457.qawf(0.0, limit, w, table)       # Error
 #        p f457.qawf(0.0, limit, wc, table)      # Error
 #
-# == {}[link:index.html"name="11] Gauss-Legendre integration
+# == Gauss-Legendre integration
 # (GSL-1.14)
 # The fixed-order Gauss-Legendre integration routines are provided for fast integration of smooth functions with known polynomial order. The n-point Gauss-Legendre rule is exact for polynomials of order 2*n-1 or less. For example, these rules are useful when integrating basis functions to form mass matrices for the Galerkin method. Unlike other numerical integration routines within the library, these routines do not accept absolute or relative error bounds.
 #

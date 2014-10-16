@@ -1,24 +1,24 @@
 #
 # = Matrices
 # Contents:
-# 1. {Class methods}[link:matrix_rdoc.html#1]
-# 1. {Instance methods}[link:matrix_rdoc.html#2]
-#    1. {Accessing matrix elements}[link:matrix_rdoc.html#2.1]
-#    1. {Initializing matrix elements}[link:matrix_rdoc.html#2.2]
-#    1. {IO}[link:matrix_rdoc.html#2.3]
-#    1. {Matrix views}[link:matrix_rdoc.html#2.4]
-#    1. {Creating row and column views}[link:matrix_rdoc.html#2.5]
-#    1. {Iterators}[link:matrix_rdoc.html#2.6]
-#    1. {Copying matrices}[link:matrix_rdoc.html#2.7]
-#    1. {Copying rows and columns}[link:matrix_rdoc.html#2.8]
-#    1. {Exchanging rows and columns}[link:matrix_rdoc.html#2.9]
-#    1. {Matrix operations}[link:matrix_rdoc.html#2.10]
-#    1. {Finding maximum and minimum elements of matrices}[link:matrix_rdoc.html#2.11]
-#    1. {Matrix properties}[link:matrix_rdoc.html#2.12]
-# 1. {NArray}[link:matrix_rdoc.html#3]
-# 1. {Special matrices}[link:matrix_rdoc.html#4]
+# 1. {Class methods}[link:matrix_rdoc.html#label-Class+methods]
+# 1. {Instance methods}[link:matrix_rdoc.html#label-Instance+Methods]
+#    1. {Accessing matrix elements}[link:matrix_rdoc.html#label-Accessing+matrix+elements]
+#    1. {Initializing matrix elements}[link:matrix_rdoc.html#label-Initializing+matrix+elements]
+#    1. {IO}[link:matrix_rdoc.html#label-IO]
+#    1. {Matrix views}[link:matrix_rdoc.html#label-Matrix+views]
+#    1. {Creating row and column views}[link:matrix_rdoc.html#label-Creating+row+and+column+views]
+#    1. {Iterators}[link:matrix_rdoc.html#label-Iterators]
+#    1. {Copying matrices}[link:matrix_rdoc.html#label-Copying+matrices]
+#    1. {Copying rows and columns}[link:matrix_rdoc.html#label-Copying+rows+and+columns]
+#    1. {Exchanging rows and columns}[link:matrix_rdoc.html#label-Exchanging+rows+and+columns]
+#    1. {Matrix operations}[link:matrix_rdoc.html#label-Matrix+operations]
+#    1. {Finding maximum and minimum elements of matrices}[link:matrix_rdoc.html#label-Finding+maximum+and+minimum+elements+of+matrices]
+#    1. {Matrix properties}[link:matrix_rdoc.html#label-Matrix+properties]
+# 1. {NArray}[link:matrix_rdoc.html#label-NArray]
+# 1. {Special matrices}[link:matrix_rdoc.html#label-Special+matrices]
 #
-# == {}[link:index.html"name="1] Class methods
+# == Class methods
 #
 # ---
 # * GSL::Matrix.alloc(n)
@@ -125,12 +125,12 @@
 #     [  4.500e+00  1.120e+01  1.790e+01
 #        2.460e+01  3.130e+01  3.800e+01 ]
 #
-# === {}[link:index.html"name="1.1] NOTE:
+# === NOTE:
 # Matrix dimensions are limited within the range of Fixnum.
 # For 32-bit CPU, the maximum of matrix dimension is 2^30 ~ 1e9.
 #
-# == {}[link:index.html"name="2] Instance Methods
-# === {}[link:index.html"name="2.1] Accessing matrix elements
+# == Instance Methods
+# === Accessing matrix elements
 #
 # ---
 # * GSL::Matrix#size1
@@ -274,7 +274,7 @@
 #     >> GSL::Matrix.eye(3).to_a
 #     => [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
 #
-# === {}[link:index.html"name="2.2] Initializing matrix elements
+# === Initializing matrix elements
 # ---
 # * GSL::Matrix#set_all(x)
 #
@@ -292,7 +292,7 @@
 #   elements of the identity matrix, i.e. a unit diagonal with all off-diagonal
 #   elements zero. This applies to both square and rectangular matrices.
 #
-# === {}[link:index.html"name="2.3] IO
+# === IO
 # ---
 # * GSL::Matrix#fwrite(io)
 # * GSL::Matrix#fwrite(filename)
@@ -304,7 +304,7 @@
 # * GSL::Matrix#fscanf(filename)
 #
 #
-# === {}[link:index.html"name="2.4] Matrix views
+# === Matrix views
 # The <tt>GSL::Matrix::View</tt> class is defined to be used as "references" to
 # matrices. The <tt>Matrix::View</tt> class is a subclass of <tt>Matrix</tt>, and an
 # instance of the <tt>View</tt> class created by slicing a <tt>Matrix</tt> object can
@@ -409,7 +409,7 @@
 #      >>
 #
 #
-# === {}[link:index.html"name="2.5] Creating row and column views
+# === Creating row and column views
 #
 # ---
 # * GSL::Matrix#row(i)
@@ -500,7 +500,7 @@
 #       => GSL::Vector
 #       [ 1.000e+00 2.000e+00 3.000e+00 4.000e+00 5.000e+00 6.000e+00 ]
 #
-# === {}[link:index.html"name="2.6] Iterators
+# === Iterators
 # ---
 # * GSL::Matrix#each_row
 #
@@ -517,7 +517,7 @@
 # * GSL::Matrix#map! { |item| .. }
 #
 #
-# === {}[link:index.html"name="2.7] Copying matrices
+# === Copying matrices
 # ---
 # * GSL::Matrix#clone
 # * GSL::Matrix#duplicate
@@ -529,7 +529,7 @@
 # * GSL::Matrix.swap(dest, src)
 #
 #
-# === {}[link:index.html"name="2.8] Copying rows and columns
+# === Copying rows and columns
 #
 # ---
 # * GSL::Matrix#get_row(i)
@@ -557,7 +557,7 @@
 #   column of the matrix. The length of the vector must be the same as the length
 #   of the column.
 #
-# === {}[link:index.html"name="2.9] Exchanging rows and columns
+# === Exchanging rows and columns
 # ---
 # * GSL::Matrix#swap_rows!(i, j)
 #
@@ -733,7 +733,7 @@
 #        7  8
 #        9 10 ]
 #
-# === {}[link:index.html"name="2.10] Matrix operations
+# === Matrix operations
 #
 # ---
 # * GSL::Matrix#add(b)
@@ -846,7 +846,7 @@
 #
 #   Computes matrix power of <tt>b</tt>.
 #
-# === {}[link:index.html"name="2.11] Finding maximum and minimum elements of matrices
+# === Finding maximum and minimum elements of matrices
 #
 # ---
 # * GSL::Matrix#max
@@ -874,7 +874,7 @@
 #   which contains the indices
 #   of the minimum and the maximum value in the matrix.
 #
-# === {}[link:index.html"name="2.12] Matrix properties
+# === Matrix properties
 # ---
 # * GSL::Matrix#isnull
 #
@@ -961,7 +961,7 @@
 #   equal to absolute accurary <tt>eps</tt> for all the indices,
 #   and <tt>false</tt> otherwise.
 #
-# == {}[link:index.html"name="3] NArray
+# == NArray
 #
 # ---
 # * GSL::Matrix#to_na
@@ -985,7 +985,7 @@
 #   NArray object <tt>na</tt>.
 #   The View object can be used as a reference to the NMatrix object.
 #
-# == {}[link:index.html"name="4] Special matrices
+# == Special matrices
 # ---
 # * GSL::Matrix.hirbert(n)
 #

@@ -5,10 +5,10 @@
 # of finite difference and to estimate the error in the derivative.
 #
 # Contentes:
-# 1. {Deriv methods}[link:diff_rdoc.html#1]
-# 1. {Diff methods}[link:diff_rdoc.html#2]
+# 1. {Deriv methods}[link:diff_rdoc.html#label-Deriv+methods+%28for+GSL+1.4.90+or+later%29]
+# 1. {Diff methods}[link:diff_rdoc.html#label-Diff+Methods+%28obsolete%29]
 #
-# == {}[link:index.html"name="1] Deriv methods (for GSL 1.4.90 or later)
+# == Deriv methods (for GSL 1.4.90 or later)
 # Numerical derivatives should now be calculated using the
 # <tt>GSL::Deriv.forward, GSL::Deriv.central</tt> and <tt>GSL::Deriv.backward</tt> methods,
 # which accept a step-size argument in addition to the position x.  The
@@ -67,7 +67,7 @@
 #   These methods are equivalent to calling the method <tt>forward</tt>
 #   with a negative step-size.
 #
-# == {}[link:index.html"name="2] Diff Methods (obsolete)
+# == Diff Methods (obsolete)
 #
 # ---
 # * GSL::Diff.central(f, x)
@@ -89,7 +89,7 @@
 #
 #   These compute the numerical derivative of the function at the point x using an adaptive backward difference algorithm.
 #
-# == {}[link:index.html"name="3] Example
+# == Example
 #
 #      #!/usr/bin/env ruby
 #      require "gsl"
