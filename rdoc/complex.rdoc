@@ -1,14 +1,14 @@
 #
 # = Complex Numbers
 # Contents:
-# 1. {Class methods}[link:rdoc/complex_rdoc.html#1]
-# 1. {Properties of Complex Numbers}[link:rdoc/complex_rdoc.html#2]
-# 1. {Complex Arithmetic Operators}[link:rdoc/complex_rdoc.html#3]
-# 1. {Elementary Complex Functions}[link:rdoc/complex_rdoc.html#4]
-# 1. {Complex Trigonometric Functions}[link:rdoc/complex_rdoc.html#5]
-# 1. {Inverse Complex Trigonometric Functions}[link:rdoc/complex_rdoc.html#6]
-# 1. {Complex Hyperbolic Functions}[link:rdoc/complex_rdoc.html#7]
-# 1. {Inverse Complex Hyperbolic Functions}[link:rdoc/complex_rdoc.html#8]
+# 1. {Class methods}[link:complex_rdoc.html#1]
+# 1. {Properties of Complex Numbers}[link:complex_rdoc.html#2]
+# 1. {Complex Arithmetic Operators}[link:complex_rdoc.html#3]
+# 1. {Elementary Complex Functions}[link:complex_rdoc.html#4]
+# 1. {Complex Trigonometric Functions}[link:complex_rdoc.html#5]
+# 1. {Inverse Complex Trigonometric Functions}[link:complex_rdoc.html#6]
+# 1. {Complex Hyperbolic Functions}[link:complex_rdoc.html#7]
+# 1. {Inverse Complex Hyperbolic Functions}[link:complex_rdoc.html#8]
 #
 # == {}[link:index.html"name="1] Class Methods
 # ---
@@ -201,10 +201,10 @@
 # * GSL::Complex#arccoth(z)
 #
 #
-# {prev}[link:rdoc/math_rdoc.html]
-# {next}[link:rdoc/poly_rdoc.html]
+# {prev}[link:math_rdoc.html]
+# {next}[link:poly_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

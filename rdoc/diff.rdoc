@@ -5,8 +5,8 @@
 # of finite difference and to estimate the error in the derivative.
 #
 # Contentes:
-# 1. {Deriv methods}[link:rdoc/diff_rdoc.html#1]
-# 1. {Diff methods}[link:rdoc/diff_rdoc.html#2]
+# 1. {Deriv methods}[link:diff_rdoc.html#1]
+# 1. {Diff methods}[link:diff_rdoc.html#2]
 #
 # == {}[link:index.html"name="1] Deriv methods (for GSL 1.4.90 or later)
 # Numerical derivatives should now be calculated using the
@@ -73,7 +73,7 @@
 # * GSL::Diff.central(f, x)
 # * GSL::Function#diff_central(x)
 #
-#   These compute the numerical derivative of the function <tt>f</tt> ( {GSL::Function}[link:rdoc/function_rdoc.html] object) at the point <tt>x</tt>
+#   These compute the numerical derivative of the function <tt>f</tt> ( {GSL::Function}[link:function_rdoc.html] object) at the point <tt>x</tt>
 #   using an adaptive central difference algorithm. The result is returned as an array
 #   which contains the derivative and an estimate of its absolute error.
 #
@@ -124,10 +124,10 @@
 #      f'(x) = 0.0000000160 +/- 0.0000000339
 #      exact = 0.0000000000
 #
-# {prev}[link:rdoc/interp_rdoc.html]
-# {next}[link:rdoc/cheb_rdoc.html]
+# {prev}[link:interp_rdoc.html]
+# {next}[link:cheb_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

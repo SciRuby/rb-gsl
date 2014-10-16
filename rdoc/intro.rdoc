@@ -19,9 +19,9 @@
 # == {}[link:index.html"name="2] Installation
 # See {here}[link:index.html].
 #
-# {next}[link:rdoc/use_rdoc.html]
+# {next}[link:use_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

@@ -10,18 +10,18 @@
 # to be used in multi-threaded programs.
 #
 # Contents:
-# 1. {Overview}[link:rdoc/nonlinearfit_rdoc.html#1]
-# 1. {Initializing the Solver}[link:rdoc/nonlinearfit_rdoc.html#2]
-#    1. {GSL::MultiFit::FdfSolver class}[link:rdoc/nonlinearfit_rdoc.html#2.1]
-# 1. {Providing the function to be minimized}[link:rdoc/nonlinearfit_rdoc.html#3]
-#    1. {GSL::MultiFit::Function_fdf class}[link:rdoc/nonlinearfit_rdoc.html#3.1]
-# 1. {Iteration}[link:rdoc/nonlinearfit_rdoc.html#4]
-# 1. {Search Stopping Parameters}[link:rdoc/nonlinearfit_rdoc.html#5]
-# 1. {Computing the covariance matrix of best fit parameters}[link:rdoc/nonlinearfit_rdoc.html#6]
-# 1. {Higher level interfaces}[link:rdoc/nonlinearfit_rdoc.html#7]
-# 1. {Examples}[link:rdoc/nonlinearfit_rdoc.html#8]
-#    1. {Fitting to user-defined functions}[link:rdoc/nonlinearfit_rdoc.html#8.1]
-#    1. {Fitting to built-in functions}[link:rdoc/nonlinearfit_rdoc.html#8.2]
+# 1. {Overview}[link:nonlinearfit_rdoc.html#1]
+# 1. {Initializing the Solver}[link:nonlinearfit_rdoc.html#2]
+#    1. {GSL::MultiFit::FdfSolver class}[link:nonlinearfit_rdoc.html#2.1]
+# 1. {Providing the function to be minimized}[link:nonlinearfit_rdoc.html#3]
+#    1. {GSL::MultiFit::Function_fdf class}[link:nonlinearfit_rdoc.html#3.1]
+# 1. {Iteration}[link:nonlinearfit_rdoc.html#4]
+# 1. {Search Stopping Parameters}[link:nonlinearfit_rdoc.html#5]
+# 1. {Computing the covariance matrix of best fit parameters}[link:nonlinearfit_rdoc.html#6]
+# 1. {Higher level interfaces}[link:nonlinearfit_rdoc.html#7]
+# 1. {Examples}[link:nonlinearfit_rdoc.html#8]
+#    1. {Fitting to user-defined functions}[link:nonlinearfit_rdoc.html#8.1]
+#    1. {Fitting to built-in functions}[link:nonlinearfit_rdoc.html#8.2]
 #
 # == {}[link:index.html"name="1] Overview
 # The problem of multidimensional nonlinear least-squares fitting requires the
@@ -65,7 +65,7 @@
 #   This method initializes, or reinitializes, an existing solver <tt>self</tt>
 #   to use the function <tt>f</tt> and the initial guess <tt>x</tt>. The function <tt>f</tt>
 #   is an instance of the <tt>GSL::MultiFit::Function_fdf</tt> class (see below). The
-#   initial guess of the parameters <tt>x</tt> is given by a {GSL::Vector}[link:rdoc/vector_rdoc.html] object.
+#   initial guess of the parameters <tt>x</tt> is given by a {GSL::Vector}[link:vector_rdoc.html] object.
 #
 # ---
 # * GSL::MultiFit::FdfSolver#name
@@ -224,7 +224,7 @@
 #   * <tt>"lognormal"</tt>: Lognormal peak fit,
 #     <tt>y = y0 + A exp[ -(log(x/x0)/width)^2 ]</tt>, <tt>coef = [y0, A, x0, width]</tt>
 #
-#   See {Linear fitting}[link:rdoc/fit_rdoc.html#2.3] for linear and polynomical fittings.
+#   See {Linear fitting}[link:fit_rdoc.html#2.3] for linear and polynomical fittings.
 #
 # == {}[link:index.html"name="8] Examples
 # === {}[link:index.html"name="8.1] Fitting to user-defined functions
@@ -338,10 +338,10 @@
 #   graph(x, y, y0+amp*Sf::exp(-pow_2(Sf::log(x/x0)/w)))
 #
 #
-# {prev}[link:rdoc/fit_rdoc.html]
-# {next}[link:rdoc/bspline_rdoc.html]
+# {prev}[link:fit_rdoc.html]
+# {next}[link:bspline_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

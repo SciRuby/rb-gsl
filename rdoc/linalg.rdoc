@@ -2,21 +2,21 @@
 # = Linear Algebra
 #
 # Contents:
-# 1. {LU Decomposition}[link:rdoc/linalg_rdoc.html#1]
-# 1. {QR Decomposition}[link:rdoc/linalg_rdoc.html#2]
-# 1. {QR Decomposition with Column Pivoting}[link:rdoc/linalg_rdoc.html#3]
-# 1. {Singular Value Decomposition}[link:rdoc/linalg_rdoc.html#4]
-# 1. {Cholesky Decomposition}[link:rdoc/linalg_rdoc.html#5]
-# 1. {Tridiagonal Decomposition of Real Symmetric Matrices}[link:rdoc/linalg_rdoc.html#6]
-# 1. {Tridiagonal Decomposition of Hermitian Matrices}[link:rdoc/linalg_rdoc.html#7]
-# 1. {Hessenberg Decomposition of Real Matrices}[link:rdoc/linalg_rdoc.html#8]
-# 1. {Hessenberg-Triangular Decomposition of Real Matrices}[link:rdoc/linalg_rdoc.html#9]
-# 1. {Bidiagonalization}[link:rdoc/linalg_rdoc.html#10]
-# 1. {Householder Transformations}[link:rdoc/linalg_rdoc.html#11]
-# 1. {Householder solver for linear systems}[link:rdoc/linalg_rdoc.html#12]
-# 1. {Tridiagonal Systems}[link:rdoc/linalg_rdoc.html#13]
-# 1. {Balancing}[link:rdoc/linalg_rdoc.html#14]
-# 1. {NArray}[link:rdoc/linalg_rdoc.html#15]
+# 1. {LU Decomposition}[link:linalg_rdoc.html#1]
+# 1. {QR Decomposition}[link:linalg_rdoc.html#2]
+# 1. {QR Decomposition with Column Pivoting}[link:linalg_rdoc.html#3]
+# 1. {Singular Value Decomposition}[link:linalg_rdoc.html#4]
+# 1. {Cholesky Decomposition}[link:linalg_rdoc.html#5]
+# 1. {Tridiagonal Decomposition of Real Symmetric Matrices}[link:linalg_rdoc.html#6]
+# 1. {Tridiagonal Decomposition of Hermitian Matrices}[link:linalg_rdoc.html#7]
+# 1. {Hessenberg Decomposition of Real Matrices}[link:linalg_rdoc.html#8]
+# 1. {Hessenberg-Triangular Decomposition of Real Matrices}[link:linalg_rdoc.html#9]
+# 1. {Bidiagonalization}[link:linalg_rdoc.html#10]
+# 1. {Householder Transformations}[link:linalg_rdoc.html#11]
+# 1. {Householder solver for linear systems}[link:linalg_rdoc.html#12]
+# 1. {Tridiagonal Systems}[link:linalg_rdoc.html#13]
+# 1. {Balancing}[link:linalg_rdoc.html#14]
+# 1. {NArray}[link:linalg_rdoc.html#15]
 #
 # == {}[link:index.html"name="1] LU Decomposition
 # ---
@@ -102,7 +102,7 @@
 #
 #   These methods return the determinant of the matrix.
 #
-# === {}[link:index.html"name="1.1] {Complex LU decomposition}[link:rdoc/linalg_complex_rdoc.html]
+# === {}[link:index.html"name="1.1] {Complex LU decomposition}[link:linalg_complex_rdoc.html]
 #
 # == {}[link:index.html"name="2] QR decomposition
 #
@@ -366,7 +366,7 @@
 #   These methods solve the system <tt>A x = b</tt> using the Cholesky decomposition
 #   of <tt>A</tt> into the matrix <tt>cholesky</tt> given by <tt>GSL::Linalg::Cholesky.decomp</tt>.
 #
-# === {}[link:index.html"name="5.1] {Complex Cholesky decomposition}[link:rdoc/cholesky_complex_rdoc.html]
+# === {}[link:index.html"name="5.1] {Complex Cholesky decomposition}[link:cholesky_complex_rdoc.html]
 #
 # == {}[link:index.html"name="6] Tridiagonal Decomposition of Real Symmetric Matrices
 # ---
@@ -672,10 +672,10 @@
 #     * HH.solve(m, b)
 #     * HH.svx(m, bx)
 #
-# {prev}[link:rdoc/blas_rdoc.html]
-# {next}[link:rdoc/eigen_rdoc.html]
+# {prev}[link:blas_rdoc.html]
+# {next}[link:eigen_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

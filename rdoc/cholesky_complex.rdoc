@@ -42,5 +42,5 @@
 #   should contain the right-hand side <tt>b</tt>,
 #   which is replaced by the solution on output.
 #
-# {back}[link:rdoc/linalg_rdoc.html]
+# {back}[link:linalg_rdoc.html]
 #

@@ -11,19 +11,19 @@
 # two-parameter regression and multiple-parameter fits.
 #
 # Contents:
-# 1. {Overview}[link:rdoc/fit_rdoc.html#1]
-# 1. {Linear regression}[link:rdoc/fit_rdoc.html#2]
-#    1. {Module functions for linear regression}[link:rdoc/fit_rdoc.html#2.1]
-# 1. {Linear fitting without a constant term}[link:rdoc/fit_rdoc.html#3]
-# 1. {Multi-parameter fitting}[link:rdoc/fit_rdoc.html#4]
-#    1. {GSL::MultiFit::Workspace class}[link:rdoc/fit_rdoc.html#4.1]
-#    1. {Module functions}[link:rdoc/fit_rdoc.html#4.2]
-#    1. {Higer level interface}[link:rdoc/fit_rdoc.html#4.3]
-#    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:rdoc/ndlinear_rdoc.html] (GSL extension)
-# 1. {Examples}[link:rdoc/fit_rdoc.html#5]
-#    1. {Linear regression}[link:rdoc/fit_rdoc.html#5.1]
-#    1. {Exponential fitting}[link:rdoc/fit_rdoc.html#5.2]
-#    1. {Multi-parameter fitting}[link:rdoc/fit_rdoc.html#5.3]
+# 1. {Overview}[link:fit_rdoc.html#1]
+# 1. {Linear regression}[link:fit_rdoc.html#2]
+#    1. {Module functions for linear regression}[link:fit_rdoc.html#2.1]
+# 1. {Linear fitting without a constant term}[link:fit_rdoc.html#3]
+# 1. {Multi-parameter fitting}[link:fit_rdoc.html#4]
+#    1. {GSL::MultiFit::Workspace class}[link:fit_rdoc.html#4.1]
+#    1. {Module functions}[link:fit_rdoc.html#4.2]
+#    1. {Higer level interface}[link:fit_rdoc.html#4.3]
+#    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:ndlinear_rdoc.html] (GSL extension)
+# 1. {Examples}[link:fit_rdoc.html#5]
+#    1. {Linear regression}[link:fit_rdoc.html#5.1]
+#    1. {Exponential fitting}[link:fit_rdoc.html#5.2]
+#    1. {Multi-parameter fitting}[link:fit_rdoc.html#5.3]
 #
 # == {}[link:index.html"name="1] Overview
 # Least-squares fits are found by minimizing \chi^2 (chi-squared), the weighted
@@ -145,9 +145,9 @@
 #   from the scatter of the observations about the best-fit. The sum of squares
 #   of the residuals from the best-fit is also calculated. The returned value is
 #   an array of 4 elements, <tt>[c, cov, chisq, status]</tt>, where <tt>c</tt> is a
-#   {GSL::Vector}[link:rdoc/vector_rdoc.html] object which contains the best-fit parameters,
+#   {GSL::Vector}[link:vector_rdoc.html] object which contains the best-fit parameters,
 #   and <tt>cov</tt> is the variance-covariance matrix as a
-#   {GSL::Matrix}[link:rdoc/matrix_rdoc.html] object.
+#   {GSL::Matrix}[link:matrix_rdoc.html] object.
 #
 #   The best-fit is found by singular value decomposition of the matrix <tt>X</tt>
 #   using the workspace provided in <tt>work</tt> (optional, if not given, it is allocated
@@ -275,10 +275,10 @@
 #
 #      c, cov, chisq, status = MultiFit.wlinear(X, w, y)
 #
-# {prev}[link:rdoc/multimin_rdoc.html]
-# {next}[link:rdoc/nonlinearfit_rdoc.html]
+# {prev}[link:multimin_rdoc.html]
+# {next}[link:nonlinearfit_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

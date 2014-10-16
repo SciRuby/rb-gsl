@@ -1,23 +1,23 @@
 #
 # = Numerical Integration
 # Contents:
-# 1. {Introduction}[link:rdoc/integration_rdoc.html#1]
-# 1. {QNG non-adaptive Gauss-Kronrod integration}[link:rdoc/integration_rdoc.html#2]
-# 1. {QAG adaptive integration}[link:rdoc/integration_rdoc.html#3]
-#    1. {GSL::Integration::Workspace class}[link:rdoc/integration_rdoc.html#3.1]
-#    1. {Methods}[link:rdoc/integration_rdoc.html#3.2]
-# 1. {QAGS adaptive integration with singularities}[link:rdoc/integration_rdoc.html#4]
-# 1. {QAGP adaptive integration with known singular points}[link:rdoc/integration_rdoc.html#5]
-# 1. {QAGI adaptive integration on infinite intervals}[link:rdoc/integration_rdoc.html#6]
-# 1. {QAWC adaptive integration for Cauchy principal values}[link:rdoc/integration_rdoc.html#7]
-# 1. {QAWS adaptive integration for singular functions}[link:rdoc/integration_rdoc.html#8]
-# 1. {QAWO adaptive integration for oscillatory functions}[link:rdoc/integration_rdoc.html#9]
-# 1. {QAWF adaptive integration for Fourier integrals}[link:rdoc/integration_rdoc.html#10]
+# 1. {Introduction}[link:integration_rdoc.html#1]
+# 1. {QNG non-adaptive Gauss-Kronrod integration}[link:integration_rdoc.html#2]
+# 1. {QAG adaptive integration}[link:integration_rdoc.html#3]
+#    1. {GSL::Integration::Workspace class}[link:integration_rdoc.html#3.1]
+#    1. {Methods}[link:integration_rdoc.html#3.2]
+# 1. {QAGS adaptive integration with singularities}[link:integration_rdoc.html#4]
+# 1. {QAGP adaptive integration with known singular points}[link:integration_rdoc.html#5]
+# 1. {QAGI adaptive integration on infinite intervals}[link:integration_rdoc.html#6]
+# 1. {QAWC adaptive integration for Cauchy principal values}[link:integration_rdoc.html#7]
+# 1. {QAWS adaptive integration for singular functions}[link:integration_rdoc.html#8]
+# 1. {QAWO adaptive integration for oscillatory functions}[link:integration_rdoc.html#9]
+# 1. {QAWF adaptive integration for Fourier integrals}[link:integration_rdoc.html#10]
 #
 # == {}[link:index.html"name="1] Introduction
 # This section describes how to compute numerical integration of a function
 # in one dimension. In Ruby/GSL, all the GSL routines for numerical integration
-# is provided as methods of {GSL::Function}[link:rdoc/function_rdoc.html] objects.
+# is provided as methods of {GSL::Function}[link:function_rdoc.html] objects.
 # For example, a <tt>GSL::Function</tt> object which represents the sine function
 # <tt>sin(x)</tt> can be expressed as
 #   f = GSL::Function.alloc { |x| sin(x) }
@@ -389,10 +389,10 @@
 #
 #   Applies the Gauss-Legendre integration rule contained in table <tt>t</tt> and returns the result.
 #
-# {prev}[link:rdoc/wavelet_rdoc.html]
-# {next}[link:rdoc/rng_rdoc.html]
+# {prev}[link:wavelet_rdoc.html]
+# {next}[link:rng_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

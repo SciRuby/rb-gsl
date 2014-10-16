@@ -20,12 +20,12 @@
 # allowing full accuracy to be retained for small results.
 #
 # Contents:
-# 1. {Introduction}[link:rdoc/randist_rdoc.html#1]
-# 1. {The Gaussian Distribution}[link:rdoc/randist_rdoc.html#2]
-# 1. {The Gaussian Tail Distribution}[link:rdoc/randist_rdoc.html#3]
+# 1. {Introduction}[link:randist_rdoc.html#1]
+# 1. {The Gaussian Distribution}[link:randist_rdoc.html#2]
+# 1. {The Gaussian Tail Distribution}[link:randist_rdoc.html#3]
 #  ...
 # and more, see {the GSL reference}[https://gnu.org/software/gsl/manual/]
-# 1. {Shuffling and Sampling}[link:rdoc/randist_rdoc.html#7]
+# 1. {Shuffling and Sampling}[link:randist_rdoc.html#7]
 #
 # == {}[link:index.html"name="1] Introduction
 # Continuous random number distributions are defined by a probability density
@@ -205,12 +205,12 @@
 # * GSL::Rng#shuffle(v, n)
 #
 #   This randomly shuffles the order of <tt>n</tt> objects,
-#   stored in the {GSL::Vector}[link:rdoc/vector_rdoc.html] object <tt>v</tt>.
+#   stored in the {GSL::Vector}[link:vector_rdoc.html] object <tt>v</tt>.
 # ---
 # * GSL::Rng#choose(v, k)
 #
-#   This returns a {GSL::Vector}[link:rdoc/vector_rdoc.html] object with <tt>k</tt> objects
-#   taken randomly from the {GSL::Vector}[link:rdoc/vector_rdoc.html] object <tt>v</tt>.
+#   This returns a {GSL::Vector}[link:vector_rdoc.html] object with <tt>k</tt> objects
+#   taken randomly from the {GSL::Vector}[link:vector_rdoc.html] object <tt>v</tt>.
 #
 #   The objects are sampled without replacement, thus each object can only
 #   appear once in the returned vector. It is required that <tt>k</tt> be less
@@ -224,10 +224,10 @@
 #   can appear more than once in the output sequence. There is no requirement
 #   that <tt>k</tt> be less than the length of <tt>v</tt>.
 #
-# {prev}[link:rdoc/qrng_rdoc.html]
-# {next}[link:rdoc/stats_rdoc.html]
+# {prev}[link:qrng_rdoc.html]
+# {next}[link:stats_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

@@ -1,17 +1,17 @@
 #
 # = Histograms
-# 1. {Histogram allocation}[link:rdoc/hist_rdoc.html#1]
-# 1. {Copying histograms}[link:rdoc/hist_rdoc.html#2]
-# 1. {Updating and accessing histogram elements}[link:rdoc/hist_rdoc.html#3]
-# 1. {Searching histogram ranges}[link:rdoc/hist_rdoc.html#4]
-# 1. {Histogram Statistics}[link:rdoc/hist_rdoc.html#5]
-# 1. {Histogram Operations}[link:rdoc/hist_rdoc.html#6]
-# 1. {Reading and writing histograms}[link:rdoc/hist_rdoc.html#7]
-# 1. {Extensions}[link:rdoc/hist_rdoc.html#8]
-#    1. {Histogram Operations}[link:rdoc/hist_rdoc.html#8.1]
-#    1. {Graph interface}[link:rdoc/hist_rdoc.html#8.2]
-#    1. {Histogram Fittings}[link:rdoc/hist_rdoc.html#8.3]
-# 1. {The histogram probability distribution}[link:rdoc/hist_rdoc.html#9]
+# 1. {Histogram allocation}[link:hist_rdoc.html#1]
+# 1. {Copying histograms}[link:hist_rdoc.html#2]
+# 1. {Updating and accessing histogram elements}[link:hist_rdoc.html#3]
+# 1. {Searching histogram ranges}[link:hist_rdoc.html#4]
+# 1. {Histogram Statistics}[link:hist_rdoc.html#5]
+# 1. {Histogram Operations}[link:hist_rdoc.html#6]
+# 1. {Reading and writing histograms}[link:hist_rdoc.html#7]
+# 1. {Extensions}[link:hist_rdoc.html#8]
+#    1. {Histogram Operations}[link:hist_rdoc.html#8.1]
+#    1. {Graph interface}[link:hist_rdoc.html#8.2]
+#    1. {Histogram Fittings}[link:hist_rdoc.html#8.3]
+# 1. {The histogram probability distribution}[link:hist_rdoc.html#9]
 #
 # == {}[link:index.html"name="1] Histogram allocation
 # ---
@@ -71,7 +71,7 @@
 # ---
 # * GSL::Histogram#set_ranges(v)
 #
-#   This sets the ranges of the existing histogram using a {GSL::Vector}[link:rdoc/vector_rdoc.html] object.
+#   This sets the ranges of the existing histogram using a {GSL::Vector}[link:vector_rdoc.html] object.
 # ---
 # * GSL::Histogram#set_ranges_uniform(xmin, xmax)
 # * GSL::Histogram#set_ranges_uniform([xmin, xmax])
@@ -400,10 +400,10 @@
 #   This returns a <tt>Vector::View</tt> object as a reference to the pointer
 #   <tt>double *sum</tt> in the <tt>gsl_histogram_pdf</tt> struct.
 #
-# {prev}[link:rdoc/stats_rdoc.html]
-# {next}[link:rdoc/hist2d_rdoc.html]
+# {prev}[link:stats_rdoc.html]
+# {next}[link:hist2d_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

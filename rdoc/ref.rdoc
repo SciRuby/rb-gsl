@@ -1,5 +1,5 @@
 #
-# = {Ruby/GSL Reference}[link:rdoc/ref_rdoc.html]
+# = {Ruby/GSL Reference}[link:ref_rdoc.html]
 # (See also {Gnu Scientific Library -- Reference Manual}[https://gnu.org/software/gsl/manual/html_node/])
 #
 # == {}[link:index.html"name="1] Front Matter
@@ -31,63 +31,63 @@
 #
 # == {}[link:index.html"name="2] Ruby/GSL Reference
 #
-# 1. {Introduction}[link:rdoc/intro_rdoc.html]
-# 1. {Using Ruby/GSL}[link:rdoc/use_rdoc.html]
-# 1. {Error Handling}[link:rdoc/ehandling_rdoc.html]
-# 1. {Mathematical Functions}[link:rdoc/math_rdoc.html]
-# 1. {Complex Numbers}[link:rdoc/complex_rdoc.html]
-# 1. {Polynomials}[link:rdoc/poly_rdoc.html]
-# 1. {Special Functions}[link:rdoc/sf_rdoc.html]
-# 1. {Vectors}[link:rdoc/vector_rdoc.html] and {Matrices}[link:rdoc/matrix_rdoc.html]
-# 1. {Permutations}[link:rdoc/perm_rdoc.html]
-# 1. {Combinations}[link:rdoc/combi_rdoc.html]
+# 1. {Introduction}[link:intro_rdoc.html]
+# 1. {Using Ruby/GSL}[link:use_rdoc.html]
+# 1. {Error Handling}[link:ehandling_rdoc.html]
+# 1. {Mathematical Functions}[link:math_rdoc.html]
+# 1. {Complex Numbers}[link:complex_rdoc.html]
+# 1. {Polynomials}[link:poly_rdoc.html]
+# 1. {Special Functions}[link:sf_rdoc.html]
+# 1. {Vectors}[link:vector_rdoc.html] and {Matrices}[link:matrix_rdoc.html]
+# 1. {Permutations}[link:perm_rdoc.html]
+# 1. {Combinations}[link:combi_rdoc.html]
 --
-# 1. {Multiset}[link:rdoc/sort_rdoc.html] (GSL-1.14)
+# 1. {Multiset}[link:sort_rdoc.html] (GSL-1.14)
 ++
-# 1. {Sorting}[link:rdoc/sort_rdoc.html]
-# 1. {BLAS Support}[link:rdoc/blas_rdoc.html]
-# 1. {Linear Algebra}[link:rdoc/linalg_rdoc.html]
-# 1. {Eigen Systems}[link:rdoc/eigen_rdoc.html]
-# 1. {Fast Fourier Transform}[link:rdoc/fft_rdoc.html]
-# 1. {Numerical Integration}[link:rdoc/integration_rdoc.html]
-# 1. {Random Number Generation}[link:rdoc/rng_rdoc.html]
-# 1. {Quasi-Random Sequences}[link:rdoc/qrng_rdoc.html]
-# 1. {Random Number Distributions}[link:rdoc/randist_rdoc.html]
-# 1. {Statistics}[link:rdoc/stats_rdoc.html]
-# 1. {1d-Histograms}[link:rdoc/hist_rdoc.html], {2d-Histograms}[link:rdoc/hist2d_rdoc.html] and {3d-Histograms}[link:rdoc/hist3d_rdoc.html]
-# 1. {N-tuples}[link:rdoc/ntuple_rdoc.html]
-# 1. {Monte-Carlo Integration}[link:rdoc/monte_rdoc.html]
-# 1. {Simulated Annealing}[link:rdoc/siman_rdoc.html]
-# 1. {Ordinary Differential Equations}[link:rdoc/odeiv_rdoc.html]
-# 1. {Interpolation}[link:rdoc/interp_rdoc.html]
-# 1. {Numerical Differentiation}[link:rdoc/diff_rdoc.html]
-# 1. {Chebyshev Approximations}[link:rdoc/cheb_rdoc.html]
-# 1. {Series Acceleration}[link:rdoc/sum_rdoc.html]
-# 1. {Wavelet Transforms}[link:rdoc/wavelet_rdoc.html] (GSL-1.6 feature)
-# 1. {Discrete Hankel Transforms}[link:rdoc/dht_rdoc.html]
-# 1. {One dimensional Root-Finding}[link:rdoc/roots_rdoc.html]
-# 1. {One dimensional Minimization}[link:rdoc/min_rdoc.html]
-# 1. {Multidimensional Root-Finding}[link:rdoc/multiroot_rdoc.html]
-# 1. {Multidimensional Minimization}[link:rdoc/multimin_rdoc.html]
-# 1. {Least-Squares Fitting}[link:rdoc/fit_rdoc.html]
-# 1. {Nonlinear Least-Squares Fitting}[link:rdoc/nonlinearfit_rdoc.html]
-# 1. {Basis Splines}[link:rdoc/bspline_rdoc.html]
-# 1. {Physical Constants}[link:rdoc/const_rdoc.html]
-# 1. {Graphics}[link:rdoc/graph_rdoc.html]
+# 1. {Sorting}[link:sort_rdoc.html]
+# 1. {BLAS Support}[link:blas_rdoc.html]
+# 1. {Linear Algebra}[link:linalg_rdoc.html]
+# 1. {Eigen Systems}[link:eigen_rdoc.html]
+# 1. {Fast Fourier Transform}[link:fft_rdoc.html]
+# 1. {Numerical Integration}[link:integration_rdoc.html]
+# 1. {Random Number Generation}[link:rng_rdoc.html]
+# 1. {Quasi-Random Sequences}[link:qrng_rdoc.html]
+# 1. {Random Number Distributions}[link:randist_rdoc.html]
+# 1. {Statistics}[link:stats_rdoc.html]
+# 1. {1d-Histograms}[link:hist_rdoc.html], {2d-Histograms}[link:hist2d_rdoc.html] and {3d-Histograms}[link:hist3d_rdoc.html]
+# 1. {N-tuples}[link:ntuple_rdoc.html]
+# 1. {Monte-Carlo Integration}[link:monte_rdoc.html]
+# 1. {Simulated Annealing}[link:siman_rdoc.html]
+# 1. {Ordinary Differential Equations}[link:odeiv_rdoc.html]
+# 1. {Interpolation}[link:interp_rdoc.html]
+# 1. {Numerical Differentiation}[link:diff_rdoc.html]
+# 1. {Chebyshev Approximations}[link:cheb_rdoc.html]
+# 1. {Series Acceleration}[link:sum_rdoc.html]
+# 1. {Wavelet Transforms}[link:wavelet_rdoc.html] (GSL-1.6 feature)
+# 1. {Discrete Hankel Transforms}[link:dht_rdoc.html]
+# 1. {One dimensional Root-Finding}[link:roots_rdoc.html]
+# 1. {One dimensional Minimization}[link:min_rdoc.html]
+# 1. {Multidimensional Root-Finding}[link:multiroot_rdoc.html]
+# 1. {Multidimensional Minimization}[link:multimin_rdoc.html]
+# 1. {Least-Squares Fitting}[link:fit_rdoc.html]
+# 1. {Nonlinear Least-Squares Fitting}[link:nonlinearfit_rdoc.html]
+# 1. {Basis Splines}[link:bspline_rdoc.html]
+# 1. {Physical Constants}[link:const_rdoc.html]
+# 1. {Graphics}[link:graph_rdoc.html]
 # 1. Supported GSL add-on packages
-#    1. {rngextra}[link:rdoc/rng_rdoc.html#3]
-#    1. {Tensor manipulations}[link:rdoc/tensor_rdoc.html]
+#    1. {rngextra}[link:rng_rdoc.html#3]
+#    1. {Tensor manipulations}[link:tensor_rdoc.html]
 #    1. OOL: Open Optimization library (see examples/ool/*.rb)
 #    1. CQP and Bundle (see examples/multimin/cqp.rb, bundle.rb)
 #    1. quartic
 #    1. jacobi (see examples/jacobi/*.rb)
-#    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:rdoc/ndlinear_rdoc.html]
-#    1. {ALF: associated Legendre polynomials}[link:rdoc/alf_rdoc.html]
-# 1. {NArray compatibilities}[link:rdoc/narray_rdoc.html]
-# 1. {Changes since Ruby/GSL 1.10.3}[link:rdoc/changes_rdoc.html]
+#    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:ndlinear_rdoc.html]
+#    1. {ALF: associated Legendre polynomials}[link:alf_rdoc.html]
+# 1. {NArray compatibilities}[link:narray_rdoc.html]
+# 1. {Changes since Ruby/GSL 1.10.3}[link:changes_rdoc.html]
 # 1. {GNU Free Documentation Licence}[https://gnu.org/software/gsl/manual/html_node/GNU-Free-Documentation-License.html]
 #
-# {next}[link:rdoc/intro_rdoc.html]
+# {next}[link:intro_rdoc.html]
 #
 # {top}[link:index.html]
 #

@@ -1,15 +1,15 @@
 #
 # = Statistics
-# 1. {Mean, Standard Deviation and Variance}[link:rdoc/stats_rdoc.html#1]
-# 1. {Absolute deviation}[link:rdoc/stats_rdoc.html#2]
-# 1. {Higher moments (skewness and kurtosis)}[link:rdoc/stats_rdoc.html#3]
-# 1. {Autocorrelation}[link:rdoc/stats_rdoc.html#4]
-# 1. {Covariance}[link:rdoc/stats_rdoc.html#5]
-# 1. {Correlation}[link:rdoc/stats_rdoc.html#6]
-# 1. {Weighted samples}[link:rdoc/stats_rdoc.html#7]
-# 1. {Maximum and minimum values}[link:rdoc/stats_rdoc.html#8]
-# 1. {Median and percentiles}[link:rdoc/stats_rdoc.html#9]
-# 1. {Examples}[link:rdoc/stats_rdoc.html#10]
+# 1. {Mean, Standard Deviation and Variance}[link:stats_rdoc.html#1]
+# 1. {Absolute deviation}[link:stats_rdoc.html#2]
+# 1. {Higher moments (skewness and kurtosis)}[link:stats_rdoc.html#3]
+# 1. {Autocorrelation}[link:stats_rdoc.html#4]
+# 1. {Covariance}[link:stats_rdoc.html#5]
+# 1. {Correlation}[link:stats_rdoc.html#6]
+# 1. {Weighted samples}[link:stats_rdoc.html#7]
+# 1. {Maximum and minimum values}[link:stats_rdoc.html#8]
+# 1. {Median and percentiles}[link:stats_rdoc.html#9]
+# 1. {Examples}[link:stats_rdoc.html#10]
 #
 # == {}[link:index.html"name="1] Mean, Standard Deviation and Variance
 #
@@ -211,9 +211,9 @@
 #      printf("The largest value is %g\n", largest);
 #      printf("The smallest value is %g\n", smallest);
 #
-# {prev}[link:rdoc/randist_rdoc.html]
-# {next}[link:rdoc/hist_rdoc.html]
+# {prev}[link:randist_rdoc.html]
+# {next}[link:hist_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #

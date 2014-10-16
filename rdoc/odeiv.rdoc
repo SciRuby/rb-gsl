@@ -9,14 +9,14 @@
 #
 #
 # Contents:
-# 1. {Classes for ODE solver}[link:rdoc/odeiv_rdoc.html#1]
-# 1. {Class Descriptions}[link:rdoc/odeiv_rdoc.html#2]
-#    1. {GSL::Odeiv::System : Defining the ODE System}[link:rdoc/odeiv_rdoc.html#2.1]
-#    1. {GSL::Odeiv::Step : Stepping Algorithms}[link:rdoc/odeiv_rdoc.html#2.2]
-#    1. {GSL::Odeiv::Control : Adaptive Step-size Control}[link:rdoc/odeiv_rdoc.html#2.3]
-#    1. {GSL::Odeiv::Evolve : Evolution}[link:rdoc/odeiv_rdoc.html#2.4]
-#    1. {GSL::Odeiv::Solver : Higher level interface}[link:rdoc/odeiv_rdoc.html#2.5]
-# 1. {Examples}[link:rdoc/odeiv_rdoc.html#3]
+# 1. {Classes for ODE solver}[link:odeiv_rdoc.html#1]
+# 1. {Class Descriptions}[link:odeiv_rdoc.html#2]
+#    1. {GSL::Odeiv::System : Defining the ODE System}[link:odeiv_rdoc.html#2.1]
+#    1. {GSL::Odeiv::Step : Stepping Algorithms}[link:odeiv_rdoc.html#2.2]
+#    1. {GSL::Odeiv::Control : Adaptive Step-size Control}[link:odeiv_rdoc.html#2.3]
+#    1. {GSL::Odeiv::Evolve : Evolution}[link:odeiv_rdoc.html#2.4]
+#    1. {GSL::Odeiv::Solver : Higher level interface}[link:odeiv_rdoc.html#2.5]
+# 1. {Examples}[link:odeiv_rdoc.html#3]
 #
 # == {}[link:index.html"name="1] Classes for ODE solver
 #
@@ -176,7 +176,7 @@
 #   <tt>t</tt> and state <tt>y</tt> to time <tt>t+h</tt>. The new state of the system
 #   is stored in <tt>y</tt> on output, with an estimate of the absolute error in
 #   each component stored in <tt>yerr</tt>. If the argument <tt>dydt_in</tt> is not
-#   <tt>nil</tt> it should be a {GSL::Vector}[link:rdoc/vector_rdoc.html] object
+#   <tt>nil</tt> it should be a {GSL::Vector}[link:vector_rdoc.html] object
 #   containing the derivatives for the system at time <tt>t</tt> on input.
 #   This is optional as the derivatives will be computed internally if they
 #   are not provided, but allows the reuse of existing derivative information.
@@ -369,10 +369,10 @@
 #       end
 #
 #
-# {prev}[link:rdoc/siman_rdoc.html]
-# {next}[link:rdoc/interp_rdoc.html]
+# {prev}[link:siman_rdoc.html]
+# {next}[link:interp_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

@@ -1,24 +1,24 @@
 #
 # = Fast Fourier Transforms
 # Contents:
-# 1. {Mathematical Definitions}[link:rdoc/fft_rdoc.html#1]
-# 1. {Complex data FFTs}[link:rdoc/fft_rdoc.html#2]
-#    1. {Overview of complex data FFTs}[link:rdoc/fft_rdoc.html#2.1]
-#    1. {Radix-2 FFT routines for complex data}[link:rdoc/fft_rdoc.html#2.2]
-#       1. {Example of the complex Radix-2 FFT}[link:rdoc/fft_rdoc.html#2.2.1]
-#    1. {Mixed-radix FFT routines for complex data}[link:rdoc/fft_rdoc.html#2.3]
-#       1. {GSL::FFT::ComplexWavetable class}[link:rdoc/fft_rdoc.html#2.3.1]
-#       1. {GSL::FFT::ComplexWorkspace class}[link:rdoc/fft_rdoc.html#2.3.2]
-#       1. {Methods to compute the transform}[link:rdoc/fft_rdoc.html#2.3.3]
-#       1. {Example of the mixed-radix FFT}[link:rdoc/fft_rdoc.html#2.3.4]
-# 1. {Real data FFTs}[link:rdoc/fft_rdoc.html#3]
-#    1. {Overview of real data FFTs}[link:rdoc/fft_rdoc.html#3.1]
-#    1. {Radix-2 FFT routines for real data}[link:rdoc/fft_rdoc.html#3.2]
-#    1. {Mixed-radix FFT routines for real data}[link:rdoc/fft_rdoc.html#3.3]
-#       1. {Data storage scheme}[link:rdoc/fft_rdoc.html#3.3.1]
-#       1. {Wavetable and Workspace classes}[link:rdoc/fft_rdoc.html#3.3.2]
-#       1. {Methods for real FFTs}[link:rdoc/fft_rdoc.html#3.3.3]
-#       1. {Examples}[link:rdoc/fft_rdoc.html#3.3.4]
+# 1. {Mathematical Definitions}[link:fft_rdoc.html#1]
+# 1. {Complex data FFTs}[link:fft_rdoc.html#2]
+#    1. {Overview of complex data FFTs}[link:fft_rdoc.html#2.1]
+#    1. {Radix-2 FFT routines for complex data}[link:fft_rdoc.html#2.2]
+#       1. {Example of the complex Radix-2 FFT}[link:fft_rdoc.html#2.2.1]
+#    1. {Mixed-radix FFT routines for complex data}[link:fft_rdoc.html#2.3]
+#       1. {GSL::FFT::ComplexWavetable class}[link:fft_rdoc.html#2.3.1]
+#       1. {GSL::FFT::ComplexWorkspace class}[link:fft_rdoc.html#2.3.2]
+#       1. {Methods to compute the transform}[link:fft_rdoc.html#2.3.3]
+#       1. {Example of the mixed-radix FFT}[link:fft_rdoc.html#2.3.4]
+# 1. {Real data FFTs}[link:fft_rdoc.html#3]
+#    1. {Overview of real data FFTs}[link:fft_rdoc.html#3.1]
+#    1. {Radix-2 FFT routines for real data}[link:fft_rdoc.html#3.2]
+#    1. {Mixed-radix FFT routines for real data}[link:fft_rdoc.html#3.3]
+#       1. {Data storage scheme}[link:fft_rdoc.html#3.3.1]
+#       1. {Wavetable and Workspace classes}[link:fft_rdoc.html#3.3.2]
+#       1. {Methods for real FFTs}[link:fft_rdoc.html#3.3.3]
+#       1. {Examples}[link:fft_rdoc.html#3.3.4]
 #
 # == {}[link:index.html"name="1] Mathematical Definitions
 # Fast Fourier Transforms are efficient algorithms for calculating the discrete
@@ -59,7 +59,7 @@
 # == {}[link:index.html"name="2] Complex data FFTs
 # === {}[link:index.html"name="2.1] Overview of complex data FFTs
 # The complex data FFT routines are provided as instance methods of
-# {GSL::Vector::Complex}[link:rdoc/vector_complex_rdoc.html].
+# {GSL::Vector::Complex}[link:vector_complex_rdoc.html].
 #
 # Here is a table which shows the layout of the array data, and the correspondence
 # between the time-domain complex data z, and the frequency-domain complex data x.
@@ -82,7 +82,7 @@
 # frequencies +1/(2 Delta), -1/(2 Delta) which are equivalent. If N is odd then
 # general structure of the table above still applies, but N/2 does not appear.
 #
-# {GSL::Vector::Complex}[link:rdoc/vector_complex_rdoc.html] provides four methods for
+# {GSL::Vector::Complex}[link:vector_complex_rdoc.html] provides four methods for
 # shifting the frequency domain data between <b>FFT order</b>, shown in the table
 # above, and <b>natural order</b>, which has the most negative freqeuncy component
 # first, the zero frequency component in the middle, and the most positive
@@ -263,7 +263,7 @@
 # === {}[link:index.html"name="3.1] Overview of real data FFTs
 #
 # The functions for real data FFTs are provided as instance methods of
-# {GSL::Vector}[link:rdoc/vector_rdoc.html].  While they are similar to those for
+# {GSL::Vector}[link:vector_rdoc.html].  While they are similar to those for
 # complex data, there is an important difference in the data storage layout
 # between forward and inverse transforms.  The Fourier transform of a real
 # sequence is not real. It is a complex sequence with a special symmetry.  A
@@ -274,7 +274,7 @@
 # Forward transforms of real sequences produce half complex sequences of the same
 # length.  Backward and inverse transforms of half complex sequences produce real
 # sequences of the same length.  In both cases, the input and output sequences
-# are instances of {GSL::Vector}[link:rdoc/vector_rdoc.html].
+# are instances of {GSL::Vector}[link:vector_rdoc.html].
 #
 # The precise storage arrangements of half complex seqeunces depend on the
 # algorithm, and are different for radix-2 and mixed-radix routines. The radix-2
@@ -288,7 +288,7 @@
 #
 # === {}[link:index.html"name="3.2] Radix-2 FFT routines for real data
 # The routines for readix-2 real FFTs are provided as instance methods of
-# {GSL::Vector}[link:rdoc/vector_rdoc.html].
+# {GSL::Vector}[link:vector_rdoc.html].
 #
 # <b>The FFT methods described below return FFTed data, and the input vector is
 # not changed. Use methods with '!' as <tt>radix2_tranform!</tt> for in-place
@@ -526,10 +526,10 @@
 #
 #     graph(nil, data, data2, "-T X -C -g 3 -L 'Real-halfcomplex' -x 0 #{data.size}")
 #
-# {prev}[link:rdoc/eigen_rdoc.html]
-# {next}[link:rdoc/wavelet_rdoc.html]
+# {prev}[link:eigen_rdoc.html]
+# {next}[link:wavelet_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

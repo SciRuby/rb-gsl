@@ -1,19 +1,19 @@
 #
 # = Polynomials
 # Contents:
-# 1. {Polynomial Evaluation}[link:rdoc/poly_rdoc.html#1]
-# 1. {Solving polynomial equations}[link:rdoc/poly_rdoc.html#2]
-#    1. {Quadratic Equations}[link:rdoc/poly_rdoc.html#2.1]
-#    1. {Cubic Equations}[link:rdoc/poly_rdoc.html#2.2]
-#    1. {General Polynomial Equations}[link:rdoc/poly_rdoc.html#2.3]
-# 1. {GSL::Poly Class}[link:rdoc/poly_rdoc.html#3]
-#    1. {Constructors}[link:rdoc/poly_rdoc.html#3.1]
-#    1. {Methods}[link:rdoc/poly_rdoc.html#3.2]
-# 1. {Polynomial Fitting}[link:rdoc/poly_rdoc.html#4]
-# 1. {Divided-difference representations}[link:rdoc/poly_rdoc.html#5]
-# 1. {Extensions}[link:rdoc/poly_rdoc.html#6]
-#    1. {Special Polynomials}[link:rdoc/poly_rdoc.html#6.1]
-#    1. {Polynomial Operations}[link:rdoc/poly_rdoc.html#6.2]
+# 1. {Polynomial Evaluation}[link:poly_rdoc.html#1]
+# 1. {Solving polynomial equations}[link:poly_rdoc.html#2]
+#    1. {Quadratic Equations}[link:poly_rdoc.html#2.1]
+#    1. {Cubic Equations}[link:poly_rdoc.html#2.2]
+#    1. {General Polynomial Equations}[link:poly_rdoc.html#2.3]
+# 1. {GSL::Poly Class}[link:poly_rdoc.html#3]
+#    1. {Constructors}[link:poly_rdoc.html#3.1]
+#    1. {Methods}[link:poly_rdoc.html#3.2]
+# 1. {Polynomial Fitting}[link:poly_rdoc.html#4]
+# 1. {Divided-difference representations}[link:poly_rdoc.html#5]
+# 1. {Extensions}[link:poly_rdoc.html#6]
+#    1. {Special Polynomials}[link:poly_rdoc.html#6.1]
+#    1. {Polynomial Operations}[link:poly_rdoc.html#6.2]
 #
 # == {}[link:index.html"name="1] Polynomial Evaluation
 # ---
@@ -210,7 +210,7 @@
 #   Finds the coefficient of a polynomial of order <tt>order</tt>
 #   that fits the vector data (<tt>x, y</tt>) in a least-square sense.
 #   This provides a higher-level interface to the method
-#   {GSL::Multifit#linear}[link:rdoc/fit_rdoc.html] in a case of polynomial fitting.
+#   {GSL::Multifit#linear}[link:fit_rdoc.html] in a case of polynomial fitting.
 #
 #   Example:
 #     #!/usr/bin/env ruby
@@ -325,10 +325,10 @@
 # * GSL::Poly#compan
 #
 #
-# {prev}[link:rdoc/complex_rdoc.html]
-# {next}[link:rdoc/sf_rdoc.html]
+# {prev}[link:complex_rdoc.html]
+# {next}[link:sf_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

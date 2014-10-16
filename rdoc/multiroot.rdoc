@@ -10,15 +10,15 @@
 # a solver keeps track of its own state, allowing the solvers to be used in
 # multi-threaded programs.
 #
-# 1. {Overview}[link:rdoc/multiroot_rdoc.html#1]
-# 1. {Initializing the Solver}[link:rdoc/multiroot_rdoc.html#2]
-# 1. {Providing the function to solve}[link:rdoc/multiroot_rdoc.html#3]
-# 1. {Iteration}[link:rdoc/multiroot_rdoc.html#4]
-# 1. {Search Stopping Parameters}[link:rdoc/multiroot_rdoc.html#5]
-# 1. {Higher Level Interface}[link:rdoc/multiroot_rdoc.html#6]
-# 1. {Examples}[link:rdoc/multiroot_rdoc.html#7]
-#    1. {FSolver}[link:rdoc/multiroot_rdoc.html#7.1]
-#    1. {FdfSolver}[link:rdoc/multiroot_rdoc.html#7.2]
+# 1. {Overview}[link:multiroot_rdoc.html#1]
+# 1. {Initializing the Solver}[link:multiroot_rdoc.html#2]
+# 1. {Providing the function to solve}[link:multiroot_rdoc.html#3]
+# 1. {Iteration}[link:multiroot_rdoc.html#4]
+# 1. {Search Stopping Parameters}[link:multiroot_rdoc.html#5]
+# 1. {Higher Level Interface}[link:multiroot_rdoc.html#6]
+# 1. {Examples}[link:multiroot_rdoc.html#7]
+#    1. {FSolver}[link:multiroot_rdoc.html#7.1]
+#    1. {FdfSolver}[link:multiroot_rdoc.html#7.2]
 #
 #
 # == {}[link:index.html"name="1] Overview
@@ -284,10 +284,10 @@
 #        status = fdfsolver.test_residual(1e-7)
 #      end while status == GSL::CONTINUE and iter < 1000
 #
-# {prev}[link:rdoc/min_rdoc.html]
-# {next}[link:rdoc/multimin_rdoc.html]
+# {prev}[link:min_rdoc.html]
+# {next}[link:multimin_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

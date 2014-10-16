@@ -5,8 +5,8 @@
 # Their values can be extracted in any combination and booked in a histogram using
 # a selection function.
 #
-# The values to be stored are held in a {GSL::Vector}[link:rdoc/vector_rdoc.html] or
-# a {GSL::Matrix}[link:rdoc/matrix_rdoc.html] object,
+# The values to be stored are held in a {GSL::Vector}[link:vector_rdoc.html] or
+# a {GSL::Matrix}[link:matrix_rdoc.html] object,
 # and an ntuple is created associating this object with a file.
 # The values are then written to the file (normally inside a loop) using
 # the ntuple functions described below.
@@ -79,10 +79,10 @@
 #   to the histogram, so subsequent calls can be used to accumulate further data in the
 #   same histogram.
 #
-# {prev}[link:rdoc/hist2d_rdoc.html]
-# {next}[link:rdoc/monte_rdoc.html]
+# {prev}[link:hist2d_rdoc.html]
+# {next}[link:monte_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

@@ -242,10 +242,10 @@
 #
 #   Returns the size
 #
-# {prev}[link:rdoc/rng_rdoc.html#3]
-# {next}[link:rdoc/narray_rdoc.html]
+# {prev}[link:rng_rdoc.html#3]
+# {next}[link:narray_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

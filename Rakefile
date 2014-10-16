@@ -28,8 +28,8 @@ begin
     :rdoc => {
       :title      => 'Ruby/GSL{version: (v%s)}',
       :rdoc_files => FileList['rdoc/*'].to_a,
-      :exclude    => %w[ext lib],
-      :main       => 'rdoc/index.rdoc'
+      :main       => 'index.rdoc',
+      :root       => 'rdoc'
     },
     :test => {
       :libs => %w[lib test]

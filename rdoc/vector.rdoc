@@ -2,28 +2,28 @@
 # = GSL::Vector class
 #
 # Contents:
-# 1. {Class methods}[link:rdoc/vector_rdoc.html#1]
-# 1. {Notes}[link:rdoc/vector_rdoc.html#2]
-# 1. {Methods}[link:rdoc/vector_rdoc.html#3]
-#    1. {Accessing vector elements}[link:rdoc/vector_rdoc.html#3.1]
-#    1. {Initializing vector elements}[link:rdoc/vector_rdoc.html#3.2]
-#    1. {Iterators}[link:rdoc/vector_rdoc.html#3.3]
-#    1. {IO}[link:rdoc/vector_rdoc.html#3.4]
-#    1. {Copying vectors}[link:rdoc/vector_rdoc.html#3.5]
-#    1. {Vector views}[link:rdoc/vector_rdoc.html#3.6]
-#    1. {Vector operations}[link:rdoc/vector_rdoc.html#3.7]
-#    1. {Vector operations with size changes}[link:rdoc/vector_rdoc.html#3.8]
-#    1. {Finding maximum and minimum elements of vectors}[link:rdoc/vector_rdoc.html#3.9]
-#    1. {Vector properties}[link:rdoc/vector_rdoc.html#3.10]
-#    1. {Element-wise vector comparison}[link:rdoc/vector_rdoc.html#3.11]
-#    1. {Histogram}[link:rdoc/vector_rdoc.html#3.12]
-#    1. {Sorting}[link:rdoc/vector_rdoc.html#3.13]
-#    1. {BLAS methods}[link:rdoc/vector_rdoc.html#3.14]
-#    1. {Data type conversions}[link:rdoc/vector_rdoc.html#3.15]
-# 1. {NArray}[link:rdoc/vector_rdoc.html#3.16]
-# 1. {GNU graph interface}[link:rdoc/vector_rdoc.html#3.17]
+# 1. {Class methods}[link:vector_rdoc.html#1]
+# 1. {Notes}[link:vector_rdoc.html#2]
+# 1. {Methods}[link:vector_rdoc.html#3]
+#    1. {Accessing vector elements}[link:vector_rdoc.html#3.1]
+#    1. {Initializing vector elements}[link:vector_rdoc.html#3.2]
+#    1. {Iterators}[link:vector_rdoc.html#3.3]
+#    1. {IO}[link:vector_rdoc.html#3.4]
+#    1. {Copying vectors}[link:vector_rdoc.html#3.5]
+#    1. {Vector views}[link:vector_rdoc.html#3.6]
+#    1. {Vector operations}[link:vector_rdoc.html#3.7]
+#    1. {Vector operations with size changes}[link:vector_rdoc.html#3.8]
+#    1. {Finding maximum and minimum elements of vectors}[link:vector_rdoc.html#3.9]
+#    1. {Vector properties}[link:vector_rdoc.html#3.10]
+#    1. {Element-wise vector comparison}[link:vector_rdoc.html#3.11]
+#    1. {Histogram}[link:vector_rdoc.html#3.12]
+#    1. {Sorting}[link:vector_rdoc.html#3.13]
+#    1. {BLAS methods}[link:vector_rdoc.html#3.14]
+#    1. {Data type conversions}[link:vector_rdoc.html#3.15]
+# 1. {NArray}[link:vector_rdoc.html#3.16]
+# 1. {GNU graph interface}[link:vector_rdoc.html#3.17]
 #
-# See also {GSL::Vector::Complex}[link:rdoc/vector_complex_rdoc.html].
+# See also {GSL::Vector::Complex}[link:vector_complex_rdoc.html].
 #
 # == {}[link:index.html"name="1] Class methods
 #
@@ -134,7 +134,7 @@
 #         p v                 <----- [ 1 2 3 4 5 ]
 #
 #
-# See also {here}[link:rdoc/vector_rdoc.html#3.16].
+# See also {here}[link:vector_rdoc.html#3.16].
 #
 # == {}[link:index.html"name="2] NOTE:
 # In Ruby/GSL, vector length is limited within the range of Fixnum.
@@ -371,7 +371,7 @@
 # * GSL::Vector#matrix_view(n1, n2)
 #
 #   This creates a <tt>Matrix::View</tt> object from the vector <tt>self</tt>.
-#   It enables to use the vector as a {Matrix}[link:rdoc/matrix_rdoc.html] object.
+#   It enables to use the vector as a {Matrix}[link:matrix_rdoc.html] object.
 #
 #   * Ex:
 #
@@ -1076,7 +1076,7 @@
 # * GSL::Vector#to_m_diagonal
 #
 #   Converts the vector into a diagonal matrix.
-#   See also {GSL::Matrix.diagonal(v)}[link:rdoc/matrix_rdoc.html].
+#   See also {GSL::Matrix.diagonal(v)}[link:matrix_rdoc.html].
 #
 #      >> v = GSL::Vector[1..4].to_i
 #      => GSL::Vector::Int:
@@ -1234,10 +1234,10 @@
 #     >> s = GSL::Sf::sin(x)
 #     >> GSL::Vector.graph(x, c, s, "-T X -C -L 'cos(x), sin(x)'")
 #
-# {prev}[link:rdoc/sf_rdoc.html]
-# {next}[link:rdoc/matrix_rdoc.html]
+# {prev}[link:sf_rdoc.html]
+# {next}[link:matrix_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

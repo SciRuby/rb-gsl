@@ -81,9 +81,9 @@
 #      Siman::solve(rng, x, efunc, step, metric, nil, params)
 #      p x
 #
-# {prev}[link:rdoc/monte_rdoc.html]
-# {next}[link:rdoc/odeiv_rdoc.html]
+# {prev}[link:monte_rdoc.html]
+# {next}[link:odeiv_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #

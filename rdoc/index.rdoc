@@ -1,5 +1,5 @@
 #
-# = {Ruby/GSL}[link:doc/index.html]
+# = {Ruby/GSL}[link:index.html]
 #
 # Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License.
 #
@@ -24,7 +24,7 @@
 #
 # == {}[link:index.html"name="5] Reference
 #
-# The {Ruby/GSL reference manual}[link:doc/rdoc/ref_rdoc.html] follows and borrows
+# The {Ruby/GSL reference manual}[link:ref_rdoc.html] follows and borrows
 # large parts of the GSL reference manual.
 #
 # == {}[link:index.html"name="6] Examples
@@ -44,7 +44,7 @@
 # If you encounter bugs in Ruby/GSL, please e-mail to me, or
 # submit reports on {GitHub}[https://github.com/blackwinter/rb-gsl/issues].
 #
-# == {}[link:index.html"name="10] Author
+# == {}[link:index.html"name="10] Authors
 # Yoshiki Tsunesada:: July, 2004
 # David MacMahon:: November, 2010
 # Jens Wille:: November, 2013

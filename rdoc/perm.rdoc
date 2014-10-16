@@ -1,14 +1,14 @@
 #
 # = Permutations
 # Contents:
-# 1. {Permuation allocations}[link:rdoc/perm_rdoc.html#1]
-# 1. {Methods}[link:rdoc/perm_rdoc.html#2]
-#    1. {Accessing permutation elements}[link:rdoc/perm_rdoc.html#2.1]
-#    1. {Permuation properties}[link:rdoc/perm_rdoc.html#2.2]
-#    1. {Permuation functions}[link:rdoc/perm_rdoc.html#2.3]
-#    1. {Reading and writing permutations}[link:rdoc/perm_rdoc.html#2.4]
-# 1. {Permutations in cyclic form}[link:rdoc/perm_rdoc.html#2.5]
-# 1. {Applying Permutations}[link:rdoc/perm_rdoc.html#3]
+# 1. {Permuation allocations}[link:perm_rdoc.html#1]
+# 1. {Methods}[link:perm_rdoc.html#2]
+#    1. {Accessing permutation elements}[link:perm_rdoc.html#2.1]
+#    1. {Permuation properties}[link:perm_rdoc.html#2.2]
+#    1. {Permuation functions}[link:perm_rdoc.html#2.3]
+#    1. {Reading and writing permutations}[link:perm_rdoc.html#2.4]
+# 1. {Permutations in cyclic form}[link:perm_rdoc.html#2.5]
+# 1. {Applying Permutations}[link:perm_rdoc.html#3]
 #
 # == {}[link:index.html"name="1] Permuation allocations
 # ---
@@ -212,10 +212,10 @@
 #   and then <tt>pa</tt>.
 #
 #
-# {prev}[link:rdoc/matrix_rdoc.html]
-# {next}[link:rdoc/combi_rdoc.html]
+# {prev}[link:matrix_rdoc.html]
+# {next}[link:combi_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

@@ -10,7 +10,7 @@
 #
 # The {Ruby/GSL}[https://blackwinter.github.com/rb-gsl] is Ruby
 # bindings for GSL. This provides higher-level interfaces to the GSL functions.
-# See {here}[link:rdoc/use_rdoc.html] for installation. To use the library , just put at the head of your scripts <tt>require("gsl")</tt>, or type it from the command line of <tt>irb</tt>.
+# See {here}[link:use_rdoc.html] for installation. To use the library , just put at the head of your scripts <tt>require("gsl")</tt>, or type it from the command line of <tt>irb</tt>.
 #
 #
 #

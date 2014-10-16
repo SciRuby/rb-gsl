@@ -1,9 +1,9 @@
 #
 # = Sorting
 # Contents:
-# 1. {Heapsort of vectors}[link:rdoc/sort_rdoc.html#1]
-# 1. {Sorting vectors}[link:rdoc/sort_rdoc.html#2]
-# 1. {Selecting the k smallest or largest elements}[link:rdoc/sort_rdoc.html#3]
+# 1. {Heapsort of vectors}[link:sort_rdoc.html#1]
+# 1. {Sorting vectors}[link:sort_rdoc.html#2]
+# 1. {Selecting the k smallest or largest elements}[link:sort_rdoc.html#3]
 #
 # == {}[link:index.html"name="1] Heapsort
 #
@@ -85,10 +85,10 @@
 #   <tt>k</tt> must be less than or equal to the length of the vector.
 #
 #
-# {prev}[link:rdoc/combi_rdoc.html]
-# {next}[link:rdoc/blas_rdoc.html]
+# {prev}[link:combi_rdoc.html]
+# {next}[link:blas_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

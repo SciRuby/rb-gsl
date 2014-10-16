@@ -168,10 +168,10 @@
 #     * CGSM (Module)
 #     * NUM (Module)
 #
-# {prev}[link:rdoc/intro_rdoc.html]
-# {next}[link:rdoc/ehandling_rdoc.html]
+# {prev}[link:intro_rdoc.html]
+# {next}[link:ehandling_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

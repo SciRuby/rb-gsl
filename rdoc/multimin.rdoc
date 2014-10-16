@@ -11,15 +11,15 @@
 # programs.
 #
 # Contents:
-# 1. {Overview}[link:rdoc/multimin_rdoc.html#1]
-# 1. {Caveats}[link:rdoc/multimin_rdoc.html#2]
-# 1. {Initializing the Multidimensional Minimizer}[link:rdoc/multimin_rdoc.html#3]
-# 1. {Providing a function to minimize}[link:rdoc/multimin_rdoc.html#4]
-# 1. {Iteration}[link:rdoc/multimin_rdoc.html#5]
-# 1. {Stopping Criteria}[link:rdoc/multimin_rdoc.html#6]
-# 1. {Examples}[link:rdoc/multimin_rdoc.html#7]
-#    1. {FdfMinimizer}[link:rdoc/multimin_rdoc.html#7.1]
-#    1. {FMinimizer}[link:rdoc/multimin_rdoc.html#7.2]
+# 1. {Overview}[link:multimin_rdoc.html#1]
+# 1. {Caveats}[link:multimin_rdoc.html#2]
+# 1. {Initializing the Multidimensional Minimizer}[link:multimin_rdoc.html#3]
+# 1. {Providing a function to minimize}[link:multimin_rdoc.html#4]
+# 1. {Iteration}[link:multimin_rdoc.html#5]
+# 1. {Stopping Criteria}[link:multimin_rdoc.html#6]
+# 1. {Examples}[link:multimin_rdoc.html#7]
+#    1. {FdfMinimizer}[link:multimin_rdoc.html#7.1]
+#    1. {FMinimizer}[link:multimin_rdoc.html#7.2]
 #
 # == {}[link:index.html"name="1] Overview
 # The problem of multidimensional minimization requires finding a point x such
@@ -303,10 +303,10 @@
 #        printf("f() = %7.3f size = %.3f\n", minimizer.fval, minimizer.size);
 #      end while status == GSL::CONTINUE and iter < 100
 #
-# {prev}[link:rdoc/multiroot_rdoc.html]
-# {next}[link:rdoc/fit_rdoc.html]
+# {prev}[link:multiroot_rdoc.html]
+# {next}[link:fit_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

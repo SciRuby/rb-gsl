@@ -73,7 +73,7 @@
 #   NOTE: GSL does not provide a vector copy function that properly copies data
 #   across overlapping memory regions, so watch out if assigning to part of a
 #   Vector from another part of itself (see <tt>#set</tt> example of
-#   {GSL::Vector}[link:rdoc/vector_rdoc.html]).
+#   {GSL::Vector}[link:vector_rdoc.html]).
 #
 # === {}[link:index.html"name="2.2] Initializing vector elements
 # ---
@@ -126,11 +126,11 @@
 #
 # === {}[link:index.html"name="2.5] Reordering Elements
 # <tt>GSL::Vector::Complex</tt> provides four methods for shifting the frequency
-# domain data between <b>FFT order</b>, shown in the table in the ((<Overview of
-# complex data FFTs|URL:fft.html#2.1>)), and <b>natural order</b>, which has the
-# most negative freqeuncy component first, the zero frequency component in the
+# domain data between <b>FFT order</b>, shown in the table in the {Overview of
+# complex data FFTs}[link:fft_rdoc.html#2.1], and <b>natural order</b>, which has
+# the most negative freqeuncy component first, the zero frequency component in the
 # middle, and the most positive frequency component last.  For more information
-# on Ruby/GSL and FFTs, see {Fast Fourier Transforms}[link:rdoc/fft_rdoc.html].
+# on Ruby/GSL and FFTs, see {Fast Fourier Transforms}[link:fft_rdoc.html].
 #
 # ---
 # * GSL::Vector::Complex#fftshift
@@ -168,7 +168,7 @@
 #   Returns a new <tt>GSL::Vector::Complex</tt> instance containing the result of
 #   the appropriate arithmetic operation on <tt>self</tt> and <tt>other</tt>.  The
 #   inputs are unchanged.  The <tt>other</tt> parameter may be a scalar,
-#   <tt>{GSL::Vector}[link:rdoc/vector_rdoc.html]</tt>, or <tt>GSL::Vector::Complex</tt>.
+#   <tt>{GSL::Vector}[link:vector_rdoc.html]</tt>, or <tt>GSL::Vector::Complex</tt>.
 #
 # ---
 # * GSL::Vector::Complex#+=(other)
@@ -182,7 +182,7 @@
 #
 #   Modifies <tt>self</tt> in place to contain the result of the appropriate
 #   arithmetic operation on <tt>self</tt> and <tt>other</tt>.  The <tt>other</tt>
-#   parameter may be a scalar, <tt>{GSL::Vector}[link:rdoc/vector_rdoc.html]</tt>, or
+#   parameter may be a scalar, <tt>{GSL::Vector}[link:vector_rdoc.html]</tt>, or
 #   <tt>GSL::Vector::Complex</tt>.
 #
 # === {}[link:index.html"name="2.7] Reading and writing vectors
@@ -341,7 +341,7 @@
 #     [ [1.000e+00 2.000e+00] [3.000e+00 4.000e+00] ]
 #     => #<GSL::Vector::Complex:0x6d6424>
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

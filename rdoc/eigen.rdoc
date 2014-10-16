@@ -1,14 +1,14 @@
 #
 # = Eigensystems
 # === {}[link:index.html"name="0.1] Contentes
-# 1. {Modules and classes}[link:rdoc/eigen_rdoc.html#1]
-# 1. {Real Symmetric Matrices}[link:rdoc/eigen_rdoc.html#2]
-# 1. {Complex Hermitian Matrices}[link:rdoc/eigen_rdoc.html#3]
-# 1. {Real Nonsymmetric Matrices}[link:rdoc/eigen_rdoc.html#4] (>= GSL-1.9)
-# 1. {Real Generalized Symmetric-Definite Eigensystems}[link:rdoc/eigen_rdoc.html#5] (>= GSL-1.10)
-# 1. {Complex Generalized Hermitian-Definite Eigensystems}[link:rdoc/eigen_rdoc.html#6] (>= GSL-1.10)
-# 1. {Real Generalized Nonsymmetric Eigensystems}[link:rdoc/eigen_rdoc.html#7] (>= GSL-1.10)
-# 1. {Sorting Eigenvalues and Eigenvectors }[link:rdoc/eigen_rdoc.html#8]
+# 1. {Modules and classes}[link:eigen_rdoc.html#1]
+# 1. {Real Symmetric Matrices}[link:eigen_rdoc.html#2]
+# 1. {Complex Hermitian Matrices}[link:eigen_rdoc.html#3]
+# 1. {Real Nonsymmetric Matrices}[link:eigen_rdoc.html#4] (>= GSL-1.9)
+# 1. {Real Generalized Symmetric-Definite Eigensystems}[link:eigen_rdoc.html#5] (>= GSL-1.10)
+# 1. {Complex Generalized Hermitian-Definite Eigensystems}[link:eigen_rdoc.html#6] (>= GSL-1.10)
+# 1. {Real Generalized Nonsymmetric Eigensystems}[link:eigen_rdoc.html#7] (>= GSL-1.10)
+# 1. {Sorting Eigenvalues and Eigenvectors }[link:eigen_rdoc.html#8]
 #
 # == {}[link:index.html"name="1] Modules and classes
 #
@@ -392,10 +392,10 @@
 #   and <tt>GSL::EIGEN_SORT_ABS_DESC</tt> are supported due to the eigenvalues
 #   being complex.
 #
-# {prev}[link:rdoc/linalg_rdoc.html]
-# {next}[link:rdoc/fft_rdoc.html]
+# {prev}[link:linalg_rdoc.html]
+# {next}[link:fft_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

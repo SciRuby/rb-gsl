@@ -57,7 +57,7 @@
 # * GSL::Histogram2d#set_ranges(vx, vy)
 #
 #   This sets the ranges of the existing histogram using
-#   two {GSL::Vector}[link:rdoc/vector_rdoc.html] objects or arrays.
+#   two {GSL::Vector}[link:vector_rdoc.html] objects or arrays.
 # ---
 # * GSL::Histogram2d#set_ranges_uniform(xmin, xmax, ymin, ymax)
 # * GSL::Histogram2d#set_ranges_uniform([xmin, xmax], [ymin, ymax])
@@ -271,9 +271,9 @@
 #   GSL::graph(hx, hy, "-T X -C -g 3")
 #
 #
-# {prev}[link:rdoc/hist_rdoc.html]
-# {next}[link:rdoc/hist3d_rdoc.html]
+# {prev}[link:hist_rdoc.html]
+# {next}[link:hist3d_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #

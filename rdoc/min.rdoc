@@ -6,11 +6,11 @@
 #
 #
 # Contents:
-# 1. {Introduction}[link:rdoc/min_rdoc.html#1]
-# 1. {GSL::Min::FMinimizer class}[link:rdoc/min_rdoc.html#2]
-# 1. {Iteration}[link:rdoc/min_rdoc.html#3]
-# 1. {Stopping Parameters}[link:rdoc/min_rdoc.html#4]
-# 1. {Examples}[link:rdoc/min_rdoc.html#5]
+# 1. {Introduction}[link:min_rdoc.html#1]
+# 1. {GSL::Min::FMinimizer class}[link:min_rdoc.html#2]
+# 1. {Iteration}[link:min_rdoc.html#3]
+# 1. {Stopping Parameters}[link:min_rdoc.html#4]
+# 1. {Examples}[link:min_rdoc.html#5]
 #
 # == {}[link:index.html"name="1] Introduction
 #
@@ -41,7 +41,7 @@
 #
 # The state of the minimizers is held in a <tt>GSL::Min::FMinimizer</tt> object.
 # The updating procedure use only function evaluations (not derivatives).
-# The function to minimize is given as an instance of the {GSL::Function}[link:rdoc/function_rdoc.html] class to the minimizer.
+# The function to minimize is given as an instance of the {GSL::Function}[link:function_rdoc.html] class to the minimizer.
 #
 #
 # == {}[link:index.html"name="2] GSL::Min::FMinimizer class
@@ -180,10 +180,10 @@
 #               iter, a, b, m, m - m_expected, b - a);
 #      end while status == GSL::CONTINUE and iter < max_iter
 #
-# {prev}[link:rdoc/roots_rdoc.html]
-# {next}[link:rdoc/multiroot_rdoc.html]
+# {prev}[link:roots_rdoc.html]
+# {next}[link:multiroot_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

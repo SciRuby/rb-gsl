@@ -42,9 +42,9 @@
 #   This replaces the Ruby/GSL default error handler by a user-defined handler
 #   given by a Proc object <tt>proc</tt> or a block.
 #
-# {prev}[link:rdoc/use_rdoc.html]
-# {next}[link:rdoc/math_rdoc.html]
+# {prev}[link:use_rdoc.html]
+# {next}[link:math_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #

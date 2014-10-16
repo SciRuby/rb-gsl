@@ -15,23 +15,23 @@
 # See also the {GSL reference}[https://gnu.org/software/gsl/manual/gsl-ref_37.html#SEC479]
 #
 # Contents:
-# 1. {Fundamental Constants}[link:rdoc/const_rdoc.html#1]
-# 1. {Astronomy and Astrophysics}[link:rdoc/const_rdoc.html#2]
-# 1. {Atomic and Nuclear Physics}[link:rdoc/const_rdoc.html#3]
-# 1. {Measurement of Time}[link:rdoc/const_rdoc.html#4]
-# 1. {Imperial Units}[link:rdoc/const_rdoc.html#5]
-# 1. {Nautical Units}[link:rdoc/const_rdoc.html#6]
-# 1. {Printers Units}[link:rdoc/const_rdoc.html#7]
-# 1. {Volume}[link:rdoc/const_rdoc.html#8]
-# 1. {Mass and Weight}[link:rdoc/const_rdoc.html#9]
-# 1. {Thermal Energy and Power}[link:rdoc/const_rdoc.html#10]
-# 1. {Pressure}[link:rdoc/const_rdoc.html#11]
-# 1. {Viscosity}[link:rdoc/const_rdoc.html#12]
-# 1. {Light and Illumination}[link:rdoc/const_rdoc.html#13]
-# 1. {Radioactivity}[link:rdoc/const_rdoc.html#14]
-# 1. {Force and Energy}[link:rdoc/const_rdoc.html#15]
-# 1. {Prefixes}[link:rdoc/const_rdoc.html#16]
-# 1. {Examples}[link:rdoc/const_rdoc.html#17]
+# 1. {Fundamental Constants}[link:const_rdoc.html#1]
+# 1. {Astronomy and Astrophysics}[link:const_rdoc.html#2]
+# 1. {Atomic and Nuclear Physics}[link:const_rdoc.html#3]
+# 1. {Measurement of Time}[link:const_rdoc.html#4]
+# 1. {Imperial Units}[link:const_rdoc.html#5]
+# 1. {Nautical Units}[link:const_rdoc.html#6]
+# 1. {Printers Units}[link:const_rdoc.html#7]
+# 1. {Volume}[link:const_rdoc.html#8]
+# 1. {Mass and Weight}[link:const_rdoc.html#9]
+# 1. {Thermal Energy and Power}[link:const_rdoc.html#10]
+# 1. {Pressure}[link:const_rdoc.html#11]
+# 1. {Viscosity}[link:const_rdoc.html#12]
+# 1. {Light and Illumination}[link:const_rdoc.html#13]
+# 1. {Radioactivity}[link:const_rdoc.html#14]
+# 1. {Force and Energy}[link:const_rdoc.html#15]
+# 1. {Prefixes}[link:const_rdoc.html#16]
+# 1. {Examples}[link:const_rdoc.html#17]
 #
 # == {}[link:index.html"name="1] Fundamental Constants
 # ---
@@ -537,10 +537,10 @@
 #      printf("minimum = %.1f minutes\n", t_min / minutes);
 #      printf("maximum = %.1f minutes\n\n", t_max / minutes);
 #
-# {prev}[link:rdoc/bspline_rdoc.html]
-# {next}[link:rdoc/graph_rdoc.html]
+# {prev}[link:bspline_rdoc.html]
+# {next}[link:graph_rdoc.html]
 #
-# {Reference index}[link:rdoc/ref_rdoc.html]
+# {Reference index}[link:ref_rdoc.html]
 # {top}[link:index.html]
 #
 #
