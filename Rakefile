@@ -17,7 +17,6 @@ begin
       :homepage      => :blackwinter,
       :dependencies  => [['narray', '>= 0.5.9']],
       :requirements  => ['GSL (http://www.gnu.org/software/gsl/)'],
-      :require_paths => %w[lib lib/gsl lib/ool ext],
 
       :extra_files => FileList['examples/**/*', 'rdoc/*'].to_a,
 
