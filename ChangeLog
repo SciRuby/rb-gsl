@@ -1,24 +1,29 @@
+Tue Oct 21 2014
+  * Ruby/GSL 1.16.0.3
+    * Fixed RDoc issues. Issue #6 by @bigtunacan.
+    * Fixed $LOAD_PATH problem. Pull request #7 by Takahiro SATOH.
+
 Wed Jul  9 2014
   * Ruby/GSL 1.16.0.2
-	  * Fixed linking problem.
+    * Fixed linking problem.
 
 Thu Apr 24 2014
   * Ruby/GSL 1.16.0.1
-	  * Extensive cleanup.
-	  * Fixed linking problems.
-	  * Required Ruby version >= 1.8.7.
+    * Extensive cleanup.
+    * Fixed linking problems.
+    * Required Ruby version >= 1.8.7.
 
 Fri Jan 24 2014
   * Ruby/GSL 1.16.0
-	  * GSL-1.16 support.
+    * GSL-1.16 support.
 
 Fri Jan 24 2014
   * Ruby/GSL 1.15.3.2
-	  * Windows compatibility.
-	  * Ruby 2.x compatibility.
-	  * Ported tests to Test::Unit.
-		* Silenced compilation warnings.
-		* Switched to rake-compiler for compilation.
+    * Windows compatibility.
+    * Ruby 2.x compatibility.
+    * Ported tests to Test::Unit.
+    * Silenced compilation warnings.
+    * Switched to rake-compiler for compilation.
 
 Sat Feb 26 2011
   * Ruby/GSL 1.14.7
