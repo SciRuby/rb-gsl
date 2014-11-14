@@ -20,7 +20,7 @@ script:
   rake test
 
 install:
-  - gem install nuggets
+  - gem install nuggets power_assert
   - gem install --prerelease --development rb-gsl
 
 before_install:
