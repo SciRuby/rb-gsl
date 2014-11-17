@@ -770,7 +770,7 @@ static VALUE rb_ool_conmin_pgrad_parameters_default(VALUE klass)
 	VALUE ary;
 	ool_conmin_parameters_default(ool_conmin_minimizer_pgrad, (void*) &P);
 	ary = create_parameters_ary_pgrad(&P);
-	RBASIC(ary)->klass = cool_conmin_pgrad_parameters;
+	RBGSL_SET_CLASS(ary, cool_conmin_pgrad_parameters);
 	return ary;
 }
 
@@ -780,7 +780,7 @@ static VALUE rb_ool_conmin_spg_parameters_default(VALUE klass)
 	VALUE ary;
 	ool_conmin_parameters_default(ool_conmin_minimizer_spg, (void*) &P);
 	ary = create_parameters_ary_spg(&P);	
-	RBASIC(ary)->klass = cool_conmin_spg_parameters;	
+	RBGSL_SET_CLASS(ary, cool_conmin_spg_parameters);	
 	return ary;	
 }
 
@@ -790,7 +790,7 @@ static VALUE rb_ool_conmin_gencan_parameters_default(VALUE klass)
 	VALUE ary;
 	ool_conmin_parameters_default(ool_conmin_minimizer_gencan, (void*) &P);
 	ary = create_parameters_ary_gencan(&P);		
-	RBASIC(ary)->klass = cool_conmin_gencan_parameters;	
+	RBGSL_SET_CLASS(ary, cool_conmin_gencan_parameters);	
 	return ary;
 }
 
