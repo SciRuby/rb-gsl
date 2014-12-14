@@ -8,10 +8,14 @@ module GSL::Oper
       def *(other)
         return _orig_mul(other) if other.is_a?(Numeric)
 
-        if other.is_a?(GSL::Matrix) || other.is_a?(GSL::Vector) || other.is_a?(GSL::Matrix::Int) ||
-           other.is_a?(GSL::Vector::Int) || other.is_a?(GSL::Vector::Complex) || other.is_a?(GSL::Matrix::Complex)
-          other.scale(self)
-        elsif GSL.have_tensor? && (other.is_a?(GSL::Tensor) || other.is_a?(GSL::Tensor::Int))
+        gsl_classes = [GSL::Matrix, GSL::Vector, GSL::Matrix::Int,
+          GSL::Vector::Int, GSL::Vector::Complex, GSL::Matrix::Complex]
+        if GSL.have_tensor?
+          gsl_classes << GSL::Tensor << GSL::Tensor::Int
+        end
+
+        case other
+        when *gsl_classes
           other.scale(self)
         else
           _orig_mul(other)
@@ -21,12 +25,13 @@ module GSL::Oper
       def /(other)
         return _orig_div(other) if other.is_a?(Numeric)
 
-        if other.is_a?(GSL::Poly) || other.is_a?(GSL::Poly::Int)
+        case other
+        when GSL::Poly, GSL::Poly::Int
           a = GSL::Poly[1]; a[0] = self
           GSL::Rational.new(a, other)
-        elsif other.is_a?(GSL::Vector::Col)
+        when GSL::Vector::Col
           other.scale(1.0/GSL::pow_2(other.dnrm2))
-        elsif other.is_a?(GSL::Vector::Int::Col)
+        when GSL::Vector::Int::Col
           v = other.to_f
           v.scale(1.0/GSL::pow_2(v.dnrm2))
         else
