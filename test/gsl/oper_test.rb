@@ -8,8 +8,8 @@ class OperTest < GSL::TestCase
     mul_int   = 2 * matrix
     mul_float = 0.2 * matrix
 
-    assert_equal 2,   mul_int[0,0]
-    assert_equal 0.2, mul_float[0,0]
+    assert_equal 2,   mul_int[0, 0]
+    assert_equal 0.2, mul_float[0, 0]
   end
 
   def test_multiplication_matrix_int
@@ -18,8 +18,8 @@ class OperTest < GSL::TestCase
     mul_int   = 2 * matrix
     mul_float = 0.2 * matrix
 
-    assert_equal 2, mul_int[0,0]
-    assert_equal 0, mul_float[0,0]
+    assert_equal 2, mul_int[0, 0]
+    assert_equal 0, mul_float[0, 0]
   end
 
   def test_multiplication_matrix_complex
@@ -31,7 +31,7 @@ class OperTest < GSL::TestCase
   end
 
   def test_multiplication_vector
-    vector = GSL::Vector[1,2]
+    vector = GSL::Vector[1, 2]
 
     mul_int   = 2 * vector
     mul_float = 0.2 * vector
@@ -41,7 +41,7 @@ class OperTest < GSL::TestCase
   end
 
   def test_multiplication_vector_int
-    vector = GSL::Vector::Int[1,2]
+    vector = GSL::Vector::Int[1, 2]
 
     mul_int   = 2 * vector
     mul_float = 0.2 * vector
@@ -59,8 +59,8 @@ class OperTest < GSL::TestCase
     mul_int   = 2 * vector
     mul_float = 0.2 * vector
 
-    assert_equal 10,   mul_int[0][1]
-    assert_equal 1.0,  mul_float[0][1]
+    assert_equal 10,  mul_int[0][1]
+    assert_equal 1.0, mul_float[0][1]
   end
 
   def test_division_poly
@@ -76,16 +76,17 @@ class OperTest < GSL::TestCase
   end
 
   def test_division_vector_col
-    vector = GSL::Vector[1,2].col
+    vector = GSL::Vector[1, 2].col
 
     result = 2 / vector
-    assert result[0] <= 0.2
+    assert_in_epsilon 0.2, result[0]
   end
 
   def test_division_vector_int_col
-    vector = GSL::Vector::Int[1,2].col
+    vector = GSL::Vector::Int[1, 2].col
 
     result = 2 / vector
-    assert result[0] <= 0.2
+    assert_in_epsilon 0.2, result[0]
   end
+
 end
