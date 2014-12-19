@@ -1,3 +1,9 @@
+Fri Dec 19 2014
+  * Ruby/GSL 1.16.0.4
+    * Optimize and extract multiplication and division operations on Fixnum
+      and Float. Pull request #8 by Veselin Vasilev.
+    * Fixed division in GSL::Oper for GSL::Vector::Col. Issue #9.
+
 Tue Oct 21 2014
   * Ruby/GSL 1.16.0.3
     * Fixed RDoc issues. Issue #6 by @bigtunacan.
