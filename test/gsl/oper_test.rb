@@ -78,15 +78,21 @@ class OperTest < GSL::TestCase
   def test_division_vector_col
     vector = GSL::Vector[1, 2].col
 
-    result = 2 / vector
-    assert_in_epsilon 0.2, result[0]
+    result1 = 2 / vector
+    result2 = 2 / result1
+
+    assert_in_epsilon 0.4, result1[0]
+    assert_equal result2, vector
   end
 
   def test_division_vector_int_col
     vector = GSL::Vector::Int[1, 2].col
 
-    result = 2 / vector
-    assert_in_epsilon 0.2, result[0]
+    result1 = 2 / vector
+    result2 = 2 / result1
+
+    assert_in_epsilon 0.4, result1[0]
+    assert_equal result2.to_a.map(&:to_i), vector.to_a
   end
 
 end

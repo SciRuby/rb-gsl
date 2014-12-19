@@ -27,10 +27,10 @@ module GSL::Oper
             a = GSL::Poly[1]; a[0] = self
             GSL::Rational.new(a, other)
           when GSL::Vector::Col
-            other.scale(1.0 / GSL.pow_2(other.dnrm2))
+            other.scale(self / GSL.pow_2(other.dnrm2))
           when GSL::Vector::Int::Col
             v = other.to_f
-            v.scale(1.0 / GSL.pow_2(v.dnrm2))
+            v.scale(self / GSL.pow_2(v.dnrm2))
           else
             _gsl_oper_original_div(other)
         end
