@@ -266,8 +266,15 @@ begin
   require 'rubygems'
   nm_gemspec=Gem::Specification.find_by_path('nmatrix.h')
   if nm_gemspec
-    nmatrix_config = File.join(nm_gemspec.full_gem_path, nm_gemspec.require_path)
-    $CPPFLAGS = " -I#{nmatrix_config} "+$CPPFLAGS
+    require 'pathname'
+    paths = nm_gemspec.require_paths.map do |path|
+      if Pathname.new(path).relative?
+        File.join(nm_gemspec.full_gem_path, path)
+      else
+        path
+      end
+    end
+    find_header('nmatrix.h', *paths)
   end
 rescue LoadError
 end
