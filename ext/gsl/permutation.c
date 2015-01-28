@@ -67,7 +67,13 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
     switch (TYPE(argv[0])) {
     case T_FIXNUM:
       i = FIX2INT(argv[0]);
-      if (i < 0) j = b->size + i; else j = (size_t) i;
+      if (i < 0) {
+	if (i >= -((int) b->size)) j = b->size + i;
+	else rb_raise(rb_eRangeError, "offset %d out of range", i);
+      } else {
+	if (i < ((int) b->size)) j = (size_t) i;
+	else rb_raise(rb_eRangeError, "offset %d out of range", i);
+      }
       return INT2FIX((int) b->data[j]);
       break;
     case T_ARRAY:
@@ -76,10 +82,16 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
       bnew = gsl_permutation_alloc(n);
       for (j = 0; j < n; j++) {
 	i = FIX2INT(rb_ary_entry(argv[0], j));
-	if (i < 0) k = b->size + i; else k = i;
+	if (i < 0) {
+	  if (i >= -((int) b->size)) k = b->size + i;
+	  else rb_raise(rb_eRangeError, "offset %d out of range", i);
+	} else {
+	  if (i < ((int) b->size)) k = i;
+	  else rb_raise(rb_eRangeError, "offset %d out of range", i);
+	}
 	bnew->data[j] = b->data[k];
       }
-      return Data_Wrap_Struct(CLASS_OF(argv[0]), 0, gsl_permutation_free, bnew);
+      return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_permutation_free, bnew);
       break;
     default:
       if (PERMUTATION_P(argv[0])) {
@@ -89,9 +101,14 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
 	return Data_Wrap_Struct(CLASS_OF(argv[0]), 0, gsl_permutation_free, bnew);
       } else if (CLASS_OF(argv[0]) == rb_cRange) {
 	get_range_int_beg_en_n(argv[0], &beg, &en, &n, &step);
+	if (beg < -((int) b->size) || en >= ((int) b->size))
+	  rb_raise(rb_eRangeError, "range overflow (%d..%d)", beg, en);
 	bnew = gsl_permutation_alloc(n);
-	for (j = 0; j < n; j++) 
-	  bnew->data[j] = b->data[beg+j];
+	for (j = 0; j < n; j++)
+	  if (beg+(int)j < 0)
+	    bnew->data[j] = b->data[b->size+beg+j];
+	  else
+	    bnew->data[j] = b->data[beg+j];
 	return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_permutation_free, bnew);
       } else {
 	rb_raise(rb_eArgError, "wrong argument type %s (Fixnum, Array, or Range expected)", rb_class2name(CLASS_OF(argv[0])));
