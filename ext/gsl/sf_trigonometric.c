@@ -57,7 +57,7 @@ static VALUE rb_gsl_sf_sinc_e(VALUE obj, VALUE x)
 }
 
 static VALUE rb_gsl_sf_complex_XXX_e(int argc, VALUE *argv, VALUE obj,
-				     int (*f)(double, double, gsl_sf_result*, gsl_sf_result*))
+             int (*f)(double, double, gsl_sf_result*, gsl_sf_result*))
 {
   gsl_sf_result *r1, *r2;
   gsl_complex *z;

@@ -21,8 +21,8 @@ void make_graphcommand(char *command, VALUE hash)
     
   strcpy(command, "graph");
   if (TYPE(hash) != T_HASH) rb_raise(rb_eTypeError, 
-				     "wrong argument type %s (Hash expected)",
-				     rb_class2name(CLASS_OF(hash)));
+             "wrong argument type %s (Hash expected)",
+             rb_class2name(CLASS_OF(hash)));
   if ((val = rb_hash_aref(hash, rb_str_new2("T"))) != Qnil)
     sprintf(command, "%s -T %s", command, STR2CSTR(val));
   else
@@ -1118,7 +1118,7 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
 
  if (g->max_line_length != Qnil)
    sprintf(command, "%s --max_line_length %d", command, 
-	   (int) FIX2INT(g->max_line_length));
+     (int) FIX2INT(g->max_line_length));
  
   if (g->page_size != Qnil)
     sprintf(command, "%s --page-size %s", command, STR2CSTR(g->page_size));
@@ -1157,7 +1157,7 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     //    if (RARRAY(g->S)->len == 2) 
     if (RARRAY_LEN(g->S) == 2) 
       sprintf(command, "%s -S %d %f", command, (int) FIX2INT(rb_ary_entry(g->S, 0)),
-	      NUM2DBL(rb_ary_entry(g->S, 1)));
+        NUM2DBL(rb_ary_entry(g->S, 1)));
     break;
   default:
     /* do nothing */
@@ -1227,7 +1227,7 @@ static VALUE rb_gsl_graph_graph(int argc, VALUE *argv, VALUE obj)
       g->ydata = argv[1];
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector or String expected)",
-	       rb_class2name(CLASS_OF(argv[1])));
+         rb_class2name(CLASS_OF(argv[1])));
     }
     /* no break */
   case 1:
@@ -1239,7 +1239,7 @@ static VALUE rb_gsl_graph_graph(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(argv[0], gsl_histogram, h);
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector or String expected)",
-	       rb_class2name(CLASS_OF(argv[0])));
+         rb_class2name(CLASS_OF(argv[0])));
     }
     break;
   default:
@@ -1298,7 +1298,7 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
       g->ydata = argv[1];
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector or String expected)",
-	       rb_class2name(CLASS_OF(argv[1])));
+         rb_class2name(CLASS_OF(argv[1])));
     }
     /* no break */
   case 1:
@@ -1308,7 +1308,7 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
       g->xdata = argv[0]; 
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector or String expected)",
-	       rb_class2name(CLASS_OF(argv[0])));
+         rb_class2name(CLASS_OF(argv[0])));
     }
     break;
   default:
@@ -1328,14 +1328,14 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
   for (i = 0; i < size; i++) {
     if (y == NULL) {
       fprintf(fp, "%d %g\n%d %g\n", (int) i, gsl_vector_get(x, i),
-	      (int) (i+1), gsl_vector_get(x, i));
+        (int) (i+1), gsl_vector_get(x, i));
     } else {
       if (i != size-1)
-	fprintf(fp, "%g %g\n%g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i),
-		gsl_vector_get(x, i+1), gsl_vector_get(y, i));
-      else 	
-	fprintf(fp, "%g %g\n%g %g", gsl_vector_get(x, i), gsl_vector_get(y, i),
-		2.0*gsl_vector_get(x, i)-gsl_vector_get(x, i-1), gsl_vector_get(y, i));
+        fprintf(fp, "%g %g\n%g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i),
+          gsl_vector_get(x, i+1), gsl_vector_get(y, i));
+      else   
+        fprintf(fp, "%g %g\n%g %g", gsl_vector_get(x, i), gsl_vector_get(y, i),
+          2.0*gsl_vector_get(x, i)-gsl_vector_get(x, i-1), gsl_vector_get(y, i));
     }
   }
   fflush(fp);
@@ -1618,17 +1618,17 @@ void Init_gsl_graph(VALUE module)
   rb_define_alias(cgsl_graph, "toggle_use_color", "C");
 
   rb_define_method(cgsl_graph, "set_symbol_font_name", 
-		   rb_gsl_graph_set_symbol_font_name, 1);
+       rb_gsl_graph_set_symbol_font_name, 1);
   rb_define_alias(cgsl_graph, "symbol_font_name=", "set_symbol_font_name");
   rb_define_method(cgsl_graph, "symbol_font_name", rb_gsl_graph_symbol_font_name, 0);
 
   rb_define_method(cgsl_graph, "set_reposition", 
-		   rb_gsl_graph_set_reposition, 1);
+       rb_gsl_graph_set_reposition, 1);
   rb_define_alias(cgsl_graph, "reposition=", "set_reposition");
   rb_define_method(cgsl_graph, "reposition", rb_gsl_graph_reposition, 0);
 
   rb_define_method(cgsl_graph, "set_blankout", 
-		   rb_gsl_graph_set_blankout, 1);
+       rb_gsl_graph_set_blankout, 1);
   rb_define_alias(cgsl_graph, "blankout=", "set_blankout");
   rb_define_method(cgsl_graph, "blankout", rb_gsl_graph_blankout, 0);
 

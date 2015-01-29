@@ -388,7 +388,7 @@ static VALUE rb_gsl_blas_zhemm(int argc, VALUE *argv, VALUE obj)
 }
 
 static VALUE rb_gsl_blas_dtrmm(VALUE obj, VALUE s, VALUE u, VALUE ta, 
-			       VALUE d, VALUE a, VALUE aa, VALUE bb)
+             VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix *A = NULL, *B = NULL;
   double alpha;
@@ -411,7 +411,7 @@ static VALUE rb_gsl_blas_dtrmm(VALUE obj, VALUE s, VALUE u, VALUE ta,
 }
 
 static VALUE rb_gsl_blas_dtrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta, 
-			       VALUE d, VALUE a, VALUE aa, VALUE bb)
+             VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix *A = NULL, *B = NULL, *Bnew = NULL;
   double alpha;
@@ -436,7 +436,7 @@ static VALUE rb_gsl_blas_dtrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
 }
 
 static VALUE rb_gsl_blas_ztrmm(VALUE obj, VALUE s, VALUE u, VALUE ta, 
-			       VALUE d, VALUE a, VALUE aa, VALUE bb)
+             VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL;
   gsl_complex alpha, *pa = &alpha;
@@ -460,7 +460,7 @@ static VALUE rb_gsl_blas_ztrmm(VALUE obj, VALUE s, VALUE u, VALUE ta,
 }
 
 static VALUE rb_gsl_blas_ztrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta, 
-			       VALUE d, VALUE a, VALUE aa, VALUE bb)
+             VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *Bnew = NULL;
   gsl_complex alpha, *pa = &alpha;
@@ -485,7 +485,7 @@ static VALUE rb_gsl_blas_ztrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
 }
 
 static VALUE rb_gsl_blas_dtrsm(VALUE obj, VALUE s, VALUE u, VALUE ta, 
-			       VALUE d, VALUE a, VALUE aa, VALUE bb)
+             VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix *A = NULL, *B = NULL;
   double alpha;
@@ -508,7 +508,7 @@ static VALUE rb_gsl_blas_dtrsm(VALUE obj, VALUE s, VALUE u, VALUE ta,
 }
 
 static VALUE rb_gsl_blas_dtrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta, 
-			       VALUE d, VALUE a, VALUE aa, VALUE bb)
+             VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix *A = NULL, *B = NULL, *Bnew = NULL;
   double alpha;
@@ -533,7 +533,7 @@ static VALUE rb_gsl_blas_dtrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
 }
 
 static VALUE rb_gsl_blas_ztrsm(VALUE obj, VALUE s, VALUE u, VALUE ta, 
-			       VALUE d, VALUE a, VALUE aa, VALUE bb)
+             VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL;
   gsl_complex alpha, *pa = &alpha;
@@ -557,7 +557,7 @@ static VALUE rb_gsl_blas_ztrsm(VALUE obj, VALUE s, VALUE u, VALUE ta,
 }
 
 static VALUE rb_gsl_blas_ztrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta, 
-			       VALUE d, VALUE a, VALUE aa, VALUE bb)
+             VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *Bnew = NULL;
   gsl_complex alpha, *pa = &alpha;
@@ -583,7 +583,7 @@ static VALUE rb_gsl_blas_ztrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
 }
 
 static VALUE rb_gsl_blas_dsyrk(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-			       VALUE b, VALUE cc)
+             VALUE b, VALUE cc)
 {
   gsl_matrix *A = NULL, *C = NULL;
   double alpha, beta;
@@ -603,7 +603,7 @@ static VALUE rb_gsl_blas_dsyrk(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_dsyrk2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-			       VALUE b, VALUE cc)
+             VALUE b, VALUE cc)
 {
   gsl_matrix *A = NULL, *C = NULL, *Cnew = NULL;
   double alpha, beta;
@@ -625,7 +625,7 @@ static VALUE rb_gsl_blas_dsyrk2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_zsyrk(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-			       VALUE b, VALUE cc)
+             VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *C = NULL;
   gsl_complex alpha, beta, *pa = &alpha, *pb = &beta;
@@ -645,7 +645,7 @@ static VALUE rb_gsl_blas_zsyrk(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_zsyrk2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-			       VALUE b, VALUE cc)
+             VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *C = NULL, *Cnew = NULL;
   gsl_complex alpha, beta, *pa = &alpha, *pb = &beta;
@@ -667,7 +667,7 @@ static VALUE rb_gsl_blas_zsyrk2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_zherk(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-			       VALUE b, VALUE cc)
+             VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *C = NULL;
   double alpha, beta;
@@ -688,7 +688,7 @@ static VALUE rb_gsl_blas_zherk(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_zherk2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-			       VALUE b, VALUE cc)
+             VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *C = NULL, *Cnew = NULL;
   double alpha, beta;
@@ -710,7 +710,7 @@ static VALUE rb_gsl_blas_zherk2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_dsyr2k(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-				VALUE bb, VALUE b, VALUE cc)
+        VALUE bb, VALUE b, VALUE cc)
 {
   gsl_matrix *A = NULL, *B = NULL, *C = NULL;
   double alpha, beta;
@@ -731,7 +731,7 @@ static VALUE rb_gsl_blas_dsyr2k(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_dsyr2k2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-				VALUE bb, VALUE b, VALUE cc)
+        VALUE bb, VALUE b, VALUE cc)
 {
   gsl_matrix *A = NULL, *B = NULL, *C = NULL, *Cnew = NULL;
   double alpha, beta;
@@ -754,7 +754,7 @@ static VALUE rb_gsl_blas_dsyr2k2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_zsyr2k(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-				VALUE bb, VALUE b, VALUE cc)
+        VALUE bb, VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *C = NULL;
   gsl_complex alpha, beta, *pa = &alpha, *pb = &beta;
@@ -775,7 +775,7 @@ static VALUE rb_gsl_blas_zsyr2k(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_zsyr2k2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-				VALUE bb, VALUE b, VALUE cc)
+        VALUE bb, VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *C = NULL, *Cnew = NULL;
   gsl_complex alpha, beta, *pa = &alpha, *pb = &beta;
@@ -798,7 +798,7 @@ static VALUE rb_gsl_blas_zsyr2k2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_zher2k(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-				VALUE bb, VALUE b, VALUE cc)
+        VALUE bb, VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *C = NULL;
   gsl_complex alpha, *pa = &alpha;
@@ -821,7 +821,7 @@ static VALUE rb_gsl_blas_zher2k(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
 }
 
 static VALUE rb_gsl_blas_zher2k2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
-				VALUE bb, VALUE b, VALUE cc)
+        VALUE bb, VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *C = NULL, *Cnew = NULL;
   gsl_complex alpha, *pa = &alpha;

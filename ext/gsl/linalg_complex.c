@@ -35,7 +35,7 @@ VALUE rb_gsl_linalg_complex_LU_decomp(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)",
-			    argc);
+          argc);
     CHECK_MATRIX_COMPLEX(argv[0]);
     Data_Get_Struct(argv[0], gsl_matrix_complex, m);
     itmp = 1;
@@ -81,7 +81,7 @@ VALUE rb_gsl_linalg_complex_LU_decomp2(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)",
-			    argc);
+          argc);
     CHECK_MATRIX_COMPLEX(argv[0]);
     Data_Get_Struct(argv[0], gsl_matrix_complex, m);
     itmp = 1;
@@ -232,8 +232,8 @@ static VALUE rb_gsl_linalg_complex_LU_svx(int argc, VALUE *argv, VALUE obj)
 }
 
 static VALUE rb_gsl_linalg_complex_LU_refine(VALUE obj, VALUE vm,
-					     VALUE lu, VALUE pp, VALUE bb,
-					     VALUE xx)
+               VALUE lu, VALUE pp, VALUE bb,
+               VALUE xx)
 {
   gsl_matrix_complex *m = NULL, *mlu = NULL;
   gsl_permutation *p = NULL;
@@ -456,7 +456,7 @@ static VALUE rb_gsl_linalg_cholesky_decomp(int argc, VALUE *argv, VALUE obj)
   switch(TYPE(obj)) {
   case T_MODULE:  case T_CLASS:  case T_OBJECT:
     if (argc != 1) rb_raise(rb_eArgError, "wrong number of argument (%d for 1)",
-			    argc);
+          argc);
     CHECK_MATRIX_COMPLEX(argv[0]);
     Data_Get_Struct(argv[0], gsl_matrix_complex, Atmp);
     break;
@@ -479,13 +479,13 @@ static VALUE rb_gsl_linalg_cholesky_solve(int argc, VALUE *argv, VALUE obj)
   switch(TYPE(obj)) {
   case T_MODULE:  case T_CLASS:  case T_OBJECT:
     if (argc != 2) rb_raise(rb_eArgError, "wrong number of argument (%d for 2)",
-			    argc);
+          argc);
     vA = argv[0];
     vb = argv[1];
     break;
   default:
     if (argc != 1) rb_raise(rb_eArgError, "wrong number of argument (%d for 1)",
-			    argc);
+          argc);
     vA = obj;
     vb = argv[0];
     break;
@@ -519,13 +519,13 @@ static VALUE rb_gsl_linalg_cholesky_svx(int argc, VALUE *argv, VALUE obj)
   switch(TYPE(obj)) {
   case T_MODULE:  case T_CLASS:  case T_OBJECT:
     if (argc != 2) rb_raise(rb_eArgError, "wrong number of argument (%d for 2)",
-			    argc);
+          argc);
     vA = argv[0];
     vb = argv[1];
     break;
   default:
     if (argc != 1) rb_raise(rb_eArgError, "wrong number of argument (%d for 1)",
-			    argc);
+          argc);
     vA = obj;
     vb = argv[0];
     break;
@@ -624,79 +624,79 @@ void Init_gsl_linalg_complex(VALUE module)
   mgsl_linalg_complex_LU = rb_define_module_under(mgsl_linalg_complex, "LU");
 
   cgsl_matrix_complex_LU = rb_define_class_under(mgsl_linalg_complex_LU,
-						 "LUMatrix", cgsl_matrix_complex);
+             "LUMatrix", cgsl_matrix_complex);
 
   rb_define_singleton_method(mgsl_linalg_complex, "LU_decomp!",
-			     rb_gsl_linalg_complex_LU_decomp, -1);
+           rb_gsl_linalg_complex_LU_decomp, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "decomp!",
-			     rb_gsl_linalg_complex_LU_decomp, -1);
+           rb_gsl_linalg_complex_LU_decomp, -1);
   rb_define_method(cgsl_matrix_complex, "LU_decomp!", 
-		   rb_gsl_linalg_complex_LU_decomp, -1);
+       rb_gsl_linalg_complex_LU_decomp, -1);
   rb_define_alias(cgsl_matrix_complex, "decomp!", "LU_decomp!");
 
   rb_define_singleton_method(mgsl_linalg_complex, "LU_decomp",
-			     rb_gsl_linalg_complex_LU_decomp2, -1);
+           rb_gsl_linalg_complex_LU_decomp2, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "decomp",
-			     rb_gsl_linalg_complex_LU_decomp2, -1);
+           rb_gsl_linalg_complex_LU_decomp2, -1);
   rb_define_method(cgsl_matrix_complex, "LU_decomp", 
-		   rb_gsl_linalg_complex_LU_decomp2, -1);
+       rb_gsl_linalg_complex_LU_decomp2, -1);
   rb_define_alias(cgsl_matrix_complex, "decomp", "LU_decomp");
 
   rb_define_singleton_method(mgsl_linalg_complex, "LU_solve",
-			     rb_gsl_linalg_complex_LU_solve, -1);
+           rb_gsl_linalg_complex_LU_solve, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "solve",
-			     rb_gsl_linalg_complex_LU_solve, -1);
+           rb_gsl_linalg_complex_LU_solve, -1);
   rb_define_method(cgsl_matrix_complex, "LU_solve", 
-		   rb_gsl_linalg_complex_LU_solve, -1);
+       rb_gsl_linalg_complex_LU_solve, -1);
   rb_define_method(cgsl_matrix_complex_LU, "solve", 
-		   rb_gsl_linalg_complex_LU_solve, -1);
+       rb_gsl_linalg_complex_LU_solve, -1);
 
   rb_define_singleton_method(mgsl_linalg_complex, "LU_svx",
-			     rb_gsl_linalg_complex_LU_svx, -1);
+           rb_gsl_linalg_complex_LU_svx, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "svx",
-			     rb_gsl_linalg_complex_LU_svx, -1);
+           rb_gsl_linalg_complex_LU_svx, -1);
   rb_define_method(cgsl_matrix_complex, "LU_svx", 
-		   rb_gsl_linalg_complex_LU_svx, -1);
+       rb_gsl_linalg_complex_LU_svx, -1);
   rb_define_method(cgsl_matrix_complex_LU, "svx", 
-		   rb_gsl_linalg_complex_LU_svx, -1);
+       rb_gsl_linalg_complex_LU_svx, -1);
 
   rb_define_singleton_method(mgsl_linalg_complex, "LU_refine",
-			     rb_gsl_linalg_complex_LU_refine, 5);
+           rb_gsl_linalg_complex_LU_refine, 5);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "refine",
-			     rb_gsl_linalg_complex_LU_refine, 5);
+           rb_gsl_linalg_complex_LU_refine, 5);
 
   rb_define_singleton_method(mgsl_linalg_complex, "LU_invert",
-			     rb_gsl_linalg_complex_LU_invert, -1);
+           rb_gsl_linalg_complex_LU_invert, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "invert",
-			     rb_gsl_linalg_complex_LU_invert, -1);
+           rb_gsl_linalg_complex_LU_invert, -1);
   rb_define_method(cgsl_matrix_complex, "LU_invert", 
-		   rb_gsl_linalg_complex_LU_invert, -1);
+       rb_gsl_linalg_complex_LU_invert, -1);
   rb_define_alias(cgsl_matrix_complex, "invert", "LU_invert");
   rb_define_alias(cgsl_matrix_complex, "inv", "LU_invert");
   rb_define_method(cgsl_matrix_complex_LU, "invert", 
-		   rb_gsl_linalg_complex_LU_invert, -1);
+       rb_gsl_linalg_complex_LU_invert, -1);
 
 #ifdef GSL_1_1_1_LATER
   rb_define_singleton_method(mgsl_linalg_complex, "LU_det", 
-			     rb_gsl_linalg_complex_LU_det, -1);
+           rb_gsl_linalg_complex_LU_det, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "det", 
-			     rb_gsl_linalg_complex_LU_det, -1);
+           rb_gsl_linalg_complex_LU_det, -1);
   rb_define_method(cgsl_matrix_complex, "LU_det", rb_gsl_linalg_complex_LU_det, -1);
   rb_define_alias(cgsl_matrix_complex, "det", "LU_det");
   rb_define_method(cgsl_matrix_complex_LU, "det", rb_gsl_linalg_complex_LU_det, -1);
 
   rb_define_singleton_method(mgsl_linalg_complex, "LU_lndet", 
-			     rb_gsl_linalg_complex_LU_lndet, -1);
+           rb_gsl_linalg_complex_LU_lndet, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "lndet", 
-			     rb_gsl_linalg_complex_LU_lndet, -1);
+           rb_gsl_linalg_complex_LU_lndet, -1);
   rb_define_method(cgsl_matrix_complex, "LU_lndet", rb_gsl_linalg_complex_LU_lndet, -1);
   rb_define_alias(cgsl_matrix_complex, "lndet", "LU_lndet");
   rb_define_method(cgsl_matrix_complex_LU, "LU_lndet", rb_gsl_linalg_complex_LU_lndet, -1);
 
   rb_define_singleton_method(mgsl_linalg_complex, "LU_sgndet", 
-			     rb_gsl_linalg_complex_LU_sgndet, -1);
+           rb_gsl_linalg_complex_LU_sgndet, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "sgndet", 
-			     rb_gsl_linalg_complex_LU_sgndet, -1);
+           rb_gsl_linalg_complex_LU_sgndet, -1);
   rb_define_method(cgsl_matrix_complex, "LU_sgndet", rb_gsl_linalg_complex_LU_sgndet, -1);
   rb_define_alias(cgsl_matrix_complex, "sgndet", "LU_sgndet");
   rb_define_method(cgsl_matrix_complex_LU, "LU_sgndet", rb_gsl_linalg_complex_LU_sgndet, -1);
@@ -716,25 +716,25 @@ void Init_gsl_linalg_complex(VALUE module)
 
   mgsl_linalg_complex_Householder = rb_define_module_under(mgsl_linalg_complex, "Householder");
  rb_define_singleton_method(mgsl_linalg_complex, "householder_transform", 
-			     rb_gsl_linalg_complex_householder_transform, -1);
+           rb_gsl_linalg_complex_householder_transform, -1);
   rb_define_singleton_method(mgsl_linalg_complex_Householder, "transform", 
-			     rb_gsl_linalg_complex_householder_transform, -1);
+           rb_gsl_linalg_complex_householder_transform, -1);
   rb_define_method(cgsl_vector_complex, "householder_transform", 
-		   rb_gsl_linalg_complex_householder_transform, -1);
+       rb_gsl_linalg_complex_householder_transform, -1);
 
   rb_define_singleton_method(mgsl_linalg_complex, "householder_hm", 
-			     rb_gsl_linalg_complex_householder_hm, 3);
+           rb_gsl_linalg_complex_householder_hm, 3);
   rb_define_singleton_method(mgsl_linalg_complex_Householder, "hm", 
-			     rb_gsl_linalg_complex_householder_hm, 3);
+           rb_gsl_linalg_complex_householder_hm, 3);
 
   rb_define_singleton_method(mgsl_linalg_complex, "householder_mh", 
-			     rb_gsl_linalg_complex_householder_mh, 3);
+           rb_gsl_linalg_complex_householder_mh, 3);
   rb_define_singleton_method(mgsl_linalg_complex_Householder, "mh", 
-			     rb_gsl_linalg_complex_householder_mh, 3);
+           rb_gsl_linalg_complex_householder_mh, 3);
 
   rb_define_singleton_method(mgsl_linalg_complex, "householder_hv", 
-			     rb_gsl_linalg_complex_householder_hv, 3);
+           rb_gsl_linalg_complex_householder_hv, 3);
   rb_define_singleton_method(mgsl_linalg_complex_Householder, "hv", 
-			     rb_gsl_linalg_complex_householder_hv, 3);
-#endif			     
+           rb_gsl_linalg_complex_householder_hv, 3);
+#endif           
 }

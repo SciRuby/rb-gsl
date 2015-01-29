@@ -25,54 +25,54 @@ VALUE rb_gsl_sf_eval_double_double(double (*func)(double, double), VALUE ff, VAL
 VALUE rb_gsl_sf_eval1_uint(double (*func)(unsigned int), VALUE argv);
 VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VALUE m);;
 VALUE rb_gsl_sf_eval_int_double_double(double (*func)(int, double, double), VALUE jj, 
-				       VALUE ff, VALUE argv);
+               VALUE ff, VALUE argv);
 VALUE rb_gsl_sf_eval_int_int_double(double (*func)(int, int, double), VALUE jj,
-				    VALUE jj2, VALUE argv);
+            VALUE jj2, VALUE argv);
 VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double), 
-					   VALUE ff, VALUE ff2, VALUE argv);
+             VALUE ff, VALUE ff2, VALUE argv);
 VALUE rb_gsl_sf_eval_double4(double (*func)(double, double, double, double), 
-			     VALUE ff, VALUE ff2, VALUE ff3, VALUE argv);
+           VALUE ff, VALUE ff2, VALUE ff3, VALUE argv);
 VALUE rb_gsl_sf_eval_double_int(double (*func)(double, int), VALUE argv, VALUE jj);
 VALUE rb_gsl_sf_eval1_int(double (*func)(int), VALUE argv);
 VALUE rb_gsl_sf_eval_e(int (*func)(double, gsl_sf_result*), VALUE x);
 VALUE rb_gsl_sf_eval_e_int_double(int (*func)(int, double, gsl_sf_result*), 
-				  VALUE n, VALUE x);
+          VALUE n, VALUE x);
 VALUE rb_gsl_sf_eval_e_int_int_double(int (*func)(int, int, double, gsl_sf_result*), 
-				      VALUE n1, VALUE n2, VALUE x);
+              VALUE n1, VALUE n2, VALUE x);
 VALUE rb_gsl_sf_eval_e_double2(int (*func)(double, double, gsl_sf_result*), 
-			       VALUE x1, VALUE x2);
+             VALUE x1, VALUE x2);
 VALUE rb_gsl_sf_eval_e_uint(int (*func)(unsigned int, gsl_sf_result*), VALUE x);
 VALUE rb_gsl_sf_eval_e_int_uint(int (*func)(int, unsigned int, gsl_sf_result*), 
-				VALUE n, VALUE x);
+        VALUE n, VALUE x);
 VALUE rb_gsl_sf_eval_e_double_uint(int (*func)(double, unsigned int, gsl_sf_result*), 
-				   VALUE y, VALUE x);
+           VALUE y, VALUE x);
 VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*), 
-			 VALUE x, VALUE m);
+       VALUE x, VALUE m);
 VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_result*), 
-				 VALUE x1, VALUE x2, VALUE m);
+         VALUE x1, VALUE x2, VALUE m);
 VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t, gsl_sf_result*), 
-				 VALUE x1, VALUE x2, VALUE x3, VALUE m);
+         VALUE x1, VALUE x2, VALUE x3, VALUE m);
 VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t), 
-			       VALUE argv, VALUE x2, VALUE m);
+             VALUE argv, VALUE x2, VALUE m);
 VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t), 
-			       VALUE argv, VALUE x2, VALUE x3, VALUE m);
+             VALUE argv, VALUE x2, VALUE x3, VALUE m);
 
 VALUE rb_gsl_sf_eval_e_double4_m(int (*func)(double, double, double, double, gsl_mode_t, gsl_sf_result*), 
-				 VALUE x1, VALUE x2, VALUE x3, VALUE x4, VALUE m);
+         VALUE x1, VALUE x2, VALUE x3, VALUE x4, VALUE m);
 
 VALUE rb_gsl_sf_eval_e_int(int (*func)(int, gsl_sf_result*), VALUE x);
 VALUE rb_gsl_sf_eval_e_double3(int (*func)(double, double, double, gsl_sf_result*), 
-			      VALUE x1, VALUE x2, VALUE x3);
+            VALUE x1, VALUE x2, VALUE x3);
 VALUE rb_gsl_sf_eval_e_int_double2(int (*func)(int, double, double, gsl_sf_result*), 
-				   VALUE n, VALUE x1, VALUE x2);
+           VALUE n, VALUE x1, VALUE x2);
 VALUE rb_gsl_sf_eval_e_double2(int (*func)(double, double, gsl_sf_result*), 
-			       VALUE x1, VALUE x2);
+             VALUE x1, VALUE x2);
 
 VALUE eval_sf(double (*func)(double, gsl_mode_t), VALUE argv);
 
 VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
-					      gsl_mode_t), 
-			       VALUE argv, VALUE x2, VALUE x3, VALUE x4, VALUE m);
+                gsl_mode_t), 
+             VALUE argv, VALUE x2, VALUE x3, VALUE x4, VALUE m);
 
 VALUE rb_gsl_sf_eval_complex(double (*f)(double), VALUE obj);
 

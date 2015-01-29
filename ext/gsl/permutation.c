@@ -75,27 +75,27 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
       n = RARRAY_LEN(argv[0]);
       bnew = gsl_permutation_alloc(n);
       for (j = 0; j < n; j++) {
-	i = FIX2INT(rb_ary_entry(argv[0], j));
-	if (i < 0) k = b->size + i; else k = i;
-	bnew->data[j] = b->data[k];
+  i = FIX2INT(rb_ary_entry(argv[0], j));
+  if (i < 0) k = b->size + i; else k = i;
+  bnew->data[j] = b->data[k];
       }
       return Data_Wrap_Struct(CLASS_OF(argv[0]), 0, gsl_permutation_free, bnew);
       break;
     default:
       if (PERMUTATION_P(argv[0])) {
-	Data_Get_Struct(argv[0], gsl_index, p);
-	bnew = gsl_permutation_alloc(p->size);
-	for (j = 0; j < p->size; j++) bnew->data[j] = b->data[p->data[j]];
-	return Data_Wrap_Struct(CLASS_OF(argv[0]), 0, gsl_permutation_free, bnew);
+  Data_Get_Struct(argv[0], gsl_index, p);
+  bnew = gsl_permutation_alloc(p->size);
+  for (j = 0; j < p->size; j++) bnew->data[j] = b->data[p->data[j]];
+  return Data_Wrap_Struct(CLASS_OF(argv[0]), 0, gsl_permutation_free, bnew);
       } else if (CLASS_OF(argv[0]) == rb_cRange) {
-	get_range_int_beg_en_n(argv[0], &beg, &en, &n, &step);
-	bnew = gsl_permutation_alloc(n);
-	for (j = 0; j < n; j++) 
-	  bnew->data[j] = b->data[beg+j];
-	return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_permutation_free, bnew);
+  get_range_int_beg_en_n(argv[0], &beg, &en, &n, &step);
+  bnew = gsl_permutation_alloc(n);
+  for (j = 0; j < n; j++) 
+    bnew->data[j] = b->data[beg+j];
+  return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_permutation_free, bnew);
       } else {
-	rb_raise(rb_eArgError, "wrong argument type %s (Fixnum, Array, or Range expected)", rb_class2name(CLASS_OF(argv[0])));
-	break;
+  rb_raise(rb_eArgError, "wrong argument type %s (Fixnum, Array, or Range expected)", rb_class2name(CLASS_OF(argv[0])));
+  break;
       }
     }
     break;
@@ -368,7 +368,7 @@ static VALUE rb_gsl_permutation_fprintf(int argc, VALUE *argv, VALUE obj)
   int status, flag = 0;
 
   if (argc != 1 && argc != 2) rb_raise(rb_eArgError, 
-				       "wrong number of arguments (%d for 1 or 2)", argc);
+               "wrong number of arguments (%d for 1 or 2)", argc);
 
   Data_Get_Struct(obj, gsl_permutation, h);
   fp = rb_gsl_open_writefile(argv[0], &flag);

@@ -551,16 +551,16 @@ static VALUE rb_gsl_siman_params_params(VALUE obj)
   gsl_siman_params_t *params = NULL;
   Data_Get_Struct(obj, gsl_siman_params_t, params);
   return rb_ary_new3(7, INT2FIX(params->n_tries), INT2FIX(params->iters_fixed_T),
-		     rb_float_new(params->step_size), rb_float_new(params->k),
-		     rb_float_new(params->t_initial), rb_float_new(params->mu_t),
-		     rb_float_new(params->t_min));
+         rb_float_new(params->step_size), rb_float_new(params->k),
+         rb_float_new(params->t_initial), rb_float_new(params->mu_t),
+         rb_float_new(params->t_min));
 }
 
 /***** solver *****/
 static VALUE rb_gsl_siman_solver_solve(VALUE obj, VALUE rng,
-				       VALUE vx0p, VALUE vefunc,
-				       VALUE vstep, VALUE vmetric, VALUE vprint,
-				       VALUE vparams)
+               VALUE vx0p, VALUE vefunc,
+               VALUE vstep, VALUE vmetric, VALUE vprint,
+               VALUE vparams)
 {
   gsl_rng *r = NULL;
   siman_solver *ss = NULL;
@@ -587,16 +587,16 @@ static VALUE rb_gsl_siman_solver_solve(VALUE obj, VALUE rng,
   }
   if (!rb_obj_is_kind_of(rng, cgsl_rng))
     rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Rng expected)",
-	     rb_class2name(CLASS_OF(rng)));
+       rb_class2name(CLASS_OF(rng)));
   if (!rb_obj_is_kind_of(vefunc, cgsl_siman_Efunc))
     rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Siman::Efunc expected)",
-	     rb_class2name(CLASS_OF(vefunc)));
+       rb_class2name(CLASS_OF(vefunc)));
   if (!rb_obj_is_kind_of(vstep, cgsl_siman_step))
     rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Siman::Step expected)",
-	     rb_class2name(CLASS_OF(vstep)));
+       rb_class2name(CLASS_OF(vstep)));
   if (!rb_obj_is_kind_of(vmetric, cgsl_siman_metric))
     rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Siman::Metric expected)",
-	     rb_class2name(CLASS_OF(vmetric)));
+       rb_class2name(CLASS_OF(vmetric)));
 
   Data_Get_Struct(rng, gsl_rng, r);
   Data_Get_Struct(vefunc, siman_Efunc, efunc);
@@ -607,13 +607,13 @@ static VALUE rb_gsl_siman_solver_solve(VALUE obj, VALUE rng,
   } else {
     if (!rb_obj_is_kind_of(vprint, cgsl_siman_print))
       rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Siman::Print expected)",
-	       rb_class2name(CLASS_OF(vprint)));
+         rb_class2name(CLASS_OF(vprint)));
     Data_Get_Struct(vprint, siman_print, print);
     ss->proc_print   = print->proc;
   }
   if (!rb_obj_is_kind_of(vparams, cgsl_siman_params))
     rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Siman::Params expected)",
-	     rb_class2name(CLASS_OF(vparams)));
+       rb_class2name(CLASS_OF(vparams)));
 
   Data_Get_Struct(vparams, gsl_siman_params_t, params);
 
@@ -625,23 +625,23 @@ static VALUE rb_gsl_siman_solver_solve(VALUE obj, VALUE rng,
 
   if (NIL_P(vprint)) {
     gsl_siman_solve(r, ss, rb_gsl_siman_Efunc_t, 
-		    rb_gsl_siman_step_t, 
-		    rb_gsl_siman_metric_t, 
-		    NULL,
-		    rb_gsl_siman_copy_t, 
-		    rb_gsl_siman_copy_construct_t,
-		    rb_gsl_siman_destroy_t, 0,
-		    *params);
+        rb_gsl_siman_step_t, 
+        rb_gsl_siman_metric_t, 
+        NULL,
+        rb_gsl_siman_copy_t, 
+        rb_gsl_siman_copy_construct_t,
+        rb_gsl_siman_destroy_t, 0,
+        *params);
 
   } else {
     gsl_siman_solve(r, ss, rb_gsl_siman_Efunc_t, 
-		    rb_gsl_siman_step_t, 
-		    rb_gsl_siman_metric_t, 
-		    rb_gsl_siman_print_t, 
-		    rb_gsl_siman_copy_t, 
-		    rb_gsl_siman_copy_construct_t,
-		    rb_gsl_siman_destroy_t, 0,
-		    *params);
+        rb_gsl_siman_step_t, 
+        rb_gsl_siman_metric_t, 
+        rb_gsl_siman_print_t, 
+        rb_gsl_siman_copy_t, 
+        rb_gsl_siman_copy_construct_t,
+        rb_gsl_siman_destroy_t, 0,
+        *params);
   }
 
   gsl_vector_memcpy(vtmp, ss->vx);

@@ -199,7 +199,7 @@ static VALUE rb_gsl_poly_make_rational(VALUE obj, VALUE other)
     case T_ARRAY:
       p2 = gsl_vector_alloc(RARRAY_LEN(other));
       for (i = 0; i < p2->size; i++)
-	gsl_vector_set(p2, i, NUM2DBL(rb_ary_entry(other, i)));
+  gsl_vector_set(p2, i, NUM2DBL(rb_ary_entry(other, i)));
       rnew = gsl_rational_new(p, p2);
       gsl_vector_free(p2);
       break;
@@ -211,7 +211,7 @@ static VALUE rb_gsl_poly_make_rational(VALUE obj, VALUE other)
       break;
     default:
       rb_raise(rb_eTypeError, "wrong argument type %s", 
-	       rb_class2name(CLASS_OF(other)));
+         rb_class2name(CLASS_OF(other)));
       break;
     }
   }
@@ -342,7 +342,7 @@ static VALUE rb_gsl_rational_div(VALUE obj, VALUE other)
     case T_ARRAY:
       p = gsl_vector_alloc(RARRAY_LEN(other));
       for (i = 0; i < p->size; i++)
-	gsl_vector_set(p, i, NUM2DBL(rb_ary_entry(other, i)));
+  gsl_vector_set(p, i, NUM2DBL(rb_ary_entry(other, i)));
       rnew = gsl_rational_div_poly(r, p);
       gsl_vector_free(p);
       break;
@@ -353,7 +353,7 @@ static VALUE rb_gsl_rational_div(VALUE obj, VALUE other)
       break;
     default:
       rb_raise(rb_eTypeError, "wrong argument type %s", 
-	       rb_class2name(CLASS_OF(other)));
+         rb_class2name(CLASS_OF(other)));
       break;
     }
   }
@@ -408,7 +408,7 @@ static VALUE rb_gsl_rational_coerce(VALUE obj, VALUE other)
   gsl_vector_set(ptmp, 0, 1.0);
   r = gsl_rational_new2(p, ptmp);
   return rb_ary_new3(2, 
-		     Data_Wrap_Struct(cgsl_rational, gsl_rational_mark, gsl_rational_free, r), obj);
+         Data_Wrap_Struct(cgsl_rational, gsl_rational_mark, gsl_rational_free, r), obj);
 }
 
 static VALUE rb_gsl_rational_zero(VALUE obj)

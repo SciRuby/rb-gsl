@@ -16,8 +16,8 @@ rng2 = GSL::Rng.alloc()
 h2 = GSL::Histogram.alloc(NBINS, [-MAX, MAX])
 NDATA2 = 10000
 for i in 0...NDATA2 do
-	val = hpdf.sample(rng2.uniform())
-	h2.fill(val)
+  val = hpdf.sample(rng2.uniform())
+  h2.fill(val)
 end
 
 GSL::graph(h, h2)

@@ -20,21 +20,21 @@ static VALUE *pgsl_error;
 
 static void Init_rb_gsl_define_GSL_CONST(VALUE module);
 void rb_gsl_error_handler(const char *reason, const char *file,
-			  int line, int gsl_errno);
+        int line, int gsl_errno);
 static void rb_gsl_my_error_handler(const char *reason, const char *file,
-				    int line, int gsl_errno);
+            int line, int gsl_errno);
 
 void rb_gsl_error_handler(const char *reason, const char *file,
-			  int line, int gsl_errno)
+        int line, int gsl_errno)
 {
   const char *emessage = gsl_strerror(gsl_errno);
   rb_raise(pgsl_error[gsl_errno], 
-	   "Ruby/GSL error code %d, %s (file %s, line %d), %s",
-	   gsl_errno, reason, file, line, emessage);
+     "Ruby/GSL error code %d, %s (file %s, line %d), %s",
+     gsl_errno, reason, file, line, emessage);
 }
 
 static void rb_gsl_my_error_handler(const char *reason, const char *file,
-				    int line, int gsl_errno)
+            int line, int gsl_errno)
 {
   VALUE vreason, vfile;
   VALUE vline, verrno;
@@ -167,13 +167,13 @@ static VALUE rb_gsl_strerror(VALUE obj, VALUE errn);
 static void define_module_functions(VALUE module)
 {
   rb_define_module_function(module, "set_error_handler_off", 
-			    rb_gsl_set_error_handler_off, 0);
+          rb_gsl_set_error_handler_off, 0);
   rb_define_module_function(module, "strerror", 
-			    rb_gsl_strerror, 1);
+          rb_gsl_strerror, 1);
   rb_define_module_function(module, "set_error_handler",
-			    rb_gsl_set_error_handler, -1);
+          rb_gsl_set_error_handler, -1);
   rb_define_module_function(module, "set_default_error_handler",
-			    rb_gsl_set_default_error_handler, 0);
+          rb_gsl_set_default_error_handler, 0);
 }
 
 static VALUE rb_gsl_strerror(VALUE obj, VALUE errn)

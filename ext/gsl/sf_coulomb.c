@@ -24,14 +24,14 @@ static VALUE rb_gsl_sf_hydrogenicR_1_e(VALUE obj,  VALUE Z, VALUE r)
 }
 
 static VALUE rb_gsl_sf_hydrogenicR(VALUE obj, VALUE n, VALUE l, 
-				   VALUE Z, VALUE r)
+           VALUE Z, VALUE r)
 {
   return rb_float_new(gsl_sf_hydrogenicR(FIX2INT(n), FIX2INT(l),
-					   NUM2DBL(Z), NUM2DBL(r)));
+             NUM2DBL(Z), NUM2DBL(r)));
 }
 
 static VALUE rb_gsl_sf_hydrogenicR_e(VALUE obj, VALUE n, VALUE l, 
-				     VALUE Z, VALUE r)
+             VALUE Z, VALUE r)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -41,12 +41,12 @@ static VALUE rb_gsl_sf_hydrogenicR_e(VALUE obj, VALUE n, VALUE l,
   Need_Float(Z); Need_Float(r);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
   /*status =*/ gsl_sf_hydrogenicR_e(FIX2INT(n), FIX2INT(l),
-			    NUM2DBL(Z), NUM2DBL(r), rslt);
+          NUM2DBL(Z), NUM2DBL(r), rslt);
   return v;
 }
 
 static VALUE rb_gsl_sf_coulomb_wave_FG_e(VALUE obj, VALUE eta, VALUE x,
-					 VALUE L_F, VALUE k)
+           VALUE L_F, VALUE k)
 
 {
   gsl_sf_result *F, *Fp, *G, *Gp;
@@ -60,13 +60,13 @@ static VALUE rb_gsl_sf_coulomb_wave_FG_e(VALUE obj, VALUE eta, VALUE x,
   vG = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, G);
   vGp = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, Gp);
   status = gsl_sf_coulomb_wave_FG_e(NUM2DBL(eta), NUM2DBL(x), NUM2DBL(L_F),
-				    FIX2INT(k), F, Fp, G, Gp, &exp_F, &exp_G);
+            FIX2INT(k), F, Fp, G, Gp, &exp_F, &exp_G);
   return rb_ary_new3(7, vF, vFp, vG, vGp,
-		     rb_float_new(exp_F), rb_float_new(exp_G), INT2FIX(status));
+         rb_float_new(exp_F), rb_float_new(exp_G), INT2FIX(status));
 }
 
 static VALUE rb_gsl_sf_coulomb_wave_F_array(VALUE obj, VALUE Lmin, VALUE kmax,
-					 VALUE eta, VALUE x)
+           VALUE eta, VALUE x)
 {
   double F_exponent;
   int status;
@@ -77,14 +77,14 @@ static VALUE rb_gsl_sf_coulomb_wave_F_array(VALUE obj, VALUE Lmin, VALUE kmax,
   size = FIX2INT(kmax);
   v = gsl_vector_alloc(size);
   status = gsl_sf_coulomb_wave_F_array(NUM2DBL(Lmin), size, NUM2DBL(eta), 
-				   NUM2DBL(x), v->data, &F_exponent);
+           NUM2DBL(x), v->data, &F_exponent);
   
   return rb_ary_new3(3, Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v), 
-		     rb_float_new(F_exponent), INT2FIX(status));
+         rb_float_new(F_exponent), INT2FIX(status));
 }
 
 static VALUE rb_gsl_sf_coulomb_wave_FG_array(VALUE obj, VALUE Lmin, VALUE kmax,
-					 VALUE eta, VALUE x)
+           VALUE eta, VALUE x)
 {
   double F_exponent, G_exponent;
   int status;
@@ -98,17 +98,17 @@ static VALUE rb_gsl_sf_coulomb_wave_FG_array(VALUE obj, VALUE Lmin, VALUE kmax,
   vg = gsl_vector_alloc(size);
 
   status = gsl_sf_coulomb_wave_FG_array(NUM2DBL(Lmin), size, NUM2DBL(eta), 
-				   NUM2DBL(x), vf->data, vg->data,
-				    &F_exponent, &G_exponent);
+           NUM2DBL(x), vf->data, vg->data,
+            &F_exponent, &G_exponent);
   fary = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vf);
   gary = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vf);
   return rb_ary_new3(5, fary, gary,
-		     rb_float_new(F_exponent), rb_float_new(G_exponent),
-		     INT2FIX(status));
+         rb_float_new(F_exponent), rb_float_new(G_exponent),
+         INT2FIX(status));
 }
 
 static VALUE rb_gsl_sf_coulomb_wave_FGp_array(VALUE obj, VALUE Lmin, VALUE kmax,
-					 VALUE eta, VALUE x)
+           VALUE eta, VALUE x)
 {
   double F_exponent, G_exponent;
   int status;
@@ -124,20 +124,20 @@ static VALUE rb_gsl_sf_coulomb_wave_FGp_array(VALUE obj, VALUE Lmin, VALUE kmax,
   vgp = gsl_vector_alloc(size);
 
   status = gsl_sf_coulomb_wave_FGp_array(NUM2DBL(Lmin), size, NUM2DBL(eta), 
-				     NUM2DBL(x), vf->data, vfp->data, 
-				     vg->data, vgp->data,
-				     &F_exponent, &G_exponent);
+             NUM2DBL(x), vf->data, vfp->data, 
+             vg->data, vgp->data,
+             &F_exponent, &G_exponent);
   fary = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vf);
   fpary =Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vfp);
   gary = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vg);
   gpary =Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vgp);
   return rb_ary_new3(7, fary, fpary, gary, gpary,
-		     rb_float_new(F_exponent), rb_float_new(G_exponent),
-		     INT2FIX(status));
+         rb_float_new(F_exponent), rb_float_new(G_exponent),
+         INT2FIX(status));
 }
 
 static VALUE rb_gsl_sf_coulomb_wave_sphF_array(VALUE obj, VALUE Lmin, VALUE kmax,
-					 VALUE eta, VALUE x)
+           VALUE eta, VALUE x)
 {
   int status;
   size_t size;
@@ -148,10 +148,10 @@ static VALUE rb_gsl_sf_coulomb_wave_sphF_array(VALUE obj, VALUE Lmin, VALUE kmax
   v = gsl_vector_alloc(size);
   v2 = gsl_vector_alloc(size);
   status =  gsl_sf_coulomb_wave_sphF_array(NUM2DBL(Lmin), size, NUM2DBL(eta), 
-				       NUM2DBL(x), v->data, v2->data);
+               NUM2DBL(x), v->data, v2->data);
   return rb_ary_new3(3, Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v), 
-		     Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v2), 
-		     INT2FIX(status));
+         Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v2), 
+         INT2FIX(status));
 }
 
 static VALUE rb_gsl_sf_coulomb_CL_e(VALUE obj, VALUE L, VALUE eta)
@@ -160,7 +160,7 @@ static VALUE rb_gsl_sf_coulomb_CL_e(VALUE obj, VALUE L, VALUE eta)
 }
 
 static VALUE rb_gsl_sf_coulomb_CL_array(VALUE obj, VALUE Lmin, VALUE kmax,
-					VALUE eta)
+          VALUE eta)
 {
   gsl_vector *v = NULL;
   size_t size;

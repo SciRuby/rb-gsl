@@ -25,7 +25,7 @@ static VALUE rb_gsl_sf_multiply_e(VALUE obj, VALUE x, VALUE y)
 }
 
 static VALUE rb_gsl_sf_multiply_err_e(VALUE obj, VALUE x, VALUE dx,
-				      VALUE y, VALUE dy)
+              VALUE y, VALUE dy)
 {
   gsl_sf_result *r;
   VALUE v;
@@ -35,7 +35,7 @@ static VALUE rb_gsl_sf_multiply_err_e(VALUE obj, VALUE x, VALUE dx,
   Need_Float(dx); Need_Float(dy);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, r);
   /*status =*/ gsl_sf_multiply_err_e(NUM2DBL(x), NUM2DBL(dx),
-				 NUM2DBL(y), NUM2DBL(dy), r);
+         NUM2DBL(y), NUM2DBL(dy), r);
   return v;
 }
 

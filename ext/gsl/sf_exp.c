@@ -119,7 +119,7 @@ static VALUE rb_gsl_sf_exp_err_e10_e(VALUE obj, VALUE x, VALUE dx)
 }
 
 static VALUE rb_gsl_sf_exp_mult_err_e(VALUE obj, VALUE x, VALUE dx,
-				      VALUE y, VALUE dy)
+              VALUE y, VALUE dy)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -133,7 +133,7 @@ static VALUE rb_gsl_sf_exp_mult_err_e(VALUE obj, VALUE x, VALUE dx,
 }
 
 static VALUE rb_gsl_sf_exp_mult_err_e10_e(VALUE obj, VALUE x, VALUE dx,
-					  VALUE y, VALUE dy)
+            VALUE y, VALUE dy)
 {
   gsl_sf_result_e10 *rslt = NULL;
   VALUE v;

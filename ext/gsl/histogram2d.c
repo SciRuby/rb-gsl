@@ -98,7 +98,7 @@ static VALUE rb_gsl_histogram2d_alloc_uniform(int argc, VALUE *argv, VALUE klass
     Need_Float(argv[4]); Need_Float(argv[5]);
     h = gsl_histogram2d_alloc(FIX2INT(argv[0]), FIX2INT(argv[3]));
     gsl_histogram2d_set_ranges_uniform(h, NUM2DBL(argv[1]), NUM2DBL(argv[2]),
-				       NUM2DBL(argv[4]), NUM2DBL(argv[5]));
+               NUM2DBL(argv[4]), NUM2DBL(argv[5]));
     return Data_Wrap_Struct(klass, 0, gsl_histogram2d_free, h);
     break;
   default:
@@ -205,7 +205,7 @@ static VALUE rb_gsl_histogram2d_accumulate(int argc, VALUE *argv, VALUE obj)
     n = (size_t) GSL_MIN_INT((int) vx->size, (int) vy->size);
     for (i = 0; i < n; i++)
       gsl_histogram2d_accumulate(h, gsl_vector_get(vx, i), gsl_vector_get(vy, i),
-				 weight);
+         weight);
   } else {
     gsl_histogram2d_accumulate(h, NUM2DBL(argv[0]), NUM2DBL(argv[1]), weight);
   }
@@ -254,13 +254,13 @@ static VALUE rb_gsl_histogram2d_get(int argc, VALUE *argv, VALUE obj)
     switch (TYPE(argv[0])) {
     case T_ARRAY:
       return rb_float_new(gsl_histogram2d_get(h2, FIX2INT(rb_ary_entry(argv[0], 0)),
-					      FIX2INT(rb_ary_entry(argv[0], 1))));
+                FIX2INT(rb_ary_entry(argv[0], 1))));
       break;
     case T_FIXNUM:
       CHECK_FIXNUM(argv[0]); 
       i = (size_t) FIX2INT(argv[0]);
       if (i >= h2->ny)
-	rb_raise(rb_eIndexError, "wrong index");
+  rb_raise(rb_eIndexError, "wrong index");
       h1 = ALLOC(mygsl_histogram2d_view);
       h1->h.n = h2->ny;
       h1->h.range = h2->yrange;
@@ -269,7 +269,7 @@ static VALUE rb_gsl_histogram2d_get(int argc, VALUE *argv, VALUE obj)
       break;
     default:
       rb_raise(rb_eTypeError, "wrong argument type %s (Array or Fixnum expected)",
-	       rb_class2name(CLASS_OF(argv[0])));
+         rb_class2name(CLASS_OF(argv[0])));
       break;
     }
     break;
@@ -689,7 +689,7 @@ static VALUE rb_gsl_histogram2d_bin(VALUE obj)
 }
 
 void mygsl_histogram2d_yproject(const gsl_histogram2d *h2, size_t istart,
-				size_t iend, gsl_histogram *h)
+        size_t iend, gsl_histogram *h)
 {
   size_t i, j;
   double sum;
@@ -704,7 +704,7 @@ void mygsl_histogram2d_yproject(const gsl_histogram2d *h2, size_t istart,
 }
 
 gsl_histogram* mygsl_histogram2d_calloc_yproject(const gsl_histogram2d *h2,
-						 size_t istart, size_t iend)
+             size_t istart, size_t iend)
 {
   gsl_histogram *h;
   h = gsl_histogram_calloc_range(h2->ny, h2->yrange);
@@ -713,7 +713,7 @@ gsl_histogram* mygsl_histogram2d_calloc_yproject(const gsl_histogram2d *h2,
 }
 
 void mygsl_histogram2d_xproject(const gsl_histogram2d *h2, size_t jstart,
-				size_t jend, gsl_histogram *h)
+        size_t jend, gsl_histogram *h)
 {
   size_t i, j;
   double sum;
@@ -728,7 +728,7 @@ void mygsl_histogram2d_xproject(const gsl_histogram2d *h2, size_t jstart,
 }
 
 gsl_histogram* mygsl_histogram2d_calloc_xproject(const gsl_histogram2d *h2,
-						 size_t jstart, size_t jend)
+             size_t jstart, size_t jend)
 {
   gsl_histogram *h;
   h = gsl_histogram_calloc_range(h2->nx, h2->xrange);
@@ -846,7 +846,7 @@ static VALUE rb_gsl_histogram2d_fread2(VALUE obj, VALUE io)
 }
 
 static gsl_histogram2d* mygsl_histogram2d_calloc_integrate(const gsl_histogram2d *h,
-							   int flag)
+                 int flag)
 {
   gsl_histogram2d *hi;
   size_t i, j, k;
@@ -867,26 +867,26 @@ static gsl_histogram2d* mygsl_histogram2d_calloc_integrate(const gsl_histogram2d
     }
     for (i = nx-2;; i--) {
       for (j = ny-2;; j--) {
-	hi->bin[i*ny+j] = ((gsl_histogram2d_get(hi, i+1, j) 
-			    + gsl_histogram2d_get(hi, i, j+1))
-			   - gsl_histogram2d_get(hi, i+1, j+1))
-	  + gsl_histogram2d_get(h, i, j);
-	if (j == 0) break;
+  hi->bin[i*ny+j] = ((gsl_histogram2d_get(hi, i+1, j) 
+          + gsl_histogram2d_get(hi, i, j+1))
+         - gsl_histogram2d_get(hi, i+1, j+1))
+    + gsl_histogram2d_get(h, i, j);
+  if (j == 0) break;
       }
       if (i == 0) break;
     }
   } else {
     hi->bin[0] = h->bin[0];
     for (j = 1; j < ny; j++) hi->bin[j] = gsl_histogram2d_get(hi, 0, j-1) 
-			       + gsl_histogram2d_get(h, 0, j);
+             + gsl_histogram2d_get(h, 0, j);
     for (i = 1; i < nx; i++) hi->bin[i*ny] = gsl_histogram2d_get(hi, i-1, 0)
-			       + gsl_histogram2d_get(h, i, 0);
+             + gsl_histogram2d_get(h, i, 0);
     for (i = 1; i < nx; i++) {
       for (j = 1; j < ny; j++) {
-	hi->bin[i*ny+j] = ((gsl_histogram2d_get(hi, i-1, j) 
-			    + gsl_histogram2d_get(hi, i, j-1))
-			   - gsl_histogram2d_get(hi, i-1, j-1))
-	  + gsl_histogram2d_get(h, i, j);
+  hi->bin[i*ny+j] = ((gsl_histogram2d_get(hi, i-1, j) 
+          + gsl_histogram2d_get(hi, i, j-1))
+         - gsl_histogram2d_get(hi, i-1, j-1))
+    + gsl_histogram2d_get(h, i, j);
       }
     }
   }
@@ -940,40 +940,40 @@ void Init_gsl_histogram2d(VALUE module)
 
   cgsl_histogram2d = rb_define_class_under(module, "Histogram2d", cGSL_Object);
   cgsl_histogram2d_view = rb_define_class_under(cgsl_histogram2d, "View",
-						cgsl_histogram);
+            cgsl_histogram);
 
   cgsl_histogram2d_integ = rb_define_class_under(cgsl_histogram2d, "Integral", 
-					       cgsl_histogram2d);
+                 cgsl_histogram2d);
 #ifdef GSL_0_9_4_LATER
   /*  rb_define_singleton_method(cgsl_histogram2d, "new", rb_gsl_histogram2d_alloc, -1);*/
   rb_define_singleton_method(cgsl_histogram2d, "alloc", rb_gsl_histogram2d_alloc, -1);
   rb_define_singleton_method(cgsl_histogram2d, "new_uniform", 
-			     rb_gsl_histogram2d_alloc_uniform, -1);
+           rb_gsl_histogram2d_alloc_uniform, -1);
   rb_define_singleton_method(cgsl_histogram2d, "alloc_uniform", 
-			     rb_gsl_histogram2d_alloc_uniform, -1);
+           rb_gsl_histogram2d_alloc_uniform, -1);
 #endif
 
   rb_define_singleton_method(cgsl_histogram2d, "equal_bins_p", 
-			     rb_gsl_histogram2d_equal_bins_p, 2);
+           rb_gsl_histogram2d_equal_bins_p, 2);
   rb_define_singleton_method(cgsl_histogram2d, "equal_bins_p?", 
-			     rb_gsl_histogram2d_equal_bins_p2, 2);
+           rb_gsl_histogram2d_equal_bins_p2, 2);
 
   rb_define_method(cgsl_histogram2d, "set_ranges",  
-		   rb_gsl_histogram2d_set_ranges, -1);
+       rb_gsl_histogram2d_set_ranges, -1);
   rb_define_method(cgsl_histogram2d, "set_ranges_uniform", 
-		   rb_gsl_histogram2d_set_ranges_uniform, -1);
+       rb_gsl_histogram2d_set_ranges_uniform, -1);
 
   rb_define_singleton_method(cgsl_histogram2d, "memcpy",  
-			     rb_gsl_histogram2d_memcpy, 2);
+           rb_gsl_histogram2d_memcpy, 2);
   rb_define_method(cgsl_histogram2d, "clone",  rb_gsl_histogram2d_clone, 0);
   rb_define_alias(cgsl_histogram2d, "duplicate", "clone");
   rb_define_method(cgsl_histogram2d, "increment",  
-		   rb_gsl_histogram2d_accumulate, -1);
+       rb_gsl_histogram2d_accumulate, -1);
   rb_define_alias(cgsl_histogram2d, "fill", "increment");
   rb_define_alias(cgsl_histogram2d, "accumulate", "increment");
 
   rb_define_method(cgsl_histogram2d, "increment2",  
-		   rb_gsl_histogram2d_accumulate2, -1);
+       rb_gsl_histogram2d_accumulate2, -1);
   rb_define_alias(cgsl_histogram2d, "accumulate2", "increment2");
   rb_define_alias(cgsl_histogram2d, "fill2", "increment2");
 
@@ -1032,13 +1032,13 @@ void Init_gsl_histogram2d(VALUE module)
   /*  rb_define_singleton_method(cgsl_histogram2d_pdf, "new", 
       rb_gsl_histogram2d_pdf_alloc, 2);*/
   rb_define_singleton_method(cgsl_histogram2d_pdf, "alloc", 
-			     rb_gsl_histogram2d_pdf_alloc, 2);
+           rb_gsl_histogram2d_pdf_alloc, 2);
   rb_define_method(cgsl_histogram2d_pdf, "init",  rb_gsl_histogram2d_pdf_init, 1);
 #else
   /*  rb_define_singleton_method(cgsl_histogram2d_pdf, "new", 
       rb_gsl_histogram2d_pdf_alloc, 1);*/
   rb_define_singleton_method(cgsl_histogram2d_pdf, "alloc", 
-			     rb_gsl_histogram2d_pdf_alloc, 1);
+           rb_gsl_histogram2d_pdf_alloc, 1);
 #endif
 
   rb_define_method(cgsl_histogram2d_pdf, "sample",  rb_gsl_histogram2d_pdf_sample, 2);

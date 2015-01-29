@@ -80,7 +80,7 @@ static VALUE rb_gsl_dht_apply(int argc, VALUE *argv, VALUE obj)
 #endif
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector expected)",
-	       rb_class2name(CLASS_OF(argv[0])));
+         rb_class2name(CLASS_OF(argv[0])));
     }
     gsl_dht_apply(t, ptr1, ptr2);
     return ary;
@@ -93,7 +93,7 @@ static VALUE rb_gsl_dht_apply(int argc, VALUE *argv, VALUE obj)
 }
 
 static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n, 
-			       double (*sample)(const gsl_dht*, int))
+             double (*sample)(const gsl_dht*, int))
 {
   gsl_dht *t = NULL;
   gsl_vector_int *vi;
@@ -129,9 +129,9 @@ static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n,
       Data_Get_Struct(n, gsl_vector_int, vi);
       v = gsl_vector_alloc(vi->size);
       for (i = 0; i < v->size; i++) {
-	nn = gsl_vector_int_get(vi, i);
-	val = (*sample)(t, nn);
-	gsl_vector_set(v, i, val);
+        nn = gsl_vector_int_get(vi, i);
+        val = (*sample)(t, nn);
+        gsl_vector_set(v, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
 #ifdef HAVE_NARRAY_H
@@ -142,13 +142,13 @@ static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n,
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, cNArray);
       ptr2 = NA_PTR_TYPE(ary, double*);
       for (i = 0; i < size; i++) {
-	ptr2[i] = (*sample)(t, ptr[i]);	
+        ptr2[i] = (*sample)(t, ptr[i]);  
       }
       return ary;
 #endif
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector::Int expected)",
-	       rb_class2name(CLASS_OF(n)));
+         rb_class2name(CLASS_OF(n)));
     }
 
   }
@@ -204,8 +204,8 @@ static VALUE rb_gsl_dht_sample(int argc, VALUE *argv, VALUE obj)
     mm = gsl_matrix_alloc(t->size, t->size);
     for (n = 0; n < t->size; n++) {
       for (m = 0; m < t->size; m++) {
-	val =  t->j[n+1]*gsl_dht_x_sample(t, m)/t->xmax;
-	gsl_matrix_set(mm, n, m, val);
+        val = t->j[n+1]*gsl_dht_x_sample(t, m)/t->xmax;
+        gsl_matrix_set(mm, n, m, val);
       }
     }
     return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mm);
@@ -235,8 +235,8 @@ static VALUE rb_gsl_dht_num(int argc, VALUE *argv, VALUE obj)
     mm = gsl_matrix_alloc(t->size, t->size);
     for (n = 0; n < t->size; n++) {
       for (m = 0; m < t->size; m++) {
-	val = gsl_sf_bessel_Jnu(t->nu, t->j[n+1]*gsl_dht_x_sample(t, m)/t->xmax);
-	gsl_matrix_set(mm, n, m, val);
+        val = gsl_sf_bessel_Jnu(t->nu, t->j[n+1]*gsl_dht_x_sample(t, m)/t->xmax);
+        gsl_matrix_set(mm, n, m, val);
       }
     }
     return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mm);
@@ -312,9 +312,9 @@ static VALUE rb_gsl_dht_coef(int argc, VALUE *argv, VALUE obj)
     mm = gsl_matrix_alloc(t->size, t->size);
     for (n = 0; n < t->size; n++) {
       for (m = 0; m < t->size; m++) {
-	val = gsl_sf_bessel_Jnu(t->nu, t->j[n+1]*gsl_dht_x_sample(t, m)/t->xmax);
-	val *= (2.0/t->xmax/t->xmax)/t->J2[m+1];
-	gsl_matrix_set(mm, n, m, val);
+        val = gsl_sf_bessel_Jnu(t->nu, t->j[n+1]*gsl_dht_x_sample(t, m)/t->xmax);
+        val *= (2.0/t->xmax/t->xmax)/t->J2[m+1];
+        gsl_matrix_set(mm, n, m, val);
       }
     }
     return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mm);

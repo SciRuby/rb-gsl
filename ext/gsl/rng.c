@@ -76,10 +76,10 @@ static VALUE rb_gsl_rng_alloc(int argc, VALUE *argv, VALUE klass)
     } else if (argc == 2) {
       itype = TYPE(argv[1]);
       if (itype == T_FIXNUM || itype == T_BIGNUM) {
-	seed = FIX2INT(argv[1]);
+  seed = FIX2INT(argv[1]);
       } else {
-	rb_raise(rb_eArgError, 
-		 "bad argument 2, seed must be an integer.");
+  rb_raise(rb_eArgError, 
+     "bad argument 2, seed must be an integer.");
       }
     } else {
       rb_raise(rb_eArgError, "too many arguments (%d for 0 or 1)", argc);

@@ -42,13 +42,13 @@ static VALUE rb_gsl_fsdfminimizer_set(VALUE obj, VALUE ff, VALUE xx, VALUE ss)
   gsl_multimin_fsdfminimizer *gmf = NULL;
   gsl_multimin_function_fsdf *F = NULL;
   gsl_vector *x;
-	size_t bundle_size;
+  size_t bundle_size;
   int status;
   CHECK_MULTIMIN_FUNCTION_FSDF(ff);
   Data_Get_Struct(obj, gsl_multimin_fsdfminimizer, gmf);
   Data_Get_Struct(ff, gsl_multimin_function_fsdf, F);
   Data_Get_Vector(xx, x);
-	bundle_size = (size_t) FIX2INT(ss);
+  bundle_size = (size_t) FIX2INT(ss);
   status = gsl_multimin_fsdfminimizer_set(gmf, F, x, bundle_size);
   return INT2FIX(status);
 }
@@ -134,12 +134,12 @@ static VALUE rb_gsl_fsdfminimizer_eps(VALUE obj)
 
 void Init_multimin_fsdf(VALUE module)
 {
-	VALUE cmin;
-	
-	cmin = rb_define_class_under(module, "FsdfMinimizer",  cGSL_Object);
-	cfsdf = rb_define_class_under(module, "Function_fsdf", cgsl_multimin_function_fdf);
-	
-	rb_define_singleton_method(cmin, "alloc", rb_gsl_fsdfminimizer_alloc, 2);
+  VALUE cmin;
+  
+  cmin = rb_define_class_under(module, "FsdfMinimizer",  cGSL_Object);
+  cfsdf = rb_define_class_under(module, "Function_fsdf", cgsl_multimin_function_fdf);
+  
+  rb_define_singleton_method(cmin, "alloc", rb_gsl_fsdfminimizer_alloc, 2);
   rb_define_method(cmin, "set", rb_gsl_fsdfminimizer_set, 3);
   rb_define_method(cmin, "name", rb_gsl_fsdfminimizer_name, 0);
   rb_define_method(cmin, "iterate", rb_gsl_fsdfminimizer_iterate, 0);
@@ -150,7 +150,7 @@ void Init_multimin_fsdf(VALUE module)
   rb_define_method(cmin, "restart", rb_gsl_fsdfminimizer_restart, 0);
   rb_define_method(cmin, "test_gradient", rb_gsl_fsdfminimizer_test_gradient, 1);
   rb_define_method(cmin, "test_convergence", rb_gsl_fsdfminimizer_test_convergence, 1);  
-  rb_define_method(cmin, "eps", rb_gsl_fsdfminimizer_eps, 0);	
+  rb_define_method(cmin, "eps", rb_gsl_fsdfminimizer_eps, 0);  
 }
 
 #endif

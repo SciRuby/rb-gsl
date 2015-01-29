@@ -34,10 +34,10 @@ static VALUE rb_gsl_interp_new(int argc, VALUE *argv, VALUE klass)
       break;
     default:
       if (ptrx == NULL) {
-	ptrx = get_vector_ptr(argv[i], &stride, &sizex);
+  ptrx = get_vector_ptr(argv[i], &stride, &sizex);
       } else {
-	ptry = get_vector_ptr(argv[i], &stride, &sizey);
-	size = GSL_MIN_INT(sizex, sizey);
+  ptry = get_vector_ptr(argv[i], &stride, &sizey);
+  size = GSL_MIN_INT(sizex, sizey);
       }
       break;
     }
@@ -170,9 +170,9 @@ static VALUE rb_gsl_interp_accel_find(VALUE obj, VALUE vv, VALUE xx)
 }
 
 static VALUE rb_gsl_interp_evaluate(VALUE obj, VALUE xxa, VALUE yya, VALUE xx,
-				    double (*eval)(const gsl_interp *, const double [], 
-						   const double [], double, 
-						   gsl_interp_accel *))
+            double (*eval)(const gsl_interp *, const double [], 
+               const double [], double, 
+               gsl_interp_accel *))
 {
   rb_gsl_interp *rgi = NULL;
   double *ptrx = NULL, *ptry = NULL;
@@ -220,7 +220,7 @@ static VALUE rb_gsl_interp_evaluate(VALUE obj, VALUE xxa, VALUE yya, VALUE xx,
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(xx));
       ptr = NA_PTR_TYPE(ary, double*);
       for (i = 0; (int) i < na->total; i++)
-	ptr[i] = (*eval)(rgi->p, ptrx, ptry, ptrz[i], rgi->a);
+  ptr[i] = (*eval)(rgi->p, ptrx, ptry, ptrz[i], rgi->a);
       return ary;
     }
 #endif
@@ -228,18 +228,18 @@ static VALUE rb_gsl_interp_evaluate(VALUE obj, VALUE xxa, VALUE yya, VALUE xx,
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-	val = (*eval)(rgi->p, ptrx, ptry, gsl_vector_get(v, i), rgi->a);
-	gsl_vector_set(vnew, i, val);
+  val = (*eval)(rgi->p, ptrx, ptry, gsl_vector_get(v, i), rgi->a);
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else if (MATRIX_P(xx)) {
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (j = 0; j < m->size2; j++) {
-	  val = (*eval)(rgi->p, ptrx, ptry, gsl_matrix_get(m, i, j), rgi->a);
-	  gsl_matrix_set(mnew, i, j, val);
-	}
+  for (j = 0; j < m->size2; j++) {
+    val = (*eval)(rgi->p, ptrx, ptry, gsl_matrix_get(m, i, j), rgi->a);
+    gsl_matrix_set(mnew, i, j, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -339,7 +339,7 @@ static VALUE rb_gsl_interp_eval_deriv2_e(VALUE obj, VALUE xxa, VALUE yya, VALUE 
 }
 
 static VALUE rb_gsl_interp_eval_integ(VALUE obj, VALUE xxa, VALUE yya, 
-				      VALUE aa, VALUE bb)
+              VALUE aa, VALUE bb)
 {
   rb_gsl_interp *rgi = NULL;
   double *ptr1 = NULL, *ptr2 = NULL;
@@ -355,7 +355,7 @@ static VALUE rb_gsl_interp_eval_integ(VALUE obj, VALUE xxa, VALUE yya,
 }
 
 static VALUE rb_gsl_interp_eval_integ_e(VALUE obj, VALUE xxa, VALUE yya, 
-					VALUE aa, VALUE bb)
+          VALUE aa, VALUE bb)
 {
   rb_gsl_interp *rgi = NULL;
   double *ptr1 = NULL, *ptr2 = NULL;

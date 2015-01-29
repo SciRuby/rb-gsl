@@ -60,8 +60,8 @@ static VALUE rb_alf_Plm_array(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(argv[1], gsl_vector, res);
       lmax = w->lmax;
       if (res->size < alf_array_size(lmax)) {
-	rb_raise(rb_eRuntimeError, "Vector length is too small. (%d for >= %d\n", (int) res->size,
-		 (int) alf_array_size(lmax));
+        rb_raise(rb_eRuntimeError, "Vector length is too small. (%d for >= %d\n", (int) res->size,
+                 (int) alf_array_size(lmax));
       }
       ret = argv[1];      
     } else { 
@@ -85,8 +85,8 @@ static VALUE rb_alf_Plm_array(int argc, VALUE *argv, VALUE obj)
       CHECK_VECTOR(argv[2]);
       Data_Get_Struct(argv[2], gsl_vector, res);
       if (res->size < alf_array_size(lmax)) {
-	rb_raise(rb_eRuntimeError, "Vector length is too small. (%d for >= %d\n", (int) res->size,
-		 (int) alf_array_size(lmax));
+        rb_raise(rb_eRuntimeError, "Vector length is too small. (%d for >= %d\n", (int) res->size,
+                 (int) alf_array_size(lmax));
       }
       ret = argv[2];
     }
@@ -155,11 +155,11 @@ static VALUE rb_alf_Plm_deriv_array(int argc, VALUE *argv, VALUE obj)
     Data_Get_Struct(argv[3], gsl_vector, deriv);
     if (res->size < alf_array_size(lmax)) {
       rb_raise(rb_eRuntimeError, "Vector length is too small. (%d for >= %d\n", (int) res->size,
-	       (int) alf_array_size(lmax));
+               (int) alf_array_size(lmax));
     }
     if (deriv->size < alf_array_size(lmax)) {
       rb_raise(rb_eRuntimeError, "Vector length is too small. (%d for >= %d\n", (int) res->size,
-	       (int) alf_array_size(lmax));
+               (int) alf_array_size(lmax));
     }
     ret1 = argv[2];
     ret2 = argv[3];

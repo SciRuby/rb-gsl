@@ -53,7 +53,7 @@ double difcost(const gsl_matrix *a, const gsl_matrix *b)
     {
       d = gsl_matrix_get(a, i, j) - gsl_matrix_get(b, i, j);
       dif += d*d;
-	//      dif += pow(gsl_matrix_get(a, i, j) - gsl_matrix_get(b, i, j), 2);
+  //      dif += pow(gsl_matrix_get(a, i, j) - gsl_matrix_get(b, i, j), 2);
     }
   }
   return dif;

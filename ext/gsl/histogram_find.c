@@ -74,9 +74,9 @@ int mygsl_find (const size_t n, const double range[], const double x, size_t * i
 }
 
 int mygsl_find2d (const size_t nx, const double xrange[],
-		  const size_t ny, const double yrange[],
-		  const double x, const double y,
-		  size_t * i, size_t * j)
+      const size_t ny, const double yrange[],
+      const double x, const double y,
+      size_t * i, size_t * j)
 {
   int status = mygsl_find (nx, xrange, x, i);
   if (status) return status;
@@ -86,10 +86,10 @@ int mygsl_find2d (const size_t nx, const double xrange[],
 }
 
 int mygsl_find3d (const size_t nx, const double xrange[],
-		  const size_t ny, const double yrange[],
-		  const size_t nz, const double zrange[],
-		  const double x, const double y, const double z,
-		  size_t * i, size_t * j, size_t *k)
+      const size_t ny, const double yrange[],
+      const size_t nz, const double zrange[],
+      const double x, const double y, const double z,
+      size_t * i, size_t * j, size_t *k)
 {
   int status = mygsl_find (nx, xrange, x, i);
   if (status) return status;

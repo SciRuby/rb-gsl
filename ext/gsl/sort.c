@@ -32,8 +32,8 @@ int rb_gsl_comparison_complex(const void *aa, const void *bb)
   a = (gsl_complex *) aa;
   b = (gsl_complex *) bb;
   return FIX2INT(rb_funcall(rb_block_proc(), RBGSL_ID_call, 2, 
-			    Data_Wrap_Struct(cgsl_complex, 0, NULL, a),
-			    Data_Wrap_Struct(cgsl_complex, 0, NULL, b)));
+          Data_Wrap_Struct(cgsl_complex, 0, NULL, a),
+          Data_Wrap_Struct(cgsl_complex, 0, NULL, b)));
 }
 
 static VALUE rb_gsl_heapsort_vector(VALUE obj)

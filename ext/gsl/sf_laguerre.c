@@ -12,7 +12,7 @@
 #include "include/rb_gsl_sf.h"
 
 static VALUE rb_gsl_sf_laguerre_X(int argc, VALUE *argv, VALUE obj,
-				  double (*f)(double, double))
+          double (*f)(double, double))
 {
   switch (argc) {
   case 2:
@@ -62,11 +62,11 @@ static VALUE rb_gsl_sf_laguerre_n(int argc, VALUE *argv, VALUE obj)
   switch (argc) {
   case 3:
     return rb_gsl_sf_eval_int_double_double(gsl_sf_laguerre_n, argv[0],
-					    argv[1], argv[2]);
+              argv[1], argv[2]);
     break;
   case 2:
     return rb_gsl_sf_eval_int_double_double(gsl_sf_laguerre_n, argv[0],
-					    INT2FIX(0), argv[1]);
+              INT2FIX(0), argv[1]);
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 2)", argc);

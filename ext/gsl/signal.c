@@ -285,16 +285,16 @@ static VALUE rb_gsl_fft_halfcomplex_correlate(int argc, VALUE *argv, VALUE obj)
 void Init_gsl_signal(VALUE module)
 {
   rb_define_method(cgsl_vector, "real_convolve", rb_gsl_fft_real_convolve, -1);
-  rb_define_method(cgsl_vector, "real_deconvolve", rb_gsl_fft_real_deconvolve, -1);			     
-  rb_define_method(cgsl_vector, "real_correlate", rb_gsl_fft_real_correlate, -1);	
+  rb_define_method(cgsl_vector, "real_deconvolve", rb_gsl_fft_real_deconvolve, -1);           
+  rb_define_method(cgsl_vector, "real_correlate", rb_gsl_fft_real_correlate, -1);  
 
   rb_define_alias(cgsl_vector, "convolve", "real_convolve");
   rb_define_alias(cgsl_vector, "deconvolve", "real_deconvolve");
   rb_define_alias(cgsl_vector, "correlate", "real_correlate");
 
   rb_define_method(cgsl_vector, "halfcomplex_convolve", rb_gsl_fft_halfcomplex_convolve, -1);
-  rb_define_method(cgsl_vector, "halfcomplex_deconvolve", rb_gsl_fft_halfcomplex_deconvolve, -1);			     
-  rb_define_method(cgsl_vector, "halfcomplex_correlate", rb_gsl_fft_halfcomplex_correlate, -1);			     
+  rb_define_method(cgsl_vector, "halfcomplex_deconvolve", rb_gsl_fft_halfcomplex_deconvolve, -1);           
+  rb_define_method(cgsl_vector, "halfcomplex_correlate", rb_gsl_fft_halfcomplex_correlate, -1);           
 
   rb_define_alias(cgsl_vector, "hc_convolve", "halfcomplex_convolve");
   rb_define_alias(cgsl_vector, "hc_deconvolve", "halfcomplex_deconvolve");

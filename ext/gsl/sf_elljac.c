@@ -20,7 +20,7 @@ static VALUE rb_gsl_sf_elljac_e(VALUE obj, VALUE n, VALUE m)
   Need_Float(n); Need_Float(m);
   /*status =*/ gsl_sf_elljac_e(NUM2DBL(n), NUM2DBL(m), &sn, &cn, &dn);
   return rb_ary_new3(3, rb_float_new(sn), 
-		     rb_float_new(cn), rb_float_new(dn));
+         rb_float_new(cn), rb_float_new(dn));
 }
 
 void Init_gsl_sf_elljac(VALUE module)

@@ -43,7 +43,7 @@ static VALUE rb_gsl_fsolver_new(VALUE klass, VALUE t)
       T = gsl_root_fsolver_brent;
     } else {
       rb_raise(rb_eTypeError, 
-	       "type must be \"bisection\" or \"falsepos\", or \"brent\".");
+         "type must be \"bisection\" or \"falsepos\", or \"brent\".");
     }
     break;
   case T_FIXNUM:
@@ -64,7 +64,7 @@ static VALUE rb_gsl_fsolver_new(VALUE klass, VALUE t)
     break;
   default:
     rb_raise(rb_eTypeError, "wrong argument type %s (String or Fixnum expected)",
-	     rb_class2name(CLASS_OF(t)));
+       rb_class2name(CLASS_OF(t)));
     break;
   }
   s = gsl_root_fsolver_alloc(T);
@@ -127,25 +127,25 @@ static VALUE rb_gsl_fsolver_test_interval(VALUE obj, VALUE eabs, VALUE erel)
   Need_Float(eabs); Need_Float(erel); 
   Data_Get_Struct(obj, gsl_root_fsolver, s);
   return INT2FIX(gsl_root_test_interval(s->x_lower, s->x_upper,
-					NUM2DBL(eabs), NUM2DBL(erel)));
+          NUM2DBL(eabs), NUM2DBL(erel)));
 }
 
 static VALUE rb_gsl_root_test_interval(VALUE obj, VALUE xl, VALUE xu, VALUE eabs,
-				       VALUE erel)
+               VALUE erel)
 {
   Need_Float(xl); Need_Float(xu);
   Need_Float(eabs); Need_Float(erel); 
   return INT2FIX(gsl_root_test_interval(NUM2DBL(xl), NUM2DBL(xu),
-					NUM2DBL(eabs), NUM2DBL(erel)));
+          NUM2DBL(eabs), NUM2DBL(erel)));
 }
 
 static VALUE rb_gsl_root_test_delta(VALUE obj, VALUE xl, VALUE xu, VALUE eabs,
-				       VALUE erel)
+               VALUE erel)
 {
   Need_Float(xl); Need_Float(xu);
   Need_Float(eabs); Need_Float(erel); 
   return INT2FIX(gsl_root_test_delta(NUM2DBL(xl), NUM2DBL(xu),
-				     NUM2DBL(eabs), NUM2DBL(erel)));
+             NUM2DBL(eabs), NUM2DBL(erel)));
 }
 
 static VALUE rb_gsl_root_test_residual(VALUE obj, VALUE xl,VALUE eabs)
@@ -173,7 +173,7 @@ static VALUE rb_gsl_fsolver_solve(int argc, VALUE *argv, VALUE *obj)
     break;
   default:
     rb_raise(rb_eArgError, 
-	     "Usage: solve(f = Function, range = Array, eps = Array)");
+       "Usage: solve(f = Function, range = Array, eps = Array)");
     break;
   }
   CHECK_FUNCTION(argv[0]);
@@ -228,7 +228,7 @@ static VALUE rb_gsl_fdfsolver_new(VALUE klass, VALUE t)
     break;
   default:
     rb_raise(rb_eTypeError, "wrong argument type %s (String or Fixnum expected)",
-	     rb_class2name(CLASS_OF(t)));
+       rb_class2name(CLASS_OF(t)));
     break;
   }
   s = gsl_root_fdfsolver_alloc(T);
@@ -373,11 +373,11 @@ void Init_gsl_root(VALUE module)
   rb_define_method(cgsl_fsolver, "solve", rb_gsl_fsolver_solve, -1);  
 
   rb_define_singleton_method(mgsl_root, "test_interval", 
-			    rb_gsl_root_test_interval, 4);
+          rb_gsl_root_test_interval, 4);
   rb_define_singleton_method(mgsl_root, "test_delta", 
-			    rb_gsl_root_test_delta, 4);
+          rb_gsl_root_test_delta, 4);
   rb_define_singleton_method(mgsl_root, "test_residual", 
-			    rb_gsl_root_test_residual, 2);
+          rb_gsl_root_test_residual, 2);
 
   cgsl_fdfsolver = rb_define_class_under(mgsl_root, "FdfSolver", cGSL_Object);
   rb_define_singleton_method(cgsl_fdfsolver, "alloc", rb_gsl_fdfsolver_new, 1);  

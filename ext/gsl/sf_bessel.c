@@ -45,7 +45,7 @@ static VALUE rb_gsl_sf_bessel_Jn_e(VALUE obj, VALUE n, VALUE x)
 }
 
 static VALUE rb_gsl_sf_bessel_Xn_array(VALUE obj, VALUE n0, VALUE n1, VALUE x,
-				       int (*f)(int, int, double, double[]))
+               int (*f)(int, int, double, double[]))
 {
   int nmin, nmax, n;
   gsl_vector *v = NULL;
@@ -167,7 +167,7 @@ static VALUE rb_gsl_sf_bessel_In_scaled_e(VALUE obj, VALUE n, VALUE x)
 }
 
 static VALUE rb_gsl_sf_bessel_In_scaled_array(VALUE obj, VALUE n0, VALUE n1,
-					      VALUE x)
+                VALUE x)
 {
   return rb_gsl_sf_bessel_Xn_array(obj, n0, n1, x, gsl_sf_bessel_In_scaled_array);
 }
@@ -239,7 +239,7 @@ static VALUE rb_gsl_sf_bessel_Kn_scaled_e(VALUE obj, VALUE n, VALUE x)
 }
 
 static VALUE rb_gsl_sf_bessel_Kn_scaled_array(VALUE obj, VALUE n0, VALUE n1,
-					      VALUE x)
+                VALUE x)
 {
   return rb_gsl_sf_bessel_Xn_array(obj, n0, n1, x, gsl_sf_bessel_Kn_scaled_array);
 }
@@ -286,7 +286,7 @@ static VALUE rb_gsl_sf_bessel_jl_e(VALUE obj, VALUE n, VALUE x)
 }
 
 static VALUE rb_gsl_sf_bessel_xl_array(VALUE obj, VALUE n1, VALUE x,
-				       int (*f)(int, double, double[]))
+               int (*f)(int, double, double[]))
 {
   int nmax, n;
   // local variable "status" declared and set, but never used
@@ -446,7 +446,7 @@ static VALUE rb_gsl_sf_bessel_kl_scaled_e(VALUE obj, VALUE n, VALUE x)
 }
 
 static VALUE rb_gsl_sf_bessel_kl_scaled_array(VALUE obj, VALUE n1,
-					      VALUE x)
+                VALUE x)
 {
   return rb_gsl_sf_bessel_xl_array(obj, n1, x, gsl_sf_bessel_kl_scaled_array);
 }
@@ -497,7 +497,7 @@ static VALUE rb_gsl_sf_bessel_sequence_Jnu_e(int argc, VALUE *argv, VALUE obj)
       break;
     default:
       rb_raise(rb_eTypeError, "wrong argument type %s (String or Fixnum expected)",
-	       rb_class2name(CLASS_OF(m)));
+         rb_class2name(CLASS_OF(m)));
       break;
     }
   default:

@@ -372,7 +372,7 @@ static VALUE rb_gsl_ntuple_value_fn_new(int argc, VALUE *argv, VALUE klass)
 
 /* singleton method */
 static VALUE rb_gsl_ntuple_project(VALUE obj, VALUE hh, VALUE nn,
-				   VALUE vvfn, VALUE vsfn)
+           VALUE vvfn, VALUE vsfn)
 {
   gsl_histogram *h = NULL;
   gsl_ntuple *n = NULL;
@@ -447,22 +447,22 @@ void Init_gsl_ntuple(VALUE module)
   rb_define_alias(cgsl_ntuple, "ntuple_data", "data");
 
   rb_define_singleton_method(cgsl_ntuple_select_fn, "alloc",
-			     rb_gsl_ntuple_select_fn_new, -1);
+           rb_gsl_ntuple_select_fn_new, -1);
   rb_define_method(cgsl_ntuple_select_fn, "set",
-		   rb_gsl_ntuple_select_fn_set_f, -1);
+       rb_gsl_ntuple_select_fn_set_f, -1);
   rb_define_method(cgsl_ntuple_select_fn, "set_params",
-		   rb_gsl_ntuple_select_fn_set_params, -1);
+       rb_gsl_ntuple_select_fn_set_params, -1);
   rb_define_method(cgsl_ntuple_select_fn, "params",
-		   rb_gsl_ntuple_select_fn_params, 0);
+       rb_gsl_ntuple_select_fn_params, 0);
 
   rb_define_singleton_method(cgsl_ntuple_value_fn, "alloc",
-			     rb_gsl_ntuple_value_fn_new, -1);
+           rb_gsl_ntuple_value_fn_new, -1);
   rb_define_method(cgsl_ntuple_value_fn, "set",
-		   rb_gsl_ntuple_value_fn_set_f, -1);
+       rb_gsl_ntuple_value_fn_set_f, -1);
   rb_define_method(cgsl_ntuple_value_fn, "set_params",
-		   rb_gsl_ntuple_value_fn_set_params, -1);
+       rb_gsl_ntuple_value_fn_set_params, -1);
   rb_define_method(cgsl_ntuple_value_fn, "params",
-		   rb_gsl_ntuple_value_fn_params, 0);
+       rb_gsl_ntuple_value_fn_params, 0);
 
   rb_define_singleton_method(cgsl_ntuple, "project", rb_gsl_ntuple_project, 4);
   rb_define_method(cgsl_ntuple, "project", rb_gsl_ntuple_project2, 3);

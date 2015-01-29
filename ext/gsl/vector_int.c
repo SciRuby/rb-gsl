@@ -162,10 +162,10 @@ static VALUE rb_gsl_vector_int_mul(VALUE obj, VALUE b)
       if (v->size != v2->size) rb_raise(rb_eIndexError, "Vector sizes does not match.");
       m = gsl_matrix_int_alloc(v->size, v2->size);
       for (i = 0; i < v->size; i++) {
-	for (j = 0; j < v2->size; j++) {
-	  val = gsl_vector_int_get(v, i)*gsl_vector_int_get(v2, j);
-	  gsl_matrix_int_set(m, i, j, val);
-	}
+  for (j = 0; j < v2->size; j++) {
+    val = gsl_vector_int_get(v, i)*gsl_vector_int_get(v2, j);
+    gsl_matrix_int_set(m, i, j, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix_int, 0, gsl_matrix_int_free, m);
     } else {

@@ -47,7 +47,7 @@ static VALUE rb_gsl_ieee_fprintf_double(int argc, VALUE *argv, VALUE obj)
       break;
     default:
       rb_raise(rb_eTypeError, "wrong type argument %s (IO or String expected)",
-	       rb_class2name(CLASS_OF(argv[0])));
+         rb_class2name(CLASS_OF(argv[0])));
     }
     vtmp = argv[1];
     break;
@@ -60,7 +60,7 @@ static VALUE rb_gsl_ieee_fprintf_double(int argc, VALUE *argv, VALUE obj)
   }
   if (TYPE(vtmp) != T_FLOAT)
     rb_raise(rb_eTypeError, "wrong argument type %s (Float expected)",
-	     rb_class2name(CLASS_OF(vtmp)));
+       rb_class2name(CLASS_OF(vtmp)));
   ftmp = RFLOAT_VALUE(vtmp);
   gsl_ieee_fprintf_double(fp, &ftmp);
   if (fp == stdout) fprintf(stdout, "\n");
@@ -82,15 +82,15 @@ void Init_gsl_ieee(VALUE module)
   mgsl_ieee = rb_define_module_under(module, "IEEE");
 
   rb_define_singleton_method(mgsl_ieee, "env_setup",
-			     rb_gsl_ieee_env_setup, 0);
+           rb_gsl_ieee_env_setup, 0);
   rb_define_module_function(module, "ieee_env_setup", rb_gsl_ieee_env_setup, 0);
   rb_define_singleton_method(mgsl_ieee, "fprintf_double",
-			     rb_gsl_ieee_fprintf_double, -1);
+           rb_gsl_ieee_fprintf_double, -1);
   rb_define_singleton_method(mgsl_ieee, "fprintf",
-			     rb_gsl_ieee_fprintf_double, -1);
+           rb_gsl_ieee_fprintf_double, -1);
   rb_define_singleton_method(mgsl_ieee, "printf",
-			     rb_gsl_ieee_printf_double, -1);
+           rb_gsl_ieee_printf_double, -1);
   rb_define_singleton_method(mgsl_ieee, "printf_double",
-			     rb_gsl_ieee_printf_double, -1);
+           rb_gsl_ieee_printf_double, -1);
 
 }

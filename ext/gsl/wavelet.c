@@ -85,8 +85,8 @@ static const gsl_wavelet_type* rb_gsl_wavelet_get_type(VALUE t)
     break;
   default:
     rb_raise(rb_eTypeError, 
-	     "wrong type of argument %s (String or Fixnum expected)",
-	     rb_class2name(CLASS_OF(t)));
+       "wrong type of argument %s (String or Fixnum expected)",
+       rb_class2name(CLASS_OF(t)));
     break;
   }
   return T;
@@ -174,19 +174,19 @@ static VALUE rb_gsl_wavelet_workspace_new(VALUE klass, VALUE nn)
 }
 
 static VALUE rb_gsl_wavelet2d_trans(int argc, VALUE *argv, VALUE obj,
-				    int (*trans)(const gsl_wavelet *, 
-						 gsl_matrix *,
-						 gsl_wavelet_workspace *),
-				    int sss);
+            int (*trans)(const gsl_wavelet *, 
+             gsl_matrix *,
+             gsl_wavelet_workspace *),
+            int sss);
 static VALUE rb_gsl_wavelet2d(int argc, VALUE *argv, VALUE obj,
-			      int (*trans)(const gsl_wavelet *, 
-					   gsl_matrix *, 
-					   gsl_wavelet_direction, 
-					   gsl_wavelet_workspace *),
-			      int sss);
+            int (*trans)(const gsl_wavelet *, 
+             gsl_matrix *, 
+             gsl_wavelet_direction, 
+             gsl_wavelet_workspace *),
+            int sss);
 
 static VALUE rb_gsl_wavelet_transform0(int argc, VALUE *argv, VALUE obj,
-				       int sss)
+               int sss)
 {
   gsl_wavelet *w = NULL;
   gsl_vector *v = NULL, *vnew;
@@ -212,7 +212,7 @@ static VALUE rb_gsl_wavelet_transform0(int argc, VALUE *argv, VALUE obj,
 
     if (MATRIX_P(argv[1])) {
       return rb_gsl_wavelet2d(argc, argv, obj,
-			      gsl_wavelet2d_transform_matrix, sss);
+            gsl_wavelet2d_transform_matrix, sss);
     }
     if (VECTOR_P(argv[1])) {
       Data_Get_Struct(argv[0], gsl_wavelet, w);
@@ -240,7 +240,7 @@ static VALUE rb_gsl_wavelet_transform0(int argc, VALUE *argv, VALUE obj,
 
     if (MATRIX_P(argv[0])) {
       return rb_gsl_wavelet2d(argc, argv, obj,
-			      gsl_wavelet2d_transform_matrix, sss);
+            gsl_wavelet2d_transform_matrix, sss);
     }
     if (VECTOR_P(obj)) {
       CHECK_WAVELET(argv[0]);
@@ -349,10 +349,10 @@ static VALUE rb_gsl_wavelet_transform2(int argc, VALUE *argv, VALUE obj)
 }
 
 static VALUE rb_gsl_wavelet_trans(int argc, VALUE *argv, VALUE obj,
-				  int (*trans)(const gsl_wavelet *, 
-					       double *, size_t, size_t, 
-					       gsl_wavelet_workspace *),
-				  int sss)
+          int (*trans)(const gsl_wavelet *, 
+                 double *, size_t, size_t, 
+                 gsl_wavelet_workspace *),
+          int sss)
 {
   gsl_wavelet *w = NULL;
   gsl_vector *v = NULL, *vnew;
@@ -375,11 +375,11 @@ static VALUE rb_gsl_wavelet_trans(int argc, VALUE *argv, VALUE obj,
 
     if (MATRIX_P(argv[1])) {
       if (trans == gsl_wavelet_transform_forward) {
-	return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				      gsl_wavelet2d_transform_matrix_forward, sss);
+  return rb_gsl_wavelet2d_trans(argc, argv, obj, 
+              gsl_wavelet2d_transform_matrix_forward, sss);
       } else {
-	return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				      gsl_wavelet2d_transform_matrix_inverse, sss);
+  return rb_gsl_wavelet2d_trans(argc, argv, obj, 
+              gsl_wavelet2d_transform_matrix_inverse, sss);
       }
     }
     if (VECTOR_P(argv[1])) {
@@ -408,11 +408,11 @@ static VALUE rb_gsl_wavelet_trans(int argc, VALUE *argv, VALUE obj,
 
     if (MATRIX_P(argv[0])) {
       if (trans == gsl_wavelet_transform_forward) {
-	return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				      gsl_wavelet2d_transform_matrix_forward, sss);
+  return rb_gsl_wavelet2d_trans(argc, argv, obj, 
+              gsl_wavelet2d_transform_matrix_forward, sss);
       } else {
-	return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				      gsl_wavelet2d_transform_matrix_inverse, sss);
+  return rb_gsl_wavelet2d_trans(argc, argv, obj, 
+              gsl_wavelet2d_transform_matrix_inverse, sss);
       }
     }
     if (VECTOR_P(obj)) {
@@ -500,33 +500,33 @@ static VALUE rb_gsl_wavelet_trans(int argc, VALUE *argv, VALUE obj,
 static VALUE rb_gsl_wavelet_transform_forward(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet_trans(argc, argv, obj, gsl_wavelet_transform_forward,
-			      RB_GSL_DWT_COPY);
+            RB_GSL_DWT_COPY);
 }
 
 static VALUE rb_gsl_wavelet_transform_inverse(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet_trans(argc, argv, obj, gsl_wavelet_transform_inverse,
-			      RB_GSL_DWT_COPY);
+            RB_GSL_DWT_COPY);
 }
 
 static VALUE rb_gsl_wavelet_transform_forward2(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet_trans(argc, argv, obj, gsl_wavelet_transform_forward,
-			      RB_GSL_DWT_INPLACE);
+            RB_GSL_DWT_INPLACE);
 }
 
 static VALUE rb_gsl_wavelet_transform_inverse2(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet_trans(argc, argv, obj, gsl_wavelet_transform_inverse,
-			      RB_GSL_DWT_INPLACE);
+            RB_GSL_DWT_INPLACE);
 }
 
 static VALUE rb_gsl_wavelet2d(int argc, VALUE *argv, VALUE obj,
-			      int (*trans)(const gsl_wavelet *, 
-					   gsl_matrix *, 
-					   gsl_wavelet_direction, 
-					   gsl_wavelet_workspace *),
-			      int sss)
+            int (*trans)(const gsl_wavelet *, 
+             gsl_matrix *, 
+             gsl_wavelet_direction, 
+             gsl_wavelet_workspace *),
+            int sss)
 {
   gsl_wavelet *w = NULL;
   gsl_matrix *m = NULL, *mnew;
@@ -605,20 +605,20 @@ static VALUE rb_gsl_wavelet2d(int argc, VALUE *argv, VALUE obj,
 static VALUE rb_gsl_wavelet2d_transform_matrix(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d(argc, argv, obj, gsl_wavelet2d_transform_matrix,
-			  RB_GSL_DWT_COPY);
+        RB_GSL_DWT_COPY);
 }
 
 static VALUE rb_gsl_wavelet2d_transform_matrix2(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d(argc, argv, obj, gsl_wavelet2d_transform_matrix,
-			  RB_GSL_DWT_INPLACE);
+        RB_GSL_DWT_INPLACE);
 }
 
 static VALUE rb_gsl_wavelet2d_trans(int argc, VALUE *argv, VALUE obj,
-				    int (*trans)(const gsl_wavelet *, 
-						 gsl_matrix *,
-						 gsl_wavelet_workspace *),
-				    int sss)
+            int (*trans)(const gsl_wavelet *, 
+             gsl_matrix *,
+             gsl_wavelet_workspace *),
+            int sss)
 {
   gsl_wavelet *w = NULL;
   gsl_matrix *m = NULL, *mnew;
@@ -683,70 +683,70 @@ static VALUE rb_gsl_wavelet2d_trans(int argc, VALUE *argv, VALUE obj,
 static VALUE rb_gsl_wavelet2d_transform_matrix_forward(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				gsl_wavelet2d_transform_matrix_forward,
-				RB_GSL_DWT_COPY);
+        gsl_wavelet2d_transform_matrix_forward,
+        RB_GSL_DWT_COPY);
 }
 
 static VALUE rb_gsl_wavelet2d_transform_matrix_forward2(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				gsl_wavelet2d_transform_matrix_forward,
-				RB_GSL_DWT_INPLACE);
+        gsl_wavelet2d_transform_matrix_forward,
+        RB_GSL_DWT_INPLACE);
 }
 
 static VALUE rb_gsl_wavelet2d_transform_matrix_inverse(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				gsl_wavelet2d_transform_matrix_inverse,
-				RB_GSL_DWT_COPY);
+        gsl_wavelet2d_transform_matrix_inverse,
+        RB_GSL_DWT_COPY);
 }
 
 static VALUE rb_gsl_wavelet2d_transform_matrix_inverse2(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				gsl_wavelet2d_transform_matrix_inverse,
-				RB_GSL_DWT_INPLACE);
+        gsl_wavelet2d_transform_matrix_inverse,
+        RB_GSL_DWT_INPLACE);
 }
 
 /** nstransform **/
 static VALUE rb_gsl_wavelet2d_nstransform_matrix(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d(argc, argv, obj, gsl_wavelet2d_nstransform_matrix,
-			  RB_GSL_DWT_COPY);
+        RB_GSL_DWT_COPY);
 }
 
 static VALUE rb_gsl_wavelet2d_nstransform_matrix2(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d(argc, argv, obj, gsl_wavelet2d_nstransform_matrix,
-			  RB_GSL_DWT_INPLACE);
+        RB_GSL_DWT_INPLACE);
 }
 
 static VALUE rb_gsl_wavelet2d_nstransform_matrix_forward(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				gsl_wavelet2d_nstransform_matrix_forward,
-				RB_GSL_DWT_COPY);
+        gsl_wavelet2d_nstransform_matrix_forward,
+        RB_GSL_DWT_COPY);
 }
 
 static VALUE rb_gsl_wavelet2d_nstransform_matrix_forward2(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				gsl_wavelet2d_nstransform_matrix_forward,
-				RB_GSL_DWT_INPLACE);
+        gsl_wavelet2d_nstransform_matrix_forward,
+        RB_GSL_DWT_INPLACE);
 }
 
 static VALUE rb_gsl_wavelet2d_nstransform_matrix_inverse(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				gsl_wavelet2d_nstransform_matrix_inverse,
-				RB_GSL_DWT_COPY);
+        gsl_wavelet2d_nstransform_matrix_inverse,
+        RB_GSL_DWT_COPY);
 }
 
 static VALUE rb_gsl_wavelet2d_nstransform_matrix_inverse2(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_wavelet2d_trans(argc, argv, obj, 
-				gsl_wavelet2d_nstransform_matrix_inverse,
-				RB_GSL_DWT_INPLACE);
+        gsl_wavelet2d_nstransform_matrix_inverse,
+        RB_GSL_DWT_INPLACE);
 }
 
 #endif
@@ -766,175 +766,175 @@ void Init_wavelet(VALUE module)
 
   cgsl_wavelet_workspace = rb_define_class_under(cgsl_wavelet, "Workspace", cGSL_Object);
   rb_define_singleton_method(cgsl_wavelet_workspace, "alloc", 
-			     rb_gsl_wavelet_workspace_new, 1);
+           rb_gsl_wavelet_workspace_new, 1);
 
   /*****/
 
   rb_define_singleton_method(cgsl_wavelet, "transform", 
-			     rb_gsl_wavelet_transform, -1);
+           rb_gsl_wavelet_transform, -1);
   rb_define_method(cgsl_wavelet, "transform", rb_gsl_wavelet_transform, -1);
   rb_define_method(cgsl_vector, "wavelet_transform", rb_gsl_wavelet_transform, -1);
   rb_define_singleton_method(cgsl_wavelet, "transform!", 
-			     rb_gsl_wavelet_transform2, -1);
+           rb_gsl_wavelet_transform2, -1);
   rb_define_method(cgsl_wavelet, "transform!", rb_gsl_wavelet_transform2, -1);
   rb_define_method(cgsl_vector, "wavelet_transform!", rb_gsl_wavelet_transform2, -1);
 
   /**/
 
   rb_define_singleton_method(cgsl_wavelet, "transform_forward", 
-			     rb_gsl_wavelet_transform_forward, -1);
+           rb_gsl_wavelet_transform_forward, -1);
   rb_define_method(cgsl_wavelet, "transform_forward", 
-		   rb_gsl_wavelet_transform_forward, -1);
+       rb_gsl_wavelet_transform_forward, -1);
   rb_define_alias(cgsl_wavelet, "forward", "transform_forward");
   rb_define_method(cgsl_vector, "wavelet_transform_forward", 
-		   rb_gsl_wavelet_transform_forward, -1);
+       rb_gsl_wavelet_transform_forward, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "transform_inverse", 
-			     rb_gsl_wavelet_transform_inverse, -1);
+           rb_gsl_wavelet_transform_inverse, -1);
   rb_define_method(cgsl_wavelet, "transform_inverse", 
-		   rb_gsl_wavelet_transform_inverse, -1);
+       rb_gsl_wavelet_transform_inverse, -1);
   rb_define_alias(cgsl_wavelet, "inverse", "transform_inverse");
   rb_define_method(cgsl_vector, "wavelet_transform_inverse", 
-		   rb_gsl_wavelet_transform_inverse, -1);
+       rb_gsl_wavelet_transform_inverse, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "transform_forward!", 
-			     rb_gsl_wavelet_transform_forward2, -1);
+           rb_gsl_wavelet_transform_forward2, -1);
   rb_define_method(cgsl_wavelet, "transform_forward!", 
-		   rb_gsl_wavelet_transform_forward2, -1);
+       rb_gsl_wavelet_transform_forward2, -1);
   rb_define_alias(cgsl_wavelet, "forward!", "transform_forward!");
   rb_define_method(cgsl_vector, "wavelet_transform_forward!", 
-		   rb_gsl_wavelet_transform_forward2, -1);
+       rb_gsl_wavelet_transform_forward2, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "transform_inverse!", 
-			     rb_gsl_wavelet_transform_inverse2, -1);
+           rb_gsl_wavelet_transform_inverse2, -1);
   rb_define_method(cgsl_wavelet, "transform_inverse!", 
-		   rb_gsl_wavelet_transform_inverse2, -1);
+       rb_gsl_wavelet_transform_inverse2, -1);
   rb_define_alias(cgsl_wavelet, "inverse!", "transform_inverse!");
   rb_define_method(cgsl_vector, "wavelet_transform_inverse!", 
-		   rb_gsl_wavelet_transform_inverse2, -1);
+       rb_gsl_wavelet_transform_inverse2, -1);
   /***** 2d *****/
   rb_define_singleton_method(cgsl_wavelet, "transform_matrix", 
-			     rb_gsl_wavelet2d_transform_matrix, -1);
+           rb_gsl_wavelet2d_transform_matrix, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "transform", 
-			     rb_gsl_wavelet2d_transform_matrix, -1);
+           rb_gsl_wavelet2d_transform_matrix, -1);
   rb_define_method(cgsl_wavelet, "transform_matrix",
-		   rb_gsl_wavelet2d_transform_matrix, -1);
+       rb_gsl_wavelet2d_transform_matrix, -1);
   rb_define_method(cgsl_wavelet2d, "transform", 
-		   rb_gsl_wavelet2d_transform_matrix, -1);
+       rb_gsl_wavelet2d_transform_matrix, -1);
   rb_define_method(cgsl_matrix, "wavelet_transform", 
-		   rb_gsl_wavelet2d_transform_matrix, -1);
+       rb_gsl_wavelet2d_transform_matrix, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "transform_matrix!", 
-			     rb_gsl_wavelet2d_transform_matrix2, -1);
+           rb_gsl_wavelet2d_transform_matrix2, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "transform!", 
-			     rb_gsl_wavelet2d_transform_matrix2, -1);
+           rb_gsl_wavelet2d_transform_matrix2, -1);
   rb_define_method(cgsl_wavelet, "transform_matrix!",
-		   rb_gsl_wavelet2d_transform_matrix2, -1);
+       rb_gsl_wavelet2d_transform_matrix2, -1);
   rb_define_method(cgsl_wavelet2d, "transform!", 
-		   rb_gsl_wavelet2d_transform_matrix2, -1);
+       rb_gsl_wavelet2d_transform_matrix2, -1);
   rb_define_method(cgsl_matrix, "wavelet_transform!", 
-		   rb_gsl_wavelet2d_transform_matrix2, -1);
+       rb_gsl_wavelet2d_transform_matrix2, -1);
   /**/
 
   rb_define_singleton_method(cgsl_wavelet, "transform_matrix_forward", 
-			     rb_gsl_wavelet2d_transform_matrix_forward, -1);
+           rb_gsl_wavelet2d_transform_matrix_forward, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "transform_forward", 
-			     rb_gsl_wavelet2d_transform_matrix_forward, -1);
+           rb_gsl_wavelet2d_transform_matrix_forward, -1);
   rb_define_method(cgsl_wavelet, "transform_matrix_forward", 
-		   rb_gsl_wavelet2d_transform_matrix_forward, -1);
+       rb_gsl_wavelet2d_transform_matrix_forward, -1);
   rb_define_method(cgsl_wavelet2d, "transform_forward", 
-		   rb_gsl_wavelet2d_transform_matrix_forward, -1);
+       rb_gsl_wavelet2d_transform_matrix_forward, -1);
   rb_define_method(cgsl_matrix, "wavelet_transform_forward", 
-		   rb_gsl_wavelet2d_transform_matrix_forward, -1);
+       rb_gsl_wavelet2d_transform_matrix_forward, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "transform_matrix_forward!", 
-			     rb_gsl_wavelet2d_transform_matrix_forward2, -1);
+           rb_gsl_wavelet2d_transform_matrix_forward2, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "transform_forward!", 
-			     rb_gsl_wavelet2d_transform_matrix_forward2, -1);
+           rb_gsl_wavelet2d_transform_matrix_forward2, -1);
   rb_define_method(cgsl_wavelet, "transform_matrix_forward!", 
-		   rb_gsl_wavelet2d_transform_matrix_forward2, -1);
+       rb_gsl_wavelet2d_transform_matrix_forward2, -1);
   rb_define_method(cgsl_wavelet2d, "transform_forward!", 
-		   rb_gsl_wavelet2d_transform_matrix_forward2, -1);
+       rb_gsl_wavelet2d_transform_matrix_forward2, -1);
   rb_define_method(cgsl_matrix, "wavelet_transform_forward!", 
-		   rb_gsl_wavelet2d_transform_matrix_forward2, -1);
+       rb_gsl_wavelet2d_transform_matrix_forward2, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "transform_matrix_inverse", 
-			     rb_gsl_wavelet2d_transform_matrix_inverse, -1);
+           rb_gsl_wavelet2d_transform_matrix_inverse, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "transform_inverse", 
-			     rb_gsl_wavelet2d_transform_matrix_inverse, -1);
+           rb_gsl_wavelet2d_transform_matrix_inverse, -1);
   rb_define_method(cgsl_wavelet, "transform_matrix_inverse", 
-		   rb_gsl_wavelet2d_transform_matrix_inverse, -1);
+       rb_gsl_wavelet2d_transform_matrix_inverse, -1);
   rb_define_method(cgsl_wavelet2d, "transform_inverse", 
-		   rb_gsl_wavelet2d_transform_matrix_inverse, -1);
+       rb_gsl_wavelet2d_transform_matrix_inverse, -1);
   rb_define_method(cgsl_matrix, "wavelet_transform_inverse", 
-		   rb_gsl_wavelet2d_transform_matrix_inverse, -1);
+       rb_gsl_wavelet2d_transform_matrix_inverse, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "transform_matrix_inverse!", 
-			     rb_gsl_wavelet2d_transform_matrix_inverse2, -1);
+           rb_gsl_wavelet2d_transform_matrix_inverse2, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "transform_inverse!", 
-			     rb_gsl_wavelet2d_transform_matrix_inverse2, -1);
+           rb_gsl_wavelet2d_transform_matrix_inverse2, -1);
   rb_define_method(cgsl_wavelet, "transform_matrix_inverse!", 
-		   rb_gsl_wavelet2d_transform_matrix_inverse2, -1);
+       rb_gsl_wavelet2d_transform_matrix_inverse2, -1);
   rb_define_method(cgsl_wavelet2d, "transform_inverse!", 
-		   rb_gsl_wavelet2d_transform_matrix_inverse2, -1);
+       rb_gsl_wavelet2d_transform_matrix_inverse2, -1);
   rb_define_method(cgsl_matrix, "wavelet_transform_inverse!", 
-		   rb_gsl_wavelet2d_transform_matrix_inverse2, -1);
+       rb_gsl_wavelet2d_transform_matrix_inverse2, -1);
 
   /** nstransform **/
   rb_define_singleton_method(cgsl_wavelet, "nstransform_matrix", 
-			     rb_gsl_wavelet2d_nstransform_matrix, -1);
+           rb_gsl_wavelet2d_nstransform_matrix, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "nstransform", 
-			     rb_gsl_wavelet2d_nstransform_matrix, -1);
+           rb_gsl_wavelet2d_nstransform_matrix, -1);
   rb_define_method(cgsl_wavelet, "nstransform_matrix", 
-		   rb_gsl_wavelet2d_nstransform_matrix, -1);
+       rb_gsl_wavelet2d_nstransform_matrix, -1);
   rb_define_method(cgsl_wavelet2d, "nstransform", 
-		   rb_gsl_wavelet2d_nstransform_matrix, -1);
+       rb_gsl_wavelet2d_nstransform_matrix, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "nstransform_matrix!", 
-			     rb_gsl_wavelet2d_nstransform_matrix2, -1);
+           rb_gsl_wavelet2d_nstransform_matrix2, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "nstransform!", 
-			     rb_gsl_wavelet2d_nstransform_matrix2, -1);
+           rb_gsl_wavelet2d_nstransform_matrix2, -1);
   rb_define_method(cgsl_wavelet, "nstransform_matrix!", 
-		   rb_gsl_wavelet2d_nstransform_matrix2, -1);
+       rb_gsl_wavelet2d_nstransform_matrix2, -1);
   rb_define_method(cgsl_wavelet2d, "nstransform!", 
-		   rb_gsl_wavelet2d_nstransform_matrix2, -1);
+       rb_gsl_wavelet2d_nstransform_matrix2, -1);
   /**/
 
   rb_define_singleton_method(cgsl_wavelet, "nstransform_matrix_forward", 
-			     rb_gsl_wavelet2d_nstransform_matrix_forward, -1);
+           rb_gsl_wavelet2d_nstransform_matrix_forward, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "nstransform_forward", 
-			     rb_gsl_wavelet2d_nstransform_matrix_forward, -1);
+           rb_gsl_wavelet2d_nstransform_matrix_forward, -1);
   rb_define_method(cgsl_wavelet, "nstransform_matrix_forward", 
-		   rb_gsl_wavelet2d_nstransform_matrix_forward, -1);
+       rb_gsl_wavelet2d_nstransform_matrix_forward, -1);
   rb_define_method(cgsl_wavelet2d, "nstransform_forward", 
-		   rb_gsl_wavelet2d_nstransform_matrix_forward, -1);
+       rb_gsl_wavelet2d_nstransform_matrix_forward, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "nstransform_matrix_forward!", 
-			     rb_gsl_wavelet2d_nstransform_matrix_forward2, -1);
+           rb_gsl_wavelet2d_nstransform_matrix_forward2, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "nstransform_forward!", 
-			     rb_gsl_wavelet2d_nstransform_matrix_forward2, -1);
+           rb_gsl_wavelet2d_nstransform_matrix_forward2, -1);
   rb_define_method(cgsl_wavelet, "nstransform_matrix_forward!", 
-		   rb_gsl_wavelet2d_nstransform_matrix_forward2, -1);
+       rb_gsl_wavelet2d_nstransform_matrix_forward2, -1);
   rb_define_method(cgsl_wavelet2d, "nstransform_forward!", 
-		   rb_gsl_wavelet2d_nstransform_matrix_forward2, -1);
+       rb_gsl_wavelet2d_nstransform_matrix_forward2, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "nstransform_matrix_inverse", 
-			     rb_gsl_wavelet2d_nstransform_matrix_inverse, -1);
+           rb_gsl_wavelet2d_nstransform_matrix_inverse, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "nstransform_inverse", 
-			     rb_gsl_wavelet2d_nstransform_matrix_inverse, -1);
+           rb_gsl_wavelet2d_nstransform_matrix_inverse, -1);
   rb_define_method(cgsl_wavelet, "nstransform_matrix_inverse", 
-		   rb_gsl_wavelet2d_nstransform_matrix_inverse, -1);
+       rb_gsl_wavelet2d_nstransform_matrix_inverse, -1);
   rb_define_method(cgsl_wavelet2d, "nstransform_inverse", 
-		   rb_gsl_wavelet2d_nstransform_matrix_inverse, -1);
+       rb_gsl_wavelet2d_nstransform_matrix_inverse, -1);
 
   rb_define_singleton_method(cgsl_wavelet, "nstransform_matrix_inverse!", 
-			     rb_gsl_wavelet2d_nstransform_matrix_inverse2, -1);
+           rb_gsl_wavelet2d_nstransform_matrix_inverse2, -1);
   rb_define_singleton_method(cgsl_wavelet2d, "nstransform_inverse!", 
-			     rb_gsl_wavelet2d_nstransform_matrix_inverse2, -1);
+           rb_gsl_wavelet2d_nstransform_matrix_inverse2, -1);
   rb_define_method(cgsl_wavelet, "nstransform_matrix_inverse!", 
-		   rb_gsl_wavelet2d_nstransform_matrix_inverse2, -1);
+       rb_gsl_wavelet2d_nstransform_matrix_inverse2, -1);
   rb_define_method(cgsl_wavelet2d, "nstransform_inverse!", 
-		   rb_gsl_wavelet2d_nstransform_matrix_inverse2, -1);
+       rb_gsl_wavelet2d_nstransform_matrix_inverse2, -1);
 
 #endif
 }

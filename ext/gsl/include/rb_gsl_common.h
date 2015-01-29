@@ -307,7 +307,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 void rb_gsl_error_handler(const char *reason, const char *file,
-				 int line, int gsl_errno);
+         int line, int gsl_errno);
 
 FILE* rb_gsl_open_writefile(VALUE io, int *flag);
 FILE* rb_gsl_open_readfile(VALUE io, int *flag);

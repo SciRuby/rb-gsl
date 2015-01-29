@@ -57,7 +57,7 @@ static VALUE rb_gsl_blas_dgemv(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc < 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 4)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     Need_Float(argv[1]);
     CHECK_MATRIX(argv[2]);
@@ -71,7 +71,7 @@ static VALUE rb_gsl_blas_dgemv(int argc, VALUE *argv, VALUE obj)
   default:
     Data_Get_Struct(obj, gsl_matrix, A);
     if (argc < 3) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 3)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     Need_Float(argv[1]);
     CHECK_VECTOR(argv[2]);
@@ -114,7 +114,7 @@ static VALUE rb_gsl_blas_dgemv2(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc < 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 4)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     Need_Float(argv[1]);
     CHECK_MATRIX(argv[2]);
@@ -128,7 +128,7 @@ static VALUE rb_gsl_blas_dgemv2(int argc, VALUE *argv, VALUE obj)
   default:
     Data_Get_Struct(obj, gsl_matrix, A);
     if (argc < 3) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 3)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     Need_Float(argv[1]);
     CHECK_VECTOR(argv[2]);
@@ -172,7 +172,7 @@ static VALUE rb_gsl_blas_zgemv(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc < 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 4)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     CHECK_COMPLEX(argv[1]);
     CHECK_MATRIX_COMPLEX(argv[2]);
@@ -186,7 +186,7 @@ static VALUE rb_gsl_blas_zgemv(int argc, VALUE *argv, VALUE obj)
   default:
     Data_Get_Struct(obj, gsl_matrix_complex, A);
     if (argc < 3) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 3)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     CHECK_COMPLEX(argv[1]);
     CHECK_VECTOR_COMPLEX(argv[2]);
@@ -231,7 +231,7 @@ static VALUE rb_gsl_blas_zgemv2(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc < 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 4)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     CHECK_COMPLEX(argv[1]);
     CHECK_MATRIX_COMPLEX(argv[2]);
@@ -245,7 +245,7 @@ static VALUE rb_gsl_blas_zgemv2(int argc, VALUE *argv, VALUE obj)
   default:
     Data_Get_Struct(obj, gsl_matrix_complex, A);
     if (argc < 3) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 3)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     CHECK_COMPLEX(argv[1]);
     CHECK_VECTOR_COMPLEX(argv[2]);
@@ -288,7 +288,7 @@ static VALUE rb_gsl_blas_dtrmv(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 5) rb_raise(rb_eArgError, "wrong number of arguments (%d for 5)",
-			    argc);
+          argc);
     CHECK_MATRIX(argv[3]);
     CHECK_VECTOR(argv[4]);
     Data_Get_Struct(argv[3], gsl_matrix, A);
@@ -296,7 +296,7 @@ static VALUE rb_gsl_blas_dtrmv(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     if (argc != 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)",
-			    argc);
+          argc);
     CHECK_VECTOR(argv[3]);
     Data_Get_Struct(obj, gsl_matrix, A);
     Data_Get_Struct(argv[3], gsl_vector, x);
@@ -304,7 +304,7 @@ static VALUE rb_gsl_blas_dtrmv(int argc, VALUE *argv, VALUE obj)
   }
   CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
   gsl_blas_dtrmv(FIX2INT(argv[0]), FIX2INT(argv[1]), FIX2INT(argv[2]),
-		 A, x);
+     A, x);
   return argv[argc-1];
 }
 
@@ -318,7 +318,7 @@ static VALUE rb_gsl_blas_dtrmv2(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 5) rb_raise(rb_eArgError, "wrong number of arguments (%d for 5)",
-			    argc);
+          argc);
     CHECK_MATRIX(argv[3]);
     CHECK_VECTOR(argv[4]);
     Data_Get_Struct(argv[3], gsl_matrix, A);
@@ -326,7 +326,7 @@ static VALUE rb_gsl_blas_dtrmv2(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     if (argc != 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)",
-			    argc);
+          argc);
     CHECK_VECTOR(argv[3]);
     Data_Get_Struct(obj, gsl_matrix, A);
     Data_Get_Struct(argv[3], gsl_vector, x);
@@ -336,7 +336,7 @@ static VALUE rb_gsl_blas_dtrmv2(int argc, VALUE *argv, VALUE obj)
   xnew = gsl_vector_alloc(x->size);
   gsl_vector_memcpy(xnew, x);
   gsl_blas_dtrmv(FIX2INT(argv[0]), FIX2INT(argv[1]), FIX2INT(argv[2]),
-		 A, xnew);
+     A, xnew);
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, xnew);
 }
 
@@ -350,7 +350,7 @@ static VALUE rb_gsl_blas_ztrmv(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 5) rb_raise(rb_eArgError, "wrong number of arguments (%d for 5)",
-			    argc);
+          argc);
     CHECK_MATRIX_COMPLEX(argv[3]);
     CHECK_VECTOR_COMPLEX(argv[4]);
     Data_Get_Struct(argv[3], gsl_matrix_complex, A);
@@ -358,7 +358,7 @@ static VALUE rb_gsl_blas_ztrmv(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     if (argc != 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)",
-			    argc);
+          argc);
     CHECK_VECTOR_COMPLEX(argv[3]);
     Data_Get_Struct(obj, gsl_matrix_complex, A);
     Data_Get_Struct(argv[3], gsl_vector_complex, x);
@@ -366,7 +366,7 @@ static VALUE rb_gsl_blas_ztrmv(int argc, VALUE *argv, VALUE obj)
   }
   CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
   gsl_blas_ztrmv(FIX2INT(argv[0]), FIX2INT(argv[1]), FIX2INT(argv[2]),
-		 A, x);
+     A, x);
   return argv[argc-1];
 }
 
@@ -379,7 +379,7 @@ static VALUE rb_gsl_blas_ztrmv2(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 5) rb_raise(rb_eArgError, "wrong number of arguments (%d for 5)",
-			    argc);
+          argc);
     CHECK_MATRIX_COMPLEX(argv[3]);
     CHECK_VECTOR_COMPLEX(argv[4]);
     Data_Get_Struct(argv[3], gsl_matrix_complex, A);
@@ -387,7 +387,7 @@ static VALUE rb_gsl_blas_ztrmv2(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     if (argc != 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)",
-			    argc);
+          argc);
     CHECK_VECTOR_COMPLEX(argv[3]);
     Data_Get_Struct(obj, gsl_matrix_complex, A);
     Data_Get_Struct(argv[3], gsl_vector_complex, x);
@@ -397,7 +397,7 @@ static VALUE rb_gsl_blas_ztrmv2(int argc, VALUE *argv, VALUE obj)
   xnew = gsl_vector_complex_alloc(x->size);
   gsl_vector_complex_memcpy(xnew, x);
   gsl_blas_ztrmv(FIX2INT(argv[0]), FIX2INT(argv[1]), FIX2INT(argv[2]),
-		 A, xnew);
+     A, xnew);
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, xnew);
 }
 
@@ -410,7 +410,7 @@ static VALUE rb_gsl_blas_dtrsv(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 5) rb_raise(rb_eArgError, "wrong number of arguments (%d for 5)",
-			    argc);
+          argc);
     CHECK_MATRIX(argv[3]);
     CHECK_VECTOR(argv[4]);
     Data_Get_Struct(argv[3], gsl_matrix, A);
@@ -418,7 +418,7 @@ static VALUE rb_gsl_blas_dtrsv(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     if (argc != 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)",
-			    argc);
+          argc);
     CHECK_VECTOR(argv[3]);
     Data_Get_Struct(obj, gsl_matrix, A);
     Data_Get_Struct(argv[3], gsl_vector, x);
@@ -426,7 +426,7 @@ static VALUE rb_gsl_blas_dtrsv(int argc, VALUE *argv, VALUE obj)
   }
   CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
   gsl_blas_dtrsv(FIX2INT(argv[0]), FIX2INT(argv[1]), FIX2INT(argv[2]),
-		 A, x);
+     A, x);
   return argv[argc-1];
 }
 
@@ -439,7 +439,7 @@ static VALUE rb_gsl_blas_dtrsv2(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 5) rb_raise(rb_eArgError, "wrong number of arguments (%d for 5)",
-			    argc);
+          argc);
     CHECK_MATRIX(argv[3]);
     CHECK_VECTOR(argv[4]);
     Data_Get_Struct(argv[3], gsl_matrix, A);
@@ -447,7 +447,7 @@ static VALUE rb_gsl_blas_dtrsv2(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     if (argc != 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)",
-			    argc);
+          argc);
     CHECK_VECTOR(argv[3]);
     Data_Get_Struct(obj, gsl_matrix, A);
     Data_Get_Struct(argv[3], gsl_vector, x);
@@ -457,7 +457,7 @@ static VALUE rb_gsl_blas_dtrsv2(int argc, VALUE *argv, VALUE obj)
   xnew = gsl_vector_alloc(x->size);
   gsl_vector_memcpy(xnew, x);
   gsl_blas_dtrsv(FIX2INT(argv[0]), FIX2INT(argv[1]), FIX2INT(argv[2]),
-		 A, xnew);
+     A, xnew);
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, xnew);
 }
 
@@ -470,7 +470,7 @@ static VALUE rb_gsl_blas_ztrsv(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 5) rb_raise(rb_eArgError, "wrong number of arguments (%d for 5)",
-			    argc);
+          argc);
     CHECK_MATRIX_COMPLEX(argv[3]);
     CHECK_VECTOR_COMPLEX(argv[4]);
     Data_Get_Struct(argv[3], gsl_matrix_complex, A);
@@ -478,7 +478,7 @@ static VALUE rb_gsl_blas_ztrsv(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     if (argc != 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)",
-			    argc);
+          argc);
     CHECK_VECTOR_COMPLEX(argv[3]);
     Data_Get_Struct(obj, gsl_matrix_complex, A);
     Data_Get_Struct(argv[3], gsl_vector_complex, x);
@@ -486,7 +486,7 @@ static VALUE rb_gsl_blas_ztrsv(int argc, VALUE *argv, VALUE obj)
   }
   CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[1]); CHECK_FIXNUM(argv[2]);
   gsl_blas_ztrsv(FIX2INT(argv[0]), FIX2INT(argv[1]), FIX2INT(argv[2]),
-		 A, x);
+     A, x);
   return argv[argc-1];
 }
 
@@ -499,7 +499,7 @@ static VALUE rb_gsl_blas_ztrsv2(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 5) rb_raise(rb_eArgError, "wrong number of arguments (%d for 5)",
-			    argc);
+          argc);
     CHECK_MATRIX_COMPLEX(argv[3]);
     CHECK_VECTOR_COMPLEX(argv[4]);
     Data_Get_Struct(argv[3], gsl_matrix_complex, A);
@@ -507,7 +507,7 @@ static VALUE rb_gsl_blas_ztrsv2(int argc, VALUE *argv, VALUE obj)
     break;
   default:
     if (argc != 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for 4)",
-			    argc);
+          argc);
     CHECK_VECTOR_COMPLEX(argv[3]);
     Data_Get_Struct(obj, gsl_matrix_complex, A);
     Data_Get_Struct(argv[3], gsl_vector_complex, x);
@@ -517,7 +517,7 @@ static VALUE rb_gsl_blas_ztrsv2(int argc, VALUE *argv, VALUE obj)
   xnew = gsl_vector_complex_alloc(x->size);
   gsl_vector_complex_memcpy(xnew, x);
   gsl_blas_ztrsv(FIX2INT(argv[0]), FIX2INT(argv[1]), FIX2INT(argv[2]),
-		 A, xnew);
+     A, xnew);
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, xnew);
 }
 
@@ -532,7 +532,7 @@ static VALUE rb_gsl_blas_dsymv(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc < 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 4)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     Need_Float(argv[1]);
     CHECK_MATRIX(argv[2]);
@@ -546,7 +546,7 @@ static VALUE rb_gsl_blas_dsymv(int argc, VALUE *argv, VALUE obj)
   default:
     Data_Get_Struct(obj, gsl_matrix, A);
     if (argc < 3) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 3)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     Need_Float(argv[1]);
     CHECK_VECTOR(argv[2]);
@@ -589,7 +589,7 @@ static VALUE rb_gsl_blas_dsymv2(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc < 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 4)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     Need_Float(argv[1]);
     CHECK_MATRIX(argv[2]);
@@ -603,7 +603,7 @@ static VALUE rb_gsl_blas_dsymv2(int argc, VALUE *argv, VALUE obj)
   default:
     Data_Get_Struct(obj, gsl_matrix, A);
     if (argc < 3) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 3)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     Need_Float(argv[1]);
     CHECK_VECTOR(argv[2]);
@@ -647,7 +647,7 @@ static VALUE rb_gsl_blas_zhemv(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc < 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 4)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     CHECK_COMPLEX(argv[1]);
     CHECK_MATRIX_COMPLEX(argv[2]);
@@ -661,7 +661,7 @@ static VALUE rb_gsl_blas_zhemv(int argc, VALUE *argv, VALUE obj)
   default:
     Data_Get_Struct(obj, gsl_matrix_complex, A);
     if (argc < 3) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 3)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     CHECK_COMPLEX(argv[1]);
     CHECK_VECTOR_COMPLEX(argv[2]);
@@ -705,7 +705,7 @@ static VALUE rb_gsl_blas_zhemv2(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc < 4) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 4)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     CHECK_COMPLEX(argv[1]);
     CHECK_MATRIX_COMPLEX(argv[2]);
@@ -719,7 +719,7 @@ static VALUE rb_gsl_blas_zhemv2(int argc, VALUE *argv, VALUE obj)
   default:
     Data_Get_Struct(obj, gsl_matrix_complex, A);
     if (argc < 3) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 3)",
-			   argc);
+         argc);
     CHECK_FIXNUM(argv[0]);
     CHECK_COMPLEX(argv[1]);
     CHECK_VECTOR_COMPLEX(argv[2]);
@@ -920,7 +920,7 @@ static VALUE rb_gsl_blas_zher_a(VALUE obj, VALUE tt, VALUE aa, VALUE xx, VALUE A
 }
 
 static VALUE rb_gsl_blas_dsyr2(VALUE obj, VALUE tt, VALUE aa, VALUE xx, 
-			      VALUE yy, VALUE AA)
+            VALUE yy, VALUE AA)
 {
   gsl_matrix *A = NULL;
   gsl_vector *x = NULL, *y = NULL;
@@ -937,7 +937,7 @@ static VALUE rb_gsl_blas_dsyr2(VALUE obj, VALUE tt, VALUE aa, VALUE xx,
 }
 
 static VALUE rb_gsl_blas_dsyr2_a(VALUE obj, VALUE tt, VALUE aa, VALUE xx, 
-				 VALUE yy, VALUE AA)
+         VALUE yy, VALUE AA)
 {
   gsl_matrix *A = NULL, *Anew = NULL;
   gsl_vector *x = NULL, *y = NULL;
@@ -956,7 +956,7 @@ static VALUE rb_gsl_blas_dsyr2_a(VALUE obj, VALUE tt, VALUE aa, VALUE xx,
 }
 
 static VALUE rb_gsl_blas_zher2(VALUE obj, VALUE tt, VALUE aa, VALUE xx, 
-			      VALUE yy, VALUE AA)
+            VALUE yy, VALUE AA)
 {
   gsl_matrix_complex *A = NULL;
   gsl_vector_complex *x = NULL, *y = NULL;
@@ -973,7 +973,7 @@ static VALUE rb_gsl_blas_zher2(VALUE obj, VALUE tt, VALUE aa, VALUE xx,
 }
 
 static VALUE rb_gsl_blas_zher2_a(VALUE obj, VALUE tt, VALUE aa, VALUE xx, 
-				 VALUE yy, VALUE AA)
+         VALUE yy, VALUE AA)
 {
   gsl_matrix_complex *A = NULL, *Anew = NULL;
   gsl_vector_complex *x = NULL, *y = NULL;

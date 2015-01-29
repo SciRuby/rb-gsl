@@ -39,7 +39,7 @@ VALUE cgsl_tensor_view, cgsl_tensor_int_view;
 #endif
 
 GSL_TYPE(rbgsl_tensor)* FUNCTION(rbgsl_tensor,alloc)(const unsigned int rank, 
-						     const size_t dimension)
+                 const size_t dimension)
 {
   GSL_TYPE(rbgsl_tensor) *t;
   t = ALLOC(GSL_TYPE(rbgsl_tensor));
@@ -52,7 +52,7 @@ GSL_TYPE(rbgsl_tensor)* FUNCTION(rbgsl_tensor,alloc)(const unsigned int rank,
 }
 
 GSL_TYPE(rbgsl_tensor)* FUNCTION(rbgsl_tensor,calloc)(const unsigned int rank, 
-						      const size_t dimension)
+                  const size_t dimension)
 {
   GSL_TYPE(rbgsl_tensor) *t;
   t = ALLOC(GSL_TYPE(rbgsl_tensor));
@@ -104,7 +104,7 @@ static VALUE FUNCTION(rb_tensor,new)(int argc, VALUE *argv, VALUE klass)
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2, rank and dimension)",
-	     argc);
+       argc);
     break;
   }
   return Data_Wrap_Struct(GSL_TYPE(cgsl_tensor), 0, FUNCTION(rbgsl_tensor,free), t);
@@ -176,7 +176,7 @@ static VALUE FUNCTION(rb_tensor,set_all)(VALUE obj, VALUE xx)
 
 static void rb_tensor_get_indices_array(tensor_indices *v, VALUE ary);
 static void rbgsl_tensor_get_indices(int argc, VALUE *argv, tensor_indices *indices, 
-				     size_t *n);
+             size_t *n);
 #ifdef BASE_DOUBLE
 static void rb_tensor_get_indices_array(tensor_indices *v, VALUE ary)
 {
@@ -188,7 +188,7 @@ static void rb_tensor_get_indices_array(tensor_indices *v, VALUE ary)
 }
 
 static void rbgsl_tensor_get_indices(int argc, VALUE *argv, 
-				     tensor_indices *indices, size_t *n)
+             tensor_indices *indices, size_t *n)
 {
   size_t i;
   for (i = 0; i < indices->size; i++) indices->data[i] = 0;
@@ -206,7 +206,7 @@ static void rbgsl_tensor_get_indices(int argc, VALUE *argv,
       break;
     default:
       rb_raise(rb_eTypeError, "wrong argument type %s (Array expected)",
-	       rb_class2name(CLASS_OF(argv[0])));
+         rb_class2name(CLASS_OF(argv[0])));
       break;
     }
     break;
@@ -222,7 +222,7 @@ static void rbgsl_tensor_get_indices(int argc, VALUE *argv,
 #endif
 
 size_t FUNCTION(tensor,position)(const size_t * indices,
-				     const GSL_TYPE(tensor) * t);
+             const GSL_TYPE(tensor) * t);
 static VALUE FUNCTION(rb_tensor,position)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(rbgsl_tensor) *t = NULL;
@@ -405,8 +405,8 @@ static VALUE FUNCTION(rb_tensor,minmax_index)(VALUE obj)
   }
   FUNCTION(tensor,minmax_index)(t->tensor, min->data, max->data);
   return rb_ary_new3(2,
-		     Data_Wrap_Struct(cgsl_index, 0, gsl_permutation_free, min), 
-		     Data_Wrap_Struct(cgsl_index, 0, gsl_permutation_free, max));
+         Data_Wrap_Struct(cgsl_index, 0, gsl_permutation_free, min), 
+         Data_Wrap_Struct(cgsl_index, 0, gsl_permutation_free, max));
 }
 
 static VALUE FUNCTION(rb_tensor,isnull)(VALUE obj)
@@ -427,7 +427,7 @@ static VALUE FUNCTION(rb_tensor,isnull2)(VALUE obj)
 }
 
 static VALUE FUNCTION(rb_tensor,oper)(VALUE obj, VALUE bb,
-					   int flag)
+             int flag)
 {
   GSL_TYPE(rbgsl_tensor) *a, *b, *anew;
   BASE x;
@@ -718,8 +718,8 @@ static VALUE FUNCTION(rb_tensor,to_v)(VALUE obj)
   rank: rank of the tensor created
 */
 GSL_TYPE(tensor) FUNCTION(tensor,subtensor)(const GSL_TYPE(tensor) *t,
-						     const unsigned int rank,
-						     size_t *indices)
+                 const unsigned int rank,
+                 size_t *indices)
 {
   GSL_TYPE(tensor) tnew;
   size_t position;
@@ -749,7 +749,7 @@ static VALUE FUNCTION(rb_tensor,subtensor)(int argc, VALUE *argv, VALUE obj)
     tnew->indices = gsl_permutation_alloc(1);
   else
     tnew->indices = gsl_permutation_alloc(rank);
-  return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_tensor,view), 0, FUNCTION(rbgsl_tensor,free2), tnew);	       
+  return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_tensor,view), 0, FUNCTION(rbgsl_tensor,free2), tnew);         
 }
 
 #ifdef BASE_DOUBLE
@@ -782,29 +782,29 @@ static VALUE FUNCTION(rb_tensor,to_s)(VALUE obj)
     m = &(matrix.matrix);
     for (i = 0; i < m->size1; i++) {
       if (i != 0) {
-	strcpy(buf, "  ");
-	rb_str_cat(str, buf, strlen(buf));
+  strcpy(buf, "  ");
+  rb_str_cat(str, buf, strlen(buf));
       }
       for (j = 0; j < m->size2; j++) {
-	sprintf(buf, PRINTF_FORMAT, FUNCTION(gsl_matrix,get)(m, i, j));
-	rb_str_cat(str, buf, strlen(buf));
-	if (j == SHOW_ELM) {
-	  strcpy(buf, "... ");
-	  rb_str_cat(str, buf, strlen(buf));
-	  break;
-	}
+  sprintf(buf, PRINTF_FORMAT, FUNCTION(gsl_matrix,get)(m, i, j));
+  rb_str_cat(str, buf, strlen(buf));
+  if (j == SHOW_ELM) {
+    strcpy(buf, "... ");
+    rb_str_cat(str, buf, strlen(buf));
+    break;
+  }
       }
       if (i == 6) {
-	strcpy(buf, "\n  ... ]");
-	rb_str_cat(str, buf, strlen(buf));
-	break;
+  strcpy(buf, "\n  ... ]");
+  rb_str_cat(str, buf, strlen(buf));
+  break;
       }
       if (i == m->size1 - 1) {
-	strcpy(buf, "]");
-	rb_str_cat(str, buf, strlen(buf));
+  strcpy(buf, "]");
+  rb_str_cat(str, buf, strlen(buf));
       } else {
-	strcpy(buf, "\n");
-	rb_str_cat(str, buf, strlen(buf));
+  strcpy(buf, "\n");
+  rb_str_cat(str, buf, strlen(buf));
       }
     }
     return str;
@@ -872,7 +872,7 @@ VALUE FUNCTION(rb_tensor,equal)(int argc, VALUE *argv, VALUE obj)
     if (a->tensor->size != b->tensor->size) return Qfalse;
     for (i = 0; i < a->tensor->size; i++)
       if (fabs(a->tensor->data[i]-b->tensor->data[i]) > eps) 
-	return Qfalse;
+  return Qfalse;
     return Qtrue;
   } else if (MAT_P(other)) {
     if (a->tensor->rank != 2) return Qfalse;
@@ -881,18 +881,18 @@ VALUE FUNCTION(rb_tensor,equal)(int argc, VALUE *argv, VALUE obj)
       return Qfalse;
     for (i = 0; i < a->tensor->size; i++)
       if (fabs(a->tensor->data[i]-m->data[i]) > eps) 
-	return Qfalse;
+  return Qfalse;
     return Qtrue;
   } else if (VEC_P(other)) {
     Data_Get_Struct(other, GSL_TYPE(gsl_vector), v);
     if (a->tensor->size != v->size) return Qfalse;
     for (i = 0; i < a->tensor->size; i++)
       if (fabs(a->tensor->data[i]-v->data[i]) > eps) 
-	return Qfalse;
+  return Qfalse;
     return Qtrue;
   } else {
     rb_raise(rb_eTypeError, "wrong argument type %s (Tensor, Matrix or Vector expected)", 
-	     rb_class2name(CLASS_OF(other)));
+       rb_class2name(CLASS_OF(other)));
   }
 }
 
@@ -928,7 +928,7 @@ static VALUE FUNCTION(rb_tensor,coerce)(VALUE obj, VALUE other)
     break;
   default:
     rb_raise(rb_eRuntimeError, "undefined operation with %s", 
-	     rb_class2name(CLASS_OF(other)));
+       rb_class2name(CLASS_OF(other)));
     break;
   }
 }
@@ -953,99 +953,99 @@ void FUNCTION(Init_tensor,init)(VALUE module)
   cgsl_tensor_int = rb_define_class_under(cgsl_tensor, "Int", cGSL_Object);
   cgsl_tensor_view = rb_define_class_under(cgsl_tensor, "View", cgsl_tensor);
   cgsl_tensor_int_view = rb_define_class_under(cgsl_tensor_int, "View",
-					       cgsl_tensor_int);
+                 cgsl_tensor_int);
   /*
   cgsl_index = rb_define_class_under(cgsl_tensor, "Index", 
   cgsl_permutation);*/
 #endif
 
   rb_define_singleton_method(GSL_TYPE(cgsl_tensor), "new",
-			     FUNCTION(rb_tensor,new), -1);
+           FUNCTION(rb_tensor,new), -1);
   rb_define_singleton_method(GSL_TYPE(cgsl_tensor), "[]",
-			     FUNCTION(rb_tensor,new), -1);
+           FUNCTION(rb_tensor,new), -1);
   rb_define_singleton_method(GSL_TYPE(cgsl_tensor), "alloc",
-			     FUNCTION(rb_tensor,new), -1);
+           FUNCTION(rb_tensor,new), -1);
   rb_define_singleton_method(GSL_TYPE(cgsl_tensor), "calloc",
-			     FUNCTION(rb_tensor,calloc), 2);
+           FUNCTION(rb_tensor,calloc), 2);
   rb_define_singleton_method(GSL_TYPE(cgsl_tensor), "copy",
-			     FUNCTION(rb_tensor,copy_singleton), 1);
+           FUNCTION(rb_tensor,copy_singleton), 1);
   rb_define_singleton_method(GSL_TYPE(cgsl_tensor), "memcpy",
-			     FUNCTION(rb_tensor,memcpy_singleton), 2);
+           FUNCTION(rb_tensor,memcpy_singleton), 2);
   rb_define_singleton_method(GSL_TYPE(cgsl_tensor), "swap",
-			     FUNCTION(rb_tensor,swap_singleton), 2);
+           FUNCTION(rb_tensor,swap_singleton), 2);
 
   /*****/
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "copy",
-			     FUNCTION(rb_tensor,copy), 0);
+           FUNCTION(rb_tensor,copy), 0);
   rb_define_alias(GSL_TYPE(cgsl_tensor), "clone", "copy");
   rb_define_alias(GSL_TYPE(cgsl_tensor), "duplicate", "copy");
   rb_define_method(GSL_TYPE(cgsl_tensor), "set_zero",
-			     FUNCTION(rb_tensor,set_zero), 0);
+           FUNCTION(rb_tensor,set_zero), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "set_all",
-			     FUNCTION(rb_tensor,set_all), 1);
+           FUNCTION(rb_tensor,set_all), 1);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "position",
-		   FUNCTION(rb_tensor,position), -1);
+       FUNCTION(rb_tensor,position), -1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "get",
-			     FUNCTION(rb_tensor,get), -1);
+           FUNCTION(rb_tensor,get), -1);
   rb_define_alias(GSL_TYPE(cgsl_tensor), "[]", "get");
   rb_define_method(GSL_TYPE(cgsl_tensor), "set",
-			     FUNCTION(rb_tensor,set), -1);
+           FUNCTION(rb_tensor,set), -1);
   rb_define_alias(GSL_TYPE(cgsl_tensor), "[]=", "set");
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "fread",
-			     FUNCTION(rb_tensor,fread), 1);
+           FUNCTION(rb_tensor,fread), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "fwrite",
-			     FUNCTION(rb_tensor,fwrite), 1);
+           FUNCTION(rb_tensor,fwrite), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "fprintf",
-			     FUNCTION(rb_tensor,fprintf), -1);
+           FUNCTION(rb_tensor,fprintf), -1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "printf",
-			     FUNCTION(rb_tensor,printf), -1);
+           FUNCTION(rb_tensor,printf), -1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "fscanf",
-			     FUNCTION(rb_tensor,fscanf), 1);
+           FUNCTION(rb_tensor,fscanf), 1);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "swap_indices",
-			     FUNCTION(rb_tensor,swap_indices), 2);
+           FUNCTION(rb_tensor,swap_indices), 2);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "max",
-			     FUNCTION(rb_tensor,max), 0);
+           FUNCTION(rb_tensor,max), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "min",
-			     FUNCTION(rb_tensor,min), 0);
+           FUNCTION(rb_tensor,min), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "minmax",
-			     FUNCTION(rb_tensor,minmax), 0);
+           FUNCTION(rb_tensor,minmax), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "max_index",
-			     FUNCTION(rb_tensor,max_index), 0);
+           FUNCTION(rb_tensor,max_index), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "min_index",
-			     FUNCTION(rb_tensor,min_index), 0);
+           FUNCTION(rb_tensor,min_index), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "minmax_index",
-			     FUNCTION(rb_tensor,minmax_index), 0);
+           FUNCTION(rb_tensor,minmax_index), 0);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "isnull",
-			     FUNCTION(rb_tensor,isnull), 0);
+           FUNCTION(rb_tensor,isnull), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "isnull?",
-			     FUNCTION(rb_tensor,isnull2), 0);
+           FUNCTION(rb_tensor,isnull2), 0);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "add",
-			     FUNCTION(rb_tensor,add), 1);
+           FUNCTION(rb_tensor,add), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "sub",
-			     FUNCTION(rb_tensor,sub), 1);
+           FUNCTION(rb_tensor,sub), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "mul_elements",
-			     FUNCTION(rb_tensor,mul_elements), 1);
+           FUNCTION(rb_tensor,mul_elements), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "div_elements",
-			     FUNCTION(rb_tensor,div_elements), 1);
+           FUNCTION(rb_tensor,div_elements), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "add_constant",
-			     FUNCTION(rb_tensor,add_constant), 1);
+           FUNCTION(rb_tensor,add_constant), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "add_diagonal",
-			     FUNCTION(rb_tensor,add_diagonal), 1);
+           FUNCTION(rb_tensor,add_diagonal), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "scale",
-			     FUNCTION(rb_tensor,scale), 1);
+           FUNCTION(rb_tensor,scale), 1);
   rb_define_singleton_method(GSL_TYPE(cgsl_tensor), "product",
-			     FUNCTION(rb_tensor,product_singleton), 2);
+           FUNCTION(rb_tensor,product_singleton), 2);
   rb_define_method(GSL_TYPE(cgsl_tensor), "product",
-			     FUNCTION(rb_tensor,product), 1);
+           FUNCTION(rb_tensor,product), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "contract",
-			     FUNCTION(rb_tensor,contract), 2);
+           FUNCTION(rb_tensor,contract), 2);
 
   rb_define_alias(GSL_TYPE(cgsl_tensor), "+", "add");
   rb_define_alias(GSL_TYPE(cgsl_tensor), "-", "sub");
@@ -1054,62 +1054,62 @@ void FUNCTION(Init_tensor,init)(VALUE module)
   rb_define_alias(GSL_TYPE(cgsl_tensor), "*", "product");
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "add!",
-			     FUNCTION(rb_tensor,add_bang), 1);
+           FUNCTION(rb_tensor,add_bang), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "sub!",
-			     FUNCTION(rb_tensor,sub_bang), 1);
+           FUNCTION(rb_tensor,sub_bang), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "mul_elements!",
-			     FUNCTION(rb_tensor,mul_elements_bang), 1);
+           FUNCTION(rb_tensor,mul_elements_bang), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "div_elements!",
-			     FUNCTION(rb_tensor,div_elements_bang), 1);
+           FUNCTION(rb_tensor,div_elements_bang), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "add_constant!",
-			     FUNCTION(rb_tensor,add_constant_bang), 1);
+           FUNCTION(rb_tensor,add_constant_bang), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "add_diagonal!",
-			     FUNCTION(rb_tensor,add_diagonal_bang), 1);
+           FUNCTION(rb_tensor,add_diagonal_bang), 1);
   rb_define_method(GSL_TYPE(cgsl_tensor), "scale!",
-			     FUNCTION(rb_tensor,scale_bang), 1);
+           FUNCTION(rb_tensor,scale_bang), 1);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "+@",
-			     FUNCTION(rb_tensor,uplus), 0);
+           FUNCTION(rb_tensor,uplus), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "-@",
-			     FUNCTION(rb_tensor,uminus), 0);
+           FUNCTION(rb_tensor,uminus), 0);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "size",
-			     FUNCTION(rb_tensor,size), 0);
+           FUNCTION(rb_tensor,size), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "rank",
-			     FUNCTION(rb_tensor,rank), 0);
+           FUNCTION(rb_tensor,rank), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "dimension",
-			     FUNCTION(rb_tensor,dimension), 0);
+           FUNCTION(rb_tensor,dimension), 0);
   rb_define_alias(GSL_TYPE(cgsl_tensor), "dim", "dimension");
   rb_define_method(GSL_TYPE(cgsl_tensor), "data",
-			     FUNCTION(rb_tensor,data), 0);
+           FUNCTION(rb_tensor,data), 0);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "to_v",
-			     FUNCTION(rb_tensor,to_v), 0);
+           FUNCTION(rb_tensor,to_v), 0);
   rb_define_alias(GSL_TYPE(cgsl_tensor), "to_gv", "to_v");
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "to_vector",
-			     FUNCTION(rb_tensor,2vector), 0);
+           FUNCTION(rb_tensor,2vector), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "to_matrix",
-			     FUNCTION(rb_tensor,2matrix), 0);
+           FUNCTION(rb_tensor,2matrix), 0);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "subtensor",
-			     FUNCTION(rb_tensor,subtensor), -1);
+           FUNCTION(rb_tensor,subtensor), -1);
   rb_define_alias(GSL_TYPE(cgsl_tensor), "view", "subtensor");
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "to_s",
-			     FUNCTION(rb_tensor,to_s), 0);
+           FUNCTION(rb_tensor,to_s), 0);
   rb_define_method(GSL_TYPE(cgsl_tensor), "inspect",
-			     FUNCTION(rb_tensor,inspect), 0);
+           FUNCTION(rb_tensor,inspect), 0);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "equal?",
-			     FUNCTION(rb_tensor,equal), -1);
+           FUNCTION(rb_tensor,equal), -1);
   rb_define_alias(GSL_TYPE(cgsl_tensor), "==", "equal?");
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "coerce",
-			     FUNCTION(rb_tensor,coerce), 1);
+           FUNCTION(rb_tensor,coerce), 1);
 
   rb_define_method(GSL_TYPE(cgsl_tensor), "info", 
-		   FUNCTION(rb_tensor,info), 0);
+       FUNCTION(rb_tensor,info), 0);
 }
 
 #undef NUMCONV

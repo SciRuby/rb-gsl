@@ -35,10 +35,10 @@ static VALUE rb_gsl_fit_linear(int argc, VALUE *argv, VALUE obj)
     break;
   }
   status = gsl_fit_linear(ptrx, stridex, ptry, stridey, n, &c0, &c1, &cov00,
-			  &cov01, &cov11, &sumsq);
+        &cov01, &cov11, &sumsq);
   return rb_ary_new3(7, rb_float_new(c0), rb_float_new(c1), rb_float_new(cov00),
-		     rb_float_new(cov01), rb_float_new(cov11), rb_float_new(sumsq),
-		     INT2FIX(status));
+         rb_float_new(cov01), rb_float_new(cov11), rb_float_new(sumsq),
+         INT2FIX(status));
 }
 
 /* linear fit with weights: y = c0 + c1 x */
@@ -66,11 +66,11 @@ static VALUE rb_gsl_fit_wlinear(int argc, VALUE *argv, VALUE obj)
     break;
   }
   status = gsl_fit_wlinear(ptrx, stridex, ptrw, stridew, ptry, stridey,
-			   n,
-			   &c0, &c1, &cov00, &cov01, &cov11, &sumsq);
+         n,
+         &c0, &c1, &cov00, &cov01, &cov11, &sumsq);
   return rb_ary_new3(7, rb_float_new(c0), rb_float_new(c1), rb_float_new(cov00),
-		     rb_float_new(cov01), rb_float_new(cov11), rb_float_new(sumsq),
-		     INT2FIX(status));
+         rb_float_new(cov01), rb_float_new(cov11), rb_float_new(sumsq),
+         INT2FIX(status));
 }
 
 static VALUE rb_gsl_fit_linear_est(int argc, VALUE *argv, VALUE obj)
@@ -130,7 +130,7 @@ static VALUE rb_gsl_fit_mul(int argc, VALUE *argv, VALUE obj)
   }
   status = gsl_fit_mul(ptrx, stridex, ptry, stridey, n, &c1, &cov11, &sumsq);
   return rb_ary_new3(4, rb_float_new(c1), 
-		     rb_float_new(cov11), rb_float_new(sumsq), INT2FIX(status));
+         rb_float_new(cov11), rb_float_new(sumsq), INT2FIX(status));
 }
 
 static VALUE rb_gsl_fit_wmul(int argc, VALUE *argv, VALUE obj)
@@ -157,9 +157,9 @@ static VALUE rb_gsl_fit_wmul(int argc, VALUE *argv, VALUE obj)
     break;
   }
   status = gsl_fit_wmul(ptrx, stridex, ptrw, stridew, ptry, stridey, 
-			n, &c1, &cov11, &sumsq);
+      n, &c1, &cov11, &sumsq);
   return rb_ary_new3(4, rb_float_new(c1), 
-		     rb_float_new(cov11), rb_float_new(sumsq), INT2FIX(status));
+         rb_float_new(cov11), rb_float_new(sumsq), INT2FIX(status));
 }
 
 static VALUE rb_gsl_fit_mul_est(int argc, VALUE *argv, VALUE obj)

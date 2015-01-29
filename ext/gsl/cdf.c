@@ -19,9 +19,9 @@
 VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double));
 VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa, double (*f)(double, double));
 VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb, 
-			      double (*f)(double, double, double));
+            double (*f)(double, double, double));
 VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa, 
-				       double (*f)(unsigned int, double));
+               double (*f)(unsigned int, double));
 
 
 static VALUE rb_gsl_cdf_gaussian_P(int argc, VALUE *argv, VALUE obj)

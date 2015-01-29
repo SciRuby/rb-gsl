@@ -195,7 +195,7 @@ static gsl_poly_int* mygsl_poly_bell(int n1)
       gsl_vector_int_memcpy(p0, p1);
       mygsl_vector_int_shift(p0, n);
       for (j = 0; j < n; j++) {
-	gsl_vector_int_set(p1, j, gsl_vector_int_get(p1, j+1)*(j+1));
+  gsl_vector_int_set(p1, j, gsl_vector_int_get(p1, j+1)*(j+1));
       }
       gsl_vector_int_set(p1, n, 0);
       mygsl_vector_int_shift(p1, n);
@@ -210,7 +210,7 @@ static gsl_poly_int* mygsl_poly_bell(int n1)
 }
 
 static VALUE rb_gsl_poly_define_poly(VALUE klass, VALUE order,
-				     gsl_poly_int* (*f)(int n1)) {
+             gsl_poly_int* (*f)(int n1)) {
   int n1;
   gsl_poly_int *pnew = NULL;
   CHECK_FIXNUM(order);

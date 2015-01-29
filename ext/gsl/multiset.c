@@ -18,7 +18,7 @@ VALUE rb_gsl_multiset_calloc(VALUE klass, VALUE nn, VALUE kk)
   m = gsl_multiset_alloc(FIX2INT(nn), FIX2INT(kk));
   return Data_Wrap_Struct(klass, 0, gsl_multiset_free, m);
 }
-	
+  
 VALUE rb_gsl_multiset_init_first(VALUE mm)
 {
   gsl_multiset *m;
@@ -180,7 +180,7 @@ VALUE rb_gsl_multiset_data2(VALUE mm, VALUE i)
   p = gsl_multiset_data(m);
   return INT2FIX(p[i]);
 }
-		  
+      
 void Init_multiset(VALUE module)
 {
   cMultiset = rb_define_class_under(module, "Multiset", cGSL_Object);

@@ -25,26 +25,26 @@ static VALUE rb_gsl_histogram3d_new(int argc, VALUE *argv, VALUE klass)
   switch (argc) {
   case 3:
     if (TYPE(argv[0]) == T_FIXNUM 
-	&& TYPE(argv[1]) == T_FIXNUM && TYPE(argv[2]) == T_FIXNUM) {
+  && TYPE(argv[1]) == T_FIXNUM && TYPE(argv[2]) == T_FIXNUM) {
       h = mygsl_histogram3d_alloc(FIX2INT(argv[0]), 
-				  FIX2INT(argv[1]), FIX2INT(argv[2])); 
+          FIX2INT(argv[1]), FIX2INT(argv[2])); 
     } else if (VECTOR_P(argv[0]) && VECTOR_P(argv[1]) && VECTOR_P(argv[2])) {
       Data_Get_Struct(argv[0], gsl_vector, xrange);
       Data_Get_Struct(argv[1], gsl_vector, yrange);
       Data_Get_Struct(argv[2], gsl_vector, zrange);
       h = mygsl_histogram3d_alloc(xrange->size-1, yrange->size-1, zrange->size-1);
       mygsl_histogram3d_set_ranges(h, xrange->data, xrange->size,
-				   yrange->data, yrange->size,
-				   zrange->data, zrange->size);
+           yrange->data, yrange->size,
+           zrange->data, zrange->size);
     } else if (TYPE(argv[0]) == T_ARRAY 
-	       && TYPE(argv[1]) == T_ARRAY && TYPE(argv[2]) == T_ARRAY) {
+         && TYPE(argv[1]) == T_ARRAY && TYPE(argv[2]) == T_ARRAY) {
       xrange = make_cvector_from_rarray(argv[0]);
       yrange = make_cvector_from_rarray(argv[1]);
       zrange = make_cvector_from_rarray(argv[2]);
       h = mygsl_histogram3d_alloc(xrange->size-1, yrange->size-1, zrange->size-1);
       mygsl_histogram3d_set_ranges(h, xrange->data, xrange->size,
-				   yrange->data, yrange->size,
-				   zrange->data, zrange->size);
+           yrange->data, yrange->size,
+           zrange->data, zrange->size);
       gsl_vector_free(zrange);
       gsl_vector_free(yrange);
       gsl_vector_free(xrange);
@@ -64,7 +64,7 @@ static VALUE rb_gsl_histogram3d_new(int argc, VALUE *argv, VALUE klass)
     zmin = NUM2DBL(rb_ary_entry(argv[5], 0));
     zmax = NUM2DBL(rb_ary_entry(argv[5], 1));
     h = mygsl_histogram3d_calloc_uniform(nx, ny, nz, xmin, xmax, ymin, ymax,
-					 zmin, zmax);
+           zmin, zmax);
     break;
   case 9:
     CHECK_FIXNUM(argv[0]); CHECK_FIXNUM(argv[3]); CHECK_FIXNUM(argv[6]);
@@ -73,7 +73,7 @@ static VALUE rb_gsl_histogram3d_new(int argc, VALUE *argv, VALUE klass)
     ymin = NUM2DBL(argv[4]);    ymax = NUM2DBL(argv[5]);
     zmin = NUM2DBL(argv[7]);    zmax = NUM2DBL(argv[8]);
     h = mygsl_histogram3d_calloc_uniform(nx, ny, nz, xmin, xmax, ymin, ymax,
-					 zmin, zmax);
+           zmin, zmax);
     break;
   default:
     break;
@@ -189,37 +189,37 @@ static VALUE rb_gsl_histogram3d_get(int argc, VALUE *argv, VALUE obj)
       //      switch (RARRAY(argv[0])->len) {
       switch (RARRAY_LEN(argv[0])) {
       case 1:
-	i = FIX2INT(rb_ary_entry(argv[0], 0));
-	h2 = ALLOC(mygsl_histogram3d_view);
-	h2->h.nx = h->ny;
-	h2->h.ny = h->nz;
-	h2->h.xrange = h->yrange;
-	h2->h.yrange = h->zrange;
-	h2->h.bin = h->bin + i*h->ny*h->nz;
-	return Data_Wrap_Struct(cgsl_histogram3d_view, 0, free, h2);
-	break;
+  i = FIX2INT(rb_ary_entry(argv[0], 0));
+  h2 = ALLOC(mygsl_histogram3d_view);
+  h2->h.nx = h->ny;
+  h2->h.ny = h->nz;
+  h2->h.xrange = h->yrange;
+  h2->h.yrange = h->zrange;
+  h2->h.bin = h->bin + i*h->ny*h->nz;
+  return Data_Wrap_Struct(cgsl_histogram3d_view, 0, free, h2);
+  break;
       case 2:
-	i = FIX2INT(rb_ary_entry(argv[0], 0));
-	j = FIX2INT(rb_ary_entry(argv[0], 1));
-	h1 = ALLOC(mygsl_histogram2d_view);
-	h1->h.n = h->nz;
-	h1->h.range = h->zrange;
-	h1->h.bin = h->bin + i*h->ny*h->nz + j*h->nz;
-	return Data_Wrap_Struct(cgsl_histogram2d_view, 0, free, h1);    
-	break;
+  i = FIX2INT(rb_ary_entry(argv[0], 0));
+  j = FIX2INT(rb_ary_entry(argv[0], 1));
+  h1 = ALLOC(mygsl_histogram2d_view);
+  h1->h.n = h->nz;
+  h1->h.range = h->zrange;
+  h1->h.bin = h->bin + i*h->ny*h->nz + j*h->nz;
+  return Data_Wrap_Struct(cgsl_histogram2d_view, 0, free, h1);    
+  break;
       case 3:
-	i = FIX2INT(rb_ary_entry(argv[0], 0));
-	j = FIX2INT(rb_ary_entry(argv[0], 1));
-	k = FIX2INT(rb_ary_entry(argv[0], 2));
-	/* do the last line of this function */
-	break;
+  i = FIX2INT(rb_ary_entry(argv[0], 0));
+  j = FIX2INT(rb_ary_entry(argv[0], 1));
+  k = FIX2INT(rb_ary_entry(argv[0], 2));
+  /* do the last line of this function */
+  break;
       default:
-	rb_raise(rb_eRuntimeError, "wrong array size");
+  rb_raise(rb_eRuntimeError, "wrong array size");
       }
       break;
     default:
       rb_raise(rb_eTypeError, "wrong argument type %s (Fixnum or Array expected)",
-	       rb_class2name(CLASS_OF(argv[0])));
+         rb_class2name(CLASS_OF(argv[0])));
       break;
     }
     break;
@@ -329,7 +329,7 @@ static VALUE rb_gsl_histogram3d_find(VALUE obj, VALUE x, VALUE y, VALUE z)
   size_t i, j, k;
   Data_Get_Struct(obj, mygsl_histogram3d, h);
   mygsl_histogram3d_find(h, NUM2DBL(x), NUM2DBL(y), NUM2DBL(z),
-			 &i, &j, &k);
+       &i, &j, &k);
   return rb_ary_new3(3, INT2FIX(i), INT2FIX(j), INT2FIX(k));
 }
 
@@ -346,7 +346,7 @@ static VALUE rb_gsl_histogram3d_set_ranges(VALUE obj, VALUE xx, VALUE yy, VALUE 
     Data_Get_Struct(xx, gsl_vector, xrange);
   } else {
     rb_raise(rb_eTypeError, "wrong argument type %s (Array or Vector expected)",
-	     rb_class2name(CLASS_OF(xx)));
+       rb_class2name(CLASS_OF(xx)));
   }
   if (xrange->size != h->nx+1)
     rb_raise(rb_eIndexError, "xrange length is different");
@@ -357,7 +357,7 @@ static VALUE rb_gsl_histogram3d_set_ranges(VALUE obj, VALUE xx, VALUE yy, VALUE 
     Data_Get_Struct(yy, gsl_vector, yrange);
   } else {
     rb_raise(rb_eTypeError, "wrong argument type %s (Array or Vector expected)",
-	     rb_class2name(CLASS_OF(yy)));
+       rb_class2name(CLASS_OF(yy)));
   }
   if (yrange->size != h->ny+1)
     rb_raise(rb_eIndexError, "yrange length is different");
@@ -368,13 +368,13 @@ static VALUE rb_gsl_histogram3d_set_ranges(VALUE obj, VALUE xx, VALUE yy, VALUE 
     Data_Get_Struct(zz, gsl_vector, zrange);
   } else {
     rb_raise(rb_eTypeError, "wrong argument type %s (Array or Vector expected)",
-	     rb_class2name(CLASS_OF(zz)));
+       rb_class2name(CLASS_OF(zz)));
   }
   if (zrange->size != h->nz+1)
     rb_raise(rb_eIndexError, "zrange length is different");
   mygsl_histogram3d_set_ranges(h, xrange->data, xrange->size,
-			       yrange->data, yrange->size, 
-			       zrange->data, zrange->size);
+             yrange->data, yrange->size, 
+             zrange->data, zrange->size);
   if (flagz == 1) gsl_vector_free(zrange);
   if (flagy == 1) gsl_vector_free(yrange);
   if (flagx == 1) gsl_vector_free(xrange);
@@ -695,7 +695,7 @@ static VALUE rb_gsl_histogram3d_reset(VALUE obj)
 }
 
 static VALUE rb_gsl_histogram3d_oper(VALUE obj, VALUE hh,
-				     int (*func)(mygsl_histogram3d *, const mygsl_histogram3d*))
+             int (*func)(mygsl_histogram3d *, const mygsl_histogram3d*))
 {
   mygsl_histogram3d *h1, *h2, *hnew;
   CHECK_HISTOGRAM3D(hh);
@@ -782,18 +782,18 @@ void Init_gsl_histogram3d(VALUE module)
 {
   cgsl_histogram3d = rb_define_class_under(module, "Histogram3d", cGSL_Object);
   cgsl_histogram3d_view = rb_define_class_under(cgsl_histogram3d, "View",
-						cgsl_histogram2d);
+            cgsl_histogram2d);
 
   /*  rb_define_singleton_method(cgsl_histogram3d, "new", rb_gsl_histogram3d_new, -1);*/
   rb_define_singleton_method(cgsl_histogram3d, "alloc", 
-			     rb_gsl_histogram3d_new, -1);
+           rb_gsl_histogram3d_new, -1);
   rb_define_singleton_method(cgsl_histogram3d, "memcpy", 
-			     rb_gsl_histogram3d_memcpy, 2);
+           rb_gsl_histogram3d_memcpy, 2);
   /******/
   rb_define_method(cgsl_histogram3d, "set_ranges", 
-		   rb_gsl_histogram3d_set_ranges, 3);
+       rb_gsl_histogram3d_set_ranges, 3);
   rb_define_method(cgsl_histogram3d, "set_ranges_uniform", 
-		   rb_gsl_histogram3d_set_ranges_uniform, -1);
+       rb_gsl_histogram3d_set_ranges_uniform, -1);
 
   rb_define_method(cgsl_histogram3d, "nx", rb_gsl_histogram3d_nx, 0);
   rb_define_method(cgsl_histogram3d, "ny", rb_gsl_histogram3d_ny, 0);
@@ -810,21 +810,21 @@ void Init_gsl_histogram3d(VALUE module)
   rb_define_alias(cgsl_histogram3d, "[]", "get");
 
   rb_define_method(cgsl_histogram3d, "increment", 
-		   rb_gsl_histogram3d_increment, -1);
+       rb_gsl_histogram3d_increment, -1);
   rb_define_alias(cgsl_histogram3d, "fill", "increment");
   rb_define_alias(cgsl_histogram3d, "accumulate", "increment");
 
   rb_define_method(cgsl_histogram3d, "increment2", 
-		   rb_gsl_histogram3d_increment2, -1);
+       rb_gsl_histogram3d_increment2, -1);
   rb_define_alias(cgsl_histogram3d, "fill2", "increment2");
   rb_define_alias(cgsl_histogram3d, "accumulate2", "increment2");
 
   rb_define_method(cgsl_histogram3d, "get_xrange", 
-		   rb_gsl_histogram3d_get_xrange, 1);
+       rb_gsl_histogram3d_get_xrange, 1);
   rb_define_method(cgsl_histogram3d, "get_yrange", 
-		   rb_gsl_histogram3d_get_yrange, 1);
+       rb_gsl_histogram3d_get_yrange, 1);
   rb_define_method(cgsl_histogram3d, "get_zrange", 
-		   rb_gsl_histogram3d_get_zrange, 1);
+       rb_gsl_histogram3d_get_zrange, 1);
 
   rb_define_method(cgsl_histogram3d, "find", rb_gsl_histogram3d_find, 3);
 
@@ -836,11 +836,11 @@ void Init_gsl_histogram3d(VALUE module)
   /*****/
 
   rb_define_method(cgsl_histogram3d, "xyproject", 
-		   rb_gsl_histogram3d_xyproject, -1);
+       rb_gsl_histogram3d_xyproject, -1);
   rb_define_method(cgsl_histogram3d, "xzproject", 
-		   rb_gsl_histogram3d_xzproject, -1);
+       rb_gsl_histogram3d_xzproject, -1);
   rb_define_method(cgsl_histogram3d, "yzproject", 
-		   rb_gsl_histogram3d_yzproject, -1);
+       rb_gsl_histogram3d_yzproject, -1);
 
   rb_define_method(cgsl_histogram3d, "scale", rb_gsl_histogram3d_scale, 1);
   rb_define_method(cgsl_histogram3d, "scale!", rb_gsl_histogram3d_scale_bang, 1);

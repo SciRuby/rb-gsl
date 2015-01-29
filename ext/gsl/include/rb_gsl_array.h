@@ -110,13 +110,13 @@ double* get_vector_ptr(VALUE ary, size_t *stride, size_t *n);
 gsl_matrix_complex* matrix_to_complex(const gsl_matrix *m);
 
 void gsl_matrix_complex_mul(gsl_matrix_complex *mnew, const gsl_matrix_complex *m, 
-			    const gsl_matrix_complex *mb);
+          const gsl_matrix_complex *mb);
 void gsl_matrix_mul(gsl_matrix *mnew, gsl_matrix *m, gsl_matrix *b);
 void gsl_matrix_complex_mul_vector(gsl_vector_complex *vnew, 
-				   const gsl_matrix_complex *m, 
-				   const gsl_vector_complex *v);
+           const gsl_matrix_complex *m, 
+           const gsl_vector_complex *v);
 void gsl_matrix_mul_vector(gsl_vector *vnew, 
-			   const gsl_matrix *m, const gsl_vector *v);
+         const gsl_matrix *m, const gsl_vector *v);
 gsl_vector_complex* vector_to_complex(const gsl_vector *v);
 
 gsl_vector* make_vector_clone(const gsl_vector *v);
@@ -151,7 +151,7 @@ void rb_gsl_matrix_int_view_free(gsl_matrix_int_view *v);
 VALUE rb_gsl_matrix_to_i(VALUE obj);
 VALUE rb_gsl_matrix_int_to_f(VALUE obj);
 void gsl_matrix_int_mul_vector(gsl_vector_int *vnew, 
-			       const gsl_matrix_int *m, const gsl_vector_int *v);
+             const gsl_matrix_int *m, const gsl_vector_int *v);
 VALUE rb_gsl_vector_to_i(VALUE obj);
 VALUE make_rarray_from_cvector_int(const gsl_vector_int *v);
 VALUE rb_gsl_vector_int_to_f(VALUE obj);
@@ -176,18 +176,18 @@ void Init_gsl_matrix_init(VALUE module);
 void Init_gsl_matrix_int_init(VALUE module);
 
 gsl_matrix* gsl_matrix_alloc_from_array_sizes(VALUE ary, 
-						     VALUE nn1, VALUE nn2);
+                 VALUE nn1, VALUE nn2);
 gsl_matrix* gsl_matrix_alloc_from_arrays(int argc, VALUE *argv);
 
 gsl_matrix* gsl_matrix_alloc_from_vector_sizes(VALUE ary,
-					      VALUE nn1, VALUE nn2);
+                VALUE nn1, VALUE nn2);
 gsl_matrix* gsl_matrix_alloc_from_vectors(int argc, VALUE *argv);
 gsl_matrix_int* gsl_matrix_int_alloc_from_array_sizes(VALUE ary, 
-						     VALUE nn1, VALUE nn2);
+                 VALUE nn1, VALUE nn2);
 gsl_matrix_int* gsl_matrix_int_alloc_from_arrays(int argc, VALUE *argv);
 
 gsl_matrix_int* gsl_matrix_int_alloc_from_vector_sizes(VALUE ary,
-					      VALUE nn1, VALUE nn2);
+                VALUE nn1, VALUE nn2);
 gsl_matrix_int* gsl_matrix_int_alloc_from_vectors(int argc, VALUE *argv);
 
 VALUE rb_gsl_matrix_do_something(VALUE obj, void (*f)(gsl_matrix *));

@@ -59,9 +59,9 @@ static void gsl_multimin_function_fdf_free(gsl_multimin_function_fdf *f);
 
 double rb_gsl_multimin_function_fdf_f(const gsl_vector *x, void *p); 
 void rb_gsl_multimin_function_fdf_df(const gsl_vector *x, void *p, 
-					   gsl_vector *g);
+             gsl_vector *g);
 void rb_gsl_multimin_function_fdf_fdf(const gsl_vector *x, void *p, 
-					    double *f, gsl_vector *g);
+              double *f, gsl_vector *g);
 static void set_function_fdf(int i, VALUE *argv, gsl_multimin_function_fdf *F);
 
 /*** multimin_funcion ***/
@@ -151,7 +151,7 @@ static void set_function(int i, VALUE *argv, gsl_multimin_function *F)
   else if (rb_obj_is_kind_of(argv[i], rb_cProc)) 
     rb_ary_store(ary, 0, argv[i]);
   else if (TYPE(argv[i]) == T_ARRAY || rb_obj_is_kind_of(argv[i], cgsl_vector)
-		|| TYPE(argv[i]) == T_FIXNUM || TYPE(argv[i]) == T_FLOAT) {
+    || TYPE(argv[i]) == T_FIXNUM || TYPE(argv[i]) == T_FLOAT) {
     rb_ary_store(ary, 1, argv[i]);
   } else {
     rb_raise(rb_eTypeError, "wrong type of argument %d (Fixnum or Proc)", i);
@@ -268,8 +268,8 @@ static void set_function_fdf(int argc, VALUE *argv, gsl_multimin_function_fdf *F
       F->n = FIX2INT(argv[2]);
       rb_ary_store(ary, 2, Qnil);
     } else {
-			rb_ary_store(ary, 2, argv[2]);
-		}
+      rb_ary_store(ary, 2, argv[2]);
+    }
     break;
   case 4:
   case 5:
@@ -316,8 +316,8 @@ static VALUE rb_gsl_multimin_function_fdf_set_procs(int argc, VALUE *argv, VALUE
       F->n = FIX2INT(argv[2]);
       rb_ary_store(ary, 2, Qnil);
     } else {
-			rb_ary_store(ary, 2, argv[2]);
-		}
+      rb_ary_store(ary, 2, argv[2]);
+    }
     break;
   case 4:
   case 5:
@@ -355,7 +355,7 @@ static VALUE rb_gsl_multimin_function_fdf_set_params(int argc, VALUE *argv, VALU
     ary = (VALUE) F->params;
   }
   if (argc == 1) {
-		rb_ary_store(ary, 3, argv[0]);
+    rb_ary_store(ary, 3, argv[0]);
   } else {
     ary2 = rb_ary_new2(argc);
     for (i = 0; (int) i < argc; i++) rb_ary_store(ary2, i, argv[i]);
@@ -385,7 +385,7 @@ double rb_gsl_multimin_function_fdf_f(const gsl_vector *x, void *p)
 }
 
 void rb_gsl_multimin_function_fdf_df(const gsl_vector *x, void *p, 
-				     gsl_vector *g)
+             gsl_vector *g)
 {
   VALUE vx, vg, proc, vp, ary;
   vx = Data_Wrap_Struct(cgsl_vector, 0, NULL, (gsl_vector *) x);
@@ -401,7 +401,7 @@ void rb_gsl_multimin_function_fdf_df(const gsl_vector *x, void *p,
 }
 
 void rb_gsl_multimin_function_fdf_fdf(const gsl_vector *x, void *p, 
-				      double *f, gsl_vector *g)
+              double *f, gsl_vector *g)
 {
   VALUE vx, vg, proc_f, proc_df, vp, ary, result;
   vx = Data_Wrap_Struct(cgsl_vector, 0, NULL, (gsl_vector *) x);
@@ -432,24 +432,24 @@ static VALUE rb_gsl_multimin_function_fdf_params(VALUE obj)
 static void define_const(VALUE klass1, VALUE klass2)
 {
   rb_define_const(klass1, 
-		  "CONJUGATE_FR", INT2FIX(GSL_FDFMINIMIZER_CONJUGATE_FR));
+      "CONJUGATE_FR", INT2FIX(GSL_FDFMINIMIZER_CONJUGATE_FR));
   rb_define_const(klass1, 
-		  "CONJUGATE_PR", INT2FIX(GSL_FDFMINIMIZER_CONJUGATE_PR));
+      "CONJUGATE_PR", INT2FIX(GSL_FDFMINIMIZER_CONJUGATE_PR));
   rb_define_const(klass1, 
-		  "VECTOR_BFGS", INT2FIX(GSL_FDFMINIMIZER_VECTOR_BFGS));  
+      "VECTOR_BFGS", INT2FIX(GSL_FDFMINIMIZER_VECTOR_BFGS));  
   rb_define_const(klass1, 
-		  "STEEPEST_DESCENT", INT2FIX(GSL_FDFMINIMIZER_STEEPEST_DESCENT));
+      "STEEPEST_DESCENT", INT2FIX(GSL_FDFMINIMIZER_STEEPEST_DESCENT));
 #ifdef GSL_1_3_LATER
   rb_define_const(klass2, 
-		  "NMSIMPLEX", INT2FIX(GSL_FMINIMIZER_NMSIMPLEX));
+      "NMSIMPLEX", INT2FIX(GSL_FMINIMIZER_NMSIMPLEX));
 #endif
 #ifdef GSL_1_9_LATER
   rb_define_const(klass1, 
-		  "VECTOR_BFGS2", INT2FIX(GSL_FDFMINIMIZER_VECTOR_BFGS2));
+      "VECTOR_BFGS2", INT2FIX(GSL_FDFMINIMIZER_VECTOR_BFGS2));
 #endif
 #ifdef GSL_1_13_LATER
   rb_define_const(klass2, 
-		  "NMSIMPLEX2RAND", INT2FIX(GSL_FMINIMIZER_NMSIMPLEX2RAND));
+      "NMSIMPLEX2RAND", INT2FIX(GSL_FMINIMIZER_NMSIMPLEX2RAND));
 #endif
 }
 
@@ -509,7 +509,7 @@ static VALUE rb_gsl_fdfminimizer_new(VALUE klass, VALUE t, VALUE n)
 }
 
 static VALUE rb_gsl_fdfminimizer_set(VALUE obj, VALUE ff, VALUE xx, VALUE ss, 
-				     VALUE tt)
+             VALUE tt)
 {
   gsl_multimin_fdfminimizer *gmf = NULL;
   gsl_multimin_function_fdf *F = NULL;
@@ -633,7 +633,7 @@ static const gsl_multimin_fminimizer_type* get_fminimizer_type(VALUE t)
     break;
   default:
     rb_raise(rb_eTypeError, "wrong argument type %s (String or Fixnum expected)",
-	     rb_class2name(CLASS_OF(t)));
+       rb_class2name(CLASS_OF(t)));
     break;
   }
 }
@@ -744,9 +744,9 @@ void Init_gsl_multimin(VALUE module)
   define_const(cgsl_multimin_fdfminimizer, cgsl_multimin_fminimizer);
 
   cgsl_multimin_function = rb_define_class_under(mgsl_multimin, "Function",
-						  cgsl_function);
+              cgsl_function);
   rb_define_singleton_method(cgsl_multimin_function, "alloc",
-			     rb_gsl_multimin_function_new, -1);
+           rb_gsl_multimin_function_new, -1);
   rb_define_method(cgsl_multimin_function, "eval", rb_gsl_multimin_function_eval, 1);
   rb_define_alias(cgsl_multimin_function, "call", "eval");
   rb_define_method(cgsl_multimin_function, "set_proc", rb_gsl_multimin_function_set_f, -1);
@@ -756,9 +756,9 @@ void Init_gsl_multimin(VALUE module)
   rb_define_method(cgsl_multimin_function, "n", rb_gsl_multimin_function_n, 0);
 
   cgsl_multimin_function_fdf = rb_define_class_under(mgsl_multimin, "Function_fdf",
-						     cGSL_Object);
+                 cGSL_Object);
   rb_define_singleton_method(cgsl_multimin_function_fdf, "alloc",
-			     rb_gsl_multimin_function_fdf_new, -1);
+           rb_gsl_multimin_function_fdf_new, -1);
 
   rb_define_method(cgsl_multimin_function_fdf, "set", rb_gsl_multimin_function_fdf_set, -1);
   rb_define_method(cgsl_multimin_function_fdf, "set_params", rb_gsl_multimin_function_fdf_set_params, -1);
@@ -794,7 +794,7 @@ void Init_gsl_multimin(VALUE module)
 
 
 #ifdef HAVE_GSL_GSL_MULTIMIN_FSDF_H
-	Init_multimin_fsdf(mgsl_multimin);
+  Init_multimin_fsdf(mgsl_multimin);
 #endif
 }
 #ifdef CHECK_MULTIMIN_FUNCTION

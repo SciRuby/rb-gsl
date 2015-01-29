@@ -38,7 +38,7 @@ static VALUE rb_gsl_sf_ellint_F(int argc, VALUE *argv, VALUE obj)
 {
   if (argc == 2) 
     return rb_gsl_sf_eval_double2_m(gsl_sf_ellint_F, argv[0], argv[1], 
-				    INT2FIX(GSL_PREC_DOUBLE));
+            INT2FIX(GSL_PREC_DOUBLE));
   else 
     return rb_gsl_sf_eval_double2_m(gsl_sf_ellint_F, argv[0], argv[1], argv[2]);
 }
@@ -52,7 +52,7 @@ static VALUE rb_gsl_sf_ellint_E(int argc, VALUE *argv, VALUE obj)
 {
   if (argc == 2) 
     return rb_gsl_sf_eval_double2_m(gsl_sf_ellint_E, argv[0], argv[1], 
-				    INT2FIX(GSL_PREC_DOUBLE));
+            INT2FIX(GSL_PREC_DOUBLE));
   else 
     return rb_gsl_sf_eval_double2_m(gsl_sf_ellint_E, argv[0], argv[1], argv[2]);
 }
@@ -67,14 +67,14 @@ static VALUE rb_gsl_sf_ellint_P(int argc, VALUE *argv, VALUE obj)
 {
   if (argc == 3) 
     return rb_gsl_sf_eval_double3_m(gsl_sf_ellint_P, argv[0], argv[1], argv[2],
-				    INT2FIX(GSL_PREC_DOUBLE));
+            INT2FIX(GSL_PREC_DOUBLE));
   else 
     return rb_gsl_sf_eval_double3_m(gsl_sf_ellint_P, argv[0], argv[1], argv[2],
-				    argv[3]);
+            argv[3]);
 }
 
 static VALUE rb_gsl_sf_ellint_P_e(VALUE obj, VALUE phi, VALUE k, 
-				  VALUE n, VALUE m)
+          VALUE n, VALUE m)
 {
   return rb_gsl_sf_eval_e_double3_m(gsl_sf_ellint_P_e, phi, k, n, m);
 }
@@ -83,14 +83,14 @@ static VALUE rb_gsl_sf_ellint_D(int argc, VALUE *argv, VALUE obj)
 {
   if (argc == 3) 
     return rb_gsl_sf_eval_double3_m(gsl_sf_ellint_D, argv[0], argv[1], argv[2],
-				    INT2FIX(GSL_PREC_DOUBLE));
+            INT2FIX(GSL_PREC_DOUBLE));
   else 
     return rb_gsl_sf_eval_double3_m(gsl_sf_ellint_D, argv[0], argv[1], argv[2],
-				    argv[3]);
+            argv[3]);
 }
 
 static VALUE rb_gsl_sf_ellint_D_e(VALUE obj, VALUE phi, VALUE k, 
-				  VALUE n, VALUE m)
+          VALUE n, VALUE m)
 {
   return rb_gsl_sf_eval_e_double3_m(gsl_sf_ellint_D_e, phi, k, n, m);
 }
@@ -99,7 +99,7 @@ static VALUE rb_gsl_sf_ellint_RC(int argc, VALUE *argv, VALUE obj)
 {
   if (argc == 2) 
     return rb_gsl_sf_eval_double2_m(gsl_sf_ellint_RC, argv[0], argv[1], 
-				    INT2FIX(GSL_PREC_DOUBLE));
+            INT2FIX(GSL_PREC_DOUBLE));
   else 
     return rb_gsl_sf_eval_double2_m(gsl_sf_ellint_RC, argv[0], argv[1], argv[2]);
 }
@@ -113,14 +113,14 @@ static VALUE rb_gsl_sf_ellint_RD(int argc, VALUE *argv, VALUE obj)
 {
   if (argc == 3) 
     return rb_gsl_sf_eval_double3_m(gsl_sf_ellint_RD, argv[0], argv[1], argv[2],
-				    INT2FIX(GSL_PREC_DOUBLE));
+            INT2FIX(GSL_PREC_DOUBLE));
   else 
     return rb_gsl_sf_eval_double3_m(gsl_sf_ellint_RD, argv[0], argv[1], argv[2],
-				    argv[3]);
+            argv[3]);
 }
 
 static VALUE rb_gsl_sf_ellint_RD_e(VALUE obj, VALUE x, VALUE y, 
-				   VALUE z, VALUE m)
+           VALUE z, VALUE m)
 {
   return rb_gsl_sf_eval_e_double3_m(gsl_sf_ellint_RD_e, x, y, z, m);
 }
@@ -129,14 +129,14 @@ static VALUE rb_gsl_sf_ellint_RF(int argc, VALUE *argv, VALUE obj)
 {
   if (argc == 3) 
     return rb_gsl_sf_eval_double3_m(gsl_sf_ellint_RF, argv[0], argv[1], argv[2],
-				    INT2FIX(GSL_PREC_DOUBLE));
+            INT2FIX(GSL_PREC_DOUBLE));
   else 
     return rb_gsl_sf_eval_double3_m(gsl_sf_ellint_RF, argv[0], argv[1], argv[2],
-				    argv[3]);
+            argv[3]);
 }
 
 static VALUE rb_gsl_sf_ellint_RF_e(VALUE obj, VALUE x, VALUE y, 
-				   VALUE z, VALUE m)
+           VALUE z, VALUE m)
 {
   return rb_gsl_sf_eval_e_double3_m(gsl_sf_ellint_RF_e, x, y, z, m);
 }
@@ -145,14 +145,14 @@ static VALUE rb_gsl_sf_ellint_RJ(int argc, VALUE *argv, VALUE obj)
 {
   if (argc == 4) 
     return rb_gsl_sf_eval_double4_m(gsl_sf_ellint_RJ, argv[0], argv[1], argv[2],
-				    argv[3], INT2FIX(GSL_PREC_DOUBLE));
+            argv[3], INT2FIX(GSL_PREC_DOUBLE));
   else 
     return rb_gsl_sf_eval_double4_m(gsl_sf_ellint_RJ, argv[0], argv[1], argv[2],
-				    argv[3], argv[4]);
+            argv[3], argv[4]);
 }
 
 static VALUE rb_gsl_sf_ellint_RJ_e(VALUE obj, VALUE x, VALUE y, 
-				   VALUE z, VALUE p, VALUE m)
+           VALUE z, VALUE p, VALUE m)
 {
   return rb_gsl_sf_eval_e_double4_m(gsl_sf_ellint_RJ_e, x, y, z, p, m);
 }

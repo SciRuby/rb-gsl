@@ -23,7 +23,7 @@
 #endif
 
 int gsl_linalg_matmult_int(const gsl_matrix_int *A, 
-			   const gsl_matrix_int *B, gsl_matrix_int *C);
+         const gsl_matrix_int *B, gsl_matrix_int *C);
 
 #define BASE_DOUBLE
 #include "include/templates_on.h"

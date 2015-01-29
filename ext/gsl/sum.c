@@ -24,7 +24,7 @@ static VALUE rb_gsl_sum_accel(VALUE obj)
   terms_used = w->terms_used;
   gsl_sum_levin_u_free(w);
  return rb_ary_new3(4, rb_float_new(sum), rb_float_new(err), 
-		    rb_float_new(sum_plain), INT2FIX(terms_used));
+        rb_float_new(sum_plain), INT2FIX(terms_used));
 }
  
 static VALUE rb_gsl_utrunc_accel(VALUE obj)
@@ -39,7 +39,7 @@ static VALUE rb_gsl_utrunc_accel(VALUE obj)
   terms_used = w->terms_used;
   gsl_sum_levin_utrunc_free(w);
   return rb_ary_new3(4, rb_float_new(sum), rb_float_new(err), 
-		     rb_float_new(sum_plain), INT2FIX(terms_used));
+         rb_float_new(sum_plain), INT2FIX(terms_used));
 }
 
 static VALUE rb_gsl_sum_levin_u_new(VALUE klass, VALUE nn)
@@ -72,7 +72,7 @@ static VALUE rb_gsl_sum_levin_u_accel2(VALUE obj, VALUE vv)
   terms_used = w->terms_used;
   gsl_sum_levin_u_free(w);
   return rb_ary_new3(4, rb_float_new(sum), rb_float_new(err), 
-		     rb_float_new(sum_plain), INT2FIX(terms_used));
+         rb_float_new(sum_plain), INT2FIX(terms_used));
 }
 
 static VALUE rb_gsl_sum_levin_utrunc_accel2(VALUE obj, VALUE vv)
@@ -88,7 +88,7 @@ static VALUE rb_gsl_sum_levin_utrunc_accel2(VALUE obj, VALUE vv)
   terms_used = w->terms_used;
   gsl_sum_levin_utrunc_free(w);
   return rb_ary_new3(4, rb_float_new(sum), rb_float_new(err), 
-		     rb_float_new(sum_plain), INT2FIX(terms_used));
+         rb_float_new(sum_plain), INT2FIX(terms_used));
 }
 
 static VALUE rb_gsl_sum_levin_u_sum_plain(VALUE obj)
@@ -126,32 +126,32 @@ void Init_gsl_sum(VALUE module)
 
   mgsl_sum = rb_define_module_under(module, "Sum");
   cgsl_sum_levin_u = rb_define_class_under(mgsl_sum, 
-					   "Levin_u", cGSL_Object);
+             "Levin_u", cGSL_Object);
   cgsl_sum_levin_utrunc = rb_define_class_under(mgsl_sum, 
-						"Levin_utrunc", cGSL_Object);
+            "Levin_utrunc", cGSL_Object);
 
   rb_define_singleton_method(cgsl_sum_levin_u, "new", rb_gsl_sum_levin_u_new, 1);
   rb_define_singleton_method(cgsl_sum_levin_u, "alloc", rb_gsl_sum_levin_u_new, 1);
   rb_define_singleton_method(cgsl_sum_levin_utrunc, "new", 
-			     rb_gsl_sum_levin_utrunc_new, 1);
+           rb_gsl_sum_levin_utrunc_new, 1);
   rb_define_singleton_method(cgsl_sum_levin_utrunc, "alloc", 
-			     rb_gsl_sum_levin_utrunc_new, 1);
+           rb_gsl_sum_levin_utrunc_new, 1);
   rb_define_singleton_method(cgsl_sum_levin_u, "accel", 
-			     rb_gsl_sum_levin_u_accel2, 1);
+           rb_gsl_sum_levin_u_accel2, 1);
 
   rb_define_singleton_method(cgsl_sum_levin_utrunc, "accel", 
-			     rb_gsl_sum_levin_utrunc_accel2, 1);
+           rb_gsl_sum_levin_utrunc_accel2, 1);
   rb_define_method(cgsl_sum_levin_u, "accel", rb_gsl_sum_levin_u_accel2, 1);
   rb_define_method(cgsl_sum_levin_utrunc, "accel", 
-		   rb_gsl_sum_levin_utrunc_accel2, 1);
+       rb_gsl_sum_levin_utrunc_accel2, 1);
 
   rb_define_method(cgsl_sum_levin_u, "sum_plain", rb_gsl_sum_levin_u_sum_plain, 0);
   rb_define_method(cgsl_sum_levin_u, "terms_used", 
-		   rb_gsl_sum_levin_u_terms_used, 0);
+       rb_gsl_sum_levin_u_terms_used, 0);
   rb_define_method(cgsl_sum_levin_utrunc, "sum_plain", 
-		   rb_gsl_sum_levin_utrunc_sum_plain, 0);
+       rb_gsl_sum_levin_utrunc_sum_plain, 0);
   rb_define_method(cgsl_sum_levin_utrunc, "terms_used", 
-		   rb_gsl_sum_levin_utrunc_terms_used, 0);
+       rb_gsl_sum_levin_utrunc_terms_used, 0);
   /***/
 
   rb_define_method(cgsl_vector, "accel_sum", rb_gsl_sum_accel, 0);

@@ -36,7 +36,7 @@ typedef struct ___gsl_rational
 */
 
 int gsl_poly_conv(const double *a, size_t na, const double *b, size_t nb,
-		  double *c, size_t *nc);
+      double *c, size_t *nc);
 
 gsl_vector* gsl_poly_deconv_vector(const gsl_vector *c, const gsl_vector *a, gsl_vector **r);
 gsl_vector* gsl_poly_deriv(const gsl_vector *v);
@@ -51,7 +51,7 @@ VALUE rb_gsl_poly_complex_solve2(int argc, VALUE *argv, VALUE obj);
 
 
 int gsl_poly_int_conv(const int *a, size_t na, const int *b, size_t nb,
-		  int *c, size_t *nc);
+      int *c, size_t *nc);
 
 gsl_vector_int* gsl_poly_int_deconv_vector(const gsl_vector_int *c, const gsl_vector_int *a, gsl_vector_int **r);
 gsl_vector_int* gsl_poly_int_deriv(const gsl_vector_int *v);

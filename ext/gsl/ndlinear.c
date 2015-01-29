@@ -223,7 +223,7 @@ static VALUE rb_gsl_multifit_ndlinear_calc(int argc, VALUE *argv, VALUE obj)
   case T_OBJECT:
     if (!rb_obj_is_kind_of(argv[argc-1], cWorkspace)) {
       rb_raise(rb_eTypeError, 
-	       "Wrong argument type %s (GSL::MultiFit::Ndlinear::Workspace expected)",
+         "Wrong argument type %s (GSL::MultiFit::Ndlinear::Workspace expected)",
         rb_class2name(CLASS_OF(argv[argc-1])));
     }
     Data_Get_Struct(argv[argc-1], gsl_multifit_ndlinear_workspace, w);    

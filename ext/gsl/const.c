@@ -20,24 +20,24 @@ void Init_gsl_const_additional(VALUE mmks, VALUE mcgs, VALUE mnum);
 static void rb_gsl_const_mks(VALUE module)
 {
   rb_define_const(module, "SPEED_OF_LIGHT", 
-		  rb_float_new(GSL_CONST_MKS_SPEED_OF_LIGHT));
+      rb_float_new(GSL_CONST_MKS_SPEED_OF_LIGHT));
   rb_define_const(module, "GRAVITATIONAL_CONSTANT", 
-		  rb_float_new(GSL_CONST_MKS_GRAVITATIONAL_CONSTANT));
+      rb_float_new(GSL_CONST_MKS_GRAVITATIONAL_CONSTANT));
   rb_define_const(module, "PLANCKS_CONSTANT_H", 
-		  rb_float_new(GSL_CONST_MKS_PLANCKS_CONSTANT_H));
+      rb_float_new(GSL_CONST_MKS_PLANCKS_CONSTANT_H));
   rb_define_const(module, "PLANCKS_CONSTANT_HBAR", 
-		  rb_float_new(GSL_CONST_MKS_PLANCKS_CONSTANT_HBAR));
+      rb_float_new(GSL_CONST_MKS_PLANCKS_CONSTANT_HBAR));
   rb_define_const(module, "VACUUM_PERMEABILITY", 
-		  rb_float_new(GSL_CONST_MKS_VACUUM_PERMEABILITY));
+      rb_float_new(GSL_CONST_MKS_VACUUM_PERMEABILITY));
   rb_define_const(module, "ASTRONOMICAL_UNIT", 
-		  rb_float_new(GSL_CONST_MKS_ASTRONOMICAL_UNIT));
+      rb_float_new(GSL_CONST_MKS_ASTRONOMICAL_UNIT));
   rb_define_const(module, "LIGHT_YEAR", rb_float_new(GSL_CONST_MKS_LIGHT_YEAR));
   rb_define_const(module, "PARSEC", rb_float_new(GSL_CONST_MKS_PARSEC));
   rb_define_const(module, "GRAV_ACCEL", rb_float_new(GSL_CONST_MKS_GRAV_ACCEL));
   rb_define_const(module, "ELECTRON_VOLT", 
-		  rb_float_new(GSL_CONST_MKS_ELECTRON_VOLT));
+      rb_float_new(GSL_CONST_MKS_ELECTRON_VOLT));
   rb_define_const(module, "MASS_ELECTRON", 
-		  rb_float_new(GSL_CONST_MKS_MASS_ELECTRON));
+      rb_float_new(GSL_CONST_MKS_MASS_ELECTRON));
   rb_define_const(module, "MASS_MUON", rb_float_new(GSL_CONST_MKS_MASS_MUON));
   rb_define_const(module, "MASS_PROTON", rb_float_new(GSL_CONST_MKS_MASS_PROTON));
   rb_define_const(module, "MASS_NEUTRON", rb_float_new(GSL_CONST_MKS_MASS_NEUTRON));
@@ -45,15 +45,15 @@ static void rb_gsl_const_mks(VALUE module)
   rb_define_const(module, "BOLTZMANN", rb_float_new(GSL_CONST_MKS_BOLTZMANN));
   rb_define_const(module, "MOLAR_GAS", rb_float_new(GSL_CONST_MKS_MOLAR_GAS));
   rb_define_const(module, "BOHR_MAGNETON", 
-		  rb_float_new(GSL_CONST_MKS_BOHR_MAGNETON));
+      rb_float_new(GSL_CONST_MKS_BOHR_MAGNETON));
   rb_define_const(module, "NUCLEAR_MAGNETON",
-		  rb_float_new(GSL_CONST_MKS_NUCLEAR_MAGNETON));
+      rb_float_new(GSL_CONST_MKS_NUCLEAR_MAGNETON));
   rb_define_const(module, "ELECTRON_MAGNETIC_MOMENT", 
-		  rb_float_new(GSL_CONST_MKS_ELECTRON_MAGNETIC_MOMENT));
+      rb_float_new(GSL_CONST_MKS_ELECTRON_MAGNETIC_MOMENT));
   rb_define_const(module, "PROTON_MAGNETIC_MOMENT", 
-		  rb_float_new(GSL_CONST_MKS_PROTON_MAGNETIC_MOMENT));
+      rb_float_new(GSL_CONST_MKS_PROTON_MAGNETIC_MOMENT));
   rb_define_const(module, "STANDARD_GAS_VOLUME", 
-		  rb_float_new(GSL_CONST_MKS_STANDARD_GAS_VOLUME));
+      rb_float_new(GSL_CONST_MKS_STANDARD_GAS_VOLUME));
 
   rb_define_const(module, "MINUTE", rb_float_new(GSL_CONST_MKS_MINUTE));
   rb_define_const(module, "HOUR", rb_float_new(GSL_CONST_MKS_HOUR));
@@ -88,49 +88,49 @@ static void rb_gsl_const_mks(VALUE module)
   rb_define_const(module, "FLUID_OUNCE", rb_float_new(GSL_CONST_MKS_FLUID_OUNCE));
   rb_define_const(module, "TABLESPOON", rb_float_new(GSL_CONST_MKS_TABLESPOON));
   rb_define_const(module, "CANADIAN_GALLON", 
-		  rb_float_new(GSL_CONST_MKS_CANADIAN_GALLON));
+      rb_float_new(GSL_CONST_MKS_CANADIAN_GALLON));
 
   rb_define_const(module, "UK_GALLON", rb_float_new(GSL_CONST_MKS_UK_GALLON));
   rb_define_const(module, "KILOMETERS_PER_HOUR", 
-		  rb_float_new(GSL_CONST_MKS_MILES_PER_HOUR));  
+      rb_float_new(GSL_CONST_MKS_MILES_PER_HOUR));  
   rb_define_const(module, "MILES_PER_HOUR", 
-		  rb_float_new(GSL_CONST_MKS_KILOMETERS_PER_HOUR));
+      rb_float_new(GSL_CONST_MKS_KILOMETERS_PER_HOUR));
   rb_define_const(module, "KNOT", rb_float_new(GSL_CONST_MKS_KNOT));
   rb_define_const(module, "POUND_MASS", rb_float_new(GSL_CONST_MKS_POUND_MASS));
   rb_define_const(module, "POUND_OUNCE", rb_float_new(GSL_CONST_MKS_OUNCE_MASS));
   rb_define_const(module, "POUND_TON", rb_float_new(GSL_CONST_MKS_TON));
   rb_define_const(module, "POUND_METRIC_TON", 
-		  rb_float_new(GSL_CONST_MKS_METRIC_TON));
+      rb_float_new(GSL_CONST_MKS_METRIC_TON));
   rb_define_const(module, "POUND_UK_TON", rb_float_new(GSL_CONST_MKS_UK_TON));
   rb_define_const(module, "POUND_TROY_OUNCE", 
-		  rb_float_new(GSL_CONST_MKS_TROY_OUNCE));
+      rb_float_new(GSL_CONST_MKS_TROY_OUNCE));
   rb_define_const(module, "CARAT", rb_float_new(GSL_CONST_MKS_CARAT));
   rb_define_const(module, "UNIFIED_ATOMIC_MASS", 
-		  rb_float_new(GSL_CONST_MKS_UNIFIED_ATOMIC_MASS));
+      rb_float_new(GSL_CONST_MKS_UNIFIED_ATOMIC_MASS));
   rb_define_const(module, "GRAM_FORCE", rb_float_new(GSL_CONST_MKS_GRAM_FORCE));
   rb_define_const(module, "POUND_FORCE", rb_float_new(GSL_CONST_MKS_POUND_FORCE));
   rb_define_const(module, "KILOPOUND_FORCE", 
-		  rb_float_new(GSL_CONST_MKS_KILOPOUND_FORCE));
+      rb_float_new(GSL_CONST_MKS_KILOPOUND_FORCE));
   rb_define_const(module, "POUNDAL", rb_float_new(GSL_CONST_MKS_POUNDAL));
   rb_define_const(module, "CALORIE", rb_float_new(GSL_CONST_MKS_CALORIE));
   rb_define_const(module, "THERM", rb_float_new(GSL_CONST_MKS_THERM));
   rb_define_const(module, "HORSEPOWER", rb_float_new(GSL_CONST_MKS_HORSEPOWER));
   rb_define_const(module, "BAR", rb_float_new(GSL_CONST_MKS_BAR));
   rb_define_const(module, "STD_ATMOSPHERE", 
-		  rb_float_new(GSL_CONST_MKS_STD_ATMOSPHERE));
+      rb_float_new(GSL_CONST_MKS_STD_ATMOSPHERE));
   rb_define_const(module, "TORR", rb_float_new(GSL_CONST_MKS_TORR));
   rb_define_const(module, "METER_OF_MERCURY", 
-		  rb_float_new(GSL_CONST_MKS_METER_OF_MERCURY));
+      rb_float_new(GSL_CONST_MKS_METER_OF_MERCURY));
   rb_define_const(module, "INCH_OF_MERCURY", 
-		  rb_float_new(GSL_CONST_MKS_INCH_OF_MERCURY));
+      rb_float_new(GSL_CONST_MKS_INCH_OF_MERCURY));
   rb_define_const(module, "INCH_OF_WATER", 
-		  rb_float_new(GSL_CONST_MKS_INCH_OF_WATER));
+      rb_float_new(GSL_CONST_MKS_INCH_OF_WATER));
   rb_define_const(module, "PSI", rb_float_new(GSL_CONST_MKS_PSI));
   rb_define_const(module, "POISE", rb_float_new(GSL_CONST_MKS_POISE));
   rb_define_const(module, "STOKES", rb_float_new(GSL_CONST_MKS_STOKES));
   rb_define_const(module, "FARADAY", rb_float_new(GSL_CONST_MKS_FARADAY));
   rb_define_const(module, "ELECTRON_CHARGE", 
-		  rb_float_new(GSL_CONST_MKS_ELECTRON_CHARGE));
+      rb_float_new(GSL_CONST_MKS_ELECTRON_CHARGE));
   rb_define_const(module, "GAUSS", rb_float_new(GSL_CONST_MKS_GAUSS));
   rb_define_const(module, "STILB", rb_float_new(GSL_CONST_MKS_STILB));
   rb_define_const(module, "LUMEN", rb_float_new(GSL_CONST_MKS_LUMEN));
@@ -144,7 +144,7 @@ static void rb_gsl_const_mks(VALUE module)
 
 #ifdef GSL_1_1_LATER
   rb_define_const(module, "VACUUM_PERMITTIVITY", 
-		  rb_float_new(GSL_CONST_MKS_VACUUM_PERMITTIVITY));
+      rb_float_new(GSL_CONST_MKS_VACUUM_PERMITTIVITY));
   rb_define_const(module, "BOHR_RADIUS", rb_float_new(GSL_CONST_MKS_BOHR_RADIUS));
 #endif
 
@@ -164,38 +164,38 @@ static void rb_gsl_const_mks(VALUE module)
 static void rb_gsl_const_cgs(VALUE module)
 {
   rb_define_const(module, "SPEED_OF_LIGHT", 
-		  rb_float_new(GSL_CONST_CGS_SPEED_OF_LIGHT));
+      rb_float_new(GSL_CONST_CGS_SPEED_OF_LIGHT));
   rb_define_const(module, "GRAVITATIONAL_CONSTANT", 
-		  rb_float_new(GSL_CONST_CGS_GRAVITATIONAL_CONSTANT));
+      rb_float_new(GSL_CONST_CGS_GRAVITATIONAL_CONSTANT));
   rb_define_const(module, "PLANCKS_CONSTANT_H", 
-		  rb_float_new(GSL_CONST_CGS_PLANCKS_CONSTANT_H));
+      rb_float_new(GSL_CONST_CGS_PLANCKS_CONSTANT_H));
   rb_define_const(module, "PLANCKS_CONSTANT_HBAR", 
-		  rb_float_new(GSL_CONST_CGS_PLANCKS_CONSTANT_HBAR));
+      rb_float_new(GSL_CONST_CGS_PLANCKS_CONSTANT_HBAR));
   rb_define_const(module, "ASTRONOMICAL_UNIT", 
-		  rb_float_new(GSL_CONST_CGS_ASTRONOMICAL_UNIT));
+      rb_float_new(GSL_CONST_CGS_ASTRONOMICAL_UNIT));
   rb_define_const(module, "LIGHT_YEAR", rb_float_new(GSL_CONST_CGS_LIGHT_YEAR));
   rb_define_const(module, "PARSEC", rb_float_new(GSL_CONST_CGS_PARSEC));
   rb_define_const(module, "GRAV_ACCEL", rb_float_new(GSL_CONST_CGS_GRAV_ACCEL));
   rb_define_const(module, "ELECTRON_VOLT", 
-		  rb_float_new(GSL_CONST_CGS_ELECTRON_VOLT));
+      rb_float_new(GSL_CONST_CGS_ELECTRON_VOLT));
   rb_define_const(module, "MASS_ELECTRON", 
-		  rb_float_new(GSL_CONST_CGS_MASS_ELECTRON));
+      rb_float_new(GSL_CONST_CGS_MASS_ELECTRON));
   rb_define_const(module, "MASS_MUON", rb_float_new(GSL_CONST_CGS_MASS_MUON));
   rb_define_const(module, "MASS_PROTON", 
-		  rb_float_new(GSL_CONST_CGS_MASS_PROTON));
+      rb_float_new(GSL_CONST_CGS_MASS_PROTON));
   rb_define_const(module, "MASS_NEUTRON", rb_float_new(GSL_CONST_CGS_MASS_NEUTRON));
   rb_define_const(module, "RYDBERG", rb_float_new(GSL_CONST_CGS_RYDBERG));
   rb_define_const(module, "BOHR_MAGNETON", 
-		  rb_float_new(GSL_CONST_CGS_BOHR_MAGNETON));
+      rb_float_new(GSL_CONST_CGS_BOHR_MAGNETON));
 
   rb_define_const(module, "NUCLEAR_MAGNETON", 
-		  rb_float_new(GSL_CONST_CGS_NUCLEAR_MAGNETON));
+      rb_float_new(GSL_CONST_CGS_NUCLEAR_MAGNETON));
   rb_define_const(module, "ELECTRON_MAGNETIC_MOMENT", 
-		  rb_float_new(GSL_CONST_CGS_ELECTRON_MAGNETIC_MOMENT));
+      rb_float_new(GSL_CONST_CGS_ELECTRON_MAGNETIC_MOMENT));
   rb_define_const(module, "PROTON_MAGNETIC_MOMENT", 
-		  rb_float_new(GSL_CONST_CGS_PROTON_MAGNETIC_MOMENT));
+      rb_float_new(GSL_CONST_CGS_PROTON_MAGNETIC_MOMENT));
   rb_define_const(module, "STANDARD_GAS_VOLUME", 
-		  rb_float_new(GSL_CONST_CGS_STANDARD_GAS_VOLUME));
+      rb_float_new(GSL_CONST_CGS_STANDARD_GAS_VOLUME));
 
   rb_define_const(module, "MINUTE", rb_float_new(GSL_CONST_CGS_MINUTE));
   rb_define_const(module, "HOUR", rb_float_new(GSL_CONST_CGS_HOUR));
@@ -206,7 +206,7 @@ static void rb_gsl_const_cgs(VALUE module)
   rb_define_const(module, "YARD", rb_float_new(GSL_CONST_CGS_YARD));
   rb_define_const(module, "MILE", rb_float_new(GSL_CONST_CGS_MILE));
   rb_define_const(module, "NAUTICAL_MILE", 
-		  rb_float_new(GSL_CONST_CGS_NAUTICAL_MILE));
+      rb_float_new(GSL_CONST_CGS_NAUTICAL_MILE));
   rb_define_const(module, "FATHOM", rb_float_new(GSL_CONST_CGS_FATHOM));
   rb_define_const(module, "MIL", rb_float_new(GSL_CONST_CGS_MIL));
   rb_define_const(module, "POINT", rb_float_new(GSL_CONST_CGS_POINT));
@@ -231,51 +231,51 @@ static void rb_gsl_const_cgs(VALUE module)
   rb_define_const(module, "FLUID_OUNCE", rb_float_new(GSL_CONST_CGS_FLUID_OUNCE));
   rb_define_const(module, "TABLESPOON", rb_float_new(GSL_CONST_CGS_TABLESPOON));
   rb_define_const(module, "CANADIAN_GALLON", 
-		  rb_float_new(GSL_CONST_CGS_CANADIAN_GALLON));
+      rb_float_new(GSL_CONST_CGS_CANADIAN_GALLON));
 
   rb_define_const(module, "UK_GALLON", rb_float_new(GSL_CONST_CGS_UK_GALLON));
   rb_define_const(module, "KILOMETERS_PER_HOUR", 
-		  rb_float_new(GSL_CONST_CGS_MILES_PER_HOUR)); 
+      rb_float_new(GSL_CONST_CGS_MILES_PER_HOUR)); 
   rb_define_const(module, "MILES_PER_HOUR", 
-		  rb_float_new(GSL_CONST_CGS_KILOMETERS_PER_HOUR));
+      rb_float_new(GSL_CONST_CGS_KILOMETERS_PER_HOUR));
   rb_define_const(module, "KNOT", rb_float_new(GSL_CONST_CGS_KNOT));
   rb_define_const(module, "POUND_MASS", rb_float_new(GSL_CONST_CGS_POUND_MASS));
   rb_define_const(module, "POUND_OUNCE", rb_float_new(GSL_CONST_CGS_OUNCE_MASS));
   rb_define_const(module, "POUND_TON", rb_float_new(GSL_CONST_CGS_TON));
   rb_define_const(module, "POUND_METRIC_TON", 
-		  rb_float_new(GSL_CONST_CGS_METRIC_TON));
+      rb_float_new(GSL_CONST_CGS_METRIC_TON));
   rb_define_const(module, "POUND_UK_TON", rb_float_new(GSL_CONST_CGS_UK_TON));
   rb_define_const(module, "POUND_TROY_OUNCE", 
-		  rb_float_new(GSL_CONST_CGS_TROY_OUNCE));
+      rb_float_new(GSL_CONST_CGS_TROY_OUNCE));
   rb_define_const(module, "CARAT", rb_float_new(GSL_CONST_CGS_CARAT));
   rb_define_const(module, "UNIFIED_ATOMIC_MASS", 
-		  rb_float_new(GSL_CONST_CGS_UNIFIED_ATOMIC_MASS));
+      rb_float_new(GSL_CONST_CGS_UNIFIED_ATOMIC_MASS));
   rb_define_const(module, "GRAM_FORCE", rb_float_new(GSL_CONST_CGS_GRAM_FORCE));
   rb_define_const(module, "POUND_FORCE", rb_float_new(GSL_CONST_CGS_POUND_FORCE));
   rb_define_const(module, "KILOPOUND_FORCE", 
-		  rb_float_new(GSL_CONST_CGS_KILOPOUND_FORCE));
+      rb_float_new(GSL_CONST_CGS_KILOPOUND_FORCE));
   rb_define_const(module, "POUNDAL", rb_float_new(GSL_CONST_CGS_POUNDAL));
   rb_define_const(module, "CALORIE", rb_float_new(GSL_CONST_CGS_CALORIE));
   rb_define_const(module, "THERM", rb_float_new(GSL_CONST_CGS_THERM));
   rb_define_const(module, "HORSEPOWER", rb_float_new(GSL_CONST_CGS_HORSEPOWER));
   rb_define_const(module, "BAR", rb_float_new(GSL_CONST_CGS_BAR));
   rb_define_const(module, "STD_ATMOSPHERE", 
-		  rb_float_new(GSL_CONST_CGS_STD_ATMOSPHERE));
+      rb_float_new(GSL_CONST_CGS_STD_ATMOSPHERE));
   rb_define_const(module, "TORR", rb_float_new(GSL_CONST_CGS_TORR));
   rb_define_const(module, "METER_OF_MERCURY",
-		  rb_float_new(GSL_CONST_CGS_METER_OF_MERCURY));
+      rb_float_new(GSL_CONST_CGS_METER_OF_MERCURY));
   rb_define_const(module, "INCH_OF_MERCURY", 
-		  rb_float_new(GSL_CONST_CGS_INCH_OF_MERCURY));
+      rb_float_new(GSL_CONST_CGS_INCH_OF_MERCURY));
   rb_define_const(module, "INCH_OF_WATER", 
-		  rb_float_new(GSL_CONST_CGS_INCH_OF_WATER));
+      rb_float_new(GSL_CONST_CGS_INCH_OF_WATER));
   rb_define_const(module, "PSI", rb_float_new(GSL_CONST_CGS_PSI));
   rb_define_const(module, "POISE", rb_float_new(GSL_CONST_CGS_POISE));
   rb_define_const(module, "STOKES", rb_float_new(GSL_CONST_CGS_STOKES));
   rb_define_const(module, "FARADAY", rb_float_new(GSL_CONST_CGS_FARADAY));
   rb_define_const(module, "ELECTRON_CHARGE", 
-		  rb_float_new(GSL_CONST_CGS_ELECTRON_CHARGE));
+      rb_float_new(GSL_CONST_CGS_ELECTRON_CHARGE));
   rb_define_const(module, "ELECTRON_CHARGE_ESU",
-		  rb_float_new(GSL_CONST_CGS_ELECTRON_CHARGE*GSL_CONST_CGS_SPEED_OF_LIGHT));
+      rb_float_new(GSL_CONST_CGS_ELECTRON_CHARGE*GSL_CONST_CGS_SPEED_OF_LIGHT));
   rb_define_const(module, "GAUSS", rb_float_new(GSL_CONST_CGS_GAUSS));
   rb_define_const(module, "STILB", rb_float_new(GSL_CONST_CGS_STILB));
   rb_define_const(module, "LUMEN", rb_float_new(GSL_CONST_CGS_LUMEN));
@@ -306,7 +306,7 @@ static void rb_gsl_const_num(VALUE module)
 {
   rb_define_const(module, "AVOGADRO", rb_float_new(GSL_CONST_NUM_AVOGADRO));
   rb_define_const(module, "FINE_STRUCTURE", 
-		  rb_float_new(GSL_CONST_NUM_FINE_STRUCTURE));
+      rb_float_new(GSL_CONST_NUM_FINE_STRUCTURE));
 #ifdef GSL_1_2_LATER
   rb_define_const(module, "YOTTA", rb_float_new(GSL_CONST_NUM_YOTTA));
   rb_define_const(module, "ZETTA", rb_float_new(GSL_CONST_NUM_ZETTA));
@@ -347,40 +347,40 @@ void Init_gsl_const(VALUE module)
 static void rb_gsl_const_mks(VALUE module)
 {
   rb_define_const(module, "SPEED_OF_LIGHT", 
-		  rb_float_new(GSL_CONST_MKSA_SPEED_OF_LIGHT));
+      rb_float_new(GSL_CONST_MKSA_SPEED_OF_LIGHT));
   rb_define_const(module, "GRAVITATIONAL_CONSTANT", 
-		  rb_float_new(GSL_CONST_MKSA_GRAVITATIONAL_CONSTANT));
+      rb_float_new(GSL_CONST_MKSA_GRAVITATIONAL_CONSTANT));
   rb_define_const(module, "PLANCKS_CONSTANT_H",
-		  rb_float_new(GSL_CONST_MKSA_PLANCKS_CONSTANT_H));
+      rb_float_new(GSL_CONST_MKSA_PLANCKS_CONSTANT_H));
   rb_define_const(module, "PLANCKS_CONSTANT_HBAR",
-		  rb_float_new(GSL_CONST_MKSA_PLANCKS_CONSTANT_HBAR));
+      rb_float_new(GSL_CONST_MKSA_PLANCKS_CONSTANT_HBAR));
   rb_define_const(module, "VACUUM_PERMEABILITY", 
-		  rb_float_new(GSL_CONST_MKSA_VACUUM_PERMEABILITY));
+      rb_float_new(GSL_CONST_MKSA_VACUUM_PERMEABILITY));
   rb_define_const(module, "VACUUM_PERMITTIVITY",
-		  rb_float_new(GSL_CONST_MKSA_VACUUM_PERMITTIVITY));
+      rb_float_new(GSL_CONST_MKSA_VACUUM_PERMITTIVITY));
   rb_define_const(module, "ASTRONOMICAL_UNIT", 
-		  rb_float_new(GSL_CONST_MKSA_ASTRONOMICAL_UNIT));
+      rb_float_new(GSL_CONST_MKSA_ASTRONOMICAL_UNIT));
   rb_define_const(module, "LIGHT_YEAR", rb_float_new(GSL_CONST_MKSA_LIGHT_YEAR));
   rb_define_const(module, "PARSEC", rb_float_new(GSL_CONST_MKSA_PARSEC));
   rb_define_const(module, "GRAV_ACCEL", rb_float_new(GSL_CONST_MKSA_GRAV_ACCEL));
   rb_define_const(module, "ELECTRON_VOLT", 
-		  rb_float_new(GSL_CONST_MKSA_ELECTRON_VOLT));
+      rb_float_new(GSL_CONST_MKSA_ELECTRON_VOLT));
   rb_define_const(module, "MASS_ELECTRON", 
-		  rb_float_new(GSL_CONST_MKSA_MASS_ELECTRON));
+      rb_float_new(GSL_CONST_MKSA_MASS_ELECTRON));
   rb_define_const(module, "MASS_MUON", rb_float_new(GSL_CONST_MKSA_MASS_MUON));
   rb_define_const(module, "MASS_PROTON", rb_float_new(GSL_CONST_MKSA_MASS_PROTON));
   rb_define_const(module, "MASS_NEUTRON", rb_float_new(GSL_CONST_MKSA_MASS_NEUTRON));
   rb_define_const(module, "RYDBERG", rb_float_new(GSL_CONST_MKSA_RYDBERG));
   rb_define_const(module, "BOHR_MAGNETON", 
-		  rb_float_new(GSL_CONST_MKSA_BOHR_MAGNETON));
+      rb_float_new(GSL_CONST_MKSA_BOHR_MAGNETON));
   rb_define_const(module, "NUCLEAR_MAGNETON",
-		  rb_float_new(GSL_CONST_MKSA_NUCLEAR_MAGNETON));
+      rb_float_new(GSL_CONST_MKSA_NUCLEAR_MAGNETON));
   rb_define_const(module, "ELECTRON_MAGNETIC_MOMENT",
-		  rb_float_new(GSL_CONST_MKSA_ELECTRON_MAGNETIC_MOMENT));
+      rb_float_new(GSL_CONST_MKSA_ELECTRON_MAGNETIC_MOMENT));
   rb_define_const(module, "PROTON_MAGNETIC_MOMENT", 
-		  rb_float_new(GSL_CONST_MKSA_PROTON_MAGNETIC_MOMENT));
+      rb_float_new(GSL_CONST_MKSA_PROTON_MAGNETIC_MOMENT));
   rb_define_const(module, "STANDARD_GAS_VOLUME", 
-		  rb_float_new(GSL_CONST_MKSA_STANDARD_GAS_VOLUME));
+      rb_float_new(GSL_CONST_MKSA_STANDARD_GAS_VOLUME));
 
   rb_define_const(module, "MINUTE", rb_float_new(GSL_CONST_MKSA_MINUTE));
   rb_define_const(module, "HOUR", rb_float_new(GSL_CONST_MKSA_HOUR));
@@ -391,7 +391,7 @@ static void rb_gsl_const_mks(VALUE module)
   rb_define_const(module, "YARD", rb_float_new(GSL_CONST_MKSA_YARD));
   rb_define_const(module, "MILE", rb_float_new(GSL_CONST_MKSA_MILE));
   rb_define_const(module, "NAUTICAL_MILE", 
-		  rb_float_new(GSL_CONST_MKSA_NAUTICAL_MILE));
+      rb_float_new(GSL_CONST_MKSA_NAUTICAL_MILE));
   rb_define_const(module, "FATHOM", rb_float_new(GSL_CONST_MKSA_FATHOM));
   rb_define_const(module, "MIL", rb_float_new(GSL_CONST_MKSA_MIL));
   rb_define_const(module, "POINT", rb_float_new(GSL_CONST_MKSA_POINT));
@@ -409,29 +409,29 @@ static void rb_gsl_const_mks(VALUE module)
   rb_define_const(module, "FLUID_OUNCE", rb_float_new(GSL_CONST_MKSA_FLUID_OUNCE));
   rb_define_const(module, "TABLESPOON", rb_float_new(GSL_CONST_MKSA_TABLESPOON));
   rb_define_const(module, "CANADIAN_GALLON", 
-		  rb_float_new(GSL_CONST_MKSA_CANADIAN_GALLON));
+      rb_float_new(GSL_CONST_MKSA_CANADIAN_GALLON));
 
   rb_define_const(module, "UK_GALLON", rb_float_new(GSL_CONST_MKSA_UK_GALLON));
   rb_define_const(module, "KILOMETERS_PER_HOUR", 
-		  rb_float_new(GSL_CONST_MKSA_MILES_PER_HOUR)); 
+      rb_float_new(GSL_CONST_MKSA_MILES_PER_HOUR)); 
   rb_define_const(module, "MILES_PER_HOUR", 
-		  rb_float_new(GSL_CONST_MKSA_KILOMETERS_PER_HOUR));
+      rb_float_new(GSL_CONST_MKSA_KILOMETERS_PER_HOUR));
   rb_define_const(module, "KNOT", rb_float_new(GSL_CONST_MKSA_KNOT));
   rb_define_const(module, "POUND_MASS", rb_float_new(GSL_CONST_MKSA_POUND_MASS));
   rb_define_const(module, "POUND_OUNCE", rb_float_new(GSL_CONST_MKSA_OUNCE_MASS));
   rb_define_const(module, "POUND_TON", rb_float_new(GSL_CONST_MKSA_TON));
   rb_define_const(module, "POUND_METRIC_TON", 
-		  rb_float_new(GSL_CONST_MKSA_METRIC_TON));
+      rb_float_new(GSL_CONST_MKSA_METRIC_TON));
   rb_define_const(module, "POUND_UK_TON", rb_float_new(GSL_CONST_MKSA_UK_TON));
   rb_define_const(module, "POUND_TROY_OUNCE",
-		  rb_float_new(GSL_CONST_MKSA_TROY_OUNCE));
+      rb_float_new(GSL_CONST_MKSA_TROY_OUNCE));
   rb_define_const(module, "CARAT", rb_float_new(GSL_CONST_MKSA_CARAT));
   rb_define_const(module, "UNIFIED_ATOMIC_MASS",
-		  rb_float_new(GSL_CONST_MKSA_UNIFIED_ATOMIC_MASS));
+      rb_float_new(GSL_CONST_MKSA_UNIFIED_ATOMIC_MASS));
   rb_define_const(module, "GRAM_FORCE", rb_float_new(GSL_CONST_MKSA_GRAM_FORCE));
   rb_define_const(module, "POUND_FORCE", rb_float_new(GSL_CONST_MKSA_POUND_FORCE));
   rb_define_const(module, "KILOPOUND_FORCE", 
-		  rb_float_new(GSL_CONST_MKSA_KILOPOUND_FORCE));
+      rb_float_new(GSL_CONST_MKSA_KILOPOUND_FORCE));
   rb_define_const(module, "POUNDAL", rb_float_new(GSL_CONST_MKSA_POUNDAL));
   rb_define_const(module, "CALORIE", rb_float_new(GSL_CONST_MKSA_CALORIE));
   rb_define_const(module, "BTU", rb_float_new(GSL_CONST_MKSA_BTU));
@@ -439,20 +439,20 @@ static void rb_gsl_const_mks(VALUE module)
   rb_define_const(module, "HORSEPOWER", rb_float_new(GSL_CONST_MKSA_HORSEPOWER));
   rb_define_const(module, "BAR", rb_float_new(GSL_CONST_MKSA_BAR));
   rb_define_const(module, "STD_ATMOSPHERE", 
-		  rb_float_new(GSL_CONST_MKSA_STD_ATMOSPHERE));
+      rb_float_new(GSL_CONST_MKSA_STD_ATMOSPHERE));
   rb_define_const(module, "TORR", rb_float_new(GSL_CONST_MKSA_TORR));
   rb_define_const(module, "METER_OF_MERCURY", 
-		  rb_float_new(GSL_CONST_MKSA_METER_OF_MERCURY));
+      rb_float_new(GSL_CONST_MKSA_METER_OF_MERCURY));
   rb_define_const(module, "INCH_OF_MERCURY", 
-		  rb_float_new(GSL_CONST_MKSA_INCH_OF_MERCURY));
+      rb_float_new(GSL_CONST_MKSA_INCH_OF_MERCURY));
   rb_define_const(module, "INCH_OF_WATER", 
-		  rb_float_new(GSL_CONST_MKSA_INCH_OF_WATER));
+      rb_float_new(GSL_CONST_MKSA_INCH_OF_WATER));
   rb_define_const(module, "PSI", rb_float_new(GSL_CONST_MKSA_PSI));
   rb_define_const(module, "POISE", rb_float_new(GSL_CONST_MKSA_POISE));
   rb_define_const(module, "STOKES", rb_float_new(GSL_CONST_MKSA_STOKES));
   rb_define_const(module, "FARADAY", rb_float_new(GSL_CONST_MKSA_FARADAY));
   rb_define_const(module, "ELECTRON_CHARGE",
-		  rb_float_new(GSL_CONST_MKSA_ELECTRON_CHARGE));
+      rb_float_new(GSL_CONST_MKSA_ELECTRON_CHARGE));
   rb_define_const(module, "GAUSS", rb_float_new(GSL_CONST_MKSA_GAUSS));
   rb_define_const(module, "STILB", rb_float_new(GSL_CONST_MKSA_STILB));
   rb_define_const(module, "LUMEN", rb_float_new(GSL_CONST_MKSA_LUMEN));
@@ -476,9 +476,9 @@ static void rb_gsl_const_mks(VALUE module)
 
 #ifdef GSL_1_4_9_LATER
   rb_define_const(module, "STEFAN_BOLTZMANN_CONSTANT", 
-		  rb_float_new(GSL_CONST_MKSA_STEFAN_BOLTZMANN_CONSTANT));
+      rb_float_new(GSL_CONST_MKSA_STEFAN_BOLTZMANN_CONSTANT));
   rb_define_const(module, "THOMSON_CROSS_SECTION", 
-		  rb_float_new(GSL_CONST_MKSA_THOMSON_CROSS_SECTION));
+      rb_float_new(GSL_CONST_MKSA_THOMSON_CROSS_SECTION));
 #endif
 
 
@@ -492,41 +492,41 @@ static void rb_gsl_const_mks(VALUE module)
 static void rb_gsl_const_cgs(VALUE module)
 {
   rb_define_const(module, "SPEED_OF_LIGHT", 
-		  rb_float_new(GSL_CONST_CGSM_SPEED_OF_LIGHT));
+      rb_float_new(GSL_CONST_CGSM_SPEED_OF_LIGHT));
   rb_define_const(module, "GRAVITATIONAL_CONSTANT", 
-		  rb_float_new(GSL_CONST_CGSM_GRAVITATIONAL_CONSTANT));
+      rb_float_new(GSL_CONST_CGSM_GRAVITATIONAL_CONSTANT));
   rb_define_const(module, "PLANCKS_CONSTANT_H", 
-		  rb_float_new(GSL_CONST_CGSM_PLANCKS_CONSTANT_H));
+      rb_float_new(GSL_CONST_CGSM_PLANCKS_CONSTANT_H));
   rb_define_const(module, "PLANCKS_CONSTANT_HBAR", 
-		  rb_float_new(GSL_CONST_CGSM_PLANCKS_CONSTANT_HBAR));
+      rb_float_new(GSL_CONST_CGSM_PLANCKS_CONSTANT_HBAR));
   rb_define_const(module, "ASTRONOMICAL_UNIT",
-		  rb_float_new(GSL_CONST_CGSM_ASTRONOMICAL_UNIT));
+      rb_float_new(GSL_CONST_CGSM_ASTRONOMICAL_UNIT));
   rb_define_const(module, "LIGHT_YEAR",
-		  rb_float_new(GSL_CONST_CGSM_LIGHT_YEAR));
+      rb_float_new(GSL_CONST_CGSM_LIGHT_YEAR));
   rb_define_const(module, "PARSEC", 
-		  rb_float_new(GSL_CONST_CGSM_PARSEC));
+      rb_float_new(GSL_CONST_CGSM_PARSEC));
   rb_define_const(module, "GRAV_ACCEL",
-		  rb_float_new(GSL_CONST_CGSM_GRAV_ACCEL));
+      rb_float_new(GSL_CONST_CGSM_GRAV_ACCEL));
   rb_define_const(module, "ELECTRON_VOLT",
-		  rb_float_new(GSL_CONST_CGSM_ELECTRON_VOLT));
+      rb_float_new(GSL_CONST_CGSM_ELECTRON_VOLT));
   rb_define_const(module, "MASS_ELECTRON", 
-		  rb_float_new(GSL_CONST_CGSM_MASS_ELECTRON));
+      rb_float_new(GSL_CONST_CGSM_MASS_ELECTRON));
   rb_define_const(module, "MASS_MUON", rb_float_new(GSL_CONST_CGSM_MASS_MUON));
   rb_define_const(module, "MASS_PROTON", rb_float_new(GSL_CONST_CGSM_MASS_PROTON));
   rb_define_const(module, "MASS_NEUTRON", rb_float_new(GSL_CONST_CGSM_MASS_NEUTRON));
   rb_define_const(module, "RYDBERG", rb_float_new(GSL_CONST_CGSM_RYDBERG));
 
   rb_define_const(module, "BOHR_MAGNETON", 
-		  rb_float_new(GSL_CONST_CGSM_BOHR_MAGNETON));
+      rb_float_new(GSL_CONST_CGSM_BOHR_MAGNETON));
 
   rb_define_const(module, "NUCLEAR_MAGNETON",
-		  rb_float_new(GSL_CONST_CGSM_NUCLEAR_MAGNETON));
+      rb_float_new(GSL_CONST_CGSM_NUCLEAR_MAGNETON));
   rb_define_const(module, "ELECTRON_MAGNETIC_MOMENT", 
-		  rb_float_new(GSL_CONST_CGSM_ELECTRON_MAGNETIC_MOMENT));
+      rb_float_new(GSL_CONST_CGSM_ELECTRON_MAGNETIC_MOMENT));
   rb_define_const(module, "PROTON_MAGNETIC_MOMENT", 
-		  rb_float_new(GSL_CONST_CGSM_PROTON_MAGNETIC_MOMENT));
+      rb_float_new(GSL_CONST_CGSM_PROTON_MAGNETIC_MOMENT));
   rb_define_const(module, "STANDARD_GAS_VOLUME",
-		  rb_float_new(GSL_CONST_CGSM_STANDARD_GAS_VOLUME));
+      rb_float_new(GSL_CONST_CGSM_STANDARD_GAS_VOLUME));
 
   rb_define_const(module, "MINUTE", rb_float_new(GSL_CONST_CGSM_MINUTE));
   rb_define_const(module, "HOUR", rb_float_new(GSL_CONST_CGSM_HOUR));
@@ -537,7 +537,7 @@ static void rb_gsl_const_cgs(VALUE module)
   rb_define_const(module, "YARD", rb_float_new(GSL_CONST_CGSM_YARD));
   rb_define_const(module, "MILE", rb_float_new(GSL_CONST_CGSM_MILE));
   rb_define_const(module, "NAUTICAL_MILE", 
-		  rb_float_new(GSL_CONST_CGSM_NAUTICAL_MILE));
+      rb_float_new(GSL_CONST_CGSM_NAUTICAL_MILE));
   rb_define_const(module, "FATHOM", rb_float_new(GSL_CONST_CGSM_FATHOM));
   rb_define_const(module, "MIL", rb_float_new(GSL_CONST_CGSM_MIL));
   rb_define_const(module, "POINT", rb_float_new(GSL_CONST_CGSM_POINT));
@@ -555,29 +555,29 @@ static void rb_gsl_const_cgs(VALUE module)
   rb_define_const(module, "FLUID_OUNCE", rb_float_new(GSL_CONST_CGSM_FLUID_OUNCE));
   rb_define_const(module, "TABLESPOON", rb_float_new(GSL_CONST_CGSM_TABLESPOON));
   rb_define_const(module, "CANADIAN_GALLON", 
-		  rb_float_new(GSL_CONST_CGSM_CANADIAN_GALLON));
+      rb_float_new(GSL_CONST_CGSM_CANADIAN_GALLON));
 
   rb_define_const(module, "UK_GALLON", rb_float_new(GSL_CONST_CGSM_UK_GALLON));
   rb_define_const(module, "KILOMETERS_PER_HOUR", 
-		  rb_float_new(GSL_CONST_CGSM_MILES_PER_HOUR));  
+      rb_float_new(GSL_CONST_CGSM_MILES_PER_HOUR));  
   rb_define_const(module, "MILES_PER_HOUR", 
-		  rb_float_new(GSL_CONST_CGSM_KILOMETERS_PER_HOUR));
+      rb_float_new(GSL_CONST_CGSM_KILOMETERS_PER_HOUR));
   rb_define_const(module, "KNOT", rb_float_new(GSL_CONST_CGSM_KNOT));
   rb_define_const(module, "POUND_MASS", rb_float_new(GSL_CONST_CGSM_POUND_MASS));
   rb_define_const(module, "POUND_OUNCE", rb_float_new(GSL_CONST_CGSM_OUNCE_MASS));
   rb_define_const(module, "POUND_TON", rb_float_new(GSL_CONST_CGSM_TON));
   rb_define_const(module, "POUND_METRIC_TON", 
-		  rb_float_new(GSL_CONST_CGSM_METRIC_TON));
+      rb_float_new(GSL_CONST_CGSM_METRIC_TON));
   rb_define_const(module, "POUND_UK_TON", rb_float_new(GSL_CONST_CGSM_UK_TON));
   rb_define_const(module, "POUND_TROY_OUNCE", 
-		  rb_float_new(GSL_CONST_CGSM_TROY_OUNCE));
+      rb_float_new(GSL_CONST_CGSM_TROY_OUNCE));
   rb_define_const(module, "CARAT", rb_float_new(GSL_CONST_CGSM_CARAT));
   rb_define_const(module, "UNIFIED_ATOMIC_MASS",
-		  rb_float_new(GSL_CONST_CGSM_UNIFIED_ATOMIC_MASS));
+      rb_float_new(GSL_CONST_CGSM_UNIFIED_ATOMIC_MASS));
   rb_define_const(module, "GRAM_FORCE", rb_float_new(GSL_CONST_CGSM_GRAM_FORCE));
   rb_define_const(module, "POUND_FORCE", rb_float_new(GSL_CONST_CGSM_POUND_FORCE));
   rb_define_const(module, "KILOPOUND_FORCE",
-		  rb_float_new(GSL_CONST_CGSM_KILOPOUND_FORCE));
+      rb_float_new(GSL_CONST_CGSM_KILOPOUND_FORCE));
   rb_define_const(module, "POUNDAL", rb_float_new(GSL_CONST_CGSM_POUNDAL));
   rb_define_const(module, "CALORIE", rb_float_new(GSL_CONST_CGSM_CALORIE));
   rb_define_const(module, "BTU", rb_float_new(GSL_CONST_CGSM_BTU));
@@ -585,22 +585,22 @@ static void rb_gsl_const_cgs(VALUE module)
   rb_define_const(module, "HORSEPOWER", rb_float_new(GSL_CONST_CGSM_HORSEPOWER));
   rb_define_const(module, "BAR", rb_float_new(GSL_CONST_CGSM_BAR));
   rb_define_const(module, "STD_ATMOSPHERE", 
-		  rb_float_new(GSL_CONST_CGSM_STD_ATMOSPHERE));
+      rb_float_new(GSL_CONST_CGSM_STD_ATMOSPHERE));
   rb_define_const(module, "TORR", rb_float_new(GSL_CONST_CGSM_TORR));
   rb_define_const(module, "METER_OF_MERCURY", 
-		  rb_float_new(GSL_CONST_CGSM_METER_OF_MERCURY));
+      rb_float_new(GSL_CONST_CGSM_METER_OF_MERCURY));
   rb_define_const(module, "INCH_OF_MERCURY",
-		  rb_float_new(GSL_CONST_CGSM_INCH_OF_MERCURY));
+      rb_float_new(GSL_CONST_CGSM_INCH_OF_MERCURY));
   rb_define_const(module, "INCH_OF_WATER",
-		  rb_float_new(GSL_CONST_CGSM_INCH_OF_WATER));
+      rb_float_new(GSL_CONST_CGSM_INCH_OF_WATER));
   rb_define_const(module, "PSI", rb_float_new(GSL_CONST_CGSM_PSI));
   rb_define_const(module, "POISE", rb_float_new(GSL_CONST_CGSM_POISE));
   rb_define_const(module, "STOKES", rb_float_new(GSL_CONST_CGSM_STOKES));
   rb_define_const(module, "FARADAY", rb_float_new(GSL_CONST_CGSM_FARADAY));
   rb_define_const(module, "ELECTRON_CHARGE", 
-		  rb_float_new(GSL_CONST_CGSM_ELECTRON_CHARGE));
+      rb_float_new(GSL_CONST_CGSM_ELECTRON_CHARGE));
   rb_define_const(module, "ELECTRON_CHARGE_ESU",
-		  rb_float_new(GSL_CONST_CGSM_ELECTRON_CHARGE*GSL_CONST_CGSM_SPEED_OF_LIGHT));
+      rb_float_new(GSL_CONST_CGSM_ELECTRON_CHARGE*GSL_CONST_CGSM_SPEED_OF_LIGHT));
 #ifndef GSL_1_13_LATER
   rb_define_const(module, "GAUSS", rb_float_new(GSL_CONST_CGSM_GAUSS));
 #endif
@@ -626,9 +626,9 @@ static void rb_gsl_const_cgs(VALUE module)
 
 #ifdef GSL_1_4_9_LATER
   rb_define_const(module, "STEFAN_BOLTZMANN_CONSTANT", 
-		  rb_float_new(GSL_CONST_CGSM_STEFAN_BOLTZMANN_CONSTANT));
+      rb_float_new(GSL_CONST_CGSM_STEFAN_BOLTZMANN_CONSTANT));
   rb_define_const(module, "THOMSON_CROSS_SECTION", 
-		  rb_float_new(GSL_CONST_CGSM_THOMSON_CROSS_SECTION));
+      rb_float_new(GSL_CONST_CGSM_THOMSON_CROSS_SECTION));
 #endif
 }
 
@@ -636,7 +636,7 @@ static void rb_gsl_const_num(VALUE module)
 {
   rb_define_const(module, "AVOGADRO", rb_float_new(GSL_CONST_NUM_AVOGADRO));
   rb_define_const(module, "FINE_STRUCTURE", 
-		  rb_float_new(GSL_CONST_NUM_FINE_STRUCTURE));
+      rb_float_new(GSL_CONST_NUM_FINE_STRUCTURE));
   rb_define_const(module, "YOTTA", rb_float_new(GSL_CONST_NUM_YOTTA));
   rb_define_const(module, "ZETTA", rb_float_new(GSL_CONST_NUM_ZETTA));
   rb_define_const(module, "EXA", rb_float_new(GSL_CONST_NUM_EXA));

@@ -23,14 +23,14 @@ static int get_func(int argc, VALUE *argv, VALUE obj, VALUE *ff, VALUE *xx)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 2) rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)",
-			    argc);
+          argc);
     CHECK_FUNCTION(argv[0]);
     *ff = argv[0];
     *xx = argv[1];
     break;
   default:
     if (argc != 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)",
-			    argc);
+          argc);
     *ff = obj;
     *xx = argv[0];
     break;
@@ -39,7 +39,7 @@ static int get_func(int argc, VALUE *argv, VALUE obj, VALUE *ff, VALUE *xx)
 }
 
 static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
-			      int (*diff)(const gsl_function *, double, double *, double *))
+            int (*diff)(const gsl_function *, double, double *, double *))
 {
   gsl_function *f = NULL;
   double result, abserr;
@@ -87,9 +87,9 @@ static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
       ptr2 = NA_PTR_TYPE(ary2, double*);
       ptr3 = NA_PTR_TYPE(ary3, double*);
       for (i = 0; i < n; i++) {
-	(*diff)(f, ptr1[i], &result, &abserr);	
-	ptr2[i] = result;
-	ptr3[i] = abserr;
+        (*diff)(f, ptr1[i], &result, &abserr);  
+        ptr2[i] = result;
+        ptr3[i] = abserr;
       }
       return rb_ary_new3(2, ary2, ary3);
     }
@@ -99,27 +99,27 @@ static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
       vnew = gsl_vector_alloc(v->size);
       verr = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-	(*diff)(f, gsl_vector_get(v, i), &result, &abserr);	
-	gsl_vector_set(vnew, i, result);
-	gsl_vector_set(verr, i, abserr);
+        (*diff)(f, gsl_vector_get(v, i), &result, &abserr);  
+        gsl_vector_set(vnew, i, result);
+        gsl_vector_set(verr, i, abserr);
       }
       return rb_ary_new3(2,
-			 Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew),
-			 Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, verr));
+       Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew),
+       Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, verr));
     } else if (MATRIX_P(xx)) {
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       merr = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (j = 0; j < m->size2; j++) {
-	  (*diff)(f, gsl_matrix_get(m, i, j), &result, &abserr);	
-	  gsl_matrix_set(mnew, i, j, result);
-	  gsl_matrix_set(merr, i, j, abserr);
-	}
+        for (j = 0; j < m->size2; j++) {
+          (*diff)(f, gsl_matrix_get(m, i, j), &result, &abserr);  
+          gsl_matrix_set(mnew, i, j, result);
+          gsl_matrix_set(merr, i, j, abserr);
+        }
       }
       return rb_ary_new3(2, 
-			 Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew),
-			 Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, merr));
+       Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew),
+       Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, merr));
     } else {
       rb_raise(rb_eTypeError, "wrong argument type");
     }

@@ -85,7 +85,7 @@ static VALUE rb_gsl_function_alloc(int argc, VALUE *argv, VALUE klass)
   obj = Data_Wrap_Struct(klass, gsl_function_mark, gsl_function_free, f);
   rb_gsl_function_set_f(argc, argv, obj);
   return obj;
-}			    
+}          
 
 double rb_gsl_function_f(double x, void *p)
 {
@@ -147,10 +147,10 @@ static VALUE rb_gsl_function_eval(VALUE obj, VALUE x)
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(x));
       ptr2 = NA_PTR_TYPE(ary, double*);
       for (i = 0; i < n; i++) {
-	x2 = rb_float_new(ptr1[i]);
-	if (NIL_P(params)) result = rb_funcall(proc, RBGSL_ID_call, 1, x2);
-	else result = rb_funcall(proc, RBGSL_ID_call, 2, x2, params);
-	ptr2[i] = NUM2DBL(result);
+        x2 = rb_float_new(ptr1[i]);
+        if (NIL_P(params)) result = rb_funcall(proc, RBGSL_ID_call, 1, x2);
+        else result = rb_funcall(proc, RBGSL_ID_call, 2, x2, params);
+        ptr2[i] = NUM2DBL(result);
       }
       return ary;
     }
@@ -159,22 +159,22 @@ static VALUE rb_gsl_function_eval(VALUE obj, VALUE x)
       Data_Get_Struct(x, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-	x2 = rb_float_new(gsl_vector_get(v, i));
-	if (NIL_P(params)) result = rb_funcall(proc, RBGSL_ID_call, 1, x2);
-	else result = rb_funcall(proc, RBGSL_ID_call, 2, x2, params);
-	gsl_vector_set(vnew, i, NUM2DBL(result));
+        x2 = rb_float_new(gsl_vector_get(v, i));
+        if (NIL_P(params)) result = rb_funcall(proc, RBGSL_ID_call, 1, x2);
+        else result = rb_funcall(proc, RBGSL_ID_call, 2, x2, params);
+        gsl_vector_set(vnew, i, NUM2DBL(result));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else if (MATRIX_P(x)) {
       Data_Get_Struct(x, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (j = 0; j < m->size2; j++) {
-	  x2 = rb_float_new(gsl_matrix_get(m, i, j));
-	  if (NIL_P(params)) result = rb_funcall(proc, RBGSL_ID_call, 1, x2);
-	  else result = rb_funcall(proc, RBGSL_ID_call, 2, x2, params);
-	  gsl_matrix_set(mnew, i, j, NUM2DBL(result));
-	}
+        for (j = 0; j < m->size2; j++) {
+          x2 = rb_float_new(gsl_matrix_get(m, i, j));
+          if (NIL_P(params)) result = rb_funcall(proc, RBGSL_ID_call, 1, x2);
+          else result = rb_funcall(proc, RBGSL_ID_call, 2, x2, params);
+          gsl_matrix_set(mnew, i, j, NUM2DBL(result));
+        }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -251,15 +251,15 @@ static VALUE rb_gsl_function_graph(int argc, VALUE *argv, VALUE obj)
       v = gsl_vector_alloc(n);
       flag = 1;
       for (i = 0; i < n; i++) 
-	gsl_vector_set(v, i, NUM2DBL(rb_ary_entry(argv[0], i)));
+        gsl_vector_set(v, i, NUM2DBL(rb_ary_entry(argv[0], i)));
     } else if (rb_obj_is_kind_of(argv[0], cgsl_vector)) {
       Data_Get_Struct(argv[0], gsl_vector, v);
       n = v->size;
       flag = 0;
     } else {
       rb_raise(rb_eTypeError, 
-	       "wrong argument type %s (Array or GSL::Vector expected)", 
-	       rb_class2name(CLASS_OF(argv[0])));
+         "wrong argument type %s (Array or GSL::Vector expected)", 
+         rb_class2name(CLASS_OF(argv[0])));
     }
     break;
   default:
@@ -314,11 +314,11 @@ static void setfunc(int i, VALUE *argv, gsl_function_fdf *F)
   if (rb_obj_is_kind_of(argv[i], rb_cProc)) {
     rb_ary_store(ary, i, argv[i]);
   } else if (TYPE(argv[i]) == T_ARRAY || rb_obj_is_kind_of(argv[i], cgsl_vector) 
-	     || TYPE(argv[i]) == T_FIXNUM || TYPE(argv[i]) == T_FLOAT) {
+       || TYPE(argv[i]) == T_FIXNUM || TYPE(argv[i]) == T_FLOAT) {
     rb_ary_store(ary, 3, argv[i]);
   } else {
     rb_raise(rb_eArgError, 
-	     "wrong type argument (Proc, Array, GSL::Vector or a number)");
+       "wrong type argument (Proc, Array, GSL::Vector or a number)");
   }
 }
 

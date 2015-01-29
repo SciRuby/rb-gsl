@@ -17,12 +17,12 @@
 VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double));
 VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa, double (*f)(double, double));
 VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb, 
-			   double (*f)(double, double, double));
+         double (*f)(double, double, double));
 VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa, 
-				double (*f)(unsigned int, double));
+        double (*f)(unsigned int, double));
 
 static VALUE rb_gsl_ran_eval0(int argc, VALUE *argv, VALUE obj,
-			      double (*f)(const gsl_rng*))
+            double (*f)(const gsl_rng*))
 {
   gsl_rng *r;
   switch (TYPE(obj)) {
@@ -52,7 +52,7 @@ static VALUE rb_gsl_ran_eval0(int argc, VALUE *argv, VALUE obj,
 }
 
 static VALUE rb_gsl_ran_eval1(int argc, VALUE *argv, VALUE obj,
-			      double (*f)(const gsl_rng*, double))
+            double (*f)(const gsl_rng*, double))
 {
   gsl_rng *r;
   gsl_vector *v;
@@ -68,7 +68,7 @@ static VALUE rb_gsl_ran_eval1(int argc, VALUE *argv, VALUE obj,
       Data_Get_Struct(argv[0], gsl_rng, r);    
       v = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) 
-	gsl_vector_set(v, i, (*f)(r, a));
+  gsl_vector_set(v, i, (*f)(r, a));
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
       break;
     case 2:
@@ -89,7 +89,7 @@ static VALUE rb_gsl_ran_eval1(int argc, VALUE *argv, VALUE obj,
       Data_Get_Struct(obj, gsl_rng, r);    
       v = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) 
-	gsl_vector_set(v, i, (*f)(r, a));
+  gsl_vector_set(v, i, (*f)(r, a));
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
       break;
     case 1:
@@ -106,7 +106,7 @@ static VALUE rb_gsl_ran_eval1(int argc, VALUE *argv, VALUE obj,
 }
 
 static VALUE rb_gsl_ran_eval1_uint(int argc, VALUE *argv, VALUE obj,
-			      unsigned int (*f)(const gsl_rng*, double))
+            unsigned int (*f)(const gsl_rng*, double))
 {
   gsl_rng *r;
   gsl_vector_int *v;
@@ -122,7 +122,7 @@ static VALUE rb_gsl_ran_eval1_uint(int argc, VALUE *argv, VALUE obj,
       Data_Get_Struct(argv[0], gsl_rng, r);    
       v = gsl_vector_int_alloc(n);
       for (i = 0; i < n; i++) 
-	gsl_vector_int_set(v, i, (int) (*f)(r, a));
+  gsl_vector_int_set(v, i, (int) (*f)(r, a));
       return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free, v);
       break;
     case 2:
@@ -143,7 +143,7 @@ static VALUE rb_gsl_ran_eval1_uint(int argc, VALUE *argv, VALUE obj,
       Data_Get_Struct(obj, gsl_rng, r);    
       v = gsl_vector_int_alloc(n);
       for (i = 0; i < n; i++) 
-	gsl_vector_int_set(v, i, (*f)(r, a));
+  gsl_vector_int_set(v, i, (*f)(r, a));
       return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free, v);
       break;
     case 1:
@@ -160,7 +160,7 @@ static VALUE rb_gsl_ran_eval1_uint(int argc, VALUE *argv, VALUE obj,
 }
 
 static VALUE rb_gsl_ran_eval2(int argc, VALUE *argv, VALUE obj,
-			      double (*f)(const gsl_rng*, double, double))
+            double (*f)(const gsl_rng*, double, double))
 {
   gsl_rng *r;
   gsl_vector *v;
@@ -212,7 +212,7 @@ static VALUE rb_gsl_ran_eval2(int argc, VALUE *argv, VALUE obj,
 }
 
 static VALUE rb_gsl_ran_eval3(int argc, VALUE *argv, VALUE obj,
-			      double (*f)(const gsl_rng*, double, double, double))
+            double (*f)(const gsl_rng*, double, double, double))
 {
   gsl_rng *r;
   gsl_vector *v;
@@ -265,7 +265,7 @@ static VALUE rb_gsl_ran_eval3(int argc, VALUE *argv, VALUE obj,
 
 static VALUE rb_gsl_ran_gaussian(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   gsl_vector *v;
   size_t n, i;
   double sigma = 1.0;
@@ -279,7 +279,7 @@ static VALUE rb_gsl_ran_gaussian(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(argv[0], gsl_rng, r);    
       v = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) 
-	gsl_vector_set(v, i, gsl_ran_gaussian(r, sigma));
+  gsl_vector_set(v, i, gsl_ran_gaussian(r, sigma));
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
       break;
     case 2:
@@ -304,7 +304,7 @@ static VALUE rb_gsl_ran_gaussian(int argc, VALUE *argv, VALUE obj)
       sigma = NUM2DBL(argv[0]);
       v = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) 
-	gsl_vector_set(v, i, gsl_ran_gaussian(r, sigma));
+  gsl_vector_set(v, i, gsl_ran_gaussian(r, sigma));
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
       break;
     case 1:
@@ -325,7 +325,7 @@ static VALUE rb_gsl_ran_gaussian(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ran_gaussian_ratio_method(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   double sigma = 1.0;
   switch (TYPE(obj)) {
   case T_MODULE: case T_CLASS: case T_OBJECT:
@@ -374,7 +374,7 @@ static VALUE rb_gsl_ran_gaussian_pdf(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ran_gaussian_tail(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   gsl_vector *v;
   size_t n, i;
   double a, sigma = 1.0;
@@ -389,7 +389,7 @@ static VALUE rb_gsl_ran_gaussian_tail(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(argv[0], gsl_rng, r);    
       v = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) 
-	gsl_vector_set(v, i, gsl_ran_gaussian_tail(r, a, sigma));
+  gsl_vector_set(v, i, gsl_ran_gaussian_tail(r, a, sigma));
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
       break;
     case 3:
@@ -415,7 +415,7 @@ static VALUE rb_gsl_ran_gaussian_tail(int argc, VALUE *argv, VALUE obj)
       a = NUM2DBL(argv[0]);
       v = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) 
-	gsl_vector_set(v, i, gsl_ran_gaussian_tail(r, a, sigma));
+  gsl_vector_set(v, i, gsl_ran_gaussian_tail(r, a, sigma));
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
       break;
     case 2:
@@ -450,7 +450,7 @@ static VALUE rb_gsl_ran_gaussian_tail_pdf(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ran_bivariate_gaussian(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   double sigmax, sigmay, x, y, rho;
   switch (TYPE(obj)) {
   case T_MODULE: case T_CLASS: case T_OBJECT:
@@ -748,7 +748,7 @@ static VALUE rb_gsl_ran_binomial(int argc, VALUE *argv, VALUE obj)
 #ifdef GSL_1_4_LATER
 static VALUE rb_gsl_ran_binomial_tpe(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   double p;
   unsigned int n;
   switch (TYPE(obj)) {
@@ -829,7 +829,7 @@ static VALUE rb_gsl_ran_negative_binomial_pdf(VALUE obj, VALUE x, VALUE p, VALUE
 
 static VALUE rb_gsl_ran_pascal(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   double p;
   unsigned int n;
   switch (TYPE(obj)) {
@@ -930,7 +930,7 @@ static VALUE rb_gsl_ran_logarithmic_pdf(VALUE obj, VALUE x, VALUE mu)
 
 static VALUE rb_gsl_ran_dir_2d(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   double x, y;
   switch (TYPE(obj)) {
   case T_MODULE: case T_CLASS: case T_OBJECT:
@@ -960,7 +960,7 @@ static VALUE rb_gsl_ran_dir_2d(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ran_dir_2d_trig_method(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   double x, y;
   switch (TYPE(obj)) {
   case T_MODULE: case T_CLASS: case T_OBJECT:
@@ -990,7 +990,7 @@ static VALUE rb_gsl_ran_dir_2d_trig_method(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ran_dir_3d(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   double x, y, z;
   switch (TYPE(obj)) {
   case T_MODULE: case T_CLASS: case T_OBJECT:
@@ -1020,7 +1020,7 @@ static VALUE rb_gsl_ran_dir_3d(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ran_dir_nd(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   size_t n;
   gsl_vector *v;
   switch (TYPE(obj)) {
@@ -1055,7 +1055,7 @@ static VALUE rb_gsl_ran_dir_nd(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ran_shuffle(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   gsl_vector *v = NULL;
   gsl_permutation *p = NULL;
   switch (TYPE(obj)) {
@@ -1067,13 +1067,13 @@ static VALUE rb_gsl_ran_shuffle(int argc, VALUE *argv, VALUE obj)
       CHECK_RNG(argv[0]);
       Data_Get_Struct(argv[0], gsl_rng, r);
       if (VECTOR_P(argv[1])) {
-	Data_Get_Struct(argv[1], gsl_vector, v);
-	gsl_ran_shuffle(r, v->data, v->size, sizeof(double));
+  Data_Get_Struct(argv[1], gsl_vector, v);
+  gsl_ran_shuffle(r, v->data, v->size, sizeof(double));
       } else if (PERMUTATION_P(argv[1])) {
-	Data_Get_Struct(argv[1], gsl_permutation, p);
-	gsl_ran_shuffle(r, p->data, p->size, sizeof(size_t));
+  Data_Get_Struct(argv[1], gsl_permutation, p);
+  gsl_ran_shuffle(r, p->data, p->size, sizeof(size_t));
       } else {
-	rb_raise(rb_eTypeError, "wrong argument type %s (Vector or Permutation expected)", rb_class2name(CLASS_OF(argv[1])));
+  rb_raise(rb_eTypeError, "wrong argument type %s (Vector or Permutation expected)", rb_class2name(CLASS_OF(argv[1])));
       }
       break;
     case 3:
@@ -1081,15 +1081,15 @@ static VALUE rb_gsl_ran_shuffle(int argc, VALUE *argv, VALUE obj)
       CHECK_FIXNUM(argv[2]);
       Data_Get_Struct(argv[0], gsl_rng, r);
       if (VECTOR_P(argv[1])) {
-	Data_Get_Struct(argv[1], gsl_vector, v);
-	gsl_ran_shuffle(r, v->data, FIX2INT(argv[2]), sizeof(double));
+  Data_Get_Struct(argv[1], gsl_vector, v);
+  gsl_ran_shuffle(r, v->data, FIX2INT(argv[2]), sizeof(double));
       } else if (PERMUTATION_P(argv[1])) {
-	Data_Get_Struct(argv[1], gsl_permutation, p);
-	gsl_ran_shuffle(r, p->data, FIX2INT(argv[2]), sizeof(size_t));
+  Data_Get_Struct(argv[1], gsl_permutation, p);
+  gsl_ran_shuffle(r, p->data, FIX2INT(argv[2]), sizeof(size_t));
       } else {
-	rb_raise(rb_eTypeError, 
-		 "wrong argument type %s (Vector or Permutation expected)", 
-		 rb_class2name(CLASS_OF(argv[1])));
+  rb_raise(rb_eTypeError, 
+     "wrong argument type %s (Vector or Permutation expected)", 
+     rb_class2name(CLASS_OF(argv[1])));
       }
       break;
     default:
@@ -1102,27 +1102,27 @@ static VALUE rb_gsl_ran_shuffle(int argc, VALUE *argv, VALUE obj)
     switch (argc) {
     case 1:
       if (VECTOR_P(argv[0])) {
-	Data_Get_Struct(argv[0], gsl_vector, v);
-	gsl_ran_shuffle(r, v->data, v->size, sizeof(double));
+  Data_Get_Struct(argv[0], gsl_vector, v);
+  gsl_ran_shuffle(r, v->data, v->size, sizeof(double));
       } else if (PERMUTATION_P(argv[0])) {
-	Data_Get_Struct(argv[0], gsl_permutation, p);
-	gsl_ran_shuffle(r, p->data, p->size, sizeof(size_t));
+  Data_Get_Struct(argv[0], gsl_permutation, p);
+  gsl_ran_shuffle(r, p->data, p->size, sizeof(size_t));
       } else {
-	rb_raise(rb_eTypeError, "wrong argument type %s (Vector or Permutation expected)", rb_class2name(CLASS_OF(argv[0])));
+  rb_raise(rb_eTypeError, "wrong argument type %s (Vector or Permutation expected)", rb_class2name(CLASS_OF(argv[0])));
       }
       break;
     case 2:
       CHECK_FIXNUM(argv[1]);
       if (VECTOR_P(argv[0])) {
-	Data_Get_Struct(argv[0], gsl_vector, v);
-	gsl_ran_shuffle(r, v->data, FIX2INT(argv[1]), sizeof(double));
+  Data_Get_Struct(argv[0], gsl_vector, v);
+  gsl_ran_shuffle(r, v->data, FIX2INT(argv[1]), sizeof(double));
       } else if (PERMUTATION_P(argv[0])) {
-	Data_Get_Struct(argv[0], gsl_permutation, p);
-	gsl_ran_shuffle(r, p->data, FIX2INT(argv[1]), sizeof(size_t));
+  Data_Get_Struct(argv[0], gsl_permutation, p);
+  gsl_ran_shuffle(r, p->data, FIX2INT(argv[1]), sizeof(size_t));
       } else {
-	rb_raise(rb_eTypeError, 
-		 "wrong argument type %s (Vector or Permutation expected)", 
-		 rb_class2name(CLASS_OF(argv[0])));
+  rb_raise(rb_eTypeError, 
+     "wrong argument type %s (Vector or Permutation expected)", 
+     rb_class2name(CLASS_OF(argv[0])));
       }
     default:
       rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)", argc);
@@ -1135,7 +1135,7 @@ static VALUE rb_gsl_ran_shuffle(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ran_choose(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   gsl_vector *v = NULL, *v2 = NULL;
   size_t k, n;
   Data_Get_Struct(obj, gsl_rng, r);  
@@ -1169,7 +1169,7 @@ static VALUE rb_gsl_ran_choose(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ran_choose_singleton(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   gsl_vector *v = NULL, *v2 = NULL;
   size_t k, n;
   switch (argc) {
@@ -1206,7 +1206,7 @@ static VALUE rb_gsl_ran_choose_singleton(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ran_sample(VALUE obj, VALUE vv, VALUE kk)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   gsl_vector *v = NULL, *v2 = NULL;
   size_t k, n;
   Data_Get_Struct(obj, gsl_rng, r);  
@@ -1221,7 +1221,7 @@ static VALUE rb_gsl_ran_sample(VALUE obj, VALUE vv, VALUE kk)
 #ifdef GSL_1_3_LATER
 static VALUE rb_gsl_ran_dirichlet(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   gsl_vector *v = NULL, *v2 = NULL;
   Data_Get_Struct(obj, gsl_rng, r);    
   if (argc == 1) {
@@ -1330,16 +1330,16 @@ VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double))
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-	gsl_vector_set(vnew, i, (*f)(gsl_vector_get(v, i)));
+  gsl_vector_set(vnew, i, (*f)(gsl_vector_get(v, i)));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else if (MATRIX_P(xx)) {
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (j = 0; j < m->size2; j++) {
-	  gsl_matrix_set(mnew, i, j, (*f)(gsl_matrix_get(m, i, j)));
-	}
+  for (j = 0; j < m->size2; j++) {
+    gsl_matrix_set(mnew, i, j, (*f)(gsl_matrix_get(m, i, j)));
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -1352,7 +1352,7 @@ VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double))
 }
 
 VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa, 
-			      double (*f)(double, double))
+            double (*f)(double, double))
 {
   VALUE x, ary;
   double a;
@@ -1400,16 +1400,16 @@ VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa,
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-	gsl_vector_set(vnew, i, (*f)(gsl_vector_get(v, i), a));
+  gsl_vector_set(vnew, i, (*f)(gsl_vector_get(v, i), a));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else if (MATRIX_P(xx)) {
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (j = 0; j < m->size2; j++) {
-	  gsl_matrix_set(mnew, i, j, (*f)(gsl_matrix_get(m, i, j), a));
-	}
+  for (j = 0; j < m->size2; j++) {
+    gsl_matrix_set(mnew, i, j, (*f)(gsl_matrix_get(m, i, j), a));
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -1422,7 +1422,7 @@ VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa,
 }
 
 VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb, 
-			      double (*f)(double, double, double))
+            double (*f)(double, double, double))
 {
   VALUE x, ary;
   double a, b;
@@ -1470,16 +1470,16 @@ VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb,
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-	gsl_vector_set(vnew, i, (*f)(gsl_vector_get(v, i), a, b));
+  gsl_vector_set(vnew, i, (*f)(gsl_vector_get(v, i), a, b));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else if (MATRIX_P(xx)) {
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (j = 0; j < m->size2; j++) {
-	  gsl_matrix_set(mnew, i, j, (*f)(gsl_matrix_get(m, i, j), a, b));
-	}
+  for (j = 0; j < m->size2; j++) {
+    gsl_matrix_set(mnew, i, j, (*f)(gsl_matrix_get(m, i, j), a, b));
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -1492,7 +1492,7 @@ VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb,
 }
 
 VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa, 
-				       double (*f)(unsigned int, double))
+               double (*f)(unsigned int, double))
 {
   VALUE x, ary;
   double a;
@@ -1534,13 +1534,13 @@ VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa,
       ptr2 = (char *)NA_STRUCT(ary)->ptr;
       switch (na->type) {
       case NA_LINT:
-	for (i = 0; i < n; i++) 
-	  ((int*)ptr2)[i] = (*f)((unsigned int) ((int*)ptr1)[i], a);
-	break;
+  for (i = 0; i < n; i++) 
+    ((int*)ptr2)[i] = (*f)((unsigned int) ((int*)ptr1)[i], a);
+  break;
       default:
-	for (i = 0; i < n; i++) 
-	  ((double*)ptr2)[i] = (*f)((unsigned int) ((double*)ptr1)[i], a);
-	break;
+  for (i = 0; i < n; i++) 
+    ((double*)ptr2)[i] = (*f)((unsigned int) ((double*)ptr1)[i], a);
+  break;
       }
       return ary;
     }
@@ -1549,32 +1549,32 @@ VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa,
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-	gsl_vector_set(vnew, i, (*f)((unsigned int) gsl_vector_get(v, i), a));
+  gsl_vector_set(vnew, i, (*f)((unsigned int) gsl_vector_get(v, i), a));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else if (VECTOR_INT_P(xx)) {
       Data_Get_Struct(xx, gsl_vector_int, vi);
       vnew = gsl_vector_alloc(vi->size);
       for (i = 0; i < vi->size; i++) {
-	gsl_vector_set(vnew, i, (*f)((unsigned int) gsl_vector_int_get(vi, i), a));
+  gsl_vector_set(vnew, i, (*f)((unsigned int) gsl_vector_int_get(vi, i), a));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else if (MATRIX_P(xx)) {
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (j = 0; j < m->size2; j++) {
-	  gsl_matrix_set(mnew, i, j, (*f)((unsigned int) gsl_matrix_get(m, i, j), a));
-	}
+  for (j = 0; j < m->size2; j++) {
+    gsl_matrix_set(mnew, i, j, (*f)((unsigned int) gsl_matrix_get(m, i, j), a));
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else if (MATRIX_INT_P(xx)) {
       Data_Get_Struct(xx, gsl_matrix_int, mi);
       mnew = gsl_matrix_alloc(mi->size1, mi->size2);
       for (i = 0; i < mi->size1; i++) {
-	for (j = 0; j < mi->size2; j++) {
-	  gsl_matrix_set(mnew, i, j, (*f)((unsigned int) gsl_matrix_int_get(mi, i, j), a));
-	}
+  for (j = 0; j < mi->size2; j++) {
+    gsl_matrix_set(mnew, i, j, (*f)((unsigned int) gsl_matrix_int_get(mi, i, j), a));
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -1604,7 +1604,7 @@ static VALUE rb_gsl_ran_erlang_pdf(VALUE obj, VALUE x, VALUE a, VALUE n)
 
 static VALUE rb_gsl_ran_gaussian_ziggurat(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_rng *r = NULL;	
+  gsl_rng *r = NULL;  
   gsl_vector *v;
   size_t n, i;
   double sigma = 1.0;
@@ -1618,7 +1618,7 @@ static VALUE rb_gsl_ran_gaussian_ziggurat(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(argv[0], gsl_rng, r);    
       v = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) 
-	gsl_vector_set(v, i, gsl_ran_gaussian_ziggurat(r, sigma));
+  gsl_vector_set(v, i, gsl_ran_gaussian_ziggurat(r, sigma));
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
       break;
     case 2:
@@ -1643,7 +1643,7 @@ static VALUE rb_gsl_ran_gaussian_ziggurat(int argc, VALUE *argv, VALUE obj)
       sigma = NUM2DBL(argv[0]);
       v = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) 
-	gsl_vector_set(v, i, gsl_ran_gaussian_ziggurat(r, sigma));
+  gsl_vector_set(v, i, gsl_ran_gaussian_ziggurat(r, sigma));
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
       break;
     case 1:
@@ -1681,11 +1681,11 @@ void Init_gsl_ran(VALUE module)
   rb_define_alias(cgsl_rng, "ugaussian", "gaussian");
 
   rb_define_module_function(mgsl_ran, "gaussian_ratio_method", 
-			    rb_gsl_ran_gaussian_ratio_method, -1);
+          rb_gsl_ran_gaussian_ratio_method, -1);
   rb_define_module_function(mgsl_ran, "ugaussian_ratio_method",
-			    rb_gsl_ran_gaussian_ratio_method, -1);
+          rb_gsl_ran_gaussian_ratio_method, -1);
   rb_define_method(cgsl_rng, "gaussian_ratio_method", 
-		   rb_gsl_ran_gaussian_ratio_method, -1);
+       rb_gsl_ran_gaussian_ratio_method, -1);
   rb_define_alias(cgsl_rng, "ugaussian_ratio_method", "gaussian_ratio_method");
   rb_define_module_function(mgsl_ran,  "gaussian_pdf", rb_gsl_ran_gaussian_pdf, -1);
   rb_define_module_function(mgsl_ran,  "ugaussian_pdf", rb_gsl_ran_gaussian_pdf, -1);
@@ -1695,21 +1695,21 @@ void Init_gsl_ran(VALUE module)
   rb_define_method(cgsl_rng, "gaussian_tail", rb_gsl_ran_gaussian_tail, -1);
   rb_define_alias(cgsl_rng, "ugaussian_tail", "gaussian_tail");
   rb_define_module_function(mgsl_ran,  "gaussian_tail_pdf", 
-			    rb_gsl_ran_gaussian_tail_pdf, -1);
+          rb_gsl_ran_gaussian_tail_pdf, -1);
   rb_define_module_function(mgsl_ran,  "ugaussian_tail_pdf", 
-			    rb_gsl_ran_gaussian_tail_pdf, -1);
+          rb_gsl_ran_gaussian_tail_pdf, -1);
 
   rb_define_module_function(mgsl_ran, "bivariate_gaussian", 
-		   rb_gsl_ran_bivariate_gaussian, -1);
+       rb_gsl_ran_bivariate_gaussian, -1);
   rb_define_method(cgsl_rng, "bivariate_gaussian", 
-		   rb_gsl_ran_bivariate_gaussian, -1);
+       rb_gsl_ran_bivariate_gaussian, -1);
   rb_define_module_function(mgsl_ran,  "bivariate_gaussian_pdf", 
-			    rb_gsl_ran_bivariate_gaussian_pdf, 5);
+          rb_gsl_ran_bivariate_gaussian_pdf, 5);
 
   rb_define_module_function(mgsl_ran, "exponential", rb_gsl_ran_exponential, -1);
   rb_define_method(cgsl_rng, "exponential", rb_gsl_ran_exponential, -1);
   rb_define_module_function(mgsl_ran,  "exponential_pdf", 
-			    rb_gsl_ran_exponential_pdf, 2);
+          rb_gsl_ran_exponential_pdf, 2);
 
   rb_define_module_function(mgsl_ran, "laplace", rb_gsl_ran_laplace, -1);
   rb_define_method(cgsl_rng, "laplace", rb_gsl_ran_laplace, -1);
@@ -1730,7 +1730,7 @@ void Init_gsl_ran(VALUE module)
   rb_define_module_function(mgsl_ran, "rayleigh_tail", rb_gsl_ran_rayleigh_tail, -1);
   rb_define_method(cgsl_rng, "rayleigh_tail", rb_gsl_ran_rayleigh_tail, -1);
   rb_define_module_function(mgsl_ran,  "rayleigh_tail_pdf", 
-			    rb_gsl_ran_rayleigh_tail_pdf, 3);
+          rb_gsl_ran_rayleigh_tail_pdf, 3);
 
   rb_define_module_function(mgsl_ran, "landau", rb_gsl_ran_landau, -1);
   rb_define_method(cgsl_rng, "landau", rb_gsl_ran_landau, -1);
@@ -1806,7 +1806,7 @@ void Init_gsl_ran(VALUE module)
   rb_define_module_function(mgsl_ran,  "binomial_pdf", rb_gsl_ran_binomial_pdf, 3);
 
   rb_define_module_function(mgsl_ran, "negative_binomial", 
-			    rb_gsl_ran_negative_binomial, -1);
+          rb_gsl_ran_negative_binomial, -1);
   rb_define_method(cgsl_rng, "negative_binomial", rb_gsl_ran_negative_binomial, -1);
   rb_define_module_function(mgsl_ran,  "negative_binomial_pdf", rb_gsl_ran_negative_binomial_pdf, 3);
 
@@ -1821,16 +1821,16 @@ void Init_gsl_ran(VALUE module)
   rb_define_module_function(mgsl_ran, "hypergeometric", rb_gsl_ran_hypergeometric, -1);
   rb_define_method(cgsl_rng, "hypergeometric", rb_gsl_ran_hypergeometric, -1);
   rb_define_module_function(mgsl_ran,  "hypergeometric_pdf", 
-			    rb_gsl_ran_hypergeometric_pdf, 4);
+          rb_gsl_ran_hypergeometric_pdf, 4);
 
   rb_define_module_function(mgsl_ran, "logarithmic", rb_gsl_ran_logarithmic, -1);
   rb_define_method(cgsl_rng, "logarithmic", rb_gsl_ran_logarithmic, -1);
   rb_define_module_function(mgsl_ran,  "logarithmic_pdf",
-			    rb_gsl_ran_logarithmic_pdf, 2);
+          rb_gsl_ran_logarithmic_pdf, 2);
 
   rb_define_module_function(mgsl_ran, "dir_2d", rb_gsl_ran_dir_2d, -1);
   rb_define_module_function(mgsl_ran, "dir_2d_trig_method", 
-			    rb_gsl_ran_dir_2d_trig_method, -1);
+          rb_gsl_ran_dir_2d_trig_method, -1);
   rb_define_module_function(mgsl_ran, "dir_3d", rb_gsl_ran_dir_3d, -1);
   rb_define_module_function(mgsl_ran, "dir_nd", rb_gsl_ran_dir_nd, -1);
 

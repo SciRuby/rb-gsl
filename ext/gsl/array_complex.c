@@ -87,83 +87,82 @@ static VALUE rb_gsl_complex_arithmetics5(int flag, VALUE obj, VALUE bb)
       case GSL_COMPLEX_SUB:
       case GSL_COMPLEX_MUL:
       case GSL_COMPLEX_DIV:
-	c = ALLOC(gsl_complex);
-	*c = tmp;
-	return Data_Wrap_Struct(cgsl_complex, 0, free, c); 
-	break;
+        c = ALLOC(gsl_complex);
+        *c = tmp;
+        return Data_Wrap_Struct(cgsl_complex, 0, free, c); 
+        break;
       }
     } else {
       if (VECTOR_P(bb)) {
-	Data_Get_Struct(bb, gsl_vector, v);
-	cv = vector_to_complex(v);
-	cvnew = gsl_vector_complex_alloc(v->size);
-	if (cvnew == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
-	gsl_vector_complex_set_all(cvnew, *a);
-	switch (flag) {
-	case GSL_COMPLEX_ADD:
-	  gsl_vector_complex_add(cvnew, cv);
-	  break;
-	case GSL_COMPLEX_SUB:
-	  gsl_vector_complex_sub(cvnew, cv);
-	  break;
-	case GSL_COMPLEX_MUL:
-	  gsl_vector_complex_mul(cvnew, cv);
-	  break;
-	case GSL_COMPLEX_DIV:
-	  gsl_vector_complex_add(cvnew, cv);
-	  break;
-	}
-	gsl_vector_complex_free(cv);
-	return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
+        Data_Get_Struct(bb, gsl_vector, v);
+        cv = vector_to_complex(v);
+        cvnew = gsl_vector_complex_alloc(v->size);
+        if (cvnew == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
+        gsl_vector_complex_set_all(cvnew, *a);
+        switch (flag) {
+        case GSL_COMPLEX_ADD:
+          gsl_vector_complex_add(cvnew, cv);
+          break;
+        case GSL_COMPLEX_SUB:
+          gsl_vector_complex_sub(cvnew, cv);
+          break;
+        case GSL_COMPLEX_MUL:
+          gsl_vector_complex_mul(cvnew, cv);
+          break;
+        case GSL_COMPLEX_DIV:
+          gsl_vector_complex_add(cvnew, cv);
+          break;
+        }
+        gsl_vector_complex_free(cv);
+        return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
       }
       if (VECTOR_COMPLEX_P(bb)) {
-	Data_Get_Struct(bb, gsl_vector_complex, cv);
-	cvnew = gsl_vector_complex_alloc(v->size);
-	if (cvnew == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
-	gsl_vector_complex_set_all(cvnew, *a);
-	switch (flag) {
-	case GSL_COMPLEX_ADD:
-	  gsl_vector_complex_add(cvnew, cv);
-	  break;
-	case GSL_COMPLEX_SUB:
-	  gsl_vector_complex_sub(cvnew, cv);
-	  break;
-	case GSL_COMPLEX_MUL:
-	  gsl_vector_complex_mul(cvnew, cv);
-	  break;
-	case GSL_COMPLEX_DIV:
-	  gsl_vector_complex_add(cvnew, cv);
-	  break;
-	}
-	return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
+        Data_Get_Struct(bb, gsl_vector_complex, cv);
+        cvnew = gsl_vector_complex_alloc(v->size);
+        if (cvnew == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
+        gsl_vector_complex_set_all(cvnew, *a);
+        switch (flag) {
+        case GSL_COMPLEX_ADD:
+          gsl_vector_complex_add(cvnew, cv);
+          break;
+        case GSL_COMPLEX_SUB:
+          gsl_vector_complex_sub(cvnew, cv);
+          break;
+        case GSL_COMPLEX_MUL:
+          gsl_vector_complex_mul(cvnew, cv);
+          break;
+        case GSL_COMPLEX_DIV:
+          gsl_vector_complex_add(cvnew, cv);
+          break;
+        }
+        return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
       }
 
-
       if (MATRIX_P(bb)) {
-	Data_Get_Struct(bb, gsl_matrix, m);
-	cm = matrix_to_complex(m);
-	flagcm = 1;
-      }	else if (MATRIX_COMPLEX_P(bb)) {
-	Data_Get_Struct(bb, gsl_matrix_complex, cm);
+        Data_Get_Struct(bb, gsl_matrix, m);
+        cm = matrix_to_complex(m);
+        flagcm = 1;
+      } else if (MATRIX_COMPLEX_P(bb)) {
+        Data_Get_Struct(bb, gsl_matrix_complex, cm);
       } else {
-	rb_raise(rb_eTypeError, "wrong argument type %s", rb_class2name(CLASS_OF(bb)));
+        rb_raise(rb_eTypeError, "wrong argument type %s", rb_class2name(CLASS_OF(bb)));
       }
       cmself = gsl_matrix_complex_alloc(m->size1, m->size2);
       if (cmself == NULL) rb_raise(rb_eNoMemError, "gsl_matrix_complex_alloc failed");
       gsl_matrix_complex_set_all(cmself, *a);
       switch (flag) {
       case GSL_COMPLEX_ADD:
-	gsl_matrix_complex_add(cmself, cm);
-	break;
+        gsl_matrix_complex_add(cmself, cm);
+        break;
       case GSL_COMPLEX_SUB:
-	gsl_matrix_complex_sub(cmself, cm);
-	break;
+        gsl_matrix_complex_sub(cmself, cm);
+        break;
       case GSL_COMPLEX_MUL:
-	gsl_matrix_complex_mul_elements(cmself, cm);
-	break;
+        gsl_matrix_complex_mul_elements(cmself, cm);
+        break;
       case GSL_COMPLEX_DIV:
-	gsl_matrix_complex_div_elements(cmself, cm);
-	break;
+        gsl_matrix_complex_div_elements(cmself, cm);
+        break;
       }
       if (flagcm == 1) gsl_matrix_complex_free(cm);
       return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmself);
@@ -206,7 +205,7 @@ static VALUE rb_gsl_complex_coerce(VALUE obj, VALUE other)
     c = ALLOC(gsl_complex);
     *c = gsl_complex_rect(x, 0.0);
     return rb_ary_new3(2, Data_Wrap_Struct(cgsl_complex, 0, free, c),
-		       obj);
+           obj);
     break;
   default:
     if (MATRIX_P(other)) {

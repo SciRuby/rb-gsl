@@ -161,31 +161,31 @@ void Init_gsl_native()
 #endif
 
 #ifdef HAVE_OOL_OOL_VERSION_H
-	Init_ool(mgsl);
+  Init_ool(mgsl);
 #endif
 
 #ifdef HAVE_JACOBI_H
-	Init_jacobi(mgsl);
+  Init_jacobi(mgsl);
 #endif
 
 #ifdef HAVE_GSL_GSL_CQP_H
-	Init_cqp(mgsl);
+  Init_cqp(mgsl);
 #endif
 
-	Init_fresnel(mgsl);
-	
+  Init_fresnel(mgsl);
+  
 #ifdef GSL_1_9_LATER
-	Init_bspline(mgsl);
+  Init_bspline(mgsl);
 #endif
 
 #ifdef HAVE_ALF_ALF_H
-	Init_alf(mgsl);
+  Init_alf(mgsl);
 #endif
 
-	Init_geometry(mgsl);
+  Init_geometry(mgsl);
 
 #ifdef GSL_1_14_LATER
-	Init_multiset(mgsl);
+  Init_multiset(mgsl);
 #endif
 
   rb_gsl_define_methods(mgsl);

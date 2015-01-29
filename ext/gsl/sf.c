@@ -195,10 +195,10 @@ VALUE rb_gsl_sf_eval_int_double(double (*func)(int, double), VALUE jj, VALUE arg
       Data_Get_Struct(argv, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (k = 0; k < m->size2; k++) {
-	  val = (*func)(j, gsl_matrix_get(m, i, k));
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < m->size2; k++) {
+    val = (*func)(j, gsl_matrix_get(m, i, k));
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -207,8 +207,8 @@ VALUE rb_gsl_sf_eval_int_double(double (*func)(int, double), VALUE jj, VALUE arg
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)(j, gsl_vector_get(v, i));
-	gsl_vector_set(vnew, i, val);
+  val = (*func)(j, gsl_vector_get(v, i));
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -264,10 +264,10 @@ VALUE rb_gsl_sf_eval_double_int(double (*func)(double, int), VALUE argv, VALUE j
       Data_Get_Struct(argv, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (k = 0; k < m->size2; k++) {
-	  val = (*func)(gsl_matrix_get(m, i, k), j);
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < m->size2; k++) {
+    val = (*func)(gsl_matrix_get(m, i, k), j);
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -276,8 +276,8 @@ VALUE rb_gsl_sf_eval_double_int(double (*func)(double, int), VALUE argv, VALUE j
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)(gsl_vector_get(v, i), j);
-	gsl_vector_set(vnew, i, val);
+  val = (*func)(gsl_vector_get(v, i), j);
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -287,7 +287,7 @@ VALUE rb_gsl_sf_eval_double_int(double (*func)(double, int), VALUE argv, VALUE j
 }
 
 VALUE rb_gsl_sf_eval_int_int_double(double (*func)(int, int, double), VALUE jj,
-				    VALUE jj2, VALUE argv)
+            VALUE jj2, VALUE argv)
 {
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
@@ -358,7 +358,7 @@ VALUE rb_gsl_sf_eval_int_int_double(double (*func)(int, int, double), VALUE jj,
 }
 
 VALUE rb_gsl_sf_eval_int_double_double(double (*func)(int, double, double), VALUE jj, 
-				       VALUE ff, VALUE argv)
+               VALUE ff, VALUE argv)
 {
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
@@ -408,10 +408,10 @@ VALUE rb_gsl_sf_eval_int_double_double(double (*func)(int, double, double), VALU
       Data_Get_Struct(argv, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (k = 0; k < m->size2; k++) {
-	  val = (*func)(j, f, gsl_matrix_get(m, i, k));
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < m->size2; k++) {
+    val = (*func)(j, f, gsl_matrix_get(m, i, k));
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -420,8 +420,8 @@ VALUE rb_gsl_sf_eval_int_double_double(double (*func)(int, double, double), VALU
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)(j, f, gsl_vector_get(v, i));
-	gsl_vector_set(vnew, i, val);
+  val = (*func)(j, f, gsl_vector_get(v, i));
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -477,9 +477,9 @@ VALUE rb_gsl_sf_eval_double_double(double (*func)(double, double), VALUE ff, VAL
       Data_Get_Struct(argv, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (k = 0; k < m->size2; k++) {
-	  gsl_matrix_set(mnew, i, k, (*func)(f, gsl_matrix_get(m, i, k)));
-	}
+  for (k = 0; k < m->size2; k++) {
+    gsl_matrix_set(mnew, i, k, (*func)(f, gsl_matrix_get(m, i, k)));
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -487,7 +487,7 @@ VALUE rb_gsl_sf_eval_double_double(double (*func)(double, double), VALUE ff, VAL
       Data_Get_Struct(argv, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-	gsl_vector_set(vnew, i, (*func)(f, gsl_vector_get(v, i)));
+  gsl_vector_set(vnew, i, (*func)(f, gsl_vector_get(v, i)));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -496,7 +496,7 @@ VALUE rb_gsl_sf_eval_double_double(double (*func)(double, double), VALUE ff, VAL
 }
 
 VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double), 
-			     VALUE ff, VALUE ff2, VALUE argv)
+           VALUE ff, VALUE ff2, VALUE argv)
 {
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
@@ -545,10 +545,10 @@ VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double),
       Data_Get_Struct(argv, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (k = 0; k < m->size2; k++) {
-	  val = (*func)(f, f2, gsl_matrix_get(m, i, k));
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < m->size2; k++) {
+    val = (*func)(f, f2, gsl_matrix_get(m, i, k));
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -557,8 +557,8 @@ VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double),
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)(f, f2, gsl_vector_get(v, i));
-	gsl_vector_set(vnew, i, val);
+  val = (*func)(f, f2, gsl_vector_get(v, i));
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -567,7 +567,7 @@ VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double),
 }
 
 VALUE rb_gsl_sf_eval_double4(double (*func)(double, double, double, double), 
-			     VALUE ff, VALUE ff2, VALUE ff3, VALUE argv)
+           VALUE ff, VALUE ff2, VALUE ff3, VALUE argv)
 {
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
@@ -617,10 +617,10 @@ VALUE rb_gsl_sf_eval_double4(double (*func)(double, double, double, double),
       Data_Get_Struct(argv, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (k = 0; k < m->size2; k++) {
-	  val = (*func)(f, f2, f3, gsl_matrix_get(m, i, k));
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < m->size2; k++) {
+    val = (*func)(f, f2, f3, gsl_matrix_get(m, i, k));
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -629,8 +629,8 @@ VALUE rb_gsl_sf_eval_double4(double (*func)(double, double, double, double),
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)(f, f2, f3, gsl_vector_get(v, i));
-	gsl_vector_set(vnew, i, val);
+  val = (*func)(f, f2, f3, gsl_vector_get(v, i));
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -682,10 +682,10 @@ VALUE rb_gsl_sf_eval1_int(double (*func)(int), VALUE argv)
       Data_Get_Struct(argv, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (k = 0; k < m->size2; k++) {
-	  val = (*func)((int) gsl_matrix_get(m, i, k));
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < m->size2; k++) {
+    val = (*func)((int) gsl_matrix_get(m, i, k));
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -694,8 +694,8 @@ VALUE rb_gsl_sf_eval1_int(double (*func)(int), VALUE argv)
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)((int) gsl_vector_get(v, i));
-	gsl_vector_set(vnew, i, val);
+  val = (*func)((int) gsl_vector_get(v, i));
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -747,10 +747,10 @@ VALUE rb_gsl_sf_eval1_uint(double (*func)(unsigned int), VALUE argv)
       Data_Get_Struct(argv, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-	for (k = 0; k < m->size2; k++) {
-	  val = (*func)((unsigned int) gsl_matrix_get(m, i, k));
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < m->size2; k++) {
+    val = (*func)((unsigned int) gsl_matrix_get(m, i, k));
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -759,8 +759,8 @@ VALUE rb_gsl_sf_eval1_uint(double (*func)(unsigned int), VALUE argv)
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)((unsigned int) gsl_vector_get(v, i));
-	gsl_vector_set(vnew, i, val);
+  val = (*func)((unsigned int) gsl_vector_get(v, i));
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -794,7 +794,7 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
     break;
   default:
     rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
-	     rb_class2name(CLASS_OF(m)));
+       rb_class2name(CLASS_OF(m)));
   }
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
   switch (TYPE(argv)) {
@@ -830,10 +830,10 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
       Data_Get_Struct(argv, gsl_matrix, mm);
       mnew = gsl_matrix_alloc(mm->size1, mm->size2);
       for (i = 0; i < mm->size1; i++) {
-	for (k = 0; k < mm->size2; k++) {
-	  val = (*func)(gsl_matrix_get(mm, i, k), m);
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < mm->size2; k++) {
+    val = (*func)(gsl_matrix_get(mm, i, k), m);
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -842,8 +842,8 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)(gsl_vector_get(v, i), m);
-	gsl_vector_set(vnew, i, val);
+  val = (*func)(gsl_vector_get(v, i), m);
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -852,7 +852,7 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
 }
 
 VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t), 
-			       VALUE argv, VALUE x2, VALUE m)
+             VALUE argv, VALUE x2, VALUE m)
 {
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *mm = NULL, *mnew = NULL;
@@ -906,10 +906,10 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
       Data_Get_Struct(argv, gsl_matrix, mm);
       mnew = gsl_matrix_alloc(mm->size1, mm->size2);
       for (i = 0; i < mm->size1; i++) {
-	for (k = 0; k < mm->size2; k++) {
-	  val = (*func)(gsl_matrix_get(mm, i, k), xx2, m);
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < mm->size2; k++) {
+    val = (*func)(gsl_matrix_get(mm, i, k), xx2, m);
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -918,8 +918,8 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)(gsl_vector_get(v, i), xx2, m);
-	gsl_vector_set(vnew, i, val);
+  val = (*func)(gsl_vector_get(v, i), xx2, m);
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -928,7 +928,7 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
 }
 
 VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t), 
-			       VALUE argv, VALUE x2, VALUE x3, VALUE m)
+             VALUE argv, VALUE x2, VALUE x3, VALUE m)
 {
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *mm = NULL, *mnew = NULL;
@@ -983,10 +983,10 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
       Data_Get_Struct(argv, gsl_matrix, mm);
       mnew = gsl_matrix_alloc(mm->size1, mm->size2);
       for (i = 0; i < mm->size1; i++) {
-	for (k = 0; k < mm->size2; k++) {
-	  val = (*func)(gsl_matrix_get(mm, i, k), xx2, xx3, m);
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < mm->size2; k++) {
+    val = (*func)(gsl_matrix_get(mm, i, k), xx2, xx3, m);
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -995,8 +995,8 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)(gsl_vector_get(v, i), xx2, xx3, m);
-	gsl_vector_set(vnew, i, val);
+  val = (*func)(gsl_vector_get(v, i), xx2, xx3, m);
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -1005,8 +1005,8 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
 }
 
 VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
-					      gsl_mode_t), 
-			       VALUE argv, VALUE x2, VALUE x3, VALUE x4, VALUE m)
+                gsl_mode_t), 
+             VALUE argv, VALUE x2, VALUE x3, VALUE x4, VALUE m)
 {
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *mm = NULL, *mnew = NULL;
@@ -1032,7 +1032,7 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
   case T_FIXNUM:
   case T_BIGNUM:
     return rb_float_new((*func)(NUM2DBL(argv), NUM2DBL(x2), NUM2DBL(x3),
-				NUM2DBL(x4), m));
+        NUM2DBL(x4), m));
     break;
   case T_ARRAY:
     n = RARRAY_LEN(argv);
@@ -1061,10 +1061,10 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
       Data_Get_Struct(argv, gsl_matrix, mm);
       mnew = gsl_matrix_alloc(mm->size1, mm->size2);
       for (i = 0; i < mm->size1; i++) {
-	for (k = 0; k < mm->size2; k++) {
-	  val = (*func)(gsl_matrix_get(mm, i, k), xx2, xx3, xx4, m);
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < mm->size2; k++) {
+    val = (*func)(gsl_matrix_get(mm, i, k), xx2, xx3, xx4, m);
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -1073,8 +1073,8 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)(gsl_vector_get(v, i),  xx2, xx3, xx4, m);
-	gsl_vector_set(vnew, i, val);
+  val = (*func)(gsl_vector_get(v, i),  xx2, xx3, xx4, m);
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -1112,7 +1112,7 @@ VALUE rb_gsl_sf_eval_e_uint(int (*func)(unsigned int, gsl_sf_result*), VALUE x)
 }
 
 VALUE rb_gsl_sf_eval_e_int_uint(int (*func)(int, unsigned int, gsl_sf_result*), 
-				VALUE n, VALUE x)
+        VALUE n, VALUE x)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -1123,7 +1123,7 @@ VALUE rb_gsl_sf_eval_e_int_uint(int (*func)(int, unsigned int, gsl_sf_result*),
 }
 
 VALUE rb_gsl_sf_eval_e_double_uint(int (*func)(double, unsigned int, gsl_sf_result*), 
-				VALUE y, VALUE x)
+        VALUE y, VALUE x)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -1134,7 +1134,7 @@ VALUE rb_gsl_sf_eval_e_double_uint(int (*func)(double, unsigned int, gsl_sf_resu
 }
 
 VALUE rb_gsl_sf_eval_e_int_double(int (*func)(int, double, gsl_sf_result*), 
-				  VALUE n, VALUE x)
+          VALUE n, VALUE x)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -1146,7 +1146,7 @@ VALUE rb_gsl_sf_eval_e_int_double(int (*func)(int, double, gsl_sf_result*),
 }
 
 VALUE rb_gsl_sf_eval_e_int_double2(int (*func)(int, double, double, gsl_sf_result*), 
-				  VALUE n, VALUE x1, VALUE x2)
+          VALUE n, VALUE x1, VALUE x2)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -1159,7 +1159,7 @@ VALUE rb_gsl_sf_eval_e_int_double2(int (*func)(int, double, double, gsl_sf_resul
 
 
 VALUE rb_gsl_sf_eval_e_int_int_double(int (*func)(int, int, double, gsl_sf_result*), 
-				      VALUE n1, VALUE n2, VALUE x)
+              VALUE n1, VALUE n2, VALUE x)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -1171,7 +1171,7 @@ VALUE rb_gsl_sf_eval_e_int_int_double(int (*func)(int, int, double, gsl_sf_resul
 }
 
 VALUE rb_gsl_sf_eval_e_double2(int (*func)(double, double, gsl_sf_result*), 
-				  VALUE x1, VALUE x2)
+          VALUE x1, VALUE x2)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -1183,7 +1183,7 @@ VALUE rb_gsl_sf_eval_e_double2(int (*func)(double, double, gsl_sf_result*),
 
 
 VALUE rb_gsl_sf_eval_e_double3(int (*func)(double, double, double, gsl_sf_result*), 
-				  VALUE x1, VALUE x2, VALUE x3)
+          VALUE x1, VALUE x2, VALUE x3)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -1194,7 +1194,7 @@ VALUE rb_gsl_sf_eval_e_double3(int (*func)(double, double, double, gsl_sf_result
 }
 
 VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*), 
-			 VALUE x, VALUE m)
+       VALUE x, VALUE m)
 {
   gsl_mode_t mode;
   char c;
@@ -1214,7 +1214,7 @@ VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*),
     break;
   default:
     rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
-	     rb_class2name(CLASS_OF(m)));
+       rb_class2name(CLASS_OF(m)));
     break;
   }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
@@ -1224,7 +1224,7 @@ VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*),
 
 
 VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_result*), 
-			 VALUE x1, VALUE x2, VALUE m)
+       VALUE x1, VALUE x2, VALUE m)
 {
   gsl_mode_t mode;
   char c;
@@ -1244,7 +1244,7 @@ VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_
     break;
   default:
     rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
-	     rb_class2name(CLASS_OF(m)));
+       rb_class2name(CLASS_OF(m)));
     break;
   }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
@@ -1253,7 +1253,7 @@ VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_
 }
 
 VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t, gsl_sf_result*), 
-			 VALUE x1, VALUE x2, VALUE x3, VALUE m)
+       VALUE x1, VALUE x2, VALUE x3, VALUE m)
 {
   gsl_mode_t mode;
   char c;
@@ -1273,7 +1273,7 @@ VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t,
     break;
   default:
     rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
-	     rb_class2name(CLASS_OF(m)));
+       rb_class2name(CLASS_OF(m)));
     break;
   }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
@@ -1283,7 +1283,7 @@ VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t,
 
 
 VALUE rb_gsl_sf_eval_e_double4_m(int (*func)(double, double, double, double, gsl_mode_t, gsl_sf_result*), 
-			 VALUE x1, VALUE x2, VALUE x3, VALUE x4, VALUE m)
+       VALUE x1, VALUE x2, VALUE x3, VALUE x4, VALUE m)
 {
   gsl_mode_t mode;
   char c;
@@ -1303,7 +1303,7 @@ VALUE rb_gsl_sf_eval_e_double4_m(int (*func)(double, double, double, double, gsl
     break;
   default:
     rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
-	     rb_class2name(CLASS_OF(m)));
+       rb_class2name(CLASS_OF(m)));
     break;
   }    
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
@@ -1356,10 +1356,10 @@ VALUE eval_sf(double (*func)(double, gsl_mode_t), VALUE argv)
       Data_Get_Struct(argv, gsl_matrix, mm);
       mnew = gsl_matrix_alloc(mm->size1, mm->size2);
       for (i = 0; i < mm->size1; i++) {
-	for (k = 0; k < mm->size2; k++) {
-	  val = (*func)(gsl_matrix_get(mm, i, k), GSL_PREC_DOUBLE);
-	  gsl_matrix_set(mnew, i, k, val);
-	}
+  for (k = 0; k < mm->size2; k++) {
+    val = (*func)(gsl_matrix_get(mm, i, k), GSL_PREC_DOUBLE);
+    gsl_matrix_set(mnew, i, k, val);
+  }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
@@ -1368,8 +1368,8 @@ VALUE eval_sf(double (*func)(double, gsl_mode_t), VALUE argv)
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-	val = (*func)(gsl_vector_get(v, i), GSL_PREC_DOUBLE);
-	gsl_vector_set(vnew, i, val);
+  val = (*func)(gsl_vector_get(v, i), GSL_PREC_DOUBLE);
+  gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -1404,18 +1404,18 @@ VALUE rb_gsl_sf_eval_complex(double (*f)(double), VALUE obj)
     mnew = gsl_matrix_complex_alloc(m->size1, m->size2);
     for (i = 0; i < m->size1; i++) {
       for (j = 0; j < m->size2; j++) {
-	c = gsl_matrix_complex_get(m, i, j);
-	GSL_SET_REAL(&c, (*f)(GSL_REAL(c)));
-	GSL_SET_IMAG(&c, (*f)(GSL_IMAG(c)));
-	gsl_matrix_complex_set(mnew, i, j, c);
+  c = gsl_matrix_complex_get(m, i, j);
+  GSL_SET_REAL(&c, (*f)(GSL_REAL(c)));
+  GSL_SET_IMAG(&c, (*f)(GSL_IMAG(c)));
+  gsl_matrix_complex_set(mnew, i, j, c);
       }
     }
     return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, mnew);
   } else {
     rb_raise(rb_eTypeError, 
-	     "wrong argument type %s "
-	     " (GSL::Complex or GSL::Vector::Complex expected)", 
-	     rb_class2name(CLASS_OF(obj)));
+       "wrong argument type %s "
+       " (GSL::Complex or GSL::Vector::Complex expected)", 
+       rb_class2name(CLASS_OF(obj)));
   }
 }
 
@@ -1425,9 +1425,9 @@ void Init_gsl_sf(VALUE module)
   mgsl_sf = rb_define_module_under(module, "Sf");
 
   cgsl_sf_result = rb_define_class_under(mgsl_sf, "Result", 
-					 cGSL_Object);
+           cGSL_Object);
   rb_define_singleton_method(cgsl_sf_result, "new", rb_gsl_sf_result_new,
-			     0);
+           0);
   rb_define_method(cgsl_sf_result, "print", rb_gsl_sf_result_print, 0);
   rb_define_method(cgsl_sf_result, "inspect", rb_gsl_sf_result_inspect, 0);
   rb_define_method(cgsl_sf_result, "val", rb_gsl_sf_result_val, 0);
@@ -1436,9 +1436,9 @@ void Init_gsl_sf(VALUE module)
   rb_define_method(cgsl_sf_result, "to_s", rb_gsl_sf_result_to_s, 0);
 
   cgsl_sf_result_e10 = rb_define_class_under(mgsl_sf, "Result_e10", 
-					     cGSL_Object);
+               cGSL_Object);
   rb_define_singleton_method(cgsl_sf_result_e10, "new", 
-			     rb_gsl_sf_result_e10_new, 0);
+           rb_gsl_sf_result_e10_new, 0);
   rb_define_method(cgsl_sf_result_e10, "val", rb_gsl_sf_result_e10_val, 0);
   rb_define_method(cgsl_sf_result_e10, "err", rb_gsl_sf_result_e10_err, 0);
   rb_define_method(cgsl_sf_result_e10, "e10", rb_gsl_sf_result_e10_e10, 0);
@@ -1475,6 +1475,6 @@ void Init_gsl_sf(VALUE module)
   Init_gsl_sf_zeta(mgsl_sf);
   
 #ifdef GSL_1_9_LATER  
-	Init_sf_mathieu(mgsl_sf);
+  Init_sf_mathieu(mgsl_sf);
 #endif
 }
