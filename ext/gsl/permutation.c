@@ -51,12 +51,17 @@ static VALUE rb_gsl_permutation_init(VALUE obj)
   return obj;
 }
 
-void get_range_int_beg_en_n(VALUE range, int *beg, int *en, size_t *n, int *step);
+#ifndef CHECK_RANGE_OFFSET
+#define CHECK_RANGE_OFFSET(i) if (i < -((int) b->size) || i >= ((int) b->size))\
+    rb_raise(rb_eRangeError, "offset %d out of range", i);
+#endif
+
 static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
 {
   gsl_permutation *b, *bnew;
   gsl_index *p;
-  int beg, en, i, step;
+  long beg;
+  int i;
   size_t n, j, k;
   Data_Get_Struct(obj, gsl_permutation, b);
   switch (argc) {
@@ -67,13 +72,8 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
     switch (TYPE(argv[0])) {
     case T_FIXNUM:
       i = FIX2INT(argv[0]);
-      if (i < 0) {
-        if (i >= -((int) b->size)) j = b->size + i;
-        else rb_raise(rb_eRangeError, "offset %d out of range", i);
-      } else {
-        if (i < ((int) b->size)) j = (size_t) i;
-        else rb_raise(rb_eRangeError, "offset %d out of range", i);
-      }
+      CHECK_RANGE_OFFSET(i);
+      if (i < 0) j = b->size + i; else j = (size_t) i;
       return INT2FIX((int) b->data[j]);
       break;
     case T_ARRAY:
@@ -82,37 +82,28 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
       bnew = gsl_permutation_alloc(n);
       for (j = 0; j < n; j++) {
         i = FIX2INT(rb_ary_entry(argv[0], j));
-        if (i < 0) {
-          if (i >= -((int) b->size)) k = b->size + i;
-          else rb_raise(rb_eRangeError, "offset %d out of range", i);
-        } else {
-          if (i < ((int) b->size)) k = i;
-          else rb_raise(rb_eRangeError, "offset %d out of range", i);
-        }
+        CHECK_RANGE_OFFSET(i);
+        if (i < 0) k = b->size + i; else k = (size_t) i;
         bnew->data[j] = b->data[k];
       }
       return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_permutation_free, bnew);
       break;
     default:
       if (PERMUTATION_P(argv[0])) {
-  Data_Get_Struct(argv[0], gsl_index, p);
-  bnew = gsl_permutation_alloc(p->size);
-  for (j = 0; j < p->size; j++) bnew->data[j] = b->data[p->data[j]];
-  return Data_Wrap_Struct(CLASS_OF(argv[0]), 0, gsl_permutation_free, bnew);
+        Data_Get_Struct(argv[0], gsl_index, p);
+        bnew = gsl_permutation_alloc(p->size);
+        for (j = 0; j < p->size; j++) bnew->data[j] = b->data[p->data[j]];
+        return Data_Wrap_Struct(CLASS_OF(argv[0]), 0, gsl_permutation_free, bnew);
       } else if (CLASS_OF(argv[0]) == rb_cRange) {
-        get_range_int_beg_en_n(argv[0], &beg, &en, &n, &step);
-        if (beg < -((int) b->size) || en >= ((int) b->size))
-          rb_raise(rb_eRangeError, "range overflow (%d..%d)", beg, en);
+        rb_range_beg_len(argv[0], &beg, (long *) &n, (long) b->size, 2);
+        if (n == 0) rb_raise(rb_eRangeError, "range overflow");
         bnew = gsl_permutation_alloc(n);
         for (j = 0; j < n; j++)
-          if (beg+(int)j < 0)
-            bnew->data[j] = b->data[b->size+beg+j];
-          else
-            bnew->data[j] = b->data[beg+j];
+          bnew->data[j] = b->data[beg+j];
         return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_permutation_free, bnew);
       } else {
-  rb_raise(rb_eArgError, "wrong argument type %s (Fixnum, Array, or Range expected)", rb_class2name(CLASS_OF(argv[0])));
-  break;
+        rb_raise(rb_eArgError, "wrong argument type %s (Fixnum, Array, or Range expected)", rb_class2name(CLASS_OF(argv[0])));
+        break;
       }
     }
     break;
@@ -611,3 +602,7 @@ void Init_gsl_permutation(VALUE module)
   rb_define_alias(cgsl_permutation, "==", "equal?");
 
 }
+
+#ifdef CHECK_RANGE_OFFSET
+#undef CHECK_RANGE_OFFSET
+#endif
