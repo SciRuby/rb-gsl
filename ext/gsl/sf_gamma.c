@@ -284,7 +284,7 @@ static VALUE rb_gsl_sf_beta_inc_e(VALUE obj, VALUE a, VALUE b, VALUE x)
 double mygsl_binomial_coef(unsigned int n, unsigned int k);
 double mygsl_binomial_coef(unsigned int n, unsigned int k)
 {
-  return floor(0.5 + exp(gsl_sf_lnfact(n) - gsl_sf_lnfact(k) - gsl_sf_lnfact(n-k))); 
+  return floor(0.5 + exp(gsl_sf_lnfact(n) - gsl_sf_lnfact(k) - gsl_sf_lnfact(n-k)));
 }
 
 static VALUE rb_gsl_sf_bincoef(VALUE obj, VALUE n, VALUE k)

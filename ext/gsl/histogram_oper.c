@@ -18,11 +18,11 @@
  */
 /***************************************************************
  *
- * File gsl_histogram_oper.c: 
- * Routine to make operation on histograms. 
+ * File gsl_histogram_oper.c:
+ * Routine to make operation on histograms.
  * Need GSL library and header.
  * Contains the routines:
- * gsl_histogram_same_binning check if two histograms have the same binning 
+ * gsl_histogram_same_binning check if two histograms have the same binning
  * gsl_histogram_add          add two histograms
  * gsl_histogram_sub          subctract two histograms
  * gsl_histogram_mult         multiply two histograms
@@ -38,7 +38,7 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_histogram.h>
 
-/* 
+/*
  * gsl_histogram_same_binning:
  * control if two histograms have the
  * same binning
@@ -68,11 +68,11 @@ mygsl_histogram_equal_bins_p (const gsl_histogram * h1, const gsl_histogram * h2
   return 1;
 }
 
-/* 
+/*
  * gsl_histogram_add:
  * add two histograms
  */
-int 
+int
 mygsl_histogram_add (gsl_histogram * h1, const gsl_histogram * h2)
 {
   size_t i;
@@ -90,12 +90,12 @@ mygsl_histogram_add (gsl_histogram * h1, const gsl_histogram * h2)
   return GSL_SUCCESS;
 }
 
-/* 
+/*
  * gsl_histogram_sub:
  * subtract two histograms
  */
 
-int 
+int
 mygsl_histogram_sub (gsl_histogram * h1, const gsl_histogram * h2)
 {
   size_t i;
@@ -114,12 +114,12 @@ mygsl_histogram_sub (gsl_histogram * h1, const gsl_histogram * h2)
 
 }
 
-/* 
+/*
  * gsl_histogram_mult:
  * multiply two histograms
  */
 
-int 
+int
 mygsl_histogram_mul (gsl_histogram * h1, const gsl_histogram * h2)
 {
   size_t i;
@@ -136,11 +136,11 @@ mygsl_histogram_mul (gsl_histogram * h1, const gsl_histogram * h2)
 
   return GSL_SUCCESS;
 }
-/* 
+/*
  * gsl_histogram_div:
  * divide two histograms
  */
-int 
+int
 mygsl_histogram_div (gsl_histogram * h1, const gsl_histogram * h2)
 {
   size_t i;

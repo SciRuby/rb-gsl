@@ -18,10 +18,10 @@ begin
   z = 0.01
   while z <= 3
     # comoving distance, luminosity distance
-    chi10, ldist10 = u10.luminosity_distance(z)  
-    chi37, ldist37 = u37.luminosity_distance(z)  
-    chi01, ldist01 = u01.luminosity_distance(z)  
-    file.printf("%e %e %e %e %e %e %e\n", 
+    chi10, ldist10 = u10.luminosity_distance(z)
+    chi37, ldist37 = u37.luminosity_distance(z)
+    chi01, ldist01 = u01.luminosity_distance(z)
+    file.printf("%e %e %e %e %e %e %e\n",
                 z, chi10, ldist10, chi37, ldist37, chi01, ldist01)
     z += 0.1
   end

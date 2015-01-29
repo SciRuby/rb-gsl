@@ -129,9 +129,9 @@ VALUE rb_gsl_math_complex_eval(gsl_complex (*func)(gsl_complex), VALUE obj)
     }
     return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, mnew);
   } else {
-    rb_raise(rb_eTypeError, 
+    rb_raise(rb_eTypeError,
        "wrong argument type %s "
-       " (GSL::Complex or GSL::Vector::Complex expected)", 
+       " (GSL::Complex or GSL::Vector::Complex expected)",
        rb_class2name(CLASS_OF(obj)));
   }
 }
@@ -258,7 +258,7 @@ static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
-      rb_raise(rb_eTypeError, 
+      rb_raise(rb_eTypeError,
          "wrong argument type %s "
          "(Array or Vector or Matrix expected)", rb_class2name(CLASS_OF(xx)));
     }
@@ -292,27 +292,27 @@ static VALUE rb_gsl_hypot3(VALUE obj, VALUE x, VALUE y, VALUE z)
 {
   Need_Float(x);
   Need_Float(y);
-  Need_Float(z);    
+  Need_Float(z);
   return rb_float_new(gsl_hypot3(NUM2DBL(x), NUM2DBL(y), NUM2DBL(z)));
 }
 #endif
 static VALUE rb_gsl_acosh(VALUE obj, VALUE x)
 {
-  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x)) 
+  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x))
     return rb_gsl_math_complex_eval(gsl_complex_arccosh, x);
   return rb_gsl_math_eval(gsl_acosh, x);
 }
 
 static VALUE rb_gsl_asinh(VALUE obj, VALUE x)
 {
-  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x)) 
+  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x))
     return rb_gsl_math_complex_eval(gsl_complex_arcsinh, x);
   return rb_gsl_math_eval(gsl_asinh, x);
 }
 
 static VALUE rb_gsl_atanh(VALUE obj, VALUE x)
 {
-  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x)) 
+  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x))
     return rb_gsl_math_complex_eval(gsl_complex_arctanh, x);
   return rb_gsl_math_eval(gsl_atanh, x);
 }
@@ -371,7 +371,7 @@ VALUE rb_gsl_pow(VALUE obj, VALUE xx, VALUE nn)
   gsl_vector_set(vnew, i, pow(gsl_vector_get(v, i), n));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
-    } 
+    }
     if (MATRIX_P(xx)) {
       n = NUM2DBL(nn);
       Data_Get_Struct(xx, gsl_matrix, m);
@@ -382,7 +382,7 @@ VALUE rb_gsl_pow(VALUE obj, VALUE xx, VALUE nn)
   }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
-    } 
+    }
     if (COMPLEX_P(xx) || VECTOR_COMPLEX_P(xx) || MATRIX_COMPLEX_P(xx)) {
       argv[0] = xx;
       argv[1] = nn;
@@ -587,7 +587,7 @@ static VALUE rb_GSL_MAX_INT(VALUE obj, VALUE aa, VALUE bb)
 {
   if (TYPE(aa) != T_FIXNUM || TYPE(bb) != T_FIXNUM)
     return rb_GSL_MAX(obj, aa, bb);
-  else 
+  else
     return INT2FIX(GSL_MAX_INT(FIX2INT(aa), FIX2INT(bb)));
 }
 
@@ -595,7 +595,7 @@ static VALUE rb_GSL_MIN_INT(VALUE obj, VALUE aa, VALUE bb)
 {
   if (TYPE(aa) != T_FIXNUM || TYPE(bb) != T_FIXNUM)
     return rb_GSL_MIN(obj, aa, bb);
-  return 
+  return
     INT2FIX(GSL_MIN_INT(FIX2INT(aa), FIX2INT(bb)));
 }
 
@@ -668,13 +668,13 @@ void Init_gsl_math(VALUE module)
   rb_define_module_function(module, "isinf?", rb_gsl_isinf2, 1);
   rb_define_module_function(module, "finite", rb_gsl_finite, 1);
   rb_define_module_function(module, "finite?", rb_gsl_finite2, 1);
-          
+
   rb_define_module_function(module, "sqrt", rb_gsl_sqrt, 1);
   rb_define_module_function(module, "log1p", rb_gsl_log1p, 1);
   rb_define_module_function(module, "expm1", rb_gsl_expm1, 1);
   rb_define_module_function(module, "hypot", rb_gsl_hypot, 2);
 #ifdef GSL_1_10_LATER
-  rb_define_module_function(module, "hypot3", rb_gsl_hypot3, 3);  
+  rb_define_module_function(module, "hypot3", rb_gsl_hypot3, 3);
 #endif
   rb_define_module_function(module, "acosh", rb_gsl_acosh, 1);
   rb_define_module_function(module, "asinh", rb_gsl_asinh, 1);
@@ -691,7 +691,7 @@ void Init_gsl_math(VALUE module)
   rb_define_module_function(module, "pow_9", rb_gsl_pow_9, 1);
   rb_define_module_function(module, "sign", rb_GSL_SIGN, 1);
   rb_define_module_function(module, "SIGN", rb_GSL_SIGN, 1);
-  
+
   rb_define_module_function(module, "is_odd", rb_GSL_IS_ODD, 1);
   rb_define_module_function(module, "IS_ODD", rb_GSL_IS_ODD, 1);
   rb_define_module_function(module, "is_odd?", rb_GSL_IS_ODD2, 1);

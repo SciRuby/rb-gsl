@@ -51,13 +51,13 @@ typedef struct {
 
 int
 mygsl_histogram_equal_bins_p (const gsl_histogram * h1, const gsl_histogram * h2);
-int 
+int
 mygsl_histogram_add (gsl_histogram * h1, const gsl_histogram * h2);
-int 
+int
 mygsl_histogram_sub (gsl_histogram * h1, const gsl_histogram * h2);
-int 
+int
 mygsl_histogram_mul (gsl_histogram * h1, const gsl_histogram * h2);
-int 
+int
 mygsl_histogram_div (gsl_histogram * h1, const gsl_histogram * h2);
 
 #endif

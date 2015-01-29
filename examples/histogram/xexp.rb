@@ -18,4 +18,4 @@ x = GSL::Vector.linspace(0, 15, 100)
 y = amp*x*GSL::Sf::exp(-x*b)
 GSL::graph(h, [x, y], "-C -g 3")
 
-  
+

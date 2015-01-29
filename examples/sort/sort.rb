@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require("gsl") 
+require("gsl")
 
 N = 100000
 k = 5

@@ -100,7 +100,7 @@ static VALUE rb_gsl_blas_dgemv(int argc, VALUE *argv, VALUE obj)
   gsl_blas_dgemv(type, a, A, x, b, y);
   if (flag == 1) return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, y);
   else return argv[argc-1];
-  
+
 }
 
 static VALUE rb_gsl_blas_dgemv2(int argc, VALUE *argv, VALUE obj)
@@ -216,7 +216,7 @@ static VALUE rb_gsl_blas_zgemv(int argc, VALUE *argv, VALUE obj)
   gsl_blas_zgemv(type, *a, A, x, *b, y);
   if (flag == 1) return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, y);
   else return argv[argc-1];
-  
+
 }
 
 
@@ -575,7 +575,7 @@ static VALUE rb_gsl_blas_dsymv(int argc, VALUE *argv, VALUE obj)
   gsl_blas_dsymv(type, a, A, x, b, y);
   if (flag == 1) return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, y);
   else return argv[argc-1];
-  
+
 }
 
 static VALUE rb_gsl_blas_dsymv2(int argc, VALUE *argv, VALUE obj)
@@ -691,7 +691,7 @@ static VALUE rb_gsl_blas_zhemv(int argc, VALUE *argv, VALUE obj)
   gsl_blas_zhemv(type, *a, A, x, *b, y);
   if (flag == 1) return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, y);
   else return argv[argc-1];
-  
+
 }
 
 static VALUE rb_gsl_blas_zhemv2(int argc, VALUE *argv, VALUE obj)
@@ -759,7 +759,7 @@ static VALUE rb_gsl_blas_dger(VALUE obj, VALUE aa, VALUE xx, VALUE yy, VALUE AA)
   gsl_vector *x = NULL, *y = NULL;
   double a;
   Need_Float(aa);
-  CHECK_VECTOR(xx);  CHECK_VECTOR(yy);  
+  CHECK_VECTOR(xx);  CHECK_VECTOR(yy);
   CHECK_MATRIX(AA);
   a = NUM2DBL(aa);
   Data_Get_Struct(xx, gsl_vector, x);
@@ -775,7 +775,7 @@ static VALUE rb_gsl_blas_dger2(VALUE obj, VALUE aa, VALUE xx, VALUE yy, VALUE AA
   gsl_vector *x = NULL, *y = NULL;
   double a;
   Need_Float(aa);
-  CHECK_VECTOR(xx);  CHECK_VECTOR(yy);  
+  CHECK_VECTOR(xx);  CHECK_VECTOR(yy);
   CHECK_MATRIX(AA);
   a = NUM2DBL(aa);
   Data_Get_Struct(xx, gsl_vector, x);
@@ -793,7 +793,7 @@ static VALUE rb_gsl_blas_zgeru(VALUE obj, VALUE aa, VALUE xx, VALUE yy, VALUE AA
   gsl_vector_complex *x = NULL, *y = NULL;
   gsl_complex *a;
   CHECK_COMPLEX(aa);
-  CHECK_VECTOR_COMPLEX(xx);CHECK_VECTOR_COMPLEX(yy); 
+  CHECK_VECTOR_COMPLEX(xx);CHECK_VECTOR_COMPLEX(yy);
   CHECK_MATRIX_COMPLEX(AA);
   Data_Get_Struct(aa, gsl_complex, a);
   Data_Get_Struct(xx, gsl_vector_complex, x);
@@ -809,7 +809,7 @@ static VALUE rb_gsl_blas_zgeru2(VALUE obj, VALUE aa, VALUE xx, VALUE yy, VALUE A
   gsl_vector_complex *x = NULL, *y = NULL;
   gsl_complex *a;
   CHECK_COMPLEX(aa);
-  CHECK_VECTOR_COMPLEX(xx);CHECK_VECTOR_COMPLEX(yy); 
+  CHECK_VECTOR_COMPLEX(xx);CHECK_VECTOR_COMPLEX(yy);
   CHECK_MATRIX_COMPLEX(AA);
   Data_Get_Struct(aa, gsl_complex, a);
   Data_Get_Struct(xx, gsl_vector_complex, x);
@@ -827,7 +827,7 @@ static VALUE rb_gsl_blas_zgerc(VALUE obj, VALUE aa, VALUE xx, VALUE yy, VALUE AA
   gsl_vector_complex *x = NULL, *y = NULL;
   gsl_complex *a;
   CHECK_COMPLEX(aa);
-  CHECK_VECTOR_COMPLEX(xx);CHECK_VECTOR_COMPLEX(yy); 
+  CHECK_VECTOR_COMPLEX(xx);CHECK_VECTOR_COMPLEX(yy);
   CHECK_MATRIX_COMPLEX(AA);
   Data_Get_Struct(aa, gsl_complex, a);
   Data_Get_Struct(xx, gsl_vector_complex, x);
@@ -843,7 +843,7 @@ static VALUE rb_gsl_blas_zgerc2(VALUE obj, VALUE aa, VALUE xx, VALUE yy, VALUE A
   gsl_vector_complex *x = NULL, *y = NULL;
   gsl_complex *a;
   CHECK_COMPLEX(aa);
-  CHECK_VECTOR_COMPLEX(xx);CHECK_VECTOR_COMPLEX(yy); 
+  CHECK_VECTOR_COMPLEX(xx);CHECK_VECTOR_COMPLEX(yy);
   CHECK_MATRIX_COMPLEX(AA);
   Data_Get_Struct(aa, gsl_complex, a);
   Data_Get_Struct(xx, gsl_vector_complex, x);
@@ -919,7 +919,7 @@ static VALUE rb_gsl_blas_zher_a(VALUE obj, VALUE tt, VALUE aa, VALUE xx, VALUE A
   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, Anew);
 }
 
-static VALUE rb_gsl_blas_dsyr2(VALUE obj, VALUE tt, VALUE aa, VALUE xx, 
+static VALUE rb_gsl_blas_dsyr2(VALUE obj, VALUE tt, VALUE aa, VALUE xx,
             VALUE yy, VALUE AA)
 {
   gsl_matrix *A = NULL;
@@ -936,7 +936,7 @@ static VALUE rb_gsl_blas_dsyr2(VALUE obj, VALUE tt, VALUE aa, VALUE xx,
   return AA;
 }
 
-static VALUE rb_gsl_blas_dsyr2_a(VALUE obj, VALUE tt, VALUE aa, VALUE xx, 
+static VALUE rb_gsl_blas_dsyr2_a(VALUE obj, VALUE tt, VALUE aa, VALUE xx,
          VALUE yy, VALUE AA)
 {
   gsl_matrix *A = NULL, *Anew = NULL;
@@ -955,7 +955,7 @@ static VALUE rb_gsl_blas_dsyr2_a(VALUE obj, VALUE tt, VALUE aa, VALUE xx,
   return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, Anew);
 }
 
-static VALUE rb_gsl_blas_zher2(VALUE obj, VALUE tt, VALUE aa, VALUE xx, 
+static VALUE rb_gsl_blas_zher2(VALUE obj, VALUE tt, VALUE aa, VALUE xx,
             VALUE yy, VALUE AA)
 {
   gsl_matrix_complex *A = NULL;
@@ -972,7 +972,7 @@ static VALUE rb_gsl_blas_zher2(VALUE obj, VALUE tt, VALUE aa, VALUE xx,
   return AA;
 }
 
-static VALUE rb_gsl_blas_zher2_a(VALUE obj, VALUE tt, VALUE aa, VALUE xx, 
+static VALUE rb_gsl_blas_zher2_a(VALUE obj, VALUE tt, VALUE aa, VALUE xx,
          VALUE yy, VALUE AA)
 {
   gsl_matrix_complex *A = NULL, *Anew = NULL;

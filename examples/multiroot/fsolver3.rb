@@ -9,7 +9,7 @@ func = GSL::MultiRoot::Function.alloc(2) { |x, f|
   f[0] = -2.0*x0*x0 + 3.0*x0*x1 + 4.0*sin(x1) - 6.0
   f[1] = 3.0*x0*x0 - 2.0*x0*x1*x1 + 3.0*cos(x0) + 4.0
 }
-                            
+
 p func.solve([1.0, 2.0].to_gv, 1000, 1e-7, "hybrids")
 p func.solve([1.0, 2.0].to_gv, 1000, "broyden")
 p func.solve([1.0, 2.0], "hybrid")

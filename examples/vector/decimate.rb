@@ -34,5 +34,5 @@ x1 = GSL::Vector.linspace(0, 20, N/DECIMATE1)
 x2 = GSL::Vector.linspace(0, 20, N/DECIMATE2)
 
 # y1 and y2 are shifted vertically for visual purpose
-GSL::graph([x0, y0], [x1, y1-1], [x2, y2-2])  
+GSL::graph([x0, y0], [x1, y1-1], [x2, y2-2])
 END

@@ -13,7 +13,7 @@ N_SUM_PHI = 9
 R_MAX = 3.0
 
 def psi_real_exact(k, l, m, r, theta, phi)
-  rr = GSL::pow(r, l)*Math::exp(-r*r)*GSL::Sf::laguerre_n(k, l + 0.5, 2 * r * r)   
+  rr = GSL::pow(r, l)*Math::exp(-r*r)*GSL::Sf::laguerre_n(k, l + 0.5, 2 * r * r)
 
   tt = GSL::Sf::legendre_sphPlm(l, m, Math::cos(theta))
 
@@ -77,7 +77,7 @@ for i in 0...NDATA do
 
   vars[i,0] = r
   vars[i,1] = theta
-  vars[i,2] = phi    
+  vars[i,2] = phi
 
   data[i] = psi + dpsi
 end

@@ -18,9 +18,9 @@
 
 VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double));
 VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa, double (*f)(double, double));
-VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb, 
+VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb,
             double (*f)(double, double, double));
-VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa, 
+VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa,
                double (*f)(unsigned int, double));
 
 
@@ -70,314 +70,314 @@ static VALUE rb_gsl_cdf_gaussian_Qinv(int argc, VALUE *argv, VALUE obj)
 static VALUE rb_gsl_cdf_exponential_P(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_exponential_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_exponential_Q(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_exponential_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_exponential_Pinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_exponential_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_exponential_Qinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_exponential_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_laplace_P(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_laplace_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_laplace_Q(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_laplace_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_laplace_Pinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_laplace_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_laplace_Qinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_laplace_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_cauchy_P(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_cauchy_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_cauchy_Q(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_cauchy_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_cauchy_Pinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_cauchy_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_cauchy_Qinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_cauchy_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_rayleigh_P(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_rayleigh_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_rayleigh_Q(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_rayleigh_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_rayleigh_Pinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_rayleigh_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_rayleigh_Qinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_rayleigh_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_gamma_P(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_gamma_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_gamma_Q(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_gamma_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_gamma_Pinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_gamma_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_gamma_Qinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_gamma_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_flat_P(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_flat_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_flat_Q(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_flat_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_flat_Pinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_flat_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_flat_Qinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_flat_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_lognormal_P(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_lognormal_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_lognormal_Q(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_lognormal_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_lognormal_Pinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_lognormal_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_lognormal_Qinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_lognormal_Qinv);
-}  
+}
 
 #ifdef GSL_1_6_LATER
 static VALUE rb_gsl_cdf_exppow_P(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_exppow_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_exppow_Q(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_exppow_Q);
-}  
+}
 #endif
 
 static VALUE rb_gsl_cdf_chisq_P(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_chisq_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_chisq_Q(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_chisq_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_chisq_Pinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_chisq_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_chisq_Qinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_chisq_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_fdist_P(VALUE obj, VALUE x, VALUE nu1, VALUE nu2)
 {
   return rb_gsl_eval_pdf_cdf3(x, nu1, nu2, gsl_cdf_fdist_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_fdist_Q(VALUE obj, VALUE x, VALUE nu1, VALUE nu2)
 {
   return rb_gsl_eval_pdf_cdf3(x, nu1, nu2, gsl_cdf_fdist_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_tdist_P(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_tdist_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_tdist_Q(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_tdist_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_tdist_Pinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_tdist_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_tdist_Qinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_tdist_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_beta_P(VALUE obj, VALUE x, VALUE nu1, VALUE nu2)
 {
   return rb_gsl_eval_pdf_cdf3(x, nu1, nu2, gsl_cdf_beta_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_beta_Q(VALUE obj, VALUE x, VALUE nu1, VALUE nu2)
 {
   return rb_gsl_eval_pdf_cdf3(x, nu1, nu2, gsl_cdf_beta_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_logistic_P(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_logistic_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_logistic_Q(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_logistic_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_logistic_Pinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_logistic_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_logistic_Qinv(VALUE obj, VALUE x, VALUE mu)
 {
   return rb_gsl_eval_pdf_cdf2(x, mu, gsl_cdf_logistic_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_pareto_P(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_pareto_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_pareto_Q(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_pareto_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_pareto_Pinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_pareto_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_pareto_Qinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_pareto_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_weibull_P(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_weibull_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_weibull_Q(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_weibull_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_weibull_Pinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_weibull_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_weibull_Qinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_weibull_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_gumbel1_P(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_gumbel1_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_gumbel1_Q(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_gumbel1_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_gumbel1_Pinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_gumbel1_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_gumbel1_Qinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_gumbel1_Qinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_gumbel2_P(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_gumbel2_P);
-}  
+}
 
 static VALUE rb_gsl_cdf_gumbel2_Q(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_gumbel2_Q);
-}  
+}
 
 static VALUE rb_gsl_cdf_gumbel2_Pinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_gumbel2_Pinv);
-}  
+}
 
 static VALUE rb_gsl_cdf_gumbel2_Qinv(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_gumbel2_Qinv);
-}  
+}
 
 #ifdef GSL_1_8_LATER
 static VALUE rb_gsl_cdf_binomial_P(VALUE obj, VALUE kk, VALUE pp, VALUE nn)
@@ -573,7 +573,7 @@ void Init_gsl_cdf(VALUE module)
   rb_define_module_function(module, "cdf_chisq_Q", rb_gsl_cdf_chisq_Q, 2);
   rb_define_module_function(module, "cdf_chisq_Pinv", rb_gsl_cdf_chisq_Pinv, 2);
   rb_define_module_function(module, "cdf_chisq_Qinv", rb_gsl_cdf_chisq_Qinv, 2);
-  
+
   rb_define_module_function(module, "cdf_fdist_P", rb_gsl_cdf_fdist_P, 3);
   rb_define_module_function(module, "cdf_fdist_Q", rb_gsl_cdf_fdist_Q, 3);
 
@@ -581,7 +581,7 @@ void Init_gsl_cdf(VALUE module)
   rb_define_module_function(module, "cdf_tdist_Q", rb_gsl_cdf_tdist_Q, 2);
   rb_define_module_function(module, "cdf_tdist_Pinv", rb_gsl_cdf_tdist_Pinv, 2);
   rb_define_module_function(module, "cdf_tdist_Qinv", rb_gsl_cdf_tdist_Qinv, 2);
-  
+
   rb_define_module_function(module, "cdf_beta_P", rb_gsl_cdf_beta_P, 3);
   rb_define_module_function(module, "cdf_beta_Q", rb_gsl_cdf_beta_Q, 3);
 
@@ -589,7 +589,7 @@ void Init_gsl_cdf(VALUE module)
   rb_define_module_function(module, "cdf_logistic_Q", rb_gsl_cdf_logistic_Q, 2);
   rb_define_module_function(module, "cdf_logistic_Pinv", rb_gsl_cdf_logistic_Pinv, 2);
   rb_define_module_function(module, "cdf_logistic_Qinv", rb_gsl_cdf_logistic_Qinv, 2);
-  
+
   rb_define_module_function(module, "cdf_pareto_P", rb_gsl_cdf_pareto_P, 3);
   rb_define_module_function(module, "cdf_pareto_Q", rb_gsl_cdf_pareto_Q, 3);
   rb_define_module_function(module, "cdf_pareto_Pinv", rb_gsl_cdf_pareto_Pinv, 3);
@@ -660,7 +660,7 @@ void Init_gsl_cdf(VALUE module)
   rb_define_module_function(mgsl_cdf, "chisq_Q", rb_gsl_cdf_chisq_Q, 2);
   rb_define_module_function(mgsl_cdf, "chisq_Pinv", rb_gsl_cdf_chisq_Pinv, 2);
   rb_define_module_function(mgsl_cdf, "chisq_Qinv", rb_gsl_cdf_chisq_Qinv, 2);
-  
+
   rb_define_module_function(mgsl_cdf, "fdist_P", rb_gsl_cdf_fdist_P, 3);
   rb_define_module_function(mgsl_cdf, "fdist_Q", rb_gsl_cdf_fdist_Q, 3);
 
@@ -668,7 +668,7 @@ void Init_gsl_cdf(VALUE module)
   rb_define_module_function(mgsl_cdf, "tdist_Q", rb_gsl_cdf_tdist_Q, 2);
   rb_define_module_function(mgsl_cdf, "tdist_Pinv", rb_gsl_cdf_tdist_Pinv, 2);
   rb_define_module_function(mgsl_cdf, "tdist_Qinv", rb_gsl_cdf_tdist_Qinv, 2);
-  
+
   rb_define_module_function(mgsl_cdf, "beta_P", rb_gsl_cdf_beta_P, 3);
   rb_define_module_function(mgsl_cdf, "beta_Q", rb_gsl_cdf_beta_Q, 3);
 
@@ -676,7 +676,7 @@ void Init_gsl_cdf(VALUE module)
   rb_define_module_function(mgsl_cdf, "logistic_Q", rb_gsl_cdf_logistic_Q, 2);
   rb_define_module_function(mgsl_cdf, "logistic_Pinv", rb_gsl_cdf_logistic_Pinv, 2);
   rb_define_module_function(mgsl_cdf, "logistic_Qinv", rb_gsl_cdf_logistic_Qinv, 2);
-  
+
   rb_define_module_function(mgsl_cdf, "pareto_P", rb_gsl_cdf_pareto_P, 3);
   rb_define_module_function(mgsl_cdf, "pareto_Q", rb_gsl_cdf_pareto_Q, 3);
   rb_define_module_function(mgsl_cdf, "pareto_Pinv", rb_gsl_cdf_pareto_Pinv, 3);

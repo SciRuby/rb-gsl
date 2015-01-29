@@ -13,7 +13,7 @@
 #include "include/rb_gsl_function.h"
 #include <gsl/gsl_min.h>
 
-double rb_gsl_function_f(double x, void *p); 
+double rb_gsl_function_f(double x, void *p);
 
 enum {
   GSL_MIN_FMINIMIZER_GOLDENSECTION,
@@ -24,39 +24,39 @@ enum {
 };
 static const gsl_min_fminimizer_type* rb_gsl_min_fminimizer_type_get(VALUE t);
 
-static const gsl_min_fminimizer_type* rb_gsl_min_fminimizer_type_get(VALUE t) 
+static const gsl_min_fminimizer_type* rb_gsl_min_fminimizer_type_get(VALUE t)
 {
   char name[32];
   switch (TYPE(t)) {
   case T_STRING:
     strcpy(name, STR2CSTR(t));
-    if (str_tail_grep(name, "goldensection") == 0) 
+    if (str_tail_grep(name, "goldensection") == 0)
       return gsl_min_fminimizer_goldensection;
-    else if (str_tail_grep(name, "brent") == 0) 
+    else if (str_tail_grep(name, "brent") == 0)
       return gsl_min_fminimizer_brent;
 #ifdef GSL_1_13_LATER
-    else if (str_tail_grep(name, "quad_golden") == 0) 
+    else if (str_tail_grep(name, "quad_golden") == 0)
       return gsl_min_fminimizer_quad_golden;
 #endif
-    else 
+    else
       rb_raise(rb_eTypeError, "unknown type %s (goldensection, brent or quad_golden expected)",
          name);
     break;
   case T_FIXNUM:
     switch (FIX2INT(t)) {
-    case GSL_MIN_FMINIMIZER_GOLDENSECTION: 
-      return gsl_min_fminimizer_goldensection; 
+    case GSL_MIN_FMINIMIZER_GOLDENSECTION:
+      return gsl_min_fminimizer_goldensection;
       break;
-    case GSL_MIN_FMINIMIZER_BRENT: 
-      return gsl_min_fminimizer_brent; 
+    case GSL_MIN_FMINIMIZER_BRENT:
+      return gsl_min_fminimizer_brent;
       break;
 #ifdef GSL_1_13_LATER
-    case GSL_MIN_FMINIMIZER_QUAD_GOLDEN: 
-      return gsl_min_fminimizer_quad_golden; 
+    case GSL_MIN_FMINIMIZER_QUAD_GOLDEN:
+      return gsl_min_fminimizer_quad_golden;
       break;
 #endif
-    default: 
-      rb_raise(rb_eTypeError, "unknown type (GOLDENSECION or BRENT or QUAD_GOLDEN expected)"); 
+    default:
+      rb_raise(rb_eTypeError, "unknown type (GOLDENSECION or BRENT or QUAD_GOLDEN expected)");
       break;
     }
     break;
@@ -83,32 +83,32 @@ static VALUE rb_gsl_min_fminimizer_name(VALUE obj)
   return rb_str_new2(gsl_min_fminimizer_name(gmf));
 }
 
-static VALUE rb_gsl_min_fminimizer_set(VALUE obj, VALUE ff, VALUE xmin, 
+static VALUE rb_gsl_min_fminimizer_set(VALUE obj, VALUE ff, VALUE xmin,
                VALUE xl, VALUE xu)
 {
   gsl_min_fminimizer *gmf = NULL;
   gsl_function *f = NULL;
-  Need_Float(xmin); Need_Float(xl); Need_Float(xu); 
+  Need_Float(xmin); Need_Float(xl); Need_Float(xu);
   CHECK_FUNCTION(ff);
   Data_Get_Struct(obj, gsl_min_fminimizer, gmf);
   Data_Get_Struct(ff, gsl_function, f);
-  return INT2FIX(gsl_min_fminimizer_set(gmf, f, NUM2DBL(xmin), 
+  return INT2FIX(gsl_min_fminimizer_set(gmf, f, NUM2DBL(xmin),
           NUM2DBL(xl), NUM2DBL(xu)));
 }
 
-static VALUE rb_gsl_min_fminimizer_set_with_values(VALUE obj, VALUE ff, 
+static VALUE rb_gsl_min_fminimizer_set_with_values(VALUE obj, VALUE ff,
                VALUE xmin, VALUE fmin,
-               VALUE xl, VALUE fl, 
+               VALUE xl, VALUE fl,
                VALUE xu, VALUE fu)
 {
   gsl_min_fminimizer *gmf = NULL;
   gsl_function *f = NULL;
-  Need_Float(xmin); Need_Float(xl); Need_Float(xu); 
-  Need_Float(fl); Need_Float(fu); 
+  Need_Float(xmin); Need_Float(xl); Need_Float(xu);
+  Need_Float(fl); Need_Float(fu);
   CHECK_FUNCTION(ff);
   Data_Get_Struct(obj, gsl_min_fminimizer, gmf);
   Data_Get_Struct(ff, gsl_function, f);
-  return INT2FIX(gsl_min_fminimizer_set_with_values(gmf, f, NUM2DBL(xmin), 
+  return INT2FIX(gsl_min_fminimizer_set_with_values(gmf, f, NUM2DBL(xmin),
                 NUM2DBL(fmin),
                 NUM2DBL(xl), NUM2DBL(fl),
                 NUM2DBL(xu), NUM2DBL(fu)));
@@ -137,23 +137,23 @@ static VALUE rb_gsl_min_fminimizer_x_upper(VALUE obj)
 
 #ifndef GSL_1_2_LATER
 static double gsl_min_fminimizer_x_minimum(const gsl_min_fminimizer * s)
-{  
+{
   /*  return s->x_minimum;*/
   return s->minimum;
 }
 
 static double gsl_min_fminimizer_f_minimum(const gsl_min_fminimizer * s)
-{  
+{
   return s->f_minimum;
 }
 
 static double gsl_min_fminimizer_f_lower(const gsl_min_fminimizer * s)
-{ 
+{
   return s->f_lower;
 }
 
 static double gsl_min_fminimizer_f_upper(const gsl_min_fminimizer * s)
-{ 
+{
   return s->f_upper;
 }
 #endif
@@ -211,12 +211,12 @@ void Init_gsl_min(VALUE module)
   VALUE mgsl_min, cgsl_fminimizer;
 
   mgsl_min = rb_define_module_under(module, "Min");
-  
+
   cgsl_fminimizer = rb_define_class_under(mgsl_min, "FMinimizer", cGSL_Object);
 
-  rb_define_const(cgsl_fminimizer, "GOLDENSECTION", 
+  rb_define_const(cgsl_fminimizer, "GOLDENSECTION",
       INT2FIX(GSL_MIN_FMINIMIZER_GOLDENSECTION));
-  rb_define_const(cgsl_fminimizer, "Goldensection", 
+  rb_define_const(cgsl_fminimizer, "Goldensection",
       INT2FIX(GSL_MIN_FMINIMIZER_GOLDENSECTION));
   rb_define_const(cgsl_fminimizer, "BRENT",
       INT2FIX(GSL_MIN_FMINIMIZER_BRENT));
@@ -239,7 +239,7 @@ void Init_gsl_min(VALUE module)
   rb_define_method(cgsl_fminimizer, "x_upper", rb_gsl_min_fminimizer_x_upper, 0);
   rb_define_method(cgsl_fminimizer, "test_interval", rb_gsl_min_fminimizer_test_interval, 2);
 
-  rb_define_singleton_method(mgsl_min, "test_interval", 
+  rb_define_singleton_method(mgsl_min, "test_interval",
            rb_gsl_fminimizer_test_interval, 4);
 
   rb_define_method(cgsl_fminimizer, "x_minimum", rb_gsl_min_fminimizer_x_minimum, 0);

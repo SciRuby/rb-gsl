@@ -19,7 +19,7 @@ f.set_params(1, 0, -5)
 expected = sqrt(5.0)
 
 printf("%5s [%9s, %9s] %9s %10s %9s\n",
-          "iter", "lower", "upper", "root", 
+          "iter", "lower", "upper", "root",
           "err", "err(est)")
 
 solver.set(f, 0.0, 5.0)

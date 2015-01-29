@@ -92,7 +92,7 @@ static VALUE rb_gsl_dht_apply(int argc, VALUE *argv, VALUE obj)
   return Qnil; /* never reach here */
 }
 
-static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n, 
+static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n,
              double (*sample)(const gsl_dht*, int))
 {
   gsl_dht *t = NULL;
@@ -142,7 +142,7 @@ static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n,
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, cNArray);
       ptr2 = NA_PTR_TYPE(ary, double*);
       for (i = 0; i < size; i++) {
-        ptr2[i] = (*sample)(t, ptr[i]);  
+        ptr2[i] = (*sample)(t, ptr[i]);
       }
       return ary;
 #endif

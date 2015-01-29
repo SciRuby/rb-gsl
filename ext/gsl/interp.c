@@ -132,7 +132,7 @@ static VALUE rb_gsl_interp_bsearch(int argc, VALUE *argv, VALUE obj)
       rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 3)", argc);
       break;
     }
-    break; 
+    break;
   }
   return INT2FIX(gsl_interp_bsearch(v->data, x, indexl, indexh));
 }
@@ -170,8 +170,8 @@ static VALUE rb_gsl_interp_accel_find(VALUE obj, VALUE vv, VALUE xx)
 }
 
 static VALUE rb_gsl_interp_evaluate(VALUE obj, VALUE xxa, VALUE yya, VALUE xx,
-            double (*eval)(const gsl_interp *, const double [], 
-               const double [], double, 
+            double (*eval)(const gsl_interp *, const double [],
+               const double [], double,
                gsl_interp_accel *))
 {
   rb_gsl_interp *rgi = NULL;
@@ -306,7 +306,7 @@ static VALUE rb_gsl_interp_eval_deriv_e(VALUE obj, VALUE xxa, VALUE yya, VALUE x
   default:
     return rb_float_new(y);
     break;
-  } 
+  }
   return Qnil;
 }
 
@@ -338,7 +338,7 @@ static VALUE rb_gsl_interp_eval_deriv2_e(VALUE obj, VALUE xxa, VALUE yya, VALUE 
   return Qnil;
 }
 
-static VALUE rb_gsl_interp_eval_integ(VALUE obj, VALUE xxa, VALUE yya, 
+static VALUE rb_gsl_interp_eval_integ(VALUE obj, VALUE xxa, VALUE yya,
               VALUE aa, VALUE bb)
 {
   rb_gsl_interp *rgi = NULL;
@@ -354,7 +354,7 @@ static VALUE rb_gsl_interp_eval_integ(VALUE obj, VALUE xxa, VALUE yya,
   return rb_float_new(gsl_interp_eval_integ(rgi->p, ptr1, ptr2, a, b, rgi->a));
 }
 
-static VALUE rb_gsl_interp_eval_integ_e(VALUE obj, VALUE xxa, VALUE yya, 
+static VALUE rb_gsl_interp_eval_integ_e(VALUE obj, VALUE xxa, VALUE yya,
           VALUE aa, VALUE bb)
 {
   rb_gsl_interp *rgi = NULL;

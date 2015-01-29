@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require("gsl") 
+require("gsl")
 
 p GSL::MAX(1, 2)
 p GSL::MAX(1, 2.0)

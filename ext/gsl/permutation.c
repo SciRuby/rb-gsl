@@ -16,9 +16,9 @@
 VALUE rb_gsl_permutation_alloc(VALUE klass, VALUE nn);
 
 /*
- * Creates a new permutation of size n. The permutation is not initialized 
- * and its elements are undefined. Use the method calloc if you want to create 
- * a permutation which is initialized to the identity. 
+ * Creates a new permutation of size n. The permutation is not initialized
+ * and its elements are undefined. Use the method calloc if you want to create
+ * a permutation which is initialized to the identity.
  */
 VALUE rb_gsl_permutation_alloc(VALUE klass, VALUE nn)
 {
@@ -90,7 +90,7 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
       } else if (CLASS_OF(argv[0]) == rb_cRange) {
   get_range_int_beg_en_n(argv[0], &beg, &en, &n, &step);
   bnew = gsl_permutation_alloc(n);
-  for (j = 0; j < n; j++) 
+  for (j = 0; j < n; j++)
     bnew->data[j] = b->data[beg+j];
   return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_permutation_free, bnew);
       } else {
@@ -367,7 +367,7 @@ static VALUE rb_gsl_permutation_fprintf(int argc, VALUE *argv, VALUE obj)
   FILE *fp = NULL;
   int status, flag = 0;
 
-  if (argc != 1 && argc != 2) rb_raise(rb_eArgError, 
+  if (argc != 1 && argc != 2) rb_raise(rb_eArgError,
                "wrong number of arguments (%d for 1 or 2)", argc);
 
   Data_Get_Struct(obj, gsl_permutation, h);
@@ -556,7 +556,7 @@ void Init_gsl_permutation(VALUE module)
   rb_define_alias(cgsl_permutation, "permute", "permute_vector");
   rb_define_method(cgsl_permutation, "permute_vector_inverse", rb_gsl_permutation_permute_vector_inverse, 1);
   rb_define_alias(cgsl_permutation, "permute_inverse", "permute_vector_inverse");
-  
+
   rb_define_singleton_method(cgsl_permutation, "permute_vector", rb_gsl_permute_vector, 2);
   rb_define_singleton_method(cgsl_permutation, "permute_vector_inverse", rb_gsl_permute_vector_inverse, 2);
   rb_define_module_function(module, "permute_vector", rb_gsl_permute_vector, 2);

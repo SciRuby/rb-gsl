@@ -15,7 +15,7 @@
 #include "narray.h"
 #endif
 
-static double* get_vector_stats2(int argc, VALUE *argv, VALUE obj, 
+static double* get_vector_stats2(int argc, VALUE *argv, VALUE obj,
          size_t *stride, size_t *size)
 {
   double *v = NULL;
@@ -40,7 +40,7 @@ static VALUE rb_gsl_stats_XXX(int argc, VALUE *argv, VALUE obj,
   return rb_float_new((*f)(data, stride, size));
 }
 
-static VALUE rb_gsl_stats_XXX1(int argc, VALUE *argv, VALUE obj, 
+static VALUE rb_gsl_stats_XXX1(int argc, VALUE *argv, VALUE obj,
             double (*f)(const double*, size_t, size_t, double))
 {
   size_t stride, size;
@@ -50,7 +50,7 @@ static VALUE rb_gsl_stats_XXX1(int argc, VALUE *argv, VALUE obj,
   return rb_float_new((*f)(data, stride, size, NUM2DBL(argv[argc-1])));
 }
 
-static VALUE rb_gsl_stats_XXX2(int argc, VALUE *argv, VALUE obj, 
+static VALUE rb_gsl_stats_XXX2(int argc, VALUE *argv, VALUE obj,
              double (*f)(const double*, size_t, size_t),
              double (*fm)(const double*, size_t, size_t, double, double))
 {
@@ -69,7 +69,7 @@ static VALUE rb_gsl_stats_XXX2(int argc, VALUE *argv, VALUE obj,
       x = (*f)(data, stride, size);
       break;
     default:
-      rb_raise(rb_eArgError, 
+      rb_raise(rb_eArgError,
          "wrong number of arguments (%d for 1 or 2)", argc);
       break;
     }
@@ -86,7 +86,7 @@ static VALUE rb_gsl_stats_XXX2(int argc, VALUE *argv, VALUE obj,
       x = (*fm)(data, stride, size, a, b);
       break;
     default:
-      rb_raise(rb_eArgError, 
+      rb_raise(rb_eArgError,
          "wrong number of arguments (%d for 0 or 1)", argc);
       break;
     }
@@ -119,7 +119,7 @@ static VALUE rb_gsl_stats_XXX_m(int argc, VALUE *argv, VALUE obj,
       x = (*f)(data, stride, size);
       break;
     default:
-      rb_raise(rb_eArgError, 
+      rb_raise(rb_eArgError,
          "wrong number of arguments (%d for 1 or 2)", argc);
       break;
     }
@@ -136,7 +136,7 @@ static VALUE rb_gsl_stats_XXX_m(int argc, VALUE *argv, VALUE obj,
       x = (*fm)(data, stride, size, mean);
       break;
     default:
-      rb_raise(rb_eArgError, 
+      rb_raise(rb_eArgError,
          "wrong number of arguments (%d for 0 or 1)", argc);
       break;
     }
@@ -165,14 +165,14 @@ static VALUE rb_gsl_stats_tss_m(int argc, VALUE *argv, VALUE obj)
 }
 #endif
 
-static VALUE rb_gsl_stats_variance_with_fixed_mean(int argc, VALUE *argv, 
+static VALUE rb_gsl_stats_variance_with_fixed_mean(int argc, VALUE *argv,
                VALUE obj)
 {
   return rb_gsl_stats_XXX1(argc, argv, obj,
          gsl_stats_variance_with_fixed_mean);
 }
 
-static VALUE rb_gsl_stats_sd_with_fixed_mean(int argc, VALUE *argv, 
+static VALUE rb_gsl_stats_sd_with_fixed_mean(int argc, VALUE *argv,
                VALUE obj)
 {
   return rb_gsl_stats_XXX1(argc, argv, obj,
@@ -185,7 +185,7 @@ static VALUE rb_gsl_stats_absdev_m(int argc, VALUE *argv, VALUE obj)
           gsl_stats_absdev, gsl_stats_absdev_m);
 }
 
-static VALUE rb_gsl_stats_skew(int argc, VALUE *argv, 
+static VALUE rb_gsl_stats_skew(int argc, VALUE *argv,
              VALUE obj)
 {
   return rb_gsl_stats_XXX2(argc, argv, obj,
@@ -193,7 +193,7 @@ static VALUE rb_gsl_stats_skew(int argc, VALUE *argv,
          gsl_stats_skew_m_sd);
 }
 
-static VALUE rb_gsl_stats_kurtosis(int argc, VALUE *argv, 
+static VALUE rb_gsl_stats_kurtosis(int argc, VALUE *argv,
                VALUE obj)
 {
   return rb_gsl_stats_XXX2(argc, argv, obj,
@@ -209,7 +209,7 @@ static VALUE rb_gsl_stats_lag1_autocorrelation(int argc, VALUE *argv, VALUE obj)
 
 /****************************/
 
-static void get_vector_stats3(int argc, VALUE *argv, VALUE obj, 
+static void get_vector_stats3(int argc, VALUE *argv, VALUE obj,
             double **w, size_t *stridew, size_t *sizew,
             double **x, size_t *stridex, size_t *sizex)
 {
@@ -228,7 +228,7 @@ static void get_vector_stats3(int argc, VALUE *argv, VALUE obj,
 }
 
 static VALUE rb_gsl_stats_wXXX(int argc, VALUE *argv, VALUE obj,
-             double (*f)(const double*, size_t, const double*, 
+             double (*f)(const double*, size_t, const double*,
              size_t, size_t))
 {
   double *w, *x;
@@ -240,7 +240,7 @@ static VALUE rb_gsl_stats_wXXX(int argc, VALUE *argv, VALUE obj,
 }
 
 static VALUE rb_gsl_stats_wXXX_m(int argc, VALUE *argv, VALUE obj,
-             double (*f)(const double*, size_t, const double*, 
+             double (*f)(const double*, size_t, const double*,
              size_t, size_t, double))
 {
   double *w, *x;
@@ -535,7 +535,7 @@ static VALUE rb_gsl_stats_wsd_m2(VALUE obj, VALUE ww, VALUE dd, VALUE mm)
   return rb_float_new(wsd);
 }
 
-static VALUE rb_gsl_stats_wvariance_with_fixed_mean2(VALUE obj, VALUE ww, VALUE dd, 
+static VALUE rb_gsl_stats_wvariance_with_fixed_mean2(VALUE obj, VALUE ww, VALUE dd,
                  VALUE mm)
 {
   double wvariance, m;
@@ -544,13 +544,13 @@ static VALUE rb_gsl_stats_wvariance_with_fixed_mean2(VALUE obj, VALUE ww, VALUE 
   dataw = get_vector_ptr(ww, &stridew, &size);
   data = get_vector_ptr(dd, &strided, &size);
   m = NUM2DBL(mm);
-  wvariance = gsl_stats_wvariance_with_fixed_mean(dataw, stridew, 
+  wvariance = gsl_stats_wvariance_with_fixed_mean(dataw, stridew,
               data, strided, size, m);
 
   return rb_float_new(wvariance);
 }
 
-static VALUE rb_gsl_stats_wsd_with_fixed_mean2(VALUE obj, VALUE ww, VALUE dd, 
+static VALUE rb_gsl_stats_wsd_with_fixed_mean2(VALUE obj, VALUE ww, VALUE dd,
                  VALUE mm)
 {
   double wsd, m;
@@ -670,18 +670,18 @@ void Init_gsl_stats(VALUE module)
   rb_define_alias(cgsl_vector, "tss", "stats_tss_m");
 #endif
 
-  rb_define_singleton_method(mgsl_stats, "variance_with_fixed_mean", 
+  rb_define_singleton_method(mgsl_stats, "variance_with_fixed_mean",
            rb_gsl_stats_variance_with_fixed_mean, -1);
-  rb_define_method(cgsl_vector, "stats_variance_with_fixed_mean", 
+  rb_define_method(cgsl_vector, "stats_variance_with_fixed_mean",
        rb_gsl_stats_variance_with_fixed_mean, -1);
-  rb_define_alias(cgsl_vector, "variance_with_fixed_mean", 
+  rb_define_alias(cgsl_vector, "variance_with_fixed_mean",
       "stats_variance_with_fixed_mean");
 
-  rb_define_singleton_method(mgsl_stats, "sd_with_fixed_mean", 
+  rb_define_singleton_method(mgsl_stats, "sd_with_fixed_mean",
            rb_gsl_stats_sd_with_fixed_mean, -1);
-  rb_define_method(cgsl_vector, "stats_sd_with_fixed_mean", 
+  rb_define_method(cgsl_vector, "stats_sd_with_fixed_mean",
        rb_gsl_stats_sd_with_fixed_mean, -1);
-  rb_define_alias(cgsl_vector, "sd_with_fixed_mean", 
+  rb_define_alias(cgsl_vector, "sd_with_fixed_mean",
       "stats_sd_with_fixed_mean");
 
   rb_define_singleton_method(mgsl_stats, "absdev", rb_gsl_stats_absdev_m, -1);
@@ -710,23 +710,23 @@ void Init_gsl_stats(VALUE module)
 
   rb_define_singleton_method(mgsl_stats, "covariance", rb_gsl_stats_covariance2, 2);
   rb_define_singleton_method(mgsl_stats, "covariance_m", rb_gsl_stats_covariance_m2, 4);
-  
+
 #ifdef GSL_1_10_LATER
-  rb_define_singleton_method(mgsl_stats, "correlation", rb_gsl_stats_correlation, 2);  
-  rb_define_singleton_method(mgsl_stats, "pvariance", rb_gsl_stats_pvariance, 2);    
-  rb_define_singleton_method(mgsl_stats, "ttest", rb_gsl_stats_ttest, 2);      
+  rb_define_singleton_method(mgsl_stats, "correlation", rb_gsl_stats_correlation, 2);
+  rb_define_singleton_method(mgsl_stats, "pvariance", rb_gsl_stats_pvariance, 2);
+  rb_define_singleton_method(mgsl_stats, "ttest", rb_gsl_stats_ttest, 2);
 #endif
 
   /*****/
-  
+
   rb_define_singleton_method(mgsl_stats, "wmean", rb_gsl_stats_wmean2, -1);
   rb_define_singleton_method(mgsl_stats, "wvariance", rb_gsl_stats_wvariance2, -1);
   rb_define_singleton_method(mgsl_stats, "wvariance_m", rb_gsl_stats_wvariance_m2, -1);
   rb_define_singleton_method(mgsl_stats, "wsd", rb_gsl_stats_wsd2, -1);
   rb_define_singleton_method(mgsl_stats, "wsd_m", rb_gsl_stats_wsd_m2, -1);
-  rb_define_singleton_method(mgsl_stats, "wvariance_with_fixed_mean", 
+  rb_define_singleton_method(mgsl_stats, "wvariance_with_fixed_mean",
            rb_gsl_stats_wvariance_with_fixed_mean2, -1);
-  rb_define_singleton_method(mgsl_stats, "wsd_with_fixed_mean", 
+  rb_define_singleton_method(mgsl_stats, "wsd_with_fixed_mean",
            rb_gsl_stats_wsd_with_fixed_mean2, -1);
   rb_define_singleton_method(mgsl_stats, "wabsdev", rb_gsl_stats_wabsdev2, -1);
   rb_define_singleton_method(mgsl_stats, "wabsdev_m", rb_gsl_stats_wabsdev_m2, -1);
@@ -747,11 +747,11 @@ void Init_gsl_stats(VALUE module)
   rb_define_alias(cgsl_vector, "wsd", "stats_wsd");
   rb_define_method(cgsl_vector, "stats_wsd_m", rb_gsl_stats_wsd_m, -1);
   rb_define_alias(cgsl_vector, "wsd_m", "stats_wsd_m");
-  rb_define_method(cgsl_vector, "stats_wvariance_with_fixed_mean", 
+  rb_define_method(cgsl_vector, "stats_wvariance_with_fixed_mean",
        rb_gsl_stats_wvariance_with_fixed_mean, -1);
-  rb_define_alias(cgsl_vector, "wvariance_with_fixed_mean", 
+  rb_define_alias(cgsl_vector, "wvariance_with_fixed_mean",
       "stats_wvariance_with_fixed_mean");
-  rb_define_method(cgsl_vector, "stats_wsd_with_fixed_mean", 
+  rb_define_method(cgsl_vector, "stats_wsd_with_fixed_mean",
        rb_gsl_stats_wsd_with_fixed_mean, -1);
   rb_define_alias(cgsl_vector, "wsd_with_fixed_mean", "stats_wsd_with_fixed_mean");
   rb_define_method(cgsl_vector, "stats_wabsdev", rb_gsl_stats_wabsdev, -1);
@@ -764,7 +764,7 @@ void Init_gsl_stats(VALUE module)
   rb_define_alias(cgsl_vector, "wskew_m_sd", "stats_wskew_m_sd");
   rb_define_method(cgsl_vector, "stats_wkurtosis", rb_gsl_stats_wkurtosis, -1);
   rb_define_alias(cgsl_vector, "wkurtosis", "stats_wkurtosis");
-  rb_define_method(cgsl_vector, "stats_wkurtosis_m_sd", 
+  rb_define_method(cgsl_vector, "stats_wkurtosis_m_sd",
        rb_gsl_stats_wkurtosis_m_sd, 2);
   rb_define_alias(cgsl_vector, "wkurtosis_m_sd", "stats_wkurtosis_m_sd");
 
@@ -774,7 +774,7 @@ void Init_gsl_stats(VALUE module)
   rb_define_singleton_method(mgsl_stats, "minmax", rb_gsl_stats_minmax, -1);
   rb_define_singleton_method(mgsl_stats, "max_index", rb_gsl_stats_max_index, -1);
   rb_define_singleton_method(mgsl_stats, "min_index", rb_gsl_stats_min_index, -1);
-  rb_define_singleton_method(mgsl_stats, "minmax_index", 
+  rb_define_singleton_method(mgsl_stats, "minmax_index",
            rb_gsl_stats_minmax_index, -1);
 
   rb_define_method(cgsl_vector, "stats_max", rb_gsl_stats_max, -1);
@@ -784,17 +784,17 @@ void Init_gsl_stats(VALUE module)
   rb_define_method(cgsl_vector, "stats_min_index", rb_gsl_stats_min_index, -1);
   rb_define_method(cgsl_vector, "stats_minmax_index", rb_gsl_stats_minmax_index, -1);
 
-  rb_define_singleton_method(mgsl_stats, "median_from_sorted_data", 
+  rb_define_singleton_method(mgsl_stats, "median_from_sorted_data",
            rb_gsl_stats_median_from_sorted_data, -1);
-  rb_define_method(cgsl_vector, "stats_median_from_sorted_data", 
+  rb_define_method(cgsl_vector, "stats_median_from_sorted_data",
        rb_gsl_stats_median_from_sorted_data, -1);
-  rb_define_alias(cgsl_vector, "median_from_sorted_data", 
+  rb_define_alias(cgsl_vector, "median_from_sorted_data",
       "stats_median_from_sorted_data");
   rb_define_method(cgsl_vector, "median", rb_gsl_stats_median, -1);
 
-  rb_define_method(cgsl_vector, "stats_quantile_from_sorted_data", 
+  rb_define_method(cgsl_vector, "stats_quantile_from_sorted_data",
        rb_gsl_stats_quantile_from_sorted_data, -1);
-  rb_define_alias(cgsl_vector, "quantile_from_sorted_data", 
+  rb_define_alias(cgsl_vector, "quantile_from_sorted_data",
       "stats_quantile_from_sorted_data");
 
 }

@@ -48,7 +48,7 @@ static gsl_poly_int* mygsl_poly_hermite(int n1)
       gsl_vector_int_memcpy(p1, p0);
     }
     gsl_vector_int_free(p2);
-    gsl_vector_int_free(p1);    
+    gsl_vector_int_free(p1);
     break;
   }
   return p0;
@@ -87,7 +87,7 @@ static gsl_poly_int* mygsl_poly_cheb(int n1)
       gsl_vector_int_memcpy(p1, p0);
     }
     gsl_vector_int_free(p2);
-    gsl_vector_int_free(p1);    
+    gsl_vector_int_free(p1);
     break;
   }
   return p0;
@@ -125,7 +125,7 @@ static gsl_poly_int* mygsl_poly_chebII(int n1)
       gsl_vector_int_memcpy(p1, p0);
     }
     gsl_vector_int_free(p2);
-    gsl_vector_int_free(p1);    
+    gsl_vector_int_free(p1);
     break;
   }
   return p0;
@@ -203,7 +203,7 @@ static gsl_poly_int* mygsl_poly_bell(int n1)
       /* save for the next iteration */
       gsl_vector_int_memcpy(p1, p0);
     }
-    gsl_vector_int_free(p1);    
+    gsl_vector_int_free(p1);
     break;
   }
   return p0;

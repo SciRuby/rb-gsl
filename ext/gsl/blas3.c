@@ -387,7 +387,7 @@ static VALUE rb_gsl_blas_zhemm(int argc, VALUE *argv, VALUE obj)
   else return argv[6];
 }
 
-static VALUE rb_gsl_blas_dtrmm(VALUE obj, VALUE s, VALUE u, VALUE ta, 
+static VALUE rb_gsl_blas_dtrmm(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix *A = NULL, *B = NULL;
@@ -410,7 +410,7 @@ static VALUE rb_gsl_blas_dtrmm(VALUE obj, VALUE s, VALUE u, VALUE ta,
   return bb;
 }
 
-static VALUE rb_gsl_blas_dtrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta, 
+static VALUE rb_gsl_blas_dtrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix *A = NULL, *B = NULL, *Bnew = NULL;
@@ -435,7 +435,7 @@ static VALUE rb_gsl_blas_dtrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
   return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, Bnew);
 }
 
-static VALUE rb_gsl_blas_ztrmm(VALUE obj, VALUE s, VALUE u, VALUE ta, 
+static VALUE rb_gsl_blas_ztrmm(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL;
@@ -459,7 +459,7 @@ static VALUE rb_gsl_blas_ztrmm(VALUE obj, VALUE s, VALUE u, VALUE ta,
   return bb;
 }
 
-static VALUE rb_gsl_blas_ztrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta, 
+static VALUE rb_gsl_blas_ztrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *Bnew = NULL;
@@ -484,7 +484,7 @@ static VALUE rb_gsl_blas_ztrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, Bnew);
 }
 
-static VALUE rb_gsl_blas_dtrsm(VALUE obj, VALUE s, VALUE u, VALUE ta, 
+static VALUE rb_gsl_blas_dtrsm(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix *A = NULL, *B = NULL;
@@ -507,7 +507,7 @@ static VALUE rb_gsl_blas_dtrsm(VALUE obj, VALUE s, VALUE u, VALUE ta,
   return bb;
 }
 
-static VALUE rb_gsl_blas_dtrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta, 
+static VALUE rb_gsl_blas_dtrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix *A = NULL, *B = NULL, *Bnew = NULL;
@@ -532,7 +532,7 @@ static VALUE rb_gsl_blas_dtrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
   return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, Bnew);
 }
 
-static VALUE rb_gsl_blas_ztrsm(VALUE obj, VALUE s, VALUE u, VALUE ta, 
+static VALUE rb_gsl_blas_ztrsm(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL;
@@ -556,7 +556,7 @@ static VALUE rb_gsl_blas_ztrsm(VALUE obj, VALUE s, VALUE u, VALUE ta,
   return bb;
 }
 
-static VALUE rb_gsl_blas_ztrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta, 
+static VALUE rb_gsl_blas_ztrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *Bnew = NULL;

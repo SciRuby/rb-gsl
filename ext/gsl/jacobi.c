@@ -21,7 +21,7 @@ static VALUE jac_eval3(VALUE xx, VALUE aa, VALUE bb, double (*f)(double, double,
 #ifdef HAVE_NARRAY_H
   double *ptr1, *ptr2;
   struct NARRAY *na;
-#endif  
+#endif
   a = NUM2DBL(aa);
   b = NUM2DBL(bb);
   if (VECTOR_P(xx)) {
@@ -48,15 +48,15 @@ static VALUE jac_eval3(VALUE xx, VALUE aa, VALUE bb, double (*f)(double, double,
     ptr2 = NA_PTR_TYPE(ary, double*);
     for (i = 0; i < len; i++) {
       ptr2[i] = (*f)(ptr1[i], a, b);
-    }    
+    }
     return ary;
-#endif    
+#endif
   } else {
     return rb_float_new((*f)(NUM2DBL(xx), a, b));
-  }  
+  }
 }
 
-static VALUE rb_jac_jacobi_eval(int argc, VALUE *argv, 
+static VALUE rb_jac_jacobi_eval(int argc, VALUE *argv,
           double (*f)(double, int, double, double),
           int (*f2)(int, const double*, int, double*, double, double, double*))
 {
@@ -83,10 +83,10 @@ static VALUE rb_jac_jacobi_eval(int argc, VALUE *argv,
       CHECK_VECTOR(argv[4]);
       Data_Get_Struct(argv[4], gsl_vector, ws);
       break;
-    default:  
+    default:
       rb_raise(rb_eArgError, "Too many arguments (%d for 4 or 5)", argc);
     }
-    (*f2)(x->size, x->data, FIX2INT(argv[1]), y->data, NUM2DBL(argv[2]), NUM2DBL(argv[3]), 
+    (*f2)(x->size, x->data, FIX2INT(argv[1]), y->data, NUM2DBL(argv[2]), NUM2DBL(argv[3]),
                     ws->data);
     if (flag == 1) gsl_vector_free(ws);
     return ary;
@@ -110,34 +110,34 @@ static VALUE rb_jac_jacobi_eval(int argc, VALUE *argv,
     ptr2 = NA_PTR_TYPE(ary, double*);
     n = FIX2INT(argv[1]);
     a = NUM2DBL(argv[2]);
-    b = NUM2DBL(argv[3]);    
+    b = NUM2DBL(argv[3]);
     ws = gsl_vector_alloc(len);
     (*f2)(len, ptr1, n, ptr2, a, b, ws->data);
     gsl_vector_free(ws);
     return ary;
 #endif
   } else {
-    return rb_float_new((*f)(NUM2DBL(argv[0]), FIX2INT(argv[1]), NUM2DBL(argv[2]), NUM2DBL(argv[3])));    
-  }  
+    return rb_float_new((*f)(NUM2DBL(argv[0]), FIX2INT(argv[1]), NUM2DBL(argv[2]), NUM2DBL(argv[3])));
+  }
 
 }
 static VALUE rb_jac_jacobi_P0_e(VALUE module, VALUE x, VALUE a, VALUE b)
-{  
+{
   return jac_eval3_e(x, a, b, jac_jacobi_P0_e);
 }
 
 static VALUE rb_jac_jacobi_P0(VALUE module, VALUE x, VALUE a, VALUE b)
-{  
+{
   return jac_eval3(x, a, b, jac_jacobi_P0);
 }
 
 static VALUE rb_jac_jacobi_P1_e(VALUE module, VALUE x, VALUE a, VALUE b)
-{  
+{
   return jac_eval3_e(x, a, b, jac_jacobi_P1_e);
 }
 
 static VALUE rb_jac_jacobi_P1(VALUE module, VALUE x, VALUE a, VALUE b)
-{  
+{
   return jac_eval3(x, a, b, jac_jacobi_P1);
 }
 
@@ -148,28 +148,28 @@ static VALUE rb_jac_jacobi(int argc, VALUE *argv, VALUE module)
 }
 
 static VALUE rb_jac_djacobi_P0_e(VALUE module, VALUE x, VALUE a, VALUE b)
-{  
+{
   return jac_eval3_e(x, a, b, jac_djacobi_P0_e);
 }
 
 static VALUE rb_jac_djacobi_P0(VALUE module, VALUE x, VALUE a, VALUE b)
-{  
+{
   return jac_eval3(x, a, b, jac_djacobi_P0);
 }
 
 static VALUE rb_jac_djacobi_P1_e(VALUE module, VALUE x, VALUE a, VALUE b)
-{  
+{
   return jac_eval3_e(x, a, b, jac_djacobi_P1_e);
 }
 
 static VALUE rb_jac_djacobi_P1(VALUE module, VALUE x, VALUE a, VALUE b)
-{  
+{
   return jac_eval3(x, a, b, jac_djacobi_P1);
 }
 
 static VALUE rb_jac_djacobi(int argc, VALUE *argv, VALUE module)
 {
-  return rb_jac_jacobi_eval(argc, argv, jac_djacobi, jac_djacobi_array);  
+  return rb_jac_jacobi_eval(argc, argv, jac_djacobi, jac_djacobi_array);
 }
 
 static VALUE rb_jac_zeros_eval(int argc, VALUE *argv, VALUE module,
@@ -192,7 +192,7 @@ static VALUE rb_jac_zeros_eval(int argc, VALUE *argv, VALUE module,
       m = x->size;
       a = NUM2DBL(argv[1]);
       b = NUM2DBL(argv[2]);
-      xx = argv[0];      
+      xx = argv[0];
     } else {
       rb_raise(rb_eTypeError, "Wrong argument type %s (Fixnum or GSL::Vector expected)",
               rb_class2name(CLASS_OF(argv[0])));
@@ -200,10 +200,10 @@ static VALUE rb_jac_zeros_eval(int argc, VALUE *argv, VALUE module,
     break;
   case 4:
     CHECK_VECTOR(argv[0]);
-    Data_Get_Struct(argv[0], gsl_vector, x);    
-    m = FIX2INT(argv[1]);    
+    Data_Get_Struct(argv[0], gsl_vector, x);
+    m = FIX2INT(argv[1]);
     a = NUM2DBL(argv[2]);
-    b = NUM2DBL(argv[3]);  
+    b = NUM2DBL(argv[3]);
     break;
   default:
     rb_raise(rb_eArgError, "Wrong number of arguments (%d for 3 or 4)", argc);
@@ -222,7 +222,7 @@ static VALUE rb_jac_jacobi_zeros(int argc, VALUE *argv, VALUE module)
 static void jac_define_const(VALUE module)
 {
   rb_define_const(module, "GJ", INT2FIX(JAC_GJ));
-  rb_define_const(module, "GLJ", INT2FIX(JAC_GLJ));  
+  rb_define_const(module, "GLJ", INT2FIX(JAC_GLJ));
   rb_define_const(module, "GRJM", INT2FIX(JAC_GRJM));
   rb_define_const(module, "GRJP", INT2FIX(JAC_GRJP));
 }
@@ -230,9 +230,9 @@ static void jac_define_const(VALUE module)
 static VALUE rb_jac_quadrature_alloc(VALUE klass, VALUE vQ)
 {
   jac_quadrature *q;
-  
+
   q = jac_quadrature_alloc(FIX2INT(vQ));
-  
+
   return Data_Wrap_Struct(klass, 0, jac_quadrature_free, q);
 }
 
@@ -318,17 +318,17 @@ static VALUE rb_jac_interpmat_alloc(int argc, VALUE *argv, VALUE obj)
   jac_quadrature *q;
   gsl_vector *xp;
   int np;
-  Data_Get_Struct(obj, jac_quadrature, q);  
+  Data_Get_Struct(obj, jac_quadrature, q);
   switch (argc) {
   case 1:
     CHECK_VECTOR(argv[0]);
-    Data_Get_Struct(argv[0], gsl_vector, xp);  
+    Data_Get_Struct(argv[0], gsl_vector, xp);
     np = xp->size;
     break;
   case 2:
     CHECK_VECTOR(argv[1]);
-    Data_Get_Struct(argv[1], gsl_vector, xp);  
-    np = FIX2INT(argv[0]);  
+    Data_Get_Struct(argv[1], gsl_vector, xp);
+    np = FIX2INT(argv[0]);
     break;
   default:
     rb_raise(rb_eArgError, "Wrong number of arguments (%d for 1 or 2)", argc);
@@ -339,8 +339,8 @@ static VALUE rb_jac_interpmat_alloc(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_jac_interpmat_free(VALUE obj)
 {
-  jac_quadrature *q;  
-  Data_Get_Struct(obj, jac_quadrature, q);    
+  jac_quadrature *q;
+  Data_Get_Struct(obj, jac_quadrature, q);
   jac_interpmat_free(q);
   return Qtrue;
 }
@@ -351,13 +351,13 @@ static VALUE rb_jac_quadrature_zwd(int argc, VALUE *argv, VALUE obj)
   gsl_vector *ws;
   int flag = 0, type, status;
   double a, b;
-  Data_Get_Struct(obj, jac_quadrature, q);      
+  Data_Get_Struct(obj, jac_quadrature, q);
   switch (argc) {
   case 3:
     type = FIX2INT(argv[0]);
     a = NUM2DBL(argv[1]);
     b = NUM2DBL(argv[2]);
-    ws = gsl_vector_alloc(q->Q);  
+    ws = gsl_vector_alloc(q->Q);
     flag = 1;
     break;
   case 4:
@@ -439,7 +439,7 @@ static VALUE rb_jac_differentiate(int argc, VALUE *argv, VALUE obj)
 }
 
 /*****/
-static VALUE rb_jac_qeval(int argc, VALUE *argv, 
+static VALUE rb_jac_qeval(int argc, VALUE *argv,
     int (*f)(double*, double*, const int, double, double, double*))
 {
   gsl_vector *z, *D, *ws;
@@ -458,7 +458,7 @@ static VALUE rb_jac_qeval(int argc, VALUE *argv,
   } else {
     ws = gsl_vector_alloc(z->size);
     flag = 1;
-  }  
+  }
   switch (argc) {
   case 2:
     Q = z->size;
@@ -480,7 +480,7 @@ static VALUE rb_jac_qeval(int argc, VALUE *argv,
       Data_Get_Struct(argv[0], gsl_vector, D);
       vD = argv[0];
     } else {
-      Q = FIX2INT(argv[0]);      
+      Q = FIX2INT(argv[0]);
       D = gsl_vector_alloc(Q*Q);
       vD = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, D);
     }
@@ -610,25 +610,25 @@ static VALUE rb_jac_interpmat_eval(int argc, VALUE *argv,
   double alpha, beta;
   int np, Q, status;
   VALUE vimat;
-  
+
   if (argc < 3) rb_raise(rb_eArgError, "Too few arguments (%d for >= 3)", argc);
-  
+
   CHECK_VECTOR(argv[0]);
   if (VECTOR_P(argv[1])) {
     Data_Get_Struct(argv[0], gsl_vector, imat);
-    Data_Get_Struct(argv[1], gsl_vector, zp);    
+    Data_Get_Struct(argv[1], gsl_vector, zp);
     vimat = argv[0];
     if (FIXNUM_P(argv[2])) np = FIX2INT(argv[2]);
     argc -= 3;
     argv += 3;
   } else {
     Data_Get_Struct(argv[0], gsl_vector, zp);
-    if (FIXNUM_P(argv[1])) np = FIX2INT(argv[1]);    
+    if (FIXNUM_P(argv[1])) np = FIX2INT(argv[1]);
     else np = zp->size;
     imat = gsl_vector_alloc(np);
     vimat = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, imat);
     argc -= 2;
-    argv += 2;    
+    argv += 2;
   }
   CHECK_VECTOR(argv[0]);
   Data_Get_Struct(argv[0], gsl_vector, z);
@@ -673,66 +673,66 @@ static VALUE rb_jac_interpmat_grjp(int argc, VALUE *argv, VALUE module)
 void Init_jacobi(VALUE module)
 {
   VALUE mjac, cjacq;
-  
+
   mjac = rb_define_module("Jac");
   jac_define_const(mjac);
   cjacq = rb_define_class_under(mjac, "Quadrature", cGSL_Object);
-  
+
   rb_define_module_function(mjac, "jacobi_P0_e", rb_jac_jacobi_P0_e, 3);
-  rb_define_module_function(mjac, "jacobi_P0", rb_jac_jacobi_P0, 3);  
+  rb_define_module_function(mjac, "jacobi_P0", rb_jac_jacobi_P0, 3);
   rb_define_module_function(mjac, "jacobi_P1_e", rb_jac_jacobi_P1_e, 3);
-  rb_define_module_function(mjac, "jacobi_P1", rb_jac_jacobi_P1, 3);    
-  rb_define_module_function(mjac, "jacobi", rb_jac_jacobi, -1);      
+  rb_define_module_function(mjac, "jacobi_P1", rb_jac_jacobi_P1, 3);
+  rb_define_module_function(mjac, "jacobi", rb_jac_jacobi, -1);
   rb_define_module_function(mjac, "djacobi_P0_e", rb_jac_djacobi_P0_e, 3);
-  rb_define_module_function(mjac, "djacobi_P0", rb_jac_djacobi_P0, 3);  
+  rb_define_module_function(mjac, "djacobi_P0", rb_jac_djacobi_P0, 3);
   rb_define_module_function(mjac, "djacobi_P1_e", rb_jac_djacobi_P1_e, 3);
-  rb_define_module_function(mjac, "djacobi_P1", rb_jac_djacobi_P1, 3);      
-  rb_define_module_function(mjac, "djacobi", rb_jac_djacobi, 4);        
-  
-  rb_define_module_function(mjac, "jacobi_zeros", rb_jac_jacobi_zeros, -1);          
+  rb_define_module_function(mjac, "djacobi_P1", rb_jac_djacobi_P1, 3);
+  rb_define_module_function(mjac, "djacobi", rb_jac_djacobi, 4);
+
+  rb_define_module_function(mjac, "jacobi_zeros", rb_jac_jacobi_zeros, -1);
 
   /*****/
   rb_define_singleton_method(cjacq, "alloc", rb_jac_quadrature_alloc, 1);
   rb_define_method(cjacq, "Q", rb_jac_quadrature_Q, 0);
-  rb_define_method(cjacq, "type", rb_jac_quadrature_type, 0);  
-  rb_define_method(cjacq, "alpha", rb_jac_quadrature_alpha, 0);  
-  rb_define_method(cjacq, "beta", rb_jac_quadrature_beta, 0);      
+  rb_define_method(cjacq, "type", rb_jac_quadrature_type, 0);
+  rb_define_method(cjacq, "alpha", rb_jac_quadrature_alpha, 0);
+  rb_define_method(cjacq, "beta", rb_jac_quadrature_beta, 0);
   rb_define_method(cjacq, "x", rb_jac_quadrature_x, 0);
   rb_define_method(cjacq, "w", rb_jac_quadrature_w, 0);
   rb_define_method(cjacq, "D", rb_jac_quadrature_D, 0);
-  rb_define_method(cjacq, "xp", rb_jac_quadrature_xp, 0);    
-  rb_define_method(cjacq, "interpmat_alloc", rb_jac_interpmat_alloc, -1);        
+  rb_define_method(cjacq, "xp", rb_jac_quadrature_xp, 0);
+  rb_define_method(cjacq, "interpmat_alloc", rb_jac_interpmat_alloc, -1);
   rb_define_method(cjacq, "interpmat_free", rb_jac_interpmat_free, 0);
   rb_define_method(cjacq, "zwd", rb_jac_quadrature_zwd, -1);
   rb_define_method(cjacq, "integrate", rb_jac_integrate, 1);
   rb_define_method(cjacq, "interpolate", rb_jac_interpolate, -1);
-  rb_define_method(cjacq, "differentiate", rb_jac_differentiate, -1);  
+  rb_define_method(cjacq, "differentiate", rb_jac_differentiate, -1);
   /*****/
   rb_define_module_function(mjac, "diffmat_gj", rb_jac_diffmat_gj, -1);
-  rb_define_module_function(mjac, "diffmat_glj", rb_jac_diffmat_glj, -1);  
-  rb_define_module_function(mjac, "diffmat_grjm", rb_jac_diffmat_grjm, -1);  
+  rb_define_module_function(mjac, "diffmat_glj", rb_jac_diffmat_glj, -1);
+  rb_define_module_function(mjac, "diffmat_grjm", rb_jac_diffmat_grjm, -1);
   rb_define_module_function(mjac, "diffmat_grjp", rb_jac_diffmat_grjp, -1);
-  
-  rb_define_module_function(mjac, "weights_gj", rb_jac_weights_gj, -1);  
-  rb_define_module_function(mjac, "weights_glj", rb_jac_weights_glj, -1);  
-  rb_define_module_function(mjac, "weights_grjm", rb_jac_weights_grjm, -1);  
-  rb_define_module_function(mjac, "weights_grjp", rb_jac_weights_grjp, -1);  
 
-  rb_define_module_function(mjac, "zeros_gj", rb_jac_zeros_gj, -1);  
-  rb_define_module_function(mjac, "zeros_glj", rb_jac_zeros_glj, -1);  
-  rb_define_module_function(mjac, "zeros_grjm", rb_jac_zeros_grjm, -1);  
-  rb_define_module_function(mjac, "zeros_grjp", rb_jac_zeros_grjp, -1);  
-  
-  rb_define_module_function(mjac, "lagrange_gj", rb_jac_lagrange_gj, -1);    
-  rb_define_module_function(mjac, "lagrange_glj", rb_jac_lagrange_glj, -1);  
-  rb_define_module_function(mjac, "lagrange_grjm", rb_jac_lagrange_grjm, -1);  
-  rb_define_module_function(mjac, "lagrange_grjp", rb_jac_lagrange_grjp, -1);  
+  rb_define_module_function(mjac, "weights_gj", rb_jac_weights_gj, -1);
+  rb_define_module_function(mjac, "weights_glj", rb_jac_weights_glj, -1);
+  rb_define_module_function(mjac, "weights_grjm", rb_jac_weights_grjm, -1);
+  rb_define_module_function(mjac, "weights_grjp", rb_jac_weights_grjp, -1);
 
-  rb_define_module_function(mjac, "interpmat_gj", rb_jac_interpmat_gj, -1);  
-  rb_define_module_function(mjac, "interpmat_glj", rb_jac_interpmat_glj, -1);  
-  rb_define_module_function(mjac, "interpmat_grjm", rb_jac_interpmat_grjm, -1);  
-  rb_define_module_function(mjac, "interpmat_grjp", rb_jac_interpmat_grjp, -1);  
-  
+  rb_define_module_function(mjac, "zeros_gj", rb_jac_zeros_gj, -1);
+  rb_define_module_function(mjac, "zeros_glj", rb_jac_zeros_glj, -1);
+  rb_define_module_function(mjac, "zeros_grjm", rb_jac_zeros_grjm, -1);
+  rb_define_module_function(mjac, "zeros_grjp", rb_jac_zeros_grjp, -1);
+
+  rb_define_module_function(mjac, "lagrange_gj", rb_jac_lagrange_gj, -1);
+  rb_define_module_function(mjac, "lagrange_glj", rb_jac_lagrange_glj, -1);
+  rb_define_module_function(mjac, "lagrange_grjm", rb_jac_lagrange_grjm, -1);
+  rb_define_module_function(mjac, "lagrange_grjp", rb_jac_lagrange_grjp, -1);
+
+  rb_define_module_function(mjac, "interpmat_gj", rb_jac_interpmat_gj, -1);
+  rb_define_module_function(mjac, "interpmat_glj", rb_jac_interpmat_glj, -1);
+  rb_define_module_function(mjac, "interpmat_grjm", rb_jac_interpmat_grjm, -1);
+  rb_define_module_function(mjac, "interpmat_grjp", rb_jac_interpmat_grjp, -1);
+
 }
 
 #endif

@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require("gsl") 
+require("gsl")
 
 p = GSL::Permutation::alloc(10)
 p.init

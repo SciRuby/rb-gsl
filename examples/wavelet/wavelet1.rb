@@ -31,7 +31,7 @@ perm = data2.abs.sort_index
 i = 0
 while (i + nc) < n
   data2[perm[i]] = 0.0
-  i += 1  
+  i += 1
 end
 
 # Choose as you like...

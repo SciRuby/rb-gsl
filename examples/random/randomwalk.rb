@@ -17,7 +17,7 @@ sigma = Math::sqrt(N).to_i
 
 h = GSL::Histogram.alloc(8*sigma+1, [-4*sigma-0.5, 4*sigma+0.5])
 
-M.times do 
+M.times do
   s = 0
   N.times do
     ds = rng.get%2 == 0 ? 1 : -1
@@ -27,8 +27,8 @@ M.times do
 end
 
 x = GSL::Vector.linspace(-40, 40, 80)
-y = GSL::Ran::gaussian_pdf(x, sigma)*M*2  
-# Factor 2 is not important, but necessary 
+y = GSL::Ran::gaussian_pdf(x, sigma)*M*2
+# Factor 2 is not important, but necessary
 # because only the even ranges are filled:
 #   a + b = N     a: positive steps, b: negative steps
 #   a - b = s     s: the end point after the N steps

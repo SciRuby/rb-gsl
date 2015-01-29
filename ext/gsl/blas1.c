@@ -16,9 +16,9 @@
 
 static int get_vector1(int argc, VALUE *argv, VALUE obj, gsl_vector **x);
 static int get_vector_complex1(int argc, VALUE *argv, VALUE obj, gsl_vector_complex **x);
-static int get_vector2(int argc, VALUE *argv, VALUE obj, 
+static int get_vector2(int argc, VALUE *argv, VALUE obj,
            gsl_vector **x, gsl_vector **y);
-static int get_vector_complex2(int argc, VALUE *argv, VALUE obj, 
+static int get_vector_complex2(int argc, VALUE *argv, VALUE obj,
            gsl_vector_complex **x, gsl_vector_complex **y);
 
 static int get_vector1(int argc, VALUE *argv, VALUE obj, gsl_vector **x)
@@ -60,7 +60,7 @@ static int get_vector_complex1(int argc, VALUE *argv, VALUE obj, gsl_vector_comp
   return flag;
 }
 
-static int get_vector2(int argc, VALUE *argv, VALUE obj, 
+static int get_vector2(int argc, VALUE *argv, VALUE obj,
            gsl_vector **x, gsl_vector **y)
 {
   int flag = 0;
@@ -85,7 +85,7 @@ static int get_vector2(int argc, VALUE *argv, VALUE obj,
 }
 
 
-static int get_vector_complex2(int argc, VALUE *argv, VALUE obj, 
+static int get_vector_complex2(int argc, VALUE *argv, VALUE obj,
            gsl_vector_complex **x, gsl_vector_complex **y)
 {
   int flag = 0;

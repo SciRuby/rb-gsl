@@ -357,7 +357,7 @@ VALUE rb_gsl_sf_eval_int_int_double(double (*func)(int, int, double), VALUE jj,
   }
 }
 
-VALUE rb_gsl_sf_eval_int_double_double(double (*func)(int, double, double), VALUE jj, 
+VALUE rb_gsl_sf_eval_int_double_double(double (*func)(int, double, double), VALUE jj,
                VALUE ff, VALUE argv)
 {
   gsl_vector *v = NULL, *vnew = NULL;
@@ -495,7 +495,7 @@ VALUE rb_gsl_sf_eval_double_double(double (*func)(double, double), VALUE ff, VAL
   }
 }
 
-VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double), 
+VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double),
            VALUE ff, VALUE ff2, VALUE argv)
 {
   gsl_vector *v = NULL, *vnew = NULL;
@@ -566,7 +566,7 @@ VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double),
   }
 }
 
-VALUE rb_gsl_sf_eval_double4(double (*func)(double, double, double, double), 
+VALUE rb_gsl_sf_eval_double4(double (*func)(double, double, double, double),
            VALUE ff, VALUE ff2, VALUE ff3, VALUE argv)
 {
   gsl_vector *v = NULL, *vnew = NULL;
@@ -851,7 +851,7 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
   }
 }
 
-VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t), 
+VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
              VALUE argv, VALUE x2, VALUE m)
 {
   gsl_vector *v = NULL, *vnew = NULL;
@@ -927,7 +927,7 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
   }
 }
 
-VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t), 
+VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t),
              VALUE argv, VALUE x2, VALUE x3, VALUE m)
 {
   gsl_vector *v = NULL, *vnew = NULL;
@@ -1005,7 +1005,7 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
 }
 
 VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
-                gsl_mode_t), 
+                gsl_mode_t),
              VALUE argv, VALUE x2, VALUE x3, VALUE x4, VALUE m)
 {
   gsl_vector *v = NULL, *vnew = NULL;
@@ -1111,7 +1111,7 @@ VALUE rb_gsl_sf_eval_e_uint(int (*func)(unsigned int, gsl_sf_result*), VALUE x)
   return v;
 }
 
-VALUE rb_gsl_sf_eval_e_int_uint(int (*func)(int, unsigned int, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_int_uint(int (*func)(int, unsigned int, gsl_sf_result*),
         VALUE n, VALUE x)
 {
   gsl_sf_result *rslt = NULL;
@@ -1122,7 +1122,7 @@ VALUE rb_gsl_sf_eval_e_int_uint(int (*func)(int, unsigned int, gsl_sf_result*),
   return v;
 }
 
-VALUE rb_gsl_sf_eval_e_double_uint(int (*func)(double, unsigned int, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_double_uint(int (*func)(double, unsigned int, gsl_sf_result*),
         VALUE y, VALUE x)
 {
   gsl_sf_result *rslt = NULL;
@@ -1133,7 +1133,7 @@ VALUE rb_gsl_sf_eval_e_double_uint(int (*func)(double, unsigned int, gsl_sf_resu
   return v;
 }
 
-VALUE rb_gsl_sf_eval_e_int_double(int (*func)(int, double, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_int_double(int (*func)(int, double, gsl_sf_result*),
           VALUE n, VALUE x)
 {
   gsl_sf_result *rslt = NULL;
@@ -1145,7 +1145,7 @@ VALUE rb_gsl_sf_eval_e_int_double(int (*func)(int, double, gsl_sf_result*),
   return v;
 }
 
-VALUE rb_gsl_sf_eval_e_int_double2(int (*func)(int, double, double, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_int_double2(int (*func)(int, double, double, gsl_sf_result*),
           VALUE n, VALUE x1, VALUE x2)
 {
   gsl_sf_result *rslt = NULL;
@@ -1158,7 +1158,7 @@ VALUE rb_gsl_sf_eval_e_int_double2(int (*func)(int, double, double, gsl_sf_resul
 }
 
 
-VALUE rb_gsl_sf_eval_e_int_int_double(int (*func)(int, int, double, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_int_int_double(int (*func)(int, int, double, gsl_sf_result*),
               VALUE n1, VALUE n2, VALUE x)
 {
   gsl_sf_result *rslt = NULL;
@@ -1170,19 +1170,19 @@ VALUE rb_gsl_sf_eval_e_int_int_double(int (*func)(int, int, double, gsl_sf_resul
   return v;
 }
 
-VALUE rb_gsl_sf_eval_e_double2(int (*func)(double, double, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_double2(int (*func)(double, double, gsl_sf_result*),
           VALUE x1, VALUE x2)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
-  Need_Float(x1); Need_Float(x2); 
+  Need_Float(x1); Need_Float(x2);
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
   (*func)(NUM2DBL(x1), NUM2DBL(x2), rslt);
   return v;
 }
 
 
-VALUE rb_gsl_sf_eval_e_double3(int (*func)(double, double, double, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_double3(int (*func)(double, double, double, gsl_sf_result*),
           VALUE x1, VALUE x2, VALUE x3)
 {
   gsl_sf_result *rslt = NULL;
@@ -1193,7 +1193,7 @@ VALUE rb_gsl_sf_eval_e_double3(int (*func)(double, double, double, gsl_sf_result
   return v;
 }
 
-VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*),
        VALUE x, VALUE m)
 {
   gsl_mode_t mode;
@@ -1223,7 +1223,7 @@ VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*),
 }
 
 
-VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_result*),
        VALUE x1, VALUE x2, VALUE m)
 {
   gsl_mode_t mode;
@@ -1252,7 +1252,7 @@ VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_
   return v;
 }
 
-VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t, gsl_sf_result*),
        VALUE x1, VALUE x2, VALUE x3, VALUE m)
 {
   gsl_mode_t mode;
@@ -1282,7 +1282,7 @@ VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t,
 }
 
 
-VALUE rb_gsl_sf_eval_e_double4_m(int (*func)(double, double, double, double, gsl_mode_t, gsl_sf_result*), 
+VALUE rb_gsl_sf_eval_e_double4_m(int (*func)(double, double, double, double, gsl_mode_t, gsl_sf_result*),
        VALUE x1, VALUE x2, VALUE x3, VALUE x4, VALUE m)
 {
   gsl_mode_t mode;
@@ -1305,7 +1305,7 @@ VALUE rb_gsl_sf_eval_e_double4_m(int (*func)(double, double, double, double, gsl
     rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
        rb_class2name(CLASS_OF(m)));
     break;
-  }    
+  }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
   (*func)(NUM2DBL(x1), NUM2DBL(x2),NUM2DBL(x3), NUM2DBL(x4), mode, rslt);
   return v;
@@ -1412,9 +1412,9 @@ VALUE rb_gsl_sf_eval_complex(double (*f)(double), VALUE obj)
     }
     return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, mnew);
   } else {
-    rb_raise(rb_eTypeError, 
+    rb_raise(rb_eTypeError,
        "wrong argument type %s "
-       " (GSL::Complex or GSL::Vector::Complex expected)", 
+       " (GSL::Complex or GSL::Vector::Complex expected)",
        rb_class2name(CLASS_OF(obj)));
   }
 }
@@ -1424,7 +1424,7 @@ void Init_gsl_sf(VALUE module)
   VALUE mgsl_sf;
   mgsl_sf = rb_define_module_under(module, "Sf");
 
-  cgsl_sf_result = rb_define_class_under(mgsl_sf, "Result", 
+  cgsl_sf_result = rb_define_class_under(mgsl_sf, "Result",
            cGSL_Object);
   rb_define_singleton_method(cgsl_sf_result, "new", rb_gsl_sf_result_new,
            0);
@@ -1435,9 +1435,9 @@ void Init_gsl_sf(VALUE module)
   rb_define_method(cgsl_sf_result, "to_a", rb_gsl_sf_result_to_a, 0);
   rb_define_method(cgsl_sf_result, "to_s", rb_gsl_sf_result_to_s, 0);
 
-  cgsl_sf_result_e10 = rb_define_class_under(mgsl_sf, "Result_e10", 
+  cgsl_sf_result_e10 = rb_define_class_under(mgsl_sf, "Result_e10",
                cGSL_Object);
-  rb_define_singleton_method(cgsl_sf_result_e10, "new", 
+  rb_define_singleton_method(cgsl_sf_result_e10, "new",
            rb_gsl_sf_result_e10_new, 0);
   rb_define_method(cgsl_sf_result_e10, "val", rb_gsl_sf_result_e10_val, 0);
   rb_define_method(cgsl_sf_result_e10, "err", rb_gsl_sf_result_e10_err, 0);
@@ -1473,8 +1473,8 @@ void Init_gsl_sf(VALUE module)
   Init_gsl_sf_transport(mgsl_sf);
   Init_gsl_sf_trigonometric(mgsl_sf);
   Init_gsl_sf_zeta(mgsl_sf);
-  
-#ifdef GSL_1_9_LATER  
+
+#ifdef GSL_1_9_LATER
   Init_sf_mathieu(mgsl_sf);
 #endif
 }

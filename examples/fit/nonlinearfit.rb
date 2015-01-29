@@ -5,7 +5,7 @@ FFF = GSL::Function.alloc { |t, params|
   a = params[0]; lambda = params[1]; b = params[2]
   a*Math::exp(-lambda*t) + b
 }
-  
+
 procf = Proc.new { |x, t, y, sigma, f|
   a = x[0]; lambda = x[1]; b = x[2]
   FFF.set_params(x)

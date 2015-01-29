@@ -13,7 +13,7 @@
 
 static VALUE rb_gsl_sf_sin(VALUE obj, VALUE x)
 {
-  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x)) 
+  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x))
     return rb_gsl_math_complex_eval(gsl_complex_sin, x);
   return rb_gsl_sf_eval1(gsl_sf_sin, x);
 }
@@ -25,7 +25,7 @@ static VALUE rb_gsl_sf_sin_e(VALUE obj, VALUE x)
 
 static VALUE rb_gsl_sf_cos(VALUE obj, VALUE x)
 {
-  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x)) 
+  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x))
     return rb_gsl_math_complex_eval(gsl_complex_cos, x);
   return rb_gsl_sf_eval1(gsl_sf_cos, x);
 }

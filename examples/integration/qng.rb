@@ -6,7 +6,7 @@ include Math
 f = Function.alloc { |x| Math::sin(x)/x }
 
 p f.qng(0, 2.0*Math::PI)
- 
+
 # Singular at x = 0
 f2 = Function.alloc { |x| exp(-x)/sqrt(x) }
 

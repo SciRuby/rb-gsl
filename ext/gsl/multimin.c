@@ -57,10 +57,10 @@ static void set_function(int i, VALUE *argv, gsl_multimin_function *F);
 
 static void gsl_multimin_function_fdf_free(gsl_multimin_function_fdf *f);
 
-double rb_gsl_multimin_function_fdf_f(const gsl_vector *x, void *p); 
-void rb_gsl_multimin_function_fdf_df(const gsl_vector *x, void *p, 
+double rb_gsl_multimin_function_fdf_f(const gsl_vector *x, void *p);
+void rb_gsl_multimin_function_fdf_df(const gsl_vector *x, void *p,
              gsl_vector *g);
-void rb_gsl_multimin_function_fdf_fdf(const gsl_vector *x, void *p, 
+void rb_gsl_multimin_function_fdf_fdf(const gsl_vector *x, void *p,
               double *f, gsl_vector *g);
 static void set_function_fdf(int i, VALUE *argv, gsl_multimin_function_fdf *F);
 
@@ -148,7 +148,7 @@ static void set_function(int i, VALUE *argv, gsl_multimin_function *F)
   VALUE ary;
   ary = (VALUE) F->params;
   if (TYPE(argv[i]) == T_FIXNUM) F->n = FIX2INT(argv[i]);
-  else if (rb_obj_is_kind_of(argv[i], rb_cProc)) 
+  else if (rb_obj_is_kind_of(argv[i], rb_cProc))
     rb_ary_store(ary, 0, argv[i]);
   else if (TYPE(argv[i]) == T_ARRAY || rb_obj_is_kind_of(argv[i], cgsl_vector)
     || TYPE(argv[i]) == T_FIXNUM || TYPE(argv[i]) == T_FLOAT) {
@@ -384,7 +384,7 @@ double rb_gsl_multimin_function_fdf_f(const gsl_vector *x, void *p)
   return NUM2DBL(result);
 }
 
-void rb_gsl_multimin_function_fdf_df(const gsl_vector *x, void *p, 
+void rb_gsl_multimin_function_fdf_df(const gsl_vector *x, void *p,
              gsl_vector *g)
 {
   VALUE vx, vg, proc, vp, ary;
@@ -400,7 +400,7 @@ void rb_gsl_multimin_function_fdf_df(const gsl_vector *x, void *p,
   }
 }
 
-void rb_gsl_multimin_function_fdf_fdf(const gsl_vector *x, void *p, 
+void rb_gsl_multimin_function_fdf_fdf(const gsl_vector *x, void *p,
               double *f, gsl_vector *g)
 {
   VALUE vx, vg, proc_f, proc_df, vp, ary, result;
@@ -431,24 +431,24 @@ static VALUE rb_gsl_multimin_function_fdf_params(VALUE obj)
 
 static void define_const(VALUE klass1, VALUE klass2)
 {
-  rb_define_const(klass1, 
+  rb_define_const(klass1,
       "CONJUGATE_FR", INT2FIX(GSL_FDFMINIMIZER_CONJUGATE_FR));
-  rb_define_const(klass1, 
+  rb_define_const(klass1,
       "CONJUGATE_PR", INT2FIX(GSL_FDFMINIMIZER_CONJUGATE_PR));
-  rb_define_const(klass1, 
-      "VECTOR_BFGS", INT2FIX(GSL_FDFMINIMIZER_VECTOR_BFGS));  
-  rb_define_const(klass1, 
+  rb_define_const(klass1,
+      "VECTOR_BFGS", INT2FIX(GSL_FDFMINIMIZER_VECTOR_BFGS));
+  rb_define_const(klass1,
       "STEEPEST_DESCENT", INT2FIX(GSL_FDFMINIMIZER_STEEPEST_DESCENT));
 #ifdef GSL_1_3_LATER
-  rb_define_const(klass2, 
+  rb_define_const(klass2,
       "NMSIMPLEX", INT2FIX(GSL_FMINIMIZER_NMSIMPLEX));
 #endif
 #ifdef GSL_1_9_LATER
-  rb_define_const(klass1, 
+  rb_define_const(klass1,
       "VECTOR_BFGS2", INT2FIX(GSL_FDFMINIMIZER_VECTOR_BFGS2));
 #endif
 #ifdef GSL_1_13_LATER
-  rb_define_const(klass2, 
+  rb_define_const(klass2,
       "NMSIMPLEX2RAND", INT2FIX(GSL_FMINIMIZER_NMSIMPLEX2RAND));
 #endif
 }
@@ -459,16 +459,16 @@ static const gsl_multimin_fdfminimizer_type* get_fdfminimizer_type(VALUE t)
   switch (TYPE(t)) {
   case T_STRING:
     strcpy(name, STR2CSTR(t));
-    if (str_tail_grep(name, "conjugate_fr") == 0) 
+    if (str_tail_grep(name, "conjugate_fr") == 0)
       return gsl_multimin_fdfminimizer_conjugate_fr;
-    else if (str_tail_grep(name, "conjugate_pr") == 0) 
+    else if (str_tail_grep(name, "conjugate_pr") == 0)
       return gsl_multimin_fdfminimizer_conjugate_pr;
-    else if (str_tail_grep(name, "vector_bfgs") == 0) 
+    else if (str_tail_grep(name, "vector_bfgs") == 0)
       return gsl_multimin_fdfminimizer_vector_bfgs;
-    else if (str_tail_grep(name, "steepest_descent") == 0) 
+    else if (str_tail_grep(name, "steepest_descent") == 0)
       return gsl_multimin_fdfminimizer_steepest_descent;
 #ifdef GSL_1_9_LATER
-    else if (str_tail_grep(name, "vector_bfgs2") == 0) 
+    else if (str_tail_grep(name, "vector_bfgs2") == 0)
       return gsl_multimin_fdfminimizer_vector_bfgs2;
 #endif
     else
@@ -487,7 +487,7 @@ static const gsl_multimin_fdfminimizer_type* get_fdfminimizer_type(VALUE t)
 #ifdef GSL_1_9_LATER
     case GSL_FDFMINIMIZER_VECTOR_BFGS2:
       return gsl_multimin_fdfminimizer_vector_bfgs2; break;
-#endif      
+#endif
     default:
       rb_raise(rb_eTypeError, "%d: unknown type", FIX2INT(t));
       break;
@@ -508,7 +508,7 @@ static VALUE rb_gsl_fdfminimizer_new(VALUE klass, VALUE t, VALUE n)
   return Data_Wrap_Struct(klass, 0, gsl_multimin_fdfminimizer_free, gmf);
 }
 
-static VALUE rb_gsl_fdfminimizer_set(VALUE obj, VALUE ff, VALUE xx, VALUE ss, 
+static VALUE rb_gsl_fdfminimizer_set(VALUE obj, VALUE ff, VALUE xx, VALUE ss,
              VALUE tt)
 {
   gsl_multimin_fdfminimizer *gmf = NULL;
@@ -609,10 +609,10 @@ static const gsl_multimin_fminimizer_type* get_fminimizer_type(VALUE t)
   switch (TYPE(t)) {
   case T_STRING:
     strcpy(name, STR2CSTR(t));
-    if (str_tail_grep(name, "nmsimplex") == 0) 
+    if (str_tail_grep(name, "nmsimplex") == 0)
       return gsl_multimin_fminimizer_nmsimplex;
 #ifdef GSL_1_13_LATER
-    if (str_tail_grep(name, "nmsimplex2rand") == 0) 
+    if (str_tail_grep(name, "nmsimplex2rand") == 0)
       return gsl_multimin_fminimizer_nmsimplex2rand;
 #endif
     else
@@ -787,7 +787,7 @@ void Init_gsl_multimin(VALUE module)
   rb_define_method(cgsl_multimin_fminimizer, "iterate", rb_gsl_fminimizer_iterate, 0);
   rb_define_method(cgsl_multimin_fminimizer, "x", rb_gsl_fminimizer_x, 0);
   rb_define_method(cgsl_multimin_fminimizer, "fval", rb_gsl_fminimizer_fval, 0);
-  rb_define_method(cgsl_multimin_fminimizer, "minimum", rb_gsl_fminimizer_minimum, 0);  
+  rb_define_method(cgsl_multimin_fminimizer, "minimum", rb_gsl_fminimizer_minimum, 0);
     rb_define_method(cgsl_multimin_fminimizer, "size", rb_gsl_fminimizer_size, 0);
   rb_define_method(cgsl_multimin_fminimizer, "test_size", rb_gsl_fminimizer_test_size, 1);
 #endif

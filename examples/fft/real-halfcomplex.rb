@@ -11,7 +11,7 @@ end
 
 rtable = GSL::FFT::RealWavetable.alloc(n)
 rwork = GSL::FFT::RealWorkspace.alloc(n)
-  
+
 #ffted = data.real_transform(rtable, rwork)
 #ffted = data.real_transform(rtable)
 #ffted = data.real_transform(rwork)
@@ -22,9 +22,9 @@ ffted = data.real_transform()
 for i in 11...n do
   ffted[i] = 0.0
 end
-  
+
 hctable = GSL::FFT::HalfComplexWavetable.alloc(n)
-  
+
 #data2 = ffted.halfcomplex_inverse(hctable, rwork)
 #data2 = ffted.halfcomplex_inverse()
 #data2 = ffted.ifft

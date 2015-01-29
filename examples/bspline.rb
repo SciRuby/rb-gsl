@@ -19,15 +19,15 @@ w = GSL::Vector.alloc(N)
 for i in 0...N do
   xi = (15.0/(N-1)/1)*i
   yi = Math::cos(xi)*Math::exp(-0.1*xi)
-  
+
   sigma = 0.1
   dy = GSL::Ran.gaussian(r, sigma)
   yi += dy
-  
+
   x[i] = xi
   y[i] = yi
   w[i] = sigma
-  
+
 #  printf("%f %f\n", xi, yi)
 end
 

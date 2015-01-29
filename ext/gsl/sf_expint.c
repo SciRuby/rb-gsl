@@ -205,7 +205,7 @@ void Init_gsl_sf_expint(VALUE module)
   rb_define_module_function(module, "expint_En",  rb_gsl_sf_expint_En, 2);
   rb_define_module_function(mgsl_sf_expint, "En",  rb_gsl_sf_expint_En, 2);
   rb_define_module_function(module, "expint_En_e",  rb_gsl_sf_expint_En_e, 2);
-  rb_define_module_function(mgsl_sf_expint, "En_e",  rb_gsl_sf_expint_En_e, 2);  
+  rb_define_module_function(mgsl_sf_expint, "En_e",  rb_gsl_sf_expint_En_e, 2);
 #endif
 
 }

@@ -18,7 +18,7 @@ class Array
   end
   def to_gsplot
     f = ""
-    
+
     if ( self[0].kind_of? Array ) then
       x = self[0]
       y = self[1]
@@ -35,7 +35,7 @@ class Array
     else
       self[0].zip( *self[1..-1] ).to_gsplot
     end
-    
+
     f
   end
 end

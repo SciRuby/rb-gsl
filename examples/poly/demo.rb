@@ -6,7 +6,7 @@ include GSL
 poly = Poly[1.5, -1.25, -3.75, 0, 1]
 # Solve the equation p(x) == 0
 root = poly.solve    # Vector::Complex
-# Extract only the real parts 
+# Extract only the real parts
 # (imaginary parts are zero for this case)
 re = root.real       # Vector::View
 

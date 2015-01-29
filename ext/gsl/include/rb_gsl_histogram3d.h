@@ -17,7 +17,7 @@ typedef struct {
 mygsl_histogram3d* mygsl_histogram3d_alloc(const size_t nx, const size_t ny,
              const size_t nz);
 void mygsl_histogram3d_free (mygsl_histogram3d * h);
-mygsl_histogram3d* mygsl_histogram3d_calloc_uniform(const size_t nx, 
+mygsl_histogram3d* mygsl_histogram3d_calloc_uniform(const size_t nx,
                 const size_t ny,
                 const size_t nz,
                 const double xmin,
@@ -26,14 +26,14 @@ mygsl_histogram3d* mygsl_histogram3d_calloc_uniform(const size_t nx,
                 const double ymax,
                 const double zmin,
                 const double zmax);
-mygsl_histogram3d* mygsl_histogram3d_calloc(const size_t nx, 
+mygsl_histogram3d* mygsl_histogram3d_calloc(const size_t nx,
               const size_t ny,
               const size_t nz);
-int mygsl_histogram3d_set_ranges_uniform (mygsl_histogram3d * h, 
+int mygsl_histogram3d_set_ranges_uniform (mygsl_histogram3d * h,
             double xmin, double xmax,
             double ymin, double ymax,
             double zmin, double zmax);
-int mygsl_histogram3d_set_ranges (mygsl_histogram3d * h, 
+int mygsl_histogram3d_set_ranges (mygsl_histogram3d * h,
           const double xrange[], size_t xsize,
           const double yrange[], size_t ysize,
           const double zrange[], size_t zsize);
@@ -42,19 +42,19 @@ mygsl_histogram3d* mygsl_histogram3d_clone(const mygsl_histogram3d * src);
 int mygsl_histogram3d_fread(FILE * stream, mygsl_histogram3d * h);
 int mygsl_histogram3d_fwrite(FILE * stream, const mygsl_histogram3d * h);
 int mygsl_histogram3d_increment(mygsl_histogram3d * h, double x, double y, double z);
-int mygsl_histogram3d_accumulate (mygsl_histogram3d * h, 
+int mygsl_histogram3d_accumulate (mygsl_histogram3d * h,
           double x, double y, double z, double weight);
-int mygsl_histogram3d_increment2(mygsl_histogram3d * h, 
+int mygsl_histogram3d_increment2(mygsl_histogram3d * h,
          double x, double y, double z);
-int mygsl_histogram3d_accumulate2(mygsl_histogram3d * h, 
+int mygsl_histogram3d_accumulate2(mygsl_histogram3d * h,
           double x, double y, double z, double weight);
-double mygsl_histogram3d_get (const mygsl_histogram3d * h, const size_t i, 
+double mygsl_histogram3d_get (const mygsl_histogram3d * h, const size_t i,
             const size_t j, const size_t k);
-int mygsl_histogram3d_get_xrange(const mygsl_histogram3d * h, const size_t i,  
+int mygsl_histogram3d_get_xrange(const mygsl_histogram3d * h, const size_t i,
          double *xlower, double *xupper);
-int mygsl_histogram3d_get_yrange(const mygsl_histogram3d * h, const size_t j,  
+int mygsl_histogram3d_get_yrange(const mygsl_histogram3d * h, const size_t j,
          double *ylower, double *yupper);
-int mygsl_histogram3d_get_zrange(const mygsl_histogram3d * h, const size_t k,  
+int mygsl_histogram3d_get_zrange(const mygsl_histogram3d * h, const size_t k,
          double *zlower, double *zupper);
 int mygsl_histogram3d_find (const mygsl_histogram3d * h,
           const double x, const double y, const double z,
@@ -74,10 +74,10 @@ double mygsl_histogram3d_ymin(const mygsl_histogram3d * h);
 double mygsl_histogram3d_zmax(const mygsl_histogram3d * h);
 double mygsl_histogram3d_zmin(const mygsl_histogram3d * h);
 double mygsl_histogram3d_max_val(const mygsl_histogram3d * h);
-void mygsl_histogram3d_max_bin(const mygsl_histogram3d * h, 
+void mygsl_histogram3d_max_bin(const mygsl_histogram3d * h,
              size_t *imax_out, size_t *jmax_out, size_t *kmax_out);
 double mygsl_histogram3d_min_val(const mygsl_histogram3d * h);
-void mygsl_histogram3d_min_bin(const mygsl_histogram3d * h, 
+void mygsl_histogram3d_min_bin(const mygsl_histogram3d * h,
              size_t *imin_out, size_t *jmin_out, size_t *kmin_out);
 double mygsl_histogram3d_sum (const mygsl_histogram3d * h);
 double mygsl_histogram3d_xmean (const mygsl_histogram3d * h);

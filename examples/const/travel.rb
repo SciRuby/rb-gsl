@@ -8,8 +8,8 @@ c  = SPEED_OF_LIGHT;
 au = ASTRONOMICAL_UNIT;
 minutes = MINUTE;
 
-# distance stored in meters 
-r_earth = 1.00 * au;  
+# distance stored in meters
+r_earth = 1.00 * au;
 r_mars  = 1.52 * au;
 
 t_min = (r_mars - r_earth) / c;
@@ -30,8 +30,8 @@ c  = SPEED_OF_LIGHT;
 au = ASTRONOMICAL_UNIT;
 minutes = MINUTE;
 
-# distance stored in meters 
-r_earth = 1.00 * au;  
+# distance stored in meters
+r_earth = 1.00 * au;
 r_mars  = 1.52 * au;
 
 t_min = (r_mars - r_earth) / c;

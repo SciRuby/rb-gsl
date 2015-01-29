@@ -58,8 +58,8 @@ typedef struct __rb_gsl_plot {
   VALUE reposition;
   VALUE blankout;
   VALUE O;
-  VALUE X, Y; 
-  
+  VALUE X, Y;
+
 } gsl_graph;
 
 gsl_graph* gsl_graph_new();

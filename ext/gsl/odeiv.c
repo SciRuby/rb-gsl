@@ -101,10 +101,10 @@ static int calc_func(double t, const double y[], double dydt[], void *data)
   vy = Data_Wrap_Struct(cgsl_vector_view_ro, 0, NULL, &ytmp);
   vdydt = Data_Wrap_Struct(cgsl_vector_view, 0, NULL, &dydttmp);
 
-  if (NIL_P(params)) /*result =*/ rb_funcall((VALUE) proc, RBGSL_ID_call, 3, rb_float_new(t), 
+  if (NIL_P(params)) /*result =*/ rb_funcall((VALUE) proc, RBGSL_ID_call, 3, rb_float_new(t),
            vy, vdydt);
   else /*result =*/ rb_funcall((VALUE) proc, RBGSL_ID_call, 4, rb_float_new(t), vy, vdydt, params);
- 
+
   return GSL_SUCCESS;
 }
 
@@ -118,7 +118,7 @@ static int calc_jac(double t, const double y[], double *dfdy, double dfdt[], voi
   gsl_vector_view ytmp, dfdttmp;
   gsl_matrix_view mv;
   size_t dim;
-  
+
   ary = (VALUE) data;
   proc = rb_ary_entry(ary, 1);
   if (NIL_P(proc)) rb_raise(rb_eRuntimeError, "df function not given");
@@ -138,7 +138,7 @@ static int calc_jac(double t, const double y[], double *dfdy, double dfdt[], voi
   vdfdt = Data_Wrap_Struct(cgsl_vector_view, 0, NULL, &dfdttmp);
   if (NIL_P(params)) /*result =*/ rb_funcall((VALUE) proc, RBGSL_ID_call, 4, rb_float_new(t),
            vy, vmjac, vdfdt);
-  else /*result =*/ rb_funcall((VALUE) proc, RBGSL_ID_call, 5, rb_float_new(t), 
+  else /*result =*/ rb_funcall((VALUE) proc, RBGSL_ID_call, 5, rb_float_new(t),
          vy, vmjac, vdfdt, params);
   return GSL_SUCCESS;
 }
@@ -227,10 +227,10 @@ static void set_sys(int argc, VALUE *argv, gsl_odeiv_system *sys)
   }
   dimension = FIX2INT(dim);
   sys->dimension = dimension;
-  rb_ary_store(ary, 0, argv[0]); 
+  rb_ary_store(ary, 0, argv[0]);
   rb_ary_store(ary, 1, vjac);
-  rb_ary_store(ary, 2, dim);  
-  rb_ary_store(ary, 3, vparams); 
+  rb_ary_store(ary, 2, dim);
+  rb_ary_store(ary, 3, vparams);
 }
 
 static VALUE rb_gsl_odeiv_system_set_params(int argc, VALUE *argv, VALUE obj);
@@ -254,7 +254,7 @@ static VALUE rb_gsl_odeiv_system_set_params(int argc, VALUE *argv, VALUE obj)
     for (i = 0; (int) i < argc; i++) rb_ary_store(vparams, i, argv[i]);
   }
   //  rb_ary_delete_at(ary, 3);
-  rb_ary_store(ary, 3, vparams); 
+  rb_ary_store(ary, 3, vparams);
   return obj;
 }
 
@@ -440,7 +440,7 @@ static VALUE rb_gsl_odeiv_step_apply(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(argv[2], gsl_vector, y);
   Data_Get_Struct(argv[3], gsl_vector, yerr);
   Data_Get_Struct(argv[argc-1], gsl_odeiv_system, sys);
-  return INT2FIX(gsl_odeiv_step_apply(s, t, h, y->data, yerr->data, 
+  return INT2FIX(gsl_odeiv_step_apply(s, t, h, y->data, yerr->data,
               dydt_in, dydt_out, sys));
 }
 
@@ -456,26 +456,26 @@ static VALUE rb_gsl_odeiv_step_info(VALUE obj)
   return rb_str_new2(buf);
 }
 
-static gsl_odeiv_control* make_control_standard(VALUE epsabs, 
+static gsl_odeiv_control* make_control_standard(VALUE epsabs,
                  VALUE epsrel,
             VALUE ay, VALUE adydt);
 static gsl_odeiv_control* make_control_y(VALUE epsabs, VALUE epsrel);
-static VALUE rb_gsl_odeiv_control_standard_new(VALUE klass, VALUE epsabs, 
+static VALUE rb_gsl_odeiv_control_standard_new(VALUE klass, VALUE epsabs,
                  VALUE epsrel,
                  VALUE ay, VALUE adydt)
 {
   gsl_odeiv_control *c = NULL;
-  c = make_control_standard(epsabs, epsrel, ay, adydt); 
+  c = make_control_standard(epsabs, epsrel, ay, adydt);
   return Data_Wrap_Struct(klass, 0, gsl_odeiv_control_free, c);
 }
 
-static gsl_odeiv_control* make_control_standard(VALUE epsabs, 
+static gsl_odeiv_control* make_control_standard(VALUE epsabs,
                  VALUE epsrel,
                  VALUE ay, VALUE adydt)
 {
   Need_Float(epsabs); Need_Float(epsrel);
   Need_Float(ay);   Need_Float(adydt);
-  return gsl_odeiv_control_standard_new(NUM2DBL(epsabs), NUM2DBL(epsrel), 
+  return gsl_odeiv_control_standard_new(NUM2DBL(epsabs), NUM2DBL(epsrel),
           NUM2DBL(ay), NUM2DBL(adydt));
 }
 
@@ -485,7 +485,7 @@ static gsl_odeiv_control* make_control_y(VALUE epsabs, VALUE epsrel)
   return gsl_odeiv_control_y_new(NUM2DBL(epsabs), NUM2DBL(epsrel));
 }
 
-static VALUE rb_gsl_odeiv_control_y_new(VALUE klass, VALUE epsabs, 
+static VALUE rb_gsl_odeiv_control_y_new(VALUE klass, VALUE epsabs,
           VALUE epsrel)
 {
   gsl_odeiv_control *c = NULL;
@@ -493,7 +493,7 @@ static VALUE rb_gsl_odeiv_control_y_new(VALUE klass, VALUE epsabs,
   return Data_Wrap_Struct(klass, 0, gsl_odeiv_control_free, c);
 }
 
-static VALUE rb_gsl_odeiv_control_yp_new(VALUE klass, VALUE epsabs, 
+static VALUE rb_gsl_odeiv_control_yp_new(VALUE klass, VALUE epsabs,
            VALUE epsrel)
 {
   gsl_odeiv_control *c = NULL;
@@ -503,7 +503,7 @@ static VALUE rb_gsl_odeiv_control_yp_new(VALUE klass, VALUE epsabs,
 }
 
 #ifdef GSL_1_2_LATER
-static VALUE rb_gsl_odeiv_control_scaled_new(VALUE klass, VALUE epsabs, 
+static VALUE rb_gsl_odeiv_control_scaled_new(VALUE klass, VALUE epsabs,
                VALUE epsrel,
                VALUE ay, VALUE adydt,
                VALUE sc, VALUE dd)
@@ -515,14 +515,14 @@ static VALUE rb_gsl_odeiv_control_scaled_new(VALUE klass, VALUE epsabs,
   CHECK_FIXNUM(dd);
   CHECK_VECTOR(sc);
   Data_Get_Struct(sc, gsl_vector, v);
-  c = gsl_odeiv_control_scaled_new(NUM2DBL(epsabs), NUM2DBL(epsrel), 
+  c = gsl_odeiv_control_scaled_new(NUM2DBL(epsabs), NUM2DBL(epsrel),
            NUM2DBL(ay), NUM2DBL(adydt), v->data,
            FIX2INT(dd));
   return Data_Wrap_Struct(klass, 0, gsl_odeiv_control_free, c);
 }
 #endif
 
-static VALUE rb_gsl_odeiv_control_init(VALUE obj, VALUE epsabs, 
+static VALUE rb_gsl_odeiv_control_init(VALUE obj, VALUE epsabs,
                VALUE epsrel,
                VALUE ay, VALUE adydt)
 {
@@ -530,7 +530,7 @@ static VALUE rb_gsl_odeiv_control_init(VALUE obj, VALUE epsabs,
   Need_Float(epsabs); Need_Float(epsrel);
   Need_Float(ay);   Need_Float(adydt);
   Data_Get_Struct(obj, gsl_odeiv_control, c);
-  gsl_odeiv_control_init(c, NUM2DBL(epsabs), NUM2DBL(epsrel), 
+  gsl_odeiv_control_init(c, NUM2DBL(epsabs), NUM2DBL(epsrel),
        NUM2DBL(ay), NUM2DBL(adydt));
   return obj;
 }
@@ -559,13 +559,13 @@ static VALUE rb_gsl_odeiv_control_hadjust(VALUE obj, VALUE ss, VALUE yy0,
   Data_Get_Struct(yyerr, gsl_vector, yerr);
   Data_Get_Struct(ddydt, gsl_vector, dydt);
   h = NUM2DBL(hh);
-  status = gsl_odeiv_control_hadjust(c, s, y0->data, yerr->data, 
+  status = gsl_odeiv_control_hadjust(c, s, y0->data, yerr->data,
              dydt->data, &h);
   return rb_ary_new3(2, rb_float_new(h), INT2FIX(status));
 }
 
 static gsl_odeiv_evolve* make_evolve(VALUE dim);
-static VALUE rb_gsl_odeiv_evolve_new(VALUE klass, VALUE dim) 
+static VALUE rb_gsl_odeiv_evolve_new(VALUE klass, VALUE dim)
 {
   gsl_odeiv_evolve *e = NULL;
   e = make_evolve(dim);
@@ -654,7 +654,7 @@ static VALUE rb_gsl_odeiv_evolve_apply(VALUE obj, VALUE cc, VALUE ss, VALUE sss,
   if (NIL_P(cc)) {
     c = NULL;
   } else {
-    CHECK_CONTROL(cc); 
+    CHECK_CONTROL(cc);
     Data_Get_Struct(cc, gsl_odeiv_control, c);
   }
   Data_Get_Struct(ss, gsl_odeiv_step, s);
@@ -788,7 +788,7 @@ static VALUE rb_gsl_odeiv_solver_set_sys(VALUE obj, VALUE ss)
   return obj;
 }
 
-static VALUE rb_gsl_odeiv_solver_apply(VALUE obj, VALUE tt, VALUE tt1, VALUE hh, 
+static VALUE rb_gsl_odeiv_solver_apply(VALUE obj, VALUE tt, VALUE tt1, VALUE hh,
                VALUE yy)
 {
   gsl_odeiv_solver *gos = NULL;
@@ -803,7 +803,7 @@ static VALUE rb_gsl_odeiv_solver_apply(VALUE obj, VALUE tt, VALUE tt1, VALUE hh,
       if (TYPE(hh) != T_FLOAT) rb_raise(rb_eTypeError, "argument 2 Float expected");*/
   t = NUM2DBL(tt);
   h = NUM2DBL(hh);
-  status = gsl_odeiv_evolve_apply(gos->e, gos->c, gos->s, 
+  status = gsl_odeiv_evolve_apply(gos->e, gos->c, gos->s,
           gos->sys, &t, NUM2DBL(tt1), &h, y->data);
   /*  RFLOAT(tt)->value = t;
       RFLOAT(hh)->value = h;
@@ -836,7 +836,7 @@ static VALUE rb_gsl_odeiv_solver_set_params(int argc, VALUE *argv, VALUE obj)
 {
   gsl_odeiv_solver *gos = NULL;
   Data_Get_Struct(obj, gsl_odeiv_solver, gos);
-  rb_gsl_odeiv_system_set_params(argc, argv, 
+  rb_gsl_odeiv_system_set_params(argc, argv,
          Data_Wrap_Struct(cgsl_odeiv_system, 0, NULL, gos->sys));
   return obj;
 }
@@ -857,7 +857,7 @@ void Init_gsl_odeiv(VALUE module)
   rb_define_const(mgsl_odeiv, "HADJ_DEC", INT2FIX(GSL_ODEIV_HADJ_DEC));
   rb_define_const(mgsl_odeiv, "HADJ_INC", INT2FIX(GSL_ODEIV_HADJ_INC));
   rb_define_const(mgsl_odeiv, "HADJ_NIL", INT2FIX(GSL_ODEIV_HADJ_NIL));
-  cgsl_odeiv_step = rb_define_class_under(mgsl_odeiv, "Step", 
+  cgsl_odeiv_step = rb_define_class_under(mgsl_odeiv, "Step",
               cGSL_Object);
   rb_define_singleton_method(cgsl_odeiv_step, "alloc", rb_gsl_odeiv_step_new, -1);
 
@@ -885,7 +885,7 @@ void Init_gsl_odeiv(VALUE module)
 
   /****/
 
-  cgsl_odeiv_control = rb_define_class_under(mgsl_odeiv, "Control", 
+  cgsl_odeiv_control = rb_define_class_under(mgsl_odeiv, "Control",
               cGSL_Object);
   rb_define_singleton_method(cgsl_odeiv_control, "alloc", rb_gsl_odeiv_control_standard_new, 4);
   rb_define_singleton_method(cgsl_odeiv_control, "standard_alloc", rb_gsl_odeiv_control_standard_new, 4);
@@ -900,7 +900,7 @@ void Init_gsl_odeiv(VALUE module)
   rb_define_method(cgsl_odeiv_control, "hadjust", rb_gsl_odeiv_control_hadjust, 5);
 
  /****/
-  cgsl_odeiv_evolve = rb_define_class_under(mgsl_odeiv, "Evolve", 
+  cgsl_odeiv_evolve = rb_define_class_under(mgsl_odeiv, "Evolve",
                cGSL_Object);
   rb_define_singleton_method(cgsl_odeiv_evolve, "alloc", rb_gsl_odeiv_evolve_new, 1);
 
@@ -914,18 +914,18 @@ void Init_gsl_odeiv(VALUE module)
   rb_define_method(cgsl_odeiv_evolve, "yerr", rb_gsl_odeiv_evolve_yerr, 0);
   /*****/
 
-  cgsl_odeiv_system = rb_define_class_under(mgsl_odeiv, "System", 
+  cgsl_odeiv_system = rb_define_class_under(mgsl_odeiv, "System",
               cGSL_Object);
   rb_define_singleton_method(cgsl_odeiv_system, "alloc", rb_gsl_odeiv_system_new, -1);
   rb_define_method(cgsl_odeiv_system, "set", rb_gsl_odeiv_system_set, -1);
-  rb_define_method(cgsl_odeiv_system, "set_params", 
+  rb_define_method(cgsl_odeiv_system, "set_params",
            rb_gsl_odeiv_system_set_params, -1);
-  rb_define_method(cgsl_odeiv_system, "params", 
+  rb_define_method(cgsl_odeiv_system, "params",
            rb_gsl_odeiv_system_params, 0);
-  rb_define_method(cgsl_odeiv_system, "function", 
+  rb_define_method(cgsl_odeiv_system, "function",
            rb_gsl_odeiv_system_function, 0);
   rb_define_alias(cgsl_odeiv_system, "func", "function");
-  rb_define_method(cgsl_odeiv_system, "jacobian", 
+  rb_define_method(cgsl_odeiv_system, "jacobian",
            rb_gsl_odeiv_system_jacobian, 0);
   rb_define_alias(cgsl_odeiv_system, "jac", "jacobian");
   rb_define_method(cgsl_odeiv_system, "dimension", rb_gsl_odeiv_system_dimension, 0);

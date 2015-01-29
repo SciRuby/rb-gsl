@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require("gsl") 
+require("gsl")
 
 p GSL::pow_int(8, 3)
 p 8*8*8.0

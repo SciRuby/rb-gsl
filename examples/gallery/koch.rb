@@ -15,7 +15,7 @@ def koch(x, y, theta, size, order, file)
     x, y = koch(x, y, theta, size/3, order-1, file)
     theta += Math::PI/3
     x, y = koch(x, y, theta, size/3, order-1, file)
-    theta -= 2.0*Math::PI/3    
+    theta -= 2.0*Math::PI/3
     x, y = koch(x, y, theta, size/3, order-1, file)
     theta += Math::PI/3
     x, y = koch(x, y, theta, size/3, order-1, file)

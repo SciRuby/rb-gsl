@@ -43,7 +43,7 @@ static VALUE rb_dirac_commute(VALUE obj, VALUE mm1, VALUE mm2)
   gsl_matrix_complex_mul(mnew2, m2, m1);
   gsl_matrix_complex_sub(mnew1, mnew2);
   gsl_matrix_complex_free(mnew2);
-  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, 
+  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free,
         mnew1);
 }
 
@@ -61,7 +61,7 @@ static VALUE rb_dirac_anticommute(VALUE obj, VALUE mm1, VALUE mm2)
   gsl_matrix_complex_mul(mnew2, m2, m1);
   gsl_matrix_complex_add(mnew1, mnew2);
   gsl_matrix_complex_free(mnew2);
-  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, 
+  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free,
         mnew1);
 }
 
@@ -88,7 +88,7 @@ static void define_eye(VALUE module)
   gsl_complex z;
 
   Eye2 = gsl_matrix_complex_calloc(2, 2);
-  VEye2 = Data_Wrap_Struct(cgsl_matrix_complex_const, 0, 
+  VEye2 = Data_Wrap_Struct(cgsl_matrix_complex_const, 0,
          gsl_matrix_complex_free, Eye2);
   z.dat[0] = 1; z.dat[1] = 0;
   gsl_matrix_complex_set(Eye2, 0, 0, z);
@@ -96,7 +96,7 @@ static void define_eye(VALUE module)
   rb_define_const(module, "Eye2", VEye2);
 
   Eye4 = gsl_matrix_complex_calloc(4, 4);
-  VEye4 = Data_Wrap_Struct(cgsl_matrix_complex_const, 0, 
+  VEye4 = Data_Wrap_Struct(cgsl_matrix_complex_const, 0,
          gsl_matrix_complex_free, Eye4);
   z.dat[0] = 1; z.dat[1] = 0;
   gsl_matrix_complex_set(Eye4, 0, 0, z);
@@ -106,7 +106,7 @@ static void define_eye(VALUE module)
   rb_define_const(module, "Eye4", VEye4);
 
   IEye2 = gsl_matrix_complex_calloc(2, 2);
-  VIEye2 = Data_Wrap_Struct(cgsl_matrix_complex_const, 0, 
+  VIEye2 = Data_Wrap_Struct(cgsl_matrix_complex_const, 0,
           gsl_matrix_complex_free, IEye2);
   z.dat[0] = 0; z.dat[1] = 1;
   gsl_matrix_complex_set(IEye2, 0, 0, z);
@@ -114,7 +114,7 @@ static void define_eye(VALUE module)
   rb_define_const(module, "IEye2", VIEye2);
 
   IEye4 = gsl_matrix_complex_calloc(4, 4);
-  VIEye4 = Data_Wrap_Struct(cgsl_matrix_complex_const, 0, 
+  VIEye4 = Data_Wrap_Struct(cgsl_matrix_complex_const, 0,
          gsl_matrix_complex_free, IEye4);
   gsl_matrix_complex_set(IEye4, 0, 0, z);
   gsl_matrix_complex_set(IEye4, 1, 1, z);
@@ -128,7 +128,7 @@ static void define_pauli(VALUE module)
   gsl_complex z;
 
   Pauli[0] = gsl_matrix_complex_calloc(2, 2);
-  VPauli[0] = Data_Wrap_Struct(cPauli, 0, 
+  VPauli[0] = Data_Wrap_Struct(cPauli, 0,
          gsl_matrix_complex_free, Pauli[0]);
   z.dat[0] = 1; z.dat[1] = 0;
   gsl_matrix_complex_set(Pauli[0], 0, 1, z);
@@ -136,7 +136,7 @@ static void define_pauli(VALUE module)
   rb_define_const(module, "Pauli1", VPauli[0]);
 
   Pauli[1] = gsl_matrix_complex_calloc(2, 2);
-  VPauli[1] = Data_Wrap_Struct(cPauli, 0, 
+  VPauli[1] = Data_Wrap_Struct(cPauli, 0,
          gsl_matrix_complex_free, Pauli[1]);
   z.dat[0] = 0; z.dat[1] = -1;
   gsl_matrix_complex_set(Pauli[1], 0, 1, z);
@@ -145,7 +145,7 @@ static void define_pauli(VALUE module)
   rb_define_const(module, "Pauli2", VPauli[1]);
 
   Pauli[2] = gsl_matrix_complex_calloc(2, 2);
-  VPauli[2] = Data_Wrap_Struct(cPauli, 0, 
+  VPauli[2] = Data_Wrap_Struct(cPauli, 0,
          gsl_matrix_complex_free, Pauli[2]);
   z.dat[0] = 1; z.dat[1] = 0;
   gsl_matrix_complex_set(Pauli[2], 0, 0, z);
@@ -159,7 +159,7 @@ static void define_beta(VALUE module)
   gsl_complex z;
 
   Beta = gsl_matrix_complex_calloc(4, 4);
-  VGamma[0] = Data_Wrap_Struct(cGamma, 0, 
+  VGamma[0] = Data_Wrap_Struct(cGamma, 0,
          gsl_matrix_complex_free, Beta);
   z.dat[0] = 1; z.dat[1] = 0;
   gsl_matrix_complex_set(Beta, 0, 0, z);
@@ -180,22 +180,22 @@ static void define_alpha(VALUE module)
 
     for (j = 2; j < 4; j++) {
       for (k = 0; k < 2; k++) {
-        gsl_matrix_complex_set(Alpha[i], j, k, 
+        gsl_matrix_complex_set(Alpha[i], j, k,
           gsl_matrix_complex_get(Pauli[i], j-2, k));
       }
     }
     for (j = 0; j < 2; j++) {
       for (k = 2; k < 4; k++) {
-        gsl_matrix_complex_set(Alpha[i], j, k, 
+        gsl_matrix_complex_set(Alpha[i], j, k,
           gsl_matrix_complex_get(Pauli[i], j, k-2));
       }
     }
-    VAlpha[i] = Data_Wrap_Struct(cAlpha, 0, 
+    VAlpha[i] = Data_Wrap_Struct(cAlpha, 0,
           gsl_matrix_complex_free, Alpha[i]);
     sprintf(name, "Alpha%d", (int) i+1);
     rb_define_const(module, name, VAlpha[i]);
   }
-  
+
 }
 
 static void define_gamma(VALUE module)
@@ -206,7 +206,7 @@ static void define_gamma(VALUE module)
   for (i = 1; i <= 3; i++) {
     Gamma[i] = gsl_matrix_complex_calloc(4, 4);
     gsl_matrix_complex_mul(Gamma[i], Beta, Alpha[i-1]);
-    VGamma[i] = Data_Wrap_Struct(cGamma, 0, 
+    VGamma[i] = Data_Wrap_Struct(cGamma, 0,
           gsl_matrix_complex_free, Gamma[i]);
     sprintf(name, "Gamma%d", (int) i);
     rb_define_const(module, name, VGamma[i]);
@@ -217,7 +217,7 @@ static void define_gamma(VALUE module)
   gsl_matrix_complex_set(Gamma[4], 1, 3, z);
   gsl_matrix_complex_set(Gamma[4], 2, 0, z);
   gsl_matrix_complex_set(Gamma[4], 3, 1, z);
-  VGamma[4] = Data_Wrap_Struct(cGamma, 0, 
+  VGamma[4] = Data_Wrap_Struct(cGamma, 0,
         gsl_matrix_complex_free, Gamma[4]);
   rb_define_const(module, "Gamma5", VGamma[4]);
 }
@@ -234,7 +234,7 @@ static void define_lambda(VALUE module)
   zmi.dat[0] = 0; zmi.dat[1] = -1;
   for (i = 0; i < 8; i++) {
     Lambda[i] = gsl_matrix_complex_calloc(3, 3);
-    VLambda[i] = Data_Wrap_Struct(cLambda, 0, 
+    VLambda[i] = Data_Wrap_Struct(cLambda, 0,
           gsl_matrix_complex_free, Lambda[i]);
     sprintf(name, "Lambda%d", (int) i+1);
     rb_define_const(module, name, VLambda[i]);
@@ -332,13 +332,13 @@ static VALUE rb_Dirac_matrix_is_equal(int argc, VALUE *argv, VALUE obj)
 #define NUM 20
 static VALUE rb_Dirac_matrix_whoami(int argc, VALUE *argv, VALUE obj)
 {
-  VALUE array[NUM] = {VPauli[0], VPauli[1], VPauli[2], 
+  VALUE array[NUM] = {VPauli[0], VPauli[1], VPauli[2],
                       VGamma[0], VGamma[1], VGamma[2], VGamma[3],
                       VGamma[4], VEye2, VEye4, VIEye2, VIEye4,
                       VLambda[0], VLambda[1], VLambda[2], VLambda[3],
                       VLambda[4], VLambda[5], VLambda[6], VLambda[7]};
 
-  const char *name[NUM] = {"Pauli1", "Pauli2", "Pauli3", 
+  const char *name[NUM] = {"Pauli1", "Pauli2", "Pauli3",
                            "Gamma0", "Gamma1", "Gamma2", "Gamma3", "Gamma5",
                            "Eye2", "Eye4", "IEye2", "IEye4", "Lambda1", "Lambda2",
                            "Lambda3", "Lambda4", "Lambda5", "Lambda6",

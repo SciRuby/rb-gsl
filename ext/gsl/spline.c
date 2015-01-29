@@ -120,7 +120,7 @@ static VALUE rb_gsl_spline_accel(VALUE obj)
 }
 
 static VALUE rb_gsl_spline_evaluate(VALUE obj, VALUE xx,
-            double (*eval)(const gsl_spline *, double, 
+            double (*eval)(const gsl_spline *, double,
                gsl_interp_accel *))
 {
   rb_gsl_spline *rgs = NULL;
@@ -160,7 +160,7 @@ static VALUE rb_gsl_spline_evaluate(VALUE obj, VALUE xx,
       n = na->total;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(xx));
       ptr2 = NA_PTR_TYPE(ary, double*);
-      for (i = 0; i < n; i++) 
+      for (i = 0; i < n; i++)
   ptr2[i] = (*eval)(rgs->s, ptr1[i], rgs->a);
       return ary;
     }
@@ -270,7 +270,7 @@ static VALUE rb_gsl_spline_eval_deriv_e(VALUE obj, VALUE xx)
   default:
     return rb_float_new(val);
     break;
-  } 
+  }
   return Qnil;
 }
 
@@ -289,7 +289,7 @@ static VALUE rb_gsl_spline_eval_deriv2_e(VALUE obj, VALUE xx)
   default:
     return rb_float_new(val);
     break;
-  } 
+  }
   return Qnil;
 }
 
@@ -308,7 +308,7 @@ static VALUE rb_gsl_spline_eval_integ_e(VALUE obj, VALUE a, VALUE b)
   default:
     return rb_float_new(val);
     break;
-  } 
+  }
   return Qnil;
 }
 

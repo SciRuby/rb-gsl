@@ -18,7 +18,7 @@ static const gsl_cqpminimizer_type* get_type(VALUE t)
 
 static const gsl_cqpminimizer_type* type_by_string(VALUE t)
 {
-  char *name;  
+  char *name;
   name = STR2CSTR(t);
   if (strcmp(name, "mg_pdip") == 0) {
     return gsl_cqpminimizer_mg_pdip;
@@ -172,7 +172,7 @@ static VALUE rb_cqp_data_set_Q(VALUE obj, VALUE mm)
   gsl_matrix *m;
   Data_Get_Struct(obj, gsl_cqp_data, d);
   CHECK_MATRIX(mm);
-  Data_Get_Struct(mm, gsl_matrix, m);  
+  Data_Get_Struct(mm, gsl_matrix, m);
   d->Q = m;
   return Qtrue;
 }
@@ -235,36 +235,36 @@ static VALUE rb_cqp_data_set_d(VALUE obj, VALUE vv)
 void Init_cqp(VALUE module)
 {
   VALUE mCQP, cMinimizer, cData;
-  
+
   mCQP = rb_define_module_under(module, "CQP");
   cMinimizer = rb_define_class_under(mCQP, "Minimizer", cGSL_Object);
-  cData = rb_define_class_under(mCQP, "Data", cGSL_Object);  
+  cData = rb_define_class_under(mCQP, "Data", cGSL_Object);
 
   rb_define_singleton_method(cMinimizer, "alloc", rb_cqpminimizer_alloc, 4);
-  
+
   rb_define_method(cMinimizer, "set", rb_cqpminimizer_set, 1);
   rb_define_method(cMinimizer, "name", rb_cqpminimizer_name, 0);
-  rb_define_method(cMinimizer, "iterate", rb_cqpminimizer_iterate, 0);  
+  rb_define_method(cMinimizer, "iterate", rb_cqpminimizer_iterate, 0);
   rb_define_method(cMinimizer, "x", rb_cqpminimizer_x, 0);
   rb_define_method(cMinimizer, "lm_eq", rb_cqpminimizer_lm_eq, 0);
   rb_define_method(cMinimizer, "lm_ineq", rb_cqpminimizer_lm_ineq, 0);
   rb_define_method(cMinimizer, "f", rb_cqpminimizer_f, 0);
   rb_define_method(cMinimizer, "gap", rb_cqpminimizer_gap, 0);
-  rb_define_method(cMinimizer, "residuals_norm", rb_cqpminimizer_residuals_norm, 0);  
+  rb_define_method(cMinimizer, "residuals_norm", rb_cqpminimizer_residuals_norm, 0);
 /*  rb_define_method(cMinimizer, "minimum", rb_cqpminimizer_minimum, 0);  */
   rb_define_method(cMinimizer, "test_convergence", rb_cqpminimizer_test_convergence, 2);
-  rb_define_method(cMinimizer, "test_infeasibility", rb_cqpminimizer_test_infeasibility, 1);  
+  rb_define_method(cMinimizer, "test_infeasibility", rb_cqpminimizer_test_infeasibility, 1);
 
-  /*****/  
-  rb_define_singleton_method(cData, "alloc", rb_cqp_data_alloc, 0);  
-  
+  /*****/
+  rb_define_singleton_method(cData, "alloc", rb_cqp_data_alloc, 0);
+
   rb_define_method(cData, "Q", rb_cqp_data_Q, 0);
   rb_define_method(cData, "q", rb_cqp_data_q, 0);
   rb_define_method(cData, "A", rb_cqp_data_A, 0);
   rb_define_method(cData, "b", rb_cqp_data_b, 0);
   rb_define_method(cData, "C", rb_cqp_data_C, 0);
   rb_define_method(cData, "d", rb_cqp_data_d, 0);
-  
+
   rb_define_method(cData, "set_Q", rb_cqp_data_set_Q, 1);
   rb_define_method(cData, "set_q", rb_cqp_data_set_q, 1);
   rb_define_method(cData, "set_A", rb_cqp_data_set_A, 1);
@@ -276,7 +276,7 @@ void Init_cqp(VALUE module)
   rb_define_alias(cData, "A=", "set_A");
   rb_define_alias(cData, "b=", "set_b");
   rb_define_alias(cData, "C=", "set_C");
-  rb_define_alias(cData, "d=", "set_d");  
+  rb_define_alias(cData, "d=", "set_d");
 }
 
 #endif

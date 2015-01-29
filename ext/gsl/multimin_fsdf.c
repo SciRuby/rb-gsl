@@ -17,7 +17,7 @@ static const gsl_multimin_fsdfminimizer_type* get_fsdfminimizer_type(VALUE t)
   switch (TYPE(t)) {
   case T_STRING:
     strcpy(name, STR2CSTR(t));
-    if (strcmp(name, "bundle") == 0 || strcmp(name, "bundle_method") == 0) 
+    if (strcmp(name, "bundle") == 0 || strcmp(name, "bundle_method") == 0)
       return gsl_multimin_fsdfminimizer_bundle_method;
     else
       rb_raise(rb_eTypeError, "%s: unknown minimizer type", name);
@@ -135,10 +135,10 @@ static VALUE rb_gsl_fsdfminimizer_eps(VALUE obj)
 void Init_multimin_fsdf(VALUE module)
 {
   VALUE cmin;
-  
+
   cmin = rb_define_class_under(module, "FsdfMinimizer",  cGSL_Object);
   cfsdf = rb_define_class_under(module, "Function_fsdf", cgsl_multimin_function_fdf);
-  
+
   rb_define_singleton_method(cmin, "alloc", rb_gsl_fsdfminimizer_alloc, 2);
   rb_define_method(cmin, "set", rb_gsl_fsdfminimizer_set, 3);
   rb_define_method(cmin, "name", rb_gsl_fsdfminimizer_name, 0);
@@ -149,8 +149,8 @@ void Init_multimin_fsdf(VALUE module)
   rb_define_method(cmin, "minimum", rb_gsl_fsdfminimizer_minimum, 0);
   rb_define_method(cmin, "restart", rb_gsl_fsdfminimizer_restart, 0);
   rb_define_method(cmin, "test_gradient", rb_gsl_fsdfminimizer_test_gradient, 1);
-  rb_define_method(cmin, "test_convergence", rb_gsl_fsdfminimizer_test_convergence, 1);  
-  rb_define_method(cmin, "eps", rb_gsl_fsdfminimizer_eps, 0);  
+  rb_define_method(cmin, "test_convergence", rb_gsl_fsdfminimizer_test_convergence, 1);
+  rb_define_method(cmin, "eps", rb_gsl_fsdfminimizer_eps, 0);
 }
 
 #endif

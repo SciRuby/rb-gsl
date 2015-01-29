@@ -23,7 +23,7 @@ a += b
 a
 
 # Subtract b from a
-a -= b 
+a -= b
 
 # Show a
 a

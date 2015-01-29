@@ -87,7 +87,7 @@ static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
       ptr2 = NA_PTR_TYPE(ary2, double*);
       ptr3 = NA_PTR_TYPE(ary3, double*);
       for (i = 0; i < n; i++) {
-        (*diff)(f, ptr1[i], &result, &abserr);  
+        (*diff)(f, ptr1[i], &result, &abserr);
         ptr2[i] = result;
         ptr3[i] = abserr;
       }
@@ -99,7 +99,7 @@ static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
       vnew = gsl_vector_alloc(v->size);
       verr = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-        (*diff)(f, gsl_vector_get(v, i), &result, &abserr);  
+        (*diff)(f, gsl_vector_get(v, i), &result, &abserr);
         gsl_vector_set(vnew, i, result);
         gsl_vector_set(verr, i, abserr);
       }
@@ -112,12 +112,12 @@ static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
       merr = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
         for (j = 0; j < m->size2; j++) {
-          (*diff)(f, gsl_matrix_get(m, i, j), &result, &abserr);  
+          (*diff)(f, gsl_matrix_get(m, i, j), &result, &abserr);
           gsl_matrix_set(mnew, i, j, result);
           gsl_matrix_set(merr, i, j, abserr);
         }
       }
-      return rb_ary_new3(2, 
+      return rb_ary_new3(2,
        Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew),
        Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, merr));
     } else {

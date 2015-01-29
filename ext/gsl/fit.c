@@ -54,7 +54,7 @@ static VALUE rb_gsl_fit_wlinear(int argc, VALUE *argv, VALUE obj)
     ptrw = get_vector_ptr(argv[1], &stridew, &n);
     ptry = get_vector_ptr(argv[2], &stridey, &n);
     break;
-  case 4:   
+  case 4:
     CHECK_FIXNUM(argv[3]);
     ptrx = get_vector_ptr(argv[0], &stridex, &n);
     ptrw = get_vector_ptr(argv[1], &stridew, &n);
@@ -129,7 +129,7 @@ static VALUE rb_gsl_fit_mul(int argc, VALUE *argv, VALUE obj)
     break;
   }
   status = gsl_fit_mul(ptrx, stridex, ptry, stridey, n, &c1, &cov11, &sumsq);
-  return rb_ary_new3(4, rb_float_new(c1), 
+  return rb_ary_new3(4, rb_float_new(c1),
          rb_float_new(cov11), rb_float_new(sumsq), INT2FIX(status));
 }
 
@@ -145,7 +145,7 @@ static VALUE rb_gsl_fit_wmul(int argc, VALUE *argv, VALUE obj)
     ptrw = get_vector_ptr(argv[1], &stridew, &n);
     ptry = get_vector_ptr(argv[2], &stridey, &n);
     break;
-  case 4:   
+  case 4:
     CHECK_FIXNUM(argv[3]);
     ptrx = get_vector_ptr(argv[0], &stridex, &n);
     ptrw = get_vector_ptr(argv[1], &stridew, &n);
@@ -156,9 +156,9 @@ static VALUE rb_gsl_fit_wmul(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)", argc);
     break;
   }
-  status = gsl_fit_wmul(ptrx, stridex, ptrw, stridew, ptry, stridey, 
+  status = gsl_fit_wmul(ptrx, stridex, ptrw, stridew, ptry, stridey,
       n, &c1, &cov11, &sumsq);
-  return rb_ary_new3(4, rb_float_new(c1), 
+  return rb_ary_new3(4, rb_float_new(c1),
          rb_float_new(cov11), rb_float_new(sumsq), INT2FIX(status));
 }
 
@@ -194,7 +194,7 @@ static VALUE rb_gsl_fit_mul_est(int argc, VALUE *argv, VALUE obj)
 void Init_gsl_fit(VALUE module)
 {
   VALUE mgsl_fit;
-  mgsl_fit = rb_define_module_under(module, "Fit"); 
+  mgsl_fit = rb_define_module_under(module, "Fit");
   rb_define_module_function(mgsl_fit, "linear", rb_gsl_fit_linear, -1);
   rb_define_module_function(mgsl_fit, "wlinear", rb_gsl_fit_wlinear, -1);
   rb_define_module_function(mgsl_fit, "linear_est", rb_gsl_fit_linear_est, -1);

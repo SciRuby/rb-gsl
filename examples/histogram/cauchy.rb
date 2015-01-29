@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 # Usage from command line:
-#  % gsl-randist 0 10000 cauchy 30 | ./hist1d.rb -100 100 200 
+#  % gsl-randist 0 10000 cauchy 30 | ./hist1d.rb -100 100 200
 
 require("gsl")
 
@@ -24,4 +24,4 @@ end
 h.graph("-C -g 3 -L 'gsl-randist 0 10000 cauchy 30'")
 
 
- 
+

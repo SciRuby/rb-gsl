@@ -19,7 +19,7 @@ h[2] = GSL::Histogram.alloc(61, -30, 30)
 
 i = 0
 for n in [6, 50, 100] do
-  M.times do 
+  M.times do
     s = 0
     n.times do
       ds = rng.get%2 == 0 ? 1 : -1

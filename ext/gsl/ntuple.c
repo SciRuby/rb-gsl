@@ -386,10 +386,10 @@ static VALUE rb_gsl_ntuple_project(VALUE obj, VALUE hh, VALUE nn,
   if (!rb_obj_is_kind_of(nn, cgsl_ntuple))
     rb_raise(rb_eTypeError, "argument 2: Ntuple expected");
   Data_Get_Struct(nn, gsl_ntuple, n);
-  if (!rb_obj_is_kind_of(vvfn, cgsl_ntuple_value_fn)) 
+  if (!rb_obj_is_kind_of(vvfn, cgsl_ntuple_value_fn))
     rb_raise(rb_eTypeError, "argument 3: Ntuple::ValueFn expected");
   Data_Get_Struct(vvfn, gsl_ntuple_value_fn, vfn);
-  if (!rb_obj_is_kind_of(vsfn, cgsl_ntuple_select_fn)) 
+  if (!rb_obj_is_kind_of(vsfn, cgsl_ntuple_select_fn))
     rb_raise(rb_eTypeError, "argument 4: Ntuple::SelectFn expected");
   Data_Get_Struct(vsfn, gsl_ntuple_select_fn, sfn);
 
@@ -412,10 +412,10 @@ static VALUE rb_gsl_ntuple_project2(VALUE obj, VALUE hh, VALUE vvfn, VALUE vsfn)
   CHECK_HISTOGRAM(hh);
   Data_Get_Struct(obj, gsl_ntuple, n);
   Data_Get_Struct(hh, gsl_histogram, h);
-  if (!rb_obj_is_kind_of(vvfn, cgsl_ntuple_value_fn)) 
+  if (!rb_obj_is_kind_of(vvfn, cgsl_ntuple_value_fn))
     rb_raise(rb_eTypeError, "argument 2: Ntuple::ValueFn expected");
   Data_Get_Struct(vvfn, gsl_ntuple_value_fn, vfn);
-  if (!rb_obj_is_kind_of(vsfn, cgsl_ntuple_select_fn)) 
+  if (!rb_obj_is_kind_of(vsfn, cgsl_ntuple_select_fn))
     rb_raise(rb_eTypeError, "argument 3: Ntuple::SelectFn expected");
   Data_Get_Struct(vsfn, gsl_ntuple_select_fn, sfn);
   size = n->size/sizeof(double);

@@ -5,8 +5,8 @@ require("gsl")
 # Create Function object from the module function
 F = GSL::Function.alloc { |x| GSL::Sf::synchrotron_1(x) }
 # Derivative of the function
-DF = GSL::Function.alloc { |x|  
-  result, abserr, status = F.deriv_central(x, 1e-6)  
+DF = GSL::Function.alloc { |x|
+  result, abserr, status = F.deriv_central(x, 1e-6)
   result
 }
 # Find zero-point of the derivative in interval (0.01, 5)

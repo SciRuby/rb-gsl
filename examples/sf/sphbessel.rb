@@ -19,7 +19,7 @@ File.open("sphbessel.dat", "w") do |file|
     k0 = bessel_k0_scaled(x)
     k1 = bessel_k1_scaled(x)
     k2 = bessel_k2_scaled(x)
-    file.printf("%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n", 
+    file.printf("%e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",
                 x, j0, j1, j2, j3, y0, y1, y2, i0, i1, i2, k0, k1, k2)
     x += 0.1
   end

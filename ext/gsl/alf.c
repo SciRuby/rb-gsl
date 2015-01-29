@@ -19,7 +19,7 @@ static VALUE rb_alf_params(VALUE obj, VALUE csphase, VALUE cnorm, VALUE norm)
   int ret;
   Data_Get_Struct(obj, alf_workspace, w);
   ret = alf_params(FIX2INT(csphase), FIX2INT(cnorm), (alf_norm_t) FIX2INT(norm), w);
-  return INT2FIX(ret); 
+  return INT2FIX(ret);
 }
 
 static void define_constants(VALUE klass)
@@ -63,8 +63,8 @@ static VALUE rb_alf_Plm_array(int argc, VALUE *argv, VALUE obj)
         rb_raise(rb_eRuntimeError, "Vector length is too small. (%d for >= %d\n", (int) res->size,
                  (int) alf_array_size(lmax));
       }
-      ret = argv[1];      
-    } else { 
+      ret = argv[1];
+    } else {
       lmax = FIX2INT(argv[0]);
       x = NUM2DBL(argv[1]);
       res = gsl_vector_alloc(alf_array_size(lmax));

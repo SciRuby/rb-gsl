@@ -64,7 +64,7 @@ mygsl_histogram3d* mygsl_histogram3d_alloc(const size_t nx, const size_t ny,
   return h;
 }
 
-mygsl_histogram3d* mygsl_histogram3d_calloc_uniform(const size_t nx, 
+mygsl_histogram3d* mygsl_histogram3d_calloc_uniform(const size_t nx,
                 const size_t ny,
                 const size_t nz,
                 const double xmin,
@@ -86,7 +86,7 @@ mygsl_histogram3d* mygsl_histogram3d_calloc_uniform(const size_t nx,
   return h;
 }
 
-mygsl_histogram3d* mygsl_histogram3d_calloc(const size_t nx, 
+mygsl_histogram3d* mygsl_histogram3d_calloc(const size_t nx,
               const size_t ny,
               const size_t nz)
 {
@@ -104,7 +104,7 @@ mygsl_histogram3d* mygsl_histogram3d_calloc(const size_t nx,
   return h;
 }
 
-int mygsl_histogram3d_set_ranges_uniform (mygsl_histogram3d * h, 
+int mygsl_histogram3d_set_ranges_uniform (mygsl_histogram3d * h,
             double xmin, double xmax,
             double ymin, double ymax,
             double zmin, double zmax)
@@ -126,7 +126,7 @@ int mygsl_histogram3d_set_ranges_uniform (mygsl_histogram3d * h,
   return GSL_SUCCESS;
 }
 
-int mygsl_histogram3d_set_ranges(mygsl_histogram3d * h, 
+int mygsl_histogram3d_set_ranges(mygsl_histogram3d * h,
          const double xrange[], size_t xsize,
          const double yrange[], size_t ysize,
          const double zrange[], size_t zsize)
@@ -134,13 +134,13 @@ int mygsl_histogram3d_set_ranges(mygsl_histogram3d * h,
   size_t i;
   const size_t nx = h->nx, ny = h->ny, nz = h->nz;
   if (xsize != (nx + 1))
-    GSL_ERROR_VAL ("size of xrange must match size of histogram", 
+    GSL_ERROR_VAL ("size of xrange must match size of histogram",
        GSL_EINVAL, 0);
   if (ysize != (ny + 1))
-    GSL_ERROR_VAL ("size of yrange must match size of histogram", 
+    GSL_ERROR_VAL ("size of yrange must match size of histogram",
        GSL_EINVAL, 0);
   if (zsize != (nz + 1))
-    GSL_ERROR_VAL ("size of yrange must match size of histogram", 
+    GSL_ERROR_VAL ("size of yrange must match size of histogram",
        GSL_EINVAL, 0);
   memcpy(h->xrange, xrange, sizeof(double)*xsize);
   memcpy(h->yrange, yrange, sizeof(double)*ysize);
@@ -161,13 +161,13 @@ void mygsl_histogram3d_free (mygsl_histogram3d * h)
 /*****/
 
 int mygsl_histogram3d_memcpy(mygsl_histogram3d * dest, const mygsl_histogram3d * src)
-{  
-  size_t nx = src->nx;  
-  size_t ny = src->ny;  
-  size_t nz = src->nz;  
+{
+  size_t nx = src->nx;
+  size_t ny = src->ny;
+  size_t nz = src->nz;
   if (dest->nx != src->nx || dest->ny != src->ny ||  dest->nz != src->nz) {
-    GSL_ERROR ("histograms have different sizes, cannot copy",   
-         GSL_EINVAL);    
+    GSL_ERROR ("histograms have different sizes, cannot copy",
+         GSL_EINVAL);
   }
   memcpy(dest->xrange, src->xrange, sizeof(double)*(nx+1));
   memcpy(dest->yrange, src->yrange, sizeof(double)*(ny+1));
@@ -187,32 +187,32 @@ mygsl_histogram3d* mygsl_histogram3d_clone(const mygsl_histogram3d * src)
 /*****/
 
 int mygsl_histogram3d_fread(FILE * stream, mygsl_histogram3d * h)
-{  
-  int status = gsl_block_raw_fread (stream, h->xrange, h->nx + 1, 1);  
-  if (status)    return status;  
-  status = gsl_block_raw_fread (stream, h->yrange, h->ny + 1, 1);  
-  if (status)    return status;  
-  status = gsl_block_raw_fread (stream, h->zrange, h->nz + 1, 1);  
-  if (status)    return status;  
-  status = gsl_block_raw_fread (stream, h->bin, h->nx * h->ny * h->nz, 1);  
+{
+  int status = gsl_block_raw_fread (stream, h->xrange, h->nx + 1, 1);
+  if (status)    return status;
+  status = gsl_block_raw_fread (stream, h->yrange, h->ny + 1, 1);
+  if (status)    return status;
+  status = gsl_block_raw_fread (stream, h->zrange, h->nz + 1, 1);
+  if (status)    return status;
+  status = gsl_block_raw_fread (stream, h->bin, h->nx * h->ny * h->nz, 1);
   return status;
 }
 
 int mygsl_histogram3d_fwrite(FILE * stream, const mygsl_histogram3d * h)
-{  
-  int status = gsl_block_raw_fwrite (stream, h->xrange, h->nx + 1, 1);  
-  if (status)    return status;  
-  status = gsl_block_raw_fwrite (stream, h->yrange, h->ny + 1, 1);  
-  if (status)    return status;  
-  status = gsl_block_raw_fwrite (stream, h->zrange, h->nz + 1, 1);  
-  if (status)    return status;  
-  status = gsl_block_raw_fwrite (stream, h->bin, h->nx * h->ny * h->nz, 1);  
+{
+  int status = gsl_block_raw_fwrite (stream, h->xrange, h->nx + 1, 1);
+  if (status)    return status;
+  status = gsl_block_raw_fwrite (stream, h->yrange, h->ny + 1, 1);
+  if (status)    return status;
+  status = gsl_block_raw_fwrite (stream, h->zrange, h->nz + 1, 1);
+  if (status)    return status;
+  status = gsl_block_raw_fwrite (stream, h->bin, h->nx * h->ny * h->nz, 1);
   return status;
 }
 
 int mygsl_histogram3d_increment(mygsl_histogram3d * h, double x, double y, double z)
-{  
-  int status = mygsl_histogram3d_accumulate (h, x, y, z, 1.0);  
+{
+  int status = mygsl_histogram3d_accumulate (h, x, y, z, 1.0);
   return status;
 }
 
@@ -227,38 +227,38 @@ int mygsl_find3d (const size_t nx, const double xrange[],
       const double x, const double y, const double z,
       size_t * i, size_t * j, size_t *k);
 
-int mygsl_histogram3d_accumulate(mygsl_histogram3d * h, 
+int mygsl_histogram3d_accumulate(mygsl_histogram3d * h,
          double x, double y, double z, double weight)
-{  
-  const size_t nx = h->nx;  
-  const size_t ny = h->ny;  
-  const size_t nz = h->nz;  
-  size_t i = 0, j = 0, k = 0;  
+{
+  const size_t nx = h->nx;
+  const size_t ny = h->ny;
+  const size_t nz = h->nz;
+  size_t i = 0, j = 0, k = 0;
   int status = mygsl_find3d (h->nx, h->xrange, h->ny, h->yrange, h->nz, h->zrange,
-           x, y, z, &i, &j, &k);  
-  if (status) return GSL_EDOM; 
-  if (i >= nx) GSL_ERROR ("index lies outside valid range of 0 .. nx - 1",   
-        GSL_ESANITY);    
-  if (j >= ny) GSL_ERROR ("index lies outside valid range of 0 .. ny - 1",  
-        GSL_ESANITY);   
-  if (k >= nz) GSL_ERROR ("index lies outside valid range of 0 .. nz - 1",  
-        GSL_ESANITY);   
-  h->bin[i*ny*nz + j*nz + k] += weight;  
+           x, y, z, &i, &j, &k);
+  if (status) return GSL_EDOM;
+  if (i >= nx) GSL_ERROR ("index lies outside valid range of 0 .. nx - 1",
+        GSL_ESANITY);
+  if (j >= ny) GSL_ERROR ("index lies outside valid range of 0 .. ny - 1",
+        GSL_ESANITY);
+  if (k >= nz) GSL_ERROR ("index lies outside valid range of 0 .. nz - 1",
+        GSL_ESANITY);
+  h->bin[i*ny*nz + j*nz + k] += weight;
   return GSL_SUCCESS;
 }
 
-int mygsl_histogram3d_increment2(mygsl_histogram3d * h, 
+int mygsl_histogram3d_increment2(mygsl_histogram3d * h,
          double x, double y, double z)
 {
   return mygsl_histogram3d_accumulate2(h, x, y, z, 1.0);
 }
 
-int mygsl_histogram3d_accumulate2(mygsl_histogram3d * h, 
+int mygsl_histogram3d_accumulate2(mygsl_histogram3d * h,
           double x, double y, double z, double weight)
-{  
-  const size_t nx = h->nx;  
-  const size_t ny = h->ny;  
-  const size_t nz = h->nz;  
+{
+  const size_t nx = h->nx;
+  const size_t ny = h->ny;
+  const size_t nz = h->nz;
   size_t i = 0, j = 0, k = 0;
   int status;
   if (x < h->xrange[0]) x = h->xrange[0] + 4*GSL_DBL_EPSILON;
@@ -268,76 +268,76 @@ int mygsl_histogram3d_accumulate2(mygsl_histogram3d * h,
   if (z < h->zrange[0]) z = h->zrange[0] + 4*GSL_DBL_EPSILON;
   if (z > h->zrange[h->nz]) z = h->zrange[h->nz] - 4*GSL_DBL_EPSILON;
   status = mygsl_find3d (h->nx, h->xrange, h->ny, h->yrange, h->nz, h->zrange,
-       x, y, z, &i, &j, &k);  
-  if (status) return GSL_EDOM; 
-  if (i >= nx) GSL_ERROR ("index lies outside valid range of 0 .. nx - 1",   
-        GSL_ESANITY);    
-  if (j >= ny) GSL_ERROR ("index lies outside valid range of 0 .. ny - 1",  
-        GSL_ESANITY);   
-  if (k >= nz) GSL_ERROR ("index lies outside valid range of 0 .. nz - 1",  
-        GSL_ESANITY);   
-  h->bin[i*ny*nz + j*nz + k] += weight;  
+       x, y, z, &i, &j, &k);
+  if (status) return GSL_EDOM;
+  if (i >= nx) GSL_ERROR ("index lies outside valid range of 0 .. nx - 1",
+        GSL_ESANITY);
+  if (j >= ny) GSL_ERROR ("index lies outside valid range of 0 .. ny - 1",
+        GSL_ESANITY);
+  if (k >= nz) GSL_ERROR ("index lies outside valid range of 0 .. nz - 1",
+        GSL_ESANITY);
+  h->bin[i*ny*nz + j*nz + k] += weight;
   return GSL_SUCCESS;
 }
 
-double mygsl_histogram3d_get(const mygsl_histogram3d * h, const size_t i, 
+double mygsl_histogram3d_get(const mygsl_histogram3d * h, const size_t i,
            const size_t j, const size_t k)
-{  
-  const size_t nx = h->nx;  
-  const size_t ny = h->ny;  
-  const size_t nz = h->nz;  
-  if (i >= nx) GSL_ERROR_VAL ("index i lies outside valid range of 0 .. nx - 1", 
-            GSL_EDOM, 0);   
-  if (j >= ny) GSL_ERROR_VAL ("index j lies outside valid range of 0 .. ny - 1",    
-            GSL_EDOM, 0);    
-  if (k >= nz) GSL_ERROR_VAL ("index k lies outside valid range of 0 .. nz - 1",    
-            GSL_EDOM, 0);    
+{
+  const size_t nx = h->nx;
+  const size_t ny = h->ny;
+  const size_t nz = h->nz;
+  if (i >= nx) GSL_ERROR_VAL ("index i lies outside valid range of 0 .. nx - 1",
+            GSL_EDOM, 0);
+  if (j >= ny) GSL_ERROR_VAL ("index j lies outside valid range of 0 .. ny - 1",
+            GSL_EDOM, 0);
+  if (k >= nz) GSL_ERROR_VAL ("index k lies outside valid range of 0 .. nz - 1",
+            GSL_EDOM, 0);
   return h->bin[i*ny*nz + j*nz + k];
 }
 
-int mygsl_histogram3d_get_xrange(const mygsl_histogram3d * h, const size_t i,  
+int mygsl_histogram3d_get_xrange(const mygsl_histogram3d * h, const size_t i,
              double *xlower, double *xupper)
-{ 
-  const size_t nx = h->nx;  
-  if (i >= nx) GSL_ERROR ("index i lies outside valid range of 0 .. nx - 1", 
-        GSL_EDOM);    
-  *xlower = h->xrange[i];  
-  *xupper = h->xrange[i + 1];  
+{
+  const size_t nx = h->nx;
+  if (i >= nx) GSL_ERROR ("index i lies outside valid range of 0 .. nx - 1",
+        GSL_EDOM);
+  *xlower = h->xrange[i];
+  *xupper = h->xrange[i + 1];
   return GSL_SUCCESS;
 }
 
-int mygsl_histogram3d_get_yrange(const mygsl_histogram3d * h, const size_t j,  
+int mygsl_histogram3d_get_yrange(const mygsl_histogram3d * h, const size_t j,
              double *ylower, double *yupper)
-{ 
-  const size_t ny = h->ny;  
-  if (j >= ny) GSL_ERROR ("index j lies outside valid range of 0 .. ny - 1", 
-        GSL_EDOM);    
-  *ylower = h->yrange[j];  
-  *yupper = h->yrange[j + 1];  
+{
+  const size_t ny = h->ny;
+  if (j >= ny) GSL_ERROR ("index j lies outside valid range of 0 .. ny - 1",
+        GSL_EDOM);
+  *ylower = h->yrange[j];
+  *yupper = h->yrange[j + 1];
   return GSL_SUCCESS;
 }
 
-int mygsl_histogram3d_get_zrange(const mygsl_histogram3d * h, const size_t k,  
+int mygsl_histogram3d_get_zrange(const mygsl_histogram3d * h, const size_t k,
              double *zlower, double *zupper)
-{ 
-  const size_t nz = h->nz;  
-  if (k >= nz) GSL_ERROR ("index k lies outside valid range of 0 .. nz - 1", 
-        GSL_EDOM);    
-  *zlower = h->zrange[k];  
-  *zupper = h->zrange[k + 1];  
+{
+  const size_t nz = h->nz;
+  if (k >= nz) GSL_ERROR ("index k lies outside valid range of 0 .. nz - 1",
+        GSL_EDOM);
+  *zlower = h->zrange[k];
+  *zupper = h->zrange[k + 1];
   return GSL_SUCCESS;
 }
 
 int mygsl_histogram3d_find (const mygsl_histogram3d * h,
           const double x, const double y, const double z,
           size_t * i, size_t * j, size_t *k)
-{ 
-  int status = mygsl_find(h->nx, h->xrange, x, i);  
-  if (status) GSL_ERROR ("x not found in range of h", GSL_EDOM);    
-  status = mygsl_find (h->ny, h->yrange, y, j);  
-  if (status) GSL_ERROR ("y not found in range of h", GSL_EDOM);    
-  status = mygsl_find (h->nz, h->zrange, z, k);  
-  if (status) GSL_ERROR ("z not found in range of h", GSL_EDOM);    
+{
+  int status = mygsl_find(h->nx, h->xrange, x, i);
+  if (status) GSL_ERROR ("x not found in range of h", GSL_EDOM);
+  status = mygsl_find (h->ny, h->yrange, y, j);
+  if (status) GSL_ERROR ("y not found in range of h", GSL_EDOM);
+  status = mygsl_find (h->nz, h->zrange, z, k);
+  if (status) GSL_ERROR ("z not found in range of h", GSL_EDOM);
   return GSL_SUCCESS;
 }
 
@@ -422,7 +422,7 @@ int mygsl_histogram3d_shift(mygsl_histogram3d * h, double shift)
 
 double mygsl_histogram3d_xmax(const mygsl_histogram3d * h)
 {
-  const int nx = h->nx;  
+  const int nx = h->nx;
   return h->xrange[nx];
 }
 double mygsl_histogram3d_xmin(const mygsl_histogram3d * h)
@@ -432,7 +432,7 @@ double mygsl_histogram3d_xmin(const mygsl_histogram3d * h)
 
 double mygsl_histogram3d_ymax(const mygsl_histogram3d * h)
 {
-  const int ny = h->ny;  
+  const int ny = h->ny;
   return h->yrange[ny];
 }
 double mygsl_histogram3d_ymin(const mygsl_histogram3d * h)
@@ -442,7 +442,7 @@ double mygsl_histogram3d_ymin(const mygsl_histogram3d * h)
 
 double mygsl_histogram3d_zmax(const mygsl_histogram3d * h)
 {
-  const int nz = h->nz;  
+  const int nz = h->nz;
   return h->zrange[nz];
 }
 
@@ -464,7 +464,7 @@ double mygsl_histogram3d_max_val(const mygsl_histogram3d * h)
   return max;
 }
 
-void mygsl_histogram3d_max_bin(const mygsl_histogram3d * h, 
+void mygsl_histogram3d_max_bin(const mygsl_histogram3d * h,
              size_t *imax_out, size_t *jmax_out, size_t *kmax_out)
 {
   const size_t nx = h->nx;
@@ -503,7 +503,7 @@ double mygsl_histogram3d_min_val(const mygsl_histogram3d * h)
   return min;
 }
 
-void mygsl_histogram3d_min_bin(const mygsl_histogram3d * h, 
+void mygsl_histogram3d_min_bin(const mygsl_histogram3d * h,
              size_t *imin_out, size_t *jmin_out, size_t *kmin_out)
 {
   const size_t nx = h->nx;
@@ -700,7 +700,7 @@ int mygsl_histogram3d_equal_bins_p(const mygsl_histogram3d * h1,
 {
   size_t i;
   if ((h1->nx != h2->nx) || (h1->ny != h2->ny) || (h1->nz != h2->nz)) return 0;
-  for (i = 0; i <= h1->nx; i++) 
+  for (i = 0; i <= h1->nx; i++)
     if (h1->xrange[i] != h2->xrange[i]) return 0;
   for (i = 0; i <= h1->ny; i++)
     if (h1->yrange[i] != h2->yrange[i]) return 0;

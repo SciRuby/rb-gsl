@@ -219,7 +219,7 @@ static VALUE rb_gsl_cheb_eval_err(VALUE obj, VALUE xx)
         gsl_vector_set(vnew, i, result);
         gsl_vector_set(verr, i, err);
       }
-      return rb_ary_new3(2, 
+      return rb_ary_new3(2,
        Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew),
        Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, verr));
     } else if (MATRIX_P(xx)) {
@@ -300,7 +300,7 @@ static VALUE rb_gsl_cheb_eval_n(VALUE obj, VALUE nn, VALUE xx)
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
         for (j = 0; j < m->size2; j++) {
-          gsl_matrix_set(mnew, i, j, 
+          gsl_matrix_set(mnew, i, j,
             gsl_cheb_eval_n(p, order, gsl_matrix_get(m, i, j)));
         }
       }
@@ -325,7 +325,7 @@ static VALUE rb_gsl_cheb_eval_n_err(VALUE obj, VALUE nn, VALUE xx)
   struct NARRAY *na;
   double *ptr1, *ptr2, *ptr3;
 #endif
-  CHECK_FIXNUM(nn); 
+  CHECK_FIXNUM(nn);
   order = FIX2INT(nn);
   Data_Get_Struct(obj, gsl_cheb_series, p);
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
@@ -377,7 +377,7 @@ static VALUE rb_gsl_cheb_eval_n_err(VALUE obj, VALUE nn, VALUE xx)
         gsl_vector_set(vnew, i, result);
         gsl_vector_set(verr, i, err);
       }
-      return rb_ary_new3(2, 
+      return rb_ary_new3(2,
        Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew),
        Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, verr));
     } else if (MATRIX_P(xx)) {
@@ -412,7 +412,7 @@ static VALUE rb_gsl_cheb_calc_deriv(int argc, VALUE *argv, VALUE obj)
   case T_OBJECT:
     switch (argc) {
     case 1:
-      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb)) 
+      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb))
         rb_raise(rb_eTypeError, "wrong argument type %s (Cheb expected)",
           rb_class2name(CLASS_OF(argv[0])));
       Data_Get_Struct(argv[0], gsl_cheb_series, cs);
@@ -420,10 +420,10 @@ static VALUE rb_gsl_cheb_calc_deriv(int argc, VALUE *argv, VALUE obj)
       retval = Data_Wrap_Struct(CLASS_OF(argv[0]), 0, gsl_cheb_free, deriv);
       break;
     case 2:
-      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb)) 
+      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb))
         rb_raise(rb_eTypeError, "argv[0] wrong argument type %s (Cheb expected)",
           rb_class2name(CLASS_OF(argv[0])));
-      if (!rb_obj_is_kind_of(argv[1], cgsl_cheb)) 
+      if (!rb_obj_is_kind_of(argv[1], cgsl_cheb))
         rb_raise(rb_eTypeError, "argv[1] wrong argument type %s (Cheb expected)",
           rb_class2name(CLASS_OF(argv[1])));
       Data_Get_Struct(argv[0], gsl_cheb_series, deriv);
@@ -443,7 +443,7 @@ static VALUE rb_gsl_cheb_calc_deriv(int argc, VALUE *argv, VALUE obj)
       retval = Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_cheb_free, deriv);
       break;
     case 1:
-      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb)) 
+      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb))
         rb_raise(rb_eTypeError, "argv[0] wrong argument type %s (Cheb expected)",
           rb_class2name(CLASS_OF(argv[0])));
       Data_Get_Struct(argv[0], gsl_cheb_series, deriv);
@@ -469,7 +469,7 @@ static VALUE rb_gsl_cheb_calc_integ(int argc, VALUE *argv, VALUE obj)
   case T_OBJECT:
     switch (argc) {
     case 1:
-      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb)) 
+      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb))
         rb_raise(rb_eTypeError, "wrong argument type %s (Cheb expected)",
           rb_class2name(CLASS_OF(argv[0])));
       Data_Get_Struct(argv[0], gsl_cheb_series, cs);
@@ -477,10 +477,10 @@ static VALUE rb_gsl_cheb_calc_integ(int argc, VALUE *argv, VALUE obj)
       retval = Data_Wrap_Struct(CLASS_OF(argv[0]), 0, gsl_cheb_free, deriv);
       break;
     case 2:
-      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb)) 
+      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb))
         rb_raise(rb_eTypeError, "argv[0] wrong argument type %s (Cheb expected)",
           rb_class2name(CLASS_OF(argv[0])));
-      if (!rb_obj_is_kind_of(argv[1], cgsl_cheb)) 
+      if (!rb_obj_is_kind_of(argv[1], cgsl_cheb))
         rb_raise(rb_eTypeError, "argv[1] wrong argument type %s (Cheb expected)",
           rb_class2name(CLASS_OF(argv[1])));
       Data_Get_Struct(argv[0], gsl_cheb_series, deriv);
@@ -500,7 +500,7 @@ static VALUE rb_gsl_cheb_calc_integ(int argc, VALUE *argv, VALUE obj)
       retval = Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_cheb_free, deriv);
       break;
     case 1:
-      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb)) 
+      if (!rb_obj_is_kind_of(argv[0], cgsl_cheb))
         rb_raise(rb_eTypeError, "argv[0] wrong argument type %s (Cheb expected)",
           rb_class2name(CLASS_OF(argv[0])));
       Data_Get_Struct(argv[0], gsl_cheb_series, deriv);

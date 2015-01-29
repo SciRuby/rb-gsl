@@ -9,4 +9,3 @@ set ylabel 'Fractional ionization'
 set x2label 'Temperature of the Universe [K]'
 set grid
 plot 'recombination.dat' u 2:3 title '' w l lw 3, 1 title ''
- 

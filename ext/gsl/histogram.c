@@ -68,7 +68,7 @@ static VALUE rb_gsl_histogram_alloc(int argc, VALUE *argv, VALUE klass)
     case T_FIXNUM:
       CHECK_FIXNUM(argv[0]);
       if (TYPE(argv[1]) != T_ARRAY) {
-        rb_raise(rb_eTypeError, "wrong argument type %s (Array expected)", 
+        rb_raise(rb_eTypeError, "wrong argument type %s (Array expected)",
           rb_class2name(CLASS_OF(argv[1])));
       }
       n = FIX2INT(argv[0]);
@@ -133,7 +133,7 @@ static VALUE rb_gsl_histogram_alloc_from_file(VALUE klass, VALUE name)
   h->range[n] = upper;
   fclose(fp);
   return Data_Wrap_Struct(klass, 0, gsl_histogram_free, h);
-  
+
 }
 
 /* initialization + set uniform ranges (equal spacing from min to max) */
@@ -172,7 +172,7 @@ static VALUE rb_gsl_histogram_alloc_uniform(int argc, VALUE *argv, VALUE klass)
 }
 
 /* initialization + set ranges with a given spacing from min to max */
-static VALUE rb_gsl_histogram_alloc_with_min_max_step(VALUE klass, VALUE vmin, 
+static VALUE rb_gsl_histogram_alloc_with_min_max_step(VALUE klass, VALUE vmin,
               VALUE vmax, VALUE ss)
 {
   gsl_histogram *h = NULL;
@@ -244,7 +244,7 @@ static VALUE rb_gsl_histogram_set_ranges(int argc, VALUE *argv, VALUE obj)
   gsl_vector *v = NULL;
   size_t size;
   Data_Get_Struct(obj, gsl_histogram, h);
-  if (argc != 1 && argc != 2) 
+  if (argc != 1 && argc != 2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 2)", argc);
   if (TYPE(argv[0]) == T_ARRAY) {
     v = make_cvector_from_rarray(argv[0]);
@@ -368,7 +368,7 @@ static VALUE rb_gsl_histogram_accumulate(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(argv[0])) {
     ptr = get_vector_ptr(argv[0], &stride, &size);
-    for (i = 0; i < size; i++) 
+    for (i = 0; i < size; i++)
       gsl_histogram_accumulate(h, ptr[i], weight);
 #endif
   } else {
@@ -496,11 +496,11 @@ static VALUE rb_gsl_histogram_sigma(VALUE obj)
 
 #ifndef GSL_1_1_LATER
 double gsl_histogram_sum(const gsl_histogram * h)
-{  
-  double sum=0;  
-  size_t i=0, n;  
-  n=h->n;  
-  while(i < n) sum += h->bin[i++];  
+{
+  double sum=0;
+  size_t i=0, n;
+  n=h->n;
+  while(i < n) sum += h->bin[i++];
   return sum;
 }
 #endif
@@ -996,8 +996,8 @@ static VALUE rb_gsl_histogram_plot(int argc, VALUE *argv, VALUE obj)
   case 1:
     fp = popen("gnuplot -persist", "w");
     if (fp == NULL) rb_raise(rb_eIOError, "GNU graph not found.");
-    if (TYPE(argv[0]) == T_STRING) 
-      fprintf(fp, "plot '-' %s\n", STR2CSTR(argv[0]));    
+    if (TYPE(argv[0]) == T_STRING)
+      fprintf(fp, "plot '-' %s\n", STR2CSTR(argv[0]));
     else
       fprintf(fp, "plot '-' with fsteps\n");
     break;
@@ -1048,7 +1048,7 @@ static VALUE rb_gsl_histogram_fit_exponential(int argc, VALUE *argv, VALUE obj)
   }
   n = binend - binstart + 1;
   dof = n - p;
-  
+
   x = gsl_vector_alloc(n);
   w = gsl_vector_alloc(n);
   lny = gsl_vector_alloc(n);
@@ -1059,13 +1059,13 @@ static VALUE rb_gsl_histogram_fit_exponential(int argc, VALUE *argv, VALUE obj)
     gsl_vector_set(lny, i, log(h->bin[i+binstart]));
     gsl_vector_set(w, i, h->bin[i+binstart]);
   }
-  gsl_fit_wlinear(x->data, 1, w->data, 1, lny->data, 1, n, 
+  gsl_fit_wlinear(x->data, 1, w->data, 1, lny->data, 1, n,
       &c0, &c1, &cov00, &cov01, &cov11, &sumsq);
   gsl_vector_free(lny);
   gsl_vector_free(w);
   gsl_vector_free(x);
   c0 = exp(c0);
-  return rb_ary_new3(6, rb_float_new(c0), rb_float_new(c1), 
+  return rb_ary_new3(6, rb_float_new(c0), rb_float_new(c1),
          rb_float_new(c0*sqrt(cov00)), rb_float_new(sqrt(cov11)),
          rb_float_new(sumsq), INT2FIX(dof));
 }
@@ -1094,7 +1094,7 @@ static VALUE rb_gsl_histogram_fit_power(int argc, VALUE *argv, VALUE obj)
   }
   n = binend - binstart + 1;
   dof = n - p;
-  
+
   lnx = gsl_vector_alloc(n);
   w = gsl_vector_alloc(n);
   lny = gsl_vector_alloc(n);
@@ -1105,13 +1105,13 @@ static VALUE rb_gsl_histogram_fit_power(int argc, VALUE *argv, VALUE obj)
     gsl_vector_set(lny, i, log(h->bin[i+binstart]));
     gsl_vector_set(w, i, h->bin[i+binstart]);
   }
-  gsl_fit_wlinear(lnx->data, 1, w->data, 1, lny->data, 1, n, 
+  gsl_fit_wlinear(lnx->data, 1, w->data, 1, lny->data, 1, n,
       &c0, &c1, &cov00, &cov01, &cov11, &sumsq);
   gsl_vector_free(lny);
   gsl_vector_free(w);
   gsl_vector_free(lnx);
   c0 = exp(c0);
-  return rb_ary_new3(6, rb_float_new(c0), rb_float_new(c1), 
+  return rb_ary_new3(6, rb_float_new(c0), rb_float_new(c1),
          rb_float_new(c0*sqrt(cov00)), rb_float_new(sqrt(cov11)),
          rb_float_new(sumsq), INT2FIX(dof));
 }
@@ -1173,7 +1173,7 @@ static int Gaussian_df(const gsl_vector *v, void *params, gsl_matrix *J)
   return GSL_SUCCESS;
 }
 
-static int Gaussian_fdf(const gsl_vector *v, void *params, gsl_vector *f, 
+static int Gaussian_fdf(const gsl_vector *v, void *params, gsl_vector *f,
       gsl_matrix *J)
 {
   Gaussian_f(v, params, f);
@@ -1308,7 +1308,7 @@ static int Rayleigh_df(const gsl_vector *v, void *params, gsl_matrix *J)
   return GSL_SUCCESS;
 }
 
-static int Rayleigh_fdf(const gsl_vector *v, void *params, gsl_vector *f, 
+static int Rayleigh_fdf(const gsl_vector *v, void *params, gsl_vector *f,
       gsl_matrix *J)
 {
   Rayleigh_f(v, params, f);
@@ -1349,7 +1349,7 @@ static VALUE rb_gsl_histogram_fit_rayleigh(int argc, VALUE *argv, VALUE obj)
   }
   x = gsl_vector_alloc(p);
   gsl_vector_set(x, 0, gsl_pow_2(gsl_histogram_sigma(h)));   /* initial values, var = 1 */
-  gsl_vector_set(x, 1, gsl_histogram_max_val(h));   
+  gsl_vector_set(x, 1, gsl_histogram_max_val(h));
   hh.h = h;
   hh.binstart = binstart;
   hh.binend = binend;
@@ -1385,7 +1385,7 @@ static VALUE rb_gsl_histogram_fit_rayleigh(int argc, VALUE *argv, VALUE obj)
   gsl_multifit_fdfsolver_free(s);
   gsl_vector_free(x);
   gsl_matrix_free(covar);
-  return rb_ary_new3(6, rb_float_new(sigma), 
+  return rb_ary_new3(6, rb_float_new(sigma),
          rb_float_new(height), rb_float_new(errs),
          rb_float_new(errh),
          rb_float_new(chi2), INT2FIX(dof));
@@ -1444,7 +1444,7 @@ static int xExponential_df(const gsl_vector *v, void *params, gsl_matrix *J)
   return GSL_SUCCESS;
 }
 
-static int xExponential_fdf(const gsl_vector *v, void *params, gsl_vector *f, 
+static int xExponential_fdf(const gsl_vector *v, void *params, gsl_vector *f,
       gsl_matrix *J)
 {
   xExponential_f(v, params, f);
@@ -1485,7 +1485,7 @@ static VALUE rb_gsl_histogram_fit_xexponential(int argc, VALUE *argv, VALUE obj)
   }
   x = gsl_vector_alloc(p);
   gsl_vector_set(x, 0, gsl_histogram_sigma(h));   /* initial values, var = 1 */
-  gsl_vector_set(x, 1, gsl_histogram_max_val(h));   
+  gsl_vector_set(x, 1, gsl_histogram_max_val(h));
   hh.h = h;
   hh.binstart = binstart;
   hh.binend = binend;
@@ -1521,7 +1521,7 @@ static VALUE rb_gsl_histogram_fit_xexponential(int argc, VALUE *argv, VALUE obj)
   gsl_multifit_fdfsolver_free(s);
   gsl_vector_free(x);
   gsl_matrix_free(covar);
-  return rb_ary_new3(6, rb_float_new(b), 
+  return rb_ary_new3(6, rb_float_new(b),
          rb_float_new(height), rb_float_new(errs),
          rb_float_new(errh),
          rb_float_new(chi2), INT2FIX(dof));
@@ -1544,7 +1544,7 @@ static VALUE rb_gsl_histogram_fit(int argc, VALUE *argv, VALUE obj)
   } else if (str_head_grep(fittype, "xexp") == 0) {
     return rb_gsl_histogram_fit_xexponential(argc-1, argv+1, obj);
   } else {
-    rb_raise(rb_eRuntimeError, 
+    rb_raise(rb_eRuntimeError,
        "unknown fitting type %s (exp, power, gaus expected)", fittype);
   }
   return Qnil;
@@ -1692,27 +1692,27 @@ static VALUE rb_gsl_histogram_rebin(int argc, VALUE *argv, VALUE obj)
 }
 
 static int mygsl_histogram_fread2(FILE * stream, gsl_histogram * h)
-{  
+{
   double min, max;
   int status;
   status = gsl_block_raw_fread(stream, &min, 1, 1);
-  if (status)    return status;  
+  if (status)    return status;
   status = gsl_block_raw_fread(stream, &max, 1, 1);
-  if (status)    return status;  
+  if (status)    return status;
   gsl_histogram_set_ranges_uniform(h, min, max);
-  status = gsl_block_raw_fread (stream, h->bin, h->n, 1);  
-  if (status)    return status;  
+  status = gsl_block_raw_fread (stream, h->bin, h->n, 1);
+  if (status)    return status;
   return status;
 }
 
 static int mygsl_histogram_fwrite2(FILE * stream, const gsl_histogram * h)
-{  
+{
   int status;
   status = gsl_block_raw_fwrite (stream, h->range, 1, 1);
-  if (status)    return status;  
+  if (status)    return status;
   status = gsl_block_raw_fwrite (stream, h->range+h->n, 1, 1);
-  if (status)    return status;  
-  status = gsl_block_raw_fwrite (stream, h->bin, h->n, 1);  
+  if (status)    return status;
+  status = gsl_block_raw_fwrite (stream, h->bin, h->n, 1);
   return status;
 }
 
@@ -1833,11 +1833,11 @@ void Init_gsl_histogram(VALUE module)
   VALUE cgsl_histogram_pdf;
 
   cgsl_histogram = rb_define_class_under(module, "Histogram", cGSL_Object);
-  cgsl_histogram_range = rb_define_class_under(cgsl_histogram, "Range", 
+  cgsl_histogram_range = rb_define_class_under(cgsl_histogram, "Range",
                  cgsl_vector_view_ro);
-  cgsl_histogram_bin = rb_define_class_under(cgsl_histogram, "Bin", 
+  cgsl_histogram_bin = rb_define_class_under(cgsl_histogram, "Bin",
                cgsl_vector_view);
-  cgsl_histogram_integ = rb_define_class_under(cgsl_histogram, "Integral", 
+  cgsl_histogram_integ = rb_define_class_under(cgsl_histogram, "Integral",
                  cgsl_histogram);
 
 #ifdef GSL_0_9_4_LATER
@@ -1845,20 +1845,20 @@ void Init_gsl_histogram(VALUE module)
   /*  rb_define_singleton_method(cgsl_histogram, "new", rb_gsl_histogram_alloc, -1);*/
   rb_define_singleton_method(cgsl_histogram, "[]", rb_gsl_histogram_alloc, -1);
 
-  rb_define_singleton_method(cgsl_histogram, "alloc_uniform", 
+  rb_define_singleton_method(cgsl_histogram, "alloc_uniform",
            rb_gsl_histogram_alloc_uniform, -1);
-  rb_define_singleton_method(cgsl_histogram, "new_uniform", 
+  rb_define_singleton_method(cgsl_histogram, "new_uniform",
            rb_gsl_histogram_alloc_uniform, -1);
 
-  rb_define_singleton_method(cgsl_histogram, "alloc_with_min_max_step", 
+  rb_define_singleton_method(cgsl_histogram, "alloc_with_min_max_step",
            rb_gsl_histogram_alloc_with_min_max_step, 3);
-  rb_define_singleton_method(cgsl_histogram, "new_with_min_max_step", 
+  rb_define_singleton_method(cgsl_histogram, "new_with_min_max_step",
            rb_gsl_histogram_alloc_with_min_max_step, 3);
 #endif
 
-  rb_define_singleton_method(cgsl_histogram, "calloc", 
+  rb_define_singleton_method(cgsl_histogram, "calloc",
            rb_gsl_histogram_calloc, 1);
-  rb_define_singleton_method(cgsl_histogram, "calloc_range", 
+  rb_define_singleton_method(cgsl_histogram, "calloc_range",
            rb_gsl_histogram_calloc_range, -1);
 
   rb_define_method(cgsl_histogram, "bins", rb_gsl_histogram_bins, 0);
@@ -1867,7 +1867,7 @@ void Init_gsl_histogram(VALUE module)
   rb_define_method(cgsl_histogram, "set_ranges", rb_gsl_histogram_set_ranges, -1);
   rb_define_method(cgsl_histogram, "range", rb_gsl_histogram_range, 0);
   rb_define_method(cgsl_histogram, "bin", rb_gsl_histogram_bin, 0);
-  rb_define_method(cgsl_histogram, "set_ranges_uniform", 
+  rb_define_method(cgsl_histogram, "set_ranges_uniform",
        rb_gsl_histogram_set_ranges_uniform, -1);
   rb_define_singleton_method(cgsl_histogram, "memcpy", rb_gsl_histogram_memcpy, 2);
   rb_define_method(cgsl_histogram, "clone", rb_gsl_histogram_clone, 0);
@@ -1896,19 +1896,19 @@ void Init_gsl_histogram(VALUE module)
   rb_define_method(cgsl_histogram, "sum", rb_gsl_histogram_integral, -1);
   rb_define_alias(cgsl_histogram, "integral", "sum");
 
-  rb_define_method(cgsl_histogram, "equal_bins_p", 
+  rb_define_method(cgsl_histogram, "equal_bins_p",
        rb_gsl_histogram_equal_bins_p, -1);
   rb_define_alias(cgsl_histogram, "equal_bins", "equal_bins_p");
-  rb_define_singleton_method(cgsl_histogram, "equal_bins_p", 
+  rb_define_singleton_method(cgsl_histogram, "equal_bins_p",
            rb_gsl_histogram_equal_bins_p, -1);
-  rb_define_singleton_method(cgsl_histogram, "equal_bins", 
+  rb_define_singleton_method(cgsl_histogram, "equal_bins",
            rb_gsl_histogram_equal_bins_p, -1);
-  rb_define_method(cgsl_histogram, "equal_bins_p?", 
+  rb_define_method(cgsl_histogram, "equal_bins_p?",
        rb_gsl_histogram_equal_bins_p2, -1);
   rb_define_alias(cgsl_histogram, "equal_bins?", "equal_bins_p?");
-  rb_define_singleton_method(cgsl_histogram, "equal_bins_p?", 
+  rb_define_singleton_method(cgsl_histogram, "equal_bins_p?",
            rb_gsl_histogram_equal_bins_p2, -1);
-  rb_define_singleton_method(cgsl_histogram, "equal_bins?", 
+  rb_define_singleton_method(cgsl_histogram, "equal_bins?",
            rb_gsl_histogram_equal_bins_p2, -1);
 
   rb_define_method(cgsl_histogram, "add", rb_gsl_histogram_add, 1);
@@ -1940,9 +1940,9 @@ void Init_gsl_histogram(VALUE module)
   rb_define_method(cgsl_histogram, "print", rb_gsl_histogram_print, 0);
 
   cgsl_histogram_pdf = rb_define_class_under(cgsl_histogram, "Pdf", cGSL_Object);
-  rb_define_singleton_method(cgsl_histogram_pdf, "alloc", 
+  rb_define_singleton_method(cgsl_histogram_pdf, "alloc",
            rb_gsl_histogram_pdf_alloc, 1);
-  /*  rb_define_singleton_method(cgsl_histogram_pdf, "new", 
+  /*  rb_define_singleton_method(cgsl_histogram_pdf, "new",
       rb_gsl_histogram_pdf_alloc, 1);*/
 #ifdef GSL_0_9_4_LATER
   rb_define_method(cgsl_histogram_pdf, "init", rb_gsl_histogram_pdf_init, 1);
@@ -1958,22 +1958,22 @@ void Init_gsl_histogram(VALUE module)
 
   rb_define_method(cgsl_histogram, "plot", rb_gsl_histogram_plot, -1);
 
-  rb_define_method(cgsl_histogram, "fit_gaussian", 
+  rb_define_method(cgsl_histogram, "fit_gaussian",
        rb_gsl_histogram_fit_gaussian, -1);
-  rb_define_method(cgsl_histogram, "fit_exponential", 
+  rb_define_method(cgsl_histogram, "fit_exponential",
        rb_gsl_histogram_fit_exponential, -1);
-  rb_define_method(cgsl_histogram, "fit_xexponential", 
+  rb_define_method(cgsl_histogram, "fit_xexponential",
        rb_gsl_histogram_fit_xexponential, -1);
-  rb_define_method(cgsl_histogram, "fit_power", 
+  rb_define_method(cgsl_histogram, "fit_power",
        rb_gsl_histogram_fit_power, -1);
-  rb_define_method(cgsl_histogram, "fit_rayleigh", 
+  rb_define_method(cgsl_histogram, "fit_rayleigh",
        rb_gsl_histogram_fit_rayleigh, -1);
-  rb_define_method(cgsl_histogram, "fit", 
+  rb_define_method(cgsl_histogram, "fit",
        rb_gsl_histogram_fit, -1);
 
   rb_define_method(cgsl_histogram, "integrate", rb_gsl_histogram_integrate, -1);
   rb_undef_method(cgsl_histogram_integ, "integrate");
-  rb_define_method(cgsl_histogram_integ, "differentiate", 
+  rb_define_method(cgsl_histogram_integ, "differentiate",
        rb_gsl_histogram_differentiate, 0);
   rb_define_alias(cgsl_histogram_integ, "diff", "differentiate");
 

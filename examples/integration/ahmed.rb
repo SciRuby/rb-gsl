@@ -6,7 +6,7 @@ require("gsl")
 include GSL
 include Math
 
-f = Function.alloc { |x| 
+f = Function.alloc { |x|
   sqrtx22 = sqrt(x*x + 2)
   atan(sqrtx22)/(sqrtx22*(x*x + 1))
 }
@@ -18,4 +18,4 @@ puts("Expect: 5pi^2/96 = #{5.0*M_PI*M_PI/96}")
 puts("QNG result:        #{val}")
 
 
- 
+

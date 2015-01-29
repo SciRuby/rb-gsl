@@ -624,21 +624,21 @@ static VALUE rb_gsl_siman_solver_solve(VALUE obj, VALUE rng,
   gsl_vector_memcpy(ss->vx, vtmp);
 
   if (NIL_P(vprint)) {
-    gsl_siman_solve(r, ss, rb_gsl_siman_Efunc_t, 
-        rb_gsl_siman_step_t, 
-        rb_gsl_siman_metric_t, 
+    gsl_siman_solve(r, ss, rb_gsl_siman_Efunc_t,
+        rb_gsl_siman_step_t,
+        rb_gsl_siman_metric_t,
         NULL,
-        rb_gsl_siman_copy_t, 
+        rb_gsl_siman_copy_t,
         rb_gsl_siman_copy_construct_t,
         rb_gsl_siman_destroy_t, 0,
         *params);
 
   } else {
-    gsl_siman_solve(r, ss, rb_gsl_siman_Efunc_t, 
-        rb_gsl_siman_step_t, 
-        rb_gsl_siman_metric_t, 
-        rb_gsl_siman_print_t, 
-        rb_gsl_siman_copy_t, 
+    gsl_siman_solve(r, ss, rb_gsl_siman_Efunc_t,
+        rb_gsl_siman_step_t,
+        rb_gsl_siman_metric_t,
+        rb_gsl_siman_print_t,
+        rb_gsl_siman_copy_t,
         rb_gsl_siman_copy_construct_t,
         rb_gsl_siman_destroy_t, 0,
         *params);
@@ -681,7 +681,7 @@ void Init_gsl_siman(VALUE module)
   rb_define_singleton_method(cgsl_siman_metric, "alloc", rb_gsl_siman_metric_new, -1);
   rb_define_method(cgsl_siman_metric, "set", rb_gsl_siman_metric_set, -1);
   rb_define_alias(cgsl_siman_metric, "set_proc", "set");
-  
+
   /***** params *****/
   rb_define_singleton_method(cgsl_siman_params, "alloc", rb_gsl_siman_params_new, -1);
   rb_define_method(cgsl_siman_params, "set", rb_gsl_siman_params_set, -1);

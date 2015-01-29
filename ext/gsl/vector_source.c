@@ -230,7 +230,7 @@ VALUE FUNCTION(rb_gsl_vector,new)(int argc, VALUE *argv, VALUE klass)
     }
 #endif
     switch (TYPE(argv[0])) {
-    case T_FIXNUM:  
+    case T_FIXNUM:
       /*! if an integer n is given, create an empty vector of length n */
       CHECK_FIXNUM(argv[0]);
       n = FIX2INT(argv[0]);
@@ -252,7 +252,7 @@ VALUE FUNCTION(rb_gsl_vector,new)(int argc, VALUE *argv, VALUE klass)
       FUNCTION(gsl_vector,set)(v, 0, xnative);
       break;
 #ifdef BASE_DOUBLE
-    case T_ARRAY: 
+    case T_ARRAY:
       v = make_cvector_from_rarrays(argv[0]);
       break;
 #endif
@@ -263,14 +263,14 @@ VALUE FUNCTION(rb_gsl_vector,new)(int argc, VALUE *argv, VALUE klass)
   FUNCTION(set_ptr_data,by_range)(v->data, v->size, argv[0]);
   return Data_Wrap_Struct(klass, 0, FUNCTION(gsl_vector,free), v);
       } else if (VEC_P(argv[0])) {
-  /*! Create a new vector with the same elements of the vector given */ 
+  /*! Create a new vector with the same elements of the vector given */
   Data_Get_Struct(argv[0], GSL_TYPE(gsl_vector), vtmp);
   v = FUNCTION(gsl_vector,alloc)(vtmp->size);
-  for (i = 0; i < vtmp->size; i++) 
+  for (i = 0; i < vtmp->size; i++)
     FUNCTION(gsl_vector,set)(v, i, FUNCTION(gsl_vector,get)(vtmp, i));
   return Data_Wrap_Struct(VEC_ROW_COL(argv[0]), 0, FUNCTION(gsl_vector,free), v);
       } else {
-  rb_raise(rb_eTypeError, 
+  rb_raise(rb_eTypeError,
      "wrong argument type %s", rb_class2name(CLASS_OF(argv[0])));
       }
       break;
@@ -322,7 +322,7 @@ static VALUE FUNCTION(rb_gsl_vector,get)(int argc, VALUE *argv, VALUE obj)
     switch (TYPE(argv[0])) {
     case T_FIXNUM:
       i = FIX2INT(argv[0]);
-      if (i < 0) 
+      if (i < 0)
         retval = C_TO_VALUE2(FUNCTION(gsl_vector,get)(v, (size_t) (v->size + i)));
       else
         retval = C_TO_VALUE2(FUNCTION(gsl_vector,get)(v, (size_t) (i)));
@@ -659,7 +659,7 @@ static VALUE FUNCTION(rb_gsl_vector,trans)(VALUE obj)
     return Data_Wrap_Struct(cgsl_vector_int_col, 0, gsl_vector_int_free, vnew);
   else if (VECTOR_INT_COL_P(obj))
     return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free, vnew);
-  else rb_raise(rb_eTypeError, 
+  else rb_raise(rb_eTypeError,
     "wrong type %s (Vector::Int or Vector::Int::Col expected)",
     rb_class2name(CLASS_OF(obj)));
 #endif
@@ -674,7 +674,7 @@ static VALUE FUNCTION(rb_gsl_vector,trans_bang)(VALUE obj)
   else {
     rb_raise(rb_eRuntimeError, "method trans! for %s is not permitted.",
        rb_class2name(CLASS_OF(obj)));
-  }  
+  }
 #elif defined(BASE_INT)
   if (CLASS_OF(obj) == cgsl_vector_int) RBGSL_SET_CLASS(obj, cgsl_vector_int_col);
   else if (CLASS_OF(obj) == cgsl_vector_int_col) RBGSL_SET_CLASS(obj, cgsl_vector_int);
@@ -704,7 +704,7 @@ VALUE FUNCTION(rb_gsl_vector,uminus)(VALUE obj)
   }
   if (CLASS_OF(obj) == GSL_TYPE(cgsl_poly))
     return Data_Wrap_Struct(GSL_TYPE(cgsl_poly), 0, FUNCTION(gsl_vector,free), vnew);
-  else 
+  else
     return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);
 }
 
@@ -810,7 +810,7 @@ static VALUE FUNCTION(rb_gsl_vector,sgn)(VALUE obj)
     x = FUNCTION(gsl_vector,get)(v, i);
     FUNCTION(gsl_vector,set)(vnew, i, (BASE)(x>0 ? 1 : (x<0 ? -1 : 0)));
   }
-  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);  
+  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);
 }
 
 static VALUE FUNCTION(rb_gsl_vector,abs)(VALUE obj)
@@ -822,7 +822,7 @@ static VALUE FUNCTION(rb_gsl_vector,abs)(VALUE obj)
   for (i = 0; i < v->size; i++) {
     FUNCTION(gsl_vector,set)(vnew, i, (BASE) fabs(FUNCTION(gsl_vector,get)(v, i)));
   }
-  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);  
+  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);
 }
 
 static VALUE FUNCTION(rb_gsl_vector,square)(VALUE obj)
@@ -834,7 +834,7 @@ static VALUE FUNCTION(rb_gsl_vector,square)(VALUE obj)
   for (i = 0; i < v->size; i++) {
     FUNCTION(gsl_vector,set)(vnew, i, gsl_pow_2(FUNCTION(gsl_vector,get)(v, i)));
   }
-  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);  
+  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);
 }
 
 static VALUE FUNCTION(rb_gsl_vector,sqrt)(VALUE obj)
@@ -846,7 +846,7 @@ static VALUE FUNCTION(rb_gsl_vector,sqrt)(VALUE obj)
   for (i = 0; i < v->size; i++) {
     FUNCTION(gsl_vector,set)(vnew, i, sqrt(FUNCTION(gsl_vector,get)(v, i)));
   }
-  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);  
+  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);
 }
 
 static VALUE FUNCTION(rb_gsl_vector,memcpy)(VALUE obj, VALUE dest, VALUE src)
@@ -867,7 +867,7 @@ static VALUE FUNCTION(rb_gsl_vector,clone)(VALUE obj)
   FUNCTION(gsl_vector,memcpy)(vnew, v);
   if (!VEC_VIEW_P(obj))
     return Data_Wrap_Struct(CLASS_OF(obj), 0, FUNCTION(gsl_vector,free), vnew);
-  else 
+  else
     return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);
 }
 
@@ -919,7 +919,7 @@ static VALUE FUNCTION(rb_gsl_vector,fprintf)(int argc, VALUE *argv, VALUE obj)
   GSL_TYPE(gsl_vector) *h = NULL;
   FILE *fp = NULL;
   int status, flag = 0;
-  if (argc != 1 && argc != 2) 
+  if (argc != 1 && argc != 2)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 2)", argc);
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), h);
   fp = rb_gsl_open_writefile(argv[0], &flag);
@@ -941,7 +941,7 @@ static VALUE FUNCTION(rb_gsl_vector,printf)(int argc, VALUE *argv, VALUE obj)
   int status;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), h);
   if (argc == 1) {
-    if (TYPE(argv[0]) != T_STRING) 
+    if (TYPE(argv[0]) != T_STRING)
       rb_raise(rb_eTypeError, "String expected");
     else
       status = FUNCTION(gsl_vector,fprintf)(stdout, h, STR2CSTR(argv[0]));
@@ -1052,7 +1052,7 @@ static VALUE FUNCTION(rb_gsl_vector,equal)(int argc, VALUE *argv, VALUE obj)
   case T_FLOAT:
     x = NUM2DBL(other);
     Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v1);
-    for (i = 0; i < v1->size; i++) 
+    for (i = 0; i < v1->size; i++)
       if (fabs(x-FUNCTION(gsl_vector,get)(v1, i)) > eps) return Qfalse;
     return Qtrue;
     break;
@@ -1110,11 +1110,11 @@ static VALUE FUNCTION(rb_gsl_vector,graph)(int argc, VALUE *argv, VALUE obj)
       if (VEC_P(argv[0])) {
   Data_Get_Struct(argv[0], GSL_TYPE(gsl_vector), x);
       } else {
-  rb_raise(rb_eTypeError, "argv[0] wrong type %s (String or Vector expected)", 
+  rb_raise(rb_eTypeError, "argv[0] wrong type %s (String or Vector expected)",
      rb_class2name(CLASS_OF(argv[0])));
       }
     } else {
-      rb_raise(rb_eTypeError, "argv[1] wrong type %s (String or Vector expected)", 
+      rb_raise(rb_eTypeError, "argv[1] wrong type %s (String or Vector expected)",
          rb_class2name(CLASS_OF(argv[1])));
     }
     break;
@@ -1125,7 +1125,7 @@ static VALUE FUNCTION(rb_gsl_vector,graph)(int argc, VALUE *argv, VALUE obj)
   if (y == NULL) rb_raise(rb_eRuntimeError, "ydata not given");
   fp = popen(command, "w");
   for (i = 0; i < y->size; i++) {
-    if (x == NULL) 
+    if (x == NULL)
       fprintf(fp, "%d %e\n", (int) i, (double) FUNCTION(gsl_vector,get)(y, i));
     else
       fprintf(fp, "%e %e\n", (double) FUNCTION(gsl_vector,get)(x, i), (double) FUNCTION(gsl_vector,get)(y, i));
@@ -1167,11 +1167,11 @@ static VALUE FUNCTION(rb_gsl_vector,graph_step)(int argc, VALUE *argv, VALUE obj
       if (VEC_P(argv[0])) {
   Data_Get_Struct(argv[0], GSL_TYPE(gsl_vector), x);
       } else {
-  rb_raise(rb_eTypeError, "argv[0] wrong type %s (String or Vector expected)", 
+  rb_raise(rb_eTypeError, "argv[0] wrong type %s (String or Vector expected)",
      rb_class2name(CLASS_OF(argv[0])));
       }
     } else {
-      rb_raise(rb_eTypeError, "argv[1] wrong type %s (String or Vector expected)", 
+      rb_raise(rb_eTypeError, "argv[1] wrong type %s (String or Vector expected)",
          rb_class2name(CLASS_OF(argv[1])));
     }
     break;
@@ -1186,16 +1186,16 @@ static VALUE FUNCTION(rb_gsl_vector,graph_step)(int argc, VALUE *argv, VALUE obj
       fprintf(fp, "%d %e\n%d %e\n", (int) i, (double) FUNCTION(gsl_vector,get)(y, i),
         (int) (i+1), (double) FUNCTION(gsl_vector,get)(y, i));
     } else {
-      if (i != y->size-1) 
-  fprintf(fp, "%e %e\n%e %e\n", (double) FUNCTION(gsl_vector,get)(x, i), 
+      if (i != y->size-1)
+  fprintf(fp, "%e %e\n%e %e\n", (double) FUNCTION(gsl_vector,get)(x, i),
   (double) FUNCTION(gsl_vector,get)(y, i),
-  (double) FUNCTION(gsl_vector,get)(x, i+1), 
+  (double) FUNCTION(gsl_vector,get)(x, i+1),
   (double) FUNCTION(gsl_vector,get)(y, i));
       else
-  fprintf(fp, "%e %e\n%e %e", 
-  (double) FUNCTION(gsl_vector,get)(x, i), 
+  fprintf(fp, "%e %e\n%e %e",
+  (double) FUNCTION(gsl_vector,get)(x, i),
   (double) FUNCTION(gsl_vector,get)(y, i),
-  2.0*FUNCTION(gsl_vector,get)(x, i)-FUNCTION(gsl_vector,get)(x, i-1), 
+  2.0*FUNCTION(gsl_vector,get)(x, i)-FUNCTION(gsl_vector,get)(x, i-1),
   (double) FUNCTION(gsl_vector,get)(y, i));
     }
   }
@@ -1243,10 +1243,10 @@ static VALUE FUNCTION(rb_gsl_vector,plot)(int argc, VALUE *argv, VALUE obj)
   }
   if (y == NULL) rb_raise(rb_eRuntimeError, "ydata not given");
   for (i = 0; i < y->size; i++) {
-    if (x == NULL) 
+    if (x == NULL)
       fprintf(fp, "%d %e\n", (int) i, (double) FUNCTION(gsl_vector,get)(y, i));
     else
-      fprintf(fp, "%e %e\n", (double) FUNCTION(gsl_vector,get)(x, i), 
+      fprintf(fp, "%e %e\n", (double) FUNCTION(gsl_vector,get)(x, i),
   (double) FUNCTION(gsl_vector,get)(y, i));
   }
   fprintf(fp, "e\n");
@@ -1265,7 +1265,7 @@ void FUNCTION(gsl_vector,print)(const GSL_TYPE(gsl_vector) *v, VALUE klass)
   || klass == cgsl_vector_int_col || klass == cgsl_vector_int_col_view
   || klass == cgsl_vector_int_col_view_ro) {
     printf(PRINTF_FORMAT, FUNCTION(gsl_vector,get)(v, 0));
-    for (i = 1; i < v->size; i++) {  
+    for (i = 1; i < v->size; i++) {
       printf(PRINTF_FORMAT, FUNCTION(gsl_vector,get)(v, i));
       if (i != v->size-1) printf("\n");
     }
@@ -1325,8 +1325,8 @@ VALUE FUNCTION(rb_gsl_vector,to_s)(VALUE obj)
   rb_str_cat(str, buf, strlen(buf));
       }
       x = FUNCTION(gsl_vector,get)(v, i);
-      if (x < 0) sprintf(buf, format, x); 
-      else sprintf(buf, format2, x); 
+      if (x < 0) sprintf(buf, format, x);
+      else sprintf(buf, format2, x);
       if (i != v->size-1) strcat(buf, "\n");
       rb_str_cat(str, buf, strlen(buf));
       if (i >= 20 && i != v->size-1) {
@@ -1459,7 +1459,7 @@ static VALUE FUNCTION(rb_gsl_vector,matrix_view)(int argc, VALUE *argv, VALUE ob
     break;
   case 3:
     mv = ALLOC(QUALIFIED_VIEW(gsl_matrix,view));
-    *mv = FUNCTION(gsl_matrix,view_vector_with_tda)(v, FIX2INT(argv[0]), FIX2INT(argv[1]), 
+    *mv = FUNCTION(gsl_matrix,view_vector_with_tda)(v, FIX2INT(argv[0]), FIX2INT(argv[1]),
          FIX2INT(argv[2]));
     break;
   default:
@@ -1619,7 +1619,7 @@ static VALUE FUNCTION(rb_gsl_vector,to_gplot)(int argc, VALUE *argv, VALUE obj)
     CHECK_VEC(tmp);
     Data_Get_Struct(tmp, GSL_TYPE(gsl_vector), v);
     if (len == 0) len = v->size;
-    if (len != v->size) 
+    if (len != v->size)
       rb_raise(rb_eRuntimeError, "vectors must have equal lengths");
     vp[i+istart] = v;
   }
@@ -1906,7 +1906,7 @@ static VALUE FUNCTION(rb_gsl_vector,histogram)(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   switch (argc) {
   case 1:
-    if (rb_obj_is_kind_of(argv[0], rb_cRange)) 
+    if (rb_obj_is_kind_of(argv[0], rb_cRange))
       argv[0] = rb_gsl_range2ary(argv[0]);
     switch (TYPE(argv[0])) {
     case T_FIXNUM:
@@ -2031,7 +2031,7 @@ static VALUE FUNCTION(rb_gsl_vector,concat)(VALUE obj, VALUE other)
       break;
   }
 
-  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);  
+  return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);
 }
 
 void FUNCTION(mygsl_vector,diff)(GSL_TYPE(gsl_vector) *vdst,
@@ -2086,7 +2086,7 @@ static VALUE FUNCTION(rb_gsl_vector,test)(VALUE obj, int (*f)(const double))
   size_t i;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   vi = gsl_vector_int_alloc(v->size);
-  for (i = 0; i < v->size; i++) 
+  for (i = 0; i < v->size; i++)
     gsl_vector_int_set(vi, i, (*f)(FUNCTION(gsl_vector,get)(v, i)));
   return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free, vi);
 }
@@ -2227,14 +2227,14 @@ static VALUE FUNCTION(rb_gsl_vector,filescan)(VALUE klass, VALUE file)
   Check_Type(file, T_STRING);
   strcpy(filename, STR2CSTR(file));
   sprintf(buf, "sed '/^#/d' %s | wc", filename);
-  if ((fp = popen(buf, "r")) == NULL) 
+  if ((fp = popen(buf, "r")) == NULL)
     rb_raise(rb_eIOError, "popen failed.");
   if (fgets(buf, 1024, fp) == NULL)
     rb_sys_fail(0);
   pclose(fp);
   sscanf(buf, "%d", &nn);
   lines = (size_t) nn;  /*  vector length */
-  if ((fp = fopen(filename, "r")) == NULL) 
+  if ((fp = fopen(filename, "r")) == NULL)
     rb_raise(rb_eIOError, "cannot open file %s.", filename);
   while (1) {
     if (fgets(buf, 1024, fp) == NULL)    /* read the first line to count number of columns */
@@ -2269,7 +2269,7 @@ static VALUE FUNCTION(rb_gsl_vector,filescan)(VALUE klass, VALUE file)
 }
 #undef FORMAT_TMP
 
-static int FUNCTION(gsl_vector,eq)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,eq)(const GSL_TYPE(gsl_vector) *a,
            const GSL_TYPE(gsl_vector) *b,
            gsl_block_uchar *c)
 {
@@ -2285,7 +2285,7 @@ static int FUNCTION(gsl_vector,eq)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,ne)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,ne)(const GSL_TYPE(gsl_vector) *a,
            const GSL_TYPE(gsl_vector) *b,
            gsl_block_uchar *c)
 {
@@ -2301,7 +2301,7 @@ static int FUNCTION(gsl_vector,ne)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,gt)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,gt)(const GSL_TYPE(gsl_vector) *a,
            const GSL_TYPE(gsl_vector) *b,
            gsl_block_uchar *c)
 {
@@ -2317,7 +2317,7 @@ static int FUNCTION(gsl_vector,gt)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,ge)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,ge)(const GSL_TYPE(gsl_vector) *a,
            const GSL_TYPE(gsl_vector) *b,
            gsl_block_uchar *c)
 {
@@ -2333,7 +2333,7 @@ static int FUNCTION(gsl_vector,ge)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,lt)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,lt)(const GSL_TYPE(gsl_vector) *a,
            const GSL_TYPE(gsl_vector) *b,
            gsl_block_uchar *c)
 {
@@ -2349,7 +2349,7 @@ static int FUNCTION(gsl_vector,lt)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,le)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,le)(const GSL_TYPE(gsl_vector) *a,
            const GSL_TYPE(gsl_vector) *b,
            gsl_block_uchar *c)
 {
@@ -2365,7 +2365,7 @@ static int FUNCTION(gsl_vector,le)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,and)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,and)(const GSL_TYPE(gsl_vector) *a,
            const GSL_TYPE(gsl_vector) *b,
            gsl_block_uchar *c)
 {
@@ -2381,7 +2381,7 @@ static int FUNCTION(gsl_vector,and)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,or)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,or)(const GSL_TYPE(gsl_vector) *a,
            const GSL_TYPE(gsl_vector) *b,
            gsl_block_uchar *c)
 {
@@ -2397,7 +2397,7 @@ static int FUNCTION(gsl_vector,or)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,xor)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,xor)(const GSL_TYPE(gsl_vector) *a,
             const GSL_TYPE(gsl_vector) *b,
             gsl_block_uchar *c)
 {
@@ -2413,7 +2413,7 @@ static int FUNCTION(gsl_vector,xor)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,eq2)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,eq2)(const GSL_TYPE(gsl_vector) *a,
             BASE b, gsl_block_uchar *c)
 {
   size_t i;
@@ -2427,7 +2427,7 @@ static int FUNCTION(gsl_vector,eq2)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,ne2)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,ne2)(const GSL_TYPE(gsl_vector) *a,
            BASE b,
            gsl_block_uchar *c)
 {
@@ -2442,7 +2442,7 @@ static int FUNCTION(gsl_vector,ne2)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,gt2)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,gt2)(const GSL_TYPE(gsl_vector) *a,
            BASE b,
            gsl_block_uchar *c)
 {
@@ -2457,7 +2457,7 @@ static int FUNCTION(gsl_vector,gt2)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,ge2)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,ge2)(const GSL_TYPE(gsl_vector) *a,
            BASE b,
            gsl_block_uchar *c)
 {
@@ -2472,7 +2472,7 @@ static int FUNCTION(gsl_vector,ge2)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,lt2)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,lt2)(const GSL_TYPE(gsl_vector) *a,
            BASE b,
            gsl_block_uchar *c)
 {
@@ -2487,7 +2487,7 @@ static int FUNCTION(gsl_vector,lt2)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,le2)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,le2)(const GSL_TYPE(gsl_vector) *a,
             BASE b,
            gsl_block_uchar *c)
 {
@@ -2502,7 +2502,7 @@ static int FUNCTION(gsl_vector,le2)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,and2)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,and2)(const GSL_TYPE(gsl_vector) *a,
             BASE b,
            gsl_block_uchar *c)
 {
@@ -2517,7 +2517,7 @@ static int FUNCTION(gsl_vector,and2)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,or2)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,or2)(const GSL_TYPE(gsl_vector) *a,
             BASE b,
            gsl_block_uchar *c)
 {
@@ -2532,7 +2532,7 @@ static int FUNCTION(gsl_vector,or2)(const GSL_TYPE(gsl_vector) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_vector,xor2)(const GSL_TYPE(gsl_vector) *a, 
+static int FUNCTION(gsl_vector,xor2)(const GSL_TYPE(gsl_vector) *a,
              BASE b,
             gsl_block_uchar *c)
 {
@@ -2564,8 +2564,8 @@ static VALUE FUNCTION(rb_gsl_vector,compare)(VALUE aa, VALUE bb,
   c = gsl_block_uchar_alloc(a->size);
   if (VEC_P(bb)) {
     Data_Get_Struct(bb, GSL_TYPE(gsl_vector), b);
-    if (a->size != b->size) 
-      rb_raise(rb_eRuntimeError, "Vector size mismatch, %d and %d", (int) a->size, 
+    if (a->size != b->size)
+      rb_raise(rb_eRuntimeError, "Vector size mismatch, %d and %d", (int) a->size,
          (int) b->size);
     /*status =*/ (*cmp)(a, b, c);
   } else {
@@ -2663,11 +2663,11 @@ static VALUE FUNCTION(rb_gsl_vector,any2)(VALUE obj)
 
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   if (rb_block_given_p()) {
-    for (i = 0; i < v->size; i++) 
+    for (i = 0; i < v->size; i++)
       if (rb_yield(C_TO_VALUE(FUNCTION(gsl_vector,get)(v, i)))) return Qtrue;
     return Qfalse;
   } else {
-    for (i = 0; i < v->size; i++) 
+    for (i = 0; i < v->size; i++)
       if (v->data[i*v->stride]) return Qtrue;
     return Qfalse;
   }
@@ -2680,11 +2680,11 @@ static VALUE FUNCTION(rb_gsl_vector,none)(VALUE obj)
 
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   if (rb_block_given_p()) {
-    for (i = 0; i < v->size; i++) 
+    for (i = 0; i < v->size; i++)
       if (rb_yield(C_TO_VALUE(FUNCTION(gsl_vector,get)(v, i)))) return Qfalse;
     return Qtrue;
   } else {
-    for (i = 0; i < v->size; i++) 
+    for (i = 0; i < v->size; i++)
       if (v->data[i*v->stride]) return Qfalse;
     return Qtrue;
   }
@@ -2697,11 +2697,11 @@ static VALUE FUNCTION(rb_gsl_vector,all)(VALUE obj)
 
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   if (rb_block_given_p()) {
-    for (i = 0; i < v->size; i++) 
+    for (i = 0; i < v->size; i++)
       if (!rb_yield(C_TO_VALUE(FUNCTION(gsl_vector,get)(v, i)))) return Qfalse;
     return Qtrue;
   } else {
-    for (i = 0; i < v->size; i++) 
+    for (i = 0; i < v->size; i++)
       if (!v->data[i*v->stride]) return Qfalse;
     return Qtrue;
   }
@@ -2768,11 +2768,11 @@ static VALUE FUNCTION(rb_gsl_vector,where2)(VALUE obj)
     v2 = gsl_permutation_calloc(v->size);  /* calloc() initializes v2 */
     vv1 = Qnil;
     vv2 = Data_Wrap_Struct(cgsl_index, 0, gsl_permutation_free, v2);
-  } else if (v->size-n == 0) { 
+  } else if (v->size-n == 0) {
     v1 = gsl_permutation_calloc(n);           /* calloc() initializes v1 */
-    vv1 = Data_Wrap_Struct(cgsl_index, 0, gsl_permutation_free, v1);     
+    vv1 = Data_Wrap_Struct(cgsl_index, 0, gsl_permutation_free, v1);
     vv2 = Qnil;
-  } else { 
+  } else {
     /* same case as 'where' */
     v1 = gsl_permutation_alloc(n);
     v2 = gsl_permutation_alloc(v->size-n);
@@ -2787,7 +2787,7 @@ static VALUE FUNCTION(rb_gsl_vector,where2)(VALUE obj)
   return rb_ary_new3(2, vv1, vv2);
 }
 
-static VALUE FUNCTION(rb_gsl_vector,op_inplace)(VALUE vv1, VALUE vv2, 
+static VALUE FUNCTION(rb_gsl_vector,op_inplace)(VALUE vv1, VALUE vv2,
             int (*f)(GSL_TYPE(gsl_vector)*, const GSL_TYPE(gsl_vector)*))
 {
   GSL_TYPE(gsl_vector) *v1, *v2;
@@ -2866,7 +2866,7 @@ static VALUE FUNCTION(rb_gsl_vector,zip)(int argc, VALUE *argv, VALUE obj)
     argv2 = argv;
   } else {
     if (argc < 1) rb_raise(rb_eArgError, "Too few arguments.");
-    Data_Get_Struct(argv[0], GSL_TYPE(gsl_vector), v0);    
+    Data_Get_Struct(argv[0], GSL_TYPE(gsl_vector), v0);
     argc2 = argc - 1;
     argv2 = argv + 1;
   }
@@ -2890,7 +2890,7 @@ static VALUE FUNCTION(rb_gsl_vector,zip)(int argc, VALUE *argv, VALUE obj)
     }
     rb_ary_store(ary, i, Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew));
   }
-  
+
   free((GSL_TYPE(gsl_vector)**) vp);
   return ary;
 }
@@ -2960,12 +2960,12 @@ static VALUE FUNCTION(rb_gsl_vector,property)(VALUE obj,
   int (*f)(const GSL_TYPE(gsl_vector) *)) {
   GSL_TYPE(gsl_vector) *v;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  return INT2FIX((*f)(v));  
+  return INT2FIX((*f)(v));
 }
 
 static VALUE FUNCTION(rb_gsl_vector,property2)(VALUE obj,
   int (*f)(const GSL_TYPE(gsl_vector) *)) {
-  GSL_TYPE(gsl_vector) *v;  
+  GSL_TYPE(gsl_vector) *v;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   if ((*f)(v)) return Qtrue;
   else return Qfalse;
@@ -2977,15 +2977,15 @@ static VALUE FUNCTION(rb_gsl_vector,ispos)(VALUE obj)
 }
 static VALUE FUNCTION(rb_gsl_vector,ispos2)(VALUE obj)
 {
-  return FUNCTION(rb_gsl_vector,property2)(obj, FUNCTION(gsl_vector, ispos));  
+  return FUNCTION(rb_gsl_vector,property2)(obj, FUNCTION(gsl_vector, ispos));
 }
 static VALUE FUNCTION(rb_gsl_vector,isneg)(VALUE obj)
 {
-  return FUNCTION(rb_gsl_vector,property)(obj, FUNCTION(gsl_vector, isneg));    
+  return FUNCTION(rb_gsl_vector,property)(obj, FUNCTION(gsl_vector, isneg));
 }
 static VALUE FUNCTION(rb_gsl_vector,isneg2)(VALUE obj)
 {
-  return FUNCTION(rb_gsl_vector,property2)(obj, FUNCTION(gsl_vector, isneg));      
+  return FUNCTION(rb_gsl_vector,property2)(obj, FUNCTION(gsl_vector, isneg));
 }
 #endif
 
@@ -2997,18 +2997,18 @@ static VALUE FUNCTION(rb_gsl_vector,isnonneg)(VALUE obj)
 static VALUE FUNCTION(rb_gsl_vector,isnonneg2)(VALUE obj)
 {
   return FUNCTION(rb_gsl_vector,property2)(obj, FUNCTION(gsl_vector, isnonneg));
-}  
+}
 #endif
 
 void FUNCTION(Init_gsl_vector,init)(VALUE module)
 {
-  /*  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "new", 
+  /*  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "new",
       FUNCTION(rb_gsl_vector,new), -1);*/
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "[]", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "[]",
            FUNCTION(rb_gsl_vector,new), -1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "alloc", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "alloc",
            FUNCTION(rb_gsl_vector,new), -1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "calloc", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "calloc",
            FUNCTION(rb_gsl_vector,calloc), 1);
 
 /*****/
@@ -3078,9 +3078,9 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_vector), "cumsum", FUNCTION(rb_gsl_vector,cumsum), 0);
   rb_define_method(GSL_TYPE(cgsl_vector), "cumprod", FUNCTION(rb_gsl_vector,cumprod), 0);
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "connect", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "connect",
        FUNCTION(rb_gsl_vector,connect), -1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "connect", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "connect",
            FUNCTION(rb_gsl_vector,connect), -1);
 
 
@@ -3088,75 +3088,75 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
   rb_define_alias(GSL_TYPE(cgsl_vector), "signum", "sgn");
   rb_define_method(GSL_TYPE(cgsl_vector), "abs", FUNCTION(rb_gsl_vector,abs), 0);
   rb_define_alias(GSL_TYPE(cgsl_vector), "fabs", "abs");
-  rb_define_method(GSL_TYPE(cgsl_vector), "square", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "square",
        FUNCTION(rb_gsl_vector,square), 0);
   rb_define_alias(GSL_TYPE(cgsl_vector), "abs2", "square");
   rb_define_method(GSL_TYPE(cgsl_vector), "sqrt", FUNCTION(rb_gsl_vector,sqrt), 0);
 
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "memcpy", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "memcpy",
            FUNCTION(rb_gsl_vector,memcpy), 2);
-  rb_define_method(GSL_TYPE(cgsl_vector), "clone", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "clone",
        FUNCTION(rb_gsl_vector,clone), 0);
   rb_define_alias(GSL_TYPE(cgsl_vector), "duplicate", "clone");
   rb_define_alias(GSL_TYPE(cgsl_vector), "dup", "clone");
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "swap", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "swap",
            FUNCTION(rb_gsl_vector,swap), 2);
-  rb_define_method(GSL_TYPE(cgsl_vector), "swap_elements", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "swap_elements",
        FUNCTION(rb_gsl_vector,swap_elements), 2);
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "fwrite", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "fwrite",
        FUNCTION(rb_gsl_vector,fwrite), 1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "fread", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "fread",
        FUNCTION(rb_gsl_vector,fread), 1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "fprintf", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "fprintf",
        FUNCTION(rb_gsl_vector,fprintf), -1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "printf", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "printf",
        FUNCTION(rb_gsl_vector,printf), -1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "fscanf", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "fscanf",
        FUNCTION(rb_gsl_vector,fscanf), 1);
 
   /* 2.Aug.2004 */
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "inner_product", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "inner_product",
            FUNCTION(rb_gsl_vector,inner_product), -1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "dot", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "dot",
            FUNCTION(rb_gsl_vector,inner_product), -1);
   rb_define_method(GSL_TYPE(cgsl_vector), "inner_product",
        FUNCTION(rb_gsl_vector,inner_product), -1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "dot", "inner_product");
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "equal?", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "equal?",
        FUNCTION(rb_gsl_vector,equal), -1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "==", "equal?");
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "to_poly", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "to_poly",
        FUNCTION(rb_gsl_vector,to_poly), 0);
 
 /*****/
-  rb_define_method(GSL_TYPE(cgsl_vector), "graph", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "graph",
        FUNCTION(rb_gsl_vector,graph), -1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "graph_step", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "graph_step",
        FUNCTION(rb_gsl_vector,graph_step), -1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "plot", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "plot",
        FUNCTION(rb_gsl_vector,plot), -1);
 
   rb_define_method(GSL_TYPE(cgsl_vector), "print",
        FUNCTION(rb_gsl_vector,print), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "inspect", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "inspect",
        FUNCTION(rb_gsl_vector,inspect), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "to_s", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "to_s",
        FUNCTION(rb_gsl_vector,to_s), 0);
 
 /*****/
   rb_define_method(GSL_TYPE(cgsl_vector), "subvector",
        FUNCTION(rb_gsl_vector,subvector), -1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "view", "subvector");
-  rb_define_method(GSL_TYPE(cgsl_vector), "subvector_with_stride", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "subvector_with_stride",
        FUNCTION(rb_gsl_vector,subvector_with_stride), -1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "view_with_stride", "subvector_with_stride");
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "matrix_view", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "matrix_view",
        FUNCTION(rb_gsl_vector,matrix_view), -1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "matrix_view_with_tda", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "matrix_view_with_tda",
        FUNCTION(rb_gsl_vector,matrix_view_with_tda), 3);
 
 #ifdef BASE_DOUBLE
@@ -3171,34 +3171,34 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
   rb_undef_method(cgsl_vector_int_col_view_ro, "[]=");
 #endif
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "scale", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "scale",
        FUNCTION(rb_gsl_vector,scale), 1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "scale!", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "scale!",
        FUNCTION(rb_gsl_vector,scale_bang), 1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "add_constant", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "add_constant",
        FUNCTION(rb_gsl_vector,add_constant), 1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "add_const", "add_constant");
-  rb_define_method(GSL_TYPE(cgsl_vector), "add_constant!", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "add_constant!",
        FUNCTION(rb_gsl_vector,add_constant_bang), 1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "add_const!", "add_constant!");
 
 #ifdef HAVE_TENSOR_TENSOR_H
-  rb_define_method(GSL_TYPE(cgsl_vector), "to_tensor", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "to_tensor",
        FUNCTION(rb_gsl_vector,to_tensor), -1);
 #endif
 
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "to_gplot", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "to_gplot",
            FUNCTION(rb_gsl_vector,to_gplot), -1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "to_gsplot", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "to_gsplot",
            FUNCTION(rb_gsl_vector,to_gplot), -1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "to_gplot", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "to_gplot",
        FUNCTION(rb_gsl_vector,to_gplot), -1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "to_gsplot", "to_gplot");
 
   /*****/
-  rb_define_method(GSL_TYPE(cgsl_vector), "collect", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "collect",
        FUNCTION(rb_gsl_vector,collect), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "collect!", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "collect!",
        FUNCTION(rb_gsl_vector,collect_bang), 0);
   rb_define_alias(GSL_TYPE(cgsl_vector), "map", "collect");
   rb_define_alias(GSL_TYPE(cgsl_vector), "map!", "collect!");
@@ -3206,24 +3206,24 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_vector), "to_m", FUNCTION(rb_gsl_vector,to_m), 2);
   rb_define_alias(GSL_TYPE(cgsl_vector), "to_matrix", "to_m");
   rb_define_alias(GSL_TYPE(cgsl_vector), "reshape", "to_m");
-  rb_define_method(GSL_TYPE(cgsl_vector), "to_m_diagonal", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "to_m_diagonal",
        FUNCTION(rb_gsl_vector,to_m_diagonal), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "block", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "block",
        FUNCTION(rb_gsl_vector,block), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "to_m_circulant", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "to_m_circulant",
        FUNCTION(rb_gsl_vector,to_m_circulant), 0);
-  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "indgen", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_vector), "indgen",
            FUNCTION(rb_gsl_vector,indgen_singleton), -1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "indgen", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "indgen",
        FUNCTION(rb_gsl_vector,indgen), -1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "indgen!", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "indgen!",
        FUNCTION(rb_gsl_vector,indgen_bang), -1);
   /*****/
-  rb_define_method(GSL_TYPE(cgsl_vector), "sort!", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "sort!",
        GSL_TYPE(rb_gsl_sort_vector), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "sort", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "sort",
        GSL_TYPE(rb_gsl_sort_vector2), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "sort_index", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "sort_index",
        FUNCTION(rb_gsl_sort_vector,index), 0);
   rb_define_method(GSL_TYPE(cgsl_vector), "sort_smallest",
        FUNCTION(rb_gsl_sort_vector,smallest), 1);
@@ -3231,10 +3231,10 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_vector), "sort_largest",
        FUNCTION(rb_gsl_sort_vector,largest), 1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "largest", "sort_largest");
-  rb_define_method(GSL_TYPE(cgsl_vector), "sort_smallest_index", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "sort_smallest_index",
        FUNCTION(rb_gsl_sort_vector,smallest_index), 1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "smallest_index", "sort_smallest_index");
-  rb_define_method(GSL_TYPE(cgsl_vector), "sort_largest_index", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "sort_largest_index",
        FUNCTION(rb_gsl_sort_vector,largest_index), 1);
   rb_define_alias(GSL_TYPE(cgsl_vector), "largest_index", "sort_largest_index");
 
@@ -3242,34 +3242,34 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_vector), "histogram",
        FUNCTION(rb_gsl_vector,histogram), -1);
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "last", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "last",
        FUNCTION(rb_gsl_vector,last), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "first", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "first",
        FUNCTION(rb_gsl_vector,first), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "concat", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "concat",
        FUNCTION(rb_gsl_vector,concat), 1);
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "diff", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "diff",
        FUNCTION(rb_gsl_vector,diff), -1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "isnan", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "isnan",
        FUNCTION(rb_gsl_vector,isnan), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "isinf", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "isinf",
        FUNCTION(rb_gsl_vector,isinf), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "finite", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "finite",
        FUNCTION(rb_gsl_vector,finite), 0);
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "isnan?", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "isnan?",
        FUNCTION(rb_gsl_vector,isnan2), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "isinf?", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "isinf?",
        FUNCTION(rb_gsl_vector,isinf2), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "finite?", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "finite?",
        FUNCTION(rb_gsl_vector,finite2), 0);
 
-  rb_define_method(GSL_TYPE(cgsl_vector), "delete_at", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "delete_at",
        FUNCTION(rb_gsl_vector,delete_at), 1);
-  rb_define_method(GSL_TYPE(cgsl_vector), "delete_if", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "delete_if",
        FUNCTION(rb_gsl_vector,delete_if), 0);
-  rb_define_method(GSL_TYPE(cgsl_vector), "delete", 
+  rb_define_method(GSL_TYPE(cgsl_vector), "delete",
        FUNCTION(rb_gsl_vector,delete), 1);
   /***/
   rb_define_singleton_method(GSL_TYPE(cgsl_vector), "filescan", FUNCTION(rb_gsl_vector,filescan), 1);

@@ -56,7 +56,7 @@ static VALUE rb_gsl_multifit_linear(int argc, VALUE *argv, VALUE obj)
   double chisq;
   int status, flag = 0;
   VALUE vc, vcov;
-  if (argc != 2 && argc != 3) 
+  if (argc != 2 && argc != 3)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)", argc);
   Data_Get_Matrix(argv[0], x);
   Data_Get_Vector(argv[1], y);
@@ -84,7 +84,7 @@ static VALUE rb_gsl_multifit_wlinear(int argc, VALUE *argv, VALUE obj)
   double chisq;
   int status, flag = 0;
   VALUE vc, vcov;
-  if (argc != 3 && argc != 4) 
+  if (argc != 3 && argc != 4)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 3 or 4)", argc);
   Data_Get_Matrix(argv[0], x);
   Data_Get_Vector(argv[1], w);
@@ -149,7 +149,7 @@ static VALUE rb_gsl_multifit_XXXfit(int argc, VALUE *argv, VALUE obj,
   double chisq;
   int status, flag = 0, flagw = 0;
   VALUE vc, verr;
-  if (argc != 3 && argc != 4 && argc != 5) 
+  if (argc != 3 && argc != 4 && argc != 5)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 3 or 4)", argc);
   x = &xx.vector;
   w = &ww.vector;
@@ -181,9 +181,9 @@ static VALUE rb_gsl_multifit_XXXfit(int argc, VALUE *argv, VALUE obj,
   err = gsl_vector_alloc(order + 1);
   vc = Data_Wrap_Struct(cgsl_poly, 0, gsl_vector_free, c);
   verr = Data_Wrap_Struct(cgsl_poly, 0, gsl_vector_free, err);
-  for (i = 0; i < err->size; i++) 
+  for (i = 0; i < err->size; i++)
     gsl_vector_set(err, i, sqrt(chisq/((double)x->size-err->size)*gsl_matrix_get(cov, i, i)));
-  
+
   gsl_matrix_free(X);
   gsl_matrix_free(cov);
   return rb_ary_new3(4, vc, verr, rb_float_new(chisq), INT2FIX(status));
@@ -230,7 +230,7 @@ static VALUE rb_gsl_multifit_fdfsolver_new(int argc, VALUE *argv, VALUE klass)
   T = gsl_multifit_fdfsolver_lmder;
   break;
       default:
-  rb_raise(rb_eTypeError, 
+  rb_raise(rb_eTypeError,
      "unknown solver type (GSL::MultiFit::FdfSolver::LMSDER or LMDER expected)");
   break;
       }
@@ -449,15 +449,15 @@ static VALUE rb_gsl_multifit_gradient(int argc, VALUE *argv, VALUE obj)
   switch (argc) {
   case 2:
     Data_Get_Matrix(argv[0], J);
-    Data_Get_Vector(argv[1], f);  
+    Data_Get_Vector(argv[1], f);
     g = gsl_vector_alloc(f->size);
     /*status =*/ gsl_multifit_gradient(J, f, g);
     return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, g);
-    break;  
+    break;
   case 3:
     Data_Get_Matrix(argv[0], J);
-    Data_Get_Vector(argv[1], f);  
-    Data_Get_Vector(argv[2], g);  
+    Data_Get_Vector(argv[1], f);
+    Data_Get_Vector(argv[2], g);
     return INT2FIX(gsl_multifit_gradient(J, f, g));
     break;
   default:
@@ -496,14 +496,14 @@ static VALUE rb_gsl_multifit_covar(int argc, VALUE *argv, VALUE obj)
 
 static void rb_gsl_multifit_define_const(VALUE klass)
 {
-  rb_define_const(klass, "LMSDER", 
+  rb_define_const(klass, "LMSDER",
       INT2FIX(GSL_MULTIFIT_FDFSOLVER_LMSDER));
-  rb_define_const(klass, "LMDER", 
+  rb_define_const(klass, "LMDER",
       INT2FIX(GSL_MULTIFIT_FDFSOLVER_LMDER));
 
-  rb_define_const(klass, "Lmsder", 
+  rb_define_const(klass, "Lmsder",
       INT2FIX(GSL_MULTIFIT_FDFSOLVER_LMSDER));
-  rb_define_const(klass, "Lmder", 
+  rb_define_const(klass, "Lmder",
       INT2FIX(GSL_MULTIFIT_FDFSOLVER_LMDER));
 }
 
@@ -551,7 +551,7 @@ static VALUE rb_gsl_multifit_function_fdf_new(int argc, VALUE *argv, VALUE klass
     break;
   }
   return obj;
-}          
+}
 
 static VALUE rb_gsl_multifit_function_fdf_set_procs(int argc, VALUE *argv, VALUE obj)
 {
@@ -643,7 +643,7 @@ static int gsl_multifit_function_fdf_f(const gsl_vector *x, void *params,
     break;
   default:
     rb_raise(rb_eArgError, "bad argument");
-    break;    
+    break;
   }
   return GSL_SUCCESS;
 }
@@ -671,7 +671,7 @@ static int gsl_multifit_function_fdf_df(const gsl_vector *x, void *params,
     break;
   default:
     rb_raise(rb_eArgError, "bad argument");
-    break;    
+    break;
   }
   return GSL_SUCCESS;
 }
@@ -696,7 +696,7 @@ static int gsl_multifit_function_fdf_fdf(const gsl_vector *x, void *params,
     if (NIL_P(proc_fdf)) {
       rb_funcall(proc_f, RBGSL_ID_call, 4, vx, vt, vy, vf);
       rb_funcall(proc_df, RBGSL_ID_call, 4, vx, vt, vy, vJ);
-    } else 
+    } else
       rb_funcall(proc_fdf, RBGSL_ID_call, 5, vx, vt, vy, vf, vJ);
     break;
   case 3:
@@ -706,12 +706,12 @@ static int gsl_multifit_function_fdf_fdf(const gsl_vector *x, void *params,
     if (NIL_P(proc_fdf)) {
       rb_funcall(proc_f, RBGSL_ID_call, 5, vx, vt, vy, vsigma, vf);
       rb_funcall(proc_df, RBGSL_ID_call, 5, vx, vt, vy, vsigma, vJ);
-    } else 
+    } else
       rb_funcall(proc_fdf, RBGSL_ID_call, 6, vx, vt, vy, vsigma, vf, vJ);
     break;
   default:
     rb_raise(rb_eArgError, "bad argument");
-    break;    
+    break;
   }
   return GSL_SUCCESS;
 }
@@ -750,7 +750,7 @@ struct fitting_xydata {
   gsl_vector *x, *y, *w;
 };
 
-/* Gaussian fit 
+/* Gaussian fit
    y = y0 + A exp(-(x-x0/sigma)^2)
        v[0] = y0
        v[1] = A
@@ -814,7 +814,7 @@ static int Gaussian_fdf(const gsl_vector *v, void *data,
   return GSL_SUCCESS;
 }
 
-/* 2 Gaussian fit 
+/* 2 Gaussian fit
    y = y0 + A1 exp(-(x-x01/sigma1)^2) + A2 exp(-(x-x02/sigma2)^2)
        v[0] = y0
        v[1] = A1
@@ -892,7 +892,7 @@ static int Gaussian_2peaks_fdf(const gsl_vector *v, void *data,
   return GSL_SUCCESS;
 }
 
-/* Exponential fit 
+/* Exponential fit
    y = y0 + A exp(-bx)
        v[0] = y0
        v[1] = A
@@ -938,7 +938,7 @@ static int Exponential_df(const gsl_vector *v, void *data, gsl_matrix *J)
     else wi = 1.0;
     yy = exp(-xi*b);
     gsl_matrix_set(J, i, 0, 1.0*wi);
-    gsl_matrix_set(J, i, 1, yy*wi); 
+    gsl_matrix_set(J, i, 1, yy*wi);
     gsl_matrix_set(J, i, 2, -A*yy*xi*wi);
   }
   return GSL_SUCCESS;
@@ -953,7 +953,7 @@ static int Exponential_fdf(const gsl_vector *v, void *data,
 }
 
 
-/* Double Exponential fit 
+/* Double Exponential fit
    y = y0 + A1 exp(-b1 x) + A2 exp(-b2 x)
        v[0] = y0
        v[1] = A1
@@ -1006,9 +1006,9 @@ static int DblExponential_df(const gsl_vector *v, void *data, gsl_matrix *J)
     yy1 = exp(-xi*b1);
     yy2 = exp(-xi*b2);
     gsl_matrix_set(J, i, 0, 1.0*wi);
-    gsl_matrix_set(J, i, 1, yy1*wi); 
+    gsl_matrix_set(J, i, 1, yy1*wi);
     gsl_matrix_set(J, i, 2, -A1*yy1*xi*wi);
-    gsl_matrix_set(J, i, 3, yy2*wi); 
+    gsl_matrix_set(J, i, 3, yy2*wi);
     gsl_matrix_set(J, i, 4, -A2*yy2*xi*wi);
   }
   return GSL_SUCCESS;
@@ -1022,7 +1022,7 @@ static int DblExponential_fdf(const gsl_vector *v, void *data,
   return GSL_SUCCESS;
 }
 
-/* Lorentzian fit 
+/* Lorentzian fit
    y = y0 + A/((x-x0)^2 + B)
        v[0] = y0
        v[1] = A
@@ -1071,7 +1071,7 @@ static int Lorentzian_df(const gsl_vector *v, void *data, gsl_matrix *J)
     else wi = 1.0;
     yy = gsl_pow_2(xi-x0)+B;
     gsl_matrix_set(J, i, 0, 1.0*wi);
-    gsl_matrix_set(J, i, 1, 1.0/yy*wi); 
+    gsl_matrix_set(J, i, 1, 1.0/yy*wi);
     gsl_matrix_set(J, i, 2, 2.0*A*(xi-x0)/yy/yy*wi);
     gsl_matrix_set(J, i, 3, -A/yy/yy*wi);
   }
@@ -1136,7 +1136,7 @@ static int Sin_df(const gsl_vector *v, void *data, gsl_matrix *J)
     ys = sin(fc*xi + phi);
     yc = cos(fc*xi + phi);
     gsl_matrix_set(J, i, 0, 1.0*wi);
-    gsl_matrix_set(J, i, 1, ys*wi); 
+    gsl_matrix_set(J, i, 1, ys*wi);
     gsl_matrix_set(J, i, 2, A*yc*xi*wi);
     gsl_matrix_set(J, i, 3, A*yc*wi);
   }
@@ -1202,7 +1202,7 @@ static int Hill_df(const gsl_vector *v, void *data, gsl_matrix *J)
     a = pow(xhalf/xi, r);
     yy = (1.0 + a);
     gsl_matrix_set(J, i, 0, (1.0 - 1.0/yy)*wi);
-    gsl_matrix_set(J, i, 1, 1.0/yy*wi); 
+    gsl_matrix_set(J, i, 1, 1.0/yy*wi);
     gsl_matrix_set(J, i, 2, -(m-y0)*r/xhalf*a/yy/yy*wi);
     gsl_matrix_set(J, i, 3, -(m-y0)/yy/yy*a*log(xhalf/xi)*wi);
   }
@@ -1267,7 +1267,7 @@ static int Sigmoid_df(const gsl_vector *v, void *data, gsl_matrix *J)
     a = exp((x0 - xi)/r);
     yy = 1.0 + a;
     gsl_matrix_set(J, i, 0, wi);
-    gsl_matrix_set(J, i, 1, 1.0/yy*wi); 
+    gsl_matrix_set(J, i, 1, 1.0/yy*wi);
     gsl_matrix_set(J, i, 2, -m*a/r/yy/yy*wi);
     gsl_matrix_set(J, i, 3, m*a*(x0-xi)/r/r/yy/yy*wi);
   }
@@ -1329,9 +1329,9 @@ static int Power_df(const gsl_vector *v, void *data, gsl_matrix *J)
     else wi = 1.0;
     a = pow(xi, r);
     gsl_matrix_set(J, i, 0, wi);
-    gsl_matrix_set(J, i, 1, a*wi); 
+    gsl_matrix_set(J, i, 1, a*wi);
     gsl_matrix_set(J, i, 2, A*a*log(xi)*wi);
-    
+
   }
   return GSL_SUCCESS;
 }
@@ -1395,7 +1395,7 @@ static int Lognormal_df(const gsl_vector *v, void *data, gsl_matrix *J)
     a = log(xi/x0)/width;
     b = exp(-a*a);
     gsl_matrix_set(J, i, 0, wi);
-    gsl_matrix_set(J, i, 1, b*wi); 
+    gsl_matrix_set(J, i, 1, b*wi);
     gsl_matrix_set(J, i, 2, 2.0*A*b*a*a*a/width/x0*wi);
     gsl_matrix_set(J, i, 3, 2.0*A*b*a*a*a*a/width*wi);
   }
@@ -1410,7 +1410,7 @@ static int Lognormal_fdf(const gsl_vector *v, void *data,
   return GSL_SUCCESS;
 }
 
-/* Rayleigh fit 
+/* Rayleigh fit
    y = A exp(-x*x/2/var)
        v[0] = A
        v[1] = var = sigma^2
@@ -1507,7 +1507,7 @@ static void set_fittype(gsl_multifit_function_fdf *f, const char *fittype, size_
       *v = gsl_vector_alloc(*p);
       gsl_vector_set(*v, 0, 0);   /* y0 = 0 */
       gsl_vector_set(*v, 1, 1);   /* A = 1 */
-      gsl_vector_set(*v, 2, 1);   
+      gsl_vector_set(*v, 2, 1);
       *flag = 1;
     }
  } else if (str_head_grep(fittype, "rayleigh") == 0) {
@@ -1530,9 +1530,9 @@ static void set_fittype(gsl_multifit_function_fdf *f, const char *fittype, size_
       *v = gsl_vector_alloc(*p);
       gsl_vector_set(*v, 0, 0);   /* y0 = 0 */
       gsl_vector_set(*v, 1, 1);   /* A = 1 */
-      gsl_vector_set(*v, 2, 1);   
+      gsl_vector_set(*v, 2, 1);
       gsl_vector_set(*v, 3, 1);   /* A = 1 */
-      gsl_vector_set(*v, 4, 1);   
+      gsl_vector_set(*v, 4, 1);
       *flag = 1;
     }
   } else if (str_head_grep(fittype, "lor") == 0) {
@@ -1542,10 +1542,10 @@ static void set_fittype(gsl_multifit_function_fdf *f, const char *fittype, size_
     *p = 4;
     if (*v == NULL) {
       *v = gsl_vector_alloc(*p);
-      gsl_vector_set(*v, 0, 0); 
+      gsl_vector_set(*v, 0, 0);
       gsl_vector_set(*v, 1, 1);
-      gsl_vector_set(*v, 2, 0);  
-      gsl_vector_set(*v, 3, 1);  
+      gsl_vector_set(*v, 2, 0);
+      gsl_vector_set(*v, 3, 1);
       *flag = 1;
     }
   } else if (str_head_grep(fittype, "sin") == 0) {
@@ -1555,10 +1555,10 @@ static void set_fittype(gsl_multifit_function_fdf *f, const char *fittype, size_
     *p = 4;
     if (*v == NULL) {
       *v = gsl_vector_alloc(*p);
-      gsl_vector_set(*v, 0, 0); 
+      gsl_vector_set(*v, 0, 0);
       gsl_vector_set(*v, 1, 1);
-      gsl_vector_set(*v, 2, 1);  
-      gsl_vector_set(*v, 3, 0);  
+      gsl_vector_set(*v, 2, 1);
+      gsl_vector_set(*v, 3, 0);
       *flag = 1;
     }
   } else if (str_head_grep(fittype, "hill") == 0) {
@@ -1568,10 +1568,10 @@ static void set_fittype(gsl_multifit_function_fdf *f, const char *fittype, size_
     *p = 4;
     if (*v == NULL) {
       *v = gsl_vector_alloc(*p);
-      gsl_vector_set(*v, 0, 0); 
+      gsl_vector_set(*v, 0, 0);
       gsl_vector_set(*v, 1, 1);
-      gsl_vector_set(*v, 2, 1);  
-      gsl_vector_set(*v, 3, 1);  
+      gsl_vector_set(*v, 2, 1);
+      gsl_vector_set(*v, 3, 1);
       *flag = 1;
     }
   } else if (str_head_grep(fittype, "sigmoid") == 0 || str_head_grep(fittype, "fermi") == 0) {
@@ -1581,10 +1581,10 @@ static void set_fittype(gsl_multifit_function_fdf *f, const char *fittype, size_
     *p = 4;
     if (*v == NULL) {
       *v = gsl_vector_alloc(*p);
-      gsl_vector_set(*v, 0, 0); 
+      gsl_vector_set(*v, 0, 0);
       gsl_vector_set(*v, 1, 1);
-      gsl_vector_set(*v, 2, 0);  
-      gsl_vector_set(*v, 3, 1);  
+      gsl_vector_set(*v, 2, 0);
+      gsl_vector_set(*v, 3, 1);
       *flag = 1;
     }
   } else if (str_head_grep(fittype, "power") == 0) {
@@ -1594,9 +1594,9 @@ static void set_fittype(gsl_multifit_function_fdf *f, const char *fittype, size_
     *p = 3;
     if (*v == NULL) {
       *v = gsl_vector_alloc(*p);
-      gsl_vector_set(*v, 0, 0); 
+      gsl_vector_set(*v, 0, 0);
       gsl_vector_set(*v, 1, 1);
-      gsl_vector_set(*v, 2, -1);  
+      gsl_vector_set(*v, 2, -1);
       *flag = 1;
     }
   } else if (str_head_grep(fittype, "lognormal") == 0) {
@@ -1606,10 +1606,10 @@ static void set_fittype(gsl_multifit_function_fdf *f, const char *fittype, size_
     *p = 4;
     if (*v == NULL) {
       *v = gsl_vector_alloc(*p);
-      gsl_vector_set(*v, 0, 0); 
+      gsl_vector_set(*v, 0, 0);
       gsl_vector_set(*v, 1, 1);
-      gsl_vector_set(*v, 2, 1);  
-      gsl_vector_set(*v, 3, 1);  
+      gsl_vector_set(*v, 2, 1);
+      gsl_vector_set(*v, 3, 1);
       *flag = 1;
     }
   } else {
@@ -1765,33 +1765,33 @@ void Init_gsl_multifit(VALUE module)
 
   mgsl_multifit = rb_define_module_under(module, "MultiFit");
 
-  cgsl_multifit_workspace = rb_define_class_under(mgsl_multifit, "Workspace", 
+  cgsl_multifit_workspace = rb_define_class_under(mgsl_multifit, "Workspace",
               cGSL_Object);
-  rb_define_singleton_method(cgsl_multifit_workspace, "new", 
+  rb_define_singleton_method(cgsl_multifit_workspace, "new",
            rb_gsl_multifit_workspace_new, 2);
-  rb_define_singleton_method(cgsl_multifit_workspace, "alloc", 
+  rb_define_singleton_method(cgsl_multifit_workspace, "alloc",
            rb_gsl_multifit_workspace_new, 2);
-  rb_define_singleton_method(mgsl_multifit, "alloc", 
-           rb_gsl_multifit_workspace_new, 2);           
+  rb_define_singleton_method(mgsl_multifit, "alloc",
+           rb_gsl_multifit_workspace_new, 2);
   rb_define_module_function(mgsl_multifit, "linear", rb_gsl_multifit_linear, -1);
   rb_define_module_function(mgsl_multifit, "wlinear", rb_gsl_multifit_wlinear, -1);
 
   cgsl_multifit_solver = rb_define_class_under(mgsl_multifit, "Solver", cGSL_Object);
-  cgsl_multifit_fdfsolver = rb_define_class_under(mgsl_multifit, "FdfSolver", 
+  cgsl_multifit_fdfsolver = rb_define_class_under(mgsl_multifit, "FdfSolver",
               cgsl_multifit_solver);
   cgsl_multifit_function_fdf = rb_define_class_under(mgsl_multifit, "Function_fdf",
                  cGSL_Object);
 
   /*****/
 
-  rb_define_singleton_method(cgsl_multifit_fdfsolver, "new", 
+  rb_define_singleton_method(cgsl_multifit_fdfsolver, "new",
            rb_gsl_multifit_fdfsolver_new, -1);
-  rb_define_singleton_method(cgsl_multifit_fdfsolver, "alloc", 
+  rb_define_singleton_method(cgsl_multifit_fdfsolver, "alloc",
            rb_gsl_multifit_fdfsolver_new, -1);
 
-  rb_define_singleton_method(cgsl_multifit_function_fdf, "new", 
+  rb_define_singleton_method(cgsl_multifit_function_fdf, "new",
            rb_gsl_multifit_function_fdf_new, -1);
-  rb_define_singleton_method(cgsl_multifit_function_fdf, "alloc", 
+  rb_define_singleton_method(cgsl_multifit_function_fdf, "alloc",
            rb_gsl_multifit_function_fdf_new, -1);
 
   /*****/
@@ -1827,20 +1827,20 @@ void Init_gsl_multifit(VALUE module)
 
   rb_gsl_multifit_define_const(cgsl_multifit_fdfsolver);
 
-  rb_define_method(cgsl_multifit_function_fdf, "set_procs", 
+  rb_define_method(cgsl_multifit_function_fdf, "set_procs",
        rb_gsl_multifit_function_fdf_set_procs, -1);
-  rb_define_method(cgsl_multifit_function_fdf, "set_data", 
+  rb_define_method(cgsl_multifit_function_fdf, "set_data",
        rb_gsl_multifit_function_fdf_set_data, -1);
-  rb_define_method(cgsl_multifit_function_fdf, "params", 
+  rb_define_method(cgsl_multifit_function_fdf, "params",
        rb_gsl_multifit_function_fdf_params, 0);
   rb_define_alias(cgsl_multifit_function_fdf, "param", "params");
 
-  rb_define_method(cgsl_multifit_function_fdf, "n", 
+  rb_define_method(cgsl_multifit_function_fdf, "n",
        rb_gsl_multifit_function_fdf_n, 0);
-  rb_define_method(cgsl_multifit_function_fdf, "set_n", 
+  rb_define_method(cgsl_multifit_function_fdf, "set_n",
        rb_gsl_multifit_function_fdf_set_n, 1);
   rb_define_alias(cgsl_multifit_function_fdf, "n=", "set_n");
-  rb_define_method(cgsl_multifit_function_fdf, "p", 
+  rb_define_method(cgsl_multifit_function_fdf, "p",
        rb_gsl_multifit_function_fdf_p, 0);
   rb_define_alias(cgsl_multifit_function_fdf, "np", "p");
 

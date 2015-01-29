@@ -13,7 +13,7 @@ p eval
 p evec
 
 =begin
-This can be compared with the corresponding output from GNU OCTAVE, 
+This can be compared with the corresponding output from GNU OCTAVE,
 
   octave> [v,d] = eig(vander([-1 -2 3 4]));
 octave> diag(d)

@@ -82,20 +82,20 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
   size_t i, N, n;
   VALUE val;
   double *ptr0;
-  double *ptr1, *ptr2;  
+  double *ptr1, *ptr2;
 #ifdef HAVE_NARRAY_H
   int shape[1];
-#endif  
+#endif
 #ifdef GSL_1_11_LATER
   gsl_complex *z, zz;
   gsl_vector_complex *vz, *vznew;
-  if (rb_obj_is_kind_of(a, cgsl_vector_complex)) 
+  if (rb_obj_is_kind_of(a, cgsl_vector_complex))
     return rb_gsl_complex_poly_complex_eval(a, x);
 #endif
   switch (TYPE(a)) {
   case T_ARRAY:
 #ifdef GSL_1_11_LATER
-    if (rb_obj_is_kind_of(rb_ary_entry(a, 0), cgsl_complex)) 
+    if (rb_obj_is_kind_of(rb_ary_entry(a, 0), cgsl_complex))
       return rb_gsl_complex_poly_complex_eval(a, x);
 #endif
     v = make_cvector_from_rarray(a);
@@ -123,7 +123,7 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
   case T_BIGNUM:
   case T_FLOAT:
     val = rb_float_new(gsl_poly_eval(ptr0, N, NUM2DBL(x)));
-    break;    
+    break;
   case T_ARRAY:
     n = RARRAY_LEN(x);
     val = rb_ary_new2(n);
@@ -131,7 +131,7 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
       rslt = gsl_poly_eval(ptr0, N, NUM2DBL(rb_ary_entry(x, i)));
       rb_ary_store(val, i, rb_float_new(rslt));
     }
-    break;  
+    break;
   default:
     if (rb_obj_is_kind_of(x, cgsl_vector)) {
       Data_Get_Struct(x, gsl_vector, vx);
@@ -143,7 +143,7 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
     } else if (rb_obj_is_kind_of(x, cgsl_matrix)) {
       Data_Get_Struct(x, gsl_matrix, mx);
       mnew = gsl_matrix_alloc(mx->size1, mx->size2);
-      val = Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);      
+      val = Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
       n = mx->size1*mx->size2;
       ptr1 = mx->data;
       ptr2 = mnew->data;
@@ -153,7 +153,7 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
       n = shape[0];
       val = na_make_object(NA_DFLOAT, 1, shape, CLASS_OF(x));
       ptr1 = NA_PTR_TYPE(x, double*);
-      ptr2 = NA_PTR_TYPE(val, double*);      
+      ptr2 = NA_PTR_TYPE(val, double*);
 #endif
 #ifdef GSL_1_11_LATER
     } else if (rb_obj_is_kind_of(x, cgsl_complex)) {
@@ -174,7 +174,7 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
 #endif
     } else {
       rb_raise(rb_eTypeError, "Wrong argument type %s (A number, Array, GSL::Vector or NArray expected)",
-        rb_class2name(CLASS_OF(a)));      
+        rb_class2name(CLASS_OF(a)));
     }
     for (i = 0; i < n; i++) {
       ptr2[i] = gsl_poly_eval(ptr0, N, ptr1[i]);
@@ -315,7 +315,7 @@ static VALUE FUNCTION(rb_gsl_poly,eval)(VALUE obj, VALUE xx)
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
   for (j = 0; j < m->size2; j++) {
-    gsl_matrix_set(mnew, i, j, 
+    gsl_matrix_set(mnew, i, j,
        FUNCTION(gsl_poly,eval)(p->data, p->size, FUNCTION(gsl_matrix,get)(m, i, j)));
   }
       }
@@ -418,7 +418,7 @@ static VALUE FUNCTION(rb_gsl_poly,eval2)(int argc, VALUE *argv, VALUE obj)
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
   for (j = 0; j < m->size2; j++) {
-    gsl_matrix_set(mnew, i, j, 
+    gsl_matrix_set(mnew, i, j,
        FUNCTION(gsl_poly,eval)(p->data, size, FUNCTION(gsl_matrix,get)(m, i, j)));
   }
       }
@@ -446,7 +446,7 @@ static VALUE FUNCTION(rb_gsl_poly,solve_quadratic)(int argc, VALUE *argv, VALUE 
   case 1:
     switch (TYPE(argv[0])) {
     case T_ARRAY:
-      n = gsl_poly_solve_quadratic(NUMCONV2(rb_ary_entry(argv[0], 0)), 
+      n = gsl_poly_solve_quadratic(NUMCONV2(rb_ary_entry(argv[0], 0)),
            NUMCONV2(rb_ary_entry(argv[0], 1)),
            NUMCONV2(rb_ary_entry(argv[0], 2)),
            &x0, &x1);
@@ -462,7 +462,7 @@ static VALUE FUNCTION(rb_gsl_poly,solve_quadratic)(int argc, VALUE *argv, VALUE 
     }
     break;
   default:
-    rb_raise(rb_eArgError, 
+    rb_raise(rb_eArgError,
        "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
@@ -487,14 +487,14 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_quadratic)(int argc, VALUE *argv
   int n;
   switch (argc) {
   case 3:
-    n = gsl_poly_complex_solve_quadratic(NUMCONV2(argv[0]), 
+    n = gsl_poly_complex_solve_quadratic(NUMCONV2(argv[0]),
            NUMCONV2(argv[1]), NUMCONV2(argv[2]),
            &z0, &z1);
     break;
   case 1:
     switch (TYPE(argv[0])) {
     case T_ARRAY:
-      n = gsl_poly_complex_solve_quadratic(NUMCONV2(rb_ary_entry(argv[0], 0)), 
+      n = gsl_poly_complex_solve_quadratic(NUMCONV2(rb_ary_entry(argv[0], 0)),
              NUMCONV2(rb_ary_entry(argv[0], 1)),
              NUMCONV2(rb_ary_entry(argv[0], 2)),
              &z0, &z1);
@@ -510,7 +510,7 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_quadratic)(int argc, VALUE *argv
     }
     break;
   default:
-    rb_raise(rb_eArgError, 
+    rb_raise(rb_eArgError,
        "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
@@ -541,7 +541,7 @@ static VALUE FUNCTION(rb_gsl_poly,solve_cubic)(int argc, VALUE *argv, VALUE obj)
   case 1:
     switch (TYPE(argv[0])) {
     case T_ARRAY:
-      n = gsl_poly_solve_cubic(NUMCONV2(rb_ary_entry(argv[0], 0)), 
+      n = gsl_poly_solve_cubic(NUMCONV2(rb_ary_entry(argv[0], 0)),
            NUMCONV2(rb_ary_entry(argv[0], 1)),
            NUMCONV2(rb_ary_entry(argv[0], 2)),
            &x0, &x1, &x2);
@@ -557,7 +557,7 @@ static VALUE FUNCTION(rb_gsl_poly,solve_cubic)(int argc, VALUE *argv, VALUE obj)
     }
     break;
   default:
-    rb_raise(rb_eArgError, 
+    rb_raise(rb_eArgError,
        "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
@@ -584,7 +584,7 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_cubic)(int argc, VALUE *argv, VA
   case 1:
     switch (TYPE(argv[0])) {
     case T_ARRAY:
-      n = gsl_poly_complex_solve_cubic(NUMCONV2(rb_ary_entry(argv[0], 0)), 
+      n = gsl_poly_complex_solve_cubic(NUMCONV2(rb_ary_entry(argv[0], 0)),
            NUMCONV2(rb_ary_entry(argv[0], 1)),
            NUMCONV2(rb_ary_entry(argv[0], 2)),
            &z0, &z1, &z2);
@@ -600,7 +600,7 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_cubic)(int argc, VALUE *argv, VA
     }
     break;
   default:
-    rb_raise(rb_eArgError, 
+    rb_raise(rb_eArgError,
        "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
@@ -629,7 +629,7 @@ static VALUE FUNCTION(rb_gsl_poly,solve_quartic)(int argc, VALUE *argv, VALUE ob
   case 1:
     switch (TYPE(argv[0])) {
     case T_ARRAY:
-      n = gsl_poly_solve_quartic(NUMCONV2(rb_ary_entry(argv[0], 0)), 
+      n = gsl_poly_solve_quartic(NUMCONV2(rb_ary_entry(argv[0], 0)),
              NUMCONV2(rb_ary_entry(argv[0], 1)),
              NUMCONV2(rb_ary_entry(argv[0], 2)),
              NUMCONV2(rb_ary_entry(argv[0], 3)),
@@ -647,7 +647,7 @@ static VALUE FUNCTION(rb_gsl_poly,solve_quartic)(int argc, VALUE *argv, VALUE ob
     }
     break;
   default:
-    rb_raise(rb_eArgError, 
+    rb_raise(rb_eArgError,
        "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
@@ -669,14 +669,14 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_quartic)(int argc, VALUE *argv, 
   int n;
   switch (argc) {
   case 4:
-    n = gsl_poly_complex_solve_quartic(NUMCONV2(argv[0]), NUMCONV2(argv[1]), 
+    n = gsl_poly_complex_solve_quartic(NUMCONV2(argv[0]), NUMCONV2(argv[1]),
                NUMCONV2(argv[2]), NUMCONV2(argv[3]),
                &z0, &z1, &z2, &z3);
     break;
   case 1:
     switch (TYPE(argv[0])) {
     case T_ARRAY:
-      n = gsl_poly_complex_solve_quartic(NUMCONV2(rb_ary_entry(argv[0], 0)), 
+      n = gsl_poly_complex_solve_quartic(NUMCONV2(rb_ary_entry(argv[0], 0)),
            NUMCONV2(rb_ary_entry(argv[0], 1)),
            NUMCONV2(rb_ary_entry(argv[0], 2)),
            NUMCONV2(rb_ary_entry(argv[0], 3)),
@@ -694,7 +694,7 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_quartic)(int argc, VALUE *argv, 
     }
     break;
   default:
-    rb_raise(rb_eArgError, 
+    rb_raise(rb_eArgError,
        "wrong number of arguments (3 numbers or 1 array or 1 vector)");
     break;
   }
@@ -862,7 +862,7 @@ static VALUE FUNCTION(rb_gsl_poly,solve_cubic2)(VALUE obj)
   if (v->size < 4) {
     rb_raise(rb_eArgError, "the order of the object is less than 4.");
   }
-  a3 = FUNCTION(gsl_vector,get)(v, 3);   
+  a3 = FUNCTION(gsl_vector,get)(v, 3);
   a2 = FUNCTION(gsl_vector,get)(v, 2)/a3;   /* coefficients */
   a1 = FUNCTION(gsl_vector,get)(v, 1)/a3;
   a0 = FUNCTION(gsl_vector,get)(v, 0)/a3;
@@ -887,7 +887,7 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_cubic2)(VALUE obj)
   if (v->size < 4) {
     rb_raise(rb_eArgError, "the order of the object is less than 4.");
   }
-  a3 = FUNCTION(gsl_vector,get)(v, 3);   
+  a3 = FUNCTION(gsl_vector,get)(v, 3);
   a2 = FUNCTION(gsl_vector,get)(v, 2)/a3;   /* coefficients */
   a1 = FUNCTION(gsl_vector,get)(v, 1)/a3;
   a0 = FUNCTION(gsl_vector,get)(v, 0)/a3;
@@ -915,8 +915,8 @@ static VALUE FUNCTION(rb_gsl_poly,solve_quartic2)(VALUE obj)
   if (v->size < 5) {
     rb_raise(rb_eArgError, "the order of the object is less than 4.");
   }
-  a4 = FUNCTION(gsl_vector,get)(v, 4);   
-  a3 = FUNCTION(gsl_vector,get)(v, 3)/a4;   
+  a4 = FUNCTION(gsl_vector,get)(v, 4);
+  a3 = FUNCTION(gsl_vector,get)(v, 3)/a4;
   a2 = FUNCTION(gsl_vector,get)(v, 2)/a4;   /* coefficients */
   a1 = FUNCTION(gsl_vector,get)(v, 1)/a4;
   a0 = FUNCTION(gsl_vector,get)(v, 0)/a4;
@@ -941,8 +941,8 @@ static VALUE FUNCTION(rb_gsl_poly,complex_solve_quartic2)(VALUE obj)
   if (v->size < 5) {
     rb_raise(rb_eArgError, "the order of the object is less than 4.");
   }
-  a4 = FUNCTION(gsl_vector,get)(v, 4);   
-  a3 = FUNCTION(gsl_vector,get)(v, 3)/a4;   
+  a4 = FUNCTION(gsl_vector,get)(v, 4);
+  a3 = FUNCTION(gsl_vector,get)(v, 3)/a4;
   a2 = FUNCTION(gsl_vector,get)(v, 2)/a4;   /* coefficients */
   a1 = FUNCTION(gsl_vector,get)(v, 1)/a4;
   a0 = FUNCTION(gsl_vector,get)(v, 0)/a4;
@@ -986,7 +986,7 @@ VALUE FUNCTION(rb_gsl_poly,complex_solve2)(int argc, VALUE *argv, VALUE obj)
     w = gsl_poly_complex_workspace_alloc(size);
     flag = 1;
   }
-  
+
   /*status =*/ gsl_poly_complex_solve(a->data, size, w, z->data);
 
   r = gsl_vector_complex_alloc(size - 1);
@@ -1009,7 +1009,7 @@ static VALUE rb_gsl_poly_int_to_f(VALUE obj)
   size_t i;
   Data_Get_Struct(obj, gsl_vector_int, vi);
   v = gsl_vector_alloc(vi->size);
-  for (i = 0; i < v->size; i++) 
+  for (i = 0; i < v->size; i++)
     gsl_vector_set(v, i, (double) gsl_vector_int_get(vi, i));
   return Data_Wrap_Struct(cgsl_poly, 0, gsl_vector_free, v);
 }
@@ -1023,7 +1023,7 @@ static VALUE rb_gsl_poly_to_i(VALUE obj)
   size_t i;
   Data_Get_Struct(obj, gsl_vector, v);
   vi = gsl_vector_int_alloc(v->size);
-  for (i = 0; i < v->size; i++) 
+  for (i = 0; i < v->size; i++)
     gsl_vector_int_set(vi, i, (int) gsl_vector_get(v, i));
   return Data_Wrap_Struct(cgsl_poly_int, 0, gsl_vector_int_free, vi);
 }
@@ -1073,8 +1073,8 @@ static VALUE rb_gsl_poly_dd_eval(VALUE obj, VALUE xxa, VALUE xx)
     for (i = 0; i < size; i++) {
       x = rb_ary_entry(xx, i);
       Need_Float(x);
-      rb_ary_store(ary, i, 
-       rb_float_new(gsl_poly_dd_eval(dd->data, xa->data, 
+      rb_ary_store(ary, i,
+       rb_float_new(gsl_poly_dd_eval(dd->data, xa->data,
              dd->size, NUM2DBL(x))));
     }
     return ary;
@@ -1085,8 +1085,8 @@ static VALUE rb_gsl_poly_dd_eval(VALUE obj, VALUE xxa, VALUE xx)
       size = v->size;
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < size; i++) {
-  gsl_vector_set(vnew, i, 
-           gsl_poly_dd_eval(dd->data, xa->data, 
+  gsl_vector_set(vnew, i,
+           gsl_poly_dd_eval(dd->data, xa->data,
           dd->size, FUNCTION(gsl_vector,get)(v, i)));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
@@ -1096,8 +1096,8 @@ static VALUE rb_gsl_poly_dd_eval(VALUE obj, VALUE xxa, VALUE xx)
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
   for (j = 0; j < m->size2; j++) {
-    gsl_matrix_set(mnew, i, j, 
-       gsl_poly_dd_eval(dd->data, xa->data, 
+    gsl_matrix_set(mnew, i, j,
+       gsl_poly_dd_eval(dd->data, xa->data,
             dd->size, gsl_matrix_get(m, i, j)));
   }
       }
@@ -1192,7 +1192,7 @@ GSL_TYPE(gsl_vector)* FUNCTION(gsl_poly,conv_vector)(const GSL_TYPE(gsl_vector) 
 {
   GSL_TYPE(gsl_vector) *vnew = NULL;
   size_t n, tmp;
-  if (v1->size == 1) { 
+  if (v1->size == 1) {
     vnew = FUNCTION(make_vector,clone)(v2);
     FUNCTION(gsl_vector,scale)(vnew, FUNCTION(gsl_vector,get)(v1, 0));
     return vnew;
@@ -1249,7 +1249,7 @@ GSL_TYPE(gsl_vector)* FUNCTION(gsl_poly,integ)(const GSL_TYPE(gsl_vector) *v)
   return vnew;
 }
 
-GSL_TYPE(gsl_vector)* FUNCTION(gsl_poly,deconv_vector)(const GSL_TYPE(gsl_vector) *c, const GSL_TYPE(gsl_vector) *a, 
+GSL_TYPE(gsl_vector)* FUNCTION(gsl_poly,deconv_vector)(const GSL_TYPE(gsl_vector) *c, const GSL_TYPE(gsl_vector) *a,
            GSL_TYPE(gsl_vector) **r)
 {
   GSL_TYPE(gsl_vector) *vnew = NULL, *a2 = NULL, *c2 = NULL, *vtmp = NULL;
@@ -1357,7 +1357,7 @@ VALUE FUNCTION(rb_gsl_poly,deconv)(VALUE obj, VALUE bb)
   }
   vnew = FUNCTION(gsl_poly,deconv_vector)(v, v2, &r);
   if (flag == 1) FUNCTION(gsl_vector,free)(v2);
-  if (FUNCTION(gsl_vector,isnull)(r)) 
+  if (FUNCTION(gsl_vector,isnull)(r))
     return Data_Wrap_Struct(GSL_TYPE(cgsl_poly), 0, FUNCTION(gsl_vector,free), vnew);
   else
     return rb_ary_new3(2, Data_Wrap_Struct(GSL_TYPE(cgsl_poly), 0, FUNCTION(gsl_vector,free), vnew),
@@ -1410,7 +1410,7 @@ static VALUE FUNCTION(rb_gsl_poly,conv2)(VALUE klass, VALUE v1, VALUE v2)
   p3 = FUNCTION(gsl_poly,conv_vector)(p1, p2);
   if (flag1 == 1) FUNCTION(gsl_vector,free)(p1);
   if (flag2 == 1) FUNCTION(gsl_vector,free)(p2);
-  if (flag1 == 1 && flag2 == 1) {  
+  if (flag1 == 1 && flag2 == 1) {
     ary = rb_ary_new2(p3->size);
     for (i = 0; i < p3->size; i++)
       rb_ary_store(ary, i, C_TO_VALUE2(FUNCTION(gsl_vector,get)(p3, i)));
@@ -1431,14 +1431,14 @@ static VALUE FUNCTION(rb_gsl_poly,deconv2)(VALUE klass, VALUE v1, VALUE v2)
   vnew = FUNCTION(gsl_poly,deconv_vector)(p1, p2, &r);
   if (flag1 == 1) FUNCTION(gsl_vector,free)(p1);
   if (flag2 == 1) FUNCTION(gsl_vector,free)(p2);
-  if (FUNCTION(gsl_vector,isnull)(r)) 
+  if (FUNCTION(gsl_vector,isnull)(r))
     return Data_Wrap_Struct(GSL_TYPE(cgsl_poly), 0, FUNCTION(gsl_vector,free), vnew);
   else
     return rb_ary_new3(2, Data_Wrap_Struct(GSL_TYPE(cgsl_poly), 0, FUNCTION(gsl_vector,free), vnew),
            Data_Wrap_Struct(GSL_TYPE(cgsl_poly), 0, FUNCTION(gsl_vector,free), r));
 }
 
-GSL_TYPE(gsl_poly)* FUNCTION(gsl_poly,add)(const GSL_TYPE(gsl_poly) *a, 
+GSL_TYPE(gsl_poly)* FUNCTION(gsl_poly,add)(const GSL_TYPE(gsl_poly) *a,
   const GSL_TYPE(gsl_poly) *b)
 {
   GSL_TYPE(gsl_poly) *c = NULL;
@@ -1548,7 +1548,7 @@ static VALUE FUNCTION(rb_gsl_poly,companion_matrix)(VALUE obj)
   size = p->size - 1;
   m = gsl_matrix_calloc(size, size);
   z = FUNCTION(gsl_vector,get)(p, size);
-  for (j = 0; j < size; j++) 
+  for (j = 0; j < size; j++)
     gsl_matrix_set(m, 0, size-j-1, -FUNCTION(gsl_vector,get)(p, j)/z);
   for (i = 1; i < size; i++) {
    gsl_matrix_set(m, i, i-1, 1.0);
@@ -1580,7 +1580,7 @@ static VALUE rb_gsl_poly_fit(int argc, VALUE *argv, VALUE obj)
   double chisq, val;
   int status, flag = 0;
   VALUE vc, vcov;
-  if (argc != 3 && argc != 4) 
+  if (argc != 3 && argc != 4)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 3 or 4)", argc);
   x = &xx.vector;
   y = &yy.vector;
@@ -1621,7 +1621,7 @@ static VALUE rb_gsl_poly_wfit(int argc, VALUE *argv, VALUE obj)
   double chisq, val;
   int status, flag = 0;
   VALUE vc, vcov;
-  if (argc != 4 && argc != 5) 
+  if (argc != 4 && argc != 5)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4 or 5)", argc);
   Data_Get_Vector(argv[0], x);
   Data_Get_Vector(argv[1], w);
@@ -1742,14 +1742,14 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
 
   cgsl_poly_workspace = rb_define_class_under(cgsl_poly, "Workspace", cGSL_Object);
   mgsl_poly_complex = rb_define_module_under(cgsl_poly, "Complex");
-  cgsl_poly_complex_workspace = rb_define_class_under(mgsl_poly_complex, 
+  cgsl_poly_complex_workspace = rb_define_class_under(mgsl_poly_complex,
                   "Workspace", cGSL_Object);
-  rb_define_singleton_method(cgsl_poly_workspace, "alloc", 
+  rb_define_singleton_method(cgsl_poly_workspace, "alloc",
            rb_gsl_poly_workspace_new, 1);
   rb_define_singleton_method(cgsl_poly_complex_workspace, "alloc",
            rb_gsl_poly_workspace_new, 1);
 
-  rb_define_singleton_method(mgsl_poly_complex, "solve_quadratic", 
+  rb_define_singleton_method(mgsl_poly_complex, "solve_quadratic",
            FUNCTION(rb_gsl_poly,complex_solve_quadratic), -1);
   rb_define_singleton_method(mgsl_poly_complex, "solve_cubic",
            FUNCTION(rb_gsl_poly,complex_solve_cubic), -1);
@@ -1760,18 +1760,18 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
 
   rb_define_singleton_method(mgsl_poly_complex, "solve",
            FUNCTION(rb_gsl_poly,complex_solve), -1);
-  rb_define_singleton_method(mgsl_poly_complex, "roots", 
+  rb_define_singleton_method(mgsl_poly_complex, "roots",
            FUNCTION(rb_gsl_poly,complex_solve), -1);
 #endif
 
-  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "solve_quadratic", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "solve_quadratic",
            FUNCTION(rb_gsl_poly,solve_quadratic), -1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "solve_cubic", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "solve_cubic",
            FUNCTION(rb_gsl_poly,solve_cubic), -1);
 
-  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "complex_solve_quadratic", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "complex_solve_quadratic",
            FUNCTION(rb_gsl_poly,complex_solve_quadratic), -1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "complex_solve_cubic", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "complex_solve_cubic",
            FUNCTION(rb_gsl_poly,complex_solve_cubic), -1);
 #ifdef HAVE_GSL_POLY_SOLVE_QUARTIC
   rb_define_singleton_method(GSL_TYPE(cgsl_poly), "solve_quartic",
@@ -1785,34 +1785,34 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
 
   rb_define_singleton_method(GSL_TYPE(cgsl_poly), "solve",
            FUNCTION(rb_gsl_poly,complex_solve), -1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "roots", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "roots",
            FUNCTION(rb_gsl_poly,complex_solve), -1);
 
-  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "eval", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "eval",
            FUNCTION(rb_gsl_poly,eval2), -1);
 
   rb_define_method(GSL_TYPE(cgsl_poly), "eval",
        FUNCTION(rb_gsl_poly,eval), 1);
   rb_define_alias(GSL_TYPE(cgsl_poly), "at", "eval");
 
-  rb_define_method(GSL_TYPE(cgsl_poly), "solve_quadratic", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "solve_quadratic",
        FUNCTION(rb_gsl_poly,solve_quadratic2), 0);
-  rb_define_method(GSL_TYPE(cgsl_poly), "complex_solve_quadratic", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "complex_solve_quadratic",
        FUNCTION(rb_gsl_poly,complex_solve_quadratic2), 0);
 
-  rb_define_method(GSL_TYPE(cgsl_poly), "solve_cubic", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "solve_cubic",
        FUNCTION(rb_gsl_poly,solve_cubic2), 0);
-  rb_define_method(GSL_TYPE(cgsl_poly), "complex_solve_cubic", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "complex_solve_cubic",
        FUNCTION(rb_gsl_poly,complex_solve_cubic2), 0);
 
 #ifdef HAVE_GSL_POLY_SOLVE_QUARTIC
-  rb_define_method(GSL_TYPE(cgsl_poly), "solve_quartic", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "solve_quartic",
        FUNCTION(rb_gsl_poly,solve_quartic2), 0);
-  rb_define_method(GSL_TYPE(cgsl_poly), "complex_solve_quartic", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "complex_solve_quartic",
        FUNCTION(rb_gsl_poly,complex_solve_quartic2), 0);
 #endif
 
-  rb_define_method(GSL_TYPE(cgsl_poly), "complex_solve", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "complex_solve",
        FUNCTION(rb_gsl_poly,complex_solve2), -1);
   rb_define_alias(GSL_TYPE(cgsl_poly), "solve", "complex_solve");
   rb_define_alias(GSL_TYPE(cgsl_poly), "roots", "complex_solve");
@@ -1851,7 +1851,7 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
   rb_define_singleton_method(GSL_TYPE(cgsl_poly), "deconv",
            FUNCTION(rb_gsl_poly,deconv2), 2);
 
-  rb_define_method(GSL_TYPE(cgsl_poly), "reduce", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "reduce",
        FUNCTION(rb_gsl_poly,reduce), 1);
   rb_define_method(GSL_TYPE(cgsl_poly), "deriv", FUNCTION(rb_gsl_poly,deriv), 1);
   rb_define_method(GSL_TYPE(cgsl_poly), "integ", FUNCTION(rb_gsl_poly,integ), 1);
@@ -1866,23 +1866,23 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_poly), "-@", FUNCTION(rb_gsl_poly,uminus), 0);
   rb_define_method(GSL_TYPE(cgsl_poly), "+@", FUNCTION(rb_gsl_poly,uplus), 0);
 
-  rb_define_method(GSL_TYPE(cgsl_poly), "coerce", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "coerce",
        FUNCTION(rb_gsl_poly,coerce), 1);
   rb_define_method(GSL_TYPE(cgsl_poly), "to_gv", FUNCTION(rb_gsl_poly,to_gv), 0);
   rb_define_alias(GSL_TYPE(cgsl_poly), "to_v", "to_gv");
 
-  rb_define_method(GSL_TYPE(cgsl_poly), "companion_matrix", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "companion_matrix",
        FUNCTION(rb_gsl_poly,companion_matrix), 0);
   rb_define_alias(GSL_TYPE(cgsl_poly), "compan", "companion_matrix");
 
   /*****/
-  rb_define_method(GSL_TYPE(cgsl_poly), "info", 
+  rb_define_method(GSL_TYPE(cgsl_poly), "info",
        FUNCTION(rb_gsl_poly,info), 0);
 
 #ifdef BASE_DOUBLE
-  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "fit", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "fit",
        FUNCTION(rb_gsl_poly,fit), -1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "wfit", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_poly), "wfit",
        FUNCTION(rb_gsl_poly,wfit), -1);
 
 #ifdef GSL_1_13_LATER

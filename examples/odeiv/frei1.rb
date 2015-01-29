@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 #  Solve Schroedinger equation
 #
-#  This example is taken from frei1.cpp 
+#  This example is taken from frei1.cpp
 #  in "Numerische Physik" p201-204 (Springer),
 #  which simulates the time evolution of a probability density.
 #
 #  Name: frei1.cpp
-#  Zweck: Simuliert ein quantenmechanisches freies Teilchen 
-#  Gleichung: Schroedingergleichung ohne Potential verwendete 
+#  Zweck: Simuliert ein quantenmechanisches freies Teilchen
+#  Gleichung: Schroedingergleichung ohne Potential verwendete
 #  Bibiliothek: GSL
 #
 #  Reference:
@@ -20,7 +20,7 @@ require("gsl")
 #NMAX = 8192
 NMAX = 256
 
-# The wave equation: 
+# The wave equation:
 # calculate time derivative of the wave function.
 # The second spatial derivative is approximated by
 #   d2_psi/dx2 ~ (psi[n+1] - 2*psi[n] + pxi[n-1])/(dx*dx)
@@ -68,7 +68,7 @@ sum = 0.0
 for n in 0...NMAX do
   x = (n-NMAX/2) * $dx
   psi[n] = Math::exp(-GSL::pow_2(x/alpha)/2)
-  sum += GSL::pow_2(psi[n]) 
+  sum += GSL::pow_2(psi[n])
 end
 sum = 1.0/Math::sqrt(sum)
 
@@ -89,12 +89,12 @@ IO.popen("graph -T X -C -g 3", "w") do |io|
   c = GSL::Odeiv::Control.y_new(atol, rtol)
   evolve = GSL::Odeiv::Evolve.alloc(2*NMAX)
   sys = GSL::Odeiv::System.alloc(f, 2*NMAX)
-  
+
   t = 0.0
   for n in 1..n_out do
     t1 = n*dt
     STDOUT.printf("t = %2.1f (%2d/%2d)\n", t1-dt, n, n_out)
-    while t < t1 
+    while t < t1
       t, h, status = evolve.apply(c, step, sys, t, t1, h, psi)
       break if status != GSL::SUCCESS
     end

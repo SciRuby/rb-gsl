@@ -31,7 +31,7 @@ VALUE rb_gsl_vector_int_to_f(VALUE obj)
   size_t i;
   Data_Get_Struct(obj, gsl_vector_int, v);
   vnew = gsl_vector_alloc(v->size);
-  for (i = 0; i < v->size; i++) 
+  for (i = 0; i < v->size; i++)
     gsl_vector_set(vnew, i, (double) gsl_vector_int_get(v, i));
   if (VECTOR_INT_COL_P(obj))
     return Data_Wrap_Struct(cgsl_vector_col, 0, gsl_vector_free, vnew);

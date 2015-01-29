@@ -210,7 +210,7 @@ static VALUE rb_gsl_poly_make_rational(VALUE obj, VALUE other)
       return Data_Wrap_Struct(cgsl_poly, 0, gsl_vector_free, p2);
       break;
     default:
-      rb_raise(rb_eTypeError, "wrong argument type %s", 
+      rb_raise(rb_eTypeError, "wrong argument type %s",
          rb_class2name(CLASS_OF(other)));
       break;
     }
@@ -280,7 +280,7 @@ static VALUE rb_gsl_rational_uminus(VALUE obj)
   if (RATIONAL_P(obj)) {
     Data_Get_Struct(obj, gsl_rational, r);
     rnew = gsl_rational_new(r->pnum, r->pden);
-    for (i = 0; i < rnew->pnum->size; i++) 
+    for (i = 0; i < rnew->pnum->size; i++)
       gsl_vector_set(rnew->pnum, i, -gsl_vector_get(r->pnum, i));
     return Data_Wrap_Struct(cgsl_rational, gsl_rational_mark, gsl_rational_free, rnew);
   } else {
@@ -352,7 +352,7 @@ static VALUE rb_gsl_rational_div(VALUE obj, VALUE other)
       gsl_vector_scale(rnew->pnum, 1.0/NUM2DBL(other));
       break;
     default:
-      rb_raise(rb_eTypeError, "wrong argument type %s", 
+      rb_raise(rb_eTypeError, "wrong argument type %s",
          rb_class2name(CLASS_OF(other)));
       break;
     }
@@ -407,7 +407,7 @@ static VALUE rb_gsl_rational_coerce(VALUE obj, VALUE other)
   ptmp = gsl_vector_alloc(1);
   gsl_vector_set(ptmp, 0, 1.0);
   r = gsl_rational_new2(p, ptmp);
-  return rb_ary_new3(2, 
+  return rb_ary_new3(2,
          Data_Wrap_Struct(cgsl_rational, gsl_rational_mark, gsl_rational_free, r), obj);
 }
 

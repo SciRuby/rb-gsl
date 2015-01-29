@@ -5,7 +5,7 @@
 #   b: resist
 #   f: external force
 
-require("gsl") 
+require("gsl")
 
 dim = 2
 

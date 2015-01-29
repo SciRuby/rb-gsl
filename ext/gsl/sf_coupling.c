@@ -12,7 +12,7 @@
 
 #include "include/rb_gsl_sf.h"
 
-static VALUE rb_gsl_sf_coupling_3j(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE two_jc, VALUE two_ma, VALUE two_mb, VALUE two_mc) 
+static VALUE rb_gsl_sf_coupling_3j(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE two_jc, VALUE two_ma, VALUE two_mb, VALUE two_mc)
 {
   CHECK_FIXNUM(two_ja); CHECK_FIXNUM(two_jb); CHECK_FIXNUM(two_jc);
   CHECK_FIXNUM(two_ma); CHECK_FIXNUM(two_mb); CHECK_FIXNUM(two_mc);
@@ -21,7 +21,7 @@ static VALUE rb_gsl_sf_coupling_3j(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE 
            FIX2INT(two_mb), FIX2INT(two_mc)));
 }
 
-static VALUE rb_gsl_sf_coupling_3j_e(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE two_jc, VALUE two_ma, VALUE two_mb, VALUE two_mc) 
+static VALUE rb_gsl_sf_coupling_3j_e(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE two_jc, VALUE two_ma, VALUE two_mb, VALUE two_mc)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -38,7 +38,7 @@ static VALUE rb_gsl_sf_coupling_3j_e(VALUE obj, VALUE two_ja, VALUE two_jb, VALU
   return v;
 }
 
-static VALUE rb_gsl_sf_coupling_6j(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE two_jc, VALUE two_jd, VALUE two_je, VALUE two_jf) 
+static VALUE rb_gsl_sf_coupling_6j(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE two_jc, VALUE two_jd, VALUE two_je, VALUE two_jf)
 {
   CHECK_FIXNUM(two_ja); CHECK_FIXNUM(two_jb); CHECK_FIXNUM(two_jc);
   CHECK_FIXNUM(two_jd); CHECK_FIXNUM(two_je); CHECK_FIXNUM(two_jf);
@@ -47,7 +47,7 @@ static VALUE rb_gsl_sf_coupling_6j(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE 
            FIX2INT(two_je), FIX2INT(two_jf)));
 }
 
-static VALUE rb_gsl_sf_coupling_6j_e(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE two_jc, VALUE two_jd, VALUE two_je, VALUE two_jf) 
+static VALUE rb_gsl_sf_coupling_6j_e(VALUE obj, VALUE two_ja, VALUE two_jb, VALUE two_jc, VALUE two_jd, VALUE two_je, VALUE two_jf)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -66,7 +66,7 @@ static VALUE rb_gsl_sf_coupling_6j_e(VALUE obj, VALUE two_ja, VALUE two_jb, VALU
 static VALUE rb_gsl_sf_coupling_9j(VALUE obj, VALUE two_ja, VALUE two_jb,
            VALUE two_jc, VALUE two_jd, VALUE two_je,
            VALUE two_jf, VALUE two_jg, VALUE two_jh,
-           VALUE two_ji) 
+           VALUE two_ji)
 {
   CHECK_FIXNUM(two_ja); CHECK_FIXNUM(two_jb); CHECK_FIXNUM(two_jc);
   CHECK_FIXNUM(two_jd); CHECK_FIXNUM(two_je); CHECK_FIXNUM(two_jf);
@@ -81,7 +81,7 @@ static VALUE rb_gsl_sf_coupling_9j(VALUE obj, VALUE two_ja, VALUE two_jb,
 static VALUE rb_gsl_sf_coupling_9j_e(VALUE obj, VALUE two_ja, VALUE two_jb,
            VALUE two_jc, VALUE two_jd, VALUE two_je,
            VALUE two_jf, VALUE two_jg, VALUE two_jh,
-           VALUE two_ji) 
+           VALUE two_ji)
 {
   gsl_sf_result *rslt = NULL;
   VALUE v;
@@ -111,7 +111,7 @@ void Init_gsl_sf_coupling(VALUE module)
   rb_define_module_function(module, "coupling_9j_e",  rb_gsl_sf_coupling_9j_e, 9);
 
   mgsl_sf_coupling = rb_define_module_under(module, "Coupling");
-  
+
   rb_define_module_function(mgsl_sf_coupling, "3j",  rb_gsl_sf_coupling_3j, 6);
   rb_define_module_function(mgsl_sf_coupling, "3j_e",  rb_gsl_sf_coupling_3j_e, 6);
   rb_define_module_function(mgsl_sf_coupling, "6j",  rb_gsl_sf_coupling_6j, 6);

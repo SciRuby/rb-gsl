@@ -10,7 +10,7 @@ c0, c1, cov00, cov01, cov11, chisq = GSL::Fit::wlinear(x, w, y)
 
 printf("# best fit: Y = %g + %g X\n", c0, c1);
 printf("# covariance matrix:\n");
-printf("# [ %g, %g\n#   %g, %g]\n", 
+printf("# [ %g, %g\n#   %g, %g]\n",
         cov00, cov01, cov01, cov11);
 printf("# chisq = %g\n", chisq);
 
@@ -26,9 +26,9 @@ begin
   flo = File.open("lo.dat", "w")
   for i in -30...130 do
     xf = x[0] + (i/100.0) * (x[n-1] - x[0])
-    
+
     yf, yf_err = GSL::Fit::linear_est(xf, c0, c1, cov00, cov01, cov11)
-    
+
     ffit.printf("%g %g\n", xf, yf)
     fhi.printf("%g %g\n", xf, yf + yf_err)
     flo.printf("%g %g\n", xf, yf - yf_err)

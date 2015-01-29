@@ -173,7 +173,7 @@ void Init_gsl_native()
 #endif
 
   Init_fresnel(mgsl);
-  
+
 #ifdef GSL_1_9_LATER
   Init_bspline(mgsl);
 #endif

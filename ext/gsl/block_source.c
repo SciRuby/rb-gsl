@@ -82,8 +82,8 @@ static VALUE FUNCTION(rb_gsl_block,fprintf)(int argc, VALUE *argv, VALUE obj)
   GSL_TYPE(gsl_block) *h = NULL;
   FILE *fp = NULL;
   int status, flag = 0;
-  if (argc != 1 && argc != 2) 
-    rb_raise(rb_eArgError, 
+  if (argc != 1 && argc != 2)
+    rb_raise(rb_eArgError,
        "wrong number of arguments (%d for 1 or 2)", argc);
   Data_Get_Struct(obj, GSL_TYPE(gsl_block), h);
   fp = rb_gsl_open_writefile(argv[0], &flag);
@@ -218,7 +218,7 @@ static VALUE FUNCTION(rb_gsl_block,get)(int argc, VALUE *argv, VALUE obj)
       } else if (CLASS_OF(argv[0]) == rb_cRange) {
         get_range_int_beg_en_n(argv[0], &beg, &en, &n, &step);
         bnew = FUNCTION(gsl_block,alloc)(n);
-        for (j = 0; j < n; j++) 
+        for (j = 0; j < n; j++)
           bnew->data[j] = b->data[beg+j];
         return Data_Wrap_Struct(GSL_TYPE(cgsl_block), 0, FUNCTION(gsl_block,free), bnew);
       } else {
@@ -255,7 +255,7 @@ static VALUE FUNCTION(rb_gsl_block,set)(VALUE obj, VALUE ii, VALUE xx)
 }
 
 
-static int FUNCTION(gsl_block,eq)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,eq)(const GSL_TYPE(gsl_block) *a,
            const GSL_TYPE(gsl_block) *b,
            gsl_block_uchar *c)
 {
@@ -271,7 +271,7 @@ static int FUNCTION(gsl_block,eq)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,ne)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,ne)(const GSL_TYPE(gsl_block) *a,
            const GSL_TYPE(gsl_block) *b,
            gsl_block_uchar *c)
 {
@@ -287,7 +287,7 @@ static int FUNCTION(gsl_block,ne)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,gt)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,gt)(const GSL_TYPE(gsl_block) *a,
            const GSL_TYPE(gsl_block) *b,
            gsl_block_uchar *c)
 {
@@ -303,7 +303,7 @@ static int FUNCTION(gsl_block,gt)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,ge)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,ge)(const GSL_TYPE(gsl_block) *a,
            const GSL_TYPE(gsl_block) *b,
            gsl_block_uchar *c)
 {
@@ -319,7 +319,7 @@ static int FUNCTION(gsl_block,ge)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,lt)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,lt)(const GSL_TYPE(gsl_block) *a,
            const GSL_TYPE(gsl_block) *b,
            gsl_block_uchar *c)
 {
@@ -335,7 +335,7 @@ static int FUNCTION(gsl_block,lt)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,le)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,le)(const GSL_TYPE(gsl_block) *a,
            const GSL_TYPE(gsl_block) *b,
            gsl_block_uchar *c)
 {
@@ -351,7 +351,7 @@ static int FUNCTION(gsl_block,le)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,and)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,and)(const GSL_TYPE(gsl_block) *a,
            const GSL_TYPE(gsl_block) *b,
            gsl_block_uchar *c)
 {
@@ -367,7 +367,7 @@ static int FUNCTION(gsl_block,and)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,or)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,or)(const GSL_TYPE(gsl_block) *a,
            const GSL_TYPE(gsl_block) *b,
            gsl_block_uchar *c)
 {
@@ -383,7 +383,7 @@ static int FUNCTION(gsl_block,or)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,xor)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,xor)(const GSL_TYPE(gsl_block) *a,
             const GSL_TYPE(gsl_block) *b,
             gsl_block_uchar *c)
 {
@@ -399,7 +399,7 @@ static int FUNCTION(gsl_block,xor)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,eq2)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,eq2)(const GSL_TYPE(gsl_block) *a,
             BASE b, gsl_block_uchar *c)
 {
   size_t i;
@@ -413,7 +413,7 @@ static int FUNCTION(gsl_block,eq2)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,ne2)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,ne2)(const GSL_TYPE(gsl_block) *a,
            BASE b,
            gsl_block_uchar *c)
 {
@@ -428,7 +428,7 @@ static int FUNCTION(gsl_block,ne2)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,gt2)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,gt2)(const GSL_TYPE(gsl_block) *a,
            BASE b,
            gsl_block_uchar *c)
 {
@@ -443,7 +443,7 @@ static int FUNCTION(gsl_block,gt2)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,ge2)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,ge2)(const GSL_TYPE(gsl_block) *a,
            BASE b,
            gsl_block_uchar *c)
 {
@@ -458,7 +458,7 @@ static int FUNCTION(gsl_block,ge2)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,lt2)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,lt2)(const GSL_TYPE(gsl_block) *a,
            BASE b,
            gsl_block_uchar *c)
 {
@@ -473,7 +473,7 @@ static int FUNCTION(gsl_block,lt2)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,le2)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,le2)(const GSL_TYPE(gsl_block) *a,
             BASE b,
            gsl_block_uchar *c)
 {
@@ -488,7 +488,7 @@ static int FUNCTION(gsl_block,le2)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,and2)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,and2)(const GSL_TYPE(gsl_block) *a,
             BASE b,
            gsl_block_uchar *c)
 {
@@ -503,7 +503,7 @@ static int FUNCTION(gsl_block,and2)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,or2)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,or2)(const GSL_TYPE(gsl_block) *a,
             BASE b,
            gsl_block_uchar *c)
 {
@@ -518,7 +518,7 @@ static int FUNCTION(gsl_block,or2)(const GSL_TYPE(gsl_block) *a,
   return 0;
 }
 
-static int FUNCTION(gsl_block,xor2)(const GSL_TYPE(gsl_block) *a, 
+static int FUNCTION(gsl_block,xor2)(const GSL_TYPE(gsl_block) *a,
              BASE b,
             gsl_block_uchar *c)
 {
@@ -551,8 +551,8 @@ static VALUE FUNCTION(rb_gsl_block,compare)(VALUE aa, VALUE bb,
   c = gsl_block_uchar_alloc(a->size);
   if (BL_P(bb)) {
     Data_Get_Struct(bb, GSL_TYPE(gsl_block), b);
-    if (a->size != b->size) 
-      rb_raise(rb_eRuntimeError, "Block size mismatch, %d and %d", (int) a->size, 
+    if (a->size != b->size)
+      rb_raise(rb_eRuntimeError, "Block size mismatch, %d and %d", (int) a->size,
          (int) b->size);
     /*status =*/ (*cmp)(a, b, c);
   } else {
@@ -667,11 +667,11 @@ static VALUE FUNCTION(rb_gsl_block,all)(VALUE obj)
 
   Data_Get_Struct(obj, GSL_TYPE(gsl_block), v);
   if (rb_block_given_p()) {
-    for (i = 0; i < v->size; i++) 
+    for (i = 0; i < v->size; i++)
       if (!rb_yield(C_TO_VALUE(v->data[i]))) return Qfalse;
     return Qtrue;
   } else {
-    for (i = 0; i < v->size; i++) 
+    for (i = 0; i < v->size; i++)
       if (!v->data[i]) return Qfalse;
     return Qtrue;
   }
@@ -684,11 +684,11 @@ static VALUE FUNCTION(rb_gsl_block,none)(VALUE obj)
 
   Data_Get_Struct(obj, GSL_TYPE(gsl_block), v);
   if (rb_block_given_p()) {
-    for (i = 0; i < v->size; i++) 
+    for (i = 0; i < v->size; i++)
       if (rb_yield(C_TO_VALUE(v->data[i]))) return Qfalse;
     return Qtrue;
   } else {
-    for (i = 0; i < v->size; i++) 
+    for (i = 0; i < v->size; i++)
       if (v->data[i]) return Qfalse;
     return Qtrue;
   }
@@ -756,11 +756,11 @@ static VALUE FUNCTION(rb_gsl_block,where2)(VALUE obj)
     v2 = gsl_permutation_calloc(v->size);  /* calloc() initializes v2 */
     vv1 = Qnil;
     vv2 = Data_Wrap_Struct(cgsl_index, 0, gsl_permutation_free, v2);
-  } else if (v->size-n == 0) { 
+  } else if (v->size-n == 0) {
     v1 = gsl_permutation_calloc(n);           /* calloc() initializes v1 */
-    vv1 = Data_Wrap_Struct(cgsl_index, 0, gsl_permutation_free, v1);     
+    vv1 = Data_Wrap_Struct(cgsl_index, 0, gsl_permutation_free, v1);
     vv2 = Qnil;
-  } else { 
+  } else {
     /* same case as 'where' */
     v1 = gsl_permutation_alloc(n);
     v2 = gsl_permutation_alloc(v->size-n);
@@ -828,11 +828,11 @@ static VALUE FUNCTION(rb_gsl_block,collect_bang)(VALUE obj)
 
 void FUNCTION(Init_gsl_block,init)(VALUE module)
 {
-  rb_define_singleton_method(GSL_TYPE(cgsl_block), "new", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_block), "new",
            FUNCTION(rb_gsl_block,new), 1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_block), "alloc", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_block), "alloc",
            FUNCTION(rb_gsl_block,new), 1);
-  rb_define_singleton_method(GSL_TYPE(cgsl_block), "calloc", 
+  rb_define_singleton_method(GSL_TYPE(cgsl_block), "calloc",
            FUNCTION(rb_gsl_block,calloc), 1);
 
   rb_define_method(GSL_TYPE(cgsl_block), "size", FUNCTION(rb_gsl_block,size), 0);

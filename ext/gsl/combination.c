@@ -182,7 +182,7 @@ static VALUE rb_gsl_combination_fprintf(int argc, VALUE *argv, VALUE obj)
   FILE *fp = NULL;
   int status, flag = 0;
 
-  if (argc != 1 && argc != 2) rb_raise(rb_eArgError, 
+  if (argc != 1 && argc != 2) rb_raise(rb_eArgError,
                "wrong number of arguments (%d for 1 or 2)", argc);
 
   Data_Get_Struct(obj, gsl_combination, h);
@@ -246,7 +246,7 @@ void Init_gsl_combination(VALUE module)
 {
   VALUE cgsl_combination;
   cgsl_combination = rb_define_class_under(module, "Combination", cGSL_Object);
-  cgsl_combination_data = rb_define_class_under(cgsl_combination, "Data", 
+  cgsl_combination_data = rb_define_class_under(cgsl_combination, "Data",
             cgsl_permutation);
   rb_define_singleton_method(cgsl_combination, "new", rb_gsl_combination_new, 2);
   rb_define_singleton_method(cgsl_combination, "alloc", rb_gsl_combination_new, 2);

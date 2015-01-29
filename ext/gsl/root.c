@@ -2,7 +2,7 @@
   root.c
   Ruby/GSL: Ruby extension library for GSL (GNU Scientific Library)
   (C) Copyright 2004 by Yoshiki Tsunesada
-  
+
   Ruby/GSL is free software: you can redistribute it and/or modify it
   under the terms of the GNU General Public License.
   This library is distributed in the hope that it will be useful, but
@@ -42,7 +42,7 @@ static VALUE rb_gsl_fsolver_new(VALUE klass, VALUE t)
     } else if (!str_tail_grep(name, "brent")) {
       T = gsl_root_fsolver_brent;
     } else {
-      rb_raise(rb_eTypeError, 
+      rb_raise(rb_eTypeError,
          "type must be \"bisection\" or \"falsepos\", or \"brent\".");
     }
     break;
@@ -124,7 +124,7 @@ static VALUE rb_gsl_fsolver_name(VALUE obj)
 static VALUE rb_gsl_fsolver_test_interval(VALUE obj, VALUE eabs, VALUE erel)
 {
   gsl_root_fsolver *s = NULL;
-  Need_Float(eabs); Need_Float(erel); 
+  Need_Float(eabs); Need_Float(erel);
   Data_Get_Struct(obj, gsl_root_fsolver, s);
   return INT2FIX(gsl_root_test_interval(s->x_lower, s->x_upper,
           NUM2DBL(eabs), NUM2DBL(erel)));
@@ -134,7 +134,7 @@ static VALUE rb_gsl_root_test_interval(VALUE obj, VALUE xl, VALUE xu, VALUE eabs
                VALUE erel)
 {
   Need_Float(xl); Need_Float(xu);
-  Need_Float(eabs); Need_Float(erel); 
+  Need_Float(eabs); Need_Float(erel);
   return INT2FIX(gsl_root_test_interval(NUM2DBL(xl), NUM2DBL(xu),
           NUM2DBL(eabs), NUM2DBL(erel)));
 }
@@ -143,7 +143,7 @@ static VALUE rb_gsl_root_test_delta(VALUE obj, VALUE xl, VALUE xu, VALUE eabs,
                VALUE erel)
 {
   Need_Float(xl); Need_Float(xu);
-  Need_Float(eabs); Need_Float(erel); 
+  Need_Float(eabs); Need_Float(erel);
   return INT2FIX(gsl_root_test_delta(NUM2DBL(xl), NUM2DBL(xu),
              NUM2DBL(eabs), NUM2DBL(erel)));
 }
@@ -172,7 +172,7 @@ static VALUE rb_gsl_fsolver_solve(int argc, VALUE *argv, VALUE *obj)
     xh = NUM2DBL(rb_ary_entry(argv[1], 1));
     break;
   default:
-    rb_raise(rb_eArgError, 
+    rb_raise(rb_eArgError,
        "Usage: solve(f = Function, range = Array, eps = Array)");
     break;
   }
@@ -292,7 +292,7 @@ static VALUE rb_gsl_fdfsolver_solve(int argc, VALUE *argv, VALUE *obj)
   CHECK_FUNCTION_FDF(argv[0]);
   Data_Get_Struct(argv[0], gsl_function_fdf, F);
   Data_Get_Struct(obj, gsl_root_fdfsolver, s);
-  gsl_root_fdfsolver_set(s, F, x0);  
+  gsl_root_fdfsolver_set(s, F, x0);
   do {
     iter++;
     status = gsl_root_fdfsolver_iterate (s);
@@ -361,32 +361,32 @@ void Init_gsl_root(VALUE module)
   mgsl_root = rb_define_module_under(module, "Root");
 
   cgsl_fsolver = rb_define_class_under(mgsl_root, "FSolver", cGSL_Object);
-  rb_define_singleton_method(cgsl_fsolver, "alloc", rb_gsl_fsolver_new, 1);  
+  rb_define_singleton_method(cgsl_fsolver, "alloc", rb_gsl_fsolver_new, 1);
 
-  rb_define_method(cgsl_fsolver, "set", rb_gsl_fsolver_set, 3);  
-  rb_define_method(cgsl_fsolver, "iterate", rb_gsl_fsolver_iterate, 0);  
-  rb_define_method(cgsl_fsolver, "root", rb_gsl_fsolver_root, 0);  
-  rb_define_method(cgsl_fsolver, "name", rb_gsl_fsolver_name, 0);  
-  rb_define_method(cgsl_fsolver, "x_lower", rb_gsl_fsolver_x_lower, 0);  
-  rb_define_method(cgsl_fsolver, "x_upper", rb_gsl_fsolver_x_upper, 0);  
-  rb_define_method(cgsl_fsolver, "test_interval", rb_gsl_fsolver_test_interval, 2);  
-  rb_define_method(cgsl_fsolver, "solve", rb_gsl_fsolver_solve, -1);  
+  rb_define_method(cgsl_fsolver, "set", rb_gsl_fsolver_set, 3);
+  rb_define_method(cgsl_fsolver, "iterate", rb_gsl_fsolver_iterate, 0);
+  rb_define_method(cgsl_fsolver, "root", rb_gsl_fsolver_root, 0);
+  rb_define_method(cgsl_fsolver, "name", rb_gsl_fsolver_name, 0);
+  rb_define_method(cgsl_fsolver, "x_lower", rb_gsl_fsolver_x_lower, 0);
+  rb_define_method(cgsl_fsolver, "x_upper", rb_gsl_fsolver_x_upper, 0);
+  rb_define_method(cgsl_fsolver, "test_interval", rb_gsl_fsolver_test_interval, 2);
+  rb_define_method(cgsl_fsolver, "solve", rb_gsl_fsolver_solve, -1);
 
-  rb_define_singleton_method(mgsl_root, "test_interval", 
+  rb_define_singleton_method(mgsl_root, "test_interval",
           rb_gsl_root_test_interval, 4);
-  rb_define_singleton_method(mgsl_root, "test_delta", 
+  rb_define_singleton_method(mgsl_root, "test_delta",
           rb_gsl_root_test_delta, 4);
-  rb_define_singleton_method(mgsl_root, "test_residual", 
+  rb_define_singleton_method(mgsl_root, "test_residual",
           rb_gsl_root_test_residual, 2);
 
   cgsl_fdfsolver = rb_define_class_under(mgsl_root, "FdfSolver", cGSL_Object);
-  rb_define_singleton_method(cgsl_fdfsolver, "alloc", rb_gsl_fdfsolver_new, 1);  
+  rb_define_singleton_method(cgsl_fdfsolver, "alloc", rb_gsl_fdfsolver_new, 1);
 
-  rb_define_method(cgsl_fdfsolver, "set", rb_gsl_fdfsolver_set, 2);  
-  rb_define_method(cgsl_fdfsolver, "iterate", rb_gsl_fdfsolver_iterate, 0);  
-  rb_define_method(cgsl_fdfsolver, "root", rb_gsl_fdfsolver_root, 0);  
-  rb_define_method(cgsl_fdfsolver, "name", rb_gsl_fdfsolver_name, 0);  
-  rb_define_method(cgsl_fdfsolver, "solve", rb_gsl_fdfsolver_solve, -1);  
+  rb_define_method(cgsl_fdfsolver, "set", rb_gsl_fdfsolver_set, 2);
+  rb_define_method(cgsl_fdfsolver, "iterate", rb_gsl_fdfsolver_iterate, 0);
+  rb_define_method(cgsl_fdfsolver, "root", rb_gsl_fdfsolver_root, 0);
+  rb_define_method(cgsl_fdfsolver, "name", rb_gsl_fdfsolver_name, 0);
+  rb_define_method(cgsl_fdfsolver, "solve", rb_gsl_fdfsolver_solve, -1);
 
   rb_define_method(cgsl_function, "fsolve", rb_gsl_function_rootfinder, -1);
   rb_define_alias(cgsl_function, "solve", "fsolve");

@@ -3,7 +3,7 @@ require 'gsl'
 
 a = GSL::Complex.rect(1, 2)
 b = GSL::Complex[3, 4]
- 
+
 p a*b  # -5 + 10i
 p a.mul(b)
 p a

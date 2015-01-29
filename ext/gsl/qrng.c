@@ -59,11 +59,11 @@ static const gsl_qrng_type* get_gsl_qrng_type(VALUE t)
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
   case GSL_QRNG_HDSOBOL: T = qrngextra_hdsobol; break;
 #endif
-    default: 
+    default:
       rb_raise(rb_eArgError, "unknown type");
     }
     break;
-  default: 
+  default:
     rb_raise(rb_eTypeError, "wrong argument type %s (String or Fixnum expected)",
        rb_class2name(CLASS_OF(t)));
   }

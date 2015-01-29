@@ -2,7 +2,7 @@
 require("gsl")
 include Math
 
-f = GSL::Function::alloc{ |x, params| 
+f = GSL::Function::alloc{ |x, params|
   a = params[0]
   b = params[1]
   c = params[2]

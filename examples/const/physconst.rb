@@ -42,7 +42,7 @@ MENU[2] = ["", "ASTRONOMICAL_UNIT", "GRAVITATIONAL_CONSTANT",
 MENU[3] = ["", "ELECTRON_CHARGE", "ELECTRON_VOLT", "UNIFIED_ATOMIC_MASS",
            "MASS_ELECTRON", "MASS_MUON", "MASS_PROTON", "MASS_NEUTRON",
            "FINE_STRUCTURE", "RYDBERG", "BOHR_RADIUS", "ANGSTROM",
-           "BARN", "BOHR_MAGNETON", "NUCLEAR_MAGNETON", 
+           "BARN", "BOHR_MAGNETON", "NUCLEAR_MAGNETON",
            "ELECTRON_MAGNETIC_MOMENT", "PROTON_MAGNETIC_MOMENT",
            "THOMSON_CROSS_SECTION"]
 
@@ -56,10 +56,10 @@ MENU[9] = ["", "POUND_MASS", "OUNCE_MASS", "TON", "METRIC_TON", "UK_TON",
            "TROY_OUNCE", "CARAT", "GRAM_FORCE", "POUND_FORCE",
            "KILOPOUND_FORCE", "POUNDAL"]
 MENU[10] = ["", "CALORIE", "BTU", "THERM", "HORSEPOWER"]
-MENU[11] = ["", "BAR", "STD_ATMOSPHERE", "TORR", "METER_OF_MERCURY", 
+MENU[11] = ["", "BAR", "STD_ATMOSPHERE", "TORR", "METER_OF_MERCURY",
             "INCH_OF_MERCURY", "INCH_OF_WATER", "PSI"]
 MENU[12] = ["", "POISE", "STOKES"]
-MENU[13] = ["", "STILB", "LUMEN", "LUX", "PHOT", "FOOTCANDLE", 
+MENU[13] = ["", "STILB", "LUMEN", "LUX", "PHOT", "FOOTCANDLE",
             "LAMBERT", "FOOTLAMBERT"]
 MENU[14] = ["", "CURIE", "ROENTGEN", "RAD"]
 MENU[15] = ["", "NEWTON", "DYNE", "JOULE", "ERG"]
@@ -96,7 +96,7 @@ def show_submenu(ind, w)
   w.setpos(i+=1, 1)
   str = "    ? ['m' to menu]: "
   w.addstr(str)
-  w.setpos(i, str.size+1)  
+  w.setpos(i, str.size+1)
   w.box('|', '-')
   w.refresh
 end

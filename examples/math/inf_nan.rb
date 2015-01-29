@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require("gsl") 
+require("gsl")
 include GSL
 
 puts("GSL_POSINF")

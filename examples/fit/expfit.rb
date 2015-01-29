@@ -22,7 +22,7 @@ p err
 GSL::graph(x, y, y0+amp*GSL::Sf::exp(-b*x))
 
 # This will result in
-# [ 1.019e+00 5.045e+00 1.040e-01 ] 
+# [ 1.019e+00 5.045e+00 1.040e-01 ]
 # [ 3.385e-02 5.395e-02 2.826e-03 ]
 
 # GNUPLOT results:

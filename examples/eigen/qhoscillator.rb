@@ -61,13 +61,13 @@ end
 # The differences with Tabelle 5.1 are from NMAX and dx.
 # If we use NMAX=512 and dx=0.02, we obtain the same results (but much slower).
 STDERR.puts("  Eigen values:")
-STDERR.printf("  %2s Exact %5s %10s | %2s Exact %5s %10s\n", 
+STDERR.printf("  %2s Exact %5s %10s | %2s Exact %5s %10s\n",
               "n", "E", "err\(\%\)", "n", "E", "err\(\%\)")
 STDERR.print("  -----------------------------------------------------\n")
 for n1 in 0..6 do
   exact1 = n1 + 0.5
   exact2 = n1 + 7 + 0.5
-  STDERR.printf("  %2d %4.1f %8.5f %+7.5f | %2d %4.1f %8.5f %+7.5f\n", 
+  STDERR.printf("  %2d %4.1f %8.5f %+7.5f | %2d %4.1f %8.5f %+7.5f\n",
                 n1, exact1, eval[n1], (exact1 - eval[n1])/exact1*100,
                 n1+7, exact2, eval[n1+7], (exact2-eval[n1+7])/exact2*100)
 end
@@ -75,7 +75,7 @@ STDERR.flush
 
 # Eigen vectors of n = 0, 1, 2, 10. See p217 "Abb 5.3"
 c = Math::sqrt(1.0/dx)
-vec0 = evec.col(0).scale(c)    
+vec0 = evec.col(0).scale(c)
 vec1 = evec.col(1).scale(c)
 vec2 = evec.col(2).scale(c)
 vec10 = evec.col(10).scale(c)

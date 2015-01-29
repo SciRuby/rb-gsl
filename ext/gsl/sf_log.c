@@ -13,14 +13,14 @@
 
 static VALUE rb_gsl_sf_log(VALUE obj, VALUE x)
 {
-  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x)) 
+  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x))
     return rb_gsl_math_complex_eval(gsl_complex_log, x);
   return rb_gsl_sf_eval1(gsl_sf_log, x);
 }
 
 static VALUE rb_gsl_sf_log10(VALUE obj, VALUE x)
 {
-  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x)) 
+  if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x))
     return rb_gsl_math_complex_eval(gsl_complex_log10, x);
   return rb_gsl_sf_eval1(log10, x);
 }
@@ -93,7 +93,7 @@ static VALUE rb_gsl_sf_log_1plusx_mx_e(VALUE obj, VALUE x)
 void Init_gsl_sf_log(VALUE module)
 {
   rb_define_module_function(module, "log",  rb_gsl_sf_log, 1);
-  rb_define_module_function(module, "log10",  rb_gsl_sf_log10, 1);  
+  rb_define_module_function(module, "log10",  rb_gsl_sf_log10, 1);
   rb_define_module_function(module, "log_e",  rb_gsl_sf_log_e, 1);
   rb_define_module_function(module, "log_abs",  rb_gsl_sf_log_abs, 1);
   rb_define_module_function(module, "log_abs_e",  rb_gsl_sf_log_abs_e, 1);

@@ -35,16 +35,16 @@ static VALUE cgsl_integration_glfixed_table;
 #endif
 
 static int get_a_b(int argc, VALUE *argv, int argstart, double *a, double *b);
-static int get_epsabs_epsrel(int argc, VALUE *argv, int argstart, 
+static int get_epsabs_epsrel(int argc, VALUE *argv, int argstart,
            double *epsabs, double *epsrel);
 static int get_a_b_epsabs_epsrel(int argc, VALUE *argv, int argstart,
           double *a, double *b, double *epsabs,
           double *epsrel);
 static int get_limit_key_workspace(int argc, VALUE *argv, int argstart,
-           size_t *limit, int *key, 
+           size_t *limit, int *key,
            gsl_integration_workspace **w);
 static int get_limit_workspace(int argc, VALUE *argv, int argstart,
-           size_t *limit, 
+           size_t *limit,
              gsl_integration_workspace **w);
 static int get_epsabs_epsrel_limit_workspace(int argc, VALUE *argv, int argstart,
                double *epsabs, double *epsrel,
@@ -74,7 +74,7 @@ static int get_a_b(int argc, VALUE *argv, int argstart, double *a, double *b)
   return itmp;
 }
 
-static int get_epsabs_epsrel(int argc, VALUE *argv, int argstart, 
+static int get_epsabs_epsrel(int argc, VALUE *argv, int argstart,
            double *epsabs, double *epsrel)
 {
   int itmp;
@@ -94,7 +94,7 @@ static int get_epsabs_epsrel(int argc, VALUE *argv, int argstart,
     *epsabs = NUM2DBL(argv[argstart]);
     *epsrel = NUM2DBL(argv[argstart+1]);
     itmp = 2;
-  } 
+  }
   return  argstart + itmp;
 }
 
@@ -111,7 +111,7 @@ static int get_a_b_epsabs_epsrel(int argc, VALUE *argv, int argstart,
 }
 
 static int get_limit_key_workspace(int argc, VALUE *argv, int argstart,
-           size_t *limit, int *key, 
+           size_t *limit, int *key,
            gsl_integration_workspace **w)
 {
   int flag = 0;
@@ -163,7 +163,7 @@ static int get_limit_key_workspace(int argc, VALUE *argv, int argstart,
 }
 
 static int get_limit_workspace(int argc, VALUE *argv, int argstart,
-           size_t *limit, 
+           size_t *limit,
            gsl_integration_workspace **w)
 {
   int flag = 0;
@@ -269,7 +269,7 @@ static VALUE rb_gsl_integration_qng(int argc, VALUE *argv, VALUE obj)
   // local variable 'itmp' declared and set, but never used
   //int itmp;
 
-  if (argc < 1) rb_raise(rb_eArgError, 
+  if (argc < 1) rb_raise(rb_eArgError,
        "wrong number of arguments (%d for >= 1)", argc);
 
   switch (TYPE(obj)) {
@@ -283,12 +283,12 @@ static VALUE rb_gsl_integration_qng(int argc, VALUE *argv, VALUE obj)
     Data_Get_Struct(obj, gsl_function, F);
     break;
   }
-  status = gsl_integration_qng(F, a, b, epsabs, epsrel, 
+  status = gsl_integration_qng(F, a, b, epsabs, epsrel,
              &result, &abserr, &neval);
-  
+
   return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr),
          INT2FIX(neval), INT2FIX(status));
-}          
+}
 
 static VALUE rb_gsl_integration_qag(int argc, VALUE *argv, VALUE obj)
 {
@@ -298,7 +298,7 @@ static VALUE rb_gsl_integration_qag(int argc, VALUE *argv, VALUE obj)
   gsl_function *F = NULL;
   gsl_integration_workspace *w = NULL;
   int key = KEY_DEFAULT, status, intervals, itmp, flag = 0;
-  if (argc < 1) rb_raise(rb_eArgError, 
+  if (argc < 1) rb_raise(rb_eArgError,
        "wrong number of arguments (%d for >= 1)", argc);
 
   switch (TYPE(obj)) {
@@ -354,14 +354,14 @@ static VALUE rb_gsl_integration_qag(int argc, VALUE *argv, VALUE obj)
     Data_Get_Struct(obj, gsl_function, F);
     break;
   }
-  status = gsl_integration_qag(F, a, b, epsabs, epsrel, limit, key, w, 
+  status = gsl_integration_qag(F, a, b, epsabs, epsrel, limit, key, w,
              &result, &abserr);
   intervals = w->size;
   if (flag == 1) gsl_integration_workspace_free(w);
 
-  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr), 
+  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr),
          INT2FIX(intervals), INT2FIX(status));
-}          
+}
 
 static VALUE rb_gsl_integration_qags(int argc, VALUE *argv, VALUE obj)
 {
@@ -384,15 +384,15 @@ static VALUE rb_gsl_integration_qags(int argc, VALUE *argv, VALUE obj)
   }
   flag = get_epsabs_epsrel_limit_workspace(argc, argv, itmp, &epsabs, &epsrel,
              &limit, &w);
- 
-  status = gsl_integration_qags(F, a, b, epsabs, epsrel, limit, w, 
+
+  status = gsl_integration_qags(F, a, b, epsabs, epsrel, limit, w,
         &result, &abserr);
   intervals = w->size;
   if (flag == 1) gsl_integration_workspace_free(w);
 
-  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr), 
+  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr),
       INT2FIX(intervals), INT2FIX(status));
-}          
+}
 
 static VALUE rb_gsl_integration_qagp(int argc, VALUE *argv, VALUE obj)
 {
@@ -425,15 +425,15 @@ static VALUE rb_gsl_integration_qagp(int argc, VALUE *argv, VALUE obj)
   flag = get_epsabs_epsrel_limit_workspace(argc, argv, itmp, &epsabs, &epsrel,
              &limit, &w);
 
-  status = gsl_integration_qagp(F, v->data, v->size, epsabs, epsrel, limit, w, 
+  status = gsl_integration_qagp(F, v->data, v->size, epsabs, epsrel, limit, w,
         &result, &abserr);
   intervals = w->size;
   if (flag == 1) gsl_integration_workspace_free(w);
   if (flag2 == 1) gsl_vector_free(v);
 
-  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr), 
+  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr),
          INT2FIX(intervals), INT2FIX(status));
-}          
+}
 
 /* (-infty --- +infty) */
 static VALUE rb_gsl_integration_qagi(int argc, VALUE *argv, VALUE obj)
@@ -457,14 +457,14 @@ static VALUE rb_gsl_integration_qagi(int argc, VALUE *argv, VALUE obj)
   }
   flag = get_epsabs_epsrel_limit_workspace(argc, argv, itmp, &epsabs, &epsrel,
              &limit, &w);
-  status = gsl_integration_qagi(F, epsabs, epsrel, limit, w, 
+  status = gsl_integration_qagi(F, epsabs, epsrel, limit, w,
         &result, &abserr);
   intervals = w->size;
   if (flag == 1) gsl_integration_workspace_free(w);
 
-  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr), 
+  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr),
         INT2FIX(intervals), INT2FIX(status));
-}          
+}
 
 /* (a --- +infty) */
 static VALUE rb_gsl_integration_qagiu(int argc, VALUE *argv, VALUE obj)
@@ -491,14 +491,14 @@ static VALUE rb_gsl_integration_qagiu(int argc, VALUE *argv, VALUE obj)
   itmp += 1;
   flag = get_epsabs_epsrel_limit_workspace(argc, argv, itmp, &epsabs, &epsrel,
              &limit, &w);
-  status = gsl_integration_qagiu(F, a, epsabs, epsrel, limit, w, 
+  status = gsl_integration_qagiu(F, a, epsabs, epsrel, limit, w,
         &result, &abserr);
   intervals = w->size;
   if (flag == 1) gsl_integration_workspace_free(w);
 
-  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr), 
+  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr),
          INT2FIX(intervals), INT2FIX(status));
-}          
+}
 
 /* (-infty --- b) */
 static VALUE rb_gsl_integration_qagil(int argc, VALUE *argv, VALUE obj)
@@ -526,14 +526,14 @@ static VALUE rb_gsl_integration_qagil(int argc, VALUE *argv, VALUE obj)
              &limit, &w);
   Data_Get_Struct(obj, gsl_function, F);
 
-  status = gsl_integration_qagil(F, b, epsabs, epsrel, limit, w, 
+  status = gsl_integration_qagil(F, b, epsabs, epsrel, limit, w,
         &result, &abserr);
   intervals = w->size;
   if (flag == 1) gsl_integration_workspace_free(w);
 
-  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr), 
+  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr),
          INT2FIX(intervals), INT2FIX(status));
-}          
+}
 
 static VALUE rb_gsl_integration_qawc(int argc, VALUE *argv, VALUE obj)
 {
@@ -566,7 +566,7 @@ static VALUE rb_gsl_integration_qawc(int argc, VALUE *argv, VALUE obj)
 
   return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr), INT2FIX(intervals),
          INT2FIX(status));
-}          
+}
 
 VALUE rb_gsl_integration_qaws_table_alloc(int argc, VALUE *argv, VALUE klass)
 {
@@ -637,7 +637,7 @@ static VALUE rb_gsl_ary_to_integration_qaws_table(VALUE ary)
 {
   gsl_integration_qaws_table *t = NULL;
   t = make_qaws_table(ary);
-  return Data_Wrap_Struct(cgsl_integration_qaws_table, 
+  return Data_Wrap_Struct(cgsl_integration_qaws_table,
         0, gsl_integration_qaws_table_free, t);
 }
 
@@ -695,7 +695,7 @@ static VALUE rb_gsl_integration_qaws(int argc, VALUE *argv, VALUE obj)
 
   return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr), INT2FIX(intervals),
          INT2FIX(status));
-}          
+}
 
 static gsl_integration_qawo_table* make_qawo_table(VALUE ary);
 
@@ -706,7 +706,7 @@ static VALUE rb_gsl_integration_qawo_table_alloc(int argc, VALUE *argv,
   double omega, L;
   enum gsl_integration_qawo_enum sine;
   size_t n;
-  if (argc != 1 && argc != 4) 
+  if (argc != 1 && argc != 4)
     rb_raise(rb_eArgError, "wrong nubmer of arguments (%d for 1 or 4)", argc);
 
   if (TYPE(argv[0]) == T_ARRAY) {
@@ -722,7 +722,7 @@ static VALUE rb_gsl_integration_qawo_table_alloc(int argc, VALUE *argv,
   }
 
   t = gsl_integration_qawo_table_alloc(omega, L, sine, n);
-               
+
   return Data_Wrap_Struct(klass, 0, gsl_integration_qawo_table_free, t);
 }
 
@@ -743,7 +743,7 @@ static VALUE rb_gsl_ary_to_integration_qawo_table(VALUE ary)
 {
   gsl_integration_qawo_table *t = NULL;
   t = make_qawo_table(ary);
-  return Data_Wrap_Struct(cgsl_integration_qawo_table, 
+  return Data_Wrap_Struct(cgsl_integration_qawo_table,
         0, gsl_integration_qawo_table_free, t);
 }
 
@@ -829,7 +829,7 @@ static VALUE rb_gsl_integration_qawo(int argc, VALUE *argv, VALUE obj)
 
   return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr), INT2FIX(intervals),
          INT2FIX(status));
-}          
+}
 
 static int get_qawo_table(VALUE tt,
         gsl_integration_qawo_table **t)
@@ -879,7 +879,7 @@ static VALUE rb_gsl_integration_qawf(int argc, VALUE *argv, VALUE obj)
     itmp += 1;
   }
   vtmp = argv + itmp;
-  flagt = get_qawo_table(argv[argc-1], &t);    
+  flagt = get_qawo_table(argv[argc-1], &t);
 
   switch (argc - 1 - itmp) {
   case 0:
@@ -921,9 +921,9 @@ static VALUE rb_gsl_integration_qawf(int argc, VALUE *argv, VALUE obj)
   }
   if (flagt == 1) gsl_integration_qawo_table_free(t);
 
-  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr), 
+  return rb_ary_new3(4, rb_float_new(result), rb_float_new(abserr),
          INT2FIX(intervals), INT2FIX(status));
-}          
+}
 
 
 static void rb_gsl_integration_define_symbols(VALUE module)
@@ -944,8 +944,8 @@ static VALUE rb_gsl_integration_workspace_alloc(int argc, VALUE *argv,
   size_t limit;
   if (argc == 1) limit = FIX2INT(argv[0]);
   else limit = LIMIT_DEFAULT;
-  return Data_Wrap_Struct(klass, 0, 
-        gsl_integration_workspace_free, 
+  return Data_Wrap_Struct(klass, 0,
+        gsl_integration_workspace_free,
         gsl_integration_workspace_alloc(limit));
 }
 
@@ -1080,42 +1080,42 @@ void Init_gsl_integration(VALUE module)
   rb_define_alias(cgsl_function, "qagil", "integration_qagil");
   rb_define_alias(cgsl_function, "qawc", "integration_qawc");
 
-  cgsl_integration_qaws_table = rb_define_class_under(mgsl_integ, "QAWS_Table", 
+  cgsl_integration_qaws_table = rb_define_class_under(mgsl_integ, "QAWS_Table",
                   cGSL_Object);
   rb_define_singleton_method(cgsl_integration_qaws_table, "alloc",
            rb_gsl_integration_qaws_table_alloc, -1);
   /*  rb_define_singleton_method(cgsl_integration_qaws_table, "new",
       rb_gsl_integration_qaws_table_alloc, -1);*/
-  rb_define_method(cgsl_integration_qaws_table, "to_a", 
+  rb_define_method(cgsl_integration_qaws_table, "to_a",
        rb_gsl_integration_qaws_table_to_a, 0);
-  rb_define_method(cgsl_integration_qaws_table, "set", 
+  rb_define_method(cgsl_integration_qaws_table, "set",
        rb_gsl_integration_qaws_table_set, -1);
-  rb_define_method(rb_cArray, "to_gsl_integration_qaws_table", 
+  rb_define_method(rb_cArray, "to_gsl_integration_qaws_table",
        rb_gsl_ary_to_integration_qaws_table, 0);
   rb_define_alias(rb_cArray, "to_qaws_table", "to_gsl_integration_qaws_table");
   rb_define_method(cgsl_function, "integration_qaws", rb_gsl_integration_qaws, -1);
   rb_define_alias(cgsl_function, "qaws", "integration_qaws");
 
-  cgsl_integration_qawo_table = rb_define_class_under(mgsl_integ, "QAWO_Table", 
+  cgsl_integration_qawo_table = rb_define_class_under(mgsl_integ, "QAWO_Table",
                   cGSL_Object);
   rb_define_singleton_method(cgsl_integration_qawo_table, "alloc",
            rb_gsl_integration_qawo_table_alloc, -1);
   /*  rb_define_singleton_method(cgsl_integration_qawo_table, "new",
       rb_gsl_integration_qawo_table_alloc, -1);*/
-  rb_define_method(cgsl_integration_qawo_table, "to_a", 
+  rb_define_method(cgsl_integration_qawo_table, "to_a",
        rb_gsl_integration_qawo_table_to_a, 0);
-  rb_define_method(rb_cArray, "to_gsl_integration_qawo_table", 
+  rb_define_method(rb_cArray, "to_gsl_integration_qawo_table",
        rb_gsl_ary_to_integration_qawo_table, 0);
-  rb_define_method(cgsl_integration_qawo_table, "set", 
+  rb_define_method(cgsl_integration_qawo_table, "set",
        rb_gsl_integration_qawo_table_set, -1);
-  rb_define_method(cgsl_integration_qawo_table, "set_length", 
+  rb_define_method(cgsl_integration_qawo_table, "set_length",
        rb_gsl_integration_qawo_table_set_length, 1);
   rb_define_method(cgsl_function, "integration_qawo", rb_gsl_integration_qawo, -1);
   rb_define_method(cgsl_function, "integration_qawf", rb_gsl_integration_qawf, -1);
   rb_define_alias(cgsl_function, "qawo", "integration_qawo");
   rb_define_alias(cgsl_function, "qawf", "integration_qawf");
 
-  cgsl_integration_workspace = rb_define_class_under(mgsl_integ, 
+  cgsl_integration_workspace = rb_define_class_under(mgsl_integ,
                  "Workspace", cGSL_Object);
 
   /*  rb_define_singleton_method(cgsl_integration_workspace, "new",
@@ -1123,25 +1123,25 @@ void Init_gsl_integration(VALUE module)
   rb_define_singleton_method(cgsl_integration_workspace, "alloc",
            rb_gsl_integration_workspace_alloc, -1);
 
-  rb_define_method(cgsl_integration_workspace, "limit", 
+  rb_define_method(cgsl_integration_workspace, "limit",
        rb_gsl_integration_workspace_limit, 0);
-  rb_define_method(cgsl_integration_workspace, "size", 
+  rb_define_method(cgsl_integration_workspace, "size",
        rb_gsl_integration_workspace_size, 0);
-  rb_define_method(cgsl_integration_workspace, "nrmax", 
+  rb_define_method(cgsl_integration_workspace, "nrmax",
        rb_gsl_integration_workspace_nrmax, 0);
-  rb_define_method(cgsl_integration_workspace, "i", 
+  rb_define_method(cgsl_integration_workspace, "i",
        rb_gsl_integration_workspace_i, 0);
-  rb_define_method(cgsl_integration_workspace, "maximum_level", 
+  rb_define_method(cgsl_integration_workspace, "maximum_level",
        rb_gsl_integration_workspace_maximum_level, 0);
-  rb_define_method(cgsl_integration_workspace, "to_a", 
+  rb_define_method(cgsl_integration_workspace, "to_a",
        rb_gsl_integration_workspace_to_a, 0);
-  rb_define_method(cgsl_integration_workspace, "alist", 
+  rb_define_method(cgsl_integration_workspace, "alist",
        rb_gsl_integration_workspace_alist, 0);
-  rb_define_method(cgsl_integration_workspace, "blist", 
+  rb_define_method(cgsl_integration_workspace, "blist",
        rb_gsl_integration_workspace_blist, 0);
-  rb_define_method(cgsl_integration_workspace, "rlist", 
+  rb_define_method(cgsl_integration_workspace, "rlist",
        rb_gsl_integration_workspace_rlist, 0);
-  rb_define_method(cgsl_integration_workspace, "elist", 
+  rb_define_method(cgsl_integration_workspace, "elist",
        rb_gsl_integration_workspace_elist, 0);
 
   /*****/

@@ -15,8 +15,8 @@ module Degenerate
   hbar = PLANCKS_CONSTANT_HBAR    # Planck's constant
   me = MASS_ELECTRON              # Electron mass
   mn = MASS_NEUTRON               # Neutron mass
-  mu = UNIFIED_ATOMIC_MASS        
-  c = SPEED_OF_LIGHT            
+  mu = UNIFIED_ATOMIC_MASS
+  c = SPEED_OF_LIGHT
   ELambda = hbar/me/c             # Compton length of electron
   NLambda = hbar/mn/c
   MeC2 = me*c*c                   # Electron rest mass energy
@@ -29,24 +29,24 @@ module Degenerate
     tmp = sqrt(1.0 + x*x)
     (x*tmp*(2.0*x*x/3.0 - 1.0) + log(x + tmp))/8/PI/PI
   end
-  
+
   def chi(x)
     tmp = sqrt(1.0 + x*x)
     (x*tmp*(1.0 + 2*x*x) - log(x + tmp))/8/PI/PI
   end
-  
+
   def xe_rho_mue(rho, mue)
     Factor_xe*GSL::pow(rho/mue, 1.0/3.0)
   end
- 
+
   def xn_rho(rho)
     Factor_xn*GSL::pow(rho, 1.0/3.0)
   end
- 
+
 end
 
 # Polytrope gas sphere
-module Polytrope 
+module Polytrope
 
 # Lane-Emden equation
 #   n: polytrope index
@@ -59,7 +59,7 @@ module Polytrope
     dim = 2
     y = GSL::Vector[1.0, 0.0]
     dydx = GSL::Vector.alloc(dim)
-    
+
     solver = Solver.alloc(Step::RKF45, [1e-6, 0], EmdenEq, dim)
     solver.set_params(n)
     solver.reset
@@ -71,7 +71,7 @@ module Polytrope
     x = 0.0001
     xend = 10.0
     h = 1e-6
-    
+
     file = File.open("polytrope.dat", "w")
     i = 0
     while x < xend
@@ -94,10 +94,10 @@ module Polytrope
     vdy2 = vdy.subvector(0, i)
     spline = GSL::Spline.alloc(GSL::Interp::AKIMA, i)
     spline.init(vy2.reverse, vx2.reverse)
-    
+
 # Find star surface:
 # Star sufrace is defined as the zero point of density structure function
-    x1 = spline.eval(0.0)      
+    x1 = spline.eval(0.0)
     spline.init(vx2, vdy2)
     yx2 = spline.eval(x1).abs
     return [x1, yx2*x1*x1]

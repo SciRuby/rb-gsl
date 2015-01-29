@@ -10,7 +10,7 @@ gmf.set(fn1, m, a, b)
 printf("Using %s method\n", gmf.name)
 printf("%5s [%9s, %9s] %9s %10s %9s\n", "iter", "lower", "upper", "min",
        "err", "err(est)")
-printf("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n", 
+printf("%5d [%.7f, %.7f] %.7f %+.7f %.7f\n",
        iter, a, b, m, m - m_expected, b - a)
 begin
   iter += 1

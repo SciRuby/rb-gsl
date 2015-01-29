@@ -41,7 +41,7 @@ static VALUE rb_gsl_vector_complex_new(int argc, VALUE *argv, VALUE klass)
       v = gsl_vector_complex_calloc(n);
       if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
       break;
-    case T_ARRAY: 
+    case T_ARRAY:
       n = RARRAY_LEN(argv[0]);
       v = gsl_vector_complex_alloc(n);
       if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
@@ -54,16 +54,16 @@ static VALUE rb_gsl_vector_complex_new(int argc, VALUE *argv, VALUE klass)
   } else if (COMPLEX_P(tmp)) {
     Data_Get_Struct(tmp, gsl_complex, z2);
   } else {
-    rb_raise(rb_eTypeError, 
-       "wrong argument type %s (Array or Complex expected)", 
+    rb_raise(rb_eTypeError,
+       "wrong argument type %s (Array or Complex expected)",
        rb_class2name(CLASS_OF(tmp)));
-    
+
   }
   gsl_vector_complex_set(v, i, *z2);
       }
       break;
     default:
-      rb_raise(rb_eTypeError, 
+      rb_raise(rb_eTypeError,
          "wrong argument type %s", rb_class2name(CLASS_OF(argv[0])));
       break;
     }
@@ -92,8 +92,8 @@ static VALUE rb_gsl_vector_complex_new(int argc, VALUE *argv, VALUE klass)
       } else if (COMPLEX_P(argv[i])) {
   Data_Get_Struct(argv[i], gsl_complex, z2);
       } else {
-  rb_raise(rb_eTypeError, 
-     "wrong argument type %s (Array or Complex expected)", 
+  rb_raise(rb_eTypeError,
+     "wrong argument type %s (Array or Complex expected)",
      rb_class2name(CLASS_OF(argv[i])));
       }
       gsl_vector_complex_set(v, i, *z2);
@@ -770,7 +770,7 @@ static VALUE rb_gsl_vector_complex_reverse2(VALUE obj)
   vnew = gsl_vector_complex_alloc(v->size);
   gsl_vector_complex_memcpy(vnew, v);
   gsl_vector_complex_reverse(vnew);
-  if (VECTOR_COMPLEX_ROW_P(obj)) 
+  if (VECTOR_COMPLEX_ROW_P(obj))
     return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
   else
     return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, vnew);
@@ -829,7 +829,7 @@ static VALUE rb_gsl_vector_complex_fftshift(VALUE obj)
   vvnew = gsl_vector_complex_subvector(vnew, 0, n/2);
   gsl_vector_complex_memcpy(&vvnew.vector, &vv.vector);
 
-  return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);  
+  return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);
 }
 
 static VALUE rb_gsl_vector_complex_ifftshift_bang(VALUE obj)
@@ -900,7 +900,7 @@ static VALUE rb_gsl_vector_complex_matrix_view(int argc, VALUE *argv, VALUE obj)
     break;
   case 3:
     mv = gsl_matrix_complex_view_alloc();
-    *mv = gsl_matrix_complex_view_vector_with_tda(v, FIX2INT(argv[0]), FIX2INT(argv[1]), 
+    *mv = gsl_matrix_complex_view_vector_with_tda(v, FIX2INT(argv[0]), FIX2INT(argv[1]),
          FIX2INT(argv[2]));
     break;
   default:
@@ -928,9 +928,9 @@ static VALUE rb_gsl_vector_complex_trans(VALUE obj)
   gsl_vector_complex *v = NULL, *vnew = NULL;
   Data_Get_Struct(obj, gsl_vector_complex, v);
   vnew = make_vector_complex_clone(v);
-  if (VECTOR_COMPLEX_ROW_P(obj)) 
+  if (VECTOR_COMPLEX_ROW_P(obj))
     return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, vnew);
-  else if (VECTOR_COMPLEX_COL_P(obj)) 
+  else if (VECTOR_COMPLEX_COL_P(obj))
     return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew);
   else {
     rb_raise(rb_eTypeError, "wrong type");
@@ -939,9 +939,9 @@ static VALUE rb_gsl_vector_complex_trans(VALUE obj)
 
 static VALUE rb_gsl_vector_complex_trans2(VALUE obj)
 {
-  if (CLASS_OF(obj) == cgsl_vector_complex) 
+  if (CLASS_OF(obj) == cgsl_vector_complex)
     RBGSL_SET_CLASS(obj, cgsl_vector_complex_col);
-  else if (CLASS_OF(obj) == cgsl_vector_complex_col) 
+  else if (CLASS_OF(obj) == cgsl_vector_complex_col)
     RBGSL_SET_CLASS(obj, cgsl_vector_complex);
   else {
     rb_raise(rb_eRuntimeError, "method trans! for %s is forbidden",
@@ -982,7 +982,7 @@ enum {
 
 static VALUE rb_gsl_vector_complex_arithmetics(int flag, VALUE obj, VALUE bb);
 
-static VALUE rb_gsl_vector_complex_arithmetics(int flag, VALUE obj, VALUE bb) 
+static VALUE rb_gsl_vector_complex_arithmetics(int flag, VALUE obj, VALUE bb)
 {
   gsl_vector *b = NULL;
   gsl_vector_complex *cv = NULL, *cvnew = NULL, *cb = NULL;
@@ -1231,11 +1231,11 @@ static VALUE rb_gsl_vector_complex_product_to_m(int argc, VALUE *argv, VALUE obj
     if (argc != 2) rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)",
           argc);
     if (!VECTOR_COMPLEX_COL_P(argv[0]))
-      rb_raise(rb_eTypeError, 
+      rb_raise(rb_eTypeError,
          "wrong argument type %s (GSL::Vector::Complex::Col expected)",
          rb_class2name(CLASS_OF(argv[0])));
     if (!VECTOR_COMPLEX_ROW_P(argv[1]))
-      rb_raise(rb_eTypeError, 
+      rb_raise(rb_eTypeError,
          "wrong argument type %s (GSL::Vector::Complex expected)",
          rb_class2name(CLASS_OF(argv[1])));
     Data_Get_Struct(argv[0], gsl_vector_complex, v);
@@ -1245,7 +1245,7 @@ static VALUE rb_gsl_vector_complex_product_to_m(int argc, VALUE *argv, VALUE obj
     if (argc != 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)",
           argc);
     if (!VECTOR_COMPLEX_ROW_P(argv[0]))
-      rb_raise(rb_eTypeError, 
+      rb_raise(rb_eTypeError,
          "wrong argument type %s (GSL::Vector::Complex expected)",
          rb_class2name(CLASS_OF(argv[0])));
     Data_Get_Struct(obj, gsl_vector_complex, v);
@@ -1324,7 +1324,7 @@ static VALUE rb_gsl_vector_complex_XXXz_bang(VALUE obj, gsl_complex (*f)(gsl_com
   return obj;
 }
 
-static VALUE rb_gsl_vector_complex_XXXz2(VALUE obj, VALUE a, 
+static VALUE rb_gsl_vector_complex_XXXz2(VALUE obj, VALUE a,
            gsl_complex (*f)(gsl_complex, gsl_complex))
 {
   gsl_vector_complex *m, *v;
@@ -1341,7 +1341,7 @@ static VALUE rb_gsl_vector_complex_XXXz2(VALUE obj, VALUE a,
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, v);
 }
 
-static VALUE rb_gsl_vector_complex_XXXz2_bang(VALUE obj, VALUE a, 
+static VALUE rb_gsl_vector_complex_XXXz2_bang(VALUE obj, VALUE a,
            gsl_complex (*f)(gsl_complex, gsl_complex))
 {
   gsl_vector_complex *v;
@@ -1531,7 +1531,7 @@ static VALUE rb_gsl_vector_complex_z_stats_v(VALUE obj,
   CHECK_VECTOR_COMPLEX(obj);
   Data_Get_Struct(obj, gsl_vector_complex, v);
 
-  zv = Data_Make_Struct(cgsl_complex, gsl_complex, 0, free, zp); 
+  zv = Data_Make_Struct(cgsl_complex, gsl_complex, 0, free, zp);
   *zp = func(v);
 
   return zv;
@@ -1824,7 +1824,7 @@ static VALUE rb_gsl_vector_complex_concat(VALUE obj, VALUE other)
       break;
   }
 
-  return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);  
+  return Data_Wrap_Struct(VECTOR_COMPLEX_ROW_COL(obj), 0, gsl_vector_complex_free, vnew);
 }
 
 static VALUE rb_gsl_vector_complex_block(VALUE obj)
@@ -1958,7 +1958,7 @@ static VALUE rb_gsl_vector_complex_zip(int argc, VALUE *argv, VALUE obj)
     argv2 = argv;
   } else {
     if (argc < 1) rb_raise(rb_eArgError, "Too few arguments.");
-    Data_Get_Struct(argv[0], gsl_vector_complex, v0);    
+    Data_Get_Struct(argv[0], gsl_vector_complex, v0);
     argc2 = argc - 1;
     argv2 = argv + 1;
   }
@@ -1982,7 +1982,7 @@ static VALUE rb_gsl_vector_complex_zip(int argc, VALUE *argv, VALUE obj)
     }
     rb_ary_store(ary, i, Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vnew));
   }
-  
+
   free((gsl_vector_complex**) vp);
   return ary;
 }
@@ -2002,7 +2002,7 @@ static int gsl_vector_complex_equal_eps(const gsl_vector_complex *v1,
     if (!rbgsl_complex_equal(&z1, &z2, eps)) return 0;
   }
   return 1;
-  
+
 }
 
 static VALUE rb_gsl_vector_complex_equal(int argc, VALUE *argv, VALUE obj)
@@ -2043,7 +2043,7 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_singleton_method(cgsl_vector_complex, "alloc", rb_gsl_vector_complex_new, -1);
   rb_define_singleton_method(cgsl_vector_complex, "calloc", rb_gsl_vector_complex_calloc, 1);
 
-  rb_define_singleton_method(cgsl_vector_complex_col, "new", 
+  rb_define_singleton_method(cgsl_vector_complex_col, "new",
            rb_gsl_vector_complex_row_new, -1);
 
   rb_define_method(cgsl_vector_complex, "size", rb_gsl_vector_complex_size, 0);
@@ -2103,7 +2103,7 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "subvector", rb_gsl_vector_complex_subvector, -1);
   rb_define_alias(cgsl_vector_complex, "view", "subvector");
   rb_define_method(cgsl_vector_complex, "subvector_with_stride", rb_gsl_vector_complex_subvector_with_stride, 3);
-  
+
   rb_define_singleton_method(cgsl_vector_complex, "memcpy", rb_gsl_vector_complex_memcpy, 2);
   rb_define_method(cgsl_vector_complex, "clone", rb_gsl_vector_complex_clone, 0);
   rb_define_alias(cgsl_vector_complex, "duplicate", "clone");
@@ -2135,14 +2135,14 @@ void Init_gsl_vector_complex(VALUE module)
    /*****/
   rb_define_method(cgsl_vector_complex, "to_real", rb_gsl_vector_complex_to_real, 0);
 
-  rb_define_method(cgsl_vector_complex, "add", rb_gsl_vector_complex_add, 1);  
-  rb_define_method(cgsl_vector_complex, "sub", rb_gsl_vector_complex_sub, 1);  
-  rb_define_method(cgsl_vector_complex, "mul", rb_gsl_vector_complex_mul, 1);  
-  rb_define_method(cgsl_vector_complex, "div", rb_gsl_vector_complex_div, 1);  
-  rb_define_method(cgsl_vector_complex, "add!", rb_gsl_vector_complex_add_bang, 1);  
-  rb_define_method(cgsl_vector_complex, "sub!", rb_gsl_vector_complex_sub_bang, 1);  
-  rb_define_method(cgsl_vector_complex, "mul!", rb_gsl_vector_complex_mul_bang, 1);  
-  rb_define_method(cgsl_vector_complex, "div!", rb_gsl_vector_complex_div_bang, 1);  
+  rb_define_method(cgsl_vector_complex, "add", rb_gsl_vector_complex_add, 1);
+  rb_define_method(cgsl_vector_complex, "sub", rb_gsl_vector_complex_sub, 1);
+  rb_define_method(cgsl_vector_complex, "mul", rb_gsl_vector_complex_mul, 1);
+  rb_define_method(cgsl_vector_complex, "div", rb_gsl_vector_complex_div, 1);
+  rb_define_method(cgsl_vector_complex, "add!", rb_gsl_vector_complex_add_bang, 1);
+  rb_define_method(cgsl_vector_complex, "sub!", rb_gsl_vector_complex_sub_bang, 1);
+  rb_define_method(cgsl_vector_complex, "mul!", rb_gsl_vector_complex_mul_bang, 1);
+  rb_define_method(cgsl_vector_complex, "div!", rb_gsl_vector_complex_div_bang, 1);
 
   rb_define_alias(cgsl_vector_complex, "+", "add");
   rb_define_alias(cgsl_vector_complex, "add_constant", "add");
@@ -2153,7 +2153,7 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_alias(cgsl_vector_complex, "scale!", "mul!");
   rb_define_alias(cgsl_vector_complex, "/", "div");
 
-  rb_define_method(cgsl_vector_complex, "coerce", rb_gsl_vector_complex_coerce, 1);  
+  rb_define_method(cgsl_vector_complex, "coerce", rb_gsl_vector_complex_coerce, 1);
 
   /* 2.Aug.2004 */
   rb_define_singleton_method(cgsl_vector_complex, "inner_product", rb_gsl_vector_complex_inner_product, -1);
@@ -2238,10 +2238,10 @@ void Init_gsl_vector_complex(VALUE module)
 
   rb_define_method(cgsl_vector_complex, "zip", rb_gsl_vector_complex_zip, -1);
   rb_define_singleton_method(cgsl_vector_complex, "zip", rb_gsl_vector_complex_zip, -1);
-  
+
   rb_define_method(cgsl_vector_complex, "equal?", rb_gsl_vector_complex_equal, -1);
   rb_define_alias(cgsl_vector_complex, "==", "equal?");
   rb_define_method(cgsl_vector_complex, "not_equal?", rb_gsl_vector_complex_not_equal, -1);
-  rb_define_alias(cgsl_vector_complex, "!=", "not_equal?");  
+  rb_define_alias(cgsl_vector_complex, "!=", "not_equal?");
 }
 

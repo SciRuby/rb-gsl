@@ -18,7 +18,7 @@ p r.max
 p r.get
 p r.get
 
-r2 = GSL::Random::Rng.alloc 
+r2 = GSL::Random::Rng.alloc
 p r2.uniform
 p r2.uniform
 

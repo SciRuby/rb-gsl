@@ -35,7 +35,7 @@ static VALUE rb_gsl_vector_Xspace(double min, double max, int i,
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
 }
 
-static gsl_vector* gsl_vector_linspace(const double min, 
+static gsl_vector* gsl_vector_linspace(const double min,
                const double max, const size_t n)
 {
   gsl_vector *v = NULL;
@@ -53,7 +53,7 @@ static gsl_vector* gsl_vector_linspace(const double min,
   return v;
 }
 
-static gsl_vector* gsl_vector_logspace(const double min, 
+static gsl_vector* gsl_vector_logspace(const double min,
                const double max, const size_t n)
 {
   gsl_vector *v = NULL;
@@ -86,7 +86,7 @@ static VALUE rb_gsl_vector_linspace(int argc, VALUE *argv, VALUE klass)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)", argc);
     break;
   }
-  Need_Float(argv[0]);   Need_Float(argv[1]); 
+  Need_Float(argv[0]);   Need_Float(argv[1]);
   return rb_gsl_vector_Xspace(NUM2DBL(argv[0]), NUM2DBL(argv[1]), n,
             gsl_vector_linspace);
 }
@@ -106,7 +106,7 @@ static VALUE rb_gsl_vector_logspace(int argc, VALUE *argv, VALUE klass)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)", argc);
     break;
   }
-  Need_Float(argv[0]);   Need_Float(argv[1]); 
+  Need_Float(argv[0]);   Need_Float(argv[1]);
   return rb_gsl_vector_Xspace(NUM2DBL(argv[0]), NUM2DBL(argv[1]), n,
             gsl_vector_logspace);
 }
@@ -126,8 +126,8 @@ static VALUE rb_gsl_vector_logspace2(int argc, VALUE *argv, VALUE klass)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 3)", argc);
     break;
   }
-  Need_Float(argv[0]);   Need_Float(argv[1]); 
-  return rb_gsl_vector_Xspace(log10(NUM2DBL(argv[0])), 
+  Need_Float(argv[0]);   Need_Float(argv[1]);
+  return rb_gsl_vector_Xspace(log10(NUM2DBL(argv[0])),
             log10(NUM2DBL(argv[1])), n,
             gsl_vector_logspace);
 }
@@ -144,7 +144,7 @@ enum {
   GSL_VECTOR_DIV,
 };
 
-static VALUE rb_gsl_vector_arithmetics(int flag, VALUE obj, VALUE bb) 
+static VALUE rb_gsl_vector_arithmetics(int flag, VALUE obj, VALUE bb)
 {
   gsl_vector *v = NULL, *vnew = NULL, *b = NULL;
   gsl_vector_complex *cvnew = NULL, *cb = NULL;
@@ -171,9 +171,9 @@ static VALUE rb_gsl_vector_arithmetics(int flag, VALUE obj, VALUE bb)
       gsl_vector_scale(vnew, 1.0/NUM2DBL(bb));
       break;
     }
-    if (!VECTOR_VIEW_P(obj)) 
+    if (!VECTOR_VIEW_P(obj))
       return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_vector_free, vnew);
-    else 
+    else
       return Data_Wrap_Struct(VECTOR_ROW_COL(obj), 0, gsl_vector_free, vnew);
     break;
   default:
@@ -198,9 +198,9 @@ static VALUE rb_gsl_vector_arithmetics(int flag, VALUE obj, VALUE bb)
   gsl_vector_div(vnew, b);
   break;
       }
-      if (!VECTOR_VIEW_P(obj)) 
+      if (!VECTOR_VIEW_P(obj))
   return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_vector_free, vnew);
-      else 
+      else
   return Data_Wrap_Struct(VECTOR_ROW_COL(obj), 0, gsl_vector_free, vnew);
     } else if (VECTOR_COMPLEX_P(bb)) {
       Data_Get_Struct(bb, gsl_vector_complex, cb);
@@ -240,7 +240,7 @@ static VALUE rb_gsl_vector_arithmetics(int flag, VALUE obj, VALUE bb)
   gsl_vector_complex_scale(cvnew, gsl_complex_inverse(*c));
   break;
       }
-      if (VECTOR_COL_P(obj)) 
+      if (VECTOR_COL_P(obj))
   return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cvnew);
       else
   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
@@ -412,14 +412,14 @@ static VALUE rb_gsl_vector_coerce(VALUE obj, VALUE other)
       cv = gsl_vector_complex_alloc(v->size);
       if (cv == NULL) rb_raise(rb_eNoMemError, "gsl_vector_alloc failed");
       gsl_vector_complex_set_all(cv, *c);
-      if (VECTOR_ROW_P(obj)) 
+      if (VECTOR_ROW_P(obj))
   vv = Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cv);
       else
   vv = Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cv);
       return rb_ary_new3(2, vv, obj);
     } else if (VECTOR_COMPLEX_P(other)) {
       cv = vector_to_complex(v);
-      if (VECTOR_ROW_P(obj)) 
+      if (VECTOR_ROW_P(obj))
   vv = Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cv);
       else
   vv = Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cv);
@@ -491,7 +491,7 @@ VALUE rb_gsl_vector_to_i(VALUE obj)
     val = (int) gsl_vector_get(v, i);
     gsl_vector_int_set(vi, i, val);
   }
-  if (VECTOR_COL_P(obj)) 
+  if (VECTOR_COL_P(obj))
     return Data_Wrap_Struct(cgsl_vector_int_col, 0, gsl_vector_int_free, vi);
   else
     return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free, vi);
@@ -544,7 +544,7 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
 #endif
     } else {
       if (fp) pclose(fp);
-      rb_raise(rb_eTypeError, "wrong argument type %s", 
+      rb_raise(rb_eTypeError, "wrong argument type %s",
          rb_class2name(CLASS_OF(argv[0])));
     }
     if (fp) pclose(fp);
@@ -588,7 +588,7 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
   n = NA_TOTAL(argv[1]);
 #endif
       } else {
-  rb_raise(rb_eTypeError, "wrong argument type %s", 
+  rb_raise(rb_eTypeError, "wrong argument type %s",
      rb_class2name(CLASS_OF(argv[0])));
       }
       x = gsl_vector_alloc(n);
@@ -596,7 +596,7 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
       flag = 1;
     } else {
       if (fp) pclose(fp);
-      rb_raise(rb_eTypeError, "wrong argument type %s", 
+      rb_raise(rb_eTypeError, "wrong argument type %s",
          rb_class2name(CLASS_OF(argv[0])));
     }
     if (flag == 1) vx = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, x);
@@ -607,8 +607,8 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
       else if (NA_IsNArray(argv[i])) draw_vector2(vx, argv[i], fp);
 #endif
-      else 
-  rb_raise(rb_eTypeError, "wrong argument type %s", 
+      else
+  rb_raise(rb_eTypeError, "wrong argument type %s",
      rb_class2name(CLASS_OF(argv[i])));
       fprintf(fp, "\n");
       fflush(fp);
@@ -698,7 +698,7 @@ static void draw_hist(VALUE obj, FILE *fp)
   size_t j;
   Data_Get_Struct(obj, gsl_histogram, h);
   for (j = 0; j < h->n; j++) {
-    fprintf(fp, "%g %g\n%g %g\n", 
+    fprintf(fp, "%g %g\n%g %g\n",
       h->range[j], h->bin[j], h->range[j+1], h->bin[j]);
   }
   fflush(fp);
@@ -734,25 +734,25 @@ static void draw_vector_array(VALUE ary, FILE *fp)
     }
     break;
   default:
-    rb_raise(rb_eRuntimeError, "wrong array length (%d for 1 or 2)", 
+    rb_raise(rb_eRuntimeError, "wrong array length (%d for 1 or 2)",
        (int) RARRAY_LEN(ary));
     break;
   }
   switch (flag) {
   case 0:
-    for (j = 0; j < n; j++) 
+    for (j = 0; j < n; j++)
       fprintf(fp, "%g %g\n", ptrx[j*stridex], ptry[j*stridey]);
     break;
   case 1:
-    for (j = 0; j < n; j++) 
+    for (j = 0; j < n; j++)
       fprintf(fp, "%d %g\n", (int) j, ptry[j*stridey]);
     break;
   case 2:
-    for (j = 0; j < n; j++) 
+    for (j = 0; j < n; j++)
       fprintf(fp, "%d %g %g\n", (int) j, ptry[j*stridey], ptrz[j*stridez]);
     break;
   case 3:
-    for (j = 0; j < n; j++) 
+    for (j = 0; j < n; j++)
       fprintf(fp, "%g %g %g\n", ptrx[j*stridex], ptry[j*stridey], ptrz[j*stridez]);
     break;
   default:
@@ -825,11 +825,11 @@ static VALUE rb_gsl_vector_plot2(int argc, VALUE *argv, VALUE obj)
   n = x->size;
   fprintf(fp, "%s\n", command);
   for (i = 0; i < n; i++) {
-    if (y == NULL) 
+    if (y == NULL)
       fprintf(fp, "%d %g\n", (int) i, gsl_vector_get(x, i));
     else if (yerr == NULL)
       fprintf(fp, "%g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i));
-    else if (xerr) 
+    else if (xerr)
       fprintf(fp, "%g %g %g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i),
         gsl_vector_get(xerr, i), gsl_vector_get(yerr, i));
     else
@@ -864,10 +864,10 @@ static VALUE rb_gsl_vector_normalize(int argc, VALUE *argv, VALUE obj)
   vnew = make_vector_clone(v);
   /*  mean = gsl_stats_mean(v->data, v->stride, v->size);
   gsl_vector_add_constant(vnew, -mean);
-  sd = gsl_stats_sd(vnew->data, vnew->stride, vnew->size);  
+  sd = gsl_stats_sd(vnew->data, vnew->stride, vnew->size);
   gsl_vector_scale(vnew, sqrt(nrm)/sd);*/
   gsl_vector_scale(vnew, nrm/gsl_blas_dnrm2(v));
-  return Data_Wrap_Struct(VECTOR_ROW_COL(obj), 0, gsl_vector_free, vnew);  
+  return Data_Wrap_Struct(VECTOR_ROW_COL(obj), 0, gsl_vector_free, vnew);
 }
 
 static VALUE rb_gsl_vector_normalize_bang(int argc, VALUE *argv, VALUE obj)
@@ -891,7 +891,7 @@ static VALUE rb_gsl_vector_normalize_bang(int argc, VALUE *argv, VALUE obj)
   Data_Get_Vector(obj, v);
   /*  mean = gsl_stats_mean(v->data, v->stride, v->size);
   gsl_vector_add_constant(v, -mean);
-  sd = gsl_stats_sd(v->data, v->stride, v->size);  
+  sd = gsl_stats_sd(v->data, v->stride, v->size);
   gsl_vector_scale(v, sqrt(nrm)/sd);*/
   factor = nrm/gsl_blas_dnrm2(v);
   gsl_vector_scale(v, factor);
@@ -941,7 +941,7 @@ static VALUE rb_gsl_vector_filescan_na(VALUE klass, VALUE file)
     for (j = 0; j < n; j++) {
       p = str_scan_double(p, &val);
       if (p) ptr[j][i] = val;
-      else break;      
+      else break;
     }
   }
   fclose(fp);
@@ -958,8 +958,8 @@ static VALUE rb_gsl_vector_decimate(VALUE obj, VALUE nn)
   CHECK_FIXNUM(nn);
   Data_Get_Vector(obj, v);
   n = (size_t) FIX2INT(nn);
-  if (n > v->size) 
-    rb_raise(rb_eArgError, 
+  if (n > v->size)
+    rb_raise(rb_eArgError,
        "decimation factor must be smaller than the vector length.");
   if (n == 0) rb_raise(rb_eArgError, "decimation factor must be greater than 1");
   n2 = (size_t) ceil((double)v->size/n);
@@ -1199,10 +1199,10 @@ static VALUE rb_gsl_vector_linearfit(int argc, VALUE *argv, VALUE klass)
         &sumsq);
     break;
   case 2:
-    CHECK_VECTOR(argv[0]); CHECK_VECTOR(argv[1]); 
+    CHECK_VECTOR(argv[0]); CHECK_VECTOR(argv[1]);
     Data_Get_Struct(argv[0], gsl_vector, x);
     Data_Get_Struct(argv[1], gsl_vector, y);
-    gsl_fit_linear(x->data, x->stride, y->data,y->stride, y->size, 
+    gsl_fit_linear(x->data, x->stride, y->data,y->stride, y->size,
        &c0, &c1, &c00, &c01, &c11, &sumsq);
     break;
   default:
@@ -1226,7 +1226,7 @@ static VALUE rb_gsl_vector_center(VALUE obj)
 
 static VALUE rb_gsl_vector_clip(int argc, VALUE *argv, VALUE obj)
 {
-  gsl_vector *v, *vnew;  
+  gsl_vector *v, *vnew;
   double hi = 1.0, lo = 0.0;
   double x;
   size_t i;
@@ -1271,12 +1271,12 @@ static VALUE rb_gsl_vector_amp_phase(VALUE obj)
   amp = gsl_vector_alloc(v->size/2);
   phase = gsl_vector_alloc(v->size/2);
   gsl_vector_set(amp, 0, gsl_vector_get(v, 0));
-  gsl_vector_set(phase, 0, 0);  
+  gsl_vector_set(phase, 0, 0);
   gsl_vector_set(amp, amp->size-1, gsl_vector_get(v, v->size-1));
-  gsl_vector_set(phase, phase->size-1, 0);    
+  gsl_vector_set(phase, phase->size-1, 0);
   for (i = 1; i < v->size-1; i+=2) {
     re = gsl_vector_get(v, i);
-    im = gsl_vector_get(v, i+1);    
+    im = gsl_vector_get(v, i+1);
     gsl_vector_set(amp, i/2+1, sqrt(re*re + im*im));
     gsl_vector_set(phase, i/2+1, atan2(im, re));
   }
@@ -1430,11 +1430,11 @@ void Init_gsl_vector(VALUE module)
   rb_define_method(cgsl_vector, "amp_phase", rb_gsl_vector_amp_phase, 0);
   rb_define_method(cgsl_vector, "clean", rb_gsl_vector_clean, -1);
   rb_define_method(cgsl_vector, "clean!", rb_gsl_vector_clean_bang, -1);
-  
+
   rb_define_method(cgsl_vector, "pow", rb_gsl_vector_pow, 1);
   rb_define_alias(cgsl_vector, "**", "pow");
-  
-  rb_define_method(cgsl_vector, "pow!", rb_gsl_vector_pow_bang, 1);  
-  
+
+  rb_define_method(cgsl_vector, "pow!", rb_gsl_vector_pow_bang, 1);
+
   Init_gsl_vector_init(module);
 }

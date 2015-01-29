@@ -357,7 +357,7 @@ static VALUE rb_gsl_matrix_to_narray(VALUE obj, VALUE klass)
   shape[1] = m->size1;
   nary = na_make_object(NA_DFLOAT, 2, shape, klass);
   for (i = 0; (int) i < shape[1]; i++) {
-    memcpy(NA_PTR_TYPE(nary,double*)+(i*shape[0]), m->data+(i*m->tda), 
+    memcpy(NA_PTR_TYPE(nary,double*)+(i*shape[0]), m->data+(i*m->tda),
            shape[0]*sizeof(double));
   }
   return nary;
@@ -384,7 +384,7 @@ static VALUE rb_gsl_matrix_int_to_narray(VALUE obj, VALUE klass)
   shape[1] = m->size1;
   nary = na_make_object(NA_LINT, 2, shape, klass);
   for (i = 0; (int) i < shape[1]; i++) {
-    memcpy(NA_PTR_TYPE(nary,int*)+(i*shape[0]), m->data+(i*m->tda), 
+    memcpy(NA_PTR_TYPE(nary,int*)+(i*shape[0]), m->data+(i*m->tda),
            shape[0]*sizeof(int));
   }
   return nary;
@@ -538,7 +538,7 @@ gsl_matrix_view* na_to_gm_view(VALUE nna)
   m->matrix.data = NA_PTR_TYPE(ary2,double*);
   m->matrix.size1 = na->shape[1];
   m->matrix.size2 = na->shape[0];
-  m->matrix.tda = m->matrix.size2; 
+  m->matrix.tda = m->matrix.size2;
   m->matrix.owner = 0;
   return m;
 }
@@ -570,7 +570,7 @@ gsl_matrix_int_view* na_to_gm_int_view(VALUE nna)
   m->matrix.data = NA_PTR_TYPE(ary2,int*);
   m->matrix.size1 = na->shape[1];
   m->matrix.size2 = na->shape[0];
-  m->matrix.tda = m->matrix.size2; 
+  m->matrix.tda = m->matrix.size2;
   m->matrix.owner = 0;
   return m;
 }
@@ -593,7 +593,7 @@ static VALUE rb_gsl_narray_histogram(int argc, VALUE *argv, VALUE obj)
   v.vector.size = stride;
   switch (argc) {
   case 1:
-    if (rb_obj_is_kind_of(argv[0], rb_cRange)) 
+    if (rb_obj_is_kind_of(argv[0], rb_cRange))
       argv[0] = rb_gsl_range2ary(argv[0]);
     switch (TYPE(argv[0])) {
     case T_FIXNUM:
@@ -765,7 +765,7 @@ void Init_gsl_narray(VALUE module)
   rb_define_method(cNArray, "to_gslm", rb_gsl_na_to_gsl_matrix_method, 0);
   rb_define_alias(cNArray, "to_gm", "to_gslm");
   rb_define_method(cNArray, "to_gslm_view", rb_gsl_na_to_gsl_matrix_view_method, 0);
-  rb_define_alias(cNArray, "to_gm_view", "to_gslm_view");  
+  rb_define_alias(cNArray, "to_gm_view", "to_gslm_view");
 
   /*****/
   // TODO Complex matrix

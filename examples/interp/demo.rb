@@ -27,9 +27,9 @@ def spline_compare(type, xa, ya, filename)
   end
 end
 
-types = ["linear", "polynomial", "cspline", "cspline_periodic", 
+types = ["linear", "polynomial", "cspline", "cspline_periodic",
          "akima", "akima_periodic"]
-         
+
 types.each do |t|
   filename = t + ".dat"
   spline_compare(t, xa, ya, filename)

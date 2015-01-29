@@ -2,7 +2,7 @@
   matrix_int.c
   Ruby/GSL: Ruby extension library for GSL (GNU Scientific Library)
     (C) Copyright 2001-2006 by Yoshiki Tsunesada
-  
+
   Ruby/GSL is free software: you can redistribute it and/or modify it
   under the terms of the GNU General Public License.
   This library is distributed in the hope that it will be useful, but
@@ -15,7 +15,7 @@
 #include "include/rb_gsl_with_narray.h"
 #endif
 
-int gsl_linalg_matmult_int(const gsl_matrix_int *A, 
+int gsl_linalg_matmult_int(const gsl_matrix_int *A,
          const gsl_matrix_int *B, gsl_matrix_int *C);
 
 
@@ -85,16 +85,16 @@ static VALUE rb_gsl_matrix_int_operation1(VALUE obj, VALUE other, int flag)
     bval = NUM2INT(other);
     anew = make_matrix_int_clone(a);
     switch (flag) {
-    case GSL_MATRIX_INT_ADD: 
+    case GSL_MATRIX_INT_ADD:
       /*result =*/ gsl_matrix_int_add_constant(anew, bval);
       break;
-    case GSL_MATRIX_INT_SUB: 
+    case GSL_MATRIX_INT_SUB:
       /*result =*/ gsl_matrix_int_add_constant(anew, -bval);
       break;
-    case GSL_MATRIX_INT_MUL: 
+    case GSL_MATRIX_INT_MUL:
       /*result =*/ gsl_matrix_int_scale(anew, bval);
       break;
-    case GSL_MATRIX_INT_DIV: 
+    case GSL_MATRIX_INT_DIV:
       /*result =*/ gsl_matrix_int_scale(anew, 1.0/bval);
       break;
     default:
@@ -193,7 +193,7 @@ static VALUE rb_gsl_matrix_int_matrix_mul(VALUE obj, VALUE bb)
   }
 }
 
-int gsl_linalg_matmult_int(const gsl_matrix_int *A, 
+int gsl_linalg_matmult_int(const gsl_matrix_int *A,
          const gsl_matrix_int *B, gsl_matrix_int *C)
 {
   if (A->size2 != B->size1 || A->size1 != C->size1 || B->size2 != C->size2)
@@ -205,7 +205,7 @@ int gsl_linalg_matmult_int(const gsl_matrix_int *A,
       int a, b;
       int temp;
       size_t i, j, k;
-      
+
       for (i = 0; i < C->size1; i++)
         {
           for (j = 0; j < C->size2; j++)

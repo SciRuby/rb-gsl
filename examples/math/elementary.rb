@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require("gsl") 
+require("gsl")
 
 puts("gsl_log1p")
 p GSL::log1p(0.1)

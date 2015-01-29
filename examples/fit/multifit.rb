@@ -2,7 +2,7 @@
 require("gsl")
 
 GSL::Rng.env_setup()
-  
+
 r = GSL::Rng.alloc(GSL::Rng::DEFAULT)
 
 n = 19

@@ -102,7 +102,7 @@ static VALUE rb_gsl_monte_function_new(int argc, VALUE *argv, VALUE klass)
   obj = Data_Wrap_Struct(klass, gsl_monte_function_mark, gsl_monte_function_free, f);
   rb_gsl_monte_function_set_f(argc, argv, obj);
   return obj;
-}          
+}
 
 static double rb_gsl_monte_function_f(double *x, size_t dim, void *p)
 {
@@ -237,15 +237,15 @@ static VALUE rb_gsl_monte_integrate(int argc, VALUE *argv, VALUE obj)
   int itmp = 0, flagr = 0, type;
   double result, abserr;
 
-  if (argc < 4) 
+  if (argc < 4)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 4)", argc);
   switch (TYPE(obj)) {
   case T_MODULE:
   case T_CLASS:
   case T_OBJECT:
     if (!rb_obj_is_kind_of(argv[0], cgsl_monte_function))
-      rb_raise(rb_eTypeError, 
-         "wrong type argument %s (GSL::Monte::Function expected)", 
+      rb_raise(rb_eTypeError,
+         "wrong type argument %s (GSL::Monte::Function expected)",
          rb_class2name(CLASS_OF(argv[0])));
     Data_Get_Struct(argv[0], gsl_monte_function, F);
     itmp = 1;
@@ -334,7 +334,7 @@ static VALUE rb_gsl_monte_plain_integrate(int argc, VALUE *argv, VALUE obj)
   int flagr = 0;
   double result, abserr;
 
-  if (argc < 4) 
+  if (argc < 4)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4, 5 or 6)", argc);
   CHECK_MONTE_FUNCTION(argv[0]);
   CHECK_VECTOR(argv[1]);  CHECK_VECTOR(argv[2]);
@@ -356,7 +356,7 @@ static VALUE rb_gsl_monte_plain_integrate(int argc, VALUE *argv, VALUE obj)
     r = gsl_rng_alloc(gsl_rng_default);
     flagr = 1;
   }
-  gsl_monte_plain_integrate(F, xl->data, xu->data, dim, calls, r, plain, 
+  gsl_monte_plain_integrate(F, xl->data, xu->data, dim, calls, r, plain,
           &result, &abserr);
   if (flagr == 1) gsl_rng_free(r);
   return rb_ary_new3(2, rb_float_new(result), rb_float_new(abserr));
@@ -394,7 +394,7 @@ static VALUE rb_gsl_monte_miser_integrate(int argc, VALUE *argv, VALUE obj)
     r = gsl_rng_alloc(gsl_rng_default);
     flagr = 1;
   }
-  gsl_monte_miser_integrate(F, xl->data, xu->data, dim, calls, r, miser, 
+  gsl_monte_miser_integrate(F, xl->data, xu->data, dim, calls, r, miser,
           &result, &abserr);
   if (flagr == 1) gsl_rng_free(r);
   return rb_ary_new3(2, rb_float_new(result), rb_float_new(abserr));
@@ -410,7 +410,7 @@ static VALUE rb_gsl_monte_vegas_integrate(int argc, VALUE *argv, VALUE obj)
   int flagr = 0;
   double result, abserr;
 
-  if (argc < 4) 
+  if (argc < 4)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 4)", argc);
   CHECK_MONTE_FUNCTION(argv[0]);
   CHECK_VECTOR(argv[1]);  CHECK_VECTOR(argv[2]);
@@ -432,7 +432,7 @@ static VALUE rb_gsl_monte_vegas_integrate(int argc, VALUE *argv, VALUE obj)
     r = gsl_rng_alloc(gsl_rng_default);
     flagr = 1;
   }
-  gsl_monte_vegas_integrate(F, xl->data, xu->data, dim, calls, r, vegas, 
+  gsl_monte_vegas_integrate(F, xl->data, xu->data, dim, calls, r, vegas,
           &result, &abserr);
   if (flagr == 1) gsl_rng_free(r);
   return rb_ary_new3(2, rb_float_new(result), rb_float_new(abserr));
@@ -655,9 +655,9 @@ static VALUE rb_gsl_monte_vegas_state(VALUE obj)
 {
   gsl_monte_vegas_state *s = NULL;
   Data_Get_Struct(obj, gsl_monte_vegas_state, s);
-  return rb_ary_new3(8, rb_float_new(s->result), rb_float_new(s->sigma), 
-         rb_float_new(s->chisq), rb_float_new(s->alpha), 
-         INT2FIX(s->iterations), INT2FIX(s->stage), 
+  return rb_ary_new3(8, rb_float_new(s->result), rb_float_new(s->sigma),
+         rb_float_new(s->chisq), rb_float_new(s->alpha),
+         INT2FIX(s->iterations), INT2FIX(s->stage),
          INT2FIX(s->mode), INT2FIX(s->verbose));
 }
 
@@ -668,7 +668,7 @@ static VALUE rb_gsl_monte_miser_params_get(VALUE obj)
   gsl_monte_miser_params *p = NULL;
   Data_Get_Struct(obj, gsl_monte_miser_state, s);
   p = (gsl_monte_miser_params *) malloc(sizeof(gsl_monte_miser_params));
-  gsl_monte_miser_params_get(s, p);  
+  gsl_monte_miser_params_get(s, p);
   return Data_Wrap_Struct(cgsl_monte_miser_params, 0, free, p);
 }
 static VALUE rb_gsl_monte_miser_params_set(VALUE obj, VALUE params)
@@ -677,7 +677,7 @@ static VALUE rb_gsl_monte_miser_params_set(VALUE obj, VALUE params)
   gsl_monte_miser_params *p = NULL;
   Data_Get_Struct(obj, gsl_monte_miser_state, s);
   Data_Get_Struct(params, gsl_monte_miser_params, p);
-  gsl_monte_miser_params_set(s, p);  
+  gsl_monte_miser_params_set(s, p);
   return Qtrue;
 }
 static VALUE rb_gsl_monte_miser_params_get_estimate_frac(VALUE obj)
@@ -752,7 +752,7 @@ static VALUE rb_gsl_monte_vegas_params_get(VALUE obj)
   gsl_monte_vegas_params *p = NULL;
   Data_Get_Struct(obj, gsl_monte_vegas_state, s);
   p = (gsl_monte_vegas_params *) malloc(sizeof(gsl_monte_vegas_params));
-  gsl_monte_vegas_params_get(s, p);  
+  gsl_monte_vegas_params_get(s, p);
   return Data_Wrap_Struct(cgsl_monte_vegas_params, 0, free, p);
 }
 static VALUE rb_gsl_monte_vegas_params_set(VALUE obj, VALUE params)
@@ -761,7 +761,7 @@ static VALUE rb_gsl_monte_vegas_params_set(VALUE obj, VALUE params)
   gsl_monte_vegas_params *p = NULL;
   Data_Get_Struct(obj, gsl_monte_vegas_state, s);
   Data_Get_Struct(params, gsl_monte_vegas_params, p);
-  gsl_monte_vegas_params_set(s, p);  
+  gsl_monte_vegas_params_set(s, p);
   return Qtrue;
 }
 static VALUE rb_gsl_monte_vegas_params_get_alpha(VALUE obj)
@@ -926,17 +926,17 @@ void Init_gsl_monte(VALUE module)
 
 
   /*****/
-  rb_define_singleton_method(cgsl_monte_plain, "integrate", 
+  rb_define_singleton_method(cgsl_monte_plain, "integrate",
            rb_gsl_monte_integrate, -1);
-  rb_define_method(cgsl_monte_plain, "integrate", 
+  rb_define_method(cgsl_monte_plain, "integrate",
        rb_gsl_monte_plain_integrate, -1);
-  rb_define_singleton_method(cgsl_monte_miser, "integrate", 
+  rb_define_singleton_method(cgsl_monte_miser, "integrate",
            rb_gsl_monte_integrate, -1);
-  rb_define_method(cgsl_monte_miser, "integrate", 
+  rb_define_method(cgsl_monte_miser, "integrate",
        rb_gsl_monte_miser_integrate, -1);
-  rb_define_singleton_method(cgsl_monte_vegas, "integrate", 
+  rb_define_singleton_method(cgsl_monte_vegas, "integrate",
            rb_gsl_monte_integrate, -1);
-  rb_define_method(cgsl_monte_vegas, "integrate", 
+  rb_define_method(cgsl_monte_vegas, "integrate",
        rb_gsl_monte_vegas_integrate, -1);
 
 #ifdef GSL_1_13_LATER
@@ -982,7 +982,7 @@ void Init_gsl_monte(VALUE module)
   rb_define_method(cgsl_monte_vegas, "runval", rb_gsl_monte_vegas_runval, 0);
 
   rb_define_const(cgsl_monte_vegas, "MODE_IMPORTANCE", INT2FIX(GSL_VEGAS_MODE_IMPORTANCE));
-  rb_define_const(cgsl_monte_vegas, "MODE_IMPORTANCE_ONLY", INT2FIX(GSL_VEGAS_MODE_IMPORTANCE_ONLY)); 
+  rb_define_const(cgsl_monte_vegas, "MODE_IMPORTANCE_ONLY", INT2FIX(GSL_VEGAS_MODE_IMPORTANCE_ONLY));
   rb_define_const(cgsl_monte_vegas, "MODE_STRATIFIED", INT2FIX(GSL_VEGAS_MODE_STRATIFIED));
 #endif
 

@@ -2,14 +2,14 @@
 require("gsl")
 include Math
 
-f = Proc.new { |x, params| 
+f = Proc.new { |x, params|
   a = params[0]
   b = params[1]
   c = params[2]
   (a*x + b)*x + c
 }
 
-df = Proc.new { |x, params| 
+df = Proc.new { |x, params|
   a = params[0]
   b = params[1]
   2.0*a*x + b

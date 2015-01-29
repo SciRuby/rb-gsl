@@ -62,8 +62,8 @@ static int get_func2(int argc, VALUE *argv, VALUE obj, VALUE *ff, VALUE *xx, VAL
 #undef RB_GSL_DERIV_H_DEFAULT
 #endif
 
-static VALUE rb_gsl_deriv_eval(VALUE obj, VALUE xx, VALUE hh, 
-             int (*deriv)(const gsl_function *, 
+static VALUE rb_gsl_deriv_eval(VALUE obj, VALUE xx, VALUE hh,
+             int (*deriv)(const gsl_function *,
               double, double,
               double *, double *))
 {
@@ -115,7 +115,7 @@ static VALUE rb_gsl_deriv_eval(VALUE obj, VALUE xx, VALUE hh,
       ptr2 = NA_PTR_TYPE(ary2, double*);
       ptr3 = NA_PTR_TYPE(ary3, double*);
       for (i = 0; i < n; i++) {
-        (*deriv)(f, ptr1[i], h, &result, &abserr);  
+        (*deriv)(f, ptr1[i], h, &result, &abserr);
         ptr2[i] = result;
         ptr3[i] = abserr;
       }
@@ -127,7 +127,7 @@ static VALUE rb_gsl_deriv_eval(VALUE obj, VALUE xx, VALUE hh,
       vnew = gsl_vector_alloc(v->size);
       verr = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-        (*deriv)(f, gsl_vector_get(v, i), h, &result, &abserr);  
+        (*deriv)(f, gsl_vector_get(v, i), h, &result, &abserr);
         gsl_vector_set(vnew, i, result);
         gsl_vector_set(verr, i, abserr);
       }
@@ -140,7 +140,7 @@ static VALUE rb_gsl_deriv_eval(VALUE obj, VALUE xx, VALUE hh,
       merr = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
         for (j = 0; j < m->size2; j++) {
-          (*deriv)(f, gsl_matrix_get(m, i, j), h, &result, &abserr);  
+          (*deriv)(f, gsl_matrix_get(m, i, j), h, &result, &abserr);
           gsl_matrix_set(mnew, i, j, result);
           gsl_matrix_set(merr, i, j, abserr);
         }

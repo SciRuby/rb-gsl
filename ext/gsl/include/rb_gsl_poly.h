@@ -27,7 +27,7 @@ EXTERN VALUE cgsl_rational;
 typedef gsl_vector gsl_poly;
 typedef gsl_vector_int gsl_poly_int;
 /*
-typedef struct ___gsl_rational 
+typedef struct ___gsl_rational
 {
   VALUE num, den;
   gsl_poly *pnum;

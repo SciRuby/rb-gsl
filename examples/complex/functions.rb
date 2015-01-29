@@ -26,8 +26,8 @@ p f.log == z
 p z.pow(f)  # [1.931e-02 1.752e-02], verified with Octave result
 
 # The results below are verified with the Octave results
-p GSL::Complex.sin(z) 
-p GSL::Complex.cos(z) 
+p GSL::Complex.sin(z)
+p GSL::Complex.cos(z)
 p GSL::Complex.tan(z)
 p GSL::Complex.sec(z)
 p GSL::Complex.csc(z)
@@ -43,8 +43,8 @@ p GSL::Complex.arccsc(z)
 p GSL::Complex.arccsc_real(2)
 p GSL::Complex.arccot(z)
 
-p GSL::Complex.sinh(z) 
-p GSL::Complex.cosh(z) 
+p GSL::Complex.sinh(z)
+p GSL::Complex.cosh(z)
 p GSL::Complex.tanh(z)
 p GSL::Complex.sech(z)
 p GSL::Complex.csch(z)

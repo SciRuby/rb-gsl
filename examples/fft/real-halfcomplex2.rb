@@ -12,15 +12,15 @@ org = data.clone
 
 rtable = GSL::FFT::RealWavetable.alloc(n)
 rwork = GSL::FFT::RealWorkspace.alloc(n)
-  
+
 data.real_transform!(rtable, rwork)
 
 for i in 11...n do
   data[i] = 0.0
 end
-  
+
 hctable = GSL::FFT::HalfComplexWavetable.alloc(n)
-  
+
 #data.halfcomplex_inverse!(hctable, rwork)
 #data.halfcomplex_inverse!()
 #data.ifft!

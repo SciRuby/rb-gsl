@@ -15,7 +15,7 @@
 
 #include "rb_gsl_poly.h"
 
-typedef struct ___gsl_rational 
+typedef struct ___gsl_rational
 {
   VALUE num, den;
   gsl_poly *pnum;

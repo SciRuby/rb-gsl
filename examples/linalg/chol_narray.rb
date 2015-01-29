@@ -11,5 +11,5 @@ b = NArray[1.0, 2]
 p Cholesky.solve(c, b)    # Expected [-0.125, 0.75]
 
 b = NArray[1.0, 2]
-Cholesky.svx(c, b)    
+Cholesky.svx(c, b)
 p b

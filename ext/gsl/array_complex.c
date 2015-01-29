@@ -74,7 +74,7 @@ static VALUE rb_gsl_complex_arithmetics5(int flag, VALUE obj, VALUE bb)
     case GSL_COMPLEX_DIV:
       c = ALLOC(gsl_complex);
       *c = tmp;
-      return Data_Wrap_Struct(cgsl_complex, 0, free, c); 
+      return Data_Wrap_Struct(cgsl_complex, 0, free, c);
       break;
     }
     break;
@@ -89,7 +89,7 @@ static VALUE rb_gsl_complex_arithmetics5(int flag, VALUE obj, VALUE bb)
       case GSL_COMPLEX_DIV:
         c = ALLOC(gsl_complex);
         *c = tmp;
-        return Data_Wrap_Struct(cgsl_complex, 0, free, c); 
+        return Data_Wrap_Struct(cgsl_complex, 0, free, c);
         break;
       }
     } else {
@@ -218,7 +218,7 @@ static VALUE rb_gsl_complex_coerce(VALUE obj, VALUE other)
       gsl_matrix_complex_set_all(cmself, *c);
       vcmself = Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmself);
       return rb_ary_new3(2, vcmself, vcmnew);
-    } 
+    }
     if (MATRIX_COMPLEX_P(other)) {
       Data_Get_Struct(other, gsl_matrix_complex, cmnew);
       cmself = gsl_matrix_complex_alloc(cmnew->size1, cmnew->size2);

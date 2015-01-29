@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require("gsl") 
+require("gsl")
 
 n = 128
 data = GSL::Vector::Complex.alloc(n)

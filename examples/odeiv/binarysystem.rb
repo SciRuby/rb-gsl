@@ -2,13 +2,13 @@
 #      19/Apr/2004         by Yoshiki Tsunesada
 #
 #   This is an example to calculate the orbital evolution of
-# a double neutron star (binary) system. General relativity predicts 
-# that the binary orbital decays by radiating gravitational waves, 
-# and the two stars will coalesce in time scale of 100-1000 Mega-years. 
-#   The values used here are of the binary system J0730-3039 discovered 
-# in 2003 (Burgay et al., Nature 2003). The result shows that the two 
-# neutron stars will merge after about 85 Mega-years. From the age of 
-# the system 100 Mega-year, the lifetime of the system is estimated 
+# a double neutron star (binary) system. General relativity predicts
+# that the binary orbital decays by radiating gravitational waves,
+# and the two stars will coalesce in time scale of 100-1000 Mega-years.
+#   The values used here are of the binary system J0730-3039 discovered
+# in 2003 (Burgay et al., Nature 2003). The result shows that the two
+# neutron stars will merge after about 85 Mega-years. From the age of
+# the system 100 Mega-year, the lifetime of the system is estimated
 # about 185 Mega-years.
 #
 # References:
@@ -16,7 +16,7 @@
 #   2. Shapiro & Teukolsky, "Black holes, white dwarfs and neutron stars"
 #        John Wiley and Sans (1983)
 #
- 
+
 require("gsl")
 include Math
 
@@ -33,7 +33,7 @@ GMsolarC3 = 4.925490947e-6
 MegaYear = 3600*24*365*1e6
 
 # Time evolution of the binary orbital period and the eccentricity
-# due to gravitational radiation. 
+# due to gravitational radiation.
 # The calculation is based on general relativity (See e.g. Ref.2).
 #     y[0]: orbital period (pb)
 #     y[1]: eccentricity (e)
@@ -45,7 +45,7 @@ deriv = Proc.new { |t, y, dydt, binary|
   e = y[1]             # eccentricity
   m1 = binary.m1       # neutron star masses
   m2 = binary.m2
-  totalM = m1 + m2     # total mass                           
+  totalM = m1 + m2     # total mass
   mu = m1*m2/totalM    # reduced mass
   mm = mu*GSL::pow(totalM, 2.0/3.0)
   f_e = GSL::pow(1.0 - e*e, -3.5)*(1.0 + (73.0/24.0 + 37.0/96.0*e*e)*e*e);
@@ -85,8 +85,8 @@ tend = 2500*MegaYear
 h = 1.0*MegaYear
 
 begin
-  file = File.open("binarysystem.dat", "w") 
-  while t < tend 
+  file = File.open("binarysystem.dat", "w")
+  while t < tend
     t, h, status = solver.apply(t, tend, h, y)
     break if status != GSL::SUCCESS
     break if GSL::isnan?(y[0])

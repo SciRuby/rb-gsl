@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# This example is taken from frei2.cpp 
+# This example is taken from frei2.cpp
 # in "Numerische Physik" p205-206 (Springer).
 #
 # Reference:
@@ -45,10 +45,10 @@ IO.popen("graph -T X -C -g 3", "w") do |io|
     io.printf("%e %e\n", x, psi[n1].abs)
   end
   io.printf("\n")
-  
+
   psi_p.radix2_forward!
-  
-  
+
+
   t = 0.0
   for n in 1..n_out do
     t1 = n*dt

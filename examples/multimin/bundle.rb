@@ -53,7 +53,7 @@ begin
   iter += 1
   status = s.iterate
   status = s.test_convergence(1e-5)
-  printf("%4d  %14.7f  %13.8e  %13.8e\n", iter, s.f, subgradient.dnrm2, s.eps)  
+  printf("%4d  %14.7f  %13.8e  %13.8e\n", iter, s.f, subgradient.dnrm2, s.eps)
   if status == GSL::SUCCESS
     printf("\nMinimum is found at\n")
     x = s.x

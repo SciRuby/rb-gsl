@@ -11,12 +11,12 @@ pp.init
 pp.fprintf(STDOUT, " %u")
 printf("\n")
 
-puts(" random permutation:");  
+puts(" random permutation:");
 r.shuffle(pp)
 pp.fprintf(STDOUT, " %u")
 printf("\n");
 
-puts("inverse permutation:");  
+puts("inverse permutation:");
 q = pp.inverse
 q.fprintf(STDOUT, " %u")
 printf ("\n");

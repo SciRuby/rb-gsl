@@ -66,7 +66,7 @@ static VALUE rb_gsl_complex_new(int argc, VALUE *argv, VALUE klass)
 {
   gsl_complex *c = NULL;
   VALUE obj;
-  obj = Data_Make_Struct(klass, gsl_complex, 0, free, c); 
+  obj = Data_Make_Struct(klass, gsl_complex, 0, free, c);
   switch (argc) {
   case 1:
     switch (TYPE(argv[0])) {
@@ -80,7 +80,7 @@ static VALUE rb_gsl_complex_new(int argc, VALUE *argv, VALUE klass)
       *c = gsl_complex_rect(NUM2DBL(argv[0]), 0.0);
       break;
     default:
-      rb_raise(rb_eTypeError, "wrong argument type %s", 
+      rb_raise(rb_eTypeError, "wrong argument type %s",
          rb_class2name(CLASS_OF(argv[0])));
     }
     break;
@@ -107,7 +107,7 @@ static VALUE rb_gsl_complex_polar(VALUE klass, VALUE r, VALUE theta)
   VALUE obj;
   gsl_complex *c = NULL;
   Need_Float(r); Need_Float(theta);
-  obj = Data_Make_Struct(klass, gsl_complex, 0, free, c); 
+  obj = Data_Make_Struct(klass, gsl_complex, 0, free, c);
   *c = gsl_complex_polar(NUM2DBL(r), NUM2DBL(theta));
   return obj;
 }
@@ -208,7 +208,7 @@ static VALUE rb_gsl_complex_arithmetics2(gsl_complex (*func)(gsl_complex, double
   Data_Get_Struct(obj, gsl_complex, a);
   x = NUM2DBL(xx);
   tmp = (*func)(*a, x);
-  obj2 = Data_Make_Struct(cgsl_complex, gsl_complex, 0, free, c); 
+  obj2 = Data_Make_Struct(cgsl_complex, gsl_complex, 0, free, c);
   *c = tmp;
   return obj2;
 }
@@ -262,7 +262,7 @@ static VALUE rb_gsl_complex_operate(gsl_complex (*func)(gsl_complex), VALUE obj)
   Data_Get_Struct(obj, gsl_complex, c);
   cnew = ALLOC(gsl_complex);
   *cnew = (*func)(*c);
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_operate2(gsl_complex (*func)(gsl_complex), int argc, VALUE *argv, VALUE obj)
@@ -296,7 +296,7 @@ static VALUE rb_gsl_complex_operate2(gsl_complex (*func)(gsl_complex), int argc,
           mnew = gsl_matrix_complex_alloc(m->size1, m->size2);
           for (i = 0; i < m->size1; i++) {
             for (j = 0; j < m->size2; j++) {
-              gsl_matrix_complex_set(mnew, i, j, 
+              gsl_matrix_complex_set(mnew, i, j,
                    (*func)(gsl_matrix_complex_get(m, i, j)));
             }
           }
@@ -324,7 +324,7 @@ static VALUE rb_gsl_complex_operate2(gsl_complex (*func)(gsl_complex), int argc,
   }
   cnew = ALLOC(gsl_complex);
   *cnew = (*func)(*c);
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_conjugate(VALUE obj)
@@ -350,7 +350,7 @@ static VALUE rb_gsl_complex_sqrt_real(VALUE obj, VALUE x)
   tmp = gsl_complex_sqrt_real(NUM2DBL(x));
   cnew = ALLOC(gsl_complex);
   *cnew = tmp;
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_sqrt(int argc, VALUE *argv, VALUE obj)
@@ -376,7 +376,7 @@ static VALUE rb_gsl_complex_sqrt(int argc, VALUE *argv, VALUE obj)
         tmp = *z;
         z = ALLOC(gsl_complex);
         *z = gsl_complex_sqrt(tmp);
-        return Data_Wrap_Struct(cgsl_complex, 0, free, z);      
+        return Data_Wrap_Struct(cgsl_complex, 0, free, z);
         break;
       }
       break;
@@ -385,7 +385,7 @@ static VALUE rb_gsl_complex_sqrt(int argc, VALUE *argv, VALUE obj)
       GSL_SET_REAL(&tmp, NUM2DBL(argv[0]));
       GSL_SET_IMAG(&tmp, NUM2DBL(argv[1]));
       *z = gsl_complex_sqrt(tmp);
-      return Data_Wrap_Struct(cgsl_complex, 0, free, z);     
+      return Data_Wrap_Struct(cgsl_complex, 0, free, z);
       break;
     default:
       rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 2)", argc);
@@ -408,14 +408,14 @@ VALUE rb_gsl_complex_pow(int argc, VALUE *argv, VALUE obj)
   case T_MODULE:
   case T_CLASS:
   case T_OBJECT:
-    if (argc != 2) 
+    if (argc != 2)
       rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
     switch (TYPE(argv[1])) {
     case T_ARRAY:
       tmpa = ary2complex(argv[1]);
       a = &tmpa;
       break;
-    case T_FLOAT: case T_FIXNUM: 
+    case T_FLOAT: case T_FIXNUM:
       return rb_gsl_complex_pow_real(argc, argv, obj);
       break;
     default:
@@ -457,7 +457,7 @@ VALUE rb_gsl_complex_pow(int argc, VALUE *argv, VALUE obj)
 
     break;
   default:
-    if (argc != 1) 
+    if (argc != 1)
       rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
     CHECK_COMPLEX(obj);
     Data_Get_Struct(obj, gsl_complex, c);
@@ -466,7 +466,7 @@ VALUE rb_gsl_complex_pow(int argc, VALUE *argv, VALUE obj)
       tmpa = ary2complex(argv[0]);
       a = &tmpa;
       break;
-    case T_FLOAT: case T_FIXNUM: 
+    case T_FLOAT: case T_FIXNUM:
       return rb_gsl_complex_pow_real(argc, argv, obj);
       break;
     default:
@@ -478,7 +478,7 @@ VALUE rb_gsl_complex_pow(int argc, VALUE *argv, VALUE obj)
   }
   cnew = ALLOC(gsl_complex);
   *cnew = gsl_complex_pow(*c, *a);
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 VALUE rb_gsl_complex_pow_real(int argc, VALUE *argv, VALUE obj)
@@ -492,7 +492,7 @@ VALUE rb_gsl_complex_pow_real(int argc, VALUE *argv, VALUE obj)
   case T_MODULE:
   case T_CLASS:
   case T_OBJECT:
-    if (argc != 2) 
+    if (argc != 2)
       rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
     switch (TYPE(argv[0])) {
     case T_ARRAY:
@@ -531,7 +531,7 @@ VALUE rb_gsl_complex_pow_real(int argc, VALUE *argv, VALUE obj)
     a = NUM2DBL(argv[1]);
     break;
   default:
-    if (argc != 1) 
+    if (argc != 1)
       rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
     CHECK_COMPLEX(obj);
     Need_Float(argv[0]);
@@ -541,7 +541,7 @@ VALUE rb_gsl_complex_pow_real(int argc, VALUE *argv, VALUE obj)
   }
   cnew = ALLOC(gsl_complex);
   *cnew = gsl_complex_pow_real(*c, a);
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_exp(int argc, VALUE *argv, VALUE obj)
@@ -566,7 +566,7 @@ static VALUE rb_gsl_complex_log_b(int argc, VALUE *argv, VALUE obj)
   case T_MODULE:
   case T_CLASS:
   case T_OBJECT:
-    if (argc != 2) 
+    if (argc != 2)
       rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)", argc);
     switch (TYPE(argv[1])) {
     case T_ARRAY:
@@ -592,7 +592,7 @@ static VALUE rb_gsl_complex_log_b(int argc, VALUE *argv, VALUE obj)
 
     break;
   default:
-    if (argc != 1) 
+    if (argc != 1)
       rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
     CHECK_COMPLEX(obj);
     Data_Get_Struct(obj, gsl_complex, c);
@@ -610,7 +610,7 @@ static VALUE rb_gsl_complex_log_b(int argc, VALUE *argv, VALUE obj)
   }
   cnew = ALLOC(gsl_complex);
   *cnew = gsl_complex_log_b(*c, *a);
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_sin(int argc, VALUE *argv, VALUE obj)
@@ -658,7 +658,7 @@ static VALUE rb_gsl_complex_arcsin_real(VALUE obj, VALUE xx)
   tmp = gsl_complex_arcsin_real(x);
   cnew = ALLOC(gsl_complex);
   *cnew = tmp;
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_arccos(int argc, VALUE *argv, VALUE obj)
@@ -675,7 +675,7 @@ static VALUE rb_gsl_complex_arccos_real(VALUE obj, VALUE xx)
   tmp = gsl_complex_arccos_real(x);
   cnew = ALLOC(gsl_complex);
   *cnew = tmp;
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_arctan(int argc, VALUE *argv, VALUE obj)
@@ -697,7 +697,7 @@ static VALUE rb_gsl_complex_arcsec_real(VALUE obj, VALUE xx)
   tmp = gsl_complex_arcsec_real(x);
   cnew = ALLOC(gsl_complex);
   *cnew = tmp;
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_arccsc(int argc, VALUE *argv, VALUE obj)
@@ -714,7 +714,7 @@ static VALUE rb_gsl_complex_arccsc_real(VALUE obj, VALUE xx)
   tmp = gsl_complex_arccsc_real(x);
   cnew = ALLOC(gsl_complex);
   *cnew = tmp;
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_arccot(int argc, VALUE *argv, VALUE obj)
@@ -766,7 +766,7 @@ static VALUE rb_gsl_complex_arccosh_real(VALUE obj, VALUE xx)
   tmp = gsl_complex_arccosh_real(x);
   cnew = ALLOC(gsl_complex);
   *cnew = tmp;
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_arccosh(int argc, VALUE *argv, VALUE obj)
@@ -788,7 +788,7 @@ static VALUE rb_gsl_complex_arctanh_real(VALUE obj, VALUE xx)
   tmp = gsl_complex_arctanh_real(x);
   cnew = ALLOC(gsl_complex);
   *cnew = tmp;
-  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew); 
+  return Data_Wrap_Struct(cgsl_complex, 0, free, cnew);
 }
 
 static VALUE rb_gsl_complex_arcsech(int argc, VALUE *argv, VALUE obj)
@@ -810,7 +810,7 @@ int rbgsl_complex_equal(const gsl_complex *z1, const gsl_complex *z2,
       double eps)
 {
   if (gsl_fcmp(z1->dat[0], z2->dat[0], eps) != 0) return 0;
-  if (gsl_fcmp(z1->dat[1], z2->dat[1], eps) != 0) return 0;  
+  if (gsl_fcmp(z1->dat[1], z2->dat[1], eps) != 0) return 0;
   return 1;
 }
 
@@ -825,11 +825,11 @@ static VALUE rb_gsl_complex_equal(int argc, VALUE *argv, VALUE obj)
 {
   gsl_complex *z1 = NULL, *z2 = NULL;
   double eps = 1e-8;
-  
+
   switch (argc) {
   case 1:
     CHECK_COMPLEX(argv[0]);
-    Data_Get_Struct(argv[0], gsl_complex, z2);      
+    Data_Get_Struct(argv[0], gsl_complex, z2);
     break;
   case 2:
     CHECK_COMPLEX(argv[0]);

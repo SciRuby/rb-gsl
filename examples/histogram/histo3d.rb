@@ -5,7 +5,7 @@ N = 5000
 BINS = 50
 rng = GSL::Rng.alloc(1)
 
-h = GSL::Histogram3d.alloc(BINS, [-5, 5], BINS, [-4, 8], BINS, [-8, 3]) 
+h = GSL::Histogram3d.alloc(BINS, [-5, 5], BINS, [-4, 8], BINS, [-8, 3])
 sig1 = 1
 sig2 = 2
 sig3 = 1.3

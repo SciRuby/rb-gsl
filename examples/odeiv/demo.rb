@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# Solve 
+# Solve
 #   dydt = -2y     ---> y(t) = exp(-2t)
 
 require("gsl")
@@ -40,11 +40,11 @@ def odeiv_compare_algorithm(solver, steptype, t0, tend, h0, y0, outfile)
 end
 
 if GSL::VERSION >= "1.5.90"
-  ALGORITHMS = ["rk2", "rk4", "rkf45", "rkck", "rk8pd", "rk2imp", "rk4imp", 
+  ALGORITHMS = ["rk2", "rk4", "rkf45", "rkck", "rk8pd", "rk2imp", "rk4imp",
                 "bsimp", "gear1", "gear2", "rk2simp"]
   gpfile = "demo2.gp"
 else
-  ALGORITHMS = ["rk2", "rk4", "rkf45", "rkck", "rk8pd", "rk2imp", "rk4imp", 
+  ALGORITHMS = ["rk2", "rk4", "rkf45", "rkck", "rk8pd", "rk2imp", "rk4imp",
                 "bsimp", "gear1", "gear2"]
   gpfile = "demo.gp"
 end

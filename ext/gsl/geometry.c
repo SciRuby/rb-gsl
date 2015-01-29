@@ -1,20 +1,20 @@
 #include "include/rb_gsl.h"
 
 /*!
-  Counter-clockwise rotation around the X-axis 
+  Counter-clockwise rotation around the X-axis
 
   / x' \    /  1     0      0    \ / x \
   | y' |  = |  0  cos_th -sin_th | | y |
   \ z' /    \  0  sin_th  cos_th / \ z /
 
  */
-void vector3_rotateX(const double x[3] /*!< Input */, 
-                        double theta /*!< Rotation angle */, 
+void vector3_rotateX(const double x[3] /*!< Input */,
+                        double theta /*!< Rotation angle */,
                         double xout[3]  /*!< Output */)
 {
   double a, b, c;
   double costheta, sintheta;
-  
+
   costheta = cos(theta);
   sintheta = sin(theta);
 
@@ -28,7 +28,7 @@ void vector3_rotateX(const double x[3] /*!< Input */,
 }
 
 /*!
-  Counter-clockwise rotation around the Y-axis 
+  Counter-clockwise rotation around the Y-axis
   (Note the sign of the matrix element.)
 
   / x' \    /  cos_th     0   sin_th \ / x \
@@ -36,7 +36,7 @@ void vector3_rotateX(const double x[3] /*!< Input */,
   \ z' /    \ -sin_th     0   cos_th / \ z /
 
  */
-void vector3_rotateY(const double x[3] /*!< Input */, 
+void vector3_rotateY(const double x[3] /*!< Input */,
                         double theta /*!< Rotation angle */,
                         double xout[3] /*!< Output */)
 {
@@ -56,15 +56,15 @@ void vector3_rotateY(const double x[3] /*!< Input */,
 }
 
 /*!
-  Counter-clockwise rotation around the Z-axis 
+  Counter-clockwise rotation around the Z-axis
 
   / x' \    /  cos_th  -sin_th  0 \ / x \
   | y' |  = |  sin_th   cos_th  0 | | y |
   \ z' /    \    0        0     1 / \ z /
 
  */
-void vector3_rotateZ(const double x[3] /*!< Input */, 
-                        double theta  /*!< Rotation angle */, 
+void vector3_rotateZ(const double x[3] /*!< Input */,
+                        double theta  /*!< Rotation angle */,
                         double xout[3] /*!< Output */)
 {
   double a, b, c;
@@ -85,7 +85,7 @@ void vector3_rotateZ(const double x[3] /*!< Input */,
 /*!
   Rotate a 3-vector.
 
-  If flag != 1, cos/sin values stored in the static variables are used 
+  If flag != 1, cos/sin values stored in the static variables are used
   for efficiency.
   The input and the output vectors (x, xout) can be the same pointer.
 

@@ -9,7 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
-/* 
+/*
    Document-class: <i>GSL::Rng</i>
    Random number generator
 */
@@ -24,22 +24,22 @@ VALUE cgsl_rng;
 
 enum rb_gsl_rng_generator {
   GSL_RNG_DEFAULT,
-  GSL_RNG_MT19937, GSL_RNG_MT19937_1999, GSL_RNG_MT19937_1998, 
-  GSL_RNG_RANLXS0, GSL_RNG_RANLXS1, GSL_RNG_RANLXS2, 
-  GSL_RNG_RANLXD1, GSL_RNG_RANLXD2, 
+  GSL_RNG_MT19937, GSL_RNG_MT19937_1999, GSL_RNG_MT19937_1998,
+  GSL_RNG_RANLXS0, GSL_RNG_RANLXS1, GSL_RNG_RANLXS2,
+  GSL_RNG_RANLXD1, GSL_RNG_RANLXD2,
   GSL_RNG_RANLUX, GSL_RNG_RANLUX389,
-  GSL_RNG_CMRG, GSL_RNG_MRG, 
+  GSL_RNG_CMRG, GSL_RNG_MRG,
   GSL_RNG_TAUS, GSL_RNG_TAUS2, GSL_RNG_TAUS113,  GSL_RNG_GFSR4,
-  GSL_RNG_RAND, 
+  GSL_RNG_RAND,
   GSL_RNG_RANDOM_BSD, GSL_RNG_RANDOM_GLIBC2,
-  GSL_RNG_RANDOM8_GLIBC2, GSL_RNG_RANDOM32_GLIBC2, GSL_RNG_RANDOM64_GLIBC2, 
+  GSL_RNG_RANDOM8_GLIBC2, GSL_RNG_RANDOM32_GLIBC2, GSL_RNG_RANDOM64_GLIBC2,
   GSL_RNG_RANDOM128_GLIBC2, GSL_RNG_RANDOM256_GLIBC2,
-  GSL_RNG_RANDOM8_BSD, GSL_RNG_RANDOM32_BSD, GSL_RNG_RANDOM64_BSD, 
+  GSL_RNG_RANDOM8_BSD, GSL_RNG_RANDOM32_BSD, GSL_RNG_RANDOM64_BSD,
   GSL_RNG_RANDOM128_BSD, GSL_RNG_RANDOM256_BSD,
-  GSL_RNG_RANDOM_LIBC5, GSL_RNG_RANDOM8_LIBC5, GSL_RNG_RANDOM32_LIBC5, 
-  GSL_RNG_RANDOM64_LIBC5, GSL_RNG_RANDOM128_LIBC5, GSL_RNG_RANDOM256_LIBC5, 
-  GSL_RNG_RAND48, 
-  GSL_RNG_RAN0, GSL_RNG_RAN1, GSL_RNG_RAN2, GSL_RNG_RAN3, 
+  GSL_RNG_RANDOM_LIBC5, GSL_RNG_RANDOM8_LIBC5, GSL_RNG_RANDOM32_LIBC5,
+  GSL_RNG_RANDOM64_LIBC5, GSL_RNG_RANDOM128_LIBC5, GSL_RNG_RANDOM256_LIBC5,
+  GSL_RNG_RAND48,
+  GSL_RNG_RAN0, GSL_RNG_RAN1, GSL_RNG_RAN2, GSL_RNG_RAN3,
   GSL_RNG_RANF, GSL_RNG_RANMAR, GSL_RNG_R250, GSL_RNG_TT800, GSL_RNG_VAX,
   GSL_RNG_TRANSPUTER, GSL_RNG_RANDU, GSL_RNG_MINSTD,
   GSL_RNG_UNI, GSL_RNG_UNI32, GSL_RNG_SLATEC, GSL_RNG_ZUF,
@@ -70,7 +70,7 @@ static VALUE rb_gsl_rng_alloc(int argc, VALUE *argv, VALUE klass)
     T = gsl_rng_default;
     seed = gsl_rng_default_seed;
   } else {
-    T = get_gsl_rng_type(argv[0]);    
+    T = get_gsl_rng_type(argv[0]);
     if (argc == 1) {
       seed = gsl_rng_default_seed;
     } else if (argc == 2) {
@@ -78,7 +78,7 @@ static VALUE rb_gsl_rng_alloc(int argc, VALUE *argv, VALUE klass)
       if (itype == T_FIXNUM || itype == T_BIGNUM) {
   seed = FIX2INT(argv[1]);
       } else {
-  rb_raise(rb_eArgError, 
+  rb_raise(rb_eArgError,
      "bad argument 2, seed must be an integer.");
       }
     } else {
@@ -124,8 +124,8 @@ static const gsl_rng_type* get_gsl_rng_type_name(char *name)
 #ifdef GSL_1_2_LATER
   else if (str_tail_grep(name, "mt19937_1999") == 0) return gsl_rng_mt19937_1999;
   else if (str_tail_grep(name, "mt19937-1999") == 0) return gsl_rng_mt19937_1999;
-  else if (str_tail_grep(name, "mt19937_1998") == 0) return gsl_rng_mt19937_1998;  
-  else if (str_tail_grep(name, "mt19937-1998") == 0) return gsl_rng_mt19937_1998;  
+  else if (str_tail_grep(name, "mt19937_1998") == 0) return gsl_rng_mt19937_1998;
+  else if (str_tail_grep(name, "mt19937-1998") == 0) return gsl_rng_mt19937_1998;
   else if (str_tail_grep(name, "taus113") == 0) return gsl_rng_taus113;
   else if (str_tail_grep(name, "taus2") == 0) return gsl_rng_taus2;
 #endif
@@ -147,7 +147,7 @@ static const gsl_rng_type* get_gsl_rng_type_name(char *name)
   else if (str_tail_grep(name, "random32_libc5") == 0) return gsl_rng_random32_libc5;
   else if (str_tail_grep(name, "random64_libc5") == 0) return gsl_rng_random64_libc5;
   else if (str_tail_grep(name, "random128_libc5") == 0) return gsl_rng_random128_libc5;
-  else if (str_tail_grep(name, "random256_libc5") == 0) return gsl_rng_random256_libc5;  
+  else if (str_tail_grep(name, "random256_libc5") == 0) return gsl_rng_random256_libc5;
   else if (str_tail_grep(name, "random-libc5") == 0) return gsl_rng_random_libc5;
   else if (str_tail_grep(name, "random8-libc5") == 0) return gsl_rng_random8_libc5;
   else if (str_tail_grep(name, "random32-libc5") == 0) return gsl_rng_random32_libc5;
@@ -201,13 +201,13 @@ static const gsl_rng_type* get_gsl_rng_type_name(char *name)
   else if (str_tail_grep(name, "rngextra-rng1") == 0) return rngextra_rng1;
   else if (str_tail_grep(name, "rngextra-rng2") == 0) return rngextra_rng2;
 #else
-  else if (str_tail_grep(name, "rngextra_rng1")*str_tail_grep(name, "rngextra_rng2") == 0) 
+  else if (str_tail_grep(name, "rngextra_rng1")*str_tail_grep(name, "rngextra_rng2") == 0)
     rb_raise(rb_eNotImpError, "Install the rngextra package found at <http://www.network-theory.co.uk/download/rngextra/>.");
-  else if (str_tail_grep(name, "rngextra_rng2")*str_tail_grep(name, "rngextra_rng2") == 0) 
+  else if (str_tail_grep(name, "rngextra_rng2")*str_tail_grep(name, "rngextra_rng2") == 0)
     rb_raise(rb_eNotImpError, "Install the rngextra package found at <http://www.network-theory.co.uk/download/rngextra/>.");
-  else if (str_tail_grep(name, "rngextra-rng1")*str_tail_grep(name, "rngextra_rng2") == 0) 
+  else if (str_tail_grep(name, "rngextra-rng1")*str_tail_grep(name, "rngextra_rng2") == 0)
     rb_raise(rb_eNotImpError, "Install the rngextra package found at <http://www.network-theory.co.uk/download/rngextra/>.");
-  else if (str_tail_grep(name, "rngextra-rng2")*str_tail_grep(name, "rngextra_rng2") == 0) 
+  else if (str_tail_grep(name, "rngextra-rng2")*str_tail_grep(name, "rngextra_rng2") == 0)
     rb_raise(rb_eNotImpError, "Install the rngextra package found at <http://www.network-theory.co.uk/download/rngextra/>.");
 #endif
 #ifdef GSL_1_9_LATER
@@ -404,10 +404,10 @@ static VALUE rb_gsl_rng_set(VALUE obj, VALUE s)
 
 /*
   Document-method: <i>GSL::Rng#get</i>
-    Returns a random integer from the generator. 
-    The minimum and maximum values depend on the algorithm used, 
-    but all integers in the range [min,max] are equally likely. 
-    The values of min and max can determined using the auxiliary 
+    Returns a random integer from the generator.
+    The minimum and maximum values depend on the algorithm used,
+    but all integers in the range [min,max] are equally likely.
+    The values of min and max can determined using the auxiliary
     methodss GSL::Rng#max and GSL::Rng#min.
 */
 static VALUE rb_gsl_rng_get(int argc, VALUE *argv, VALUE obj)
@@ -574,7 +574,7 @@ void Init_gsl_rng(VALUE module)
   cgsl_rng = rb_define_class_under(module, "Rng", cGSL_Object);
 
   rb_gsl_rng_define_const_type(module);
-  
+
   rb_define_singleton_method(cgsl_rng, "alloc", rb_gsl_rng_alloc, -1);
 
   rb_define_singleton_method(cgsl_rng, "default_seed", rb_gsl_rng_default_seed, 0);

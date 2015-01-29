@@ -119,12 +119,12 @@ static VALUE rb_gsl_linalg_complex_LU_solve(int argc, VALUE *argv, VALUE obj)
   gsl_permutation *p = NULL;
   gsl_vector_complex *b = NULL, *x = NULL;
   int flagm = 0, flagx = 0, itmp, signum;
-  
+
   switch (TYPE(obj)) {
   case T_MODULE:
   case T_CLASS:
   case T_OBJECT:
-    if (argc < 2 || argc > 4) 
+    if (argc < 2 || argc > 4)
       rb_raise(rb_eArgError, "Usage: solve(m, b), solve(m, b, x), solve(lu, p, b), solve(lu, p, b, x)");
 
     CHECK_MATRIX(argv[0]);
@@ -139,7 +139,7 @@ static VALUE rb_gsl_linalg_complex_LU_solve(int argc, VALUE *argv, VALUE obj)
     itmp = 1;
     break;
   default:
-    if (argc < 1 || argc > 3) 
+    if (argc < 1 || argc > 3)
       rb_raise(rb_eArgError, "Usage: LU_solve(b), LU_solve(p, b), LU_solve(b, x), solve(p, b, x)");
     Data_Get_Struct(obj, gsl_matrix_complex, m);
     if (CLASS_OF(obj) != cgsl_matrix_complex_LU) {
@@ -185,7 +185,7 @@ static VALUE rb_gsl_linalg_complex_LU_svx(int argc, VALUE *argv, VALUE obj)
   gsl_permutation *p = NULL;
   gsl_vector_complex *x = NULL;
   int flagm = 0, itmp, signum;
-  
+
   switch (TYPE(obj)) {
   case T_MODULE:
   case T_CLASS:
@@ -389,7 +389,7 @@ static VALUE rb_gsl_linalg_complex_LU_lndet(int argc, VALUE *argv, VALUE obj)
   if (flagm == 1) {
     p = gsl_permutation_alloc(m->size1);
     gsl_linalg_complex_LU_decomp(mtmp, p, &signum);
-  } 
+  }
   lndet = gsl_linalg_complex_LU_lndet(mtmp);
   if (flagm == 1) {
     gsl_matrix_complex_free(mtmp);
@@ -572,7 +572,7 @@ static VALUE rb_gsl_linalg_complex_householder_hm(VALUE obj, VALUE t, VALUE vv, 
   gsl_vector_complex *v = NULL;
   gsl_complex *tau;
   gsl_matrix_complex *A = NULL;
-  CHECK_COMPLEX(t);  
+  CHECK_COMPLEX(t);
   CHECK_VECTOR_COMPLEX(vv);
   CHECK_MATRIX_COMPLEX(aa);
   Data_Get_Struct(t, gsl_complex, tau);
@@ -587,7 +587,7 @@ static VALUE rb_gsl_linalg_complex_householder_mh(VALUE obj, VALUE t, VALUE vv, 
   gsl_vector_complex *v = NULL;
   gsl_complex *tau;
   gsl_matrix_complex *A = NULL;
-  CHECK_COMPLEX(t);  
+  CHECK_COMPLEX(t);
   CHECK_VECTOR_COMPLEX(vv);
   CHECK_MATRIX_COMPLEX(aa);
   Data_Get_Struct(t, gsl_complex, tau);
@@ -601,7 +601,7 @@ static VALUE rb_gsl_linalg_complex_householder_hv(VALUE obj, VALUE t, VALUE vv, 
 {
   gsl_vector_complex *v = NULL, *w = NULL;
   gsl_complex *tau;
-  CHECK_COMPLEX(t);    
+  CHECK_COMPLEX(t);
   CHECK_VECTOR_COMPLEX(vv);
   CHECK_VECTOR_COMPLEX(ww);
   Data_Get_Struct(t, gsl_complex, tau);
@@ -630,7 +630,7 @@ void Init_gsl_linalg_complex(VALUE module)
            rb_gsl_linalg_complex_LU_decomp, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "decomp!",
            rb_gsl_linalg_complex_LU_decomp, -1);
-  rb_define_method(cgsl_matrix_complex, "LU_decomp!", 
+  rb_define_method(cgsl_matrix_complex, "LU_decomp!",
        rb_gsl_linalg_complex_LU_decomp, -1);
   rb_define_alias(cgsl_matrix_complex, "decomp!", "LU_decomp!");
 
@@ -638,7 +638,7 @@ void Init_gsl_linalg_complex(VALUE module)
            rb_gsl_linalg_complex_LU_decomp2, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "decomp",
            rb_gsl_linalg_complex_LU_decomp2, -1);
-  rb_define_method(cgsl_matrix_complex, "LU_decomp", 
+  rb_define_method(cgsl_matrix_complex, "LU_decomp",
        rb_gsl_linalg_complex_LU_decomp2, -1);
   rb_define_alias(cgsl_matrix_complex, "decomp", "LU_decomp");
 
@@ -646,18 +646,18 @@ void Init_gsl_linalg_complex(VALUE module)
            rb_gsl_linalg_complex_LU_solve, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "solve",
            rb_gsl_linalg_complex_LU_solve, -1);
-  rb_define_method(cgsl_matrix_complex, "LU_solve", 
+  rb_define_method(cgsl_matrix_complex, "LU_solve",
        rb_gsl_linalg_complex_LU_solve, -1);
-  rb_define_method(cgsl_matrix_complex_LU, "solve", 
+  rb_define_method(cgsl_matrix_complex_LU, "solve",
        rb_gsl_linalg_complex_LU_solve, -1);
 
   rb_define_singleton_method(mgsl_linalg_complex, "LU_svx",
            rb_gsl_linalg_complex_LU_svx, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "svx",
            rb_gsl_linalg_complex_LU_svx, -1);
-  rb_define_method(cgsl_matrix_complex, "LU_svx", 
+  rb_define_method(cgsl_matrix_complex, "LU_svx",
        rb_gsl_linalg_complex_LU_svx, -1);
-  rb_define_method(cgsl_matrix_complex_LU, "svx", 
+  rb_define_method(cgsl_matrix_complex_LU, "svx",
        rb_gsl_linalg_complex_LU_svx, -1);
 
   rb_define_singleton_method(mgsl_linalg_complex, "LU_refine",
@@ -669,33 +669,33 @@ void Init_gsl_linalg_complex(VALUE module)
            rb_gsl_linalg_complex_LU_invert, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "invert",
            rb_gsl_linalg_complex_LU_invert, -1);
-  rb_define_method(cgsl_matrix_complex, "LU_invert", 
+  rb_define_method(cgsl_matrix_complex, "LU_invert",
        rb_gsl_linalg_complex_LU_invert, -1);
   rb_define_alias(cgsl_matrix_complex, "invert", "LU_invert");
   rb_define_alias(cgsl_matrix_complex, "inv", "LU_invert");
-  rb_define_method(cgsl_matrix_complex_LU, "invert", 
+  rb_define_method(cgsl_matrix_complex_LU, "invert",
        rb_gsl_linalg_complex_LU_invert, -1);
 
 #ifdef GSL_1_1_1_LATER
-  rb_define_singleton_method(mgsl_linalg_complex, "LU_det", 
+  rb_define_singleton_method(mgsl_linalg_complex, "LU_det",
            rb_gsl_linalg_complex_LU_det, -1);
-  rb_define_singleton_method(mgsl_linalg_complex_LU, "det", 
+  rb_define_singleton_method(mgsl_linalg_complex_LU, "det",
            rb_gsl_linalg_complex_LU_det, -1);
   rb_define_method(cgsl_matrix_complex, "LU_det", rb_gsl_linalg_complex_LU_det, -1);
   rb_define_alias(cgsl_matrix_complex, "det", "LU_det");
   rb_define_method(cgsl_matrix_complex_LU, "det", rb_gsl_linalg_complex_LU_det, -1);
 
-  rb_define_singleton_method(mgsl_linalg_complex, "LU_lndet", 
+  rb_define_singleton_method(mgsl_linalg_complex, "LU_lndet",
            rb_gsl_linalg_complex_LU_lndet, -1);
-  rb_define_singleton_method(mgsl_linalg_complex_LU, "lndet", 
+  rb_define_singleton_method(mgsl_linalg_complex_LU, "lndet",
            rb_gsl_linalg_complex_LU_lndet, -1);
   rb_define_method(cgsl_matrix_complex, "LU_lndet", rb_gsl_linalg_complex_LU_lndet, -1);
   rb_define_alias(cgsl_matrix_complex, "lndet", "LU_lndet");
   rb_define_method(cgsl_matrix_complex_LU, "LU_lndet", rb_gsl_linalg_complex_LU_lndet, -1);
 
-  rb_define_singleton_method(mgsl_linalg_complex, "LU_sgndet", 
+  rb_define_singleton_method(mgsl_linalg_complex, "LU_sgndet",
            rb_gsl_linalg_complex_LU_sgndet, -1);
-  rb_define_singleton_method(mgsl_linalg_complex_LU, "sgndet", 
+  rb_define_singleton_method(mgsl_linalg_complex_LU, "sgndet",
            rb_gsl_linalg_complex_LU_sgndet, -1);
   rb_define_method(cgsl_matrix_complex, "LU_sgndet", rb_gsl_linalg_complex_LU_sgndet, -1);
   rb_define_alias(cgsl_matrix_complex, "sgndet", "LU_sgndet");
@@ -704,9 +704,9 @@ void Init_gsl_linalg_complex(VALUE module)
 
 #ifdef GSL_1_10_LATER
   mgsl_linalg_complex_chol = rb_define_module_under(mgsl_linalg_complex, "Cholesky");
-  cgsl_matrix_complex_C = rb_define_class_under(mgsl_linalg_complex_chol, "CholeskyMatrix", cgsl_matrix_complex);    
+  cgsl_matrix_complex_C = rb_define_class_under(mgsl_linalg_complex_chol, "CholeskyMatrix", cgsl_matrix_complex);
   rb_define_singleton_method(mgsl_linalg_complex_chol, "decomp", rb_gsl_linalg_cholesky_decomp, -1);
-  rb_define_method(cgsl_matrix_complex, "cholesky_decomp", rb_gsl_linalg_cholesky_decomp, -1);  
+  rb_define_method(cgsl_matrix_complex, "cholesky_decomp", rb_gsl_linalg_cholesky_decomp, -1);
   rb_define_singleton_method(mgsl_linalg_complex_chol, "solve", rb_gsl_linalg_cholesky_solve, -1);
   rb_define_method(cgsl_matrix_complex, "cholesky_solve", rb_gsl_linalg_cholesky_solve, -1);
   rb_define_method(cgsl_matrix_complex_C, "solve", rb_gsl_linalg_cholesky_solve, -1);
@@ -715,26 +715,26 @@ void Init_gsl_linalg_complex(VALUE module)
   rb_define_method(cgsl_matrix_complex_C, "svx", rb_gsl_linalg_cholesky_svx, -1);
 
   mgsl_linalg_complex_Householder = rb_define_module_under(mgsl_linalg_complex, "Householder");
- rb_define_singleton_method(mgsl_linalg_complex, "householder_transform", 
+ rb_define_singleton_method(mgsl_linalg_complex, "householder_transform",
            rb_gsl_linalg_complex_householder_transform, -1);
-  rb_define_singleton_method(mgsl_linalg_complex_Householder, "transform", 
+  rb_define_singleton_method(mgsl_linalg_complex_Householder, "transform",
            rb_gsl_linalg_complex_householder_transform, -1);
-  rb_define_method(cgsl_vector_complex, "householder_transform", 
+  rb_define_method(cgsl_vector_complex, "householder_transform",
        rb_gsl_linalg_complex_householder_transform, -1);
 
-  rb_define_singleton_method(mgsl_linalg_complex, "householder_hm", 
+  rb_define_singleton_method(mgsl_linalg_complex, "householder_hm",
            rb_gsl_linalg_complex_householder_hm, 3);
-  rb_define_singleton_method(mgsl_linalg_complex_Householder, "hm", 
+  rb_define_singleton_method(mgsl_linalg_complex_Householder, "hm",
            rb_gsl_linalg_complex_householder_hm, 3);
 
-  rb_define_singleton_method(mgsl_linalg_complex, "householder_mh", 
+  rb_define_singleton_method(mgsl_linalg_complex, "householder_mh",
            rb_gsl_linalg_complex_householder_mh, 3);
-  rb_define_singleton_method(mgsl_linalg_complex_Householder, "mh", 
+  rb_define_singleton_method(mgsl_linalg_complex_Householder, "mh",
            rb_gsl_linalg_complex_householder_mh, 3);
 
-  rb_define_singleton_method(mgsl_linalg_complex, "householder_hv", 
+  rb_define_singleton_method(mgsl_linalg_complex, "householder_hv",
            rb_gsl_linalg_complex_householder_hv, 3);
-  rb_define_singleton_method(mgsl_linalg_complex_Householder, "hv", 
+  rb_define_singleton_method(mgsl_linalg_complex_Householder, "hv",
            rb_gsl_linalg_complex_householder_hv, 3);
-#endif           
+#endif
 }

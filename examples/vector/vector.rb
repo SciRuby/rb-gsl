@@ -78,8 +78,8 @@ __END__
 
 v = GSL::Vector::alloc(10)
 for i in 1...10 do
-  v.set(i, i.to_f)  
-end  
+  v.set(i, i.to_f)
+end
 v.print
 
 v.swap_elements(3, 5)

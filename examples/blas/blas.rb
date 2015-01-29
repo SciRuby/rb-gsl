@@ -10,4 +10,4 @@ B = b.matrix_view(3, 2)
 C = GSL::Blas.dgemm(GSL::Blas::NoTrans, GSL::Blas::NoTrans, 1.0, A, B, 0.0)
 p C
 
-p A*B 
+p A*B

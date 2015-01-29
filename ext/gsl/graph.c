@@ -18,9 +18,9 @@ void make_graphcommand(char *command, VALUE hash)
     sprintf(command, "graph -T X -g 3 %s", STR2CSTR(hash));
     return;
   }
-    
+
   strcpy(command, "graph");
-  if (TYPE(hash) != T_HASH) rb_raise(rb_eTypeError, 
+  if (TYPE(hash) != T_HASH) rb_raise(rb_eTypeError,
              "wrong argument type %s (Hash expected)",
              rb_class2name(CLASS_OF(hash)));
   if ((val = rb_hash_aref(hash, rb_str_new2("T"))) != Qnil)
@@ -991,7 +991,7 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
       sprintf(command, "%s -E y", command);
     else if (strcmp(str, "xy")*strcmp(str, "x/y") == 0)
       sprintf(command, "%s -E x -E y", command);
-    else 
+    else
       rb_raise(rb_eRuntimeError, "unrecognized -E option %s", str);
   }
 
@@ -1021,7 +1021,7 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
       sprintf(command, "%s -l y", command);
     else if (strcmp(str, "xy")*strcmp(str, "x/y") == 0)
       sprintf(command, "%s -l x -l y", command);
-    else 
+    else
       rb_raise(rb_eRuntimeError, "unrecognized -l option %s", str);
   }
 
@@ -1036,7 +1036,7 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
       sprintf(command, "%s -N y", command);
     else if (strcmp(str, "xy")*strcmp(str, "x/y") == 0)
       sprintf(command, "%s -N x -N y", command);
-    else 
+    else
       rb_raise(rb_eRuntimeError, "unrecognized -N option %s", str);
   }
 
@@ -1051,7 +1051,7 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
       sprintf(command, "%s -R y", command);
     else if (strcmp(str, "xy")*strcmp(str, "x/y") == 0)
       sprintf(command, "%s -R x -R y", command);
-    else 
+    else
       rb_raise(rb_eRuntimeError, "unrecognized -R option %s", str);
   }
 
@@ -1117,9 +1117,9 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     sprintf(command, "%s --frame-line-width %f", command, NUM2DBL(g->frame_line_width));
 
  if (g->max_line_length != Qnil)
-   sprintf(command, "%s --max_line_length %d", command, 
+   sprintf(command, "%s --max_line_length %d", command,
      (int) FIX2INT(g->max_line_length));
- 
+
   if (g->page_size != Qnil)
     sprintf(command, "%s --page-size %s", command, STR2CSTR(g->page_size));
 
@@ -1154,8 +1154,8 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     sprintf(command, "%s -S %s", command, STR2CSTR(g->S));
     break;
   case T_ARRAY:
-    //    if (RARRAY(g->S)->len == 2) 
-    if (RARRAY_LEN(g->S) == 2) 
+    //    if (RARRAY(g->S)->len == 2)
+    if (RARRAY_LEN(g->S) == 2)
       sprintf(command, "%s -S %d %f", command, (int) FIX2INT(rb_ary_entry(g->S, 0)),
         NUM2DBL(rb_ary_entry(g->S, 1)));
     break;
@@ -1234,7 +1234,7 @@ static VALUE rb_gsl_graph_graph(int argc, VALUE *argv, VALUE obj)
     if (TYPE(argv[0]) == T_STRING) {
       sprintf(command, "%s %s", command, STR2CSTR(argv[0]));
     } else if (VECTOR_P(argv[0])) {
-      g->xdata = argv[0]; 
+      g->xdata = argv[0];
     } else if (HISTOGRAM_P(argv[0])) {
       Data_Get_Struct(argv[0], gsl_histogram, h);
     } else {
@@ -1258,9 +1258,9 @@ static VALUE rb_gsl_graph_graph(int argc, VALUE *argv, VALUE obj)
   fp = popen(command, "w");
   if (fp == NULL) rb_raise(rb_eIOError, "GNU graph not found.");
   for (i = 0; i < size; i++) {
-    if (h) 
+    if (h)
       fprintf(fp, "%g %g\n%g %g\n", h->range[i], h->bin[i], h->range[i+1], h->bin[i]);
-    else if (y == NULL) 
+    else if (y == NULL)
       fprintf(fp, "%d %g\n", (int) i, gsl_vector_get(x, i));
     else
       fprintf(fp, "%g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i));
@@ -1305,7 +1305,7 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
     if (TYPE(argv[0]) == T_STRING) {
       sprintf(command, "%s %s", command, STR2CSTR(argv[0]));
     } else if (VECTOR_P(argv[0])) {
-      g->xdata = argv[0]; 
+      g->xdata = argv[0];
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector or String expected)",
          rb_class2name(CLASS_OF(argv[0])));
@@ -1333,7 +1333,7 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
       if (i != size-1)
         fprintf(fp, "%g %g\n%g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i),
           gsl_vector_get(x, i+1), gsl_vector_get(y, i));
-      else   
+      else
         fprintf(fp, "%g %g\n%g %g", gsl_vector_get(x, i), gsl_vector_get(y, i),
           2.0*gsl_vector_get(x, i)-gsl_vector_get(x, i-1), gsl_vector_get(y, i));
     }
@@ -1617,17 +1617,17 @@ void Init_gsl_graph(VALUE module)
   rb_define_alias(cgsl_graph, "use_color", "C");
   rb_define_alias(cgsl_graph, "toggle_use_color", "C");
 
-  rb_define_method(cgsl_graph, "set_symbol_font_name", 
+  rb_define_method(cgsl_graph, "set_symbol_font_name",
        rb_gsl_graph_set_symbol_font_name, 1);
   rb_define_alias(cgsl_graph, "symbol_font_name=", "set_symbol_font_name");
   rb_define_method(cgsl_graph, "symbol_font_name", rb_gsl_graph_symbol_font_name, 0);
 
-  rb_define_method(cgsl_graph, "set_reposition", 
+  rb_define_method(cgsl_graph, "set_reposition",
        rb_gsl_graph_set_reposition, 1);
   rb_define_alias(cgsl_graph, "reposition=", "set_reposition");
   rb_define_method(cgsl_graph, "reposition", rb_gsl_graph_reposition, 0);
 
-  rb_define_method(cgsl_graph, "set_blankout", 
+  rb_define_method(cgsl_graph, "set_blankout",
        rb_gsl_graph_set_blankout, 1);
   rb_define_alias(cgsl_graph, "blankout=", "set_blankout");
   rb_define_method(cgsl_graph, "blankout", rb_gsl_graph_blankout, 0);

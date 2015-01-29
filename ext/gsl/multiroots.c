@@ -49,11 +49,11 @@ static int rb_gsl_multiroot_function_f(const gsl_vector *x, void *p, gsl_vector 
 static void set_function(int i, VALUE *argv, gsl_multiroot_function *F);
 
 static void gsl_multiroot_function_fdf_free(gsl_multiroot_function_fdf *f);
-static int rb_gsl_multiroot_function_fdf_f(const gsl_vector *x, void *p, 
+static int rb_gsl_multiroot_function_fdf_f(const gsl_vector *x, void *p,
              gsl_vector *f);
-static int rb_gsl_multiroot_function_fdf_df(const gsl_vector *x, void *p, 
+static int rb_gsl_multiroot_function_fdf_df(const gsl_vector *x, void *p,
               gsl_matrix *J);
-static int rb_gsl_multiroot_function_fdf_fdf(const gsl_vector *x, void *p, 
+static int rb_gsl_multiroot_function_fdf_fdf(const gsl_vector *x, void *p,
                gsl_vector *f, gsl_matrix *J);
 static void set_function_fdf(int i, VALUE *argv, gsl_multiroot_function_fdf *F);
 static const gsl_multiroot_fsolver_type* get_fsolver_type(VALUE t);
@@ -98,8 +98,8 @@ static void gsl_multiroot_function_mark(gsl_multiroot_function *f)
 {
   size_t i;
   rb_gc_mark((VALUE) f->params);
-  //  for (i = 0; i < RARRAY(f->params)->len; i++) 
-  for (i = 0; (int) i < RARRAY_LEN(f->params); i++) 
+  //  for (i = 0; i < RARRAY(f->params)->len; i++)
+  for (i = 0; (int) i < RARRAY_LEN(f->params); i++)
     rb_gc_mark(rb_ary_entry((VALUE) f->params, i));
 }
 
@@ -137,7 +137,7 @@ static void set_function(int i, VALUE *argv, gsl_multiroot_function *F)
   VALUE ary;
   ary = (VALUE) F->params;
   if (TYPE(argv[i]) == T_FIXNUM) F->n = FIX2INT(argv[i]);
-  else if (rb_obj_is_kind_of(argv[i], rb_cProc)) 
+  else if (rb_obj_is_kind_of(argv[i], rb_cProc))
     rb_ary_store(ary, 0, argv[i]);
   else if (TYPE(argv[i]) == T_ARRAY || rb_obj_is_kind_of(argv[i], cgsl_vector)
     || TYPE(argv[i]) == T_FIXNUM || TYPE(argv[i]) == T_FLOAT) {
@@ -235,8 +235,8 @@ static void gsl_multiroot_function_fdf_mark(gsl_multiroot_function_fdf *f)
 {
   size_t i;
   rb_gc_mark((VALUE) f->params);
-  //  for (i = 0; i < RARRAY(f->params)->len; i++) 
-  for (i = 0; (int) i < RARRAY_LEN(f->params); i++) 
+  //  for (i = 0; i < RARRAY(f->params)->len; i++)
+  for (i = 0; (int) i < RARRAY_LEN(f->params); i++)
     rb_gc_mark(rb_ary_entry((VALUE) f->params, i));
 }
 
@@ -336,7 +336,7 @@ static VALUE rb_gsl_multiroot_function_fdf_set(int argc, VALUE *argv, VALUE obj)
   return obj;
 }
 
-static int rb_gsl_multiroot_function_fdf_f(const gsl_vector *x, void *p, 
+static int rb_gsl_multiroot_function_fdf_f(const gsl_vector *x, void *p,
              gsl_vector *f)
 {
   VALUE vx, vf, ary;
@@ -351,7 +351,7 @@ static int rb_gsl_multiroot_function_fdf_f(const gsl_vector *x, void *p,
   return GSL_SUCCESS;
 }
 
-static int rb_gsl_multiroot_function_fdf_df(const gsl_vector *x, void *p, 
+static int rb_gsl_multiroot_function_fdf_df(const gsl_vector *x, void *p,
               gsl_matrix *J)
 {
   VALUE vx, vJ, ary;
@@ -366,7 +366,7 @@ static int rb_gsl_multiroot_function_fdf_df(const gsl_vector *x, void *p,
   return GSL_SUCCESS;
 }
 
-static int rb_gsl_multiroot_function_fdf_fdf(const gsl_vector *x, void *p, 
+static int rb_gsl_multiroot_function_fdf_fdf(const gsl_vector *x, void *p,
                gsl_vector *f, gsl_matrix *J)
 {
   VALUE vx, vf, vJ, ary;
@@ -671,7 +671,7 @@ static VALUE rb_gsl_multiroot_fdfsolver_test_residual(VALUE obj, VALUE ea)
   return INT2FIX(gsl_multiroot_test_residual(s->f, NUM2DBL(ea)));
 }
 
-static VALUE rb_gsl_multiroot_test_delta(VALUE obj, VALUE vdx, VALUE vx, 
+static VALUE rb_gsl_multiroot_test_delta(VALUE obj, VALUE vdx, VALUE vx,
            VALUE ea, VALUE er)
 {
   gsl_vector *dx = NULL, *x = NULL;
@@ -721,7 +721,7 @@ static VALUE rb_gsl_multiroot_fsolver_fsolve(int argc, VALUE *argv, VALUE obj)
       break;
     }
   }
-  
+
   do {
     iter ++;
     status = gsl_multiroot_fsolver_iterate (s);
@@ -730,7 +730,7 @@ static VALUE rb_gsl_multiroot_fsolver_fsolve(int argc, VALUE *argv, VALUE obj)
   } while (status == GSL_CONTINUE && iter < max_iter);
   xnew = gsl_vector_alloc(s->x->size);
   gsl_vector_memcpy(xnew, gsl_multiroot_fsolver_root(s));
-  return rb_ary_new3(3, 
+  return rb_ary_new3(3,
          Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, xnew),
          INT2FIX(iter), INT2FIX(status));
 }
@@ -803,7 +803,7 @@ static VALUE rb_gsl_multiroot_function_solve(int argc, VALUE *argv, VALUE obj)
   int flag = 0;
   double epsabs = 1e-7;
   size_t max_iter = 10000, iter = 0, i;
-  gsl_multiroot_fsolver_type *T 
+  gsl_multiroot_fsolver_type *T
     = (gsl_multiroot_fsolver_type *) gsl_multiroot_fsolver_hybrids;
   gsl_multiroot_fsolver *s = NULL;
   int status;
@@ -820,7 +820,7 @@ static VALUE rb_gsl_multiroot_function_solve(int argc, VALUE *argv, VALUE obj)
   break;
       case T_FLOAT:
   epsabs = NUM2DBL(argv[i]);
-  break;  
+  break;
       case T_FIXNUM:
   max_iter = FIX2INT(argv[i]);
   break;
@@ -833,7 +833,7 @@ static VALUE rb_gsl_multiroot_function_solve(int argc, VALUE *argv, VALUE obj)
       if (RARRAY_LEN(argv[0]) != (int) F->n)
   rb_raise(rb_eRangeError, "array size are different.");
       x0 = gsl_vector_alloc(F->n);
-      for (i = 0; i < x0->size; i++) 
+      for (i = 0; i < x0->size; i++)
   gsl_vector_set(x0, i, NUM2DBL(rb_ary_entry(argv[0], i)));
       flag = 1;
     } else {
@@ -868,12 +868,12 @@ void Init_gsl_multiroot(VALUE module)
 
   mgsl_multiroot = rb_define_module_under(module, "MultiRoot");
 
-  rb_define_singleton_method(mgsl_multiroot, "test_delta", 
+  rb_define_singleton_method(mgsl_multiroot, "test_delta",
            rb_gsl_multiroot_test_delta, 4);
-  rb_define_singleton_method(mgsl_multiroot, "test_residual", 
+  rb_define_singleton_method(mgsl_multiroot, "test_residual",
            rb_gsl_multiroot_test_residual, 2);
 
-  rb_define_singleton_method(mgsl_multiroot, "fdjacobian", 
+  rb_define_singleton_method(mgsl_multiroot, "fdjacobian",
            rb_gsl_multiroot_fdjacobian, -1);
 
   /* multiroot_function */
@@ -905,9 +905,9 @@ void Init_gsl_multiroot(VALUE module)
   cgsl_multiroot_fsolver = rb_define_class_under(mgsl_multiroot, "FSolver", cGSL_Object);
   cgsl_multiroot_fdfsolver = rb_define_class_under(mgsl_multiroot, "FdfSolver", cgsl_multiroot_fsolver);
 
-  rb_define_singleton_method(cgsl_multiroot_fsolver, "alloc", 
+  rb_define_singleton_method(cgsl_multiroot_fsolver, "alloc",
            rb_gsl_multiroot_fsolver_new, 2);
-  rb_define_singleton_method(cgsl_multiroot_fdfsolver, "alloc", 
+  rb_define_singleton_method(cgsl_multiroot_fdfsolver, "alloc",
            rb_gsl_multiroot_fdfsolver_new, 2);
 
   rb_define_method(cgsl_multiroot_fsolver, "set", rb_gsl_multiroot_fsolver_set, 2);
@@ -935,7 +935,7 @@ void Init_gsl_multiroot(VALUE module)
   rb_define_method(cgsl_multiroot_fdfsolver, "test_residual", rb_gsl_multiroot_fdfsolver_test_residual, 1);
 
 
-  multiroot_define_const(cgsl_multiroot_fdfsolver, cgsl_multiroot_fsolver);  
+  multiroot_define_const(cgsl_multiroot_fdfsolver, cgsl_multiroot_fsolver);
 
   rb_define_method(cgsl_multiroot_fsolver, "fsolve", rb_gsl_multiroot_fsolver_fsolve, -1);
   rb_define_alias(cgsl_multiroot_fsolver, "solve", "fsolve");

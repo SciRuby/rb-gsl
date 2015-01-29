@@ -2,7 +2,7 @@
   matrix_double.c
   Ruby/GSL: Ruby extension library for GSL (GNU Scientific Library)
     (C) Copyright 2001-2006 by Yoshiki Tsunesada
-  
+
   Ruby/GSL is free software: you can redistribute it and/or modify it
   under the terms of the GNU General Public License.
   This library is distributed in the hope that it will be useful, but
@@ -131,8 +131,8 @@ static VALUE rb_gsl_matrix_arithmetics(int flag, VALUE obj, VALUE bb)
       return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
     } else if (rb_obj_is_kind_of(bb, cgsl_vector)) {
       if (!VECTOR_COL_P(bb))
-  rb_raise(rb_eTypeError, 
-     "Operation with %s is not defined (GSL::Vector::Col expected)", 
+  rb_raise(rb_eTypeError,
+     "Operation with %s is not defined (GSL::Vector::Col expected)",
      rb_class2name(CLASS_OF(bb)));
       Data_Get_Struct(bb, gsl_vector, v);
       switch (flag) {
@@ -236,7 +236,7 @@ static VALUE rb_gsl_matrix_mul(VALUE obj, VALUE bb)
       return rb_gsl_matrix_mul_elements(obj, bb);
       break;
     default:
-      rb_raise(rb_eTypeError, 
+      rb_raise(rb_eTypeError,
          "wrong argument type %s", rb_class2name(CLASS_OF(bb)));
       break;
     }
@@ -271,7 +271,7 @@ static VALUE rb_gsl_matrix_mul_bang(VALUE obj, VALUE bb)
       return obj;
       break;
     default:
-      rb_raise(rb_eTypeError, 
+      rb_raise(rb_eTypeError,
          "wrong argument type %s", rb_class2name(CLASS_OF(bb)));
       break;
     }
@@ -336,7 +336,7 @@ static VALUE rb_gsl_matrix_coerce(VALUE obj, VALUE other)
       vcm = Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cm);
       return rb_ary_new3(2, other, vcm);
     } else {
-      rb_raise(rb_eTypeError, "cannot coerce %s to Matrix", 
+      rb_raise(rb_eTypeError, "cannot coerce %s to Matrix",
          rb_class2name(CLASS_OF(other)));
     }
     break;
@@ -411,7 +411,7 @@ static VALUE rb_gsl_matrix_clean_bang(int argc, VALUE *argv, VALUE obj)
 }
 
 
-static VALUE rb_gsl_matrix_op_inplace(VALUE mm1, VALUE mm2, 
+static VALUE rb_gsl_matrix_op_inplace(VALUE mm1, VALUE mm2,
               int (*f)(gsl_matrix*, const gsl_matrix*))
 {
   gsl_matrix *m1, *m2;
@@ -488,7 +488,7 @@ static VALUE rb_gsl_matrix_randx(int argc, VALUE *argv, VALUE klass,
   switch (argc) {
   case 3:
     if (!rb_obj_is_kind_of(argv[2], cgsl_rng)) {
-      rb_raise(rb_eTypeError, 
+      rb_raise(rb_eTypeError,
          "Wrong argument type (GSL::Rng expected)");
     }
     Data_Get_Struct(argv[2], gsl_rng, rng);
@@ -530,7 +530,7 @@ void Init_gsl_matrix(VALUE module)
   rb_define_alias(cgsl_matrix, "*", "mul");
   rb_define_method(cgsl_matrix, "mul!", rb_gsl_matrix_mul_bang, 1);
   /***/
- 
+
   rb_define_method(cgsl_matrix, "to_complex", rb_gsl_matrix_to_complex, 0);
 
   rb_define_method(cgsl_matrix, "coerce", rb_gsl_matrix_coerce, 1);

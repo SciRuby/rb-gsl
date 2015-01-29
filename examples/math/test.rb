@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require("gsl") 
+require("gsl")
 
 puts("sign of 5.0")
 p GSL::SIGN(5.0)

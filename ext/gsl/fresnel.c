@@ -291,13 +291,13 @@ void Init_fresnel(VALUE module)
   VALUE mfresnel;
   mfresnel = rb_define_module_under(module, "Fresnel");
   rb_define_module_function(module, "fresnel_c", rb_fresnel_c, 1);
-  rb_define_module_function(module, "fresnel_s", rb_fresnel_s, 1);  
-  rb_define_module_function(module, "fresnel_c1", rb_fresnel_c1, 1);  
-  rb_define_module_function(module, "fresnel_s1", rb_fresnel_s1, 1);    
+  rb_define_module_function(module, "fresnel_s", rb_fresnel_s, 1);
+  rb_define_module_function(module, "fresnel_c1", rb_fresnel_c1, 1);
+  rb_define_module_function(module, "fresnel_s1", rb_fresnel_s1, 1);
   rb_define_module_function(mfresnel, "c", rb_fresnel_c, 1);
-  rb_define_module_function(mfresnel, "s", rb_fresnel_s, 1);  
-  rb_define_module_function(mfresnel, "c1", rb_fresnel_c1, 1);  
-  rb_define_module_function(mfresnel, "s1", rb_fresnel_s1, 1);  
+  rb_define_module_function(mfresnel, "s", rb_fresnel_s, 1);
+  rb_define_module_function(mfresnel, "c1", rb_fresnel_c1, 1);
+  rb_define_module_function(mfresnel, "s1", rb_fresnel_s1, 1);
 }
 
 
