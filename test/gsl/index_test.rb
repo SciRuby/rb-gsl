@@ -6,7 +6,7 @@ class IndexTest < GSL::TestCase
 
   def _create_index array
     i = GSL::Index.alloc(array.size)
-    array.each_with_index { |e,idx| i[idx] = e }
+    array.each_with_index { |e, j| i[j] = e }
     i
   end
 
@@ -32,7 +32,7 @@ class IndexTest < GSL::TestCase
     i = GSL::Index.alloc(5)
     assert_equal _create_index([2, 3]), i.get(2..3)
     assert_equal _create_index([0, 1, 2, 3, 4]), i.get(0..4)
-    assert_equal _create_index([0, 1, 2, 3, 4]), i.get(0..5)
+    assert_equal _create_index([0, 1, 2, 3, 4]), i.get(0..5) unless RUBY_VERSION < '2'
     assert_equal _create_index([0, 1, 2, 3, 4]), i.get(-5..-1)
     assert_equal _create_index([0]), i.get(0..-5)
     assert_equal _create_index([0]), i.get(-5..0)
