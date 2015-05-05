@@ -15,23 +15,23 @@
 # See also the {GSL reference}[https://gnu.org/software/gsl/manual/gsl-ref_37.html#SEC479]
 #
 # Contents:
-# 1. {Fundamental Constants}[link:const_rdoc.html#label-Fundamental+Constants]
-# 1. {Astronomy and Astrophysics}[link:const_rdoc.html#label-Astronomy+and+Astrophysics]
-# 1. {Atomic and Nuclear Physics}[link:const_rdoc.html#label-Atomic+and+Nuclear+Physics]
-# 1. {Measurement of Time}[link:const_rdoc.html#label-Measurement+of+Time]
-# 1. {Imperial Units}[link:const_rdoc.html#label-Imperial+Units]
-# 1. {Nautical Units}[link:const_rdoc.html#label-Nautical+Units]
-# 1. {Printers Units}[link:const_rdoc.html#label-Printers+Units]
-# 1. {Volume}[link:const_rdoc.html#label-Volume]
-# 1. {Mass and Weight}[link:const_rdoc.html#label-Mass+and+Weight]
-# 1. {Thermal Energy and Power}[link:const_rdoc.html#label-Thermal+Energy+and+Power]
-# 1. {Pressure}[link:const_rdoc.html#label-Pressure]
-# 1. {Viscosity}[link:const_rdoc.html#label-Viscosity]
-# 1. {Light and Illumination}[link:const_rdoc.html#label-Light+and+Illumination]
-# 1. {Radioactivity}[link:const_rdoc.html#label-Radioactivity]
-# 1. {Force and Energy}[link:const_rdoc.html#label-Force+and+Energy]
-# 1. {Prefixes}[link:const_rdoc.html#label-Prefixes]
-# 1. {Examples}[link:const_rdoc.html#label-Example]
+# 1. {Fundamental Constants}[link:rdoc/const_rdoc.html#label-Fundamental+Constants]
+# 1. {Astronomy and Astrophysics}[link:rdoc/const_rdoc.html#label-Astronomy+and+Astrophysics]
+# 1. {Atomic and Nuclear Physics}[link:rdoc/const_rdoc.html#label-Atomic+and+Nuclear+Physics]
+# 1. {Measurement of Time}[link:rdoc/const_rdoc.html#label-Measurement+of+Time]
+# 1. {Imperial Units}[link:rdoc/const_rdoc.html#label-Imperial+Units]
+# 1. {Nautical Units}[link:rdoc/const_rdoc.html#label-Nautical+Units]
+# 1. {Printers Units}[link:rdoc/const_rdoc.html#label-Printers+Units]
+# 1. {Volume}[link:rdoc/const_rdoc.html#label-Volume]
+# 1. {Mass and Weight}[link:rdoc/const_rdoc.html#label-Mass+and+Weight]
+# 1. {Thermal Energy and Power}[link:rdoc/const_rdoc.html#label-Thermal+Energy+and+Power]
+# 1. {Pressure}[link:rdoc/const_rdoc.html#label-Pressure]
+# 1. {Viscosity}[link:rdoc/const_rdoc.html#label-Viscosity]
+# 1. {Light and Illumination}[link:rdoc/const_rdoc.html#label-Light+and+Illumination]
+# 1. {Radioactivity}[link:rdoc/const_rdoc.html#label-Radioactivity]
+# 1. {Force and Energy}[link:rdoc/const_rdoc.html#label-Force+and+Energy]
+# 1. {Prefixes}[link:rdoc/const_rdoc.html#label-Prefixes]
+# 1. {Examples}[link:rdoc/const_rdoc.html#label-Example]
 #
 # == Fundamental Constants
 # ---
@@ -537,10 +537,10 @@
 #      printf("minimum = %.1f minutes\n", t_min / minutes);
 #      printf("maximum = %.1f minutes\n\n", t_max / minutes);
 #
-# {prev}[link:bspline_rdoc.html]
-# {next}[link:graph_rdoc.html]
+# {prev}[link:rdoc/bspline_rdoc.html]
+# {next}[link:rdoc/graph_rdoc.html]
 #
-# {Reference index}[link:ref_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

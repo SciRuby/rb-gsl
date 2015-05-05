@@ -6,9 +6,9 @@
 # {Patrick Alken's page}[http://ucsu.colorado.edu/~alken/gsl/].
 #
 # Contents:
-# 1. {Introduction}[link:ndlinear_rdoc.html#label-Introduction]
-# 1. {Class and methods}[link:ndlinear_rdoc.html#label-Class+and+Methods]
-# 1. {Examples}[link:ndlinear_rdoc.html#label-Examples]
+# 1. {Introduction}[link:rdoc/ndlinear_rdoc.html#label-Introduction]
+# 1. {Class and methods}[link:rdoc/ndlinear_rdoc.html#label-Class+and+Methods]
+# 1. {Examples}[link:rdoc/ndlinear_rdoc.html#label-Examples]
 #
 # == Introduction
 # The NDLINEAR extension provides support for general linear least squares
@@ -244,7 +244,7 @@
 #  STDERR.printf("rms error over all parameter space = %e\n", eps_rms)
 #
 #
-# {Reference index}[link:ref_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

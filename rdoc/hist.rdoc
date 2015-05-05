@@ -1,17 +1,17 @@
 #
 # = Histograms
-# 1. {Histogram allocation}[link:hist_rdoc.html#label-Histogram+allocation]
-# 1. {Copying histograms}[link:hist_rdoc.html#label-Copying+Histograms]
-# 1. {Updating and accessing histogram elements}[link:hist_rdoc.html#label-Updating+and+accessing+histogram+elements]
-# 1. {Searching histogram ranges}[link:hist_rdoc.html#label-Searching+histogram+ranges]
-# 1. {Histogram Statistics}[link:hist_rdoc.html#label-Histogram+Statistics]
-# 1. {Histogram Operations}[link:hist_rdoc.html#label-Histogram+Operations]
-# 1. {Reading and writing histograms}[link:hist_rdoc.html#label-Reading+and+writing+histograms]
-# 1. {Extensions}[link:hist_rdoc.html#label-Extentions]
-#    1. {Histogram Operations}[link:hist_rdoc.html#label-Histogram+operations]
-#    1. {Graph interface}[link:hist_rdoc.html#label-Graphics]
-#    1. {Histogram Fittings}[link:hist_rdoc.html#label-Fitting]
-# 1. {The histogram probability distribution}[link:hist_rdoc.html#label-The+histogram+probability+distribution]
+# 1. {Histogram allocation}[link:rdoc/hist_rdoc.html#label-Histogram+allocation]
+# 1. {Copying histograms}[link:rdoc/hist_rdoc.html#label-Copying+Histograms]
+# 1. {Updating and accessing histogram elements}[link:rdoc/hist_rdoc.html#label-Updating+and+accessing+histogram+elements]
+# 1. {Searching histogram ranges}[link:rdoc/hist_rdoc.html#label-Searching+histogram+ranges]
+# 1. {Histogram Statistics}[link:rdoc/hist_rdoc.html#label-Histogram+Statistics]
+# 1. {Histogram Operations}[link:rdoc/hist_rdoc.html#label-Histogram+Operations]
+# 1. {Reading and writing histograms}[link:rdoc/hist_rdoc.html#label-Reading+and+writing+histograms]
+# 1. {Extensions}[link:rdoc/hist_rdoc.html#label-Extentions]
+#    1. {Histogram Operations}[link:rdoc/hist_rdoc.html#label-Histogram+operations]
+#    1. {Graph interface}[link:rdoc/hist_rdoc.html#label-Graphics]
+#    1. {Histogram Fittings}[link:rdoc/hist_rdoc.html#label-Fitting]
+# 1. {The histogram probability distribution}[link:rdoc/hist_rdoc.html#label-The+histogram+probability+distribution]
 #
 # == Histogram allocation
 # ---
@@ -71,7 +71,7 @@
 # ---
 # * GSL::Histogram#set_ranges(v)
 #
-#   This sets the ranges of the existing histogram using a {GSL::Vector}[link:vector_rdoc.html] object.
+#   This sets the ranges of the existing histogram using a {GSL::Vector}[link:rdoc/vector_rdoc.html] object.
 # ---
 # * GSL::Histogram#set_ranges_uniform(xmin, xmax)
 # * GSL::Histogram#set_ranges_uniform([xmin, xmax])
@@ -400,10 +400,10 @@
 #   This returns a <tt>Vector::View</tt> object as a reference to the pointer
 #   <tt>double *sum</tt> in the <tt>gsl_histogram_pdf</tt> struct.
 #
-# {prev}[link:stats_rdoc.html]
-# {next}[link:hist2d_rdoc.html]
+# {prev}[link:rdoc/stats_rdoc.html]
+# {next}[link:rdoc/hist2d_rdoc.html]
 #
-# {Reference index}[link:ref_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

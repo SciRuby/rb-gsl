@@ -1,14 +1,14 @@
 #
 # = Eigensystems
 # === Contentes
-# 1. {Modules and classes}[link:eigen_rdoc.html#label-Modules+and+classes]
-# 1. {Real Symmetric Matrices}[link:eigen_rdoc.html#label-Real+Symmetric+Matrices]
-# 1. {Complex Hermitian Matrices}[link:eigen_rdoc.html#label-Complex+Hermitian+Matrices]
-# 1. {Real Nonsymmetric Matrices}[link:eigen_rdoc.html#label-Real+Nonsymmetric+Matrices+%28%3E%3D+GSL-1.9%29] (>= GSL-1.9)
-# 1. {Real Generalized Symmetric-Definite Eigensystems}[link:eigen_rdoc.html#label-Real+Generalized+Symmetric-Definite+Eigensystems+%28GSL-1.10%29] (>= GSL-1.10)
-# 1. {Complex Generalized Hermitian-Definite Eigensystems}[link:eigen_rdoc.html#label-Complex+Generalized+Hermitian-Definite+Eigensystems+%28%3E%3D+GSL-1.10%29] (>= GSL-1.10)
-# 1. {Real Generalized Nonsymmetric Eigensystems}[link:eigen_rdoc.html#label-Real+Generalized+Nonsymmetric+Eigensystems+%28%3E%3D+GSL-1.10%29] (>= GSL-1.10)
-# 1. {Sorting Eigenvalues and Eigenvectors }[link:eigen_rdoc.html#label-Sorting+Eigenvalues+and+Eigenvectors]
+# 1. {Modules and classes}[link:rdoc/eigen_rdoc.html#label-Modules+and+classes]
+# 1. {Real Symmetric Matrices}[link:rdoc/eigen_rdoc.html#label-Real+Symmetric+Matrices]
+# 1. {Complex Hermitian Matrices}[link:rdoc/eigen_rdoc.html#label-Complex+Hermitian+Matrices]
+# 1. {Real Nonsymmetric Matrices}[link:rdoc/eigen_rdoc.html#label-Real+Nonsymmetric+Matrices+%28%3E%3D+GSL-1.9%29] (>= GSL-1.9)
+# 1. {Real Generalized Symmetric-Definite Eigensystems}[link:rdoc/eigen_rdoc.html#label-Real+Generalized+Symmetric-Definite+Eigensystems+%28GSL-1.10%29] (>= GSL-1.10)
+# 1. {Complex Generalized Hermitian-Definite Eigensystems}[link:rdoc/eigen_rdoc.html#label-Complex+Generalized+Hermitian-Definite+Eigensystems+%28%3E%3D+GSL-1.10%29] (>= GSL-1.10)
+# 1. {Real Generalized Nonsymmetric Eigensystems}[link:rdoc/eigen_rdoc.html#label-Real+Generalized+Nonsymmetric+Eigensystems+%28%3E%3D+GSL-1.10%29] (>= GSL-1.10)
+# 1. {Sorting Eigenvalues and Eigenvectors }[link:rdoc/eigen_rdoc.html#label-Sorting+Eigenvalues+and+Eigenvectors]
 #
 # == Modules and classes
 #
@@ -392,10 +392,10 @@
 #   and <tt>GSL::EIGEN_SORT_ABS_DESC</tt> are supported due to the eigenvalues
 #   being complex.
 #
-# {prev}[link:linalg_rdoc.html]
-# {next}[link:fft_rdoc.html]
+# {prev}[link:rdoc/linalg_rdoc.html]
+# {next}[link:rdoc/fft_rdoc.html]
 #
-# {Reference index}[link:ref_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

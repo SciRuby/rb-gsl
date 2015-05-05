@@ -8,14 +8,14 @@
 # functions are available for computing derivatives and integrals of
 # interpolating functions.
 #
-# 1. {Interpolation classes}[link:interp_rdoc.html#label-Interpolation+Classes]
-# 1. {Initializing interpolation objects}[link:interp_rdoc.html#label-Initializing+interpolation+objects]
-# 1. {Index Look-up and Acceleration}[link:interp_rdoc.html#label-Index+Look-up+and+Acceleration]
-# 1. {Evaluation of Interpolating Functions}[link:interp_rdoc.html#label-Evaluation+of+Interpolating+Functions]
-# 1. {Higher level interface: GSL::Spline class}[link:interp_rdoc.html#label-Higher+level+interface]
-#    1. {Class initialization}[link:interp_rdoc.html#label-Class+initialization]
-#    1. {Evaluation}[link:interp_rdoc.html#label-Evaluation]
-#    1. {Finding and acceleration}[link:interp_rdoc.html#label-Finding+and+acceleration]
+# 1. {Interpolation classes}[link:rdoc/interp_rdoc.html#label-Interpolation+Classes]
+# 1. {Initializing interpolation objects}[link:rdoc/interp_rdoc.html#label-Initializing+interpolation+objects]
+# 1. {Index Look-up and Acceleration}[link:rdoc/interp_rdoc.html#label-Index+Look-up+and+Acceleration]
+# 1. {Evaluation of Interpolating Functions}[link:rdoc/interp_rdoc.html#label-Evaluation+of+Interpolating+Functions]
+# 1. {Higher level interface: GSL::Spline class}[link:rdoc/interp_rdoc.html#label-Higher+level+interface]
+#    1. {Class initialization}[link:rdoc/interp_rdoc.html#label-Class+initialization]
+#    1. {Evaluation}[link:rdoc/interp_rdoc.html#label-Evaluation]
+#    1. {Finding and acceleration}[link:rdoc/interp_rdoc.html#label-Finding+and+acceleration]
 #
 # == Interpolation Classes
 # * GSL
@@ -221,10 +221,10 @@
 #
 # See also the GSL manual and the examples in <tt>examples/</tt>
 #
-# {prev}[link:odeiv_rdoc.html]
-# {next}[link:diff_rdoc.html]
+# {prev}[link:rdoc/odeiv_rdoc.html]
+# {next}[link:rdoc/diff_rdoc.html]
 #
-# {Reference index}[link:ref_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

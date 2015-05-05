@@ -1,8 +1,8 @@
 #
 # = NArray compatibilities
 # === Contents:
-# 1. {Data type conversions}[link:narray_rdoc.html#label-Data+type+conversions]
-# 1. {Methods which accepts NArray}[link:narray_rdoc.html#label-Methods+which+accepts+NArray]
+# 1. {Data type conversions}[link:rdoc/narray_rdoc.html#label-Data+type+conversions]
+# 1. {Methods which accepts NArray}[link:rdoc/narray_rdoc.html#label-Methods+which+accepts+NArray]
 #
 # == Data type conversions
 # === GSL to NArray
@@ -89,7 +89,7 @@
 #
 # === <tt>Sf</tt> module
 # ---
-# * {Any}[link:sf_rdoc.html]
+# * {Any}[link:rdoc/sf_rdoc.html]
 #
 # === <tt>Linalg</tt> module
 # ---
@@ -120,7 +120,7 @@
 #
 # === <tt>FFT</tt> module
 # ---
-# * {Many}[link:fft_rdoc.html]
+# * {Many}[link:rdoc/fft_rdoc.html]
 #
 # === <tt>Function</tt> class
 # ---
@@ -135,11 +135,11 @@
 #
 # === <tt>Ran</tt> and <tt>Cdf</tt> module
 # ---
-# * {Many}[link:randist_rdoc.html]
+# * {Many}[link:rdoc/randist_rdoc.html]
 #
 # === <tt>Stats</tt> module
 # ---
-# * {Any}[link:stats_rdoc.html]
+# * {Any}[link:rdoc/stats_rdoc.html]
 #
 # === <tt>Interp</tt> and <tt>Spline</tt> class
 # ---
@@ -167,11 +167,11 @@
 #
 # === <tt>Wavelet</tt> class
 # ---
-# * {Many}[link:wavelet_rdoc.html]
+# * {Many}[link:rdoc/wavelet_rdoc.html]
 #
-# {prev}[link:tensor_rdoc.html]
+# {prev}[link:rdoc/tensor_rdoc.html]
 #
-# {Reference index}[link:ref_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

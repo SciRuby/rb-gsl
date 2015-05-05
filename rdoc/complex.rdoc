@@ -1,14 +1,14 @@
 #
 # = Complex Numbers
 # Contents:
-# 1. {Class methods}[link:complex_rdoc.html#label-Class+Methods]
-# 1. {Properties of Complex Numbers}[link:complex_rdoc.html#label-Properties+of+complex+numbers]
-# 1. {Complex Arithmetic Operators}[link:complex_rdoc.html#label-Complex+arithmetic+operators]
-# 1. {Elementary Complex Functions}[link:complex_rdoc.html#label-Elementary+Complex+Functions]
-# 1. {Complex Trigonometric Functions}[link:complex_rdoc.html#label-Complex+Trigonometric+Functions]
-# 1. {Inverse Complex Trigonometric Functions}[link:complex_rdoc.html#label-Inverse+Complex+Trigonometric+Functions]
-# 1. {Complex Hyperbolic Functions}[link:complex_rdoc.html#label-Complex+Hyperbolic+Functions]
-# 1. {Inverse Complex Hyperbolic Functions}[link:complex_rdoc.html#label-Inverse+Complex+Hyperbolic+Functions]
+# 1. {Class methods}[link:rdoc/complex_rdoc.html#label-Class+Methods]
+# 1. {Properties of Complex Numbers}[link:rdoc/complex_rdoc.html#label-Properties+of+complex+numbers]
+# 1. {Complex Arithmetic Operators}[link:rdoc/complex_rdoc.html#label-Complex+arithmetic+operators]
+# 1. {Elementary Complex Functions}[link:rdoc/complex_rdoc.html#label-Elementary+Complex+Functions]
+# 1. {Complex Trigonometric Functions}[link:rdoc/complex_rdoc.html#label-Complex+Trigonometric+Functions]
+# 1. {Inverse Complex Trigonometric Functions}[link:rdoc/complex_rdoc.html#label-Inverse+Complex+Trigonometric+Functions]
+# 1. {Complex Hyperbolic Functions}[link:rdoc/complex_rdoc.html#label-Complex+Hyperbolic+Functions]
+# 1. {Inverse Complex Hyperbolic Functions}[link:rdoc/complex_rdoc.html#label-Inverse+Complex+Hyperbolic+Functions]
 #
 # == Class Methods
 # ---
@@ -201,10 +201,10 @@
 # * GSL::Complex#arccoth(z)
 #
 #
-# {prev}[link:math_rdoc.html]
-# {next}[link:poly_rdoc.html]
+# {prev}[link:rdoc/math_rdoc.html]
+# {next}[link:rdoc/poly_rdoc.html]
 #
-# {Reference index}[link:ref_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

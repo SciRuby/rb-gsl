@@ -5,12 +5,12 @@
 # The library includes wavelets for real data in both one and two dimensions.
 #
 # Contents:
-# 1. {Definitions}[link:wavelet_rdoc.html#label-Definitions]
-# 1. {Initialization}[link:wavelet_rdoc.html#label-Initialization]
-# 1. {Transform methods}[link:wavelet_rdoc.html#label-Transform+Methods]
-#    1. {Wavelet transforms in one dimension}[link:wavelet_rdoc.html#label-Wavelet+transforms+in+one+dimension]
-#    1. {Wavelet transforms in two dimension}[link:wavelet_rdoc.html#label-Wavelet+transforms+in+two+dimension]
-# 1. {Examples}[link:wavelet_rdoc.html#label-Example]
+# 1. {Definitions}[link:rdoc/wavelet_rdoc.html#label-Definitions]
+# 1. {Initialization}[link:rdoc/wavelet_rdoc.html#label-Initialization]
+# 1. {Transform methods}[link:rdoc/wavelet_rdoc.html#label-Transform+Methods]
+#    1. {Wavelet transforms in one dimension}[link:rdoc/wavelet_rdoc.html#label-Wavelet+transforms+in+one+dimension]
+#    1. {Wavelet transforms in two dimension}[link:rdoc/wavelet_rdoc.html#label-Wavelet+transforms+in+two+dimension]
+# 1. {Examples}[link:rdoc/wavelet_rdoc.html#label-Example]
 #
 # == Definitions
 #
@@ -211,8 +211,8 @@
 #   #If you have GNU graph utility...
 #   GSL::graph(nil, data, data3, "-T X -C -g 3")
 #
-# {prev}[link:fft_rdoc.html]
-# {next}[link:integration_rdoc.html]
+# {prev}[link:rdoc/fft_rdoc.html]
+# {next}[link:rdoc/integration_rdoc.html]
 #
 # {back}[link:index.html]
 #

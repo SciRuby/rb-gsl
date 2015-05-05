@@ -26,9 +26,7 @@ begin
     },
     :rdoc => {
       :title      => 'Ruby/GSL{version: (v%s)}',
-      :rdoc_files => FileList['rdoc/*'].to_a,
-      :main       => 'index.rdoc',
-      :root       => 'rdoc'
+      :rdoc_files => FileList[%w[README COPYING ChangeLog rdoc/*]].to_a,
     },
     :test => {
       :libs => %w[lib test]

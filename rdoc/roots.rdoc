@@ -8,13 +8,13 @@
 # and its derivative (hence the name fdf) to be supplied by the user.
 #
 # Contents:
-# 1. {Solver classes}[link:roots_rdoc.html#label-Solver+classes]
-# 1. {Methods}[link:roots_rdoc.html#label-Methods]
-#    1. {Methods to solve equations}[link:roots_rdoc.html#label-Methods+to+solve+equations]
-#    1. {GSL::Function_fdf class: Providing the function to solve}[link:roots_rdoc.html#label-Function_fdf+class]
-#    1. {Search Stopping Parameters}[link:roots_rdoc.html#label-Search+Stopping+Parameters]
-# 1. {Higher-level interface}[link:roots_rdoc.html#label-High-level+interface]
-# 1. {Example}[link:roots_rdoc.html#label-Example]
+# 1. {Solver classes}[link:rdoc/roots_rdoc.html#label-Solver+classes]
+# 1. {Methods}[link:rdoc/roots_rdoc.html#label-Methods]
+#    1. {Methods to solve equations}[link:rdoc/roots_rdoc.html#label-Methods+to+solve+equations]
+#    1. {GSL::Function_fdf class: Providing the function to solve}[link:rdoc/roots_rdoc.html#label-Function_fdf+class]
+#    1. {Search Stopping Parameters}[link:rdoc/roots_rdoc.html#label-Search+Stopping+Parameters]
+# 1. {Higher-level interface}[link:rdoc/roots_rdoc.html#label-High-level+interface]
+# 1. {Example}[link:rdoc/roots_rdoc.html#label-Example]
 #
 # == Solver classes
 #
@@ -51,7 +51,7 @@
 #   This initialize the solver <tt>self</tt> to use the function <tt>f</tt>,
 #   and the initial search
 #   interval <tt>xl, xu</tt>. The function to be solved <tt>f</tt> is given
-#   an instanse of the {GSL::Function}[link:function_rdoc.html] class.
+#   an instanse of the {GSL::Function}[link:rdoc/function_rdoc.html] class.
 #
 # ---
 # * GSL::Root::FdfSolver#set(fdf, r)
@@ -91,7 +91,7 @@
 #
 # === Function_fdf class
 # The <tt>FSolver</tt> object require an instance of the
-# {GSL::Function}[link:function_rdoc.html] class, which is already introduced elsewhere.
+# {GSL::Function}[link:rdoc/function_rdoc.html] class, which is already introduced elsewhere.
 # The <tt>FdfSolver</tt> which uses the root-polishing algorithm requires not only
 # the function to solve, but also
 # procedures to calculate the derivatives. This is
@@ -296,10 +296,10 @@
 #        printf("%5d %10.7f %+10.7f %10.7f\n", iter, x, x - expected, x - x0)
 #      end while status != GSL::SUCCESS
 #
-# {prev}[link:dht_rdoc.html]
-# {next}[link:min_rdoc.html]
+# {prev}[link:rdoc/dht_rdoc.html]
+# {next}[link:rdoc/min_rdoc.html]
 #
-# {Reference index}[link:ref_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
 #
 #

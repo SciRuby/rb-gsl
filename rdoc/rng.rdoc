@@ -13,12 +13,12 @@
 #
 #
 # Contents:
-# 1. {General comments on random numbers}[link:rng_rdoc.html#label-General+comments+on+random+numbers]
-# 1. {The Random Number Generator Interface: GSL::Rng class}[link:rng_rdoc.html#label-The+Random+Number+Generator+Interface]
-# 1. {Random number generator initialization}[link:rng_rdoc.html#label-Random+number+generator+initialization]
-# 1. {Sampling from a random number generator}[link:rng_rdoc.html#label-Sampling+from+a+random+number+generator]
-# 1. {Auxiliary random number generator functions}[link:rng_rdoc.html#label-Auxiliary+random+number+generator+functions]
-# 1. {Random number environment variables}[link:rng_rdoc.html#label-Random+number+environment+variables]
+# 1. {General comments on random numbers}[link:rdoc/rng_rdoc.html#label-General+comments+on+random+numbers]
+# 1. {The Random Number Generator Interface: GSL::Rng class}[link:rdoc/rng_rdoc.html#label-The+Random+Number+Generator+Interface]
+# 1. {Random number generator initialization}[link:rdoc/rng_rdoc.html#label-Random+number+generator+initialization]
+# 1. {Sampling from a random number generator}[link:rdoc/rng_rdoc.html#label-Sampling+from+a+random+number+generator]
+# 1. {Auxiliary random number generator functions}[link:rdoc/rng_rdoc.html#label-Auxiliary+random+number+generator+functions]
+# 1. {Random number environment variables}[link:rdoc/rng_rdoc.html#label-Random+number+environment+variables]
 #
 # == General comments on random numbers
 # In 1988, Park and Miller wrote a paper entitled "Random number generators:
@@ -195,9 +195,9 @@
 #   The initial value of the default seed is zero.
 #
 #
-# {prev}[link:integration_rdoc.html]
-# {next}[link:qrng_rdoc.html]
+# {prev}[link:rdoc/integration_rdoc.html]
+# {next}[link:rdoc/qrng_rdoc.html]
 #
-# {Reference index}[link:ref_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
 #

@@ -1,19 +1,19 @@
 #
 # = Polynomials
 # Contents:
-# 1. {Polynomial Evaluation}[link:poly_rdoc.html#label-Polynomial+Evaluation]
-# 1. {Solving polynomial equations}[link:poly_rdoc.html#label-Solving+polynomial+equations]
-#    1. {Quadratic Equations}[link:poly_rdoc.html#label-Quadratic+Equations]
-#    1. {Cubic Equations}[link:poly_rdoc.html#label-Cubic+Equations]
-#    1. {General Polynomial Equations}[link:poly_rdoc.html#label-General+Polynomial+Equations]
-# 1. {GSL::Poly class}[link:poly_rdoc.html#label-Poly+class]
-#    1. {Constructors}[link:poly_rdoc.html#label-Constructors]
-#    1. {Methods}[link:poly_rdoc.html#label-Instance+Methods]
-# 1. {Polynomial Fitting}[link:poly_rdoc.html#label-Polynomial+fitting]
-# 1. {Divided-difference representations}[link:poly_rdoc.html#label-Divided-difference+representations]
-# 1. {Extensions}[link:poly_rdoc.html#label-Extensions]
-#    1. {Special Polynomials}[link:poly_rdoc.html#label-Special+Polynomials]
-#    1. {Polynomial Operations}[link:poly_rdoc.html#label-Polynomial+Operations]
+# 1. {Polynomial Evaluation}[link:rdoc/poly_rdoc.html#label-Polynomial+Evaluation]
+# 1. {Solving polynomial equations}[link:rdoc/poly_rdoc.html#label-Solving+polynomial+equations]
+#    1. {Quadratic Equations}[link:rdoc/poly_rdoc.html#label-Quadratic+Equations]
+#    1. {Cubic Equations}[link:rdoc/poly_rdoc.html#label-Cubic+Equations]
+#    1. {General Polynomial Equations}[link:rdoc/poly_rdoc.html#label-General+Polynomial+Equations]
+# 1. {GSL::Poly class}[link:rdoc/poly_rdoc.html#label-Poly+class]
+#    1. {Constructors}[link:rdoc/poly_rdoc.html#label-Constructors]
+#    1. {Methods}[link:rdoc/poly_rdoc.html#label-Instance+Methods]
+# 1. {Polynomial Fitting}[link:rdoc/poly_rdoc.html#label-Polynomial+fitting]
+# 1. {Divided-difference representations}[link:rdoc/poly_rdoc.html#label-Divided-difference+representations]
+# 1. {Extensions}[link:rdoc/poly_rdoc.html#label-Extensions]
+#    1. {Special Polynomials}[link:rdoc/poly_rdoc.html#label-Special+Polynomials]
+#    1. {Polynomial Operations}[link:rdoc/poly_rdoc.html#label-Polynomial+Operations]
 #
 # == Polynomial Evaluation
 # ---
@@ -210,7 +210,7 @@
 #   Finds the coefficient of a polynomial of order <tt>order</tt>
 #   that fits the vector data (<tt>x, y</tt>) in a least-square sense.
 #   This provides a higher-level interface to the method
-#   {GSL::Multifit#linear}[link:fit_rdoc.html] in a case of polynomial fitting.
+#   {GSL::Multifit#linear}[link:rdoc/fit_rdoc.html] in a case of polynomial fitting.
 #
 #   Example:
 #     #!/usr/bin/env ruby
@@ -325,10 +325,10 @@
 # * GSL::Poly#compan
 #
 #
-# {prev}[link:complex_rdoc.html]
-# {next}[link:sf_rdoc.html]
+# {prev}[link:rdoc/complex_rdoc.html]
+# {next}[link:rdoc/sf_rdoc.html]
 #
-# {Reference index}[link:ref_rdoc.html]
+# {Reference index}[link:rdoc/ref_rdoc.html]
 # {top}[link:index.html]
 #
 #
