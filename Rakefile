@@ -4,9 +4,9 @@ require 'rdoc/task'
 
 RB_GSL_VERSION = File.readlines('VERSION')[0].chomp
 
-spec = gemspec = eval(IO.read("gsl.gemspec"))
+spec = gemspec = eval(IO.read("gsl-nmatrix.gemspec"))
 
-Rake::PackageTask.new('rb-gsl', RB_GSL_VERSION) do |pkg|
+Rake::PackageTask.new('gsl-nmatrix', RB_GSL_VERSION) do |pkg|
   pkg.need_zip = true
   pkg.need_tar = true
   pkg.package_files = spec.files
