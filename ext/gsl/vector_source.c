@@ -1514,7 +1514,7 @@ VALUE FUNCTION(rb_gsl_vector,scale)(VALUE obj, VALUE x)
   GSL_TYPE(gsl_vector) *v, *vnew;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   vnew = FUNCTION(make_vector,clone)(v);
-  FUNCTION(gsl_vector,scale)(vnew, NUMCONV(x));
+  FUNCTION(gsl_vector,scale)(vnew, NUMCONV2(x));
   //  return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);
     return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);
 }
