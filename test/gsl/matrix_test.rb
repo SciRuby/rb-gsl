@@ -74,4 +74,15 @@ class MatrixTest < GSL::TestCase
     assert_equal z1, m[1, 0]
   end
 
+  def test_coerce
+    { 1 => m0 = GSL::Matrix.ones(1), 2 => GSL::Matrix[[2]] }.each { |a, b|
+      [a, a.to_f].each { |c| assert_equal([b, m0], m0.coerce(c)) } }
+
+    m1 = GSL::Matrix::Int.ones(1); [1, 2].each { |a|
+      [a, a.to_f].each { |c| assert_equal([c, m0], m1.coerce(c)) } }
+
+    { 1 => m2 = GSL::Complex[1, 0], 2 => GSL::Complex[2, 0] }.each { |a, b|
+      [a, a.to_f].each { |c| assert_equal([b, m2], m2.coerce(c)) } }
+  end
+
 end
