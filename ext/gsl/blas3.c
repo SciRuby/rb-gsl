@@ -91,11 +91,11 @@ static VALUE rb_gsl_blas_dgemm(int argc, VALUE *argv, VALUE obj)
 static VALUE rb_gsl_blas_zgemm(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *C = NULL;
-  gsl_complex alpha, beta, *pa = &alpha, *pb = &beta;
+  gsl_complex *pa = NULL, *pb = NULL;
   CBLAS_TRANSPOSE_t TransA, TransB;
   int flag = 0;
-  alpha.dat[0] = 1.0; alpha.dat[1] = 0.0;
-  beta.dat[0] = 0.0; beta.dat[1] = 0.0;
+  (*pa).dat[0] = 1.0; (*pa).dat[1] = 0.0;
+  (*pb).dat[0] = 0.0; (*pb).dat[1] = 0.0;
   switch (argc) {
   case 2:
     CHECK_MATRIX_COMPLEX(argv[0]);
@@ -156,7 +156,7 @@ static VALUE rb_gsl_blas_zgemm(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 7)", argc);
     break;
   }
-  gsl_blas_zgemm(TransA, TransB, alpha, A, B, beta, C);
+  gsl_blas_zgemm(TransA, TransB, *pa, A, B, *pb, C);
   if (flag == 1) return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, C);
   else return argv[6];
 }
@@ -307,7 +307,7 @@ static VALUE rb_gsl_blas_zsymm(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 7)", argc);
     break;
   }
-  gsl_blas_zsymm(Side, Uplo, alpha, A, B, beta, C);
+  gsl_blas_zsymm(Side, Uplo, *pa, A, B, *pb, C);
   if (flag == 1) return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, C);
   else return argv[6];
 }
@@ -382,7 +382,7 @@ static VALUE rb_gsl_blas_zhemm(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 2 or 7)", argc);
     break;
   }
-  gsl_blas_zhemm(Side, Uplo, alpha, A, B, beta, C);
+  gsl_blas_zhemm(Side, Uplo, *pa, A, B, *pb, C);
   if (flag == 1) return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, C);
   else return argv[6];
 }
@@ -439,7 +439,7 @@ static VALUE rb_gsl_blas_ztrmm(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL;
-  gsl_complex alpha, *pa = &alpha;
+  gsl_complex *pa = NULL;
   CBLAS_SIDE_t Side;
   CBLAS_UPLO_t Uplo;
   CBLAS_TRANSPOSE_t TransA;
@@ -455,7 +455,7 @@ static VALUE rb_gsl_blas_ztrmm(VALUE obj, VALUE s, VALUE u, VALUE ta,
   Data_Get_Struct(a, gsl_complex, pa);
   Data_Get_Struct(aa, gsl_matrix_complex, A);
   Data_Get_Struct(bb, gsl_matrix_complex, B);
-  gsl_blas_ztrmm(Side, Uplo, TransA, Diag, alpha, A, B);
+  gsl_blas_ztrmm(Side, Uplo, TransA, Diag, *pa, A, B);
   return bb;
 }
 
@@ -463,7 +463,7 @@ static VALUE rb_gsl_blas_ztrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *Bnew = NULL;
-  gsl_complex alpha, *pa = &alpha;
+  gsl_complex *pa = NULL;
   CBLAS_SIDE_t Side;
   CBLAS_UPLO_t Uplo;
   CBLAS_TRANSPOSE_t TransA;
@@ -480,7 +480,7 @@ static VALUE rb_gsl_blas_ztrmm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
   Data_Get_Struct(bb, gsl_matrix_complex, B);
   Bnew = gsl_matrix_complex_alloc(B->size1, B->size2);
   gsl_matrix_complex_memcpy(Bnew, B);
-  gsl_blas_ztrmm(Side, Uplo, TransA, Diag, alpha, A, Bnew);
+  gsl_blas_ztrmm(Side, Uplo, TransA, Diag, *pa, A, Bnew);
   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, Bnew);
 }
 
@@ -536,7 +536,7 @@ static VALUE rb_gsl_blas_ztrsm(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL;
-  gsl_complex alpha, *pa = &alpha;
+  gsl_complex *pa = NULL;
   CBLAS_SIDE_t Side;
   CBLAS_UPLO_t Uplo;
   CBLAS_TRANSPOSE_t TransA;
@@ -552,7 +552,7 @@ static VALUE rb_gsl_blas_ztrsm(VALUE obj, VALUE s, VALUE u, VALUE ta,
   Data_Get_Struct(a, gsl_complex, pa);
   Data_Get_Struct(aa, gsl_matrix_complex, A);
   Data_Get_Struct(bb, gsl_matrix_complex, B);
-  gsl_blas_ztrsm(Side, Uplo, TransA, Diag, alpha, A, B);
+  gsl_blas_ztrsm(Side, Uplo, TransA, Diag, *pa, A, B);
   return bb;
 }
 
@@ -560,7 +560,7 @@ static VALUE rb_gsl_blas_ztrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
              VALUE d, VALUE a, VALUE aa, VALUE bb)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *Bnew = NULL;
-  gsl_complex alpha, *pa = &alpha;
+  gsl_complex *pa = NULL;
   CBLAS_SIDE_t Side;
   CBLAS_UPLO_t Uplo;
   CBLAS_TRANSPOSE_t TransA;
@@ -578,7 +578,7 @@ static VALUE rb_gsl_blas_ztrsm2(VALUE obj, VALUE s, VALUE u, VALUE ta,
   Data_Get_Struct(bb, gsl_matrix_complex, B);
   Bnew = gsl_matrix_complex_alloc(B->size1, B->size2);
   gsl_matrix_complex_memcpy(Bnew, B);
-  gsl_blas_ztrsm(Side, Uplo, TransA, Diag, alpha, A, Bnew);
+  gsl_blas_ztrsm(Side, Uplo, TransA, Diag, *pa, A, Bnew);
   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, Bnew);
 }
 
@@ -628,7 +628,7 @@ static VALUE rb_gsl_blas_zsyrk(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
              VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *C = NULL;
-  gsl_complex alpha, beta, *pa = &alpha, *pb = &beta;
+  gsl_complex *pa = NULL, *pb = NULL;
   CBLAS_UPLO_t Uplo;
   CBLAS_TRANSPOSE_t Trans;
   CHECK_FIXNUM(u);  CHECK_FIXNUM(t);
@@ -640,7 +640,7 @@ static VALUE rb_gsl_blas_zsyrk(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
   Data_Get_Struct(b, gsl_complex, pb);
   Data_Get_Struct(aa, gsl_matrix_complex, A);
   Data_Get_Struct(cc, gsl_matrix_complex, C);
-  gsl_blas_zsyrk(Uplo, Trans, alpha, A, beta, C);
+  gsl_blas_zsyrk(Uplo, Trans, *pa, A, *pb, C);
   return cc;
 }
 
@@ -648,7 +648,7 @@ static VALUE rb_gsl_blas_zsyrk2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
              VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *C = NULL, *Cnew = NULL;
-  gsl_complex alpha, beta, *pa = &alpha, *pb = &beta;
+  gsl_complex *pa = NULL, *pb = NULL;
   CBLAS_UPLO_t Uplo;
   CBLAS_TRANSPOSE_t Trans;
   CHECK_FIXNUM(u);  CHECK_FIXNUM(t);
@@ -662,7 +662,7 @@ static VALUE rb_gsl_blas_zsyrk2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
   Data_Get_Struct(cc, gsl_matrix_complex, C);
   Cnew = gsl_matrix_complex_alloc(C->size1, C->size2);
   gsl_matrix_complex_memcpy(Cnew, C);
-  gsl_blas_zsyrk(Uplo, Trans, alpha, A, beta, Cnew);
+  gsl_blas_zsyrk(Uplo, Trans, *pa, A, *pb, Cnew);
   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, Cnew);
 }
 
@@ -757,7 +757,7 @@ static VALUE rb_gsl_blas_zsyr2k(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
         VALUE bb, VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *C = NULL;
-  gsl_complex alpha, beta, *pa = &alpha, *pb = &beta;
+  gsl_complex *pa = NULL, *pb = NULL;
   CBLAS_UPLO_t Uplo;
   CBLAS_TRANSPOSE_t Trans;
   CHECK_FIXNUM(u);  CHECK_FIXNUM(t);
@@ -770,7 +770,7 @@ static VALUE rb_gsl_blas_zsyr2k(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
   Data_Get_Struct(aa, gsl_matrix_complex, A);
   Data_Get_Struct(bb, gsl_matrix_complex, B);
   Data_Get_Struct(cc, gsl_matrix_complex, C);
-  gsl_blas_zsyr2k(Uplo, Trans, alpha, A, B, beta, C);
+  gsl_blas_zsyr2k(Uplo, Trans, *pa, A, B, *pb, C);
   return cc;
 }
 
@@ -778,7 +778,7 @@ static VALUE rb_gsl_blas_zsyr2k2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
         VALUE bb, VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *C = NULL, *Cnew = NULL;
-  gsl_complex alpha, beta, *pa = &alpha, *pb = &beta;
+  gsl_complex *pa = NULL, *pb = NULL;
   CBLAS_UPLO_t Uplo;
   CBLAS_TRANSPOSE_t Trans;
   CHECK_FIXNUM(u);  CHECK_FIXNUM(t);
@@ -793,7 +793,7 @@ static VALUE rb_gsl_blas_zsyr2k2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
   Data_Get_Struct(cc, gsl_matrix_complex, C);
   Cnew = gsl_matrix_complex_alloc(C->size1, C->size2);
   gsl_matrix_complex_memcpy(Cnew, C);
-  gsl_blas_zsyr2k(Uplo, Trans, alpha, A, B, beta, Cnew);
+  gsl_blas_zsyr2k(Uplo, Trans, *pa, A, B, *pb, Cnew);
   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, Cnew);
 }
 
@@ -801,7 +801,7 @@ static VALUE rb_gsl_blas_zher2k(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
         VALUE bb, VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *C = NULL;
-  gsl_complex alpha, *pa = &alpha;
+  gsl_complex *pa = NULL;
   double beta;
   CBLAS_UPLO_t Uplo;
   CBLAS_TRANSPOSE_t Trans;
@@ -816,7 +816,7 @@ static VALUE rb_gsl_blas_zher2k(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
   Data_Get_Struct(aa, gsl_matrix_complex, A);
   Data_Get_Struct(bb, gsl_matrix_complex, B);
   Data_Get_Struct(cc, gsl_matrix_complex, C);
-  gsl_blas_zher2k(Uplo, Trans, alpha, A, B, beta, C);
+  gsl_blas_zher2k(Uplo, Trans, *pa, A, B, beta, C);
   return cc;
 }
 
@@ -824,7 +824,7 @@ static VALUE rb_gsl_blas_zher2k2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
         VALUE bb, VALUE b, VALUE cc)
 {
   gsl_matrix_complex *A = NULL, *B = NULL, *C = NULL, *Cnew = NULL;
-  gsl_complex alpha, *pa = &alpha;
+  gsl_complex *pa = NULL;
   double beta;
   CBLAS_UPLO_t Uplo;
   CBLAS_TRANSPOSE_t Trans;
@@ -841,7 +841,7 @@ static VALUE rb_gsl_blas_zher2k2(VALUE obj, VALUE u, VALUE t, VALUE a, VALUE aa,
   Data_Get_Struct(cc, gsl_matrix_complex, C);
   Cnew = gsl_matrix_complex_alloc(C->size1, C->size2);
   gsl_matrix_complex_memcpy(Cnew, C);
-  gsl_blas_zher2k(Uplo, Trans, alpha, A, B, beta, Cnew);
+  gsl_blas_zher2k(Uplo, Trans, *pa, A, B, beta, Cnew);
   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, Cnew);
 }
 
