@@ -154,7 +154,7 @@ static VALUE rb_gsl_root_test_residual(VALUE obj, VALUE xl,VALUE eabs)
   return INT2FIX(gsl_root_test_residual(NUM2DBL(xl),  NUM2DBL(eabs)));
 }
 
-static VALUE rb_gsl_fsolver_solve(int argc, VALUE *argv, VALUE *obj)
+static VALUE rb_gsl_fsolver_solve(int argc, VALUE *argv, VALUE obj)
 {
   gsl_root_fsolver *s = NULL;
   gsl_function *F = NULL;
@@ -269,7 +269,7 @@ static VALUE rb_gsl_fdfsolver_name(VALUE obj)
   return rb_str_new2(gsl_root_fdfsolver_name(s));
 }
 
-static VALUE rb_gsl_fdfsolver_solve(int argc, VALUE *argv, VALUE *obj)
+static VALUE rb_gsl_fdfsolver_solve(int argc, VALUE *argv, VALUE obj)
 {
   gsl_root_fdfsolver *s = NULL;
   double x = 0.0, x0, epsabs = 0.0, epsrel = 1e-6;
