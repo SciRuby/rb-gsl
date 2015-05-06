@@ -987,13 +987,13 @@
 #
 # == Special matrices
 # ---
-# * GSL::Matrix.hirbert(n)
+# * GSL::Matrix.hilbert(n)
 #
 #   Returns the Hilbert matrix of order <tt>n</tt>. The <tt>ij</tt> element is
 #   defined as 1/(i+j+1).
 #
 # ---
-# * GSL::Matrix.invhirbert(n)
+# * GSL::Matrix.invhilbert(n)
 #
 #   Returns the inverse of a Hilbert matrix of order <tt>n</tt>.
 #
