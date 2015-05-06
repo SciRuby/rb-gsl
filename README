@@ -30,7 +30,7 @@ If you want the nmatrix conversions to work, you should probably do as follows b
 
 == Reference
 
-See ((<URL:http://rb-gsl.rubyforge.org/ref.html>)).
+See ((<URL:http://rb-gsl.rubyforge.org/files/rdoc/ref_rdoc.html >)).
 
 == Licence
 Ruby/GSL is free software: you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ WITHOUT ANY WARRANTY.
 Any bug reports are welcome.
 
 If you encounter bugs in Ruby/GSL, please e-mail to me, or
-submit reports from http://rubyforge.org/projects/rb-gsl/.
+submit reports from  https://github.com/SciRuby/rb-gsl.
 
 == Authors
 Yoshiki Tsunesada
