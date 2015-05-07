@@ -1523,7 +1523,7 @@ VALUE FUNCTION(rb_gsl_vector,scale_bang)(VALUE obj, VALUE x)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  FUNCTION(gsl_vector,scale)(v, NUMCONV(x));
+  FUNCTION(gsl_vector,scale)(v, NUMCONV2(x));
   return obj;
 }
 

@@ -1499,7 +1499,7 @@ static VALUE FUNCTION(rb_gsl_matrix,scale_bang)(VALUE obj, VALUE x)
 {
   GSL_TYPE(gsl_matrix) *m;
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
-  FUNCTION(gsl_matrix,scale)(m, NUMCONV(x));
+  FUNCTION(gsl_matrix,scale)(m, NUMCONV2(x));
   return obj;
 }
 
