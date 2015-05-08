@@ -1532,7 +1532,7 @@ VALUE FUNCTION(rb_gsl_vector,add_constant)(VALUE obj, VALUE x)
   GSL_TYPE(gsl_vector) *v, *vnew;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
   vnew = FUNCTION(make_vector,clone)(v);
-  FUNCTION(gsl_vector,add_constant)(vnew, NUMCONV(x));
+  FUNCTION(gsl_vector,add_constant)(vnew, NUMCONV2(x));
   //  return Data_Wrap_Struct(GSL_TYPE(cgsl_vector), 0, FUNCTION(gsl_vector,free), vnew);
   return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);
 }
@@ -1541,7 +1541,7 @@ VALUE FUNCTION(rb_gsl_vector,add_constant_bang)(VALUE obj, VALUE x)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
   Data_Get_Struct(obj, GSL_TYPE(gsl_vector), v);
-  FUNCTION(gsl_vector,add_constant)(v, NUMCONV(x));
+  FUNCTION(gsl_vector,add_constant)(v, NUMCONV2(x));
   return obj;
 }
 

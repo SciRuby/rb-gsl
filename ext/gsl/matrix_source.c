@@ -1516,7 +1516,7 @@ static VALUE FUNCTION(rb_gsl_matrix,add_constant_bang)(VALUE obj, VALUE x)
 {
   GSL_TYPE(gsl_matrix) *m;
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
-  FUNCTION(gsl_matrix,add_constant)(m, NUMCONV(x));
+  FUNCTION(gsl_matrix,add_constant)(m, NUMCONV2(x));
   return obj;
 }
 
@@ -1525,7 +1525,7 @@ static VALUE FUNCTION(rb_gsl_matrix,add_constant)(VALUE obj, VALUE b)
   GSL_TYPE(gsl_matrix) *m = NULL, *mnew;
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
   mnew = FUNCTION(make_matrix,clone)(m);
-  FUNCTION(gsl_matrix,add_constant)(mnew, NUMCONV(b));
+  FUNCTION(gsl_matrix,add_constant)(mnew, NUMCONV2(b));
   return Data_Wrap_Struct(GSL_TYPE(cgsl_matrix), 0, FUNCTION(gsl_matrix,free), mnew);
 }
 
