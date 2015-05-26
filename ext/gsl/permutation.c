@@ -97,6 +97,8 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
       } else if (CLASS_OF(argv[0]) == rb_cRange) {
         rb_range_beg_len(argv[0], &beg, (long *) &n, (long) b->size, 2);
         if (n == 0) rb_raise(rb_eRangeError, "range overflow");
+        if (n > b->size)
+          n = b->size;
         bnew = gsl_permutation_alloc(n);
         for (j = 0; j < n; j++)
           bnew->data[j] = b->data[beg+j];
