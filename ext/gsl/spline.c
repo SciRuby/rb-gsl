@@ -65,9 +65,6 @@ static VALUE rb_gsl_spline_init(VALUE obj, VALUE xxa, VALUE yya)
   size_t i, size;
   int flagx = 0, flagy = 0;
   double *ptr1 = NULL, *ptr2 = NULL;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *nax = NULL, *nay = NULL;
-#endif
   Data_Get_Struct(obj, rb_gsl_spline, sp);
   p = sp->s;
   if (TYPE(xxa) == T_ARRAY) {
@@ -83,9 +80,10 @@ static VALUE rb_gsl_spline_init(VALUE obj, VALUE xxa, VALUE yya)
     ptr1 = xa->data;
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(xxa)) {
-      GetNArray(xxa, nax);
-      size = nax->total;
-      ptr1 = (double *) nax->ptr;
+    struct NARRAY *nax = NULL;
+    GetNArray(xxa, nax);
+    size = nax->total;
+    ptr1 = (double *) nax->ptr;
 #endif
   } else {
     rb_raise(rb_eTypeError, "not a vector");
@@ -97,6 +95,7 @@ static VALUE rb_gsl_spline_init(VALUE obj, VALUE xxa, VALUE yya)
     flagy = 1;
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(yya)) {
+    struct NARRAY *nay = NULL;
       GetNArray(yya, nay);
       ptr2 = (double *) nay->ptr;
 #endif
@@ -129,10 +128,6 @@ static VALUE rb_gsl_spline_evaluate(VALUE obj, VALUE xx,
   VALUE ary, x;
   double val;
   size_t n, i, j;
-#ifdef HAVE_NARRAY_H
-  double *ptr1 = NULL, *ptr2 = NULL;
-  struct NARRAY *na = NULL;
-#endif
   Data_Get_Struct(obj, rb_gsl_spline, rgs);
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
   switch (TYPE(xx)) {
@@ -155,6 +150,8 @@ static VALUE rb_gsl_spline_evaluate(VALUE obj, VALUE xx,
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      double *ptr1 = NULL, *ptr2 = NULL;
+      struct NARRAY *na = NULL;
       GetNArray(xx, na);
       ptr1 = (double *) na->ptr;
       n = na->total;

@@ -154,10 +154,6 @@ VALUE rb_gsl_sf_eval_int_double(double (*func)(int, double), VALUE jj, VALUE arg
   VALUE ary, xx;
   size_t i, j, k, n;
   double val;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   CHECK_FIXNUM(jj);
   j = FIX2INT(jj);
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
@@ -181,6 +177,8 @@ VALUE rb_gsl_sf_eval_int_double(double (*func)(int, double), VALUE jj, VALUE arg
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       argv = na_change_type(argv, NA_DFLOAT);
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
@@ -223,10 +221,6 @@ VALUE rb_gsl_sf_eval_double_int(double (*func)(double, int), VALUE argv, VALUE j
   VALUE ary, xx;
   size_t i, j, k, n;
   double val;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   CHECK_FIXNUM(jj);
   j = FIX2INT(jj);
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
@@ -250,6 +244,8 @@ VALUE rb_gsl_sf_eval_double_int(double (*func)(double, int), VALUE argv, VALUE j
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       argv = na_change_type(argv, NA_DFLOAT);
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
@@ -294,10 +290,6 @@ VALUE rb_gsl_sf_eval_int_int_double(double (*func)(int, int, double), VALUE jj,
   VALUE ary, xx;
   size_t i, j, k, j2, n;
   double val;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   CHECK_FIXNUM(jj); CHECK_FIXNUM(jj2);
   j = FIX2INT(jj);
   j2 = FIX2INT(jj2);
@@ -322,6 +314,8 @@ VALUE rb_gsl_sf_eval_int_int_double(double (*func)(int, int, double), VALUE jj,
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       argv = na_change_type(argv, NA_DFLOAT);
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
@@ -365,10 +359,6 @@ VALUE rb_gsl_sf_eval_int_double_double(double (*func)(int, double, double), VALU
   VALUE ary, xx;
   size_t i, j, k, n;
   double f, val;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   CHECK_FIXNUM(jj);
   Need_Float(ff);
   j = FIX2INT(jj);
@@ -394,6 +384,8 @@ VALUE rb_gsl_sf_eval_int_double_double(double (*func)(int, double, double), VALU
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       argv = na_change_type(argv, NA_DFLOAT);
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
@@ -436,10 +428,6 @@ VALUE rb_gsl_sf_eval_double_double(double (*func)(double, double), VALUE ff, VAL
   VALUE ary, xx;
   size_t i, k, n;
   double val, f;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   Need_Float(ff);
   f = NUM2DBL(ff);
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
@@ -463,6 +451,8 @@ VALUE rb_gsl_sf_eval_double_double(double (*func)(double, double), VALUE ff, VAL
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       argv = na_change_type(argv, NA_DFLOAT);
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
@@ -503,10 +493,6 @@ VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double),
   VALUE ary, xx;
   size_t i, k, n;
   double val, f, f2;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   Need_Float(ff); Need_Float(ff2);
   f = NUM2DBL(ff);
   f2 = NUM2DBL(ff2);
@@ -531,6 +517,8 @@ VALUE rb_gsl_sf_eval_double3(double (*func)(double, double, double),
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       argv = na_change_type(argv, NA_DFLOAT);
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
@@ -574,10 +562,6 @@ VALUE rb_gsl_sf_eval_double4(double (*func)(double, double, double, double),
   VALUE ary, xx;
   size_t i, k, n;
   double val, f, f2, f3;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   Need_Float(ff); Need_Float(ff2); Need_Float(ff3);
   f = NUM2DBL(ff);
   f2 = NUM2DBL(ff2);
@@ -603,6 +587,8 @@ VALUE rb_gsl_sf_eval_double4(double (*func)(double, double, double, double),
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       argv = na_change_type(argv, NA_DFLOAT);
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
@@ -645,10 +631,6 @@ VALUE rb_gsl_sf_eval1_int(double (*func)(int), VALUE argv)
   VALUE ary;
   size_t i, k, n;
   double val;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
   switch (TYPE(argv)) {
   case T_FIXNUM:
@@ -668,6 +650,8 @@ VALUE rb_gsl_sf_eval1_int(double (*func)(int), VALUE argv)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       argv = na_change_type(argv, NA_DFLOAT);
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
@@ -710,10 +694,6 @@ VALUE rb_gsl_sf_eval1_uint(double (*func)(unsigned int), VALUE argv)
   VALUE ary;
   size_t i, k, n;
   double val;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
   switch (TYPE(argv)) {
   case T_FIXNUM:
@@ -733,6 +713,8 @@ VALUE rb_gsl_sf_eval1_uint(double (*func)(unsigned int), VALUE argv)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       argv = na_change_type(argv, NA_DFLOAT);
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
@@ -777,10 +759,6 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
   double val;
   /*gsl_mode_t mode;
   char c;*/
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   switch (TYPE(m)) {
   case T_STRING:
     /*c = tolower(NUM2CHR(m));
@@ -817,6 +795,8 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
       n = na->total;
@@ -861,10 +841,6 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
   double val, xx2;
   /*gsl_mode_t mode;
   char c;*/
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   Need_Float(x2);
   xx2 = NUM2DBL(x2);
   /*c = tolower(NUM2CHR(m));
@@ -893,6 +869,8 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
       n = na->total;
@@ -937,10 +915,6 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
   double val, xx2, xx3;
   /*gsl_mode_t mode;
   char c;*/
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   Need_Float(x2); Need_Float(x3);
   xx2 = NUM2DBL(x2);
   xx3 = NUM2DBL(x3);
@@ -970,6 +944,8 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
       n = na->total;
@@ -1015,10 +991,6 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
   double val, xx2, xx3, xx4;
   /*gsl_mode_t mode;
   char c;*/
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   Need_Float(x2); Need_Float(x3); Need_Float(x4);
   xx2 = NUM2DBL(x2);  xx3 = NUM2DBL(x3); xx4 = NUM2DBL(x4);
   /*c = tolower(NUM2CHR(m));
@@ -1048,6 +1020,8 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
       n = na->total;
@@ -1319,10 +1293,6 @@ VALUE eval_sf(double (*func)(double, gsl_mode_t), VALUE argv)
   double val;
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *mm = NULL, *mnew = NULL;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   switch (TYPE(argv)) {
   case T_FLOAT:
   case T_FIXNUM:
@@ -1343,6 +1313,8 @@ VALUE eval_sf(double (*func)(double, gsl_mode_t), VALUE argv)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       ptr1 = NA_PTR_TYPE(argv, double*);
       GetNArray(argv, na);
       n = na->total;

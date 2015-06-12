@@ -38,7 +38,41 @@ enum {
 
 #ifdef HAVE_NARRAY_H
 static VALUE rb_gsl_linalg_LU_decomp_narray(int argc, VALUE *argv, VALUE obj,
-              int flag);
+              int flag)
+{
+  struct NARRAY *na, *na2;
+  VALUE m;
+  gsl_matrix_view mv;
+  gsl_permutation *p;
+  int signum;
+
+  if (argc != 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
+  GetNArray(argv[0], na);
+  if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+  if (na->shape[0] != na->shape[1])
+    rb_raise(rb_eRuntimeError, "square matrix required");
+  if (flag == LINALG_DECOMP) {
+    m = na_make_object(NA_DFLOAT, 2, na->shape, CLASS_OF(argv[0]));
+    GetNArray(m, na2);
+    memcpy((double*)na2->ptr, (double*)na->ptr, sizeof(double)*na2->total);
+    mv = gsl_matrix_view_array((double*)na2->ptr, na->shape[1], na->shape[0]);
+  } else {
+    mv = gsl_matrix_view_array((double*)na->ptr, na->shape[1], na->shape[0]);
+  }
+  p = gsl_permutation_alloc(mv.matrix.size1);
+  gsl_linalg_LU_decomp(&mv.matrix, p, &signum);
+  if (flag == LINALG_DECOMP) {
+    return rb_ary_new3(3, m,
+           Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p),
+           INT2FIX(signum));
+  } else {
+    return rb_ary_new3(3, argv[0],
+    Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p),
+    INT2FIX(signum));
+  }
+
+}
 #endif
 
 static VALUE rb_gsl_linalg_LU_decomposition(int argc, VALUE *argv, VALUE obj, int flag)
@@ -109,45 +143,6 @@ static VALUE rb_gsl_linalg_LU_decomp_bang(int argc, VALUE *argv, VALUE obj)
   return rb_gsl_linalg_LU_decomposition(argc, argv, obj, LINALG_DECOMP_BANG);
 }
 
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_linalg_LU_decomp_narray(int argc, VALUE *argv, VALUE obj,
-              int flag)
-{
-  struct NARRAY *na, *na2;
-  VALUE m;
-  gsl_matrix_view mv;
-  gsl_permutation *p;
-  int signum;
-
-  if (argc != 1)
-    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
-  GetNArray(argv[0], na);
-  if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
-  if (na->shape[0] != na->shape[1])
-    rb_raise(rb_eRuntimeError, "square matrix required");
-  if (flag == LINALG_DECOMP) {
-    m = na_make_object(NA_DFLOAT, 2, na->shape, CLASS_OF(argv[0]));
-    GetNArray(m, na2);
-    memcpy((double*)na2->ptr, (double*)na->ptr, sizeof(double)*na2->total);
-    mv = gsl_matrix_view_array((double*)na2->ptr, na->shape[1], na->shape[0]);
-  } else {
-    mv = gsl_matrix_view_array((double*)na->ptr, na->shape[1], na->shape[0]);
-  }
-  p = gsl_permutation_alloc(mv.matrix.size1);
-  gsl_linalg_LU_decomp(&mv.matrix, p, &signum);
-  if (flag == LINALG_DECOMP) {
-    return rb_ary_new3(3, m,
-           Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p),
-           INT2FIX(signum));
-  } else {
-    return rb_ary_new3(3, argv[0],
-    Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p),
-    INT2FIX(signum));
-  }
-
-}
-#endif
-
 static gsl_matrix* get_matrix(VALUE obj, VALUE klass,int *flagm);
 static gsl_permutation* get_permutation(VALUE obj,  size_t size, int *flagp);
 static gsl_vector* get_vector2(VALUE obj,  int *flagv);
@@ -155,15 +150,13 @@ static gsl_vector* get_vector2(VALUE obj,  int *flagv);
 static gsl_matrix* get_matrix(VALUE obj, VALUE klass, int *flagm)
 {
   gsl_matrix *mtmp = NULL, *m = NULL;
-#ifdef HAVE_NARRAY_H
-  gsl_matrix_view mv;
-  struct NARRAY *na;
-#endif
   if (CLASS_OF(obj) == klass) {
     Data_Get_Struct(obj, gsl_matrix, m);
     *flagm = 0;
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(obj)) {
+    gsl_matrix_view mv;
+    struct NARRAY *na;
     GetNArray(obj, na);
     mv = gsl_matrix_view_array((double*)na->ptr, na->shape[1], na->shape[0]);
     m = &mv.matrix;
@@ -194,15 +187,13 @@ static gsl_permutation* get_permutation(VALUE obj, size_t size, int *flagp)
 static gsl_vector* get_vector2(VALUE obj, int *flagv)
 {
   gsl_vector *v = NULL;
-#ifdef HAVE_NARRAY_H
-  gsl_vector_view vv;
-  struct NARRAY *na;
-#endif
   if (TYPE(obj) == T_ARRAY) {
     v = make_cvector_from_rarray(obj);
     *flagv = 1;
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(obj)) {
+    gsl_vector_view vv;
+    struct NARRAY *na;
     GetNArray(obj, na);
     vv = gsl_vector_view_array((double*) na->ptr, na->total);
     v = &vv.vector;
@@ -217,7 +208,36 @@ static gsl_vector* get_vector2(VALUE obj, int *flagv)
 }
 
 #ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_linalg_LU_solve_narray(int argc, VALUE *argv, VALUE obj);
+static VALUE rb_gsl_linalg_LU_solve_narray(int argc, VALUE *argv, VALUE obj)
+{
+  struct NARRAY *na, *b;
+  VALUE ret;
+  gsl_permutation *p;
+  gsl_matrix_view mv;
+  gsl_vector_view bv, xv;
+  double *x;
+  int shape[1];
+  if (argc < 3)
+    rb_raise(rb_eArgError,
+       "wrong number of arguments %d(NArray, GSL::Permutation and NArray expected",
+       argc);
+  GetNArray(argv[0], na);
+  mv = gsl_matrix_view_array((double*) na->ptr, na->shape[1], na->shape[0]);
+  CHECK_PERMUTATION(argv[1]);
+  Data_Get_Struct(argv[1], gsl_permutation, p);
+  GetNArray(argv[2], b);
+  bv = gsl_vector_view_array((double*) b->ptr, b->total);
+  if (argc == 3) {
+    shape[0] = b->total;
+    ret = na_make_object(NA_DFLOAT, 1, shape, CLASS_OF(argv[0]));
+  } else {
+    ret = argv[3];
+  }
+  x = NA_PTR_TYPE(ret,double*);
+  xv = gsl_vector_view_array(x, b->total);
+  gsl_linalg_LU_solve(&mv.matrix, p, &bv.vector, &xv.vector);
+  return ret;
+}
 #endif
 
 VALUE rb_gsl_linalg_LU_solve(int argc, VALUE *argv, VALUE obj)
@@ -274,16 +294,13 @@ VALUE rb_gsl_linalg_LU_solve(int argc, VALUE *argv, VALUE obj)
 }
 
 #ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_linalg_LU_solve_narray(int argc, VALUE *argv, VALUE obj)
+static VALUE rb_gsl_linalg_LU_svx_narray(int argc, VALUE *argv, VALUE obj)
 {
   struct NARRAY *na, *b;
-  VALUE ret;
   gsl_permutation *p;
   gsl_matrix_view mv;
-  gsl_vector_view bv, xv;
-  double *x;
-  int shape[1];
-  if (argc < 3)
+  gsl_vector_view bv;
+  if (argc != 3)
     rb_raise(rb_eArgError,
        "wrong number of arguments %d(NArray, GSL::Permutation and NArray expected",
        argc);
@@ -293,21 +310,9 @@ static VALUE rb_gsl_linalg_LU_solve_narray(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(argv[1], gsl_permutation, p);
   GetNArray(argv[2], b);
   bv = gsl_vector_view_array((double*) b->ptr, b->total);
-  if (argc == 3) {
-    shape[0] = b->total;
-    ret = na_make_object(NA_DFLOAT, 1, shape, CLASS_OF(argv[0]));
-  } else {
-    ret = argv[3];
-  }
-  x = NA_PTR_TYPE(ret,double*);
-  xv = gsl_vector_view_array(x, b->total);
-  gsl_linalg_LU_solve(&mv.matrix, p, &bv.vector, &xv.vector);
-  return ret;
+  gsl_linalg_LU_svx(&mv.matrix, p, &bv.vector);
+  return argv[2];
 }
-#endif
-
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_linalg_LU_svx_narray(int argc, VALUE *argv, VALUE obj);
 #endif
 
 /* bb must be Vector, it is replaced by the root of the system */
@@ -350,28 +355,6 @@ static VALUE rb_gsl_linalg_LU_svx(int argc, VALUE *argv, VALUE obj)
   return argv[itmp];
 }
 
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_linalg_LU_svx_narray(int argc, VALUE *argv, VALUE obj)
-{
-  struct NARRAY *na, *b;
-  gsl_permutation *p;
-  gsl_matrix_view mv;
-  gsl_vector_view bv;
-  if (argc != 3)
-    rb_raise(rb_eArgError,
-       "wrong number of arguments %d(NArray, GSL::Permutation and NArray expected",
-       argc);
-  GetNArray(argv[0], na);
-  mv = gsl_matrix_view_array((double*) na->ptr, na->shape[1], na->shape[0]);
-  CHECK_PERMUTATION(argv[1]);
-  Data_Get_Struct(argv[1], gsl_permutation, p);
-  GetNArray(argv[2], b);
-  bv = gsl_vector_view_array((double*) b->ptr, b->total);
-  gsl_linalg_LU_svx(&mv.matrix, p, &bv.vector);
-  return argv[2];
-}
-#endif
-
 /* singleton */
 static VALUE rb_gsl_linalg_LU_refine(VALUE obj, VALUE vm,
              VALUE lu, VALUE pp, VALUE bb,
@@ -400,59 +383,6 @@ static VALUE rb_gsl_linalg_LU_refine(VALUE obj, VALUE vm,
   vr = Data_Wrap_Struct(cgsl_vector_col, 0, gsl_vector_free, r);
   if (flagb == 1) gsl_vector_free(b);
   return rb_ary_new3(2, xx, vr);
-}
-
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_linalg_LU_invert_narray(int argc, VALUE *argv, VALUE obj);
-#endif
-
-static VALUE rb_gsl_linalg_LU_invert(int argc, VALUE *argv, VALUE obj)
-{
-  gsl_matrix *m = NULL, *inverse = NULL;
-  gsl_permutation *p = NULL;
-  int signum, flagm = 0, flagp = 0, itmp;
-  size_t size;
-  switch (TYPE(obj)) {
-  case T_MODULE:  case T_CLASS:  case T_OBJECT:
-#ifdef HAVE_NARRAY_H
-    if (NA_IsNArray(argv[0]))
-      return rb_gsl_linalg_LU_invert_narray(argc, argv, obj);
-#endif
-    m = get_matrix(argv[0], cgsl_matrix_LU, &flagm);
-    itmp = 1;
-    break;
-  default:
-    m = get_matrix(obj, cgsl_matrix_LU, &flagm);
-    itmp = 0;
-  }
-  size = m->size1;
-
-  if (argc == itmp) {
-    p = gsl_permutation_alloc(size);
-    flagp = 1;
-  } else {
-    CHECK_PERMUTATION(argv[itmp]);
-    p = get_permutation(argv[itmp], size, &flagp);
-  }
-  if (flagp == 1 && flagm == 0) rb_raise(rb_eArgError, "permutation must be given");
-  if (flagp == 0) itmp++;
-
-  if (flagm == 1 || flagp == 1) {
-    gsl_linalg_LU_decomp(m, p, &signum);
-  }
-
-  if (argc-1 == itmp) {
-    CHECK_MATRIX(argv[itmp]);
-    Data_Get_Struct(argv[itmp], gsl_matrix, inverse);
-  } else {
-    inverse = gsl_matrix_alloc(size, size);
-  }
-  gsl_linalg_LU_invert(m, p, inverse);
-  if (flagm == 1) gsl_matrix_free(m);
-  if (flagp == 1) gsl_permutation_free(p);
-  if (argc-1 == itmp) return argv[itmp];
-  else return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, inverse);
-
 }
 
 #ifdef HAVE_NARRAY_H
@@ -512,6 +442,54 @@ static VALUE rb_gsl_linalg_LU_lndet_narray(int argc, VALUE *argv, VALUE obj)
 
 #endif
 
+static VALUE rb_gsl_linalg_LU_invert(int argc, VALUE *argv, VALUE obj)
+{
+  gsl_matrix *m = NULL, *inverse = NULL;
+  gsl_permutation *p = NULL;
+  int signum, flagm = 0, flagp = 0, itmp;
+  size_t size;
+  switch (TYPE(obj)) {
+  case T_MODULE:  case T_CLASS:  case T_OBJECT:
+#ifdef HAVE_NARRAY_H
+    if (NA_IsNArray(argv[0]))
+      return rb_gsl_linalg_LU_invert_narray(argc, argv, obj);
+#endif
+    m = get_matrix(argv[0], cgsl_matrix_LU, &flagm);
+    itmp = 1;
+    break;
+  default:
+    m = get_matrix(obj, cgsl_matrix_LU, &flagm);
+    itmp = 0;
+  }
+  size = m->size1;
+
+  if (argc == itmp) {
+    p = gsl_permutation_alloc(size);
+    flagp = 1;
+  } else {
+    CHECK_PERMUTATION(argv[itmp]);
+    p = get_permutation(argv[itmp], size, &flagp);
+  }
+  if (flagp == 1 && flagm == 0) rb_raise(rb_eArgError, "permutation must be given");
+  if (flagp == 0) itmp++;
+
+  if (flagm == 1 || flagp == 1) {
+    gsl_linalg_LU_decomp(m, p, &signum);
+  }
+
+  if (argc-1 == itmp) {
+    CHECK_MATRIX(argv[itmp]);
+    Data_Get_Struct(argv[itmp], gsl_matrix, inverse);
+  } else {
+    inverse = gsl_matrix_alloc(size, size);
+  }
+  gsl_linalg_LU_invert(m, p, inverse);
+  if (flagm == 1) gsl_matrix_free(m);
+  if (flagp == 1) gsl_permutation_free(p);
+  if (argc-1 == itmp) return argv[itmp];
+  else return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, inverse);
+
+}
 static VALUE rb_gsl_linalg_LU_det(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *m = NULL;
@@ -751,7 +729,88 @@ static VALUE rb_gsl_linalg_QR_LQ_decomposition(int argc, VALUE *argv, VALUE obj,
 }
 
 #ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_linalg_QR_decomp_narray(int argc, VALUE *argv, VALUE obj);
+static VALUE rb_gsl_linalg_QR_decomp_narray(int argc, VALUE *argv, VALUE obj)
+{
+  struct NARRAY *na;
+  gsl_matrix_view mv;
+  gsl_vector_view vv;
+  int shapem[2], shapev[1];
+  VALUE qr, tau;
+  if (argc < 1) rb_raise(rb_eArgError, "too few arguments.");
+  GetNArray(argv[0], na);
+  shapem[0] = na->shape[1];
+  shapem[1] = na->shape[1];
+  shapev[0] = shapem[0];
+  qr = na_make_object(NA_DFLOAT, 2, shapem, CLASS_OF(argv[0]));
+  tau = na_make_object(NA_DFLOAT, 1, shapev, cNVector);
+  memcpy(NA_PTR_TYPE(qr,double*),na->ptr,sizeof(double)*shapem[0]*shapem[1]);
+  mv = gsl_matrix_view_array(NA_PTR_TYPE(qr,double*), shapem[0], shapem[1]);
+  vv = gsl_vector_view_array(NA_PTR_TYPE(tau,double*), shapev[0]);
+  gsl_linalg_QR_decomp(&mv.matrix, &vv.vector);
+  return rb_ary_new3(2, qr, tau);
+}
+
+static VALUE rb_gsl_linalg_QR_unpack_narray(int argc, VALUE *argv, VALUE obj)
+{
+  struct NARRAY *m, *tau;
+  gsl_matrix_view mv, mq, mr;
+  gsl_vector_view vv;
+  int shape[2];
+  VALUE q, r;
+  if (argc != 2) rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)",
+        argc);
+  GetNArray(argv[0], m);
+  GetNArray(argv[1], tau);
+  mv = gsl_matrix_view_array((double*)m->ptr, m->shape[1], m->shape[0]);
+  vv = gsl_vector_view_array((double*)tau->ptr, tau->shape[0]);
+  shape[0] = m->shape[1];
+  shape[1] = m->shape[1];
+  q = na_make_object(NA_DFLOAT, 2, shape, CLASS_OF(argv[0]));
+  shape[0] = m->shape[1];
+  shape[1] = m->shape[0];
+  r = na_make_object(NA_DFLOAT, 2, shape, CLASS_OF(argv[0]));
+  mq = gsl_matrix_view_array(NA_PTR_TYPE(q,double*), m->shape[1], m->shape[1]);
+  mr = gsl_matrix_view_array(NA_PTR_TYPE(r,double*), m->shape[1], m->shape[0]);
+  //  printf("OK 4 %d %d\n", mq.matrix.size1, mr.matrix.size2);
+  gsl_linalg_QR_unpack(&mv.matrix, &vv.vector, &mq.matrix, &mr.matrix);
+  //  printf("OK 5\n");
+  return rb_ary_new3(2, q, r);
+}
+
+static VALUE rb_gsl_linalg_QR_solve_narray(int argc, VALUE *argv, VALUE obj)
+{
+  struct NARRAY *qr, *tau, *b;
+  VALUE x;
+  gsl_matrix_view mv;
+  gsl_vector_view tv, bv, xv;
+  if (argc != 3) rb_raise(rb_eArgError, "Usage: QR.solve(qr, tau, b)");
+  GetNArray(argv[0], qr);
+  GetNArray(argv[1], tau);
+  GetNArray(argv[2], b);
+  x = na_make_object(NA_DFLOAT, 1, b->shape, CLASS_OF(argv[2]));
+  mv = gsl_matrix_view_array((double*)qr->ptr, qr->shape[1], qr->shape[0]);
+  tv = gsl_vector_view_array((double*)tau->ptr, tau->shape[0]);
+  bv = gsl_vector_view_array((double*)b->ptr, b->shape[0]);
+  xv = gsl_vector_view_array(NA_PTR_TYPE(x,double*), b->shape[0]);
+  gsl_linalg_QR_solve(&mv.matrix, &tv.vector, &bv.vector, &xv.vector);
+  return x;
+}
+static VALUE rb_gsl_linalg_QR_svx_narray(int argc, VALUE *argv, VALUE obj)
+{
+  struct NARRAY *qr, *tau, *b;
+  gsl_matrix_view mv;
+  gsl_vector_view tv, bv;
+  if (argc != 3) rb_raise(rb_eArgError, "Usage: QR.solve(qr, tau, b)");
+  GetNArray(argv[0], qr);
+  GetNArray(argv[1], tau);
+  GetNArray(argv[2], b);
+  mv = gsl_matrix_view_array((double*)qr->ptr, qr->shape[1], qr->shape[0]);
+  tv = gsl_vector_view_array((double*)tau->ptr, tau->shape[0]);
+  bv = gsl_vector_view_array((double*)b->ptr, b->shape[0]);
+  gsl_linalg_QR_svx(&mv.matrix, &tv.vector, &bv.vector);
+  return argv[2];
+}
+
 #endif
 
 static VALUE rb_gsl_linalg_QR_decomp(int argc, VALUE *argv, VALUE obj)
@@ -1024,11 +1083,6 @@ static VALUE rb_gsl_linalg_QR_LQ_lssolve(int argc, VALUE *argv, VALUE obj, int f
   return Qnil;
 }
 
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_linalg_QR_solve_narray(int argc, VALUE *argv, VALUE obj);
-static VALUE rb_gsl_linalg_QR_svx_narray(int argc, VALUE *argv, VALUE obj);
-#endif
-
 static VALUE rb_gsl_linalg_QR_solve(int argc, VALUE *argv, VALUE obj)
 {
 #ifdef HAVE_NARRAY_H
@@ -1199,10 +1253,6 @@ static VALUE rb_gsl_linalg_QRLQ_unpack(int argc, VALUE *argv, VALUE obj,
   }
   return rb_ary_new3(2, vQ, vR);
 }
-
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_linalg_QR_unpack_narray(int argc, VALUE *argv, VALUE obj);
-#endif
 
 static VALUE rb_gsl_linalg_QR_unpack(int argc, VALUE *argv, VALUE obj)
 {
@@ -3332,91 +3382,6 @@ static VALUE rb_gsl_linalg_balance_columns(int argc, VALUE *argv, VALUE obj)
   /*status =*/ gsl_linalg_balance_columns(Anew, D);
   return rb_ary_new3(2, mat, vec);
 }
-
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_linalg_QR_decomp_narray(int argc, VALUE *argv, VALUE obj)
-{
-  struct NARRAY *na;
-  gsl_matrix_view mv;
-  gsl_vector_view vv;
-  int shapem[2], shapev[1];
-  VALUE qr, tau;
-  if (argc < 1) rb_raise(rb_eArgError, "too few arguments.");
-  GetNArray(argv[0], na);
-  shapem[0] = na->shape[1];
-  shapem[1] = na->shape[1];
-  shapev[0] = shapem[0];
-  qr = na_make_object(NA_DFLOAT, 2, shapem, CLASS_OF(argv[0]));
-  tau = na_make_object(NA_DFLOAT, 1, shapev, cNVector);
-  memcpy(NA_PTR_TYPE(qr,double*),na->ptr,sizeof(double)*shapem[0]*shapem[1]);
-  mv = gsl_matrix_view_array(NA_PTR_TYPE(qr,double*), shapem[0], shapem[1]);
-  vv = gsl_vector_view_array(NA_PTR_TYPE(tau,double*), shapev[0]);
-  gsl_linalg_QR_decomp(&mv.matrix, &vv.vector);
-  return rb_ary_new3(2, qr, tau);
-}
-
-static VALUE rb_gsl_linalg_QR_unpack_narray(int argc, VALUE *argv, VALUE obj)
-{
-  struct NARRAY *m, *tau;
-  gsl_matrix_view mv, mq, mr;
-  gsl_vector_view vv;
-  int shape[2];
-  VALUE q, r;
-  if (argc != 2) rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)",
-        argc);
-  GetNArray(argv[0], m);
-  GetNArray(argv[1], tau);
-  mv = gsl_matrix_view_array((double*)m->ptr, m->shape[1], m->shape[0]);
-  vv = gsl_vector_view_array((double*)tau->ptr, tau->shape[0]);
-  shape[0] = m->shape[1];
-  shape[1] = m->shape[1];
-  q = na_make_object(NA_DFLOAT, 2, shape, CLASS_OF(argv[0]));
-  shape[0] = m->shape[1];
-  shape[1] = m->shape[0];
-  r = na_make_object(NA_DFLOAT, 2, shape, CLASS_OF(argv[0]));
-  mq = gsl_matrix_view_array(NA_PTR_TYPE(q,double*), m->shape[1], m->shape[1]);
-  mr = gsl_matrix_view_array(NA_PTR_TYPE(r,double*), m->shape[1], m->shape[0]);
-  //  printf("OK 4 %d %d\n", mq.matrix.size1, mr.matrix.size2);
-  gsl_linalg_QR_unpack(&mv.matrix, &vv.vector, &mq.matrix, &mr.matrix);
-  //  printf("OK 5\n");
-  return rb_ary_new3(2, q, r);
-}
-
-static VALUE rb_gsl_linalg_QR_solve_narray(int argc, VALUE *argv, VALUE obj)
-{
-  struct NARRAY *qr, *tau, *b;
-  VALUE x;
-  gsl_matrix_view mv;
-  gsl_vector_view tv, bv, xv;
-  if (argc != 3) rb_raise(rb_eArgError, "Usage: QR.solve(qr, tau, b)");
-  GetNArray(argv[0], qr);
-  GetNArray(argv[1], tau);
-  GetNArray(argv[2], b);
-  x = na_make_object(NA_DFLOAT, 1, b->shape, CLASS_OF(argv[2]));
-  mv = gsl_matrix_view_array((double*)qr->ptr, qr->shape[1], qr->shape[0]);
-  tv = gsl_vector_view_array((double*)tau->ptr, tau->shape[0]);
-  bv = gsl_vector_view_array((double*)b->ptr, b->shape[0]);
-  xv = gsl_vector_view_array(NA_PTR_TYPE(x,double*), b->shape[0]);
-  gsl_linalg_QR_solve(&mv.matrix, &tv.vector, &bv.vector, &xv.vector);
-  return x;
-}
-static VALUE rb_gsl_linalg_QR_svx_narray(int argc, VALUE *argv, VALUE obj)
-{
-  struct NARRAY *qr, *tau, *b;
-  gsl_matrix_view mv;
-  gsl_vector_view tv, bv;
-  if (argc != 3) rb_raise(rb_eArgError, "Usage: QR.solve(qr, tau, b)");
-  GetNArray(argv[0], qr);
-  GetNArray(argv[1], tau);
-  GetNArray(argv[2], b);
-  mv = gsl_matrix_view_array((double*)qr->ptr, qr->shape[1], qr->shape[0]);
-  tv = gsl_vector_view_array((double*)tau->ptr, tau->shape[0]);
-  bv = gsl_vector_view_array((double*)b->ptr, b->shape[0]);
-  gsl_linalg_QR_svx(&mv.matrix, &tv.vector, &bv.vector);
-  return argv[2];
-}
-
-#endif
 
 #ifdef GSL_1_9_LATER
 static VALUE rb_gsl_linalg_hessenberg_decomp(VALUE module, VALUE AA)

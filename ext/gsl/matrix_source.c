@@ -257,16 +257,14 @@ static VALUE FUNCTION(rb_gsl_matrix,alloc)(int argc, VALUE *argv, VALUE klass)
 {
   GSL_TYPE(gsl_matrix) *m = NULL;
   size_t n1, n2;
-#ifdef HAVE_NARRAY_H
-  size_t n;
-  VALUE ary;
-  struct NARRAY *na;
-#endif
   if (argc < 1) rb_raise(rb_eArgError,
        "wrong number of arguments (%d for >= 1)", argc);
 
 #ifdef HAVE_NARRAY_H
   if (NA_IsNArray(argv[0])) {
+    size_t n;
+    VALUE ary;
+    struct NARRAY *na;
     GetNArray(argv[0], na);
     n = na->shape[0]*na->shape[1];
     m = FUNCTION(gsl_matrix,alloc)(na->shape[1], na->shape[0]);

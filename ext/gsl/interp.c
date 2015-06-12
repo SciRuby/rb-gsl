@@ -181,10 +181,6 @@ static VALUE rb_gsl_interp_evaluate(VALUE obj, VALUE xxa, VALUE yya, VALUE xx,
   VALUE ary, x;
   double val;
   size_t n, i, j, size, stridex, stridey;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na = NULL;
-  double *ptrz = NULL, *ptr = NULL;
-#endif
   Data_Get_Struct(obj, rb_gsl_interp, rgi);
   ptrx = get_vector_ptr(xxa, &stridex, &size);
   if (size != rgi->p->size ){
@@ -215,6 +211,8 @@ static VALUE rb_gsl_interp_evaluate(VALUE obj, VALUE xxa, VALUE yya, VALUE xx,
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na = NULL;
+      double *ptrz = NULL, *ptr = NULL;
       GetNArray(xx, na);
       ptrz = (double*) na->ptr;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(xx));

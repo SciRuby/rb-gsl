@@ -336,10 +336,6 @@ static VALUE rb_gsl_histogram_accumulate(int argc, VALUE *argv, VALUE obj)
   gsl_vector_int *vi;
   size_t i;
   double weight = 1;
-#ifdef HAVE_NARRAY_H
-  double *ptr;
-  size_t size, stride;
-#endif
   switch (argc) {
   case 2:
     Need_Float(argv[1]);
@@ -367,6 +363,8 @@ static VALUE rb_gsl_histogram_accumulate(int argc, VALUE *argv, VALUE obj)
       gsl_histogram_accumulate(h, (double)gsl_vector_int_get(vi, i), weight);
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(argv[0])) {
+    double *ptr;
+    size_t size, stride;
     ptr = get_vector_ptr(argv[0], &stride, &size);
     for (i = 0; i < size; i++)
       gsl_histogram_accumulate(h, ptr[i], weight);

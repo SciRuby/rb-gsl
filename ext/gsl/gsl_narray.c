@@ -575,7 +575,6 @@ gsl_matrix_int_view* na_to_gm_int_view(VALUE nna)
   return m;
 }
 
-#ifdef HAVE_NARRAY_H
 #include "narray.h"
 #include <gsl/gsl_histogram.h>
 EXTERN VALUE cgsl_histogram;
@@ -652,7 +651,6 @@ static VALUE rb_gsl_narray_histogram(int argc, VALUE *argv, VALUE obj)
     gsl_histogram_increment(h, ptr[i*stride]);
   return Data_Wrap_Struct(cgsl_histogram, 0, gsl_histogram_free, h);
 }
-#endif
 
 /*void rb_gsl_with_narray_define_methods()*/
 void Init_gsl_narray(VALUE module)

@@ -1291,10 +1291,6 @@ VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double))
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
   size_t i, j, n;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-#endif
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
   switch(TYPE(xx)) {
   case T_FIXNUM:
@@ -1316,6 +1312,8 @@ VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double))
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2;
       xx = na_change_type(xx, NA_DFLOAT);
       GetNArray(xx, na);
       ptr1 = (double *) na->ptr;
@@ -1359,10 +1357,6 @@ VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa,
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
   size_t i, j, n;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-#endif
   Need_Float(aa);
   a = NUM2DBL(aa);
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
@@ -1386,6 +1380,8 @@ VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa,
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2;
       xx = na_change_type(xx, NA_DFLOAT);
       GetNArray(xx, na);
       ptr1 = (double *) na->ptr;
@@ -1429,10 +1425,6 @@ VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb,
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
   size_t i, j, n;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-#endif
   Need_Float(aa);  Need_Float(bb);
   a = NUM2DBL(aa); b = NUM2DBL(bb);
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
@@ -1456,6 +1448,8 @@ VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb,
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2;
       xx = na_change_type(xx, NA_DFLOAT);
       GetNArray(xx, na);
       ptr1 = (double *) na->ptr;
@@ -1501,10 +1495,6 @@ VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa,
   gsl_matrix *m = NULL, *mnew = NULL;
   gsl_matrix_int *mi = NULL;
   size_t i, j, n;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  char *ptr1, *ptr2;
-#endif
   Need_Float(aa);
   a = NUM2DBL(aa);
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
@@ -1527,6 +1517,8 @@ VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa,
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      char *ptr1, *ptr2;
       GetNArray(xx, na);
       n = na->total;
       ary = na_make_object(na->type, na->rank, na->shape, CLASS_OF(xx));
