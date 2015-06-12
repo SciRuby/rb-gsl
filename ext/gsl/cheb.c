@@ -15,9 +15,6 @@
 #include "include/rb_gsl_function.h"
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_chebyshev.h>
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 static VALUE cgsl_cheb;
 

@@ -12,9 +12,6 @@
 
 #include "include/rb_gsl_math.h"
 #include "include/rb_gsl_complex.h"
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 static void rb_gsl_define_const(VALUE module);
 

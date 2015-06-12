@@ -10,9 +10,6 @@
 */
 
 #include "include/rb_gsl_function.h"
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 VALUE cgsl_function;
 VALUE cgsl_function_fdf;

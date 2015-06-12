@@ -13,9 +13,6 @@
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_common.h"
 #include <gsl/gsl_dht.h>
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 static VALUE rb_gsl_dht_alloc(int argc, VALUE *argv, VALUE klass)
 {

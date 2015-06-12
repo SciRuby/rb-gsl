@@ -15,9 +15,6 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_deriv.h>
 #define RB_GSL_DERIV_H_DEFAULT (1e-8)
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 static int get_func2(int argc, VALUE *argv, VALUE obj, VALUE *ff, VALUE *xx, VALUE *hh)
 {

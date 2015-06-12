@@ -12,9 +12,6 @@
 #include "include/rb_gsl_poly.h"
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_common.h"
-#ifdef HAVE_NARARY_H
-#include "narray.h"
-#endif
 
 void Init_gsl_poly_init(VALUE module);
 void Init_gsl_poly_int_init(VALUE module);

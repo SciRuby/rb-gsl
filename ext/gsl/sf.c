@@ -12,9 +12,6 @@
 
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_sf.h"
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 VALUE cgsl_sf_result, cgsl_sf_result_e10;
 

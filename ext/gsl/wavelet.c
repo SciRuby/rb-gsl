@@ -17,10 +17,6 @@
 #include <gsl/gsl_wavelet2d.h>
 #endif
 
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
-
 #ifndef CHECK_WAVELET
 #define CHECK_WAVELET(x) if(!rb_obj_is_kind_of(x,cgsl_wavelet))\
     rb_raise(rb_eTypeError, "wrong argument type (Wavelet expected)");

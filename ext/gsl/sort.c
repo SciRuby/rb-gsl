@@ -141,7 +141,6 @@ static VALUE rb_gsl_heapsort_index(VALUE obj, VALUE vv)
 /*****/
 
 #ifdef HAVE_NARRAY_H
-#include "narray.h"
 static VALUE rb_gsl_sort_narray(VALUE obj)
 {
   struct NARRAY *na;

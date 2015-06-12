@@ -67,7 +67,6 @@ double gsl_poly_int_eval(const BASE c[], const int len, const double x)
 }
 #endif
 #ifdef BASE_DOUBLE
-#include "include/rb_gsl_with_narray.h"
 #ifdef GSL_1_11_LATER
 static VALUE rb_gsl_complex_poly_complex_eval(VALUE a, VALUE b);
 #endif

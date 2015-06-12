@@ -1280,10 +1280,6 @@ static VALUE rb_gsl_ran_discrete_pdf(VALUE obj, VALUE k, VALUE gg)
   return rb_float_new(gsl_ran_discrete_pdf(FIX2INT(k), g));
 }
 
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
-
 /*****/
 VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double))
 {

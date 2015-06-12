@@ -11,9 +11,6 @@
 
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_statistics.h"
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 static double* get_vector_stats2(int argc, VALUE *argv, VALUE obj,
          size_t *stride, size_t *size)
