@@ -70,7 +70,7 @@ double* get_vector_ptr(VALUE ary, size_t *stride, size_t *n)
 #endif
   } else {
     rb_raise(rb_eTypeError,
-       "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
+             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
   }
 }
 
@@ -138,7 +138,7 @@ gsl_vector* get_vector(VALUE ary)
     return v;
   } else {
     rb_raise(rb_eTypeError,
-       "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
+             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
   }
 }
 
@@ -153,7 +153,7 @@ gsl_vector* make_cvector_from_rarrays(VALUE ary)
 #endif
   } else {
     rb_raise(rb_eTypeError,
-       "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
+             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
   }
 }
 
@@ -180,7 +180,7 @@ void carray_set_from_rarrays(double *a, VALUE ary)
 #endif
   } else {
     rb_raise(rb_eTypeError,
-       "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
+             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
   }
 }
 
@@ -270,7 +270,7 @@ VALUE make_matrix_clone2(VALUE vm)
   mnew = gsl_matrix_alloc(m->size1, m->size2);
   if (mnew == NULL) rb_raise(rb_eNoMemError, "gsl_matrix_alloc failed");
   gsl_matrix_memcpy(mnew, m);
-  return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);;
+  return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
 }
 
 gsl_matrix_complex* make_matrix_complex_clone(const gsl_matrix_complex *m)
@@ -345,7 +345,7 @@ void gsl_matrix_mul_vector(gsl_vector *vnew,
 }
 
 void gsl_matrix_int_mul_vector(gsl_vector_int *vnew,
-             const gsl_matrix_int *m, const gsl_vector_int *v)
+                               const gsl_matrix_int *m, const gsl_vector_int *v)
 {
   size_t i, j;
   int val;
@@ -358,8 +358,8 @@ void gsl_matrix_int_mul_vector(gsl_vector_int *vnew,
 }
 
 void gsl_matrix_complex_mul_vector(gsl_vector_complex *vnew,
-           const gsl_matrix_complex *m,
-           const gsl_vector_complex *v)
+                                   const gsl_matrix_complex *m,
+                                   const gsl_vector_complex *v)
 {
   gsl_complex a, b, c, sum;
   size_t i, j;
@@ -373,7 +373,6 @@ void gsl_matrix_complex_mul_vector(gsl_vector_complex *vnew,
     }
     gsl_vector_complex_set(vnew, i, sum);
   }
-
 }
 
 VALUE rb_gsl_range2ary(VALUE obj)
@@ -384,7 +383,7 @@ VALUE rb_gsl_range2ary(VALUE obj)
   VALUE ary;
   if (CLASS_OF(obj) != rb_cRange)
     rb_raise(rb_eTypeError, "wrong argument type %s (Range expected)",
-       rb_class2name(CLASS_OF(obj)));
+             rb_class2name(CLASS_OF(obj)));
   ary = rb_funcall(obj, rb_gsl_id_to_a, 0);
   return ary;
 }
@@ -398,7 +397,7 @@ VALUE rb_gsl_range2vector(VALUE obj)
   gsl_vector *v;
   if (CLASS_OF(obj) != rb_cRange)
     rb_raise(rb_eTypeError, "wrong argument type %s (Range expected)",
-       rb_class2name(CLASS_OF(obj)));
+             rb_class2name(CLASS_OF(obj)));
   get_range_beg_en_n(obj, &beg, &en, &n, &step);
   v = gsl_vector_alloc(n);
   for (i = 0; i < (int) n; i++) gsl_vector_set(v, i, (double) (beg+i));
@@ -413,7 +412,7 @@ VALUE rb_gsl_range2vector_int(VALUE obj)
   gsl_vector_int *v;
   if (CLASS_OF(obj) != rb_cRange)
     rb_raise(rb_eTypeError, "wrong argument type %s (Range expected)",
-       rb_class2name(CLASS_OF(obj)));
+             rb_class2name(CLASS_OF(obj)));
   get_range_int_beg_en_n(obj, &beg, &en, &n, &step);
   v = gsl_vector_int_alloc(n);
   for (i = 0; i < (int) n; i++) gsl_vector_int_set(v, i, beg+i);
@@ -464,21 +463,21 @@ void rb_gsl_matrix_int_view_free(gsl_matrix_int_view * mv)
 void Init_gsl_array(VALUE module)
 {
   cgsl_block = rb_define_class_under(module, "Block",
-           cGSL_Object);
+                                     cGSL_Object);
   cgsl_block_int = rb_define_class_under(cgsl_block, "Int",
-           cGSL_Object);
+                                         cGSL_Object);
   cgsl_block_uchar = rb_define_class_under(cgsl_block, "Byte",
-             cGSL_Object);
+                                           cGSL_Object);
 
   cgsl_block_complex = rb_define_class_under(cgsl_block, "Complex", cgsl_block);
   cgsl_vector = rb_define_class_under(module, "Vector",
-              cGSL_Object);
+                                      cGSL_Object);
   cgsl_vector_col = rb_define_class_under(cgsl_vector, "Col",
-           cgsl_vector);
+                                          cgsl_vector);
   cgsl_vector_complex = rb_define_class_under(cgsl_vector, "Complex",
-                cGSL_Object);
+                                              cGSL_Object);
   cgsl_vector_complex_col = rb_define_class_under(cgsl_vector_complex, "Col",
-                cgsl_vector_complex);
+                                                  cgsl_vector_complex);
   cgsl_matrix = rb_define_class_under(module, "Matrix", cGSL_Object);
   cgsl_matrix_complex = rb_define_class_under(cgsl_matrix, "Complex", cGSL_Object);
 
@@ -486,9 +485,9 @@ void Init_gsl_array(VALUE module)
   cgsl_vector_col_view = rb_define_class_under(cgsl_vector_col, "View", cgsl_vector_col);
 
   cgsl_vector_complex_view = rb_define_class_under(cgsl_vector_complex, "View",
-               cgsl_vector_complex);
+                                                   cgsl_vector_complex);
   cgsl_vector_complex_col_view = rb_define_class_under(cgsl_vector_complex_col, "View",
-               cgsl_vector_complex_col);
+                                                       cgsl_vector_complex_col);
 
   cgsl_vector_int = rb_define_class_under(cgsl_vector, "Int", cGSL_Object);
   cgsl_vector_int_col = rb_define_class_under(cgsl_vector_int, "Col", cgsl_vector_int);
@@ -499,35 +498,35 @@ void Init_gsl_array(VALUE module)
   /*****/
 
   cgsl_matrix_view = rb_define_class_under(cgsl_matrix, "View",
-             cgsl_matrix);
+                                           cgsl_matrix);
   cgsl_matrix_complex_view = rb_define_class_under(cgsl_matrix_complex, "View",
-               cgsl_matrix_complex);
+                                                   cgsl_matrix_complex);
   cgsl_permutation = rb_define_class_under(module, "Permutation", cGSL_Object);
   cgsl_index = rb_define_class_under(module, "Index", cgsl_permutation);
 
   cgsl_vector_view_ro = rb_define_class_under(cgsl_vector_view, "ReadOnly",
-                cgsl_vector_view);
+                                              cgsl_vector_view);
   cgsl_vector_col_view_ro = rb_define_class_under(cgsl_vector_col_view, "ReadOnly",
-                cgsl_vector_col_view);
+                                                  cgsl_vector_col_view);
   cgsl_vector_int_view_ro = rb_define_class_under(cgsl_vector_int_view, "ReadOnly",
-                cgsl_vector_int_view);
+                                                  cgsl_vector_int_view);
   cgsl_vector_int_col_view_ro = rb_define_class_under(cgsl_vector_int_col_view, "ReadOnly",
-                cgsl_vector_int_col_view);
+                                                      cgsl_vector_int_col_view);
   cgsl_matrix_view_ro = rb_define_class_under(cgsl_matrix_view, "ReadOnly",
-                cgsl_matrix_view);
+                                              cgsl_matrix_view);
 
   cgsl_vector_complex_view_ro = rb_define_class_under(cgsl_vector_complex_view,
-                  "ReadOnly",
-                  cgsl_vector_complex_view);
+                                                      "ReadOnly",
+                                                      cgsl_vector_complex_view);
   cgsl_matrix_complex_view_ro = rb_define_class_under(cgsl_matrix_complex_view,
-                  "ReadOnly",
-                  cgsl_matrix_complex_view);
+                                                      "ReadOnly",
+                                                      cgsl_matrix_complex_view);
 
   /*****/
   cgsl_matrix_int = rb_define_class_under(cgsl_matrix, "Int", cGSL_Object);
   cgsl_matrix_int_view = rb_define_class_under(cgsl_matrix_int, "View", cgsl_matrix_int);
   cgsl_matrix_int_view_ro = rb_define_class_under(cgsl_matrix_int_view, "ReadOnly",
-                cgsl_matrix_int_view);
+                                                  cgsl_matrix_int_view);
   /*****/
   Init_gsl_block_init(module);
   Init_gsl_block_int_init(module);

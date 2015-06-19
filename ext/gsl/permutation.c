@@ -52,7 +52,7 @@ static VALUE rb_gsl_permutation_init(VALUE obj)
 }
 
 #ifndef CHECK_RANGE_OFFSET
-#define CHECK_RANGE_OFFSET(i) if (i < -((int) b->size) || i >= ((int) b->size))\
+#define CHECK_RANGE_OFFSET(i) if (i < -((int) b->size) || i >= ((int) b->size)) \
     rb_raise(rb_eRangeError, "offset %d out of range", i);
 #endif
 
@@ -373,8 +373,7 @@ static VALUE rb_gsl_permutation_fprintf(int argc, VALUE *argv, VALUE obj)
   int status, flag = 0;
 
   if (argc != 1 && argc != 2) rb_raise(rb_eArgError,
-               "wrong number of arguments (%d for 1 or 2)", argc);
-
+                                       "wrong number of arguments (%d for 1 or 2)", argc);
   Data_Get_Struct(obj, gsl_permutation, h);
   fp = rb_gsl_open_writefile(argv[0], &flag);
   if (argc == 1) {

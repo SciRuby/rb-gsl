@@ -137,7 +137,6 @@ static VALUE rb_gsl_complex_arithmetics5(int flag, VALUE obj, VALUE bb)
         }
         return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
       }
-
       if (MATRIX_P(bb)) {
         Data_Get_Struct(bb, gsl_matrix, m);
         cm = matrix_to_complex(m);
@@ -205,7 +204,7 @@ static VALUE rb_gsl_complex_coerce(VALUE obj, VALUE other)
     c = ALLOC(gsl_complex);
     *c = gsl_complex_rect(x, 0.0);
     return rb_ary_new3(2, Data_Wrap_Struct(cgsl_complex, 0, free, c),
-           obj);
+                       obj);
     break;
   default:
     if (MATRIX_P(other)) {

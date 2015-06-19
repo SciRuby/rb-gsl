@@ -36,11 +36,11 @@ static void rb_gsl_const_num(VALUE module);
 static void rb_gsl_const_mks(VALUE module)
 {
   rb_define_const(module, "RADIATION_DENSITY_CONSTANT",
-      rb_float_new(MKS_RADIATION_DENSITY_CONSTANT));
+                  rb_float_new(MKS_RADIATION_DENSITY_CONSTANT));
   rb_define_const(module, "RADIATION_NUMBER_DENSITY_CONSTANT",
-      rb_float_new(MKS_RADIATION_NUMBER_DENSITY_CONSTANT));
+                  rb_float_new(MKS_RADIATION_NUMBER_DENSITY_CONSTANT));
   rb_define_const(module, "CLASSICAL_ELECTRON_RADIUS",
-      rb_float_new(MKS_CLASSICAL_ELECTRON_RADIUS));
+                  rb_float_new(MKS_CLASSICAL_ELECTRON_RADIUS));
   rb_define_const(module, "SOLAR_TIME", rb_float_new(MKS_SOLAR_TIME));
   rb_define_const(module, "SOLAR_GM", rb_float_new(MKS_SOLAR_GM));
 
@@ -52,11 +52,11 @@ static void rb_gsl_const_mks(VALUE module)
 static void rb_gsl_const_cgs(VALUE module)
 {
   rb_define_const(module, "RADIATION_DENSITY_CONSTANT",
-      rb_float_new(CGS_RADIATION_DENSITY_CONSTANT));
+                  rb_float_new(CGS_RADIATION_DENSITY_CONSTANT));
   rb_define_const(module, "RADIATION_NUMBER_DENSITY_CONSTANT",
-      rb_float_new(CGS_RADIATION_NUMBER_DENSITY_CONSTANT));
+                  rb_float_new(CGS_RADIATION_NUMBER_DENSITY_CONSTANT));
   rb_define_const(module, "CLASSICAL_ELECTRON_RADIUS",
-      rb_float_new(CGS_CLASSICAL_ELECTRON_RADIUS));
+                  rb_float_new(CGS_CLASSICAL_ELECTRON_RADIUS));
   rb_define_const(module, "SOLAR_TIME", rb_float_new(CGS_SOLAR_TIME));
   rb_define_const(module, "SOLAR_GM", rb_float_new(CGS_SOLAR_GM));
 

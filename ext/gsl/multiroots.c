@@ -15,17 +15,17 @@
 #include <gsl/gsl_multiroots.h>
 
 #ifndef CHECK_MULTIROOT_FUNCTION
-#define CHECK_MULTIROOT_FUNCTION(x) if(CLASS_OF(x)!=cgsl_multiroot_function)\
-      rb_raise(rb_eTypeError,\
-      "wrong argument type %s (GSL::MultiRoot::Function expected)",\
-      rb_class2name(CLASS_OF(x)));
+#define CHECK_MULTIROOT_FUNCTION(x) if(CLASS_OF(x)!=cgsl_multiroot_function) \
+    rb_raise(rb_eTypeError, \
+             "wrong argument type %s (GSL::MultiRoot::Function expected)", \
+             rb_class2name(CLASS_OF(x)));
 #endif
 
 #ifndef CHECK_MULTIROOT_FUNCTION_FDF
-#define CHECK_MULTIROOT_FUNCTION_FDF(x) if(CLASS_OF(x)!=cgsl_multiroot_function_fdf)\
-      rb_raise(rb_eTypeError,\
-      "wrong argument type %s (GSL::MultiRoot::Function_fdf expected)",\
-      rb_class2name(CLASS_OF(x)));
+#define CHECK_MULTIROOT_FUNCTION_FDF(x) if(CLASS_OF(x)!=cgsl_multiroot_function_fdf) \
+    rb_raise(rb_eTypeError, \
+             "wrong argument type %s (GSL::MultiRoot::Function_fdf expected)", \
+             rb_class2name(CLASS_OF(x)));
 #endif
 
 static VALUE cgsl_multiroot_function;
@@ -50,11 +50,11 @@ static void set_function(int i, VALUE *argv, gsl_multiroot_function *F);
 
 static void gsl_multiroot_function_fdf_free(gsl_multiroot_function_fdf *f);
 static int rb_gsl_multiroot_function_fdf_f(const gsl_vector *x, void *p,
-             gsl_vector *f);
+                                           gsl_vector *f);
 static int rb_gsl_multiroot_function_fdf_df(const gsl_vector *x, void *p,
-              gsl_matrix *J);
+                                            gsl_matrix *J);
 static int rb_gsl_multiroot_function_fdf_fdf(const gsl_vector *x, void *p,
-               gsl_vector *f, gsl_matrix *J);
+                                             gsl_vector *f, gsl_matrix *J);
 static void set_function_fdf(int i, VALUE *argv, gsl_multiroot_function_fdf *F);
 static const gsl_multiroot_fsolver_type* get_fsolver_type(VALUE t);
 static const gsl_multiroot_fdfsolver_type* get_fdfsolver_type(VALUE t);
@@ -140,7 +140,7 @@ static void set_function(int i, VALUE *argv, gsl_multiroot_function *F)
   else if (rb_obj_is_kind_of(argv[i], rb_cProc))
     rb_ary_store(ary, 0, argv[i]);
   else if (TYPE(argv[i]) == T_ARRAY || rb_obj_is_kind_of(argv[i], cgsl_vector)
-    || TYPE(argv[i]) == T_FIXNUM || TYPE(argv[i]) == T_FLOAT) {
+           || TYPE(argv[i]) == T_FIXNUM || TYPE(argv[i]) == T_FLOAT) {
     rb_ary_store(ary, 1, argv[i]);
   } else {
     rb_raise(rb_eTypeError, "wrong type of argument %d (Fixnum or Proc)", i);
@@ -337,7 +337,7 @@ static VALUE rb_gsl_multiroot_function_fdf_set(int argc, VALUE *argv, VALUE obj)
 }
 
 static int rb_gsl_multiroot_function_fdf_f(const gsl_vector *x, void *p,
-             gsl_vector *f)
+                                           gsl_vector *f)
 {
   VALUE vx, vf, ary;
   VALUE proc, vp;
@@ -352,7 +352,7 @@ static int rb_gsl_multiroot_function_fdf_f(const gsl_vector *x, void *p,
 }
 
 static int rb_gsl_multiroot_function_fdf_df(const gsl_vector *x, void *p,
-              gsl_matrix *J)
+                                            gsl_matrix *J)
 {
   VALUE vx, vJ, ary;
   VALUE proc, vp;
@@ -367,7 +367,7 @@ static int rb_gsl_multiroot_function_fdf_df(const gsl_vector *x, void *p,
 }
 
 static int rb_gsl_multiroot_function_fdf_fdf(const gsl_vector *x, void *p,
-               gsl_vector *f, gsl_matrix *J)
+                                             gsl_vector *f, gsl_matrix *J)
 {
   VALUE vx, vf, vJ, ary;
   VALUE proc_f, proc_df, proc_fdf, vp;
@@ -672,7 +672,7 @@ static VALUE rb_gsl_multiroot_fdfsolver_test_residual(VALUE obj, VALUE ea)
 }
 
 static VALUE rb_gsl_multiroot_test_delta(VALUE obj, VALUE vdx, VALUE vx,
-           VALUE ea, VALUE er)
+                                         VALUE ea, VALUE er)
 {
   gsl_vector *dx = NULL, *x = NULL;
   Need_Float(ea); Need_Float(er);
@@ -717,13 +717,12 @@ static VALUE rb_gsl_multiroot_fsolver_fsolve(int argc, VALUE *argv, VALUE obj)
       break;
     default:
       rb_raise(rb_eTypeError, "wrong type of argument %s (Fixnum or Float expected)",
-         rb_class2name(CLASS_OF(argv[i])));
+               rb_class2name(CLASS_OF(argv[i])));
       break;
     }
   }
-
   do {
-    iter ++;
+    iter++;
     status = gsl_multiroot_fsolver_iterate (s);
     if (status) break;
     status = gsl_multiroot_test_residual(s->f, eps);
@@ -731,8 +730,8 @@ static VALUE rb_gsl_multiroot_fsolver_fsolve(int argc, VALUE *argv, VALUE obj)
   xnew = gsl_vector_alloc(s->x->size);
   gsl_vector_memcpy(xnew, gsl_multiroot_fsolver_root(s));
   return rb_ary_new3(3,
-         Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, xnew),
-         INT2FIX(iter), INT2FIX(status));
+                     Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, xnew),
+                     INT2FIX(iter), INT2FIX(status));
 }
 
 /* singleton */
@@ -746,7 +745,6 @@ static VALUE rb_gsl_multiroot_fdjacobian(int argc, VALUE *argv, VALUE obj)
   int status;
   if (argc != 4 && argc != 5)
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 4 or 5)", argc);
-
   if (rb_obj_is_kind_of(argv[0], cgsl_multiroot_function_fdf)) {
     Data_Get_Struct(argv[0], gsl_multiroot_function_fdf, fdf);
     func.f = fdf->f;
@@ -758,7 +756,6 @@ static VALUE rb_gsl_multiroot_fdjacobian(int argc, VALUE *argv, VALUE obj)
   } else {
     rb_raise(rb_eArgError, "wrong argument type %s (MultiRoot::Function or MultiRoot::Function_fdf expected)", rb_class2name(CLASS_OF(argv[0])));
   }
-
   Need_Float(argv[3]);
   Data_Get_Vector(argv[1], x);
   Data_Get_Vector(argv[2], f);
@@ -767,7 +764,7 @@ static VALUE rb_gsl_multiroot_fdjacobian(int argc, VALUE *argv, VALUE obj)
     J = gsl_matrix_alloc(F->n, F->n);
     status = gsl_multiroot_fdjacobian(F, x, f, eps, J);
     return rb_ary_new3(2, Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, J),
-           INT2FIX(status));
+                       INT2FIX(status));
   } else {
     Data_Get_Struct(argv[4], gsl_matrix, J);
     status = gsl_multiroot_fdjacobian(F, x, f, eps, J);
@@ -816,25 +813,25 @@ static VALUE rb_gsl_multiroot_function_solve(int argc, VALUE *argv, VALUE obj)
     for (i = 1; (int) i < argc; i++) {
       switch (TYPE(argv[i])) {
       case T_STRING:
-  T = (gsl_multiroot_fsolver_type *) get_fsolver_type(argv[i]);
-  break;
+        T = (gsl_multiroot_fsolver_type *) get_fsolver_type(argv[i]);
+        break;
       case T_FLOAT:
-  epsabs = NUM2DBL(argv[i]);
-  break;
+        epsabs = NUM2DBL(argv[i]);
+        break;
       case T_FIXNUM:
-  max_iter = FIX2INT(argv[i]);
-  break;
+        max_iter = FIX2INT(argv[i]);
+        break;
       }
     }
-    /* no break */
+  /* no break */
   case 1:
     if (TYPE(argv[0]) == T_ARRAY) {
       //      if (RARRAY(argv[0])->len != F->n)
       if (RARRAY_LEN(argv[0]) != (int) F->n)
-  rb_raise(rb_eRangeError, "array size are different.");
+        rb_raise(rb_eRangeError, "array size are different.");
       x0 = gsl_vector_alloc(F->n);
       for (i = 0; i < x0->size; i++)
-  gsl_vector_set(x0, i, NUM2DBL(rb_ary_entry(argv[0], i)));
+        gsl_vector_set(x0, i, NUM2DBL(rb_ary_entry(argv[0], i)));
       flag = 1;
     } else {
       Data_Get_Vector(argv[0], x0);
@@ -858,7 +855,7 @@ static VALUE rb_gsl_multiroot_function_solve(int argc, VALUE *argv, VALUE obj)
   gsl_multiroot_fsolver_free (s);
   if (flag == 1) gsl_vector_free(x0);
   return rb_ary_new3(3, Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, xnew),
-         INT2FIX(iter), INT2FIX(status));
+                     INT2FIX(iter), INT2FIX(status));
 }
 
 void Init_gsl_multiroot(VALUE module)
@@ -869,18 +866,18 @@ void Init_gsl_multiroot(VALUE module)
   mgsl_multiroot = rb_define_module_under(module, "MultiRoot");
 
   rb_define_singleton_method(mgsl_multiroot, "test_delta",
-           rb_gsl_multiroot_test_delta, 4);
+                             rb_gsl_multiroot_test_delta, 4);
   rb_define_singleton_method(mgsl_multiroot, "test_residual",
-           rb_gsl_multiroot_test_residual, 2);
+                             rb_gsl_multiroot_test_residual, 2);
 
   rb_define_singleton_method(mgsl_multiroot, "fdjacobian",
-           rb_gsl_multiroot_fdjacobian, -1);
+                             rb_gsl_multiroot_fdjacobian, -1);
 
   /* multiroot_function */
   cgsl_multiroot_function = rb_define_class_under(mgsl_multiroot, "Function",
-              cgsl_function);
+                                                  cgsl_function);
   rb_define_singleton_method(cgsl_multiroot_function, "alloc",
-           rb_gsl_multiroot_function_new, -1);
+                             rb_gsl_multiroot_function_new, -1);
   rb_define_method(cgsl_multiroot_function, "eval", rb_gsl_multiroot_function_eval, 1);
   rb_define_alias(cgsl_multiroot_function, "call", "eval");
   rb_define_method(cgsl_multiroot_function, "set", rb_gsl_multiroot_function_set_f, -1);
@@ -891,9 +888,9 @@ void Init_gsl_multiroot(VALUE module)
 
   /* multiroot_function_fdf */
   cgsl_multiroot_function_fdf = rb_define_class_under(mgsl_multiroot, "Function_fdf",
-              cgsl_multiroot_function);
+                                                      cgsl_multiroot_function);
   rb_define_singleton_method(cgsl_multiroot_function_fdf, "alloc",
-           rb_gsl_multiroot_function_fdf_new, -1);
+                             rb_gsl_multiroot_function_fdf_new, -1);
   rb_define_method(cgsl_multiroot_function_fdf, "set", rb_gsl_multiroot_function_fdf_set, -1);
   rb_define_method(cgsl_multiroot_function_fdf, "set_params", rb_gsl_multiroot_function_fdf_set_params, -1);
   rb_define_method(cgsl_multiroot_function_fdf, "params", rb_gsl_multiroot_function_fdf_params, 0);
@@ -906,9 +903,9 @@ void Init_gsl_multiroot(VALUE module)
   cgsl_multiroot_fdfsolver = rb_define_class_under(mgsl_multiroot, "FdfSolver", cgsl_multiroot_fsolver);
 
   rb_define_singleton_method(cgsl_multiroot_fsolver, "alloc",
-           rb_gsl_multiroot_fsolver_new, 2);
+                             rb_gsl_multiroot_fsolver_new, 2);
   rb_define_singleton_method(cgsl_multiroot_fdfsolver, "alloc",
-           rb_gsl_multiroot_fdfsolver_new, 2);
+                             rb_gsl_multiroot_fdfsolver_new, 2);
 
   rb_define_method(cgsl_multiroot_fsolver, "set", rb_gsl_multiroot_fsolver_set, 2);
   rb_define_method(cgsl_multiroot_fsolver, "name", rb_gsl_multiroot_fsolver_name, 0);

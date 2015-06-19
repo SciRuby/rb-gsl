@@ -237,7 +237,7 @@ static VALUE rb_gsl_function_graph(int argc, VALUE *argv, VALUE obj)
   case 2:
     Check_Type(argv[1], T_STRING);
     strcpy(opt, STR2CSTR(argv[1]));
-    /* no break, do next */
+  /* no break, do next */
   case 1:
     if (CLASS_OF(argv[0]) == rb_cRange) argv[0] = rb_gsl_range2ary(argv[0]);
     if (TYPE(argv[0]) == T_ARRAY) {
@@ -253,8 +253,8 @@ static VALUE rb_gsl_function_graph(int argc, VALUE *argv, VALUE obj)
       flag = 0;
     } else {
       rb_raise(rb_eTypeError,
-         "wrong argument type %s (Array or GSL::Vector expected)",
-         rb_class2name(CLASS_OF(argv[0])));
+               "wrong argument type %s (Array or GSL::Vector expected)",
+               rb_class2name(CLASS_OF(argv[0])));
     }
     break;
   default:
@@ -276,7 +276,7 @@ static VALUE rb_gsl_function_graph(int argc, VALUE *argv, VALUE obj)
     fprintf(fp, "%e %e\n", x, y);
   }
   fflush(fp);
- pclose(fp);
+  pclose(fp);
   fp = NULL;
   if (flag == 1) gsl_vector_free(v);
   return Qtrue;
@@ -305,15 +305,14 @@ static void setfunc(int i, VALUE *argv, gsl_function_fdf *F)
   } else {
     ary = (VALUE) F->params;
   }
-
   if (rb_obj_is_kind_of(argv[i], rb_cProc)) {
     rb_ary_store(ary, i, argv[i]);
   } else if (TYPE(argv[i]) == T_ARRAY || rb_obj_is_kind_of(argv[i], cgsl_vector)
-       || TYPE(argv[i]) == T_FIXNUM || TYPE(argv[i]) == T_FLOAT) {
+             || TYPE(argv[i]) == T_FIXNUM || TYPE(argv[i]) == T_FLOAT) {
     rb_ary_store(ary, 3, argv[i]);
   } else {
     rb_raise(rb_eArgError,
-       "wrong type argument (Proc, Array, GSL::Vector or a number)");
+             "wrong type argument (Proc, Array, GSL::Vector or a number)");
   }
 }
 

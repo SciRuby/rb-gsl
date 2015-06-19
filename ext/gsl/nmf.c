@@ -32,8 +32,8 @@ void pp(const gsl_matrix *m)
 {
   int r, c;
 
-  for(r=0; r < (int) m->size1; r++) {
-    for(c=0; c < (int) m->size2; c++) {
+  for(r = 0; r < (int) m->size1; r++) {
+    for(c = 0; c < (int) m->size2; c++) {
       printf(" %.2f", gsl_matrix_get(m, r, c));
     }
     printf("\n");
@@ -45,15 +45,15 @@ void pp(const gsl_matrix *m)
 double difcost(const gsl_matrix *a, const gsl_matrix *b)
 {
   int i, j;
-  double dif=0, d;
+  double dif = 0, d;
 
-  for (i=0; i < (int) a->size1; i++)
+  for (i = 0; i < (int) a->size1; i++)
   {
-    for (j=0; j < (int) a->size2; j++)
+    for (j = 0; j < (int) a->size2; j++)
     {
       d = gsl_matrix_get(a, i, j) - gsl_matrix_get(b, i, j);
       dif += d*d;
-  //      dif += pow(gsl_matrix_get(a, i, j) - gsl_matrix_get(b, i, j), 2);
+      //      dif += pow(gsl_matrix_get(a, i, j) - gsl_matrix_get(b, i, j), 2);
     }
   }
   return dif;
@@ -66,9 +66,9 @@ static void initmatrix(gsl_matrix *m, double min, double max)
 
   srand(time(NULL));
 
-  for(i=0; i < (int) m->size1; i++)
+  for(i = 0; i < (int) m->size1; i++)
   {
-    for(j=0; j < (int) m->size2; j++)
+    for(j = 0; j < (int) m->size2; j++)
     {
       val = min + (int) (max * (rand() / (RAND_MAX + min)));
       gsl_matrix_set(m, i, j, val);
@@ -79,10 +79,10 @@ static void initmatrix(gsl_matrix *m, double min, double max)
 static double update(gsl_matrix *v, gsl_matrix *w, gsl_matrix *h)
 {
   double dist = 0;
-  gsl_matrix *wt=NULL, *ht=NULL, *wh=NULL;
-  gsl_matrix *w_h=NULL, *wt_w=NULL;
+  gsl_matrix *wt = NULL, *ht = NULL, *wh = NULL;
+  gsl_matrix *w_h = NULL, *wt_w = NULL;
   gsl_matrix *wt_v = NULL;
-  gsl_matrix *v_ht=NULL, *wt_w_h=NULL, *w_h_ht=NULL;
+  gsl_matrix *v_ht = NULL, *wt_w_h = NULL, *w_h_ht = NULL;
 
   wt = gsl_matrix_alloc(w->size2, w->size1);
   gsl_matrix_transpose_memcpy(wt, w);

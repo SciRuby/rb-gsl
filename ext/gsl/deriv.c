@@ -59,9 +59,9 @@ static int get_func2(int argc, VALUE *argv, VALUE obj, VALUE *ff, VALUE *xx, VAL
 #endif
 
 static VALUE rb_gsl_deriv_eval(VALUE obj, VALUE xx, VALUE hh,
-             int (*deriv)(const gsl_function *,
-              double, double,
-              double *, double *))
+                               int (*deriv)(const gsl_function *,
+                                            double, double,
+                                            double *, double *))
 {
   gsl_function *f = NULL;
   double result, abserr, h;
@@ -126,8 +126,8 @@ static VALUE rb_gsl_deriv_eval(VALUE obj, VALUE xx, VALUE hh,
         gsl_vector_set(verr, i, abserr);
       }
       return rb_ary_new3(2,
-       Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew),
-       Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, verr));
+                         Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew),
+                         Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, verr));
     } else if (MATRIX_P(xx)) {
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
@@ -140,8 +140,8 @@ static VALUE rb_gsl_deriv_eval(VALUE obj, VALUE xx, VALUE hh,
         }
       }
       return rb_ary_new3(2,
-       Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew),
-       Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, merr));
+                         Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew),
+                         Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, merr));
     } else {
       rb_raise(rb_eTypeError, "wrong argument type");
     }

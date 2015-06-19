@@ -54,7 +54,7 @@ static VALUE rb_gsl_bspline_knots_uniform(int argc, VALUE *argv, VALUE obj)
   case T_OBJECT:
     if (!rb_obj_is_kind_of(argv[argc-1], cBSWS)) {
       rb_raise(rb_eTypeError, "Wrong argument type %s (GSL::BSpline expected)",
-        rb_class2name(CLASS_OF(argv[argc-1])));
+               rb_class2name(CLASS_OF(argv[argc-1])));
     }
     Data_Get_Struct(argv[argc-1], gsl_bspline_workspace, w);
     argc2 = argc-1;

@@ -90,17 +90,17 @@ static VALUE rb_gsl_vector_int_add(VALUE obj, VALUE b)
     return rb_gsl_vector_add_constant(rb_gsl_vector_int_to_f(obj), b);
     break;
   default:
-   if (rb_obj_is_kind_of(b, cgsl_vector_int)) {
-     Data_Get_Struct(obj, gsl_vector_int, v);
-     Data_Get_Struct(b, gsl_vector_int, vb);
-     vnew = gsl_vector_int_alloc(v->size);
-     gsl_vector_int_memcpy(vnew, v);
-     gsl_vector_int_add(vnew, vb);
-     return Data_Wrap_Struct(VECTOR_INT_ROW_COL(obj), 0, gsl_vector_int_free, vnew);
-   } else {
-     return rb_gsl_vector_add(rb_gsl_vector_int_to_f(obj), b);
-   }
-   break;
+    if (rb_obj_is_kind_of(b, cgsl_vector_int)) {
+      Data_Get_Struct(obj, gsl_vector_int, v);
+      Data_Get_Struct(b, gsl_vector_int, vb);
+      vnew = gsl_vector_int_alloc(v->size);
+      gsl_vector_int_memcpy(vnew, v);
+      gsl_vector_int_add(vnew, vb);
+      return Data_Wrap_Struct(VECTOR_INT_ROW_COL(obj), 0, gsl_vector_int_free, vnew);
+    } else {
+      return rb_gsl_vector_add(rb_gsl_vector_int_to_f(obj), b);
+    }
+    break;
   }
 }
 
@@ -117,12 +117,12 @@ static VALUE rb_gsl_vector_int_sub(VALUE obj, VALUE b)
     break;
   default:
     if (rb_obj_is_kind_of(b, cgsl_vector_int)) {
-     Data_Get_Struct(obj, gsl_vector_int, v);
-     Data_Get_Struct(b, gsl_vector_int, vb);
-     vnew = gsl_vector_int_alloc(v->size);
-     gsl_vector_int_memcpy(vnew, v);
-     gsl_vector_int_sub(vnew, vb);
-     return Data_Wrap_Struct(VECTOR_INT_ROW_COL(obj), 0, gsl_vector_int_free, vnew);
+      Data_Get_Struct(obj, gsl_vector_int, v);
+      Data_Get_Struct(b, gsl_vector_int, vb);
+      vnew = gsl_vector_int_alloc(v->size);
+      gsl_vector_int_memcpy(vnew, v);
+      gsl_vector_int_sub(vnew, vb);
+      return Data_Wrap_Struct(VECTOR_INT_ROW_COL(obj), 0, gsl_vector_int_free, vnew);
     } else {
       return rb_gsl_vector_sub(rb_gsl_vector_int_to_f(obj), b);
     }
@@ -149,7 +149,7 @@ static VALUE rb_gsl_vector_int_mul(VALUE obj, VALUE b)
       argv[0] = obj;
       argv[1] = b;
       return rb_gsl_vector_int_inner_product(2, argv, CLASS_OF(obj));
-    } else  if (VECTOR_INT_ROW_P(obj) && MATRIX_INT_P(b)) {
+    } else if (VECTOR_INT_ROW_P(obj) && MATRIX_INT_P(b)) {
       Data_Get_Struct(obj, gsl_vector_int, v);
       Data_Get_Struct(b, gsl_matrix_int, m);
       vnew = mygsl_vector_int_mul_matrix(v, m);
@@ -160,10 +160,10 @@ static VALUE rb_gsl_vector_int_mul(VALUE obj, VALUE b)
       if (v->size != v2->size) rb_raise(rb_eIndexError, "Vector sizes does not match.");
       m = gsl_matrix_int_alloc(v->size, v2->size);
       for (i = 0; i < v->size; i++) {
-  for (j = 0; j < v2->size; j++) {
-    val = gsl_vector_int_get(v, i)*gsl_vector_int_get(v2, j);
-    gsl_matrix_int_set(m, i, j, val);
-  }
+        for (j = 0; j < v2->size; j++) {
+          val = gsl_vector_int_get(v, i)*gsl_vector_int_get(v2, j);
+          gsl_matrix_int_set(m, i, j, val);
+        }
       }
       return Data_Wrap_Struct(cgsl_matrix_int, 0, gsl_matrix_int_free, m);
     } else {

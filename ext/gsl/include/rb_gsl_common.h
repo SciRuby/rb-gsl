@@ -28,7 +28,7 @@
 EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 
 #ifndef CHECK_FIXNUM
-#define CHECK_FIXNUM(x) if(!FIXNUM_P(x))rb_raise(rb_eTypeError,"Fixnum expected");
+#define CHECK_FIXNUM(x) if(!FIXNUM_P(x)) rb_raise(rb_eTypeError,"Fixnum expected");
 #endif
 
 #ifndef Need_Float
@@ -36,9 +36,9 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef Need_Float2
-#define Need_Float2(x,y) do {\
-    Need_Float(x);\
-    Need_Float(y);} while (0)
+#define Need_Float2(x,y) do { \
+    Need_Float(x); \
+    Need_Float(y); } while (0)
 #endif
 
 #ifndef COMPLEX_P
@@ -46,12 +46,12 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_RNG
-#define CHECK_RNG(x) if(!rb_obj_is_kind_of(x,cgsl_rng))\
+#define CHECK_RNG(x) if(!rb_obj_is_kind_of(x,cgsl_rng)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Rng expected)");
 #endif
 
 #ifndef CHECK_COMPLEX
-#define CHECK_COMPLEX(x) if(!rb_obj_is_kind_of(x,cgsl_complex))\
+#define CHECK_COMPLEX(x) if(!rb_obj_is_kind_of(x,cgsl_complex)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Complex expected)");
 #endif
 
@@ -60,12 +60,12 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_POLY
-#define CHECK_POLY(x) if(!rb_obj_is_kind_of(x,cgsl_poly))\
+#define CHECK_POLY(x) if(!rb_obj_is_kind_of(x,cgsl_poly)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Poly expected)");
 #endif
 
 #ifndef CHECK_POLY_INT
-#define CHECK_POLY_INT(x) if(!rb_obj_is_kind_of(x,cgsl_poly_int))\
+#define CHECK_POLY_INT(x) if(!rb_obj_is_kind_of(x,cgsl_poly_int)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Poly::Int expected)");
 #endif
 
@@ -74,7 +74,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_RATIONAL
-#define CHECK_RATIONAL(x) if(!rb_obj_is_kind_of(x,cgsl_rational))\
+#define CHECK_RATIONAL(x) if(!rb_obj_is_kind_of(x,cgsl_rational)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Rational expected)");
 #endif
 
@@ -84,7 +84,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_BLOCK
-#define CHECK_BLOCK(x) if(!rb_obj_is_kind_of(x,cgsl_block))\
+#define CHECK_BLOCK(x) if(!rb_obj_is_kind_of(x,cgsl_block)) \
     rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Block expected)", rb_class2name(CLASS_OF(x)));
 #endif
 #ifndef BLOCK_INT_P
@@ -92,7 +92,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_BLOCK_INT
-#define CHECK_BLOCK_INT(x) if(!rb_obj_is_kind_of(x,cgsl_block_int))\
+#define CHECK_BLOCK_INT(x) if(!rb_obj_is_kind_of(x,cgsl_block_int)) \
     rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Block::Int expected)", rb_class2name(CLASS_OF(x)));
 #endif
 #ifndef BLOCK_UCHAR_P
@@ -100,7 +100,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_BLOCK_UCHAR
-#define CHECK_BLOCK_UCHAR(x) if(!rb_obj_is_kind_of(x,cgsl_block_uchar))\
+#define CHECK_BLOCK_UCHAR(x) if(!rb_obj_is_kind_of(x,cgsl_block_uchar)) \
     rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Block::Byte expected)", rb_class2name(CLASS_OF(x)));
 #endif
 /*****/
@@ -122,27 +122,27 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef VECTOR_ROW_COL
-#define VECTOR_ROW_COL(x) ((rb_obj_is_kind_of(x,cgsl_vector_col)||rb_obj_is_kind_of(x,cgsl_vector_int_col))?cgsl_vector_col:cgsl_vector)
+#define VECTOR_ROW_COL(x) ((rb_obj_is_kind_of(x,cgsl_vector_col)||rb_obj_is_kind_of(x,cgsl_vector_int_col)) ? cgsl_vector_col : cgsl_vector)
 #endif
 
 #ifndef CHECK_VECTOR
-#define CHECK_VECTOR(x) if(!rb_obj_is_kind_of(x,cgsl_vector))\
+#define CHECK_VECTOR(x) if(!rb_obj_is_kind_of(x,cgsl_vector)) \
     rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Vector expected)", rb_class2name(CLASS_OF(x)));
 #endif
 
 #ifdef HAVE_NARRAY_H
-#define Data_Get_Vector(obj,sval) do {\
-    if (NA_IsNArray(obj)) {\
-      /* Convert obj to GSL::Vector::View */\
-      obj = rb_gsl_na_to_gsl_vector_view_method(obj);\
-    }\
-    CHECK_VECTOR(obj);\
-    Data_Get_Struct(obj,gsl_vector,sval);\
+#define Data_Get_Vector(obj,sval) do { \
+    if (NA_IsNArray(obj)) { \
+      /* Convert obj to GSL::Vector::View */ \
+      obj = rb_gsl_na_to_gsl_vector_view_method(obj); \
+    } \
+    CHECK_VECTOR(obj); \
+    Data_Get_Struct(obj,gsl_vector,sval); \
 } while (0)
 #else
-#define Data_Get_Vector(obj,sval) do {\
-    CHECK_VECTOR(obj);\
-    Data_Get_Struct(obj,gsl_vector,sval);\
+#define Data_Get_Vector(obj,sval) do { \
+    CHECK_VECTOR(obj); \
+    Data_Get_Struct(obj,gsl_vector,sval); \
 } while (0)
 #endif
 
@@ -164,11 +164,11 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef VECTOR_INT_ROW_COL
-#define VECTOR_INT_ROW_COL(x) (VECTOR_INT_ROW_P(x)?cgsl_vector_int:cgsl_vector_int_col)
+#define VECTOR_INT_ROW_COL(x) (VECTOR_INT_ROW_P(x) ? cgsl_vector_int : cgsl_vector_int_col)
 #endif
 
 #ifndef CHECK_VECTOR_INT
-#define CHECK_VECTOR_INT(x) if(!rb_obj_is_kind_of(x,cgsl_vector_int))\
+#define CHECK_VECTOR_INT(x) if(!rb_obj_is_kind_of(x,cgsl_vector_int)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Vector::Int expected)");
 #endif
 
@@ -186,11 +186,11 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef VECTOR_COMPLEX_ROW_COL
-#define VECTOR_COMPLEX_ROW_COL(x) (VECTOR_COMPLEX_ROW_P(x)?cgsl_vector_complex:cgsl_vector_complex_col)
+#define VECTOR_COMPLEX_ROW_COL(x) (VECTOR_COMPLEX_ROW_P(x) ? cgsl_vector_complex : cgsl_vector_complex_col)
 #endif
 
 #ifndef CHECK_VECTOR_COMPLEX
-#define CHECK_VECTOR_COMPLEX(x) if(!rb_obj_is_kind_of(x,cgsl_vector_complex))\
+#define CHECK_VECTOR_COMPLEX(x) if(!rb_obj_is_kind_of(x,cgsl_vector_complex)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Vector::Complex expected)");
 #endif
 
@@ -199,13 +199,13 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_MATRIX
-#define CHECK_MATRIX(x) if(!rb_obj_is_kind_of(x,cgsl_matrix))\
+#define CHECK_MATRIX(x) if(!rb_obj_is_kind_of(x,cgsl_matrix)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Matrix expected)");
 #endif
 
-#define Data_Get_Matrix(obj,sval) do {\
-    CHECK_MATRIX(obj);\
-    Data_Get_Struct(obj,gsl_matrix,sval);\
+#define Data_Get_Matrix(obj,sval) do { \
+    CHECK_MATRIX(obj); \
+    Data_Get_Struct(obj,gsl_matrix,sval); \
 } while (0)
 
 
@@ -214,7 +214,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_MATRIX_INT
-#define CHECK_MATRIX_INT(x) if(!rb_obj_is_kind_of(x,cgsl_matrix_int))\
+#define CHECK_MATRIX_INT(x) if(!rb_obj_is_kind_of(x,cgsl_matrix_int)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Matrix::Int expected)");
 #endif
 
@@ -223,7 +223,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_MATRIX_COMPLEX
-#define CHECK_MATRIX_COMPLEX(x) if(!rb_obj_is_kind_of(x,cgsl_matrix_complex))\
+#define CHECK_MATRIX_COMPLEX(x) if(!rb_obj_is_kind_of(x,cgsl_matrix_complex)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Matrix::Complex expected)");
 #endif
 
@@ -232,7 +232,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_TENSOR
-#define CHECK_TENSOR(x) if(CLASS_OF(x)!=cgsl_tensor)\
+#define CHECK_TENSOR(x) if(CLASS_OF(x)!=cgsl_tensor) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Tensor expected)");
 #endif
 
@@ -241,7 +241,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_TENSOR_INT
-#define CHECK_TENSOR_INT(x) if(CLASS_OF(x)!=cgsl_tensor_int)\
+#define CHECK_TENSOR_INT(x) if(CLASS_OF(x)!=cgsl_tensor_int) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Tensor::Int expected)");
 #endif
 
@@ -250,7 +250,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_PERMUTATION
-#define CHECK_PERMUTATION(x) if(!rb_obj_is_kind_of(x,cgsl_permutation))\
+#define CHECK_PERMUTATION(x) if(!rb_obj_is_kind_of(x,cgsl_permutation)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Permutation expected)");
 #endif
 
@@ -259,7 +259,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_PROC
-#define CHECK_PROC(x) if(!rb_obj_is_kind_of(x,rb_cProc))\
+#define CHECK_PROC(x) if(!rb_obj_is_kind_of(x,rb_cProc)) \
     rb_raise(rb_eTypeError, "wrong argument type (Proc expected)");
 #endif
 
@@ -268,7 +268,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_FUNCTION
-#define CHECK_FUNCTION(x) if(!rb_obj_is_kind_of(x,cgsl_function))\
+#define CHECK_FUNCTION(x) if(!rb_obj_is_kind_of(x,cgsl_function)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Function expected)");
 #endif
 
@@ -277,7 +277,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_FUNCTION_FDF
-#define CHECK_FUNCTION_FDF(x) if(!rb_obj_is_kind_of(x,cgsl_function_fdf))\
+#define CHECK_FUNCTION_FDF(x) if(!rb_obj_is_kind_of(x,cgsl_function_fdf)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Function_fdf expected)");
 #endif
 
@@ -286,7 +286,7 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #endif
 
 #ifndef CHECK_HISTOGRAM
-#define CHECK_HISTOGRAM(x) if(!rb_obj_is_kind_of(x,cgsl_histogram))\
+#define CHECK_HISTOGRAM(x) if(!rb_obj_is_kind_of(x,cgsl_histogram)) \
     rb_raise(rb_eTypeError, "wrong argument type (GSL::Histogram expected)");
 #endif
 
@@ -297,13 +297,13 @@ EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 #define RBGSL_SET_CLASS0(obj0, cls) RBASIC(obj0)->klass = cls
 #endif
 #define RBGSL_SET_CLASS(obj, cls) do { \
-  VALUE _obj_ = (obj); \
-  RBGSL_SET_CLASS0(_obj_, cls); \
+    VALUE _obj_ = (obj); \
+    RBGSL_SET_CLASS0(_obj_, cls); \
 } while (0)
 #endif
 
 void rb_gsl_error_handler(const char *reason, const char *file,
-         int line, int gsl_errno);
+                          int line, int gsl_errno);
 
 FILE* rb_gsl_open_writefile(VALUE io, int *flag);
 FILE* rb_gsl_open_readfile(VALUE io, int *flag);

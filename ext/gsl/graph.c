@@ -18,25 +18,21 @@ void make_graphcommand(char *command, VALUE hash)
     sprintf(command, "graph -T X -g 3 %s", STR2CSTR(hash));
     return;
   }
-
   strcpy(command, "graph");
   if (TYPE(hash) != T_HASH) rb_raise(rb_eTypeError,
-             "wrong argument type %s (Hash expected)",
-             rb_class2name(CLASS_OF(hash)));
+                                     "wrong argument type %s (Hash expected)",
+                                     rb_class2name(CLASS_OF(hash)));
   if ((val = rb_hash_aref(hash, rb_str_new2("T"))) != Qnil)
     sprintf(command, "%s -T %s", command, STR2CSTR(val));
   else
     sprintf(command, "%s -T X", command);
-
   val = rb_hash_aref(hash, rb_str_new2("C"));
   if (val == Qtrue)
     sprintf(command, "%s -C", command);
-
   if ((val = rb_hash_aref(hash, rb_str_new2("g"))) != Qnil)
     sprintf(command, "%s -g %d", command, (int) FIX2INT(val));
   else
     sprintf(command, "%s -g 3", command);
-
   if ((val = rb_hash_aref(hash, rb_str_new2("B"))) == Qtrue)
     sprintf(command, "%s -B", command);
   if ((val = rb_hash_aref(hash, rb_str_new2("E"))) != Qnil)
@@ -45,7 +41,6 @@ void make_graphcommand(char *command, VALUE hash)
     sprintf(command, "%s -f %f", command, NUM2DBL(val));
   if ((val = rb_hash_aref(hash, rb_str_new2("F"))) != Qnil)
     sprintf(command, "%s -F %s", command, STR2CSTR(val));
-
   if ((val = rb_hash_aref(hash, rb_str_new2("h"))) != Qnil)
     sprintf(command, "%s -h %f", command, NUM2DBL(val));
   if ((val = rb_hash_aref(hash, rb_str_new2("k"))) != Qnil)
@@ -58,7 +53,6 @@ void make_graphcommand(char *command, VALUE hash)
     else
       sprintf(command, "%s -l %s", command, STR2CSTR(val));
   }
-
   if ((val = rb_hash_aref(hash, rb_str_new2("L"))) != Qnil)
     sprintf(command, "%s -L \"%s\"", command, STR2CSTR(val));
   if ((val = rb_hash_aref(hash, rb_str_new2("N"))) != Qnil)
@@ -103,10 +97,8 @@ void make_graphcommand(char *command, VALUE hash)
     sprintf(command, "%s --title-font-name %s", command, STR2CSTR(val));
   if ((val = rb_hash_aref(hash, rb_str_new2("title-font-size"))) != Qnil)
     sprintf(command, "%s --title-font-size %f", command, NUM2DBL(val));
-
   if ((val = rb_hash_aref(hash, rb_str_new2("toggle-rotate-y-label"))) == Qtrue)
     sprintf(command, "%s --toggle-rotate-y-label", command);
-
   if ((val = rb_hash_aref(hash, rb_str_new2("m"))) != Qnil)
     sprintf(command, "%s -m %d", command, (int) FIX2INT(val));
   if ((val = rb_hash_aref(hash, rb_str_new2("S"))) != Qnil)
@@ -115,15 +107,12 @@ void make_graphcommand(char *command, VALUE hash)
     sprintf(command, "%s -W %f", command, NUM2DBL(val));
   if ((val = rb_hash_aref(hash, rb_str_new2("q"))) != Qnil)
     sprintf(command, "%s -q %f", command, NUM2DBL(val));
-
   if ((val = rb_hash_aref(hash, rb_str_new2("symbol-font-name"))) != Qnil)
     sprintf(command, "%s --symbol-font-name %s", command, STR2CSTR(val));
-
   if ((val = rb_hash_aref(hash, rb_str_new2("reposition"))) != Qnil)
     sprintf(command, "%s --reposition %s", command, STR2CSTR(val));
   if ((val = rb_hash_aref(hash, rb_str_new2("blankout"))) != Qnil)
     sprintf(command, "%s --blankout %s", command, STR2CSTR(val));
-
   if ((val = rb_hash_aref(hash, rb_str_new2("O"))) == Qtrue)
     sprintf(command, "%s -O", command);
 }
@@ -982,7 +971,6 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     sprintf(command, "%s -T X", command);
   else
     sprintf(command, "%s -T %s", command, STR2CSTR(g->T));
-
   if (TYPE(g->E) == T_STRING) {
     strcpy(str, STR2CSTR(g->E));
     if (strcmp(str, "x") == 0)
@@ -994,25 +982,18 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     else
       rb_raise(rb_eRuntimeError, "unrecognized -E option %s", str);
   }
-
   if (g->f != Qnil)
     sprintf(command, "%s -f %f", command, NUM2DBL(g->f));
-
   if (TYPE(g->F) == T_STRING)
     sprintf(command, "%s -F %s", command, STR2CSTR(g->F));
-
   if (TYPE(g->g) == T_FIXNUM)
     sprintf(command, "%s -g %d", command, (int) FIX2INT(g->g));
-
   if (g->h != Qnil)
     sprintf(command, "%s -h %f", command, NUM2DBL(g->h));
-
   if (g->k != Qnil)
     sprintf(command, "%s -k %f", command, NUM2DBL(g->k));
-
   if (TYPE(g->K) == T_FIXNUM)
     sprintf(command, "%s -K %d", command, (int) FIX2INT(g->K));
-
   if (TYPE(g->l) == T_STRING) {
     strcpy(str, STR2CSTR(g->l));
     if (strcmp(str, "x") == 0)
@@ -1024,10 +1005,8 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     else
       rb_raise(rb_eRuntimeError, "unrecognized -l option %s", str);
   }
-
   if (TYPE(g->L) == T_STRING)
     sprintf(command, "%s -L \"%s\"", command, STR2CSTR(g->L));
-
   if (TYPE(g->N) == T_STRING) {
     strcpy(str, STR2CSTR(g->N));
     if (strcmp(str, "x") == 0)
@@ -1039,10 +1018,8 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     else
       rb_raise(rb_eRuntimeError, "unrecognized -N option %s", str);
   }
-
   if (g->r != Qnil)
     sprintf(command, "%s -r %f", command, NUM2DBL(g->r));
-
   if (TYPE(g->R) == T_STRING) {
     strcpy(str, STR2CSTR(g->R));
     if (strcmp(str, "x") == 0)
@@ -1054,13 +1031,10 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     else
       rb_raise(rb_eRuntimeError, "unrecognized -R option %s", str);
   }
-
   if (g->u != Qnil)
     sprintf(command, "%s -u %f", command, NUM2DBL(g->u));
-
   if (g->w != Qnil)
     sprintf(command, "%s -w %f", command, NUM2DBL(g->w));
-
   switch (TYPE(g->x)) {
   case T_STRING:
     sprintf(command, "%s -x %s", command, STR2CSTR(g->x));
@@ -1103,52 +1077,38 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     sprintf(command, "%s -X \"%s\"", command, STR2CSTR(g->X));
   if (g->Y != Qnil)
     sprintf(command, "%s -Y \"%s\"", command, STR2CSTR(g->Y));
-
   if (TYPE(g->bg) == T_STRING)
     sprintf(command, "%s --bg-color %s", command, STR2CSTR(g->bg));
-
   if (TYPE(g->bitmap_size) == T_STRING)
     sprintf(command, "%s --bitmap-size %s", command, STR2CSTR(g->bitmap_size));
-
   if (TYPE(g->frame) == T_STRING)
     sprintf(command, "%s --frame-color %s", command, STR2CSTR(g->frame));
-
   if (g->frame_line_width != Qnil)
     sprintf(command, "%s --frame-line-width %f", command, NUM2DBL(g->frame_line_width));
-
- if (g->max_line_length != Qnil)
-   sprintf(command, "%s --max_line_length %d", command,
-     (int) FIX2INT(g->max_line_length));
-
+  if (g->max_line_length != Qnil)
+    sprintf(command, "%s --max_line_length %d", command,
+            (int) FIX2INT(g->max_line_length));
   if (g->page_size != Qnil)
     sprintf(command, "%s --page-size %s", command, STR2CSTR(g->page_size));
-
   if (g->pen_colors != Qnil)
     sprintf(command, "%s --pen-colors %s", command, STR2CSTR(g->pen_colors));
-
   if (g->rotation != Qnil)
     sprintf(command, "%s --rotation %d", command, (int) FIX2INT(g->rotation));
-
   if (g->title_font_name != Qnil)
     sprintf(command, "%s --title-font-name %s", command, STR2CSTR(g->title_font_name));  if (g->title_font_size != Qnil)
     sprintf(command, "%s --title-font-size %f", command, NUM2DBL(g->title_font_size));
-
   if (g->rotate_y_label == Qtrue)
     sprintf(command, "%s --toggle-rotate-y-label", command);
-
   if (g->I != Qnil)
     sprintf(command, "%s -I %s", command, STR2CSTR(g->I));
-
   if (g->s == Qtrue)
     sprintf(command, "%s -s", command);
   if (g->t == Qtrue)
     sprintf(command, "%s -t", command);
   if (g->B == Qtrue)
     sprintf(command, "%s -B", command);
-
   if (g->m != Qnil)
     sprintf(command, "%s -m %d", command, (int) FIX2INT(g->m));
-
   switch (TYPE(g->S)) {
   case T_STRING:
     sprintf(command, "%s -S %s", command, STR2CSTR(g->S));
@@ -1157,7 +1117,7 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
     //    if (RARRAY(g->S)->len == 2)
     if (RARRAY_LEN(g->S) == 2)
       sprintf(command, "%s -S %d %f", command, (int) FIX2INT(rb_ary_entry(g->S, 0)),
-        NUM2DBL(rb_ary_entry(g->S, 1)));
+              NUM2DBL(rb_ary_entry(g->S, 1)));
     break;
   default:
     /* do nothing */
@@ -1166,16 +1126,12 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
 
   if (g->W != Qnil)
     sprintf(command, "%s -W %f", command, NUM2DBL(g->W));
-
   if (g->q != Qnil)
     sprintf(command, "%s -q %f", command, NUM2DBL(g->q));
-
   if (g->C == Qtrue)
     sprintf(command, "%s -C", command);
-
   if (g->symbol_font_name != Qnil)
     sprintf(command, "%s --symbol_font_name %s", command, STR2CSTR(g->symbol_font_name));
-
   switch (TYPE(g->reposition)) {
   case T_STRING:
     sprintf(command, "%s --reposition %s", command, STR2CSTR(g->reposition));
@@ -1197,7 +1153,6 @@ static void gsl_graph_set_command(gsl_graph *g, char *command)
 
   if (g->blankout != Qnil)
     sprintf(command, "%s --blankout %f", command, NUM2DBL(g->blankout));
-
   if (g->O == Qtrue)
     sprintf(command, "%s -O", command);
 }
@@ -1219,7 +1174,7 @@ static VALUE rb_gsl_graph_graph(int argc, VALUE *argv, VALUE obj)
   case 3:
     Check_Type(argv[2], T_STRING);
     sprintf(command, "%s %s", command, STR2CSTR(argv[2]));
-    /* no break */
+  /* no break */
   case 2:
     if (TYPE(argv[1]) == T_STRING) {
       sprintf(command, "%s %s", command, STR2CSTR(argv[1]));
@@ -1227,9 +1182,9 @@ static VALUE rb_gsl_graph_graph(int argc, VALUE *argv, VALUE obj)
       g->ydata = argv[1];
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector or String expected)",
-         rb_class2name(CLASS_OF(argv[1])));
+               rb_class2name(CLASS_OF(argv[1])));
     }
-    /* no break */
+  /* no break */
   case 1:
     if (TYPE(argv[0]) == T_STRING) {
       sprintf(command, "%s %s", command, STR2CSTR(argv[0]));
@@ -1239,7 +1194,7 @@ static VALUE rb_gsl_graph_graph(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(argv[0], gsl_histogram, h);
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector or String expected)",
-         rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     }
     break;
   default:
@@ -1248,13 +1203,10 @@ static VALUE rb_gsl_graph_graph(int argc, VALUE *argv, VALUE obj)
   }
   if (VECTOR_P(g->xdata)) Data_Get_Struct(g->xdata, gsl_vector, x);
   if (VECTOR_P(g->ydata)) Data_Get_Struct(g->ydata, gsl_vector, y);
-
   if (x == NULL && h == NULL)
     rb_raise(rb_eRuntimeError, "data is not given");
-
   if (h) size = h->n;
   else size = x->size;
-
   fp = popen(command, "w");
   if (fp == NULL) rb_raise(rb_eIOError, "GNU graph not found.");
   for (i = 0; i < size; i++) {
@@ -1290,7 +1242,7 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
   case 3:
     Check_Type(argv[2], T_STRING);
     sprintf(command, "%s %s", command, STR2CSTR(argv[2]));
-    /* no break */
+  /* no break */
   case 2:
     if (TYPE(argv[1]) == T_STRING) {
       sprintf(command, "%s %s", command, STR2CSTR(argv[1]));
@@ -1298,9 +1250,9 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
       g->ydata = argv[1];
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector or String expected)",
-         rb_class2name(CLASS_OF(argv[1])));
+               rb_class2name(CLASS_OF(argv[1])));
     }
-    /* no break */
+  /* no break */
   case 1:
     if (TYPE(argv[0]) == T_STRING) {
       sprintf(command, "%s %s", command, STR2CSTR(argv[0]));
@@ -1308,7 +1260,7 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
       g->xdata = argv[0];
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector or String expected)",
-         rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     }
     break;
   default:
@@ -1317,10 +1269,8 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
   }
   if (VECTOR_P(g->xdata)) Data_Get_Struct(g->xdata, gsl_vector, x);
   if (VECTOR_P(g->ydata)) Data_Get_Struct(g->ydata, gsl_vector, y);
-
   if (x == NULL)
     rb_raise(rb_eRuntimeError, "data is not given");
-
   size = x->size;
 
   fp = popen(command, "w");
@@ -1328,14 +1278,14 @@ static VALUE rb_gsl_graph_step(int argc, VALUE *argv, VALUE obj)
   for (i = 0; i < size; i++) {
     if (y == NULL) {
       fprintf(fp, "%d %g\n%d %g\n", (int) i, gsl_vector_get(x, i),
-        (int) (i+1), gsl_vector_get(x, i));
+              (int) (i+1), gsl_vector_get(x, i));
     } else {
       if (i != size-1)
         fprintf(fp, "%g %g\n%g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i),
-          gsl_vector_get(x, i+1), gsl_vector_get(y, i));
+                gsl_vector_get(x, i+1), gsl_vector_get(y, i));
       else
         fprintf(fp, "%g %g\n%g %g", gsl_vector_get(x, i), gsl_vector_get(y, i),
-          2.0*gsl_vector_get(x, i)-gsl_vector_get(x, i-1), gsl_vector_get(y, i));
+                2.0*gsl_vector_get(x, i)-gsl_vector_get(x, i-1), gsl_vector_get(y, i));
     }
   }
   fflush(fp);
@@ -1618,17 +1568,17 @@ void Init_gsl_graph(VALUE module)
   rb_define_alias(cgsl_graph, "toggle_use_color", "C");
 
   rb_define_method(cgsl_graph, "set_symbol_font_name",
-       rb_gsl_graph_set_symbol_font_name, 1);
+                   rb_gsl_graph_set_symbol_font_name, 1);
   rb_define_alias(cgsl_graph, "symbol_font_name=", "set_symbol_font_name");
   rb_define_method(cgsl_graph, "symbol_font_name", rb_gsl_graph_symbol_font_name, 0);
 
   rb_define_method(cgsl_graph, "set_reposition",
-       rb_gsl_graph_set_reposition, 1);
+                   rb_gsl_graph_set_reposition, 1);
   rb_define_alias(cgsl_graph, "reposition=", "set_reposition");
   rb_define_method(cgsl_graph, "reposition", rb_gsl_graph_reposition, 0);
 
   rb_define_method(cgsl_graph, "set_blankout",
-       rb_gsl_graph_set_blankout, 1);
+                   rb_gsl_graph_set_blankout, 1);
   rb_define_alias(cgsl_graph, "blankout=", "set_blankout");
   rb_define_method(cgsl_graph, "blankout", rb_gsl_graph_blankout, 0);
 

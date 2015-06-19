@@ -98,7 +98,7 @@ void Init_gsl_native()
   Init_gsl_eigen(mgsl);
 
   Init_gsl_fft(mgsl);
-    Init_gsl_signal(mgsl);
+  Init_gsl_signal(mgsl);
   Init_gsl_function(mgsl);
   Init_gsl_integration(mgsl);
 

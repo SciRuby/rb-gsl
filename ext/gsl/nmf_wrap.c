@@ -28,7 +28,7 @@ static VALUE nmf_wrap(VALUE obj, VALUE matrix, VALUE cols)
   unsigned int c;
   VALUE arr;
 
-  if ( ! FIXNUM_P(cols) || (c=NUM2INT(cols)) <= 0 ) {
+  if ( !FIXNUM_P(cols) || (c = NUM2INT(cols)) <= 0 ) {
     rb_raise(rb_eArgError, "Number of columns should be a positive integer.");
   }
   arr = rb_ary_new2(2);

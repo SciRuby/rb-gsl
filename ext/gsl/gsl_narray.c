@@ -29,7 +29,7 @@ static VALUE rb_gsl_vector_to_narray(VALUE obj, VALUE klass)
     memcpy(NA_PTR_TYPE(nary,double*), v->data, shape[0]*sizeof(double));
   } else {
     int i;
-    for(i=0; i < (int) v->size; i++) {
+    for(i = 0; i < (int) v->size; i++) {
       (NA_PTR_TYPE(nary,double*))[i] = gsl_vector_get(v, i);
     }
   }
@@ -48,7 +48,7 @@ static VALUE rb_gsl_vector_complex_to_narray(VALUE obj, VALUE klass)
     memcpy(NA_PTR_TYPE(nary,double*), v->data, shape[0]*2*sizeof(double));
   } else {
     int i;
-    for(i=0; i < (int) (2*v->size); i++) {
+    for(i = 0; i < (int) (2*v->size); i++) {
       (NA_PTR_TYPE(nary,gsl_complex*))[i] = gsl_vector_complex_get(v, i);
     }
   }
@@ -65,8 +65,7 @@ static VALUE rb_gsl_vector_to_na(VALUE obj)
     na = rb_gsl_vector_complex_to_narray(obj, cNArray);
   else
     rb_raise(rb_eRuntimeError, "unexpected type '%s'",
-        rb_obj_classname(obj));
-
+             rb_obj_classname(obj));
   return na;
 }
 
@@ -140,7 +139,7 @@ static VALUE rb_gsl_vector_to_narray_ref(VALUE obj, VALUE klass)
     na->ptr = (char *) vc->data;
   } else {
     rb_raise(rb_eRuntimeError, "cannot convert %s to NArray reference object",
-        rb_obj_classname(obj));
+             rb_obj_classname(obj));
   }
   nary = Data_Wrap_Struct(klass, 0, rb_gsl_na_view_free, na);
   return nary;
@@ -168,7 +167,7 @@ static VALUE rb_gsl_vector_int_to_narray(VALUE obj, VALUE klass)
     memcpy(NA_PTR_TYPE(nary,int*), v->data, shape[0]*sizeof(int));
   } else {
     int i;
-    for(i=0; i < (int) v->size; i++) {
+    for(i = 0; i < (int) v->size; i++) {
       (NA_PTR_TYPE(nary,int*))[i] = gsl_vector_int_get(v, i);
     }
   }
@@ -228,11 +227,10 @@ static VALUE rb_gsl_na_to_gsl_vector_method(VALUE na)
 
   if(NA_TYPE(na) == NA_SCOMPLEX || NA_TYPE(na) == NA_DCOMPLEX)
     v = Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free,
-        na_to_gv_complex(na));
+                         na_to_gv_complex(na));
   else
     v = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free,
-        na_to_gv(na));
-
+                         na_to_gv(na));
   return v;
 }
 
@@ -242,11 +240,10 @@ VALUE rb_gsl_na_to_gsl_vector_view_method(VALUE na)
 
   if(NA_TYPE(na) == NA_SCOMPLEX || NA_TYPE(na) == NA_DCOMPLEX)
     v = Data_Wrap_Struct(cgsl_vector_complex_view, 0, gsl_vector_complex_view_free,
-        na_to_gv_complex_view(na));
+                         na_to_gv_complex_view(na));
   else
     v = Data_Wrap_Struct(cgsl_vector_view, 0, gsl_vector_view_free,
-        na_to_gv_view(na));
-
+                         na_to_gv_view(na));
   return v;
 }
 
@@ -281,7 +278,6 @@ gsl_vector_view* na_to_gv_view(VALUE na)
   // Raise exception if na's type is not NA_DFLOAT.
   if(NA_TYPE(na) != NA_DFLOAT)
     rb_raise(rb_eTypeError, "GSL::Vector::View requires NArray be DFLOAT");
-
   v = gsl_vector_view_alloc();
   v->vector.data = NA_PTR_TYPE(na,double*);
   v->vector.size = NA_TOTAL(na);
@@ -309,7 +305,6 @@ gsl_vector_complex_view* na_to_gv_complex_view(VALUE na)
   // Raise exception if na's type is not NA_DCOMPLEX
   if(NA_TYPE(na) != NA_DCOMPLEX)
     rb_raise(rb_eTypeError, "GSL::Vector::Complex::View requires NArray be DCOMPLEX");
-
   v = gsl_vector_complex_view_alloc();
   v->vector.data = NA_PTR_TYPE(na,double*);
   v->vector.size = NA_TOTAL(na);

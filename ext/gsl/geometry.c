@@ -9,8 +9,8 @@
 
  */
 void vector3_rotateX(const double x[3] /*!< Input */,
-                        double theta /*!< Rotation angle */,
-                        double xout[3]  /*!< Output */)
+                     double theta /*!< Rotation angle */,
+                     double xout[3] /*!< Output */)
 {
   double a, b, c;
   double costheta, sintheta;
@@ -37,8 +37,8 @@ void vector3_rotateX(const double x[3] /*!< Input */,
 
  */
 void vector3_rotateY(const double x[3] /*!< Input */,
-                        double theta /*!< Rotation angle */,
-                        double xout[3] /*!< Output */)
+                     double theta /*!< Rotation angle */,
+                     double xout[3] /*!< Output */)
 {
   double a, b, c;
   double costheta, sintheta;
@@ -64,8 +64,8 @@ void vector3_rotateY(const double x[3] /*!< Input */,
 
  */
 void vector3_rotateZ(const double x[3] /*!< Input */,
-                        double theta  /*!< Rotation angle */,
-                        double xout[3] /*!< Output */)
+                     double theta /*!< Rotation angle */,
+                     double xout[3] /*!< Output */)
 {
   double a, b, c;
   double costheta, sintheta;
@@ -95,7 +95,7 @@ void vector3_rotateZ(const double x[3] /*!< Input */,
 
  */
 void vector3_rotate(const double x[3], double theta, double phi,
- double xout[3])
+                    double xout[3])
 {
   vector3_rotateY(x, theta,xout);
   vector3_rotateZ(xout, phi, xout);

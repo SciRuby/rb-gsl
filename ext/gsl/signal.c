@@ -20,39 +20,39 @@ enum FFT_CONV_CORR {
 };
 
 #ifndef WAVETABLE_P
-#define WAVETABLE_P(x) (rb_obj_is_kind_of(x,cgsl_fft_halfcomplex_wavetable)?1:0)
+#define WAVETABLE_P(x) (rb_obj_is_kind_of(x,cgsl_fft_halfcomplex_wavetable) ? 1 : 0)
 #endif
 
 #ifndef CHECK_WAVETABLE
-#define CHECK_WAVETABLE(x) if(!rb_obj_is_kind_of(x,cgsl_fft_halfcomplex_wavetable))\
+#define CHECK_WAVETABLE(x) if(!rb_obj_is_kind_of(x,cgsl_fft_halfcomplex_wavetable)) \
     rb_raise(rb_eTypeError, "wrong argument type (FFT::HalfComplex::Wavetable expected)");
 #endif
 
 #ifndef WORKSPACE_P
-#define WORKSPACE_P(x) (rb_obj_is_kind_of(x,cgsl_fft_real_workspace)?1:0)
+#define WORKSPACE_P(x) (rb_obj_is_kind_of(x,cgsl_fft_real_workspace) ? 1 : 0)
 #endif
 
 #ifndef CHECK_WORKSPACE
-#define CHECK_WORKSPACE(x) if(!rb_obj_is_kind_of(x,cgsl_fft_real_workspace))\
+#define CHECK_WORKSPACE(x) if(!rb_obj_is_kind_of(x,cgsl_fft_real_workspace)) \
     rb_raise(rb_eTypeError, "wrong argument type (FFT::Real::Workspace expected)");
 #endif
 
 static void complex_mul(double re1, double im1, double re2, double im2,
-      double *re, double *im)
+                        double *re, double *im)
 {
   *re = re1*re2 - im1*im2;
   *im = re1*im2 + im1*re2;
 }
 
 static void complex_conj_mul(double re1, double im1, double re2, double im2,
-      double *re, double *im)
+                             double *re, double *im)
 {
   *re = re1*re2 + im1*im2;
   *im = -re1*im2 + im1*re2;
 }
 
 static void complex_div(double re1, double im1, double re2, double im2,
-      double *re, double *im)
+                        double *re, double *im)
 {
   double factor = re2*re2 + im2*im2;
   complex_conj_mul(re1, im1, re2, im2, re, im);
@@ -62,9 +62,9 @@ static void complex_div(double re1, double im1, double re2, double im2,
 
 /* data1, data2: FFTed data */
 static void rbgsl_calc_conv_corr_c(const double *data1, const double *data2,
-     double *data3, size_t size,
-     gsl_fft_halfcomplex_wavetable *table,
-     gsl_fft_real_workspace *space, enum FFT_CONV_CORR calcflag)
+                                   double *data3, size_t size,
+                                   gsl_fft_halfcomplex_wavetable *table,
+                                   gsl_fft_real_workspace *space, enum FFT_CONV_CORR calcflag)
 {
   size_t i;
   double re1, re2, im1, im2;
@@ -91,17 +91,16 @@ static void rbgsl_calc_conv_corr_c(const double *data1, const double *data2,
     break;
   }
 
-  for (i = 1; i < size-1; i+=2) {
+  for (i = 1; i < size-1; i += 2) {
     re1 = data1[i];    im1 = data1[i+1];
     re2 = data2[i];    im2 = data2[i+1];
     (*complex_cal)(re1, im1, re2, im2, &data3[i], &data3[i+1]);
   }
-
 }
 
 static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
-        enum FFT_CONV_CORR flag1,
-        enum FFT_CONV_CORR flag2)
+                                  enum FFT_CONV_CORR flag1,
+                                  enum FFT_CONV_CORR flag2)
 {
   double *data1, *data2, *data3 = NULL;
   size_t stride1, stride2, size1, size2;
@@ -136,9 +135,9 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
       flagt = 1;
     } else {
       rb_raise(rb_eTypeError,
-         "wrong argument type %s "
-         "(FFT::HalfComplex::Wavetable or FFT::Real::Workspace expected)",
-         rb_class2name(CLASS_OF(argv[2])));
+               "wrong argument type %s "
+               "(FFT::HalfComplex::Wavetable or FFT::Real::Workspace expected)",
+               rb_class2name(CLASS_OF(argv[2])));
     }
     break;
   case 1:
@@ -227,7 +226,6 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
     gsl_fft_halfcomplex_inverse(data3, 1, size1, table, space);
 //    for (i = 0; i < size1; i++) data3[i] /= size1;
   }
-
   if (flagt == 1) gsl_fft_halfcomplex_wavetable_free(table);
   if (flagw == 1) gsl_fft_real_workspace_free(space);
   if (vtmp1) gsl_vector_free(vtmp1);
@@ -239,45 +237,45 @@ static VALUE rb_gsl_fft_conv_corr(int argc, VALUE *argv, VALUE obj,
 static VALUE rb_gsl_fft_real_convolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj,
-          RB_GSL_FFT_REAL,
-          RB_GSL_FFT_CONVOLVE);
+                              RB_GSL_FFT_REAL,
+                              RB_GSL_FFT_CONVOLVE);
 }
 /* GSL::Vector#deconvolve */
 static VALUE rb_gsl_fft_real_deconvolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj,
-            RB_GSL_FFT_REAL,
-            RB_GSL_FFT_DECONVOLVE);
+                              RB_GSL_FFT_REAL,
+                              RB_GSL_FFT_DECONVOLVE);
 }
 
 /* GSL::Vector#correlate */
 static VALUE rb_gsl_fft_real_correlate(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj,
-            RB_GSL_FFT_REAL,
-            RB_GSL_FFT_CORRELATE);
+                              RB_GSL_FFT_REAL,
+                              RB_GSL_FFT_CORRELATE);
 }
 
 /* GSL::Vector#halfcomplex_convolve */
 static VALUE rb_gsl_fft_halfcomplex_convolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj,
-          RB_GSL_FFT_HALFCOMPLEX,
-          RB_GSL_FFT_CONVOLVE);
+                              RB_GSL_FFT_HALFCOMPLEX,
+                              RB_GSL_FFT_CONVOLVE);
 }
 /* GSL::Vector#halfcomplex_deconvolve */
 static VALUE rb_gsl_fft_halfcomplex_deconvolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj,
-            RB_GSL_FFT_HALFCOMPLEX,
-            RB_GSL_FFT_DECONVOLVE);
+                              RB_GSL_FFT_HALFCOMPLEX,
+                              RB_GSL_FFT_DECONVOLVE);
 }
 /* GSL::Vector#halfcomplex_correlate */
 static VALUE rb_gsl_fft_halfcomplex_correlate(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_fft_conv_corr(argc, argv, obj,
-            RB_GSL_FFT_HALFCOMPLEX,
-            RB_GSL_FFT_CORRELATE);
+                              RB_GSL_FFT_HALFCOMPLEX,
+                              RB_GSL_FFT_CORRELATE);
 }
 
 void Init_gsl_signal(VALUE module)

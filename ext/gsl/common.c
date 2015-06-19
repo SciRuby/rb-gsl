@@ -225,7 +225,7 @@ gsl_complex ary2complex(VALUE obj)
       c = *z;
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Array or Complex expected)",
-         rb_class2name(CLASS_OF(obj)));
+               rb_class2name(CLASS_OF(obj)));
     }
     break;
   }

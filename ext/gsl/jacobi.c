@@ -3,7 +3,7 @@
 #include "jacobi.h"
 
 static VALUE jac_eval3_e(VALUE x, VALUE a, VALUE b,
-                    int (*f)(double, double, double, gsl_sf_result*))
+                         int (*f)(double, double, double, gsl_sf_result*))
 {
   gsl_sf_result *result;
   VALUE obj;
@@ -55,8 +55,8 @@ static VALUE jac_eval3(VALUE xx, VALUE aa, VALUE bb, double (*f)(double, double,
 }
 
 static VALUE rb_jac_jacobi_eval(int argc, VALUE *argv,
-          double (*f)(double, int, double, double),
-          int (*f2)(int, const double*, int, double*, double, double, double*))
+                                double (*f)(double, int, double, double),
+                                int (*f2)(int, const double*, int, double*, double, double, double*))
 {
   gsl_vector *x, *ws, *y;
   double a, b;
@@ -81,7 +81,7 @@ static VALUE rb_jac_jacobi_eval(int argc, VALUE *argv,
       rb_raise(rb_eArgError, "Too many arguments (%d for 4 or 5)", argc);
     }
     (*f2)(x->size, x->data, FIX2INT(argv[1]), y->data, NUM2DBL(argv[2]), NUM2DBL(argv[3]),
-                    ws->data);
+          ws->data);
     if (flag == 1) gsl_vector_free(ws);
     return ary;
   } else if (TYPE(argv[0]) == T_ARRAY) {
@@ -115,7 +115,6 @@ static VALUE rb_jac_jacobi_eval(int argc, VALUE *argv,
   } else {
     return rb_float_new((*f)(NUM2DBL(argv[0]), FIX2INT(argv[1]), NUM2DBL(argv[2]), NUM2DBL(argv[3])));
   }
-
 }
 static VALUE rb_jac_jacobi_P0_e(VALUE module, VALUE x, VALUE a, VALUE b)
 {
@@ -169,7 +168,7 @@ static VALUE rb_jac_djacobi(int argc, VALUE *argv, VALUE module)
 }
 
 static VALUE rb_jac_zeros_eval(int argc, VALUE *argv, VALUE module,
-    int (*f)(double*, int, double, double))
+                               int (*f)(double*, int, double, double))
 {
   gsl_vector *x;
   int m, status;
@@ -191,7 +190,7 @@ static VALUE rb_jac_zeros_eval(int argc, VALUE *argv, VALUE module,
       xx = argv[0];
     } else {
       rb_raise(rb_eTypeError, "Wrong argument type %s (Fixnum or GSL::Vector expected)",
-              rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     }
     break;
   case 4:
@@ -436,7 +435,7 @@ static VALUE rb_jac_differentiate(int argc, VALUE *argv, VALUE obj)
 
 /*****/
 static VALUE rb_jac_qeval(int argc, VALUE *argv,
-    int (*f)(double*, double*, const int, double, double, double*))
+                          int (*f)(double*, double*, const int, double, double, double*))
 {
   gsl_vector *z, *D, *ws;
   int Q;
@@ -481,10 +480,10 @@ static VALUE rb_jac_qeval(int argc, VALUE *argv,
       vD = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, D);
     }
     alpha = NUM2DBL(argv[1]);
-     beta = NUM2DBL(argv[2]);
-     break;
-   default:
-     rb_raise(rb_eArgError, "Wrong number of arguments.");
+    beta = NUM2DBL(argv[2]);
+    break;
+  default:
+    rb_raise(rb_eArgError, "Wrong number of arguments.");
   }
   status = (*f)(z->data, D->data, Q, alpha, beta, ws->data);
   if (flag == 1) gsl_vector_free(ws);
@@ -550,7 +549,7 @@ static VALUE rb_jac_zeros_grjp(int argc, VALUE *argv, VALUE module)
 }
 
 static VALUE rb_jac_lagrange_eval(int argc, VALUE *argv,
-    double (*f)(int, double, int, double*, double, double))
+                                  double (*f)(int, double, int, double*, double, double))
 {
   gsl_vector *z;
   int i, Q;
@@ -565,7 +564,7 @@ static VALUE rb_jac_lagrange_eval(int argc, VALUE *argv,
     Q = z->size;
     alpha = NUM2DBL(argv[3]);
     beta = NUM2DBL(argv[4]);
-  break;
+    break;
   case 6:
     i = FIX2INT(argv[0]);
     zz = NUM2DBL(argv[1]);
@@ -600,7 +599,7 @@ static VALUE rb_jac_lagrange_grjp(int argc, VALUE *argv, VALUE module)
 }
 
 static VALUE rb_jac_interpmat_eval(int argc, VALUE *argv,
-  int (*f) (double*, double*, int, double*, int, double, double))
+                                   int (*f)(double*, double*, int, double*, int, double, double))
 {
   gsl_vector *imat, *zp, *z;
   double alpha, beta;
@@ -608,7 +607,6 @@ static VALUE rb_jac_interpmat_eval(int argc, VALUE *argv,
   VALUE vimat;
 
   if (argc < 3) rb_raise(rb_eArgError, "Too few arguments (%d for >= 3)", argc);
-
   CHECK_VECTOR(argv[0]);
   if (VECTOR_P(argv[1])) {
     Data_Get_Struct(argv[0], gsl_vector, imat);

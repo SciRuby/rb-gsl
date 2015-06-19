@@ -18,19 +18,19 @@ static int get_func(int argc, VALUE *argv, VALUE obj, VALUE *ff, VALUE *xx);
 
 static int get_func(int argc, VALUE *argv, VALUE obj, VALUE *ff, VALUE *xx)
 {
-   switch (TYPE(obj)) {
+  switch (TYPE(obj)) {
   case T_MODULE:
   case T_CLASS:
   case T_OBJECT:
     if (argc != 2) rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)",
-          argc);
+                            argc);
     CHECK_FUNCTION(argv[0]);
     *ff = argv[0];
     *xx = argv[1];
     break;
   default:
     if (argc != 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)",
-          argc);
+                            argc);
     *ff = obj;
     *xx = argv[0];
     break;
@@ -39,7 +39,7 @@ static int get_func(int argc, VALUE *argv, VALUE obj, VALUE *ff, VALUE *xx)
 }
 
 static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
-            int (*diff)(const gsl_function *, double, double *, double *))
+                              int (*diff)(const gsl_function *, double, double *, double *))
 {
   gsl_function *f = NULL;
   double result, abserr;
@@ -102,8 +102,8 @@ static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
         gsl_vector_set(verr, i, abserr);
       }
       return rb_ary_new3(2,
-       Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew),
-       Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, verr));
+                         Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew),
+                         Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, verr));
     } else if (MATRIX_P(xx)) {
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
@@ -116,8 +116,8 @@ static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
         }
       }
       return rb_ary_new3(2,
-       Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew),
-       Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, merr));
+                         Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew),
+                         Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, merr));
     } else {
       rb_raise(rb_eTypeError, "wrong argument type");
     }

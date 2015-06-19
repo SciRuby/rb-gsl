@@ -38,7 +38,7 @@ static const gsl_qrng_type* get_gsl_qrng_type(VALUE t)
     strcpy(name, STR2CSTR(t));
     if (strstr(name, "niederreiter_2")) return T = gsl_qrng_niederreiter_2;
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
-  else if (strstr(name, "hdsobol")) return T = qrngextra_hdsobol;
+    else if (strstr(name, "hdsobol")) return T = qrngextra_hdsobol;
 #endif
     else if (strstr(name, "sobol")) return T = gsl_qrng_sobol;
     else if (strstr(name, "reversehalton")) return T = gsl_qrng_reversehalton;
@@ -52,7 +52,7 @@ static const gsl_qrng_type* get_gsl_qrng_type(VALUE t)
     case GSL_QRNG_HALTON: T = gsl_qrng_halton; break;
     case GSL_QRNG_REVERSEHALTON: T = gsl_qrng_reversehalton; break;
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
-  case GSL_QRNG_HDSOBOL: T = qrngextra_hdsobol; break;
+    case GSL_QRNG_HDSOBOL: T = qrngextra_hdsobol; break;
 #endif
     default:
       rb_raise(rb_eArgError, "unknown type");
@@ -60,7 +60,7 @@ static const gsl_qrng_type* get_gsl_qrng_type(VALUE t)
     break;
   default:
     rb_raise(rb_eTypeError, "wrong argument type %s (String or Fixnum expected)",
-       rb_class2name(CLASS_OF(t)));
+             rb_class2name(CLASS_OF(t)));
   }
   return T;
 }
@@ -155,6 +155,6 @@ void Init_gsl_qrng(VALUE module)
   rb_define_const(cgsl_qrng, "HALTON", INT2FIX(GSL_QRNG_HALTON));
   rb_define_const(cgsl_qrng, "REVERSEHALTON", INT2FIX(GSL_QRNG_REVERSEHALTON));
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
-    rb_define_const(cgsl_qrng, "HDSOBOL", INT2FIX(GSL_QRNG_HDSOBOL));
+  rb_define_const(cgsl_qrng, "HDSOBOL", INT2FIX(GSL_QRNG_HDSOBOL));
 #endif
 }

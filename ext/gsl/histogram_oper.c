@@ -48,21 +48,20 @@ int
 mygsl_histogram_equal_bins_p (const gsl_histogram * h1, const gsl_histogram * h2)
 {
   if (h1->n != h2->n)
-    {
-      return 0;
-    }
-
+  {
+    return 0;
+  }
   {
     size_t i;
     /* init ranges */
 
     for (i = 0; i <= h1->n; i++)
+    {
+      if (gsl_fcmp(h1->range[i],h2->range[i], 1e-12))
       {
-        if (gsl_fcmp(h1->range[i],h2->range[i], 1e-12))
-          {
-            return 0;
-          }
+        return 0;
       }
+    }
   }
 
   return 1;
@@ -78,15 +77,13 @@ mygsl_histogram_add (gsl_histogram * h1, const gsl_histogram * h2)
   size_t i;
 
   if (!mygsl_histogram_equal_bins_p (h1, h2))
-    {
-      GSL_ERROR ("histograms have different binning", GSL_EINVAL);
-    }
-
+  {
+    GSL_ERROR ("histograms have different binning", GSL_EINVAL);
+  }
   for (i = 0; i < h1->n; i++)
-    {
-      h1->bin[i] += h2->bin[i];
-    }
-
+  {
+    h1->bin[i] += h2->bin[i];
+  }
   return GSL_SUCCESS;
 }
 
@@ -101,15 +98,13 @@ mygsl_histogram_sub (gsl_histogram * h1, const gsl_histogram * h2)
   size_t i;
 
   if (!mygsl_histogram_equal_bins_p (h1, h2))
-    {
-      GSL_ERROR ("histograms have different binning", GSL_EINVAL);
-    }
-
+  {
+    GSL_ERROR ("histograms have different binning", GSL_EINVAL);
+  }
   for (i = 0; i < h1->n; i++)
-    {
-      h1->bin[i] -= h2->bin[i];
-    }
-
+  {
+    h1->bin[i] -= h2->bin[i];
+  }
   return GSL_SUCCESS;
 
 }
@@ -125,15 +120,13 @@ mygsl_histogram_mul (gsl_histogram * h1, const gsl_histogram * h2)
   size_t i;
 
   if (!mygsl_histogram_equal_bins_p (h1, h2))
-    {
-      GSL_ERROR ("histograms have different binning", GSL_EINVAL);
-    }
-
+  {
+    GSL_ERROR ("histograms have different binning", GSL_EINVAL);
+  }
   for (i = 0; i < h1->n; i++)
-    {
-      h1->bin[i] *= h2->bin[i];
-    }
-
+  {
+    h1->bin[i] *= h2->bin[i];
+  }
   return GSL_SUCCESS;
 }
 /*
@@ -146,14 +139,12 @@ mygsl_histogram_div (gsl_histogram * h1, const gsl_histogram * h2)
   size_t i;
 
   if (!mygsl_histogram_equal_bins_p (h1, h2))
-    {
-      GSL_ERROR ("histograms have different binning", GSL_EINVAL);
-    }
-
+  {
+    GSL_ERROR ("histograms have different binning", GSL_EINVAL);
+  }
   for (i = 0; i < h1->n; i++)
-    {
-      h1->bin[i] /= h2->bin[i];
-    }
-
+  {
+    h1->bin[i] /= h2->bin[i];
+  }
   return GSL_SUCCESS;
 }

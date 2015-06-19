@@ -26,7 +26,6 @@ int mygsl_find (const size_t n, const double range[], const double x, size_t * i
   size_t i_linear, lower, upper, mid;
   if (x < range[0]) return -1;
   if (x >= range[n]) return +1;
-
   /* optimize for linear case */
 
 #ifdef LINEAR_OPT
@@ -36,47 +35,46 @@ int mygsl_find (const size_t n, const double range[], const double x, size_t * i
   }
 
   if (x >= range[i_linear] && x < range[i_linear + 1])
-    {
-      *i = i_linear;
-      return 0;
-    }
+  {
+    *i = i_linear;
+    return 0;
+  }
 #endif
 
   /* perform binary search */
 
-  upper = n ;
-  lower = 0 ;
+  upper = n;
+  lower = 0;
 
   while (upper - lower > 1)
+  {
+    mid = (upper + lower) / 2;
+
+    if (x >= range[mid])
     {
-      mid = (upper + lower) / 2 ;
-
-      if (x >= range[mid])
-        {
-          lower = mid ;
-        }
-      else
-        {
-          upper = mid ;
-        }
+      lower = mid;
     }
+    else
+    {
+      upper = mid;
+    }
+  }
 
-  *i = lower ;
+  *i = lower;
 
   /* sanity check the result */
 
   if (x < range[lower] || x >= range[lower + 1])
-    {
-      GSL_ERROR ("x not found in range", GSL_ESANITY);
-    }
-
+  {
+    GSL_ERROR ("x not found in range", GSL_ESANITY);
+  }
   return 0;
 }
 
 int mygsl_find2d (const size_t nx, const double xrange[],
-      const size_t ny, const double yrange[],
-      const double x, const double y,
-      size_t * i, size_t * j)
+                  const size_t ny, const double yrange[],
+                  const double x, const double y,
+                  size_t * i, size_t * j)
 {
   int status = mygsl_find (nx, xrange, x, i);
   if (status) return status;
@@ -86,10 +84,10 @@ int mygsl_find2d (const size_t nx, const double xrange[],
 }
 
 int mygsl_find3d (const size_t nx, const double xrange[],
-      const size_t ny, const double yrange[],
-      const size_t nz, const double zrange[],
-      const double x, const double y, const double z,
-      size_t * i, size_t * j, size_t *k)
+                  const size_t ny, const double yrange[],
+                  const size_t nz, const double zrange[],
+                  const double x, const double y, const double z,
+                  size_t * i, size_t * j, size_t *k)
 {
   int status = mygsl_find (nx, xrange, x, i);
   if (status) return status;

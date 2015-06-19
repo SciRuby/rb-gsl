@@ -8,3 +8,4 @@ mkmf.log
 *.so
 *.o
 Gemfile.lock
+*~

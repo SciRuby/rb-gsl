@@ -121,15 +121,15 @@ VALUE rb_gsl_math_complex_eval(gsl_complex (*func)(gsl_complex), VALUE obj)
     mnew = gsl_matrix_complex_alloc(m->size1, m->size2);
     for (i = 0; i < m->size1; i++) {
       for (j = 0; j < m->size2; j++) {
-  gsl_matrix_complex_set(mnew, i, j, (*func)(gsl_matrix_complex_get(m, i, j)));
+        gsl_matrix_complex_set(mnew, i, j, (*func)(gsl_matrix_complex_get(m, i, j)));
       }
     }
     return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, mnew);
   } else {
     rb_raise(rb_eTypeError,
-       "wrong argument type %s "
-       " (GSL::Complex or GSL::Vector::Complex expected)",
-       rb_class2name(CLASS_OF(obj)));
+             "wrong argument type %s "
+             " (GSL::Complex or GSL::Vector::Complex expected)",
+             rb_class2name(CLASS_OF(obj)));
   }
 }
 
@@ -183,9 +183,9 @@ static VALUE rb_gsl_math_eval(double (*func)(const double), VALUE xx)
 }
 
 static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE xx,
-             VALUE yy);
+                               VALUE yy);
 static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE xx,
-             VALUE yy)
+                               VALUE yy)
 {
   VALUE x, y, ary;
   size_t i, j, size;
@@ -236,7 +236,7 @@ static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE
       Data_Get_Struct(yy, gsl_vector, v2);
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-  gsl_vector_set(vnew, i, (*func)(gsl_vector_get(v, i), gsl_vector_get(v2, i)));
+        gsl_vector_set(vnew, i, (*func)(gsl_vector_get(v, i), gsl_vector_get(v2, i)));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else if (MATRIX_P(xx)) {
@@ -245,15 +245,15 @@ static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE
       Data_Get_Struct(yy, gsl_matrix, m2);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-  for (j = 0; j < m->size2; j++) {
-    gsl_matrix_set(mnew, i, j, (*func)(gsl_matrix_get(m, i, j), gsl_matrix_get(m2, i, j)));
-  }
+        for (j = 0; j < m->size2; j++) {
+          gsl_matrix_set(mnew, i, j, (*func)(gsl_matrix_get(m, i, j), gsl_matrix_get(m2, i, j)));
+        }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else {
       rb_raise(rb_eTypeError,
-         "wrong argument type %s "
-         "(Array or Vector or Matrix expected)", rb_class2name(CLASS_OF(xx)));
+               "wrong argument type %s "
+               "(Array or Vector or Matrix expected)", rb_class2name(CLASS_OF(xx)));
     }
     break;
   }
@@ -359,7 +359,7 @@ VALUE rb_gsl_pow(VALUE obj, VALUE xx, VALUE nn)
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-  gsl_vector_set(vnew, i, pow(gsl_vector_get(v, i), n));
+        gsl_vector_set(vnew, i, pow(gsl_vector_get(v, i), n));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     }
@@ -368,9 +368,9 @@ VALUE rb_gsl_pow(VALUE obj, VALUE xx, VALUE nn)
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-  for (j = 0; j < m->size2; j++) {
-    gsl_matrix_set(mnew, i, j, pow(gsl_matrix_get(m, i, j), n));
-  }
+        for (j = 0; j < m->size2; j++) {
+          gsl_matrix_set(mnew, i, j, pow(gsl_matrix_get(m, i, j), n));
+        }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     }
@@ -436,7 +436,7 @@ static VALUE rb_gsl_pow_int(VALUE obj, VALUE xx, VALUE nn)
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
       for (i = 0; i < v->size; i++) {
-  gsl_vector_set(vnew, i, gsl_pow_int(gsl_vector_get(v, i), n));
+        gsl_vector_set(vnew, i, gsl_pow_int(gsl_vector_get(v, i), n));
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
     } else if (MATRIX_P(xx)) {
@@ -445,9 +445,9 @@ static VALUE rb_gsl_pow_int(VALUE obj, VALUE xx, VALUE nn)
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
-  for (j = 0; j < m->size2; j++) {
-    gsl_matrix_set(mnew, i, j, gsl_pow_int(gsl_matrix_get(m, i, j), n));
-  }
+        for (j = 0; j < m->size2; j++) {
+          gsl_matrix_set(mnew, i, j, gsl_pow_int(gsl_matrix_get(m, i, j), n));
+        }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     } else if (COMPLEX_P(xx) || VECTOR_COMPLEX_P(xx) || MATRIX_COMPLEX_P(xx)) {
@@ -545,7 +545,6 @@ static VALUE rb_GSL_MAX(VALUE obj, VALUE aa, VALUE bb)
   max = GSL_MAX_DBL(a, b);
   if (gsl_fcmp(max, a, 1.0e-10) == 0) return aa;
   else return bb;
-
 }
 
 static VALUE rb_GSL_MIN(VALUE obj, VALUE aa, VALUE bb)
@@ -608,7 +607,7 @@ static VALUE rb_gsl_fcmp(int argc, VALUE *argv, VALUE obj)
   switch (argc) {
   case 3:
     epsilon = NUM2DBL(argv[2]);
-    /* no break, do next */
+  /* no break, do next */
   case 2:
     a = NUM2DBL(argv[0]);
     b = NUM2DBL(argv[1]);
@@ -628,7 +627,7 @@ static VALUE rb_gsl_equal(int argc, VALUE *argv, VALUE obj)
   switch (argc) {
   case 3:
     epsilon = NUM2DBL(argv[2]);
-    /* no break, do next */
+  /* no break, do next */
   case 2:
     a = NUM2DBL(argv[0]);
     b = NUM2DBL(argv[1]);

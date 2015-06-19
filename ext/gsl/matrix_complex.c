@@ -27,7 +27,7 @@ void get_range_beg_en_n(VALUE range, double *beg, double *en, size_t *n, int *st
 
 // From ext/matrix_source.c
 void parse_submatrix_args(int argc, VALUE *argv, size_t size1, size_t size2,
-    size_t *i, size_t *j, size_t *n1, size_t *n2);
+                          size_t *i, size_t *j, size_t *n1, size_t *n2);
 
 static VALUE rb_gsl_matrix_complex_arithmetics(int flag, VALUE obj, VALUE bb)
 {
@@ -73,28 +73,28 @@ static VALUE rb_gsl_matrix_complex_arithmetics(int flag, VALUE obj, VALUE bb)
       Data_Get_Struct(bb, gsl_matrix_complex, cmb);
       switch (flag) {
       case GSL_MATRIX_COMPLEX_ADD:
-  cmnew = make_matrix_complex_clone(cm);
-  gsl_matrix_complex_add(cmnew, cmb);
-  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
-  break;
+        cmnew = make_matrix_complex_clone(cm);
+        gsl_matrix_complex_add(cmnew, cmb);
+        return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
+        break;
       case GSL_MATRIX_COMPLEX_SUB:
-  cmnew = make_matrix_complex_clone(cm);
-  gsl_matrix_complex_sub(cmnew,cmb);
-  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
-  break;
+        cmnew = make_matrix_complex_clone(cm);
+        gsl_matrix_complex_sub(cmnew,cmb);
+        return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
+        break;
       case GSL_MATRIX_COMPLEX_MUL:
-  cmnew = make_matrix_complex_clone(cm);
-  gsl_matrix_complex_mul_elements(cmnew, cmb);
-  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
-  break;
+        cmnew = make_matrix_complex_clone(cm);
+        gsl_matrix_complex_mul_elements(cmnew, cmb);
+        return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
+        break;
       case GSL_MATRIX_COMPLEX_DIV:
-  cmnew = make_matrix_complex_clone(cm);
-  gsl_matrix_complex_div_elements(cmnew, cmb);
-  return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
-  break;
+        cmnew = make_matrix_complex_clone(cm);
+        gsl_matrix_complex_div_elements(cmnew, cmb);
+        return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
+        break;
       default:
-  rb_raise(rb_eRuntimeError, "operation not defined");
-  break;
+        rb_raise(rb_eRuntimeError, "operation not defined");
+        break;
       }
     } else if (rb_obj_is_kind_of(bb, cgsl_matrix)) {
       Data_Get_Struct(bb, gsl_matrix, m);
@@ -102,80 +102,80 @@ static VALUE rb_gsl_matrix_complex_arithmetics(int flag, VALUE obj, VALUE bb)
       cmnew = make_matrix_complex_clone(cm);
       switch (flag) {
       case GSL_MATRIX_COMPLEX_ADD:
-  gsl_matrix_complex_add(cmnew, cmb);
-  break;
+        gsl_matrix_complex_add(cmnew, cmb);
+        break;
       case GSL_MATRIX_COMPLEX_SUB:
-  gsl_matrix_complex_sub(cmnew,cmb);
-  break;
+        gsl_matrix_complex_sub(cmnew,cmb);
+        break;
       case GSL_MATRIX_COMPLEX_MUL:
-  gsl_matrix_complex_mul_elements(cmnew, cmb);
-  break;
+        gsl_matrix_complex_mul_elements(cmnew, cmb);
+        break;
       case GSL_MATRIX_COMPLEX_DIV:
-  gsl_matrix_complex_div_elements(cmnew, cmb);
-  break;
+        gsl_matrix_complex_div_elements(cmnew, cmb);
+        break;
       default:
-  rb_raise(rb_eRuntimeError, "operation not defined");
-  break;
+        rb_raise(rb_eRuntimeError, "operation not defined");
+        break;
       }
       return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
     } else if (rb_obj_is_kind_of(bb, cgsl_complex)) {
       Data_Get_Struct(bb, gsl_complex, c);
       switch (flag) {
       case GSL_MATRIX_COMPLEX_ADD:
-  cmnew = make_matrix_complex_clone(cm);
-  gsl_matrix_complex_add_constant(cmnew, *c);
-  break;
+        cmnew = make_matrix_complex_clone(cm);
+        gsl_matrix_complex_add_constant(cmnew, *c);
+        break;
       case GSL_MATRIX_COMPLEX_SUB:
-  cmnew = make_matrix_complex_clone(cm);
-  gsl_matrix_complex_add_constant(cmnew, gsl_complex_negative(*c));
-  break;
+        cmnew = make_matrix_complex_clone(cm);
+        gsl_matrix_complex_add_constant(cmnew, gsl_complex_negative(*c));
+        break;
       case GSL_MATRIX_COMPLEX_MUL:
-  cmnew = make_matrix_complex_clone(cm);
-  gsl_matrix_complex_scale(cmnew, *c);
-  break;
+        cmnew = make_matrix_complex_clone(cm);
+        gsl_matrix_complex_scale(cmnew, *c);
+        break;
       case GSL_MATRIX_COMPLEX_DIV:
-  cmnew = make_matrix_complex_clone(cm);
-  gsl_matrix_complex_scale(cmnew, gsl_complex_inverse(*c));
-  break;
+        cmnew = make_matrix_complex_clone(cm);
+        gsl_matrix_complex_scale(cmnew, gsl_complex_inverse(*c));
+        break;
       default:
-  rb_raise(rb_eRuntimeError, "operation not defined");
-  break;
+        rb_raise(rb_eRuntimeError, "operation not defined");
+        break;
       }
       return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, cmnew);
     } else if (rb_obj_is_kind_of(bb, cgsl_vector)) {
       Data_Get_Struct(bb, gsl_vector, v);
       switch (flag) {
       case GSL_MATRIX_COMPLEX_MUL:
-  cvb = vector_to_complex(v);
-  cvnew = gsl_vector_complex_alloc(v->size);
-  if (cvnew == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
-  gsl_matrix_complex_mul_vector(cvnew, cm, cvb);
-  gsl_vector_complex_free(cvb);
-  return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
-  break;
+        cvb = vector_to_complex(v);
+        cvnew = gsl_vector_complex_alloc(v->size);
+        if (cvnew == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
+        gsl_matrix_complex_mul_vector(cvnew, cm, cvb);
+        gsl_vector_complex_free(cvb);
+        return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
+        break;
       default:
-  rb_raise(rb_eRuntimeError,
-     "operation is not defined %s and Matrix_Complex",
-     rb_class2name(CLASS_OF(bb)));
-  break;
+        rb_raise(rb_eRuntimeError,
+                 "operation is not defined %s and Matrix_Complex",
+                 rb_class2name(CLASS_OF(bb)));
+        break;
       }
     } else if (rb_obj_is_kind_of(bb, cgsl_vector_complex)) {
       if (!VECTOR_COMPLEX_COL_P(bb))
-  rb_raise(rb_eTypeError,
-     "Operation is not defined with %s (Vector::Complex::Col expected)",
-     rb_class2name(CLASS_OF(bb)));
+        rb_raise(rb_eTypeError,
+                 "Operation is not defined with %s (Vector::Complex::Col expected)",
+                 rb_class2name(CLASS_OF(bb)));
       Data_Get_Struct(bb, gsl_vector_complex, cv);
       switch (flag) {
       case GSL_MATRIX_COMPLEX_MUL:
-  cvnew = gsl_vector_complex_alloc(cv->size);
-  if (cvnew == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
-  gsl_matrix_complex_mul_vector(cvnew, cm, cv);
-  return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cvnew);;
+        cvnew = gsl_vector_complex_alloc(cv->size);
+        if (cvnew == NULL) rb_raise(rb_eNoMemError, "gsl_vector_complex_alloc failed");
+        gsl_matrix_complex_mul_vector(cvnew, cm, cv);
+        return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cvnew);
       default:
-  rb_raise(rb_eRuntimeError,
-     "operation is not defined %s and Matrix_Complex",
-     rb_class2name(CLASS_OF(bb)));
-  break;
+        rb_raise(rb_eRuntimeError,
+                 "operation is not defined %s and Matrix_Complex",
+                 rb_class2name(CLASS_OF(bb)));
+        break;
       }
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s", rb_class2name(CLASS_OF(bb)));
@@ -218,15 +218,15 @@ static VALUE rb_gsl_matrix_complex_eye(int argc, VALUE *argv, VALUE klass)
       //      if (RARRAY(argv[1])->len < 2) rb_raise(rb_eArgError, "wrong argument");
       if (RARRAY_LEN(argv[1]) < 2) rb_raise(rb_eArgError, "wrong argument");
       z = gsl_complex_rect(NUM2DBL(rb_ary_entry(argv[1], 0)),
-         NUM2DBL(rb_ary_entry(argv[1], 1)));
+                           NUM2DBL(rb_ary_entry(argv[1], 1)));
       break;
     default:
       if (rb_obj_is_kind_of(argv[1], cgsl_complex)) {
-  Data_Get_Struct(argv[1], gsl_complex, pz);
+        Data_Get_Struct(argv[1], gsl_complex, pz);
         z = *pz;
       } else {
-  rb_raise(rb_eTypeError,
-     "wrong argument type %s", rb_class2name(CLASS_OF(argv[1])));
+        rb_raise(rb_eTypeError,
+                 "wrong argument type %s", rb_class2name(CLASS_OF(argv[1])));
       }
       break;
     }
@@ -244,7 +244,7 @@ static VALUE rb_gsl_matrix_complex_eye(int argc, VALUE *argv, VALUE klass)
   m = gsl_matrix_complex_calloc(n, n);
   if (m == NULL) rb_raise(rb_eNoMemError, "gsl_matrix_complex_alloc failed");
   for (i = 0; i < n; i++) gsl_matrix_complex_set(m, i, i, z);
-  return  Data_Wrap_Struct(klass, 0, gsl_matrix_complex_free, m);
+  return Data_Wrap_Struct(klass, 0, gsl_matrix_complex_free, m);
 }
 
 static VALUE rb_gsl_matrix_complex_identity(VALUE klass, VALUE nn)
@@ -258,7 +258,7 @@ static VALUE rb_gsl_matrix_complex_identity(VALUE klass, VALUE nn)
   if (m == NULL) rb_raise(rb_eNoMemError, "gsl_matrix_complex_calloc failed");
   z = gsl_complex_rect(1.0, 0.0);
   for (i = 0; i < n; i++) gsl_matrix_complex_set(m, i, i, z);
-  return  Data_Wrap_Struct(klass, 0, gsl_matrix_complex_free, m);
+  return Data_Wrap_Struct(klass, 0, gsl_matrix_complex_free, m);
 }
 
 static VALUE rb_gsl_matrix_complex_set_zero(VALUE obj)
@@ -301,7 +301,7 @@ static VALUE rb_gsl_matrix_complex_set_all(VALUE obj, VALUE s)
       gsl_matrix_complex_set_all(m, *z);
     } else {
       rb_raise(rb_eTypeError,
-         "wrong argument type %s", rb_class2name(CLASS_OF(s)));
+               "wrong argument type %s", rb_class2name(CLASS_OF(s)));
     }
     break;
   }
@@ -323,7 +323,6 @@ static VALUE rb_gsl_matrix_complex_set(int argc, VALUE *argv, VALUE obj)
   if(argc < 1 || argc > 5) {
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1-5)", argc);
   }
-
   Data_Get_Struct(obj, gsl_matrix_complex, m);
   other = argv[argc-1];
 
@@ -357,7 +356,7 @@ static VALUE rb_gsl_matrix_complex_set(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(other, gsl_matrix_complex, mother);
       if(n1 * n2 != mother->size1 * mother->size2) {
         rb_raise(rb_eRangeError, "sizes do not match (%d x %d != %d x %d)",
-     (int) n1, (int) n2, (int) mother->size1, (int) mother->size2);
+                 (int) n1, (int) n2, (int) mother->size1, (int) mother->size2);
       }
       // TODO Change to gsl_matrix_memmove if/when GSL has such a function
       // because gsl_matrix_memcpy does not handle overlapping regions (e.g.
@@ -375,7 +374,7 @@ static VALUE rb_gsl_matrix_complex_set(int argc, VALUE *argv, VALUE obj)
         // m[...] = [[row0], [row1], ...] # multiple rows
         if((int) n1 != RARRAY_LEN(other)) {
           rb_raise(rb_eRangeError, "row counts do not match (%d != %d)",
-       (int) n1, (int) RARRAY_LEN(other));
+                   (int) n1, (int) RARRAY_LEN(other));
         }
         for(k = 0; k < n1; k++) {
           vv = gsl_matrix_complex_row(&mv.matrix, k);
@@ -399,7 +398,6 @@ static VALUE rb_gsl_matrix_complex_set(int argc, VALUE *argv, VALUE obj)
       gsl_matrix_complex_set_all(&mv.matrix, rb_gsl_obj_to_gsl_complex(other, NULL));
     }
   }
-
   return obj;
 }
 
@@ -409,7 +407,7 @@ static VALUE rb_gsl_matrix_complex_set_row(int argc, VALUE *argv, VALUE obj)
   size_t i, k;
   gsl_complex z, *pz = &z;
   if (argc < 2) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 2)",
-       argc);
+                         argc);
   CHECK_FIXNUM(argv[0]);
   Data_Get_Struct(obj, gsl_matrix_complex, A);
   i = FIX2INT(argv[0]);
@@ -436,7 +434,7 @@ static VALUE rb_gsl_matrix_complex_set_col(int argc, VALUE *argv, VALUE obj)
   int j, k;
   gsl_complex z, *pz = &z;
   if (argc < 2) rb_raise(rb_eArgError, "wrong number of arguments (%d for >= 2)",
-       argc);
+                         argc);
   CHECK_FIXNUM(argv[0]);
   Data_Get_Struct(obj, gsl_matrix_complex, A);
   j = FIX2INT(argv[0]);
@@ -500,7 +498,6 @@ static VALUE rb_gsl_matrix_complex_get(int argc, VALUE *argv, VALUE obj)
   } else {
     retval = rb_gsl_matrix_complex_submatrix(argc, argv, obj);
   }
-
   return retval;
 }
 
@@ -546,10 +543,10 @@ static VALUE rb_gsl_matrix_complex_to_a(VALUE obj)
   size_t i, j;
   Data_Get_Struct(obj, gsl_matrix_complex, m);
   ma = rb_ary_new2(m->size1);
-  for(i=0; i < m->size1; i++) {
+  for(i = 0; i < m->size1; i++) {
     ra = rb_ary_new2(m->size2);
     rb_ary_store(ma, i, ra);
-    for(j=0; j < m->size2; j++) {
+    for(j = 0; j < m->size2; j++) {
       c = ALLOC(gsl_complex);
       *c = gsl_matrix_complex_get(m, i, j);
       rb_ary_store(ra, j, Data_Wrap_Struct(cgsl_complex, 0, free, c));
@@ -610,11 +607,11 @@ static VALUE rb_gsl_matrix_complex_to_s(int argc, VALUE *argv, VALUE obj)
   int max_rows = 4;
   int max_cols = 4;
 
-  switch(argc){
-    case 2: max_cols = NUM2INT(argv[1]);
-    case 1: max_rows = NUM2INT(argv[0]);
-    case 0: break;
-    default:
+  switch(argc) {
+  case 2: max_cols = NUM2INT(argv[1]);
+  case 1: max_rows = NUM2INT(argv[0]);
+  case 0: break;
+  default:
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 0, 1, or 2)", argc);
   }
 
@@ -628,7 +625,7 @@ static VALUE rb_gsl_matrix_complex_to_s(int argc, VALUE *argv, VALUE obj)
     for (j = 0; j < m->size2; j++) {
       z = gsl_matrix_complex_get(m, i, j);
       sprintf(buf,
-          "%s[ %4.3e %4.3e ]", (j==0) ? "" : " ", GSL_REAL(z), GSL_IMAG(z));
+              "%s[ %4.3e %4.3e ]", (j==0) ? "" : " ", GSL_REAL(z), GSL_IMAG(z));
       rb_str_cat(str, buf, strlen(buf));
       // if too many cols
       if ((int) j >= max_cols-1 && j != m->size2-1) {
@@ -927,7 +924,7 @@ static VALUE rb_gsl_matrix_complex_add_diagonal(VALUE obj, VALUE s)
       gsl_matrix_complex_add_diagonal(m, *z);
     } else {
       rb_raise(rb_eTypeError,
-         "wrong argument type %s", rb_class2name(CLASS_OF(s)));
+               "wrong argument type %s", rb_class2name(CLASS_OF(s)));
     }
     break;
   }
@@ -1001,7 +998,7 @@ static VALUE rb_gsl_matrix_complex_set_diagonal(VALUE obj, VALUE diag)
     for (i = 0; i < m->size1; i++) gsl_matrix_complex_set(m, i, i, gsl_vector_complex_get(v, i));
   } else {
     rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Vector_Complex or Array expected)",
-       rb_class2name(CLASS_OF(diag)));
+             rb_class2name(CLASS_OF(diag)));
   }
   return obj;
 }
@@ -1055,7 +1052,7 @@ static VALUE rb_gsl_matrix_complex_coerce(VALUE obj, VALUE other)
       return rb_ary_new3(2, vcm, obj);
     } else {
       rb_raise(rb_eTypeError, "cannot coerce %s to GSL::Matrix::Complex",
-         rb_class2name(CLASS_OF(other)));
+               rb_class2name(CLASS_OF(other)));
     }
     break;
   }
@@ -1274,7 +1271,7 @@ static VALUE rb_gsl_matrix_complex_logabs(VALUE obj)
 }
 
 static VALUE rb_gsl_matrix_complex_XXX_complex(VALUE obj,
-                 gsl_complex (*f)(gsl_complex))
+                                               gsl_complex (*f)(gsl_complex))
 {
   gsl_matrix_complex *m, *mnew;
   size_t i, j;
@@ -1525,7 +1522,7 @@ static VALUE rb_gsl_matrix_complex_indgen_singleton(int argc, VALUE *argv, VALUE
 // function, but it only determines absolute equality (i.e. is has no epsilon
 // argument).
 static int gsl_matrix_complex_equal_eps(const gsl_matrix_complex *m1,
-  const gsl_matrix_complex *m2, double eps)
+                                        const gsl_matrix_complex *m2, double eps)
 {
   gsl_complex z1, z2;
   size_t i, j;

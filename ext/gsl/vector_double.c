@@ -22,7 +22,7 @@ VALUE rb_gsl_vector_int_to_f(VALUE obj);
 VALUE rb_ary_to_gv(VALUE klass, VALUE ary);
 
 static VALUE rb_gsl_vector_Xspace(double min, double max, int i,
-          gsl_vector* (*f)(const double, const double, const size_t))
+                                  gsl_vector* (*f)(const double, const double, const size_t))
 {
   gsl_vector *v = NULL;
   size_t n;
@@ -34,7 +34,7 @@ static VALUE rb_gsl_vector_Xspace(double min, double max, int i,
 }
 
 static gsl_vector* gsl_vector_linspace(const double min,
-               const double max, const size_t n)
+                                       const double max, const size_t n)
 {
   gsl_vector *v = NULL;
   double dx;
@@ -52,7 +52,7 @@ static gsl_vector* gsl_vector_linspace(const double min,
 }
 
 static gsl_vector* gsl_vector_logspace(const double min,
-               const double max, const size_t n)
+                                       const double max, const size_t n)
 {
   gsl_vector *v = NULL;
   double dx;
@@ -86,7 +86,7 @@ static VALUE rb_gsl_vector_linspace(int argc, VALUE *argv, VALUE klass)
   }
   Need_Float(argv[0]);   Need_Float(argv[1]);
   return rb_gsl_vector_Xspace(NUM2DBL(argv[0]), NUM2DBL(argv[1]), n,
-            gsl_vector_linspace);
+                              gsl_vector_linspace);
 }
 
 static VALUE rb_gsl_vector_logspace(int argc, VALUE *argv, VALUE klass)
@@ -106,7 +106,7 @@ static VALUE rb_gsl_vector_logspace(int argc, VALUE *argv, VALUE klass)
   }
   Need_Float(argv[0]);   Need_Float(argv[1]);
   return rb_gsl_vector_Xspace(NUM2DBL(argv[0]), NUM2DBL(argv[1]), n,
-            gsl_vector_logspace);
+                              gsl_vector_logspace);
 }
 
 static VALUE rb_gsl_vector_logspace2(int argc, VALUE *argv, VALUE klass)
@@ -126,8 +126,8 @@ static VALUE rb_gsl_vector_logspace2(int argc, VALUE *argv, VALUE klass)
   }
   Need_Float(argv[0]);   Need_Float(argv[1]);
   return rb_gsl_vector_Xspace(log10(NUM2DBL(argv[0])),
-            log10(NUM2DBL(argv[1])), n,
-            gsl_vector_logspace);
+                              log10(NUM2DBL(argv[1])), n,
+                              gsl_vector_logspace);
 }
 
 /********************************************************/
@@ -180,68 +180,68 @@ static VALUE rb_gsl_vector_arithmetics(int flag, VALUE obj, VALUE bb)
       Data_Get_Struct(bb, gsl_vector, b);
       switch (flag) {
       case GSL_VECTOR_ADD:
-  vnew = make_vector_clone(v);
-  gsl_vector_add(vnew, b);
-  break;
+        vnew = make_vector_clone(v);
+        gsl_vector_add(vnew, b);
+        break;
       case GSL_VECTOR_SUB:
-  vnew = make_vector_clone(v);
-  gsl_vector_sub(vnew, b);
-  break;
+        vnew = make_vector_clone(v);
+        gsl_vector_sub(vnew, b);
+        break;
       case GSL_VECTOR_MUL:
-  vnew = make_vector_clone(v);
-  gsl_vector_mul(vnew, b);
-  break;
+        vnew = make_vector_clone(v);
+        gsl_vector_mul(vnew, b);
+        break;
       case GSL_VECTOR_DIV:
-  vnew = make_vector_clone(v);
-  gsl_vector_div(vnew, b);
-  break;
+        vnew = make_vector_clone(v);
+        gsl_vector_div(vnew, b);
+        break;
       }
       if (!VECTOR_VIEW_P(obj))
-  return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_vector_free, vnew);
+        return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_vector_free, vnew);
       else
-  return Data_Wrap_Struct(VECTOR_ROW_COL(obj), 0, gsl_vector_free, vnew);
+        return Data_Wrap_Struct(VECTOR_ROW_COL(obj), 0, gsl_vector_free, vnew);
     } else if (VECTOR_COMPLEX_P(bb)) {
       Data_Get_Struct(bb, gsl_vector_complex, cb);
       cvnew = vector_to_complex(v);
       switch (flag) {
       case GSL_VECTOR_ADD:
-  gsl_vector_complex_add(cvnew, cb);
-  break;
+        gsl_vector_complex_add(cvnew, cb);
+        break;
       case GSL_VECTOR_SUB:
-  gsl_vector_complex_sub(cvnew, cb);
-  break;
+        gsl_vector_complex_sub(cvnew, cb);
+        break;
       case GSL_VECTOR_MUL:
-  gsl_vector_complex_mul(cvnew, cb);
-  break;
+        gsl_vector_complex_mul(cvnew, cb);
+        break;
       case GSL_VECTOR_DIV:
-  gsl_vector_complex_div(cvnew, cb);
-  break;
+        gsl_vector_complex_div(cvnew, cb);
+        break;
       }
       if (VECTOR_COL_P(obj))
-  return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cvnew);
+        return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cvnew);
       else
-  return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
+        return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
     } else if (COMPLEX_P(bb)) {
       Data_Get_Struct(bb, gsl_complex, c);
       cvnew = vector_to_complex(v);
       switch (flag) {
       case GSL_VECTOR_ADD:
-  gsl_vector_complex_add_constant(cvnew, *c);
-  break;
+        gsl_vector_complex_add_constant(cvnew, *c);
+        break;
       case GSL_VECTOR_SUB:
-  gsl_vector_complex_add_constant(cvnew, gsl_complex_negative(*c));
-  break;
+        gsl_vector_complex_add_constant(cvnew, gsl_complex_negative(*c));
+        break;
       case GSL_VECTOR_MUL:
-  gsl_vector_complex_scale(cvnew, *c);
-  break;
+        gsl_vector_complex_scale(cvnew, *c);
+        break;
       case GSL_VECTOR_DIV:
-  gsl_vector_complex_scale(cvnew, gsl_complex_inverse(*c));
-  break;
+        gsl_vector_complex_scale(cvnew, gsl_complex_inverse(*c));
+        break;
       }
       if (VECTOR_COL_P(obj))
-  return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cvnew);
+        return Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cvnew);
       else
-  return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
+        return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cvnew);
     } else {
       rb_raise(rb_eTypeError, "wrong type argument %s", rb_class2name(CLASS_OF(bb)));
     }
@@ -411,16 +411,16 @@ static VALUE rb_gsl_vector_coerce(VALUE obj, VALUE other)
       if (cv == NULL) rb_raise(rb_eNoMemError, "gsl_vector_alloc failed");
       gsl_vector_complex_set_all(cv, *c);
       if (VECTOR_ROW_P(obj))
-  vv = Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cv);
+        vv = Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cv);
       else
-  vv = Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cv);
+        vv = Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cv);
       return rb_ary_new3(2, vv, obj);
     } else if (VECTOR_COMPLEX_P(other)) {
       cv = vector_to_complex(v);
       if (VECTOR_ROW_P(obj))
-  vv = Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cv);
+        vv = Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, cv);
       else
-  vv = Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cv);
+        vv = Data_Wrap_Struct(cgsl_vector_complex_col, 0, gsl_vector_complex_free, cv);
       return rb_ary_new3(2, other, vv);
     } else {
       rb_raise(rb_eTypeError, "cannot coerced");
@@ -440,25 +440,25 @@ static VALUE rb_gsl_vector_product_to_m(int argc, VALUE *argv, VALUE obj)
   case T_CLASS:
   case T_OBJECT:
     if (argc != 2) rb_raise(rb_eArgError, "wrong number of arguments (%d for 2)",
-          argc);
+                            argc);
     if (!VECTOR_COL_P(argv[0]))
       rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Vector::Col expected)",
-         rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     if (!VECTOR_ROW_P(argv[1]))
       rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Vector expected)",
-         rb_class2name(CLASS_OF(argv[1])));
+               rb_class2name(CLASS_OF(argv[1])));
     Data_Get_Struct(argv[0], gsl_vector, v);
     Data_Get_Struct(argv[1], gsl_vector, v2);
     break;
   default:
     if (argc != 1) rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)",
-          argc);
+                            argc);
     if (!VECTOR_COL_P(obj))
       rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Vector::Col expected)",
-         rb_class2name(CLASS_OF(obj)));
+               rb_class2name(CLASS_OF(obj)));
     if (!VECTOR_ROW_P(argv[0]))
       rb_raise(rb_eTypeError, "wrong argument type %s (GSL::Vector expected)",
-         rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     Data_Get_Struct(obj, gsl_vector, v);
     Data_Get_Struct(argv[0], gsl_vector, v2);
     break;
@@ -530,7 +530,6 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
   FILE *fp = NULL;
   if (argc < 1)
     rb_raise(rb_eArgError, "two few arguments");
-
   if (TYPE(argv[argc-1]) == T_STRING) {
     sprintf(command, "graph -T X %s", STR2CSTR(argv[argc-1]));
     iend = argc-1;
@@ -538,7 +537,6 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
     strcpy(command, "graph -T X -C -g 3");
     iend = argc;
   }
-
   if (iend == 1) {
     fp = popen(command, "w");
     if (fp == NULL) rb_raise(rb_eIOError, "GNU graph not found.");
@@ -555,7 +553,7 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
     } else {
       if (fp) pclose(fp);
       rb_raise(rb_eTypeError, "wrong argument type %s",
-         rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     }
     if (fp) pclose(fp);
     return Qtrue;
@@ -572,7 +570,7 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
       x = gsl_vector_alloc(h->n);
       n = x->size;
       for (j = 0; j < x->size; j++)
-  gsl_vector_set(x, j, h->range[j]);
+        gsl_vector_set(x, j, h->range[j]);
       flag = 1;
       draw_hist(argv[0], fp);
       fprintf(fp, "\n");
@@ -588,18 +586,18 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
     } else if (NIL_P(argv[0])) {
       if (argc < 2) rb_raise(rb_eArgError, "too few arguments");
       if (VECTOR_P(argv[1])) {
-  Data_Get_Struct(argv[1], gsl_vector, y);
-  n = y->size;
+        Data_Get_Struct(argv[1], gsl_vector, y);
+        n = y->size;
       } else if (HISTOGRAM_P(argv[1])) {
-  Data_Get_Struct(argv[1], gsl_histogram, h);
-  n = h->n;
+        Data_Get_Struct(argv[1], gsl_histogram, h);
+        n = h->n;
 #ifdef HAVE_NARRAY_H
       } else if (NA_IsNArray(argv[1])) {
-  n = NA_TOTAL(argv[1]);
+        n = NA_TOTAL(argv[1]);
 #endif
       } else {
-  rb_raise(rb_eTypeError, "wrong argument type %s",
-     rb_class2name(CLASS_OF(argv[0])));
+        rb_raise(rb_eTypeError, "wrong argument type %s",
+                 rb_class2name(CLASS_OF(argv[0])));
       }
       x = gsl_vector_alloc(n);
       for (j = 0; j < n; j++) gsl_vector_set(x, j, (double) j);
@@ -607,7 +605,7 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
     } else {
       if (fp) pclose(fp);
       rb_raise(rb_eTypeError, "wrong argument type %s",
-         rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     }
     if (flag == 1) vx = Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, x);
     for (i = 1; i < iend; i++) {
@@ -618,8 +616,8 @@ static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
       else if (NA_IsNArray(argv[i])) draw_vector2(vx, argv[i], fp);
 #endif
       else
-  rb_raise(rb_eTypeError, "wrong argument type %s",
-     rb_class2name(CLASS_OF(argv[i])));
+        rb_raise(rb_eTypeError, "wrong argument type %s",
+                 rb_class2name(CLASS_OF(argv[i])));
       fprintf(fp, "\n");
       fflush(fp);
     }
@@ -664,7 +662,7 @@ static void draw_vector2(VALUE xx, VALUE yy, FILE *fp)
 #endif // HAVE_NARRAY_H
   } else {
     rb_raise(rb_eTypeError, "wrong argument type %s (Vector expected)",
-       rb_class2name(CLASS_OF(xx)));
+             rb_class2name(CLASS_OF(xx)));
   }
   if (VECTOR_P(yy)) {
     Data_Get_Struct(yy, gsl_vector, vy);
@@ -680,7 +678,7 @@ static void draw_vector2(VALUE xx, VALUE yy, FILE *fp)
 #endif // HAVE_NARRAY_H
   } else {
     rb_raise(rb_eTypeError, "wrong argument type %s (Vector expected)",
-       rb_class2name(CLASS_OF(yy)));
+             rb_class2name(CLASS_OF(yy)));
   }
   for (j = 0; j < n; j++)
     fprintf(fp, "%g %g\n", ptr1[j*stridex], ptr2[j*stridey]);
@@ -694,7 +692,7 @@ static void draw_hist(VALUE obj, FILE *fp)
   Data_Get_Struct(obj, gsl_histogram, h);
   for (j = 0; j < h->n; j++) {
     fprintf(fp, "%g %g\n%g %g\n",
-      h->range[j], h->bin[j], h->range[j+1], h->bin[j]);
+            h->range[j], h->bin[j], h->range[j+1], h->bin[j]);
   }
   fflush(fp);
 }
@@ -713,7 +711,7 @@ static void draw_vector_array(VALUE ary, FILE *fp)
   case 2:
     ptry = get_vector_ptr(rb_ary_entry(ary, 1), &stridey, &n);
     vx = rb_ary_entry(ary, 0);
-    if (NIL_P(vx)) {flag = 1;}
+    if (NIL_P(vx)) {flag = 1; }
     else {
       ptrx = get_vector_ptr(vx, &stridex, &n);
     }
@@ -722,7 +720,7 @@ static void draw_vector_array(VALUE ary, FILE *fp)
     ptrz = get_vector_ptr(rb_ary_entry(ary, 2), &stridez, &n);
     ptry = get_vector_ptr(rb_ary_entry(ary, 1), &stridey, &n);
     vx = rb_ary_entry(ary, 0);
-    if (NIL_P(vx)) {flag = 2;}
+    if (NIL_P(vx)) {flag = 2; }
     else {
       ptrx = get_vector_ptr(vx, &stridex, &n);
       flag = 3;
@@ -730,7 +728,7 @@ static void draw_vector_array(VALUE ary, FILE *fp)
     break;
   default:
     rb_raise(rb_eRuntimeError, "wrong array length (%d for 1 or 2)",
-       (int) RARRAY_LEN(ary));
+             (int) RARRAY_LEN(ary));
     break;
   }
   switch (flag) {
@@ -771,7 +769,7 @@ static VALUE rb_gsl_vector_plot2(int argc, VALUE *argv, VALUE obj)
   case 5:
     if (TYPE(argv[4]) == T_STRING)
       sprintf(command, "%s %s", command, STR2CSTR(argv[4]));
-    /* no break */
+  /* no break */
   case 4:
     if (TYPE(argv[3]) == T_STRING) {
       sprintf(command, "%s %s", command, STR2CSTR(argv[3]));
@@ -779,9 +777,9 @@ static VALUE rb_gsl_vector_plot2(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(argv[3], gsl_vector, yerr);
     } else {
       rb_raise(rb_eTypeError, "argv[3] wrong type %s (String or Vector expected)",
-         rb_class2name(CLASS_OF(argv[3])));
+               rb_class2name(CLASS_OF(argv[3])));
     }
-    /* no break */
+  /* no break */
   case 3:
     if (TYPE(argv[2]) == T_STRING) {
       sprintf(command, "%s %s", command, STR2CSTR(argv[2]));
@@ -789,9 +787,9 @@ static VALUE rb_gsl_vector_plot2(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(argv[2], gsl_vector, xerr);
     } else {
       rb_raise(rb_eTypeError, "argv[2] wrong type %s (String or Vector expected)",
-         rb_class2name(CLASS_OF(argv[2])));
+               rb_class2name(CLASS_OF(argv[2])));
     }
-    /* no break */
+  /* no break */
   case 2:
     if (TYPE(argv[1]) == T_STRING) {
       sprintf(command, "%s %s", command, STR2CSTR(argv[1]));
@@ -799,9 +797,9 @@ static VALUE rb_gsl_vector_plot2(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(argv[1], gsl_vector, y);
     } else {
       rb_raise(rb_eTypeError, "argv[1] wrong type %s (String or Vector expected)",
-         rb_class2name(CLASS_OF(argv[1])));
+               rb_class2name(CLASS_OF(argv[1])));
     }
-    /* no break */
+  /* no break */
   case 1:
     if (TYPE(argv[0]) == T_STRING) {
       sprintf(command, "%s %s", command, STR2CSTR(argv[0]));
@@ -809,7 +807,7 @@ static VALUE rb_gsl_vector_plot2(int argc, VALUE *argv, VALUE obj)
       Data_Get_Struct(argv[0], gsl_vector, x);
     } else {
       rb_raise(rb_eTypeError, "argv[0] wrong type %s (String or Vector expected)",
-         rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     }
     break;
   default:
@@ -826,10 +824,10 @@ static VALUE rb_gsl_vector_plot2(int argc, VALUE *argv, VALUE obj)
       fprintf(fp, "%g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i));
     else if (xerr)
       fprintf(fp, "%g %g %g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i),
-        gsl_vector_get(xerr, i), gsl_vector_get(yerr, i));
+              gsl_vector_get(xerr, i), gsl_vector_get(yerr, i));
     else
-     fprintf(fp, "%g %g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i),
-       gsl_vector_get(yerr, i));
+      fprintf(fp, "%g %g %g\n", gsl_vector_get(x, i), gsl_vector_get(y, i),
+              gsl_vector_get(yerr, i));
   }
   fprintf(fp, "e\n");
   fflush(fp);
@@ -955,7 +953,7 @@ static VALUE rb_gsl_vector_decimate(VALUE obj, VALUE nn)
   n = (size_t) FIX2INT(nn);
   if (n > v->size)
     rb_raise(rb_eArgError,
-       "decimation factor must be smaller than the vector length.");
+             "decimation factor must be smaller than the vector length.");
   if (n == 0) rb_raise(rb_eArgError, "decimation factor must be greater than 1");
   n2 = (size_t) ceil((double)v->size/n);
   vnew = gsl_vector_alloc(n2);
@@ -964,7 +962,7 @@ static VALUE rb_gsl_vector_decimate(VALUE obj, VALUE nn)
     if (i == n2-1) vv = gsl_vector_subvector(v, i*n, n3);
     else vv = gsl_vector_subvector(v, i*n, n);
     gsl_vector_set(vnew, i, gsl_stats_mean(vv.vector.data, vv.vector.stride,
-             vv.vector.size));
+                                           vv.vector.size));
   }
   return Data_Wrap_Struct(VECTOR_ROW_COL(obj), 0, gsl_vector_free, vnew);
 }
@@ -1072,21 +1070,21 @@ static VALUE rb_gsl_vector_rotate_bang(int argc, VALUE *argv, VALUE klass)
       v0 = rb_ary_entry(argv[0], 0);
       v1 = rb_ary_entry(argv[0], 1);
       if (VECTOR_P(v0) && VECTOR_P(v1)) {
-  Data_Get_Struct(v0, gsl_vector, vx);
-  Data_Get_Struct(v1, gsl_vector, vy);
-  n = (size_t) GSL_MIN(vx->size, vy->size);
-  rad = NUM2DBL(argv[1]);
-  retval = argv[0];
+        Data_Get_Struct(v0, gsl_vector, vx);
+        Data_Get_Struct(v1, gsl_vector, vy);
+        n = (size_t) GSL_MIN(vx->size, vy->size);
+        rad = NUM2DBL(argv[1]);
+        retval = argv[0];
       } else {
-  x = NUM2DBL(rb_ary_entry(argv[0], 0));
-  y = NUM2DBL(rb_ary_entry(argv[0], 1));
-  rad = NUM2DBL(argv[1]);
-  c = cos(rad); s = sin(rad);
-  return rb_ary_new3(2, rb_float_new(c*x - s*y), rb_float_new(s*x + c*y));
+        x = NUM2DBL(rb_ary_entry(argv[0], 0));
+        y = NUM2DBL(rb_ary_entry(argv[0], 1));
+        rad = NUM2DBL(argv[1]);
+        c = cos(rad); s = sin(rad);
+        return rb_ary_new3(2, rb_float_new(c*x - s*y), rb_float_new(s*x + c*y));
       }
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Array expected)",
-         rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     }
     break;
   case 3:
@@ -1131,19 +1129,19 @@ static VALUE rb_gsl_vector_rotate(int argc, VALUE *argv, VALUE klass)
       v0 = rb_ary_entry(argv[0], 0);
       v1 = rb_ary_entry(argv[0], 1);
       if (VECTOR_P(v0) && VECTOR_P(v1)) {
-  Data_Get_Struct(v0, gsl_vector, vx);
-  Data_Get_Struct(v1, gsl_vector, vy);
-  rad = NUM2DBL(argv[1]);
+        Data_Get_Struct(v0, gsl_vector, vx);
+        Data_Get_Struct(v1, gsl_vector, vy);
+        rad = NUM2DBL(argv[1]);
       } else {
-  x = NUM2DBL(rb_ary_entry(argv[0], 0));
-  y = NUM2DBL(rb_ary_entry(argv[0], 1));
-  rad = NUM2DBL(argv[1]);
-  c = cos(rad); s = sin(rad);
-  return rb_ary_new3(2, rb_float_new(c*x - s*y), rb_float_new(s*x + c*y));
+        x = NUM2DBL(rb_ary_entry(argv[0], 0));
+        y = NUM2DBL(rb_ary_entry(argv[0], 1));
+        rad = NUM2DBL(argv[1]);
+        c = cos(rad); s = sin(rad);
+        return rb_ary_new3(2, rb_float_new(c*x - s*y), rb_float_new(s*x + c*y));
       }
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Array expected)",
-         rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     }
     break;
   case 3:
@@ -1174,7 +1172,7 @@ static VALUE rb_gsl_vector_rotate(int argc, VALUE *argv, VALUE klass)
     gsl_vector_set(vynew, i, s*x + c*y);
   }
   return rb_ary_new3(2, Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vxnew),
-         Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vynew));
+                     Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vynew));
 }
 
 #include "gsl/gsl_fit.h"
@@ -1190,21 +1188,21 @@ static VALUE rb_gsl_vector_linearfit(int argc, VALUE *argv, VALUE klass)
     Data_Get_Struct(argv[1], gsl_vector, w);
     Data_Get_Struct(argv[2], gsl_vector, y);
     gsl_fit_wlinear(x->data, x->stride, w->data, w->stride,
-        y->data, y->stride, y->size, &c0, &c1, &c00, &c01, &c11,
-        &sumsq);
+                    y->data, y->stride, y->size, &c0, &c1, &c00, &c01, &c11,
+                    &sumsq);
     break;
   case 2:
     CHECK_VECTOR(argv[0]); CHECK_VECTOR(argv[1]);
     Data_Get_Struct(argv[0], gsl_vector, x);
     Data_Get_Struct(argv[1], gsl_vector, y);
     gsl_fit_linear(x->data, x->stride, y->data,y->stride, y->size,
-       &c0, &c1, &c00, &c01, &c11, &sumsq);
+                   &c0, &c1, &c00, &c01, &c11, &sumsq);
     break;
   default:
     rb_raise(rb_eArgError, "Wrong number of arguments (%d for 2 or 3).\n", argc);
   }
   return rb_ary_new3(6, rb_float_new(c0), rb_float_new(c1), rb_float_new(c00),
-        rb_float_new(c01), rb_float_new(c11), rb_float_new(sumsq));
+                     rb_float_new(c01), rb_float_new(c11), rb_float_new(sumsq));
 }
 
 static VALUE rb_gsl_vector_center(VALUE obj)
@@ -1249,7 +1247,7 @@ static VALUE rb_gsl_vector_clip(int argc, VALUE *argv, VALUE obj)
     x = gsl_vector_get(v, i);
     if (x > hi) x = hi;
     else if (x < lo) x = lo;
-    else {};
+    else {}
     gsl_vector_set(vnew, i, x);
   }
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
@@ -1269,7 +1267,7 @@ static VALUE rb_gsl_vector_amp_phase(VALUE obj)
   gsl_vector_set(phase, 0, 0);
   gsl_vector_set(amp, amp->size-1, gsl_vector_get(v, v->size-1));
   gsl_vector_set(phase, phase->size-1, 0);
-  for (i = 1; i < v->size-1; i+=2) {
+  for (i = 1; i < v->size-1; i += 2) {
     re = gsl_vector_get(v, i);
     im = gsl_vector_get(v, i+1);
     gsl_vector_set(amp, i/2+1, sqrt(re*re + im*im));
@@ -1302,7 +1300,7 @@ static VALUE rb_gsl_vector_clean(int argc, VALUE *argv, VALUE obj)
   vnew = make_vector_clone(v);
   n = v->size;
   for (i = 0; i < n; i++) if (fabs(vnew->data[i]) < eps) vnew->data[i] = 0.0;
-  return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);;
+  return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
 }
 
 static VALUE rb_gsl_vector_clean_bang(int argc, VALUE *argv, VALUE obj)

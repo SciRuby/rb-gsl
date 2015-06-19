@@ -29,21 +29,21 @@ typedef struct {
 } mygsl_histogram2d_view;
 
 #ifndef HISTOGRAM2D_P
-#define HISTOGRAM2D_P(x) (rb_obj_is_kind_of(x,cgsl_histogram2d)?1:0)
+#define HISTOGRAM2D_P(x) (rb_obj_is_kind_of(x,cgsl_histogram2d) ? 1 : 0)
 #endif
 
 #ifndef CHECK_HISTOGRAM2D
-#define CHECK_HISTOGRAM2D(x) if(!rb_obj_is_kind_of(x,cgsl_histogram2d))\
+#define CHECK_HISTOGRAM2D(x) if(!rb_obj_is_kind_of(x,cgsl_histogram2d)) \
     rb_raise(rb_eTypeError, "wrong type (Histogram2d expected)");
 #endif
 
 
 #ifndef HISTOGRAM3D_P
-#define HISTOGRAM3D_P(x) (rb_obj_is_kind_of(x,cgsl_histogram3d)?1:0)
+#define HISTOGRAM3D_P(x) (rb_obj_is_kind_of(x,cgsl_histogram3d) ? 1 : 0)
 #endif
 
 #ifndef CHECK_HISTOGRAM3D
-#define CHECK_HISTOGRAM3D(x) if(!rb_obj_is_kind_of(x,cgsl_histogram3d))\
+#define CHECK_HISTOGRAM3D(x) if(!rb_obj_is_kind_of(x,cgsl_histogram3d)) \
     rb_raise(rb_eTypeError, "wrong type (Histogram3d expected)");
 #endif
 

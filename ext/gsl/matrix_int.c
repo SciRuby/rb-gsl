@@ -16,7 +16,7 @@
 #endif
 
 int gsl_linalg_matmult_int(const gsl_matrix_int *A,
-         const gsl_matrix_int *B, gsl_matrix_int *C);
+                           const gsl_matrix_int *B, gsl_matrix_int *C);
 
 
 VALUE rb_gsl_matrix_to_i(VALUE obj);
@@ -109,34 +109,34 @@ static VALUE rb_gsl_matrix_int_operation1(VALUE obj, VALUE other, int flag)
       Data_Get_Struct(other, gsl_matrix_int, b);
       switch (flag) {
       case GSL_MATRIX_INT_ADD:
-  /*result =*/ gsl_matrix_int_add(anew, b);
-  break;
+        /*result =*/ gsl_matrix_int_add(anew, b);
+        break;
       case GSL_MATRIX_INT_SUB:
-  /*result =*/ gsl_matrix_int_sub(anew, b);
-  break;
+        /*result =*/ gsl_matrix_int_sub(anew, b);
+        break;
       case GSL_MATRIX_INT_MUL:
-  /*result =*/ gsl_matrix_int_mul_elements(anew, b);
-  break;
+        /*result =*/ gsl_matrix_int_mul_elements(anew, b);
+        break;
       case GSL_MATRIX_INT_DIV:
-  /*result =*/ gsl_matrix_int_div_elements(anew, b);
-  break;
+        /*result =*/ gsl_matrix_int_div_elements(anew, b);
+        break;
       default:
-  break;
+        break;
       }
     } else if (VECTOR_INT_COL_P(other)) {
       switch (flag) {
       case GSL_MATRIX_INT_MUL:
-  Data_Get_Struct(other, gsl_vector_int, vi);
-  vinew = gsl_vector_int_alloc(vi->size);
-  gsl_matrix_int_mul_vector(vinew, a, vi);
-  return Data_Wrap_Struct(cgsl_vector_int_col, 0, gsl_vector_int_free, vinew);
-  break;
+        Data_Get_Struct(other, gsl_vector_int, vi);
+        vinew = gsl_vector_int_alloc(vi->size);
+        gsl_matrix_int_mul_vector(vinew, a, vi);
+        return Data_Wrap_Struct(cgsl_vector_int_col, 0, gsl_vector_int_free, vinew);
+        break;
       default:
-  rb_raise(rb_eRuntimeError, "Operation not defined");
+        rb_raise(rb_eRuntimeError, "Operation not defined");
       }
     } else {
       rb_raise(rb_eTypeError, "Operation not defined with %s",
-         rb_class2name(CLASS_OF(other)));
+               rb_class2name(CLASS_OF(other)));
     }
     break;
   }
@@ -183,48 +183,47 @@ static VALUE rb_gsl_matrix_int_matrix_mul(VALUE obj, VALUE bb)
     switch (TYPE(bb)) {
     case T_FIXNUM:
       return rb_gsl_matrix_int_mul(obj, bb);
-  /*      return rb_gsl_matrix_int_power(obj, bb);*/
+      /*      return rb_gsl_matrix_int_power(obj, bb);*/
       break;
     default:
       rb_raise(rb_eTypeError, "wrong argument type %s (Matrix::Int, Vector::Int::Col or Fixnum expected)",
-         rb_class2name(CLASS_OF(bb)));
+               rb_class2name(CLASS_OF(bb)));
       break;
     }
   }
 }
 
 int gsl_linalg_matmult_int(const gsl_matrix_int *A,
-         const gsl_matrix_int *B, gsl_matrix_int *C)
+                           const gsl_matrix_int *B, gsl_matrix_int *C)
 {
   if (A->size2 != B->size1 || A->size1 != C->size1 || B->size2 != C->size2)
-    {
-      GSL_ERROR ("matrix sizes are not conformant", GSL_EBADLEN);
-    }
+  {
+    GSL_ERROR ("matrix sizes are not conformant", GSL_EBADLEN);
+  }
   else
+  {
+    int a, b;
+    int temp;
+    size_t i, j, k;
+
+    for (i = 0; i < C->size1; i++)
     {
-      int a, b;
-      int temp;
-      size_t i, j, k;
-
-      for (i = 0; i < C->size1; i++)
+      for (j = 0; j < C->size2; j++)
+      {
+        a = gsl_matrix_int_get(A, i, 0);
+        b = gsl_matrix_int_get(B, 0, j);
+        temp = a * b;
+        for (k = 1; k < A->size2; k++)
         {
-          for (j = 0; j < C->size2; j++)
-            {
-              a = gsl_matrix_int_get(A, i, 0);
-              b = gsl_matrix_int_get(B, 0, j);
-              temp = a * b;
-              for (k = 1; k < A->size2; k++)
-                {
-                  a = gsl_matrix_int_get(A, i, k);
-                  b = gsl_matrix_int_get(B, k, j);
-                  temp += a * b;
-                }
-              gsl_matrix_int_set(C, i, j, temp);
-            }
+          a = gsl_matrix_int_get(A, i, k);
+          b = gsl_matrix_int_get(B, k, j);
+          temp += a * b;
         }
-
-      return GSL_SUCCESS;
+        gsl_matrix_int_set(C, i, j, temp);
+      }
     }
+    return GSL_SUCCESS;
+  }
 }
 
 void Init_gsl_matrix_int_init(VALUE module);

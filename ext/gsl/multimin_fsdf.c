@@ -4,10 +4,10 @@
 
 static VALUE cfsdf;
 #ifndef CHECK_MULTIMIN_FUNCTION_FSDF
-#define CHECK_MULTIMIN_FUNCTION_FSDF(x) if(CLASS_OF(x)!=cfsdf)\
-      rb_raise(rb_eTypeError,\
-      "wrong argument type %s (GSL::MultiMin::Function_fsdf expected)",\
-      rb_class2name(CLASS_OF(x)));
+#define CHECK_MULTIMIN_FUNCTION_FSDF(x) if(CLASS_OF(x)!=cfsdf) \
+    rb_raise(rb_eTypeError, \
+             "wrong argument type %s (GSL::MultiMin::Function_fsdf expected)", \
+             rb_class2name(CLASS_OF(x)));
 #endif
 extern VALUE cgsl_multimin_function_fdf;
 

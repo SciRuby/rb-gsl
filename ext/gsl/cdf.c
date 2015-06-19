@@ -18,9 +18,9 @@
 VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double));
 VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa, double (*f)(double, double));
 VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb,
-            double (*f)(double, double, double));
+                           double (*f)(double, double, double));
 VALUE rb_gsl_eval_pdf_cdf2_uint(VALUE xx, VALUE aa,
-               double (*f)(unsigned int, double));
+                                double (*f)(unsigned int, double));
 
 
 static VALUE rb_gsl_cdf_gaussian_P(int argc, VALUE *argv, VALUE obj)
@@ -530,7 +530,7 @@ void Init_gsl_cdf(VALUE module)
   rb_define_module_function(module, "cdf_ugaussian_Qinv", rb_gsl_cdf_gaussian_Qinv, -1);
 
   rb_define_module_function(module, "cdf_exponential_P", rb_gsl_cdf_exponential_P, 2);
- rb_define_module_function(module, "cdf_exponential_Q", rb_gsl_cdf_exponential_Q, 2);
+  rb_define_module_function(module, "cdf_exponential_Q", rb_gsl_cdf_exponential_Q, 2);
   rb_define_module_function(module, "cdf_exponential_Pinv", rb_gsl_cdf_exponential_Pinv, 2);
   rb_define_module_function(module, "cdf_exponential_Qinv", rb_gsl_cdf_exponential_Qinv, 2);
 
@@ -617,12 +617,12 @@ void Init_gsl_cdf(VALUE module)
   rb_define_module_function(mgsl_cdf, "ugaussian_Qinv", rb_gsl_cdf_gaussian_Qinv, -1);
 
   rb_define_module_function(mgsl_cdf, "exponential_P", rb_gsl_cdf_exponential_P, 2);
- rb_define_module_function(mgsl_cdf, "exponential_Q", rb_gsl_cdf_exponential_Q, 2);
+  rb_define_module_function(mgsl_cdf, "exponential_Q", rb_gsl_cdf_exponential_Q, 2);
   rb_define_module_function(mgsl_cdf, "exponential_Pinv", rb_gsl_cdf_exponential_Pinv, 2);
   rb_define_module_function(mgsl_cdf, "exponential_Qinv", rb_gsl_cdf_exponential_Qinv, 2);
 
- rb_define_module_function(mgsl_cdf, "laplace_P", rb_gsl_cdf_laplace_P, 2);
- rb_define_module_function(mgsl_cdf, "laplace_Q", rb_gsl_cdf_laplace_Q, 2);
+  rb_define_module_function(mgsl_cdf, "laplace_P", rb_gsl_cdf_laplace_P, 2);
+  rb_define_module_function(mgsl_cdf, "laplace_Q", rb_gsl_cdf_laplace_Q, 2);
   rb_define_module_function(mgsl_cdf, "laplace_Pinv", rb_gsl_cdf_laplace_Pinv, 2);
   rb_define_module_function(mgsl_cdf, "laplace_Qinv", rb_gsl_cdf_laplace_Qinv, 2);
 

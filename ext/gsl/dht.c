@@ -26,7 +26,7 @@ static VALUE rb_gsl_dht_alloc(int argc, VALUE *argv, VALUE klass)
     CHECK_FIXNUM(argv[0]);
     Need_Float(argv[1]); Need_Float(argv[2]);
     t = gsl_dht_new(FIX2INT(argv[0]), NUM2DBL(argv[1]), NUM2DBL(argv[2]));
-   break;
+    break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments (%d for 1 or 3)", argc);
     break;
@@ -75,7 +75,7 @@ static VALUE rb_gsl_dht_apply(int argc, VALUE *argv, VALUE obj)
 #endif
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector expected)",
-         rb_class2name(CLASS_OF(argv[0])));
+               rb_class2name(CLASS_OF(argv[0])));
     }
     gsl_dht_apply(t, ptr1, ptr2);
     return ary;
@@ -88,7 +88,7 @@ static VALUE rb_gsl_dht_apply(int argc, VALUE *argv, VALUE obj)
 }
 
 static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n,
-             double (*sample)(const gsl_dht*, int))
+                                  double (*sample)(const gsl_dht*, int))
 {
   gsl_dht *t = NULL;
   gsl_vector_int *vi;
@@ -141,9 +141,8 @@ static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n,
 #endif
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector::Int expected)",
-         rb_class2name(CLASS_OF(n)));
+               rb_class2name(CLASS_OF(n)));
     }
-
   }
   return Qnil;
 }

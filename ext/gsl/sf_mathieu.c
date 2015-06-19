@@ -10,7 +10,7 @@ static VALUE rb_gsl_sf_mathieu_alloc(VALUE klass, VALUE n, VALUE q)
 }
 
 static VALUE sf_mathieu_eval(VALUE order, VALUE qq,
-  int (*f)(int, double, gsl_sf_result*))
+                             int (*f)(int, double, gsl_sf_result*))
 {
   gsl_sf_result r;
   (*f)(FIX2INT(order), NUM2DBL(qq), &r);
@@ -18,7 +18,7 @@ static VALUE sf_mathieu_eval(VALUE order, VALUE qq,
 }
 
 static VALUE sf_mathieu_eval2(VALUE n1, VALUE n2, VALUE q, VALUE x,
-  int (*f)(int, int, double, double, gsl_sf_result*))
+                              int (*f)(int, int, double, double, gsl_sf_result*))
 {
   gsl_sf_result r;
   (*f)(FIX2INT(n1),FIX2INT(n2),  NUM2DBL(q), NUM2DBL(x), &r);
@@ -26,7 +26,7 @@ static VALUE sf_mathieu_eval2(VALUE n1, VALUE n2, VALUE q, VALUE x,
 }
 
 static VALUE sf_mathieu_array_eval(int argc, VALUE *argv,
-  int (*f)(int, int, double, gsl_sf_mathieu_workspace*, double[]))
+                                   int (*f)(int, int, double, gsl_sf_mathieu_workspace*, double[]))
 {
   gsl_sf_mathieu_workspace *w;
   gsl_vector *v;
@@ -36,7 +36,7 @@ static VALUE sf_mathieu_array_eval(int argc, VALUE *argv,
   case 4:
     if (!rb_obj_is_kind_of(argv[3], cWorkspace)) {
       rb_raise(rb_eTypeError, "Wrong argument type 3 (%s detected, %s expected)",
-        rb_class2name(CLASS_OF(argv[3])), rb_class2name(cWorkspace));
+               rb_class2name(CLASS_OF(argv[3])), rb_class2name(cWorkspace));
     }
     n1 = FIX2INT(argv[0]);
     n2 = FIX2INT(argv[1]);
@@ -52,7 +52,7 @@ static VALUE sf_mathieu_array_eval(int argc, VALUE *argv,
 }
 
 static VALUE sf_mathieu_array_eval2(int argc, VALUE *argv,
-  int (*f)(int, int,  double, double, gsl_sf_mathieu_workspace*, double[]))
+                                    int (*f)(int, int,  double, double, gsl_sf_mathieu_workspace*, double[]))
 {
   gsl_sf_mathieu_workspace *w;
   gsl_vector *v;
@@ -62,7 +62,7 @@ static VALUE sf_mathieu_array_eval2(int argc, VALUE *argv,
   case 5:
     if (!rb_obj_is_kind_of(argv[4], cWorkspace)) {
       rb_raise(rb_eTypeError, "Wrong argument type 4 (%s detected, %s expected)",
-        rb_class2name(CLASS_OF(argv[4])), rb_class2name(cWorkspace));
+               rb_class2name(CLASS_OF(argv[4])), rb_class2name(cWorkspace));
     }
     n1 = FIX2INT(argv[0]);
     n2 = FIX2INT(argv[1]);
@@ -78,7 +78,7 @@ static VALUE sf_mathieu_array_eval2(int argc, VALUE *argv,
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
 }
 static VALUE sf_mathieu_array_eval3(int argc, VALUE *argv,
-  int (*f)(int, int, int, double, double, gsl_sf_mathieu_workspace*, double[]))
+                                    int (*f)(int, int, int, double, double, gsl_sf_mathieu_workspace*, double[]))
 {
   gsl_sf_mathieu_workspace *w;
   gsl_vector *v;
@@ -88,7 +88,7 @@ static VALUE sf_mathieu_array_eval3(int argc, VALUE *argv,
   case 6:
     if (!rb_obj_is_kind_of(argv[5], cWorkspace)) {
       rb_raise(rb_eTypeError, "Wrong argument type 5 (%s detected, %s expected)",
-        rb_class2name(CLASS_OF(argv[5])), rb_class2name(cWorkspace));
+               rb_class2name(CLASS_OF(argv[5])), rb_class2name(cWorkspace));
     }
     n1 = FIX2INT(argv[0]);
     n2 = FIX2INT(argv[1]);
@@ -105,14 +105,14 @@ static VALUE sf_mathieu_array_eval3(int argc, VALUE *argv,
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
 }
 static VALUE sf_mathieu_eval_int_double2(VALUE order, VALUE qq, VALUE zz,
-  int (*f)(int, double, double, gsl_sf_result*))
+                                         int (*f)(int, double, double, gsl_sf_result*))
 {
   gsl_sf_result r;
   (*f)(FIX2INT(order), NUM2DBL(qq), NUM2DBL(zz), &r);
   return rb_float_new(r.val);
 }
 static VALUE sf_mathieu_eval_e_int_double2(VALUE order, VALUE qq, VALUE zz,
-  int (*f)(int, double, double, gsl_sf_result*))
+                                           int (*f)(int, double, double, gsl_sf_result*))
 {
   gsl_sf_result *r;
   VALUE val;
@@ -122,7 +122,7 @@ static VALUE sf_mathieu_eval_e_int_double2(VALUE order, VALUE qq, VALUE zz,
 }
 
 static VALUE sf_mathieu_eval_e_int2_double2(VALUE n1, VALUE n2, VALUE qq, VALUE zz,
-  int (*f)(int, int, double, double, gsl_sf_result*))
+                                            int (*f)(int, int, double, double, gsl_sf_result*))
 {
   gsl_sf_result *r;
   VALUE val;
