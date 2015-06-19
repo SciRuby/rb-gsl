@@ -30,9 +30,7 @@ static VALUE cgsl_integration_qaws_table, cgsl_integration_qawo_table;
 
 static VALUE cgsl_integration_workspace;
 
-#ifdef GSL_1_14_LATER
 static VALUE cgsl_integration_glfixed_table;
-#endif
 
 static int get_a_b(int argc, VALUE *argv, int argstart, double *a, double *b);
 static int get_epsabs_epsrel(int argc, VALUE *argv, int argstart,
@@ -1029,7 +1027,6 @@ static VALUE rb_gsl_integration_workspace_elist(VALUE obj)
   return Data_Wrap_Struct(cgsl_vector_view_ro, 0, free, v);
 }
 
-#ifdef GSL_1_14_LATER
 static VALUE rb_gsl_integration_glfixed_table_alloc(VALUE klass, VALUE n)
 {
   gsl_integration_glfixed_table *t;
@@ -1054,7 +1051,6 @@ static VALUE rb_gsl_integration_glfixed(VALUE obj, VALUE aa, VALUE bb, VALUE tt)
   res = gsl_integration_glfixed(f, a, b, t);
   return rb_float_new(res);
 }
-#endif
 
 void Init_gsl_integration(VALUE module)
 {
@@ -1157,13 +1153,10 @@ void Init_gsl_integration(VALUE module)
   rb_define_module_function(mgsl_integ, "qawo", rb_gsl_integration_qawo, -1);
   rb_define_module_function(mgsl_integ, "qawf", rb_gsl_integration_qawf, -1);
 
-#ifdef GSL_1_14_LATER
   cgsl_integration_glfixed_table = rb_define_class_under(mgsl_integ, "Glfixed_table", cGSL_Object);
   rb_define_singleton_method(cgsl_integration_glfixed_table, "alloc",
            rb_gsl_integration_glfixed_table_alloc, 1);
   rb_define_method(cgsl_function, "glfixed", rb_gsl_integration_glfixed, 3);
-#endif
-
 }
 
 #undef EPSABS_DEFAULT

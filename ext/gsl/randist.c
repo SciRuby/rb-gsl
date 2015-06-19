@@ -745,7 +745,6 @@ static VALUE rb_gsl_ran_binomial(int argc, VALUE *argv, VALUE obj)
   return UINT2NUM(gsl_ran_binomial(r, p, n));
 }
 
-#ifdef GSL_1_4_LATER
 static VALUE rb_gsl_ran_binomial_tpe(int argc, VALUE *argv, VALUE obj)
 {
   gsl_rng *r = NULL;
@@ -780,7 +779,6 @@ static VALUE rb_gsl_ran_binomial_tpe(int argc, VALUE *argv, VALUE obj)
   }
   return UINT2NUM(gsl_ran_binomial_tpe(r, p, n));
 }
-#endif
 
 static VALUE rb_gsl_ran_binomial_pdf(VALUE obj, VALUE x, VALUE p, VALUE n)
 {
@@ -1218,7 +1216,6 @@ static VALUE rb_gsl_ran_sample(VALUE obj, VALUE vv, VALUE kk)
   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v2);;
 }
 
-#ifdef GSL_1_3_LATER
 static VALUE rb_gsl_ran_dirichlet(int argc, VALUE *argv, VALUE obj)
 {
   gsl_rng *r = NULL;
@@ -1253,7 +1250,6 @@ static VALUE rb_gsl_ran_dirichlet_lnpdf(VALUE obj, VALUE a, VALUE t)
   Data_Get_Struct(t, gsl_vector, theta);
   return rb_float_new(gsl_ran_dirichlet_lnpdf(alpha->size, alpha->data, theta->data));
 }
-#endif
 
 static VALUE rb_gsl_ran_discrete_new(VALUE klass, VALUE vv)
 {
@@ -1588,7 +1584,6 @@ static VALUE rb_gsl_ran_erlang_pdf(VALUE obj, VALUE x, VALUE a, VALUE n)
 }
 */
 
-#ifdef GSL_1_8_LATER
 
 static VALUE rb_gsl_ran_gaussian_ziggurat(int argc, VALUE *argv, VALUE obj)
 {
@@ -1654,7 +1649,6 @@ static VALUE rb_gsl_ran_gamma_mt(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_ran_eval2(argc, argv, obj, gsl_ran_gamma_mt);
 }
-#endif
 
 void Init_gsl_ran(VALUE module)
 {
@@ -1787,10 +1781,8 @@ void Init_gsl_ran(VALUE module)
 
   rb_define_module_function(mgsl_ran, "binomial", rb_gsl_ran_binomial, -1);
   rb_define_method(cgsl_rng, "binomial", rb_gsl_ran_binomial, -1);
-#ifdef GSL_1_4_LATER
   rb_define_module_function(mgsl_ran, "binomial_tpe", rb_gsl_ran_binomial_tpe, -1);
   rb_define_method(cgsl_rng, "binomial_tpe", rb_gsl_ran_binomial_tpe, -1);
-#endif
   rb_define_module_function(mgsl_ran,  "binomial_pdf", rb_gsl_ran_binomial_pdf, 3);
 
   rb_define_module_function(mgsl_ran, "negative_binomial",
@@ -1841,21 +1833,16 @@ void Init_gsl_ran(VALUE module)
   rb_define_method(cgsl_rng, "discrete", rb_gsl_ran_discrete, 1);
   rb_define_module_function(mgsl_ran,  "discrete_pdf", rb_gsl_ran_discrete_pdf, 2);
 
-#ifdef GSL_1_3_LATER
   rb_define_method(cgsl_rng, "dirichlet", rb_gsl_ran_dirichlet, -1);
   rb_define_module_function(mgsl_ran,  "dirichlet_pdf", rb_gsl_ran_dirichlet_pdf, 2);
   rb_define_module_function(mgsl_ran,  "dirichlet_lnpdf", rb_gsl_ran_dirichlet_lnpdf, 2);
-#endif
 
   /*  rb_define_method(cgsl_rng, "erlang", rb_gsl_ran_erlang, 2);
   rb_define_method(module, "ran_erlang_pdf", rb_gsl_ran_erlang_pdf, 3);
   rb_define_method(mgsl_ran, "erlang_pdf", rb_gsl_ran_erlang_pdf, 3);*/
 
-#ifdef GSL_1_8_LATER
   rb_define_module_function(mgsl_ran, "gaussian_ziggurat", rb_gsl_ran_gaussian_ziggurat, -1);
   rb_define_method(cgsl_rng, "gaussian_ziggurat", rb_gsl_ran_gaussian_ziggurat, -1);
   rb_define_module_function(mgsl_ran, "gamma_mt", rb_gsl_ran_gamma_mt, -1);
   rb_define_method(cgsl_rng, "gamma_mt", rb_gsl_ran_gamma_mt, -1);
-#endif
-
 }

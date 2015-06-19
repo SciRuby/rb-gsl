@@ -41,21 +41,16 @@ static const gsl_qrng_type* get_gsl_qrng_type(VALUE t)
   else if (strstr(name, "hdsobol")) return T = qrngextra_hdsobol;
 #endif
     else if (strstr(name, "sobol")) return T = gsl_qrng_sobol;
-#ifdef GSL_1_11_LATER
     else if (strstr(name, "reversehalton")) return T = gsl_qrng_reversehalton;
     else if (strstr(name, "halton")) return T = gsl_qrng_halton;
-
-#endif
     else rb_raise(rb_eArgError, "unknown type");
     break;
   case T_FIXNUM:
     switch (FIX2INT(t)) {
     case GSL_QRNG_NIEDERREITER_2: T = gsl_qrng_niederreiter_2; break;
     case GSL_QRNG_SOBOL: T = gsl_qrng_sobol; break;
-#ifdef GSL_1_11_LATER
     case GSL_QRNG_HALTON: T = gsl_qrng_halton; break;
     case GSL_QRNG_REVERSEHALTON: T = gsl_qrng_reversehalton; break;
-#endif
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
   case GSL_QRNG_HDSOBOL: T = qrngextra_hdsobol; break;
 #endif
@@ -81,7 +76,6 @@ static VALUE rb_gsl_qrng_new(VALUE klass, VALUE t, VALUE dd)
   return Data_Wrap_Struct(klass, 0, gsl_qrng_free, q);
 }
 
-#ifdef GSL_1_2_LATER
 static VALUE rb_gsl_qrng_init(VALUE obj)
 {
   gsl_qrng *q = NULL;
@@ -89,7 +83,6 @@ static VALUE rb_gsl_qrng_init(VALUE obj)
   gsl_qrng_init(q);
   return obj;
 }
-#endif
 
 static VALUE rb_gsl_qrng_name(VALUE obj)
 {
@@ -148,9 +141,7 @@ void Init_gsl_qrng(VALUE module)
 
   rb_define_singleton_method(cgsl_qrng, "new", rb_gsl_qrng_new, 2);
   rb_define_singleton_method(cgsl_qrng, "alloc", rb_gsl_qrng_new, 2);
-#ifdef GSL_1_2_LATER
   rb_define_method(cgsl_qrng, "init", rb_gsl_qrng_init, 0);
-#endif
   rb_define_method(cgsl_qrng, "name", rb_gsl_qrng_name, 0);
   rb_define_method(cgsl_qrng, "size", rb_gsl_qrng_size, 0);
   rb_define_method(cgsl_qrng, "clone", rb_gsl_qrng_clone, 0);
@@ -161,10 +152,8 @@ void Init_gsl_qrng(VALUE module)
 
   rb_define_const(cgsl_qrng, "NIEDERREITER_2", INT2FIX(GSL_QRNG_NIEDERREITER_2));
   rb_define_const(cgsl_qrng, "SOBOL", INT2FIX(GSL_QRNG_SOBOL));
-#ifdef GSL_1_11_LATER
   rb_define_const(cgsl_qrng, "HALTON", INT2FIX(GSL_QRNG_HALTON));
   rb_define_const(cgsl_qrng, "REVERSEHALTON", INT2FIX(GSL_QRNG_REVERSEHALTON));
-#endif
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
     rb_define_const(cgsl_qrng, "HDSOBOL", INT2FIX(GSL_QRNG_HDSOBOL));
 #endif

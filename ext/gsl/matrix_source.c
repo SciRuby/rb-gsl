@@ -1400,7 +1400,6 @@ static VALUE FUNCTION(rb_gsl_matrix,column)(VALUE obj, VALUE j)
   return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,col_view), 0, free, vv);
 }
 
-#ifdef GSL_1_10_LATER
 static VALUE FUNCTION(rb_gsl_matrix,subrow)(VALUE obj, VALUE i, VALUE offset,
   VALUE n)
 {
@@ -1421,7 +1420,6 @@ static VALUE FUNCTION(rb_gsl_matrix,subcolumn)(VALUE obj, VALUE j, VALUE offset,
   *vv = FUNCTION(gsl_matrix,subcolumn)(m, FIX2INT(j), FIX2INT(offset), FIX2INT(n));
   return Data_Wrap_Struct(QUALIFIED_VIEW(cgsl_vector,col_view), 0, free, vv);
 }
-#endif
 
 static VALUE FUNCTION(rb_gsl_matrix,diagonal)(VALUE obj)
 {
@@ -2330,7 +2328,6 @@ static VALUE FUNCTION(rb_gsl_matrix,vertcat_singleton)(VALUE klass, VALUE mm, VA
   return FUNCTION(rb_gsl_matrix,vertcat)(mm, mm2);
 }
 
-#ifdef GSL_1_9_LATER
 static VALUE FUNCTION(rb_gsl_matrix,property)(VALUE obj,
   int (*f)(const GSL_TYPE(gsl_matrix)*)) {
   GSL_TYPE(gsl_matrix) *m;
@@ -2361,9 +2358,7 @@ static VALUE FUNCTION(rb_gsl_matrix,isneg2)(VALUE obj)
 {
   return FUNCTION(rb_gsl_matrix,property2)(obj, FUNCTION(gsl_matrix,isneg));
 }
-#endif
 
-#ifdef GSL_1_10_LATER
 static VALUE FUNCTION(rb_gsl_matrix,isnonneg)(VALUE obj)
 {
   return FUNCTION(rb_gsl_matrix,property)(obj, FUNCTION(gsl_matrix,isnonneg));
@@ -2372,7 +2367,6 @@ static VALUE FUNCTION(rb_gsl_matrix,isnonneg2)(VALUE obj)
 {
   return FUNCTION(rb_gsl_matrix,property2)(obj, FUNCTION(gsl_matrix,isnonneg));
 }
-#endif
 
 static VALUE FUNCTION(rb_gsl_matrix,symmetrize)(VALUE obj)
 {
@@ -2561,13 +2555,11 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
        FUNCTION(rb_gsl_matrix,column), 1);
   rb_define_alias(GSL_TYPE(cgsl_matrix), "col", "column");
 
-#ifdef GSL_1_10_LATER
  rb_define_method(GSL_TYPE(cgsl_matrix), "subrow",
        FUNCTION(rb_gsl_matrix,subrow), 3);
  rb_define_method(GSL_TYPE(cgsl_matrix), "subcolumn",
        FUNCTION(rb_gsl_matrix,subcolumn), 3);
   rb_define_alias(GSL_TYPE(cgsl_matrix), "subcol", "subcolumn");
-#endif
 
   rb_define_method(GSL_TYPE(cgsl_matrix), "diagonal",
        FUNCTION(rb_gsl_matrix,diagonal), 0);
@@ -2692,17 +2684,13 @@ void FUNCTION(Init_gsl_matrix,init)(VALUE module)
   rb_define_method(GSL_TYPE(cgsl_matrix), "vertcat", FUNCTION(rb_gsl_matrix,vertcat), 1);
   rb_define_singleton_method(GSL_TYPE(cgsl_matrix), "vertcat", FUNCTION(rb_gsl_matrix,vertcat_singleton), 2);
 
-#ifdef GSL_1_9_LATER
   rb_define_method(GSL_TYPE(cgsl_matrix), "ispos", FUNCTION(rb_gsl_matrix,ispos), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "ispos?", FUNCTION(rb_gsl_matrix,ispos2), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "isneg", FUNCTION(rb_gsl_matrix,isneg), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "isneg?", FUNCTION(rb_gsl_matrix,isneg2), 0);
-#endif
 
-#ifdef GSL_1_10_LATER
   rb_define_method(GSL_TYPE(cgsl_matrix), "isnonneg", FUNCTION(rb_gsl_matrix,isnonneg), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "isnonneg?", FUNCTION(rb_gsl_matrix,isnonneg2), 0);
-#endif
 
   rb_define_method(GSL_TYPE(cgsl_matrix), "symmetrize", FUNCTION(rb_gsl_matrix,symmetrize), 0);
   rb_define_method(GSL_TYPE(cgsl_matrix), "symmetrize!", FUNCTION(rb_gsl_matrix,symmetrize_bang), 0);

@@ -390,9 +390,7 @@ const gsl_interp_type* get_interp_type(VALUE t)
     type = FIX2INT(t);
     switch (type) {
     case GSL_INTERP_LINEAR: return gsl_interp_linear; break;
-#ifdef GSL_1_1_LATER
     case GSL_INTERP_POLYNOMIAL: return gsl_interp_polynomial; break;
-#endif
     case GSL_INTERP_CSPLINE: return gsl_interp_cspline; break;
     case GSL_INTERP_CSPLINE_PERIODIC: return gsl_interp_cspline_periodic; break;
     case GSL_INTERP_AKIMA: return gsl_interp_akima; break;
@@ -406,10 +404,8 @@ const gsl_interp_type* get_interp_type(VALUE t)
     strcpy(name, STR2CSTR(t));
     if (str_tail_grep(name, "linear") == 0) {
       return gsl_interp_linear;
-#ifdef GSL_1_1_LATER
     } else if (str_tail_grep(name, "polynomial") == 0) {
       return gsl_interp_polynomial;
-#endif
     } else if (str_tail_grep(name, "cspline") == 0) {
       return gsl_interp_cspline;
     } else if (str_tail_grep(name, "cspline_periodic") == 0) {
@@ -451,10 +447,8 @@ static void rb_gsl_interp_define_const(VALUE klass)
   rb_define_const(klass, "AKIMA_PERIODIC", INT2FIX(GSL_INTERP_AKIMA_PERIODIC));
 
   rb_define_const(klass, "Linear", INT2FIX(GSL_INTERP_LINEAR));
-#ifdef GSL_1_1_LATER
   rb_define_const(klass, "POLYNOMIAL", INT2FIX(GSL_INTERP_POLYNOMIAL));
   rb_define_const(klass, "Polynomial", INT2FIX(GSL_INTERP_POLYNOMIAL));
-#endif
   rb_define_const(klass, "CSpline", INT2FIX(GSL_INTERP_CSPLINE));
   rb_define_const(klass, "CSpline_Periodic", INT2FIX(GSL_INTERP_CSPLINE_PERIODIC));
   rb_define_const(klass, "Akima", INT2FIX(GSL_INTERP_AKIMA));

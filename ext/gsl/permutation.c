@@ -121,7 +121,6 @@ static VALUE rb_gsl_permutation_get(int argc, VALUE *argv, VALUE obj)
   return Qnil;
 }
 
-#ifdef GSL_1_1_LATER
 static VALUE rb_gsl_permutation_clone(VALUE obj)
 {
   gsl_permutation *p, *p2 = NULL;
@@ -142,7 +141,6 @@ static VALUE rb_gsl_permutation_memcpy(VALUE obj, VALUE pp1, VALUE pp2)
   gsl_permutation_memcpy(p1, p2);
   return pp1;
 }
-#endif
 
 static VALUE rb_gsl_permutation_swap(VALUE obj, VALUE i, VALUE j)
 {
@@ -280,7 +278,6 @@ static VALUE rb_gsl_permute_vector_inverse(VALUE obj, VALUE pp, VALUE vv)
 }
 
 /* singleton method */
-#ifdef GSL_1_2_LATER
 static VALUE rb_gsl_permutation_mul(VALUE obj, VALUE ppa, VALUE ppb)
 {
   gsl_permutation *p = NULL;
@@ -300,7 +297,6 @@ static VALUE rb_gsl_permutation_mul(VALUE obj, VALUE ppa, VALUE ppb)
   if (flag == 1) return obj;
   else return Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p);
 }
-#endif
 
 static VALUE rb_gsl_permutation_print(VALUE obj);
 
@@ -418,7 +414,6 @@ static VALUE rb_gsl_permutation_fscanf(VALUE obj, VALUE io)
   return INT2FIX(status);
 }
 
-#ifdef GSL_1_2_LATER
 static VALUE rb_gsl_permutation_linear_to_canonical(int argc, VALUE *argv, VALUE obj)
 {
   gsl_permutation *p, *q;
@@ -485,7 +480,6 @@ static VALUE rb_gsl_permutation_canonical_cycles(VALUE obj)
   Data_Get_Struct(obj, gsl_permutation, p);
   return INT2FIX(gsl_permutation_canonical_cycles(p));
 }
-#endif
 
 static VALUE rb_gsl_vector_permute(VALUE obj, VALUE pp)
 {
@@ -546,10 +540,8 @@ void Init_gsl_permutation(VALUE module)
   rb_define_alias(cgsl_permutation, "[]", "get");
   rb_define_method(cgsl_permutation, "set", rb_gsl_permutation_set, 2);
   rb_define_alias(cgsl_permutation, "[]=", "set");
-#ifdef GSL_1_1_LATER
   rb_define_singleton_method(cgsl_permutation, "memcpy", rb_gsl_permutation_memcpy, 2);
   rb_define_method(cgsl_permutation, "clone", rb_gsl_permutation_clone, 0);
-#endif
   rb_define_method(cgsl_permutation, "swap", rb_gsl_permutation_swap, 2);
   rb_define_method(cgsl_permutation, "valid", rb_gsl_permutation_valid, 0);
   rb_define_method(cgsl_permutation, "valid?", rb_gsl_permutation_valid2, 0);
@@ -583,7 +575,6 @@ void Init_gsl_permutation(VALUE module)
   rb_define_method(cgsl_permutation, "fscanf", rb_gsl_permutation_fscanf, 1);
   rb_define_method(cgsl_permutation, "print", rb_gsl_permutation_print, 0);
 
-#ifdef GSL_1_2_LATER
   rb_define_singleton_method(cgsl_permutation, "mul", rb_gsl_permutation_mul, 2);
   rb_define_method(cgsl_permutation, "mul", rb_gsl_permutation_mul, 2);
   rb_define_method(cgsl_permutation, "linear_to_canonical", rb_gsl_permutation_linear_to_canonical, -1);
@@ -594,7 +585,6 @@ void Init_gsl_permutation(VALUE module)
   rb_define_method(cgsl_permutation, "inversions", rb_gsl_permutation_inversions, 0);
   rb_define_method(cgsl_permutation, "linear_cycles", rb_gsl_permutation_linear_cycles, 0);
   rb_define_method(cgsl_permutation, "canonical_cycles", rb_gsl_permutation_canonical_cycles, 0);
-#endif
 
   rb_define_method(cgsl_vector, "permute", rb_gsl_vector_permute, 1);
   rb_define_method(cgsl_vector, "permute_inverse", rb_gsl_vector_permute_inverse, 1);

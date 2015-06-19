@@ -24,9 +24,7 @@ static VALUE cgsl_monte_plain;
 static VALUE cgsl_monte_miser;
 static VALUE cgsl_monte_vegas;
 static VALUE cgsl_monte_function;
-#ifdef GSL_1_13_LATER
 static VALUE cgsl_monte_miser_params, cgsl_monte_vegas_params;
-#endif
 EXTERN VALUE cgsl_vector;
 
 enum {
@@ -661,7 +659,6 @@ static VALUE rb_gsl_monte_vegas_state(VALUE obj)
          INT2FIX(s->mode), INT2FIX(s->verbose));
 }
 
-#ifdef GSL_1_13_LATER
 static VALUE rb_gsl_monte_miser_params_get(VALUE obj)
 {
   gsl_monte_miser_state *s = NULL;
@@ -841,7 +838,6 @@ static VALUE rb_gsl_monte_vegas_runval(VALUE obj)
   rb_ary_store(ary, 1, rb_float_new(sig));
   return ary;
 }
-#endif
 
 void Init_gsl_monte(VALUE module)
 {
@@ -939,7 +935,6 @@ void Init_gsl_monte(VALUE module)
   rb_define_method(cgsl_monte_vegas, "integrate",
        rb_gsl_monte_vegas_integrate, -1);
 
-#ifdef GSL_1_13_LATER
   cgsl_monte_miser_params = rb_define_class_under(cgsl_monte_miser, "Params", cGSL_Object);
   cgsl_monte_vegas_params = rb_define_class_under(cgsl_monte_vegas, "Params", cGSL_Object);
 
@@ -984,8 +979,6 @@ void Init_gsl_monte(VALUE module)
   rb_define_const(cgsl_monte_vegas, "MODE_IMPORTANCE", INT2FIX(GSL_VEGAS_MODE_IMPORTANCE));
   rb_define_const(cgsl_monte_vegas, "MODE_IMPORTANCE_ONLY", INT2FIX(GSL_VEGAS_MODE_IMPORTANCE_ONLY));
   rb_define_const(cgsl_monte_vegas, "MODE_STRATIFIED", INT2FIX(GSL_VEGAS_MODE_STRATIFIED));
-#endif
-
 }
 #ifdef CHECK_MONTE_FUNCTION
 #undef CHECK_MONTE_FUNCTION

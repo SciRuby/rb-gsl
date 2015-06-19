@@ -105,9 +105,7 @@ void Init_gsl_native()
   Init_gsl_rng(mgsl);
   Init_gsl_qrng(mgsl);
   Init_gsl_ran(mgsl);
-#ifdef GSL_1_4_LATER
   Init_gsl_cdf(mgsl);
-#endif
   Init_gsl_stats(mgsl);
 
   Init_gsl_histogram(mgsl);
@@ -121,9 +119,7 @@ void Init_gsl_native()
   Init_gsl_interp(mgsl);
   Init_gsl_spline(mgsl);
   Init_gsl_diff(mgsl);
-#ifdef GSL_1_4_9_LATER
   Init_gsl_deriv(mgsl);
-#endif
 
   Init_gsl_cheb(mgsl);
   Init_gsl_sum(mgsl);
@@ -174,9 +170,7 @@ void Init_gsl_native()
 
   Init_fresnel(mgsl);
 
-#ifdef GSL_1_9_LATER
   Init_bspline(mgsl);
-#endif
 
 #ifdef HAVE_ALF_ALF_H
   Init_alf(mgsl);
@@ -184,9 +178,7 @@ void Init_gsl_native()
 
   Init_geometry(mgsl);
 
-#ifdef GSL_1_14_LATER
   Init_multiset(mgsl);
-#endif
 
   rb_gsl_define_methods(mgsl);
 }
@@ -209,10 +201,8 @@ static void rb_gsl_define_const(VALUE module)
   rb_define_const(module, "PREC_DOUBLE", INT2FIX(GSL_PREC_DOUBLE));
   rb_define_const(module, "PREC_SINGLE", INT2FIX(GSL_PREC_SINGLE));
   rb_define_const(module, "PREC_APPROX", INT2FIX(GSL_PREC_APPROX));
-#ifdef GSL_VERSION
   rb_define_const(module, "VERSION", rb_str_new2(GSL_VERSION));
   rb_define_const(module, "GSL_VERSION", rb_str_new2(GSL_VERSION));
-#endif
 
   rb_define_const(module, "DBL_EPSILON", rb_float_new(GSL_DBL_EPSILON));
   rb_define_const(module, "FLT_EPSILON", rb_float_new(GSL_FLT_EPSILON));
@@ -240,11 +230,8 @@ static void rb_gsl_define_const(VALUE module)
   rb_define_const(module, "ROOT6_DBL_MIN", rb_float_new(GSL_ROOT6_DBL_MIN));
   rb_define_const(module, "LOG_DBL_MIN", rb_float_new(GSL_LOG_DBL_MIN));
 
-#ifdef GSL_1_14_LATER
   rb_define_const(module, "MAJOR_VERSION", INT2FIX(GSL_MAJOR_VERSION));
   rb_define_const(module, "MINOR_VERSION", INT2FIX(GSL_MINOR_VERSION));
-#endif
-
 }
 
 static VALUE rb_gsl_have_tensor(VALUE module)

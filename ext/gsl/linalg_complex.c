@@ -18,9 +18,7 @@ EXTERN VALUE mgsl_linalg;
 EXTERN VALUE cgsl_complex;
 
 static VALUE cgsl_matrix_complex_LU;
-#ifdef GSL_1_10_LATER
 static VALUE cgsl_matrix_complex_C;
-#endif
 
 VALUE rb_gsl_linalg_complex_LU_decomp(int argc, VALUE *argv, VALUE obj)
 {
@@ -306,7 +304,6 @@ static VALUE rb_gsl_linalg_complex_LU_invert(int argc, VALUE *argv, VALUE obj)
   }
   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free, inverse);
 }
-#ifdef GSL_1_1_1_LATER
 static VALUE rb_gsl_linalg_complex_LU_det(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix_complex *m = NULL, *mtmp = NULL;
@@ -446,9 +443,6 @@ static VALUE rb_gsl_linalg_complex_LU_sgndet(int argc, VALUE *argv, VALUE obj)
   }
   return vz;
 }
-#endif
-
-#ifdef GSL_1_10_LATER
 
 static VALUE rb_gsl_linalg_cholesky_decomp(int argc, VALUE *argv, VALUE obj)
 {
@@ -610,15 +604,12 @@ static VALUE rb_gsl_linalg_complex_householder_hv(VALUE obj, VALUE t, VALUE vv, 
   gsl_linalg_complex_householder_hv(*tau, v, w);
   return ww;
 }
-#endif
 
 void Init_gsl_linalg_complex(VALUE module)
 {
   VALUE mgsl_linalg_complex;
   VALUE mgsl_linalg_complex_LU;
-#ifdef GSL_1_10_LATER
   VALUE mgsl_linalg_complex_chol, mgsl_linalg_complex_Householder;
-#endif
 
   mgsl_linalg_complex = rb_define_module_under(module, "Complex");
   mgsl_linalg_complex_LU = rb_define_module_under(mgsl_linalg_complex, "LU");
@@ -676,7 +667,6 @@ void Init_gsl_linalg_complex(VALUE module)
   rb_define_method(cgsl_matrix_complex_LU, "invert",
        rb_gsl_linalg_complex_LU_invert, -1);
 
-#ifdef GSL_1_1_1_LATER
   rb_define_singleton_method(mgsl_linalg_complex, "LU_det",
            rb_gsl_linalg_complex_LU_det, -1);
   rb_define_singleton_method(mgsl_linalg_complex_LU, "det",
@@ -700,9 +690,7 @@ void Init_gsl_linalg_complex(VALUE module)
   rb_define_method(cgsl_matrix_complex, "LU_sgndet", rb_gsl_linalg_complex_LU_sgndet, -1);
   rb_define_alias(cgsl_matrix_complex, "sgndet", "LU_sgndet");
   rb_define_method(cgsl_matrix_complex_LU, "LU_sgndet", rb_gsl_linalg_complex_LU_sgndet, -1);
-#endif
 
-#ifdef GSL_1_10_LATER
   mgsl_linalg_complex_chol = rb_define_module_under(mgsl_linalg_complex, "Cholesky");
   cgsl_matrix_complex_C = rb_define_class_under(mgsl_linalg_complex_chol, "CholeskyMatrix", cgsl_matrix_complex);
   rb_define_singleton_method(mgsl_linalg_complex_chol, "decomp", rb_gsl_linalg_cholesky_decomp, -1);
@@ -736,5 +724,4 @@ void Init_gsl_linalg_complex(VALUE module)
            rb_gsl_linalg_complex_householder_hv, 3);
   rb_define_singleton_method(mgsl_linalg_complex_Householder, "hv",
            rb_gsl_linalg_complex_householder_hv, 3);
-#endif
 }

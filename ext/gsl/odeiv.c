@@ -341,9 +341,7 @@ static const gsl_odeiv_step_type* rb_gsl_odeiv_step_type_get(VALUE tt)
     case GSL_ODEIV_STEP_BSIMP: T = gsl_odeiv_step_bsimp; break;
     case GSL_ODEIV_STEP_GEAR1: T = gsl_odeiv_step_gear1; break;
     case GSL_ODEIV_STEP_GEAR2: T = gsl_odeiv_step_gear2; break;
-#ifdef GSL_1_6_LATER
     case GSL_ODEIV_STEP_RK2SIMP: T = gsl_odeiv_step_rk2simp; break;
-#endif
     default:
       rb_raise(rb_eArgError, "wrong argument type (Fixnum expected)");
       break;
@@ -361,9 +359,7 @@ static const gsl_odeiv_step_type* rb_gsl_odeiv_step_type_get(VALUE tt)
     else if (str_tail_grep(name, "bsimp") == 0) T = gsl_odeiv_step_bsimp;
     else if (str_tail_grep(name, "gear1") == 0) T = gsl_odeiv_step_gear1;
     else if (str_tail_grep(name, "gear2") == 0) T = gsl_odeiv_step_gear2;
-#ifdef GSL_1_6_LATER
     else if (str_tail_grep(name, "rk2simp") == 0) T = gsl_odeiv_step_rk2simp;
-#endif
     else {
       rb_raise(rb_eArgError, "wrong argument type %s", name);
     }
@@ -502,7 +498,6 @@ static VALUE rb_gsl_odeiv_control_yp_new(VALUE klass, VALUE epsabs,
   return Data_Wrap_Struct(klass, 0, gsl_odeiv_control_free, c);
 }
 
-#ifdef GSL_1_2_LATER
 static VALUE rb_gsl_odeiv_control_scaled_new(VALUE klass, VALUE epsabs,
                VALUE epsrel,
                VALUE ay, VALUE adydt,
@@ -520,7 +515,6 @@ static VALUE rb_gsl_odeiv_control_scaled_new(VALUE klass, VALUE epsabs,
            FIX2INT(dd));
   return Data_Wrap_Struct(klass, 0, gsl_odeiv_control_free, c);
 }
-#endif
 
 static VALUE rb_gsl_odeiv_control_init(VALUE obj, VALUE epsabs,
                VALUE epsrel,
@@ -891,9 +885,7 @@ void Init_gsl_odeiv(VALUE module)
   rb_define_singleton_method(cgsl_odeiv_control, "standard_alloc", rb_gsl_odeiv_control_standard_new, 4);
  rb_define_singleton_method(cgsl_odeiv_control, "y_new", rb_gsl_odeiv_control_y_new, 2);
  rb_define_singleton_method(cgsl_odeiv_control, "yp_new", rb_gsl_odeiv_control_yp_new, 2);
-#ifdef GSL_1_2_LATER
  rb_define_singleton_method(cgsl_odeiv_control, "scaled_alloc", rb_gsl_odeiv_control_scaled_new, 5);
-#endif
 
   rb_define_method(cgsl_odeiv_control, "init", rb_gsl_odeiv_control_init, 4);
   rb_define_method(cgsl_odeiv_control, "name", rb_gsl_odeiv_control_name, 0);
