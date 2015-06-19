@@ -12,10 +12,8 @@
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_common.h"
 
-#ifdef GSL_1_6_LATER
 #include <gsl/gsl_wavelet.h>
 #include <gsl/gsl_wavelet2d.h>
-#endif
 
 #ifndef CHECK_WAVELET
 #define CHECK_WAVELET(x) if(!rb_obj_is_kind_of(x,cgsl_wavelet))\
@@ -43,14 +41,11 @@ enum {
   GSL_WAVELET_BSPLINE_CENTERED,
 };
 
-#ifdef GSL_1_6_LATER
 static const gsl_wavelet_type* rb_gsl_wavelet_get_type(VALUE t);
 static VALUE cgsl_wavelet_workspace;
-#endif
 
 static VALUE rb_gsl_wavelet_new(VALUE klass, VALUE t, VALUE m)
 {
-#ifdef GSL_1_6_LATER
   const gsl_wavelet_type *T;
   size_t member;
   gsl_wavelet *w = NULL;
@@ -60,13 +55,8 @@ static VALUE rb_gsl_wavelet_new(VALUE klass, VALUE t, VALUE m)
   w = gsl_wavelet_alloc(T, member);
   if (w == NULL) rb_raise(rb_eNoMemError, "gsl_wavelet_alloc failed");
   return Data_Wrap_Struct(klass, 0, gsl_wavelet_free, w);
-#else
-  rb_raise(rb_eNotImpError, "Wavelet transforms not supported in GSL-%s, use GSL-1.6 or later", GSL_VERSION);
-  return Qnil;
-#endif
 }
 
-#ifdef GSL_1_6_LATER
 static const gsl_wavelet_type* rb_gsl_wavelet_get_type_str(char *name);
 static const gsl_wavelet_type* rb_gsl_wavelet_get_type_int(int t);
 static const gsl_wavelet_type* rb_gsl_wavelet_get_type(VALUE t)
@@ -745,8 +735,6 @@ static VALUE rb_gsl_wavelet2d_nstransform_matrix_inverse2(int argc, VALUE *argv,
         RB_GSL_DWT_INPLACE);
 }
 
-#endif
-
 void Init_wavelet(VALUE module)
 {
   VALUE cgsl_wavelet2d;
@@ -756,7 +744,6 @@ void Init_wavelet(VALUE module)
 
   rb_define_singleton_method(cgsl_wavelet, "alloc", rb_gsl_wavelet_new, 2);
 
-#ifdef GSL_1_6_LATER
   rb_gsl_wavelet_define_const(cgsl_wavelet);
   rb_define_method(cgsl_wavelet, "name", rb_gsl_wavelet_name, 0);
 
@@ -931,8 +918,6 @@ void Init_wavelet(VALUE module)
        rb_gsl_wavelet2d_nstransform_matrix_inverse2, -1);
   rb_define_method(cgsl_wavelet2d, "nstransform_inverse!",
        rb_gsl_wavelet2d_nstransform_matrix_inverse2, -1);
-
-#endif
 }
 
 #undef CHECK_WAVELET

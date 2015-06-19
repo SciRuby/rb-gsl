@@ -51,10 +51,8 @@
 VALUE cgsl_poly, cgsl_poly_int;
 VALUE cgsl_poly_workspace;
 VALUE cgsl_poly_complex_workspace;
-#ifdef GSL_1_1_LATER
 VALUE cgsl_poly_dd;
 VALUE cgsl_poly_taylor;
-#endif
 #endif
 
 #ifdef BASE_INT
@@ -67,9 +65,7 @@ double gsl_poly_int_eval(const BASE c[], const int len, const double x)
 }
 #endif
 #ifdef BASE_DOUBLE
-#ifdef GSL_1_11_LATER
 static VALUE rb_gsl_complex_poly_complex_eval(VALUE a, VALUE b);
-#endif
 static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
 {
   gsl_vector *v = NULL, *vx, *vnew;
@@ -80,18 +76,14 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
   VALUE val;
   double *ptr0;
   double *ptr1, *ptr2;
-#ifdef GSL_1_11_LATER
   gsl_complex *z, zz;
   gsl_vector_complex *vz, *vznew;
   if (rb_obj_is_kind_of(a, cgsl_vector_complex))
     return rb_gsl_complex_poly_complex_eval(a, x);
-#endif
   switch (TYPE(a)) {
   case T_ARRAY:
-#ifdef GSL_1_11_LATER
     if (rb_obj_is_kind_of(rb_ary_entry(a, 0), cgsl_complex))
       return rb_gsl_complex_poly_complex_eval(a, x);
-#endif
     v = make_cvector_from_rarray(a);
     N = v->size;
     ptr0 = v->data;
@@ -150,7 +142,6 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
       ptr1 = NA_PTR_TYPE(x, double*);
       ptr2 = NA_PTR_TYPE(val, double*);
 #endif
-#ifdef GSL_1_11_LATER
     } else if (rb_obj_is_kind_of(x, cgsl_complex)) {
       Data_Get_Struct(x, gsl_complex, z);
       zz = gsl_poly_complex_eval(ptr0, N, *z);
@@ -166,7 +157,6 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
       }
       if (flag == 1) gsl_vector_free(v);
       return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vznew);
-#endif
     } else {
       rb_raise(rb_eTypeError, "Wrong argument type %s (A number, Array, GSL::Vector or NArray expected)",
         rb_class2name(CLASS_OF(a)));
@@ -178,7 +168,7 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
   if (flag == 1) gsl_vector_free(v);
   return val;
 }
-#ifdef GSL_1_11_LATER
+
 static VALUE rb_gsl_complex_poly_complex_eval(VALUE a, VALUE b)
 {
   gsl_vector_complex *coef = NULL, *zb, *vnew;
@@ -244,7 +234,6 @@ static VALUE rb_gsl_complex_poly_complex_eval(VALUE a, VALUE b)
   return ret;
 }
 #endif
-#endif
 
 static VALUE FUNCTION(rb_gsl_poly,eval)(VALUE obj, VALUE xx)
 {
@@ -256,10 +245,8 @@ static VALUE FUNCTION(rb_gsl_poly,eval)(VALUE obj, VALUE xx)
   VALUE x, ary;
   size_t i, j;
 #ifdef BASE_DOUBLE
-#ifdef GSL_1_11_LATER
   gsl_complex *z, zz;
   gsl_vector_complex *vz, *vznew;
-#endif
 #endif
 
   Data_Get_Struct(obj, GSL_TYPE(gsl_poly), p);
@@ -314,7 +301,6 @@ static VALUE FUNCTION(rb_gsl_poly,eval)(VALUE obj, VALUE xx)
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
 #ifdef BASE_DOUBLE
-#ifdef GSL_1_11_LATER
     } else if (rb_obj_is_kind_of(xx, cgsl_complex)) {
       Data_Get_Struct(xx, gsl_complex, z);
       zz = gsl_poly_complex_eval(p->data, p->size, *z);
@@ -328,7 +314,6 @@ static VALUE FUNCTION(rb_gsl_poly,eval)(VALUE obj, VALUE xx)
   gsl_vector_complex_set(vznew, i, zz);
       }
       return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free, vznew);
-#endif
 #endif
     } else {
       rb_raise(rb_eTypeError, "wrong argument type");
@@ -1024,8 +1009,6 @@ static VALUE FUNCTION(rb_gsl_poly,workspace_new)(VALUE klass, VALUE n)
   return Data_Wrap_Struct(klass, 0, gsl_poly_complex_workspace_free, w);
 }
 
-#ifdef GSL_1_1_LATER
-
 /* singleton method of the class Poly */
 static VALUE rb_gsl_poly_dd_init(VALUE obj, VALUE vxa, VALUE vya)
 {
@@ -1149,7 +1132,6 @@ static VALUE rb_gsl_poly_dd_taylor(int argc, VALUE *argv, VALUE obj)
   return Data_Wrap_Struct(cgsl_poly_taylor, 0, gsl_vector_free, c);
 }
 
-#endif
 #endif
 
 static VALUE FUNCTION(rb_gsl_poly,order)(VALUE obj)
@@ -1643,7 +1625,6 @@ static VALUE rb_gsl_poly_wfit(int argc, VALUE *argv, VALUE obj)
 #endif
 
 #ifdef BASE_DOUBLE
-#ifdef GSL_1_13_LATER
 static VALUE rb_gsl_poly_eval_derivs_singleton(int argc, VALUE *argv, VALUE klass)
 {
   VALUE ary;
@@ -1717,7 +1698,6 @@ static VALUE rb_gsl_poly_eval_derivs(int argc, VALUE *argv, VALUE obj)
   gsl_poly_eval_derivs(v->data, lenc, NUM2DBL(argv[0]), v2->data, lenres);
   return Data_Wrap_Struct(cgsl_poly, 0, gsl_vector_free, v2);
 }
-#endif
 #endif
 
 void FUNCTION(Init_gsl_poly,init)(VALUE module)
@@ -1811,18 +1791,14 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
 #ifdef BASE_DOUBLE
   //  rb_define_singleton_method(cgsl_poly, "eval", rb_gsl_poly_eval_singleton, 2);
   rb_define_method(cgsl_poly, "to_i", rb_gsl_poly_to_i, 0);
-#ifdef GSL_1_11_LATER
   rb_define_singleton_method(cgsl_poly, "complex_eval", rb_gsl_poly_eval_singleton, 2);
   rb_define_method(cgsl_vector_complex, "eval", rb_gsl_complex_poly_complex_eval, 1);
-#endif
-#ifdef GSL_1_1_LATER
   cgsl_poly_dd = rb_define_class_under(cgsl_poly, "DividedDifference", cgsl_poly);
   cgsl_poly_taylor = rb_define_class_under(cgsl_poly, "Taylor", cgsl_poly);
   rb_define_singleton_method(cgsl_poly, "dd_init", rb_gsl_poly_dd_init, 2);
 
   rb_define_method(cgsl_poly_dd, "eval",rb_gsl_poly_dd_eval, 2);
   rb_define_method(cgsl_poly_dd, "taylor", rb_gsl_poly_dd_taylor, -1);
-#endif
 #endif
 
   rb_define_method(GSL_TYPE(cgsl_poly), "order", FUNCTION(rb_gsl_poly,order), 0);
@@ -1872,10 +1848,8 @@ void FUNCTION(Init_gsl_poly,init)(VALUE module)
   rb_define_singleton_method(GSL_TYPE(cgsl_poly), "wfit",
        FUNCTION(rb_gsl_poly,wfit), -1);
 
-#ifdef GSL_1_13_LATER
   rb_define_singleton_method(cgsl_poly, "eval_derivs", rb_gsl_poly_eval_derivs_singleton, -1);
   rb_define_method(cgsl_vector, "eval_derivs", rb_gsl_poly_eval_derivs, -1);
-#endif
 
 #endif
 }

@@ -83,21 +83,18 @@ static VALUE rb_gsl_sf_debye_n(int argc, VALUE *argv, VALUE obj)
   case 4:
     return rb_gsl_sf_eval1(gsl_sf_debye_4, x);
     break;
-#ifdef GSL_1_8_LATER
   case 5:
     return rb_gsl_sf_eval1(gsl_sf_debye_5, x);
     break;
   case 6:
     return rb_gsl_sf_eval1(gsl_sf_debye_6, x);
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "n must be 1, 2, 3, or 4");
     break;
   }
 }
 
-#ifdef GSL_1_8_LATER
 static VALUE rb_gsl_sf_debye_5(VALUE obj, VALUE x)
 {
   return rb_gsl_sf_eval1(gsl_sf_debye_5, x);
@@ -117,8 +114,6 @@ static VALUE rb_gsl_sf_debye_6_e(VALUE obj, VALUE x)
   return rb_gsl_sf_eval_e(gsl_sf_debye_6_e, x);
 }
 
-#endif
-
 void Init_gsl_sf_debye(VALUE module)
 {
   VALUE mgsl_sf_debye;
@@ -130,12 +125,10 @@ void Init_gsl_sf_debye(VALUE module)
   rb_define_module_function(module, "debye_3_e",  rb_gsl_sf_debye_3_e, 1);
   rb_define_module_function(module, "debye_4",  rb_gsl_sf_debye_4, 1);
   rb_define_module_function(module, "debye_4_e",  rb_gsl_sf_debye_4_e, 1);
-#ifdef GSL_1_8_LATER
   rb_define_module_function(module, "debye_5",  rb_gsl_sf_debye_5, 1);
   rb_define_module_function(module, "debye_5_e",  rb_gsl_sf_debye_5_e, 1);
   rb_define_module_function(module, "debye_6",  rb_gsl_sf_debye_6, 1);
   rb_define_module_function(module, "debye_6_e",  rb_gsl_sf_debye_6_e, 1);
-#endif
   rb_define_module_function(module, "debye_n",  rb_gsl_sf_debye_n, -1);
 
   mgsl_sf_debye = rb_define_module_under(module, "Debye");
@@ -147,11 +140,9 @@ void Init_gsl_sf_debye(VALUE module)
   rb_define_module_function(mgsl_sf_debye, "three_e",  rb_gsl_sf_debye_3_e, 1);
   rb_define_module_function(mgsl_sf_debye, "four",  rb_gsl_sf_debye_4, 1);
   rb_define_module_function(mgsl_sf_debye, "four_e",  rb_gsl_sf_debye_4_e, 1);
-#ifdef GSL_1_8_LATER
   rb_define_module_function(mgsl_sf_debye, "five",  rb_gsl_sf_debye_5, 1);
   rb_define_module_function(mgsl_sf_debye, "five_e",  rb_gsl_sf_debye_5_e, 1);
   rb_define_module_function(mgsl_sf_debye, "six",  rb_gsl_sf_debye_6, 1);
   rb_define_module_function(mgsl_sf_debye, "six_e",  rb_gsl_sf_debye_6_e, 1);
-#endif
   rb_define_module_function(mgsl_sf_debye, "n",  rb_gsl_sf_debye_n, -1);
 }

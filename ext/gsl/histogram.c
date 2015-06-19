@@ -21,7 +21,6 @@ VALUE cgsl_histogram_bin;
 static VALUE cgsl_histogram_integ;
 
 static VALUE rb_gsl_histogram_alloc_from_file(VALUE klass, VALUE name);
-#ifdef GSL_0_9_4_LATER
 static VALUE rb_gsl_histogram_alloc(int argc, VALUE *argv, VALUE klass)
 {
   gsl_histogram *h = NULL;
@@ -196,7 +195,6 @@ static VALUE rb_gsl_histogram_alloc_with_min_max_step(VALUE klass, VALUE vmin,
   gsl_vector_free(v);
   return Data_Wrap_Struct(klass, 0, gsl_histogram_free, h);
 }
-#endif
 
 static VALUE rb_gsl_histogram_calloc(VALUE klass, VALUE nn)
 {
@@ -491,17 +489,6 @@ static VALUE rb_gsl_histogram_sigma(VALUE obj)
   Data_Get_Struct(obj, gsl_histogram, h);
   return rb_float_new(gsl_histogram_sigma(h));
 }
-
-#ifndef GSL_1_1_LATER
-double gsl_histogram_sum(const gsl_histogram * h)
-{
-  double sum=0;
-  size_t i=0, n;
-  n=h->n;
-  while(i < n) sum += h->bin[i++];
-  return sum;
-}
-#endif
 
 static VALUE rb_gsl_histogram_sum(VALUE obj)
 {
@@ -882,7 +869,6 @@ static VALUE rb_gsl_histogram_pdf_alloc(VALUE klass, VALUE nn)
 {
   gsl_histogram_pdf *h = NULL;
   gsl_histogram *h0 = NULL;
-#ifdef GSL_0_9_4_LATER
   if (rb_obj_is_kind_of(nn, cgsl_histogram)) {
     Data_Get_Struct(nn, gsl_histogram, h0);
     h = gsl_histogram_pdf_alloc(h0->n);
@@ -891,15 +877,9 @@ static VALUE rb_gsl_histogram_pdf_alloc(VALUE klass, VALUE nn)
     CHECK_FIXNUM(nn);
     h = gsl_histogram_pdf_alloc(FIX2INT(nn));
   }
-#else
-  gsl_histogram *hh = NULL;
-  Data_Get_Struct(nn, gsl_histogram, hh);
-  h = gsl_histogram_pdf_alloc(hh);
-#endif
   return Data_Wrap_Struct(klass, 0, gsl_histogram_pdf_free, h);
 }
 
-#ifdef GSL_0_9_4_LATER
 static VALUE rb_gsl_histogram_pdf_init(VALUE obj, VALUE hh)
 {
   gsl_histogram_pdf *p = NULL;
@@ -910,7 +890,6 @@ static VALUE rb_gsl_histogram_pdf_init(VALUE obj, VALUE hh)
   gsl_histogram_pdf_init(p, h);
   return obj;
 }
-#endif
 
 static VALUE rb_gsl_histogram_pdf_sample(VALUE obj, VALUE r)
 {
@@ -1838,7 +1817,6 @@ void Init_gsl_histogram(VALUE module)
   cgsl_histogram_integ = rb_define_class_under(cgsl_histogram, "Integral",
                  cgsl_histogram);
 
-#ifdef GSL_0_9_4_LATER
   rb_define_singleton_method(cgsl_histogram, "alloc", rb_gsl_histogram_alloc, -1);
   /*  rb_define_singleton_method(cgsl_histogram, "new", rb_gsl_histogram_alloc, -1);*/
   rb_define_singleton_method(cgsl_histogram, "[]", rb_gsl_histogram_alloc, -1);
@@ -1852,7 +1830,6 @@ void Init_gsl_histogram(VALUE module)
            rb_gsl_histogram_alloc_with_min_max_step, 3);
   rb_define_singleton_method(cgsl_histogram, "new_with_min_max_step",
            rb_gsl_histogram_alloc_with_min_max_step, 3);
-#endif
 
   rb_define_singleton_method(cgsl_histogram, "calloc",
            rb_gsl_histogram_calloc, 1);
@@ -1942,9 +1919,7 @@ void Init_gsl_histogram(VALUE module)
            rb_gsl_histogram_pdf_alloc, 1);
   /*  rb_define_singleton_method(cgsl_histogram_pdf, "new",
       rb_gsl_histogram_pdf_alloc, 1);*/
-#ifdef GSL_0_9_4_LATER
   rb_define_method(cgsl_histogram_pdf, "init", rb_gsl_histogram_pdf_init, 1);
-#endif
   rb_define_method(cgsl_histogram_pdf, "sample", rb_gsl_histogram_pdf_sample, 1);
 
   rb_define_method(cgsl_histogram_pdf, "range", rb_gsl_histogram_pdf_range, 0);

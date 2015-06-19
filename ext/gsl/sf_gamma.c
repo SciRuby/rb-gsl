@@ -242,12 +242,10 @@ static VALUE rb_gsl_sf_gamma_inc(VALUE obj, VALUE a, VALUE x)
   return rb_gsl_sf_eval_double_double(gsl_sf_gamma_inc_P, a, x);
 }
 
-#ifdef GSL_1_4_LATER
 static VALUE rb_gsl_sf_gamma_inc_e(VALUE obj, VALUE a, VALUE x)
 {
   return rb_gsl_sf_eval_e_double2(gsl_sf_gamma_inc_e, a, x);
 }
-#endif
 
 static VALUE rb_gsl_sf_beta(VALUE obj, VALUE a, VALUE b)
 {
@@ -333,9 +331,7 @@ void Init_gsl_sf_gamma(VALUE module)
   rb_define_module_function(module, "gamma_inc_Q_e",  rb_gsl_sf_gamma_inc_Q_e, 2);
   rb_define_module_function(module, "gamma_inc",  rb_gsl_sf_gamma_inc, 2);
 
-#ifdef GSL_1_4_LATER
   rb_define_module_function(module, "gamma_inc_e",  rb_gsl_sf_gamma_inc_e, 2);
-#endif
   rb_define_module_function(module, "beta",  rb_gsl_sf_beta, 2);
   rb_define_module_function(module, "beta_e",  rb_gsl_sf_beta_e, 2);
   rb_define_module_function(module, "lnbeta",  rb_gsl_sf_lnbeta, 2);

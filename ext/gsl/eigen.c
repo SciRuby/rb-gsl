@@ -33,12 +33,9 @@ static VALUE cgsl_eigen_herm_vectors;
 static VALUE cgsl_eigen_francis_workspace;
 
 #endif
-#ifdef GSL_1_9_LATER
 static VALUE cgsl_eigen_nonsymm_workspace;
 static VALUE cgsl_eigen_nonsymmv_workspace;
-#endif
 
-#ifdef GSL_1_10_LATER
 static VALUE cgensymm, mgensymm;
 static VALUE cgensymmv, mgensymmv;
 static VALUE cgenherm, mgenherm;
@@ -46,7 +43,6 @@ static VALUE cgenhermv, mgenhermv;
 
 static VALUE mgen, mgenv;
 static VALUE cgenw, cgenvw;
-#endif
 
 static VALUE rb_gsl_eigen_symm_alloc(VALUE klass, VALUE nn)
 {
@@ -807,7 +803,6 @@ static VALUE rb_gsl_eigen_francis_Z(int argc, VALUE *argv, VALUE obj)
 }
 #endif
 
-#ifdef GSL_1_9_LATER
 static VALUE rb_gsl_eigen_nonsymm_alloc(VALUE klass, VALUE nn)
 {
   size_t n;
@@ -893,7 +888,6 @@ static VALUE rb_gsl_eigen_nonsymm_narray(int argc, VALUE *argv, VALUE obj)
   if (flagw == 1) gsl_eigen_nonsymm_free(w);
   return nary;
 }
-#endif
 
 static VALUE rb_gsl_eigen_nonsymm(int argc, VALUE *argv, VALUE obj)
 {
@@ -1290,8 +1284,6 @@ static VALUE rb_gsl_eigen_nonsymmv_sort(int argc, VALUE *argv, VALUE obj)
 }
 
 #endif
-
-#ifdef GSL_1_10_LATER
 
 static VALUE rb_gsl_eigen_gensymm_alloc(VALUE klass, VALUE nn)
 {
@@ -2092,7 +2084,6 @@ static VALUE rb_gsl_eigen_genv_sort(int argc, VALUE *argv, VALUE obj)
   }
   return INT2FIX(gsl_eigen_genv_sort(alpha, beta, evec, type));
 }
-#endif
 
 void Init_gsl_eigen(VALUE module)
 {
@@ -2104,10 +2095,8 @@ void Init_gsl_eigen(VALUE module)
 #ifdef HAVE_GSL_EIGEN_FRANCIS
   VALUE mgsl_eigen_francis;
 #endif
-#ifdef GSL_1_9_LATER
   VALUE mgsl_eigen_nonsymmv;
   VALUE mgsl_eigen_nonsymm;
-#endif
 
   mgsl_eigen = rb_define_module_under(module, "Eigen");
   mgsl_eigen_symm = rb_define_module_under(mgsl_eigen, "Symm");
@@ -2210,7 +2199,6 @@ void Init_gsl_eigen(VALUE module)
 
 #endif
 
-#ifdef GSL_1_9_LATER
   mgsl_eigen_nonsymm = rb_define_module_under(mgsl_eigen, "Nonsymm");
   mgsl_eigen_nonsymmv = rb_define_module_under(mgsl_eigen, "Nonsymmv");
   cgsl_eigen_nonsymm_workspace = rb_define_class_under(mgsl_eigen_nonsymm,
@@ -2251,9 +2239,7 @@ void Init_gsl_eigen(VALUE module)
            rb_gsl_eigen_nonsymmv_sort, -1);
   rb_define_module_function(module, "eigen_nonsymmv_sort",
            rb_gsl_eigen_nonsymmv_sort, -1);
-#endif
 
-#ifdef GSL_1_10_LATER
   /** gensymm, gensymmv **/
   mgensymm = rb_define_module_under(mgsl_eigen, "Gensymm");
   cgensymm = rb_define_class_under(mgensymm, "Workspace", cGSL_Object);
@@ -2347,7 +2333,5 @@ void Init_gsl_eigen(VALUE module)
          rb_gsl_eigen_genv_sort, -1);
   rb_define_module_function(module, "eigen_genv_sort",
          rb_gsl_eigen_genv_sort, -1);
-#endif
-
 }
 

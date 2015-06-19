@@ -1713,7 +1713,6 @@ static VALUE rb_gsl_multifit_fit(int argc, VALUE *argv, VALUE klass)
          rb_float_new(chi2), INT2FIX(dof));
 }
 
-#ifdef GSL_1_8_LATER
 static VALUE rb_gsl_multifit_linear_est(VALUE module, VALUE xx, VALUE cc, VALUE ccov)
 {
   gsl_vector *x, *c;
@@ -1726,8 +1725,7 @@ static VALUE rb_gsl_multifit_linear_est(VALUE module, VALUE xx, VALUE cc, VALUE 
   gsl_multifit_linear_est(x, c, cov, &y, &y_err);
   return rb_ary_new3(2, rb_float_new(y), rb_float_new(y_err));
 }
-#endif
-#ifdef GSL_1_11_LATER
+
 static VALUE rb_gsl_multifit_linear_residuals(int argc, VALUE argv[], VALUE module)
 {
   gsl_vector *y, *c, *r;
@@ -1754,8 +1752,6 @@ static VALUE rb_gsl_multifit_linear_residuals(int argc, VALUE argv[], VALUE modu
   gsl_multifit_linear_residuals(X, y, c, r);
   return ret;
 }
-
-#endif
 
 void Init_gsl_multifit(VALUE module)
 {
@@ -1848,14 +1844,11 @@ void Init_gsl_multifit(VALUE module)
   rb_define_singleton_method(cgsl_multifit_fdfsolver, "fit", rb_gsl_multifit_fit, -1);
 
   /***/
-#ifdef GSL_1_8_LATER
   rb_define_module_function(mgsl_multifit, "linear_est", rb_gsl_multifit_linear_est, 3);
   rb_define_module_function(module, "multifit_linear_est", rb_gsl_multifit_linear_est, 3);
-#endif
-#ifdef GSL_1_11_LATER
+
   rb_define_module_function(mgsl_multifit, "linear_residuals", rb_gsl_multifit_linear_residuals, -1);
   rb_define_module_function(module, "multifit_linear_residuals", rb_gsl_multifit_linear_residuals, -1);
-#endif
 
 #ifdef HAVE_NDLINEAR_GSL_MULTIFIT_NDLINEAR_H
   Init_ndlinear(mgsl_multifit);

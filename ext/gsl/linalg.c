@@ -597,7 +597,6 @@ static VALUE rb_gsl_linalg_LU_sgndet(int argc, VALUE *argv, VALUE obj)
   return INT2FIX(signdet);
 }
 
-#ifdef GSL_1_6_LATER
 int gsl_linalg_LQ_solve_T(const gsl_matrix*, const gsl_vector*, const gsl_vector*, gsl_vector*);
 int gsl_linalg_LQ_svx_T (const gsl_matrix*, const gsl_vector*, gsl_vector*);
 int gsl_linalg_LQ_lssolve_T(const gsl_matrix * LQ, const gsl_vector * tau,
@@ -609,9 +608,6 @@ int
 gsl_linalg_LQ_Lsvx_T (const gsl_matrix * LQ, gsl_vector * x);
 int
 gsl_linalg_L_solve_T (const gsl_matrix * L, const gsl_vector * b, gsl_vector * x);
-
-
-#endif
 
 enum {
   LINALG_QR_DECOMP,
@@ -671,7 +667,6 @@ static VALUE rb_gsl_linalg_QR_LQ_decomposition(int argc, VALUE *argv, VALUE obj,
     mdecomp = omatrix;
     RBGSL_SET_CLASS(mdecomp, cgsl_matrix_QR);
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_LQ_DECOMP:
     fdecomp = &gsl_linalg_LQ_decomp;
     m = make_matrix_clone(mtmp);
@@ -683,7 +678,6 @@ static VALUE rb_gsl_linalg_QR_LQ_decomposition(int argc, VALUE *argv, VALUE obj,
     mdecomp = omatrix;
     RBGSL_SET_CLASS(mdecomp, cgsl_matrix_LQ);
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -827,7 +821,6 @@ static VALUE rb_gsl_linalg_QR_decomp_bang(int argc, VALUE *argv, VALUE obj)
   return rb_gsl_linalg_QR_LQ_decomposition(argc, argv, obj, LINALG_QR_DECOMP_BANG);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_LQ_decomp(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QR_LQ_decomposition(argc, argv, obj, LINALG_LQ_DECOMP);
@@ -837,7 +830,6 @@ static VALUE rb_gsl_linalg_LQ_decomp_bang(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QR_LQ_decomposition(argc, argv, obj, LINALG_LQ_DECOMP_BANG);
 }
-#endif
 
 static VALUE rb_gsl_linalg_QR_LQ_solve(int argc, VALUE *argv, VALUE obj, int flag)
 {
@@ -869,13 +861,11 @@ static VALUE rb_gsl_linalg_QR_LQ_solve(int argc, VALUE *argv, VALUE obj, int fla
     fdecomp = &gsl_linalg_QR_decomp;
     fsolve = &gsl_linalg_QR_solve;
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_LQ_SOLVE:
     m = get_matrix(omatrix, cgsl_matrix_LQ, &flagm);
     fdecomp = &gsl_linalg_LQ_decomp;
     fsolve = &gsl_linalg_LQ_solve_T;
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operatioin");
     break;
@@ -946,13 +936,11 @@ static VALUE rb_gsl_linalg_QR_LQ_svx(int argc, VALUE *argv, VALUE obj, int flag)
     fdecomp = &gsl_linalg_QR_decomp;
     fsvx = &gsl_linalg_QR_svx;
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_LQ_SOLVE:
     m = get_matrix(omatrix, cgsl_matrix_LQ, &flagm);
     fdecomp = &gsl_linalg_LQ_decomp;
     fsvx = &gsl_linalg_LQ_svx_T;
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operatioin");
     break;
@@ -1013,13 +1001,11 @@ static VALUE rb_gsl_linalg_QR_LQ_lssolve(int argc, VALUE *argv, VALUE obj, int f
     fdecomp = &gsl_linalg_QR_decomp;
     flssolve = &gsl_linalg_QR_lssolve;
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_LQ_SOLVE:
     m = get_matrix(omatrix, cgsl_matrix_LQ, &flagm);
     fdecomp = &gsl_linalg_LQ_decomp;
     flssolve = &gsl_linalg_LQ_lssolve_T;
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operatioin");
     break;
@@ -1106,7 +1092,6 @@ static VALUE rb_gsl_linalg_QR_lssolve(int argc, VALUE *argv, VALUE obj)
   return rb_gsl_linalg_QR_LQ_lssolve(argc, argv, obj, LINALG_QR_SOLVE);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_LQ_solve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QR_LQ_solve(argc, argv, obj, LINALG_LQ_SOLVE);
@@ -1121,7 +1106,6 @@ static VALUE rb_gsl_linalg_LQ_lssolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QR_LQ_lssolve(argc, argv, obj, LINALG_LQ_SOLVE);
 }
-#endif
 
 static VALUE rb_gsl_linalg_QRLQ_QTvec(int argc, VALUE *argv, VALUE obj,
               int flag)
@@ -1156,14 +1140,12 @@ static VALUE rb_gsl_linalg_QRLQ_QTvec(int argc, VALUE *argv, VALUE obj,
   case LINALG_QR_Qvec:
     gsl_linalg_QR_Qvec(QR, tau, v);
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_LQ_vecQ:
     gsl_linalg_LQ_vecQ(QR, tau, v);
     break;
   case LINALG_LQ_vecQT:
     gsl_linalg_LQ_vecQT(QR, tau, v);
     break;
-#endif
   default:
     break;
   }
@@ -1180,7 +1162,6 @@ static VALUE rb_gsl_linalg_QR_Qvec(int argc, VALUE *argv, VALUE obj)
   return rb_gsl_linalg_QRLQ_QTvec(argc, argv, obj, LINALG_QR_Qvec);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_LQ_vecQT(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQ_QTvec(argc, argv, obj, LINALG_LQ_vecQT);
@@ -1190,7 +1171,6 @@ static VALUE rb_gsl_linalg_LQ_vecQ(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQ_QTvec(argc, argv, obj, LINALG_LQ_vecQ);
 }
-#endif
 
 static VALUE rb_gsl_linalg_QRLQ_unpack(int argc, VALUE *argv, VALUE obj,
                int flag)
@@ -1240,13 +1220,11 @@ static VALUE rb_gsl_linalg_QRLQ_unpack(int argc, VALUE *argv, VALUE obj,
     vQ = Data_Wrap_Struct(cgsl_matrix_Q, 0, gsl_matrix_free, Q);
     vR = Data_Wrap_Struct(cgsl_matrix_R, 0, gsl_matrix_free, R);
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_LQ_UNPACK:
   gsl_linalg_LQ_unpack(QR, tau, Q, R);
   vQ = Data_Wrap_Struct(cgsl_matrix_L, 0, gsl_matrix_free, Q);
   vR = Data_Wrap_Struct(cgsl_matrix_Q, 0, gsl_matrix_free, R);
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -1263,12 +1241,10 @@ static VALUE rb_gsl_linalg_QR_unpack(int argc, VALUE *argv, VALUE obj)
   return rb_gsl_linalg_QRLQ_unpack(argc, argv, obj, LINALG_QR_UNPACK);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_LQ_unpack(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQ_unpack(argc, argv, obj, LINALG_LQ_UNPACK);
 }
-#endif
 
 /* singleton */
 static VALUE rb_gsl_linalg_QRLQ_QRLQsolve(int argc, VALUE *argv, VALUE obj,
@@ -1307,7 +1283,6 @@ static VALUE rb_gsl_linalg_QRLQ_QRLQsolve(int argc, VALUE *argv, VALUE obj,
       rb_raise(rb_eTypeError, "not a R matrix");
     fsolve = &gsl_linalg_QR_QRsolve;
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_LQ_DECOMP:
     /*    if (CLASS_OF(argv[0]) != cgsl_matrix_L)
       rb_raise(rb_eTypeError, "not a L matrix");
@@ -1315,7 +1290,6 @@ static VALUE rb_gsl_linalg_QRLQ_QRLQsolve(int argc, VALUE *argv, VALUE obj,
     rb_raise(rb_eTypeError, "not a Q matrix");*/
     fsolve = &gsl_linalg_LQ_LQsolve;
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -1388,7 +1362,6 @@ static VALUE rb_gsl_linalg_QRLQ_RLsolve(int argc, VALUE *argv, VALUE obj,
     }
     fsolve = &gsl_linalg_R_solve;
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_LQ_LSOLVE:
     if (CLASS_OF(omatrix) != cgsl_matrix_LQ) {
       QR = make_matrix_clone(mtmp);
@@ -1407,7 +1380,6 @@ static VALUE rb_gsl_linalg_QRLQ_RLsolve(int argc, VALUE *argv, VALUE obj,
     }
     fsolve = &gsl_linalg_L_solve_T;
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -1485,7 +1457,6 @@ static VALUE rb_gsl_linalg_QRLQ_RLsvx(int argc, VALUE *argv, VALUE obj,
     fsolve = &gsl_linalg_R_svx;
     break;
     */
-#ifdef GSL_1_6_LATER
   case LINALG_LQ_LSVX:
     if (CLASS_OF(omatrix) != cgsl_matrix_LQ) {
       QR = make_matrix_clone(mtmp);
@@ -1495,7 +1466,6 @@ static VALUE rb_gsl_linalg_QRLQ_RLsvx(int argc, VALUE *argv, VALUE obj,
     }
     fsolve = &gsl_linalg_LQ_Lsvx_T;
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -1530,7 +1500,6 @@ static VALUE rb_gsl_linalg_QR_QRsolve(int argc, VALUE *argv, VALUE obj,
   return rb_gsl_linalg_QRLQ_QRLQsolve(argc, argv, obj, LINALG_QR_DECOMP);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_LQ_Lsolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQ_RLsolve(argc, argv, obj, LINALG_LQ_LSOLVE);
@@ -1552,7 +1521,6 @@ static VALUE rb_gsl_linalg_LQ_LQsolve(int argc, VALUE *argv, VALUE obj,
 {
   return rb_gsl_linalg_QRLQ_QRLQsolve(argc, argv, obj, LINALG_LQ_DECOMP);
 }
-#endif
 
 static VALUE rb_gsl_linalg_QRLQ_update(VALUE obj, VALUE qq, VALUE rr, VALUE ww,
              VALUE vv, int flag)
@@ -1570,11 +1538,9 @@ static VALUE rb_gsl_linalg_QRLQ_update(VALUE obj, VALUE qq, VALUE rr, VALUE ww,
   case LINALG_QR_DECOMP:
     status = gsl_linalg_QR_update(Q, R, w, v);
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_LQ_DECOMP:
     status = gsl_linalg_LQ_update(Q, R, w, v);
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -1589,13 +1555,11 @@ static VALUE rb_gsl_linalg_QR_update(VALUE obj, VALUE qq, VALUE rr, VALUE ww,
   return rb_gsl_linalg_QRLQ_update(obj, qq, rr, ww, vv, LINALG_QR_DECOMP);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_LQ_update(VALUE obj, VALUE qq, VALUE rr, VALUE ww,
              VALUE vv)
 {
   return rb_gsl_linalg_QRLQ_update(obj, qq, rr, ww, vv, LINALG_LQ_DECOMP);
 }
-#endif
 
 /******/
 enum {
@@ -1635,14 +1599,12 @@ static VALUE rb_gsl_linalg_QRLQPT_decomp(int argc, VALUE *argv, VALUE obj, int f
     vp = Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p);
     gsl_linalg_QRPT_decomp(QR, tau, p, &signum, norm);
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
     vQR = Data_Wrap_Struct(cgsl_matrix_PTLQ, 0, gsl_matrix_free, QR);
     vtau = Data_Wrap_Struct(cgsl_vector_tau, 0, gsl_vector_free, tau);
     vp = Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p);
     gsl_linalg_PTLQ_decomp(QR, tau, p, &signum, norm);
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -1682,14 +1644,12 @@ static VALUE rb_gsl_linalg_QRLQPT_decomp_bang(int argc, VALUE *argv, VALUE obj, 
     vp = Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p);
     gsl_linalg_QRPT_decomp(A, tau, p, &signum, norm);
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
     RBGSL_SET_CLASS(vA, cgsl_matrix_PTLQ);
     vtau = Data_Wrap_Struct(cgsl_vector_tau, 0, gsl_vector_free, tau);
     vp = Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p);
     gsl_linalg_PTLQ_decomp(A, tau, p, &signum, norm);
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -1708,7 +1668,6 @@ static VALUE rb_gsl_linalg_QRPT_decomp_bang(int argc, VALUE *argv, VALUE obj)
   return rb_gsl_linalg_QRLQPT_decomp_bang(argc, argv, obj, LINALG_QRPT);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_PTLQ_decomp(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQPT_decomp(argc, argv, obj, LINALG_PTLQ);
@@ -1718,7 +1677,6 @@ static VALUE rb_gsl_linalg_PTLQ_decomp_bang(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQPT_decomp_bang(argc, argv, obj, LINALG_PTLQ);
 }
-#endif
 
 static VALUE rb_gsl_linalg_QRLQPT_decomp2(int argc, VALUE *argv, VALUE obj,int flag)
 {
@@ -1756,13 +1714,11 @@ static VALUE rb_gsl_linalg_QRLQPT_decomp2(int argc, VALUE *argv, VALUE obj,int f
     vR = Data_Wrap_Struct(cgsl_matrix_R, 0, gsl_matrix_free, R);
     gsl_linalg_QRPT_decomp2(A, Q, R, tau, p, &signum, norm);
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
     vR = Data_Wrap_Struct(cgsl_matrix_L, 0, gsl_matrix_free, R);
     vQ = Data_Wrap_Struct(cgsl_matrix_Q, 0, gsl_matrix_free, Q);
     gsl_linalg_PTLQ_decomp2(A, Q, R, tau, p, &signum, norm);
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
   }
@@ -1775,14 +1731,11 @@ static VALUE rb_gsl_linalg_QRPT_decomp2(int argc, VALUE *argv, VALUE obj)
   return rb_gsl_linalg_QRLQPT_decomp2(argc, argv, obj, LINALG_QRPT);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_PTLQ_decomp2(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQPT_decomp2(argc, argv, obj, LINALG_PTLQ);
 }
-#endif
 
-#ifdef GSL_1_6_LATER
 int gsl_linalg_PTLQ_solve_T(const gsl_matrix * QR, const gsl_vector * tau,
           const gsl_permutation * p, const gsl_vector * b,
           gsl_vector * x);
@@ -1801,7 +1754,6 @@ int gsl_linalg_PTLQ_Lsolve_T (const gsl_matrix * LQ,
 int gsl_linalg_PTLQ_Lsvx_T (const gsl_matrix * LQ,
                         const gsl_permutation * p,
                         gsl_vector * x);
-#endif
 
 static VALUE rb_gsl_linalg_QRLQPT_solve(int argc, VALUE *argv, VALUE obj, int flag)
 {
@@ -1820,13 +1772,11 @@ static VALUE rb_gsl_linalg_QRLQPT_solve(int argc, VALUE *argv, VALUE obj, int fl
     fdecomp = &gsl_linalg_QRPT_decomp;
     fsolve = &gsl_linalg_QRPT_solve;
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
     klass = cgsl_matrix_PTLQ;
     fdecomp = &gsl_linalg_PTLQ_decomp;
     fsolve = &gsl_linalg_PTLQ_solve_T;
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -1892,12 +1842,10 @@ static VALUE rb_gsl_linalg_QRPT_solve(int argc, VALUE *argv, VALUE obj)
   return rb_gsl_linalg_QRLQPT_solve(argc, argv, obj, LINALG_QRPT);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_PTLQ_solve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQPT_solve(argc, argv, obj, LINALG_PTLQ);
 }
-#endif
 
 static VALUE rb_gsl_linalg_QRLQPT_svx(int argc, VALUE *argv, VALUE obj, int flag)
 {
@@ -1916,13 +1864,11 @@ static VALUE rb_gsl_linalg_QRLQPT_svx(int argc, VALUE *argv, VALUE obj, int flag
     fdecomp = &gsl_linalg_QRPT_decomp;
     fsvx = &gsl_linalg_QRPT_svx;
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
     klass = cgsl_matrix_PTLQ;
     fdecomp = &gsl_linalg_PTLQ_decomp;
     fsvx = &gsl_linalg_PTLQ_svx_T;
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -1983,12 +1929,10 @@ static VALUE rb_gsl_linalg_QRPT_svx(int argc, VALUE *argv, VALUE obj)
   return rb_gsl_linalg_QRLQPT_svx(argc, argv, obj, LINALG_QRPT);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_PTLQ_svx(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQPT_svx(argc, argv, obj, LINALG_PTLQ);
 }
-#endif
 
 /* singleton */
 static VALUE rb_gsl_linalg_QRLQPT_QRLQsolve(VALUE obj, VALUE qq, VALUE rr,
@@ -2006,13 +1950,11 @@ static VALUE rb_gsl_linalg_QRLQPT_QRLQsolve(VALUE obj, VALUE qq, VALUE rr,
     if (CLASS_OF(rr) != cgsl_matrix_R) rb_raise(rb_eTypeError, "not a R matrix");
     fsolve = &gsl_linalg_QRPT_QRsolve;
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
     if (CLASS_OF(qq) != cgsl_matrix_Q) rb_raise(rb_eTypeError, "not a Q matrix");
     if (CLASS_OF(rr) != cgsl_matrix_L) rb_raise(rb_eTypeError, "not a L matrix");
     fsolve = &gsl_linalg_PTLQ_LQsolve_T;
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -2040,13 +1982,11 @@ static VALUE rb_gsl_linalg_QRPT_QRsolve(VALUE obj, VALUE qq, VALUE rr,
   return rb_gsl_linalg_QRLQPT_QRLQsolve(obj, qq, rr, pp, bb, LINALG_QRPT);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_PTLQ_LQsolve(VALUE obj, VALUE qq, VALUE rr,
           VALUE pp, VALUE bb)
 {
   return rb_gsl_linalg_QRLQPT_QRLQsolve(obj, qq, rr, pp, bb, LINALG_PTLQ);
 }
-#endif
 
 /* singleton */
 static VALUE rb_gsl_linalg_QRLQPT_update(VALUE obj, VALUE qq, VALUE rr,
@@ -2060,12 +2000,10 @@ static VALUE rb_gsl_linalg_QRLQPT_update(VALUE obj, VALUE qq, VALUE rr,
     if (CLASS_OF(qq) != cgsl_matrix_Q) rb_raise(rb_eTypeError, "not a Q matrix");
     if (CLASS_OF(rr) != cgsl_matrix_R) rb_raise(rb_eTypeError, "not a R matrix");
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
     if (CLASS_OF(qq) != cgsl_matrix_Q) rb_raise(rb_eTypeError, "not a Q matrix");
     if (CLASS_OF(rr) != cgsl_matrix_L) rb_raise(rb_eTypeError, "not a L matrix");
     break;
-#endif
   }
   CHECK_PERMUTATION(pp);
   Data_Get_Struct(qq, gsl_matrix, Q);
@@ -2077,11 +2015,9 @@ static VALUE rb_gsl_linalg_QRLQPT_update(VALUE obj, VALUE qq, VALUE rr,
   case LINALG_QRPT:
     gsl_linalg_QRPT_update(Q, R, p, w, v);
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
     gsl_linalg_PTLQ_update(Q, R, p, w, v);
     break;
-#endif
   }
   return obj;
 }
@@ -2092,13 +2028,11 @@ static VALUE rb_gsl_linalg_QRPT_update(VALUE obj, VALUE qq, VALUE rr,
   return rb_gsl_linalg_QRLQPT_update(obj, qq, rr, pp, ww, vv, LINALG_QRPT);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_linalg_PTLQ_update(VALUE obj, VALUE qq, VALUE rr,
                VALUE pp, VALUE ww, VALUE vv)
 {
   return rb_gsl_linalg_QRLQPT_update(obj, qq, rr, pp, ww, vv, LINALG_PTLQ);
 }
-#endif
 
 static VALUE rb_gsl_linalg_QRLQPT_RLsolve(int argc, VALUE *argv, VALUE obj, int flag)
 {
@@ -2114,12 +2048,10 @@ static VALUE rb_gsl_linalg_QRLQPT_RLsolve(int argc, VALUE *argv, VALUE obj, int 
     klass = cgsl_matrix_QRPT;
     fsolve = &gsl_linalg_QRPT_Rsolve;
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
     klass = cgsl_matrix_PTLQ;
     fsolve = &gsl_linalg_PTLQ_Lsolve_T;
     break;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -2163,12 +2095,11 @@ static VALUE rb_gsl_linalg_QRPT_Rsolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQPT_RLsolve(argc, argv, obj, LINALG_QRPT);
 }
-#ifdef GSL_1_6_LATER
+
 static VALUE rb_gsl_linalg_PTLQ_Lsolve(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQPT_RLsolve(argc, argv, obj, LINALG_PTLQ);
 }
-#endif
 
 static VALUE rb_gsl_linalg_QRLQPT_RLsvx(int argc, VALUE *argv, VALUE obj, int flag)
 {
@@ -2183,11 +2114,9 @@ static VALUE rb_gsl_linalg_QRLQPT_RLsvx(int argc, VALUE *argv, VALUE obj, int fl
     klass = cgsl_matrix_QRPT;
     fsvx = &gsl_linalg_QRPT_Rsvx;
     break;
-#ifdef GSL_1_6_LATER
   case LINALG_PTLQ:
     klass = cgsl_matrix_PTLQ;
     fsvx = &gsl_linalg_PTLQ_Lsvx_T;
-#endif
   default:
     rb_raise(rb_eRuntimeError, "unknown operation");
     break;
@@ -2228,12 +2157,11 @@ static VALUE rb_gsl_linalg_QRPT_Rsvx(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQPT_RLsvx(argc, argv, obj, LINALG_QRPT);
 }
-#ifdef GSL_1_6_LATER
+
 static VALUE rb_gsl_linalg_PTLQ_Lsvx(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_linalg_QRLQPT_RLsvx(argc, argv, obj, LINALG_PTLQ);
 }
-#endif
 
 /*******/
 #ifdef HAVE_NARRAY_H
@@ -3264,7 +3192,6 @@ static VALUE rb_gsl_linalg_solve_symm_tridiag(VALUE obj, VALUE dd, VALUE ee, VAL
   return Data_Wrap_Struct(cgsl_vector_col, 0, gsl_vector_free, x);
 }
 
-#ifdef GSL_1_2_LATER
 static VALUE rb_gsl_linalg_solve_tridiag(VALUE obj, VALUE dd, VALUE ee, VALUE ff,
            VALUE bb)
 {
@@ -3305,7 +3232,6 @@ static VALUE rb_gsl_linalg_solve_cyc_tridiag(VALUE obj, VALUE dd, VALUE ee,
   gsl_linalg_solve_cyc_tridiag(d, e, f, b, x);
   return Data_Wrap_Struct(cgsl_vector_col, 0, gsl_vector_free, x);
 }
-#endif
 
 static void rb_gsl_linalg_balance_columns_init(int argc, VALUE *argv, VALUE obj,
             VALUE *mat, VALUE *vec,
@@ -3383,7 +3309,6 @@ static VALUE rb_gsl_linalg_balance_columns(int argc, VALUE *argv, VALUE obj)
   return rb_ary_new3(2, mat, vec);
 }
 
-#ifdef GSL_1_9_LATER
 static VALUE rb_gsl_linalg_hessenberg_decomp(VALUE module, VALUE AA)
 {
   gsl_matrix *A = NULL, *Atmp = NULL;
@@ -3610,7 +3535,6 @@ static VALUE rb_gsl_linalg_balance_matrix2(int argc, VALUE *argv, VALUE module)
   }
   return Qtrue;
 }
-#endif
 
 void Init_gsl_linalg_complex(VALUE module);
 void Init_gsl_linalg(VALUE module)
@@ -3629,9 +3553,7 @@ void Init_gsl_linalg(VALUE module)
   VALUE mgsl_linalg_tridiag;
   VALUE mgsl_linalg_HH;
   VALUE mgsl_linalg_Householder;
-#ifdef GSL_1_9_LATER
   VALUE mhessen;
-#endif
 
   mgsl_linalg = rb_define_module_under(module, "Linalg");
   mgsl_linalg_LU = rb_define_module_under(mgsl_linalg, "LU");
@@ -3890,14 +3812,12 @@ void Init_gsl_linalg(VALUE module)
 
   rb_define_module_function(mgsl_linalg_tridiag, "solve_symm", rb_gsl_linalg_solve_symm_tridiag, 3);
 
-#ifdef GSL_1_2_LATER
   rb_define_module_function(mgsl_linalg, "solve_tridiag", rb_gsl_linalg_solve_tridiag, 4);
   rb_define_module_function(mgsl_linalg_tridiag, "solve", rb_gsl_linalg_solve_tridiag, 4);
   rb_define_module_function(mgsl_linalg, "solve_symm_cyc_tridiag", rb_gsl_linalg_solve_symm_cyc_tridiag, 3);
   rb_define_module_function(mgsl_linalg, "solve_cyc_tridiag", rb_gsl_linalg_solve_cyc_tridiag, 4);
   rb_define_module_function(mgsl_linalg_tridiag, "solve_symm_cyc", rb_gsl_linalg_solve_symm_cyc_tridiag, 3);
   rb_define_module_function(mgsl_linalg_tridiag, "solve_cyc", rb_gsl_linalg_solve_cyc_tridiag, 4);
-#endif
 
   /*****/
   rb_define_module_function(mgsl_linalg, "balance_columns!",
@@ -3915,7 +3835,6 @@ void Init_gsl_linalg(VALUE module)
   Init_gsl_linalg_complex(mgsl_linalg);
 
   /** GSL-1.6 **/
-#ifdef GSL_1_6_LATER
   rb_define_module_function(mgsl_linalg, "LQ_decomp", rb_gsl_linalg_LQ_decomp, -1);
   rb_define_module_function(mgsl_linalg_LQ, "decomp", rb_gsl_linalg_LQ_decomp, -1);
   rb_define_method(cgsl_matrix, "LQ_decomp", rb_gsl_linalg_LQ_decomp, -1);
@@ -3983,9 +3902,6 @@ void Init_gsl_linalg(VALUE module)
   rb_define_module_function(mgsl_linalg_PTLQ, "Lsvx_T", rb_gsl_linalg_PTLQ_Lsvx, -1);
   rb_define_method(cgsl_matrix_PTLQ, "Lsvx_T", rb_gsl_linalg_PTLQ_Lsvx, -1);
 
-#endif
-
-#ifdef GSL_1_9_LATER
   mhessen = rb_define_module_under(mgsl_linalg, "Hessenberg");
   rb_define_module_function(mhessen, "decomp", rb_gsl_linalg_hessenberg_decomp, 1);
   rb_define_module_function(mgsl_linalg, "heesenberg_decomp", rb_gsl_linalg_hessenberg_decomp, 1);
@@ -4003,6 +3919,4 @@ void Init_gsl_linalg(VALUE module)
   rb_define_module_function(mgsl_linalg, "balance_matrix!", rb_gsl_linalg_balance_matrix2, -1);
   rb_define_module_function(mgsl_linalg, "balance", rb_gsl_linalg_balance_matrix, -1);
   rb_define_module_function(mgsl_linalg, "balance!", rb_gsl_linalg_balance_matrix2, -1);
-#endif
-
 }

@@ -31,19 +31,15 @@ static VALUE rb_gsl_sf_psi_e(VALUE obj, VALUE x)
   return rb_gsl_sf_eval_e(gsl_sf_psi_e, x);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_sf_psi_1(VALUE obj, VALUE x)
 {
   return rb_gsl_sf_eval1(gsl_sf_psi_1, x);
 }
-#endif
 
-#ifdef GSL_1_4_9_LATER
 static VALUE rb_gsl_sf_psi_1_e(VALUE obj, VALUE x)
 {
   return rb_gsl_sf_eval_e(gsl_sf_psi_1_e, x);
 }
-#endif
 
 static VALUE rb_gsl_sf_psi_1piy(VALUE obj, VALUE x)
 {
@@ -88,11 +84,6 @@ void Init_gsl_sf_psi(VALUE module)
 
   rb_define_module_function(module, "psi",  rb_gsl_sf_psi, 1);
   rb_define_module_function(module, "psi_e",  rb_gsl_sf_psi_e, 1);
-
-#ifdef GSL_1_6_LATER
-    rb_define_module_function(module, "psi_1",  rb_gsl_sf_psi_1, 1);
-#endif
-#ifdef GSL_1_4_9_LATER
-    rb_define_module_function(module, "psi_1_e",  rb_gsl_sf_psi_1_e, 1);
-#endif
+  rb_define_module_function(module, "psi_1",  rb_gsl_sf_psi_1, 1);
+  rb_define_module_function(module, "psi_1_e",  rb_gsl_sf_psi_1_e, 1);
 }

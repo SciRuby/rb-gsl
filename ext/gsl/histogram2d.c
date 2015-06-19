@@ -17,7 +17,6 @@ VALUE cgsl_histogram2d;
 VALUE cgsl_histogram2d_view;
 static VALUE cgsl_histogram2d_integ;
 
-#ifdef GSL_0_9_4_LATER
 static VALUE rb_gsl_histogram2d_alloc_uniform(int argc, VALUE *argv, VALUE klass);
 static VALUE rb_gsl_histogram2d_alloc(int argc, VALUE *argv, VALUE klass)
 {
@@ -107,7 +106,6 @@ static VALUE rb_gsl_histogram2d_alloc_uniform(int argc, VALUE *argv, VALUE klass
   }
   return Qnil;  /* never reach here */
 }
-#endif
 
 static VALUE rb_gsl_histogram2d_set_ranges(int argc, VALUE *argv, VALUE obj)
 {
@@ -383,7 +381,6 @@ static VALUE rb_gsl_histogram2d_min_bin(VALUE obj)
   return rb_ary_new3(2, INT2FIX(i), INT2FIX(j));
 }
 
-#ifdef GSL_1_1_LATER
 static VALUE rb_gsl_histogram2d_xmean(VALUE obj)
 {
   gsl_histogram2d *h = NULL;
@@ -425,7 +422,6 @@ static VALUE rb_gsl_histogram2d_sum(VALUE obj)
   Data_Get_Struct(obj, gsl_histogram2d, h);
   return rb_float_new(gsl_histogram2d_sum(h));
 }
-#endif
 
 /* singleton */
 static VALUE rb_gsl_histogram2d_equal_bins_p(VALUE obj, VALUE hh1, VALUE hh2)
@@ -611,7 +607,6 @@ static VALUE rb_gsl_histogram2d_reset(VALUE obj)
   return obj;
 }
 
-#ifdef GSL_0_9_4_LATER
 static VALUE rb_gsl_histogram2d_pdf_alloc(VALUE klass, VALUE nx, VALUE ny)
 {
   gsl_histogram2d_pdf *h = NULL;
@@ -630,17 +625,6 @@ static VALUE rb_gsl_histogram2d_pdf_init(VALUE obj, VALUE hh)
   gsl_histogram2d_pdf_init(pdf, h);
   return obj;
 }
-#else
-static VALUE rb_gsl_histogram2d_pdf_alloc(VALUE klass, VALUE hhh)
-{
-  gsl_histogram2d_pdf *h = NULL;
-  gsl_histogram2d *hh;
-  Data_Get_Struct(hhh, gsl_histogram2d, hh);
-  h = gsl_histogram2d_pdf_alloc(hh);
-  return Data_Wrap_Struct(klass, 0, gsl_histogram2d_pdf_free, h);
-}
-
-#endif
 
 static VALUE rb_gsl_histogram2d_pdf_sample(VALUE obj, VALUE r1, VALUE r2)
 {
@@ -944,14 +928,13 @@ void Init_gsl_histogram2d(VALUE module)
 
   cgsl_histogram2d_integ = rb_define_class_under(cgsl_histogram2d, "Integral",
                  cgsl_histogram2d);
-#ifdef GSL_0_9_4_LATER
+
   /*  rb_define_singleton_method(cgsl_histogram2d, "new", rb_gsl_histogram2d_alloc, -1);*/
   rb_define_singleton_method(cgsl_histogram2d, "alloc", rb_gsl_histogram2d_alloc, -1);
   rb_define_singleton_method(cgsl_histogram2d, "new_uniform",
            rb_gsl_histogram2d_alloc_uniform, -1);
   rb_define_singleton_method(cgsl_histogram2d, "alloc_uniform",
            rb_gsl_histogram2d_alloc_uniform, -1);
-#endif
 
   rb_define_singleton_method(cgsl_histogram2d, "equal_bins_p",
            rb_gsl_histogram2d_equal_bins_p, 2);
@@ -996,7 +979,6 @@ void Init_gsl_histogram2d(VALUE module)
   rb_define_method(cgsl_histogram2d, "min_val",  rb_gsl_histogram2d_min_val, 0);
   rb_define_method(cgsl_histogram2d, "min_bin",  rb_gsl_histogram2d_min_bin, 0);
 
-#ifdef GSL_1_1_LATER
   rb_define_method(cgsl_histogram2d, "xmean",  rb_gsl_histogram2d_xmean, 0);
   rb_define_method(cgsl_histogram2d, "ymean",  rb_gsl_histogram2d_ymean, 0);
   rb_define_method(cgsl_histogram2d, "xsigma",  rb_gsl_histogram2d_xsigma, 0);
@@ -1004,7 +986,6 @@ void Init_gsl_histogram2d(VALUE module)
   rb_define_method(cgsl_histogram2d, "cov",  rb_gsl_histogram2d_cov, 0);
   rb_define_method(cgsl_histogram2d, "sum",  rb_gsl_histogram2d_sum, 0);
   rb_define_alias(cgsl_histogram2d, "integral", "sum");
-#endif
 
   rb_define_method(cgsl_histogram2d, "add",  rb_gsl_histogram2d_add, 1);
   rb_define_alias(cgsl_histogram2d, "+", "add");
@@ -1028,18 +1009,12 @@ void Init_gsl_histogram2d(VALUE module)
   rb_define_method(cgsl_histogram2d, "fscanf",  rb_gsl_histogram2d_fscanf, 3);
 
   cgsl_histogram2d_pdf = rb_define_class_under(cgsl_histogram2d, "Pdf", cGSL_Object);
-#ifdef GSL_0_9_4_LATER
+
   /*  rb_define_singleton_method(cgsl_histogram2d_pdf, "new",
       rb_gsl_histogram2d_pdf_alloc, 2);*/
   rb_define_singleton_method(cgsl_histogram2d_pdf, "alloc",
            rb_gsl_histogram2d_pdf_alloc, 2);
   rb_define_method(cgsl_histogram2d_pdf, "init",  rb_gsl_histogram2d_pdf_init, 1);
-#else
-  /*  rb_define_singleton_method(cgsl_histogram2d_pdf, "new",
-      rb_gsl_histogram2d_pdf_alloc, 1);*/
-  rb_define_singleton_method(cgsl_histogram2d_pdf, "alloc",
-           rb_gsl_histogram2d_pdf_alloc, 1);
-#endif
 
   rb_define_method(cgsl_histogram2d_pdf, "sample",  rb_gsl_histogram2d_pdf_sample, 2);
 

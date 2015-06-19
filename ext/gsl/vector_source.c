@@ -2953,7 +2953,6 @@ static VALUE FUNCTION(rb_gsl_vector,cumprod)(VALUE obj)
   return Data_Wrap_Struct(VEC_ROW_COL(obj), 0, FUNCTION(gsl_vector,free), vnew);
 }
 
-#ifdef GSL_1_9_LATER
 static VALUE FUNCTION(rb_gsl_vector,property)(VALUE obj,
   int (*f)(const GSL_TYPE(gsl_vector) *)) {
   GSL_TYPE(gsl_vector) *v;
@@ -2985,9 +2984,7 @@ static VALUE FUNCTION(rb_gsl_vector,isneg2)(VALUE obj)
 {
   return FUNCTION(rb_gsl_vector,property2)(obj, FUNCTION(gsl_vector, isneg));
 }
-#endif
 
-#ifdef GSL_1_10_LATER
 static VALUE FUNCTION(rb_gsl_vector,isnonneg)(VALUE obj)
 {
   return FUNCTION(rb_gsl_vector,property)(obj, FUNCTION(gsl_vector, isnonneg));
@@ -2996,7 +2993,6 @@ static VALUE FUNCTION(rb_gsl_vector,isnonneg2)(VALUE obj)
 {
   return FUNCTION(rb_gsl_vector,property2)(obj, FUNCTION(gsl_vector, isnonneg));
 }
-#endif
 
 void FUNCTION(Init_gsl_vector,init)(VALUE module)
 {
@@ -3307,17 +3303,12 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
   rb_define_singleton_method(GSL_TYPE(cgsl_vector), "zip", FUNCTION(rb_gsl_vector,zip), -1);
   rb_define_method(GSL_TYPE(cgsl_vector), "zip", FUNCTION(rb_gsl_vector,zip), -1);
   rb_define_method(GSL_TYPE(cgsl_vector), "join", FUNCTION(rb_gsl_vector,join), -1);
-#ifdef GSL_1_9_LATER
   rb_define_method(GSL_TYPE(cgsl_vector), "ispos", FUNCTION(rb_gsl_vector,ispos), 0);
   rb_define_method(GSL_TYPE(cgsl_vector), "ispos?", FUNCTION(rb_gsl_vector,ispos2), 0);
   rb_define_method(GSL_TYPE(cgsl_vector), "isneg", FUNCTION(rb_gsl_vector,isneg), 0);
   rb_define_method(GSL_TYPE(cgsl_vector), "isneg?", FUNCTION(rb_gsl_vector,isneg2), 0);
-#endif
-
-#ifdef GSL_1_10_LATER
   rb_define_method(GSL_TYPE(cgsl_vector), "isnonneg", FUNCTION(rb_gsl_vector,isnonneg), 0);
   rb_define_method(GSL_TYPE(cgsl_vector), "isnonneg?", FUNCTION(rb_gsl_vector,isnonneg2), 0);
-#endif
 }
 
 #undef NUMCONV

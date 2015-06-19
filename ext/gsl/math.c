@@ -280,7 +280,7 @@ static VALUE rb_gsl_hypot(VALUE obj, VALUE x, VALUE y)
 {
   return rb_gsl_math_eval2(gsl_hypot, x, y);
 }
-#ifdef GSL_1_10_LATER
+
 static VALUE rb_gsl_hypot3(VALUE obj, VALUE x, VALUE y, VALUE z)
 {
   Need_Float(x);
@@ -288,7 +288,7 @@ static VALUE rb_gsl_hypot3(VALUE obj, VALUE x, VALUE y, VALUE z)
   Need_Float(z);
   return rb_float_new(gsl_hypot3(NUM2DBL(x), NUM2DBL(y), NUM2DBL(z)));
 }
-#endif
+
 static VALUE rb_gsl_acosh(VALUE obj, VALUE x)
 {
   if (COMPLEX_P(x) || VECTOR_COMPLEX_P(x) || MATRIX_COMPLEX_P(x))
@@ -588,7 +588,6 @@ static VALUE rb_GSL_MIN_INT(VALUE obj, VALUE aa, VALUE bb)
     INT2FIX(GSL_MIN_INT(FIX2INT(aa), FIX2INT(bb)));
 }
 
-#ifdef GSL_1_3_LATER
 static VALUE rb_gsl_ldexp(VALUE obj, VALUE x, VALUE e)
 {
   return rb_float_new(gsl_ldexp(NUM2DBL(x), FIX2INT(e)));
@@ -602,7 +601,6 @@ static VALUE rb_gsl_frexp(VALUE obj, VALUE x)
   val = gsl_frexp(NUM2DBL(x), &e);
   return rb_ary_new3(2, rb_float_new(val), INT2FIX(e));
 }
-#endif
 
 static VALUE rb_gsl_fcmp(int argc, VALUE *argv, VALUE obj)
 {
@@ -662,9 +660,7 @@ void Init_gsl_math(VALUE module)
   rb_define_module_function(module, "log1p", rb_gsl_log1p, 1);
   rb_define_module_function(module, "expm1", rb_gsl_expm1, 1);
   rb_define_module_function(module, "hypot", rb_gsl_hypot, 2);
-#ifdef GSL_1_10_LATER
   rb_define_module_function(module, "hypot3", rb_gsl_hypot3, 3);
-#endif
   rb_define_module_function(module, "acosh", rb_gsl_acosh, 1);
   rb_define_module_function(module, "asinh", rb_gsl_asinh, 1);
   rb_define_module_function(module, "atanh", rb_gsl_atanh, 1);
@@ -706,8 +702,6 @@ void Init_gsl_math(VALUE module)
 
   rb_define_module_function(module, "fcmp", rb_gsl_fcmp, -1);
   rb_define_singleton_method(module, "equal?", rb_gsl_equal, -1);
-#ifdef GSL_1_3_LATER
   rb_define_module_function(module, "ldexp", rb_gsl_ldexp, 2);
   rb_define_module_function(module, "frexp", rb_gsl_frexp, 1);
-#endif
 }

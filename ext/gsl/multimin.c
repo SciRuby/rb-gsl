@@ -37,18 +37,12 @@ enum {
   GSL_FDFMINIMIZER_VECTOR_BFGS,
   GSL_FDFMINIMIZER_STEEPEST_DESCENT,
   GSL_FMINIMIZER_NMSIMPLEX,
-#ifdef GSL_1_9_LATER
   GSL_FDFMINIMIZER_VECTOR_BFGS2,
-#endif
-#ifdef GSL_1_13_LATER
   GSL_FMINIMIZER_NMSIMPLEX2RAND,
-#endif
 };
 
 static const gsl_multimin_fdfminimizer_type* get_fdfminimizer_type(VALUE t);
-#ifdef GSL_1_3_LATER
 static const gsl_multimin_fminimizer_type* get_fminimizer_type(VALUE t);
-#endif
 static void define_const();
 
 static void gsl_multimin_function_free(gsl_multimin_function *f);
@@ -439,18 +433,12 @@ static void define_const(VALUE klass1, VALUE klass2)
       "VECTOR_BFGS", INT2FIX(GSL_FDFMINIMIZER_VECTOR_BFGS));
   rb_define_const(klass1,
       "STEEPEST_DESCENT", INT2FIX(GSL_FDFMINIMIZER_STEEPEST_DESCENT));
-#ifdef GSL_1_3_LATER
   rb_define_const(klass2,
       "NMSIMPLEX", INT2FIX(GSL_FMINIMIZER_NMSIMPLEX));
-#endif
-#ifdef GSL_1_9_LATER
   rb_define_const(klass1,
       "VECTOR_BFGS2", INT2FIX(GSL_FDFMINIMIZER_VECTOR_BFGS2));
-#endif
-#ifdef GSL_1_13_LATER
   rb_define_const(klass2,
       "NMSIMPLEX2RAND", INT2FIX(GSL_FMINIMIZER_NMSIMPLEX2RAND));
-#endif
 }
 
 static const gsl_multimin_fdfminimizer_type* get_fdfminimizer_type(VALUE t)
@@ -467,10 +455,8 @@ static const gsl_multimin_fdfminimizer_type* get_fdfminimizer_type(VALUE t)
       return gsl_multimin_fdfminimizer_vector_bfgs;
     else if (str_tail_grep(name, "steepest_descent") == 0)
       return gsl_multimin_fdfminimizer_steepest_descent;
-#ifdef GSL_1_9_LATER
     else if (str_tail_grep(name, "vector_bfgs2") == 0)
       return gsl_multimin_fdfminimizer_vector_bfgs2;
-#endif
     else
       rb_raise(rb_eTypeError, "%s: unknown minimizer type", name);
     break;
@@ -484,10 +470,8 @@ static const gsl_multimin_fdfminimizer_type* get_fdfminimizer_type(VALUE t)
       return gsl_multimin_fdfminimizer_vector_bfgs; break;
     case GSL_FDFMINIMIZER_STEEPEST_DESCENT:
       return gsl_multimin_fdfminimizer_steepest_descent; break;
-#ifdef GSL_1_9_LATER
     case GSL_FDFMINIMIZER_VECTOR_BFGS2:
       return gsl_multimin_fdfminimizer_vector_bfgs2; break;
-#endif
     default:
       rb_raise(rb_eTypeError, "%d: unknown type", FIX2INT(t));
       break;
@@ -601,7 +585,6 @@ static VALUE rb_gsl_multimin_test_gradient(VALUE obj, VALUE gg, VALUE ea)
 }
 
 /*****/
-#ifdef GSL_1_3_LATER
 static const gsl_multimin_fminimizer_type* get_fminimizer_type(VALUE t)
 {
   char name[64];
@@ -611,10 +594,8 @@ static const gsl_multimin_fminimizer_type* get_fminimizer_type(VALUE t)
     strcpy(name, STR2CSTR(t));
     if (str_tail_grep(name, "nmsimplex") == 0)
       return gsl_multimin_fminimizer_nmsimplex;
-#ifdef GSL_1_13_LATER
     if (str_tail_grep(name, "nmsimplex2rand") == 0)
       return gsl_multimin_fminimizer_nmsimplex2rand;
-#endif
     else
       rb_raise(rb_eTypeError, "unknown type %s (nmsimplex and nmsimplex2rand supported)", name);
     break;
@@ -622,10 +603,8 @@ static const gsl_multimin_fminimizer_type* get_fminimizer_type(VALUE t)
     switch (FIX2INT(t)) {
     case GSL_FMINIMIZER_NMSIMPLEX:
       return gsl_multimin_fminimizer_nmsimplex; break;
-#ifdef GSL_1_13_LATER
     case GSL_FMINIMIZER_NMSIMPLEX2RAND:
       return gsl_multimin_fminimizer_nmsimplex2rand; break;
-#endif
     default:
       rb_raise(rb_eTypeError, "%d: unknown type (not supported)", FIX2INT(t));
       break;
@@ -720,8 +699,6 @@ static VALUE rb_gsl_multimin_test_size(VALUE obj, VALUE ss, VALUE ea)
   return INT2FIX(gsl_multimin_test_size(NUM2DBL(ss), NUM2DBL(ea)));
 }
 
-#endif
-
 #ifdef HAVE_GSL_GSL_MULTIMIN_FSDF_H
 void Init_multimin_fsdf(VALUE module);
 #endif
@@ -735,9 +712,7 @@ void Init_gsl_multimin(VALUE module)
 
   mgsl_multimin = rb_define_module_under(module, "MultiMin");
   rb_define_singleton_method(mgsl_multimin, "test_gradient", rb_gsl_multimin_test_gradient, 2);
-#ifdef GSL_1_3_LATER
   rb_define_singleton_method(mgsl_multimin, "test_size", rb_gsl_multimin_test_size, 2);
-#endif
 
   cgsl_multimin_fdfminimizer = rb_define_class_under(mgsl_multimin, "FdfMinimizer", cGSL_Object);
   cgsl_multimin_fminimizer = rb_define_class_under(mgsl_multimin, "FMinimizer", cGSL_Object);
@@ -779,7 +754,6 @@ void Init_gsl_multimin(VALUE module)
   rb_define_method(cgsl_multimin_fdfminimizer, "test_gradient", rb_gsl_fdfminimizer_test_gradient, 1);
 
   /*****/
-#ifdef GSL_1_3_LATER
   rb_define_singleton_method(cgsl_multimin_fminimizer, "alloc", rb_gsl_fminimizer_new, 2);
 
   rb_define_method(cgsl_multimin_fminimizer, "set", rb_gsl_fminimizer_set, 3);
@@ -790,8 +764,6 @@ void Init_gsl_multimin(VALUE module)
   rb_define_method(cgsl_multimin_fminimizer, "minimum", rb_gsl_fminimizer_minimum, 0);
     rb_define_method(cgsl_multimin_fminimizer, "size", rb_gsl_fminimizer_size, 0);
   rb_define_method(cgsl_multimin_fminimizer, "test_size", rb_gsl_fminimizer_test_size, 1);
-#endif
-
 
 #ifdef HAVE_GSL_GSL_MULTIMIN_FSDF_H
   Init_multimin_fsdf(mgsl_multimin);

@@ -110,7 +110,6 @@ static const gsl_rng_type* get_gsl_rng_type_name(char *name)
 {
   if (str_tail_grep(name, "default") == 0) return gsl_rng_default;
   else if (str_tail_grep(name, "mt19937") == 0) return gsl_rng_mt19937;
-#ifdef GSL_1_1_LATER
   else if (str_tail_grep(name, "borosh13") == 0) return gsl_rng_borosh13;
   else if (str_tail_grep(name, "coveyou") == 0) return gsl_rng_coveyou;
   else if (str_tail_grep(name, "fishman18") == 0) return gsl_rng_fishman18;
@@ -120,15 +119,12 @@ static const gsl_rng_type* get_gsl_rng_type_name(char *name)
   else if (str_tail_grep(name, "waterman14") == 0) return gsl_rng_waterman14;
   else if (str_tail_grep(name, "knuthran") == 0) return gsl_rng_knuthran;
   else if (str_tail_grep(name, "knuthran2") == 0) return gsl_rng_knuthran2;
-#endif
-#ifdef GSL_1_2_LATER
   else if (str_tail_grep(name, "mt19937_1999") == 0) return gsl_rng_mt19937_1999;
   else if (str_tail_grep(name, "mt19937-1999") == 0) return gsl_rng_mt19937_1999;
   else if (str_tail_grep(name, "mt19937_1998") == 0) return gsl_rng_mt19937_1998;
   else if (str_tail_grep(name, "mt19937-1998") == 0) return gsl_rng_mt19937_1998;
   else if (str_tail_grep(name, "taus113") == 0) return gsl_rng_taus113;
   else if (str_tail_grep(name, "taus2") == 0) return gsl_rng_taus2;
-#endif
   else if (str_tail_grep(name, "mt19937") == 0) return gsl_rng_mt19937;
   else if (str_tail_grep(name, "ranlxs0") == 0) return gsl_rng_ranlxs0;
   else if (str_tail_grep(name, "ranlxs1") == 0) return gsl_rng_ranlxs1;
@@ -210,9 +206,7 @@ static const gsl_rng_type* get_gsl_rng_type_name(char *name)
   else if (str_tail_grep(name, "rngextra-rng2")*str_tail_grep(name, "rngextra_rng2") == 0)
     rb_raise(rb_eNotImpError, "Install the rngextra package found at <http://www.network-theory.co.uk/download/rngextra/>.");
 #endif
-#ifdef GSL_1_9_LATER
   else if (str_tail_grep(name, "knuthran2002") == 0) return gsl_rng_knuthran2002;
-#endif
   else
     rb_raise(rb_eArgError, "unknown generator type \"%s\"", name);
 }
@@ -224,12 +218,10 @@ static const gsl_rng_type* get_gsl_rng_type_int(int itype)
   switch (itype) {
   case GSL_RNG_DEFAULT: T = gsl_rng_default; break;
   case GSL_RNG_MT19937: T = gsl_rng_mt19937; break; /* default */
-#ifdef GSL_1_2_LATER
   case GSL_RNG_MT19937_1999: T = gsl_rng_mt19937_1999; break;
   case GSL_RNG_MT19937_1998: T = gsl_rng_mt19937_1998; break;
   case GSL_RNG_TAUS113: T = gsl_rng_taus113; break;
   case GSL_RNG_TAUS2: T = gsl_rng_taus2; break;
-#endif
   case GSL_RNG_RANLXS0: T = gsl_rng_ranlxs0; break;
   case GSL_RNG_RANLXS1: T = gsl_rng_ranlxs1; break;
   case GSL_RNG_RANLXS2: T = gsl_rng_ranlxs2; break;
@@ -277,7 +269,6 @@ static const gsl_rng_type* get_gsl_rng_type_int(int itype)
   case GSL_RNG_UNI32: T = gsl_rng_uni32; break;
   case GSL_RNG_SLATEC: T = gsl_rng_slatec; break;
   case GSL_RNG_ZUF: T = gsl_rng_zuf; break;
-#ifdef GSL_1_1_LATER
   case GSL_RNG_BOROSH13: T = gsl_rng_borosh13; break;
   case GSL_RNG_COVEYOU: T = gsl_rng_coveyou; break;
   case GSL_RNG_FISHMAN18: T = gsl_rng_fishman18; break;
@@ -287,7 +278,6 @@ static const gsl_rng_type* get_gsl_rng_type_int(int itype)
   case GSL_RNG_KNUTHRAN2: T = gsl_rng_knuthran2; break;
   case GSL_RNG_LECUYER21: T = gsl_rng_lecuyer21; break;
   case GSL_RNG_WATERMAN14: T = gsl_rng_waterman14; break;
-#endif
 #ifdef HAVE_RNGEXTRA_RNGEXTRA_H
   case GSL_RNGEXTRA_RNG1: T = rngextra_rng1; break;
   case GSL_RNGEXTRA_RNG2: T = rngextra_rng2; break;
@@ -297,9 +287,7 @@ static const gsl_rng_type* get_gsl_rng_type_int(int itype)
     rb_raise(rb_eNotImpError, "Install the rngextra package found at <http://www.network-theory.co.uk/download/rngextra/>.");
     break;
 #endif
-#ifdef GSL_1_9_LATER
   case GSL_RNG_KNUTHRAN2002: T = gsl_rng_knuthran2002; break;
-#endif
   default:
     rb_raise(rb_eTypeError, "wrong generator type");
   }
@@ -533,7 +521,6 @@ static VALUE rb_gsl_rng_print_state(VALUE obj)
   return obj;
 }
 
-#ifdef GSL_1_4_LATER
 static VALUE rb_gsl_rng_fwrite(VALUE obj, VALUE io)
 {
   gsl_rng *h = NULL;
@@ -557,7 +544,6 @@ static VALUE rb_gsl_rng_fread(VALUE obj, VALUE io)
   if (flag == 1) fclose(f);
   return INT2FIX(status);
 }
-#endif
 
 static VALUE rb_gsl_rng_memcpy(VALUE obj, VALUE dst, VALUE org)
 {
@@ -603,9 +589,7 @@ void Init_gsl_rng(VALUE module)
   rb_define_alias(cgsl_rng, "duplicate", "clone");
   rb_define_method(cgsl_rng, "print_state", rb_gsl_rng_print_state, 0);
 
-#ifdef GSL_1_4_LATER
   rb_define_method(cgsl_rng, "fwrite", rb_gsl_rng_fwrite, 1);
   rb_define_method(cgsl_rng, "fread", rb_gsl_rng_fread, 1);
-#endif
   rb_define_singleton_method(cgsl_rng, "memcpy", rb_gsl_rng_memcpy, 2);
 }
