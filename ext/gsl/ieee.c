@@ -19,11 +19,7 @@ static VALUE rb_gsl_ieee_env_setup(VALUE obj)
 
 static VALUE rb_gsl_ieee_fprintf_double(int argc, VALUE *argv, VALUE obj)
 {
-#ifdef HAVE_RUBY_IO_H
   rb_io_t *fptr = NULL;
-#else
-  OpenFile *fptr = NULL;
-#endif
   FILE *fp = NULL;
   int flag = 0;
   VALUE vtmp;
@@ -39,11 +35,7 @@ static VALUE rb_gsl_ieee_fprintf_double(int argc, VALUE *argv, VALUE obj)
     case T_FILE:
       GetOpenFile(argv[0], fptr);
       rb_io_check_writable(fptr);
-#ifdef HAVE_RUBY_IO_H
       fp = rb_io_stdio_file(fptr);
-#else
-      fp = GetWriteFile(fptr);
-#endif
       break;
     default:
       rb_raise(rb_eTypeError, "wrong type argument %s (IO or String expected)",

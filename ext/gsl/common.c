@@ -16,11 +16,7 @@
 
 FILE* rb_gsl_open_writefile(VALUE io, int *flag)
 {
-#ifdef HAVE_RUBY_IO_H
   rb_io_t *fptr = NULL;
-#else
-  OpenFile *fptr = NULL;
-#endif
   FILE *fp = NULL;
   char *name;
   switch (TYPE(io)) {
@@ -31,19 +27,8 @@ FILE* rb_gsl_open_writefile(VALUE io, int *flag)
     break;
   case T_FILE:
     GetOpenFile(io, fptr);
-    /*
-#ifdef HAVE_RUBY_IO_H
-    name = STR2CSTR(fptr->pathv);
-#else
-    name = fptr->path;
-#endif
-    */
     rb_io_check_writable(fptr);
-#ifdef HAVE_RUBY_IO_H
     fp = rb_io_stdio_file(fptr);
-#else
-    fp = GetWriteFile(fptr);
-#endif
     *flag = 0;
     break;
   default:
@@ -57,11 +42,7 @@ FILE* rb_gsl_open_writefile(VALUE io, int *flag)
 
 FILE* rb_gsl_open_readfile(VALUE io, int *flag)
 {
-#ifdef HAVE_RUBY_IO_H
   rb_io_t *fptr = NULL;
-#else
-  OpenFile *fptr = NULL;
-#endif
   FILE *fp = NULL;
   char *name;
   switch (TYPE(io)) {
@@ -72,19 +53,8 @@ FILE* rb_gsl_open_readfile(VALUE io, int *flag)
     break;
   case T_FILE:
     GetOpenFile(io, fptr);
-    /*
-#ifdef HAVE_RUBY_IO_H
-    name = STR2CSTR(fptr->pathv);
-#else
-    name = fptr->path;
-#endif
-    */
     rb_io_check_readable(fptr);
-#ifdef HAVE_RUBY_IO_H
     fp = rb_io_stdio_file(fptr);
-#else
-    fp = fptr->f;
-#endif
     *flag = 0;
     break;
   default:
