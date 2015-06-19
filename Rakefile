@@ -1,37 +1,36 @@
 require File.expand_path(%q{../lib/gsl/version}, __FILE__)
 
+require 'rubygems'
+require 'rubygems/package_task'
+require 'bundler'
+
+Bundler::GemHelper.install_tasks
+
 begin
-  require 'hen'
-
-  note = '[Ruby 2.x and GSL 1.16 compatible fork]'
-
-  Hen.lay! {{
-    :gem => {
-      :name          => %q{rb-gsl},
-      :version       => GSL::RB_GSL_VERSION,
-      :summary       => %Q{Ruby interface to the GNU Scientific Library #{note}},
-      :description   => %Q{Ruby/GSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby #{note}},
-      :authors       => ['Yoshiki Tsunesada', 'David MacMahon', 'Jens Wille'],
-      :email         => %q{jens.wille@gmail.com},
-      :license       => %q{GPL-2.0},
-      :homepage      => :blackwinter,
-      :dependencies  => [['narray', '>= 0.5.9']],
-      :requirements  => ['GSL (http://www.gnu.org/software/gsl/)'],
-
-      :extra_files => FileList['examples/**/*', 'rdoc/*'].to_a,
-
-      :extension => { :cross_compile => false },
-
-      :required_ruby_version => '>= 1.8.7'
-    },
-    :rdoc => {
-      :title      => 'Ruby/GSL{version: (v%s)}',
-      :rdoc_files => FileList[%w[README COPYING ChangeLog rdoc/*]].to_a,
-    },
-    :test => {
-      :libs => %w[lib test]
-    }
-  }}
-rescue LoadError => err
-  warn "Please install the `hen' gem. (#{err})"
+  Bundler.setup(:default, :development)
+rescue Bundler::BundlerError => e
+  $stderr.puts e.message
+  $stderr.puts "Run `bundle install` to install missing gems"
+  exit e.status_code
 end
+
+require 'rake'
+require "rake/extensiontask"
+require 'rake/testtask'
+
+Rake::TestTask.new do |t|
+  t.libs << "test"
+  t.libs << "test/gsl"
+  t.test_files = FileList['test/*.rb', 'test/gsl/*.rb']
+end
+
+Rake::ExtensionTask.new do |ext|
+  ext.name = 'gsl_native'
+  ext.ext_dir = 'ext/gsl'
+  ext.lib_dir = 'lib/'
+  ext.source_pattern = "**/*.{c,cpp,h}"
+end
+
+gemspec = eval(IO.read("rb-gsl.gemspec"))
+
+Gem::PackageTask.new(gemspec).define
