@@ -376,86 +376,6 @@ void gsl_matrix_complex_mul_vector(gsl_vector_complex *vnew,
 
 }
 
-/*****/
-#ifndef GSL_1_12_LATER
-int gsl_vector_complex_add(gsl_vector_complex *cv, const gsl_vector_complex *cv2)
-{
-  size_t i;
-  gsl_complex a, b, c;
-  for (i = 0; i < cv->size; i++) {
-    a = gsl_vector_complex_get(cv, i);
-    b = gsl_vector_complex_get(cv2, i);
-    c = gsl_complex_add(a, b);
-    gsl_vector_complex_set(cv, i, c);
-  }
-  return 0;
-}
-
-int gsl_vector_complex_add_constant(gsl_vector_complex *cv, gsl_complex b)
-{
-  size_t i;
-  gsl_complex a, c;
-  for (i = 0; i < cv->size; i++) {
-    a = gsl_vector_complex_get(cv, i);
-    c = gsl_complex_add(a, b);
-    gsl_vector_complex_set(cv, i, c);
-  }
-  return 0;
-}
-
-int gsl_vector_complex_scale(gsl_vector_complex *cv, gsl_complex b)
-{
-  size_t i;
-  gsl_complex a, c;
-  for (i = 0; i < cv->size; i++) {
-    a = gsl_vector_complex_get(cv, i);
-    c = gsl_complex_mul(a, b);
-    gsl_vector_complex_set(cv, i, c);
-  }
-  return 0;
-}
-
-
-int gsl_vector_complex_sub(gsl_vector_complex *cv, const gsl_vector_complex *cv2)
-{
-  size_t i;
-  gsl_complex a, b, c;
-  for (i = 0; i < cv->size; i++) {
-    a = gsl_vector_complex_get(cv, i);
-    b = gsl_vector_complex_get(cv2, i);
-    c = gsl_complex_sub(a, b);
-    gsl_vector_complex_set(cv, i, c);
-  }
-  return 0;
-}
-
-int gsl_vector_complex_mul(gsl_vector_complex *cv, const gsl_vector_complex *cv2)
-{
-  size_t i;
-  gsl_complex a, b, c;
-  for (i = 0; i < cv->size; i++) {
-    a = gsl_vector_complex_get(cv, i);
-    b = gsl_vector_complex_get(cv2, i);
-    c = gsl_complex_mul(a, b);
-    gsl_vector_complex_set(cv, i, c);
-  }
-  return 0;
-}
-
-int gsl_vector_complex_div(gsl_vector_complex *cv, const gsl_vector_complex *cv2)
-{
-  size_t i;
-  gsl_complex a, b, c;
-  for (i = 0; i < cv->size; i++) {
-    a = gsl_vector_complex_get(cv, i);
-    b = gsl_vector_complex_get(cv2, i);
-    c = gsl_complex_div(a, b);
-    gsl_vector_complex_set(cv, i, c);
-  }
-  return 0;
-}
-#endif
-
 VALUE rb_gsl_range2ary(VALUE obj)
 {
   //  double beg, en;
@@ -620,9 +540,7 @@ void Init_gsl_array(VALUE module)
   Init_gsl_matrix_int(module);
   Init_gsl_matrix_complex(module);
   Init_gsl_permutation(module);
-#ifdef GSL_1_1_LATER
   Init_gsl_combination(module);
-#endif
   Init_gsl_array_complex(module);
   Init_gsl_matrix_nmf();
 

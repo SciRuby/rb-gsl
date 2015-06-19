@@ -9,7 +9,6 @@
   WITHOUT ANY WARRANTY.
 */
 
-#ifdef GSL_1_4_LATER
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_common.h"
 #include "include/rb_gsl_rng.h"
@@ -207,7 +206,6 @@ static VALUE rb_gsl_cdf_lognormal_Qinv(VALUE obj, VALUE x, VALUE a, VALUE b)
   return rb_gsl_eval_pdf_cdf3(x, a, b,  gsl_cdf_lognormal_Qinv);
 }
 
-#ifdef GSL_1_6_LATER
 static VALUE rb_gsl_cdf_exppow_P(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_exppow_P);
@@ -217,7 +215,6 @@ static VALUE rb_gsl_cdf_exppow_Q(VALUE obj, VALUE x, VALUE a, VALUE b)
 {
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_exppow_Q);
 }
-#endif
 
 static VALUE rb_gsl_cdf_chisq_P(VALUE obj, VALUE x, VALUE mu)
 {
@@ -379,7 +376,6 @@ static VALUE rb_gsl_cdf_gumbel2_Qinv(VALUE obj, VALUE x, VALUE a, VALUE b)
   return rb_gsl_eval_pdf_cdf3(x, a, b, gsl_cdf_gumbel2_Qinv);
 }
 
-#ifdef GSL_1_8_LATER
 static VALUE rb_gsl_cdf_binomial_P(VALUE obj, VALUE kk, VALUE pp, VALUE nn)
 {
   unsigned int k, n;
@@ -516,7 +512,6 @@ static VALUE rb_gsl_cdf_fdist_Qinv(VALUE obj, VALUE qq, VALUE aa, VALUE bb)
   b = NUM2DBL(bb);
   return rb_float_new(gsl_cdf_fdist_Qinv(Q, a, b));
 }
-#endif
 
 void Init_gsl_cdf(VALUE module)
 {
@@ -697,16 +692,12 @@ void Init_gsl_cdf(VALUE module)
   rb_define_module_function(mgsl_cdf, "gumbel2_Pinv", rb_gsl_cdf_gumbel2_Pinv, 3);
   rb_define_module_function(mgsl_cdf, "gumbel2_Qinv", rb_gsl_cdf_gumbel2_Qinv, 3);
 
-
-#ifdef GSL_1_6_LATER
   rb_define_module_function(module, "cdf_exppow_P", rb_gsl_cdf_exppow_P, 3);
   rb_define_module_function(module, "cdf_exppow_Q", rb_gsl_cdf_exppow_Q, 3);
 
   rb_define_module_function(mgsl_cdf, "exppow_P", rb_gsl_cdf_exppow_P, 3);
   rb_define_module_function(mgsl_cdf, "exppow_Q", rb_gsl_cdf_exppow_Q, 3);
-#endif
 
-#ifdef GSL_1_8_LATER
   rb_define_module_function(module, "cdf_binomial_P", rb_gsl_cdf_binomial_P, 3);
   rb_define_module_function(module, "cdf_binomial_Q", rb_gsl_cdf_binomial_Q, 3);
   rb_define_module_function(mgsl_cdf, "binomial_P", rb_gsl_cdf_binomial_P, 3);
@@ -746,7 +737,4 @@ void Init_gsl_cdf(VALUE module)
   rb_define_module_function(mgsl_cdf, "fdist_Pinv", rb_gsl_cdf_fdist_Pinv, 3);
   rb_define_module_function(module, "cdf_fdist_Qinv", rb_gsl_cdf_fdist_Qinv, 3);
   rb_define_module_function(mgsl_cdf, "fdist_Qinv", rb_gsl_cdf_fdist_Qinv, 3);
-#endif
-
 }
-#endif

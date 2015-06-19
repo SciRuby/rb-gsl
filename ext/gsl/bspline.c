@@ -1,6 +1,4 @@
-
 #include "include/rb_gsl.h"
-#ifdef GSL_1_9_LATER
 #include "gsl/gsl_bspline.h"
 
 static VALUE cBSWS;
@@ -98,14 +96,13 @@ static VALUE rb_gsl_bspline_eval(int argc, VALUE *argv, VALUE obj)
 
   return vB;
 }
-#ifdef GSL_1_13_LATER
+
 static VALUE rb_gsl_bspline_greville_abscissa(VALUE obj, VALUE i)
 {
   gsl_bspline_workspace *w;
   Data_Get_Struct(obj, gsl_bspline_workspace, w);
   return rb_float_new(gsl_bspline_greville_abscissa(i, w));
 }
-#endif
 
 void Init_bspline(VALUE module)
 {
@@ -121,10 +118,5 @@ void Init_bspline(VALUE module)
   rb_define_method(cBSWS, "knots_uniform", rb_gsl_bspline_knots_uniform, -1);
   rb_define_singleton_method(cBSWS, "knots_uniform", rb_gsl_bspline_knots_uniform, -1);
   rb_define_method(cBSWS, "eval", rb_gsl_bspline_eval, -1);
-
-#ifdef GSL_1_13_LATER
   rb_define_method(cBSWS, "greville_abscissa", rb_gsl_bspline_greville_abscissa, 1);
-#endif
-
 }
-#endif

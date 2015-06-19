@@ -9,7 +9,6 @@
   WITHOUT ANY WARRANTY.
 */
 
-#ifdef GSL_1_1_LATER
 #include "include/rb_gsl_common.h"
 #include "include/rb_gsl_array.h"
 
@@ -47,7 +46,6 @@ static VALUE rb_gsl_combination_init_last(VALUE obj)
   return obj;
 }
 
-#ifdef GSL_1_4_LATER
 /* singleton */
 static VALUE rb_gsl_combination_memcpy(VALUE klass, VALUE dst, VALUE src)
 {
@@ -73,7 +71,6 @@ static VALUE rb_gsl_combination_clone(VALUE obj)
   gsl_combination_memcpy(c2, c);
   return Data_Wrap_Struct(CLASS_OF(obj), 0, gsl_combination_free, c2);
 }
-#endif
 
 static VALUE rb_gsl_combination_get(VALUE obj, VALUE ii)
 {
@@ -253,10 +250,8 @@ void Init_gsl_combination(VALUE module)
   rb_define_singleton_method(cgsl_combination, "calloc", rb_gsl_combination_calloc, 2);
   rb_define_method(cgsl_combination, "init_first", rb_gsl_combination_init_first, 0);
   rb_define_method(cgsl_combination, "init_last", rb_gsl_combination_init_last, 0);
-#ifdef GSL_1_4_LATER
   rb_define_singleton_method(cgsl_combination, "memcpy", rb_gsl_combination_memcpy, 2);
   rb_define_method(cgsl_combination, "clone", rb_gsl_combination_clone, 0);
-#endif
   rb_define_method(cgsl_combination, "get", rb_gsl_combination_get, 1);
   rb_define_alias(cgsl_combination, "[]", "get");
   rb_define_method(cgsl_combination, "set", rb_gsl_combination_set, 2);
@@ -279,4 +274,4 @@ void Init_gsl_combination(VALUE module)
   rb_define_method(cgsl_combination, "equal?", rb_gsl_combination_equal, 1);
   rb_define_alias(cgsl_combination, "==", "equal?");
 }
-#endif
+
