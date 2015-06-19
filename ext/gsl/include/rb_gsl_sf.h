@@ -13,6 +13,7 @@
 
 #include <gsl/gsl_sf.h>
 #include <gsl/gsl_complex.h>
+#include <gsl/gsl_sf_mathieu.h>
 #include "rb_gsl.h"
 
 EXTERN VALUE cgsl_sf_result, cgsl_sf_result_e10;
@@ -104,11 +105,6 @@ void Init_gsl_sf_synchrotron(VALUE module);
 void Init_gsl_sf_transport(VALUE module);
 void Init_gsl_sf_trigonometric(VALUE module);
 void Init_gsl_sf_zeta(VALUE module);
-
-
-#ifdef GSL_1_9_LATER
-#include <gsl/gsl_sf_mathieu.h>
 void Init_sf_mathieu(VALUE module);
-#endif
 
 #endif

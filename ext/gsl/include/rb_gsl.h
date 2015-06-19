@@ -67,9 +67,7 @@ void Init_gsl_odeiv(VALUE module);
 void Init_gsl_interp(VALUE module);
 void Init_gsl_spline(VALUE module);
 void Init_gsl_diff(VALUE module);
-#ifdef GSL_1_4_9_LATER
 void Init_gsl_deriv(VALUE module);
-#endif
 
 void Init_gsl_cheb(VALUE module);
 void Init_gsl_sum(VALUE module);
@@ -123,9 +121,7 @@ void Init_cqp(VALUE module);
 
 void Init_fresnel(VALUE module);
 
-#ifdef GSL_1_9_LATER
 void Init_bspline(VALUE module);
-#endif
 
 #ifdef HAVE_ALF_ALF_H
 #include "alf/alf.h"
@@ -133,11 +129,8 @@ void Init_bspline(VALUE module);
 void Init_alf(VALUE module);
 void Init_geometry(VALUE module);
 
-#ifdef GSL_1_14_LATER
 #include <gsl/gsl_multiset.h>
 extern VALUE cMultiset;
 void Init_multiset(VALUE module);
-
-#endif
 
 #endif

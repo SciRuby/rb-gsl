@@ -1442,8 +1442,5 @@ void Init_gsl_sf(VALUE module)
   Init_gsl_sf_transport(mgsl_sf);
   Init_gsl_sf_trigonometric(mgsl_sf);
   Init_gsl_sf_zeta(mgsl_sf);
-
-#ifdef GSL_1_9_LATER
   Init_sf_mathieu(mgsl_sf);
-#endif
 }

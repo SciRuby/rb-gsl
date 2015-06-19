@@ -102,7 +102,6 @@ static VALUE rb_gsl_sf_atanint_e(VALUE obj, VALUE x)
   return rb_gsl_sf_eval_e(gsl_sf_atanint_e, x);
 }
 
-#ifdef GSL_1_3_LATER
 static VALUE rb_gsl_sf_expint_E1_scaled(VALUE obj, VALUE x)
 {
   return rb_gsl_sf_eval1(gsl_sf_expint_E1_scaled, x);
@@ -132,9 +131,7 @@ static VALUE rb_gsl_sf_expint_Ei_scaled_e(VALUE obj, VALUE x)
 {
   return rb_gsl_sf_eval_e(gsl_sf_expint_Ei_scaled_e, x);
 }
-#endif
 
-#ifdef GSL_1_10_LATER
 static VALUE rb_gsl_sf_expint_En(VALUE obj, VALUE n, VALUE x)
 {
   return rb_gsl_sf_eval_int_double(gsl_sf_expint_En, n, x);
@@ -147,8 +144,6 @@ static VALUE rb_gsl_sf_expint_En_e(VALUE obj, VALUE n, VALUE x)
   gsl_sf_expint_En_e(FIX2INT(n), NUM2DBL(x), rslt);
   return val;
 }
-
-#endif
 
 void Init_gsl_sf_expint(VALUE module)
 {
@@ -185,7 +180,6 @@ void Init_gsl_sf_expint(VALUE module)
   rb_define_module_function(mgsl_sf_expint, "three",  rb_gsl_sf_expint_3, 1);
   rb_define_module_function(mgsl_sf_expint, "three_e",  rb_gsl_sf_expint_3_e, 1);
 
-#ifdef GSL_1_3_LATER
   rb_define_module_function(module, "expint_E1_scaled",  rb_gsl_sf_expint_E1_scaled, 1);
   rb_define_module_function(module, "expint_E1_scaled_e",  rb_gsl_sf_expint_E1_scaled_e, 1);
   rb_define_module_function(module, "expint_E2_scaled",  rb_gsl_sf_expint_E2_scaled, 1);
@@ -199,13 +193,9 @@ void Init_gsl_sf_expint(VALUE module)
   rb_define_module_function(mgsl_sf_expint, "E2_scaled_e",  rb_gsl_sf_expint_E2_scaled_e, 1);
   rb_define_module_function(mgsl_sf_expint, "Ei_scaled",  rb_gsl_sf_expint_Ei_scaled, 1);
   rb_define_module_function(mgsl_sf_expint, "Ei_scaled_e",  rb_gsl_sf_expint_Ei_scaled_e, 1);
-#endif
 
-#ifdef GSL_1_10_LATER
   rb_define_module_function(module, "expint_En",  rb_gsl_sf_expint_En, 2);
   rb_define_module_function(mgsl_sf_expint, "En",  rb_gsl_sf_expint_En, 2);
   rb_define_module_function(module, "expint_En_e",  rb_gsl_sf_expint_En_e, 2);
   rb_define_module_function(mgsl_sf_expint, "En_e",  rb_gsl_sf_expint_En_e, 2);
-#endif
-
 }

@@ -323,7 +323,6 @@ static VALUE rb_gsl_spline_info(VALUE obj)
   return rb_str_new2(buf);
 }
 
-#ifdef GSL_1_8_LATER
 static VALUE rb_gsl_spline_name(VALUE obj)
 {
   rb_gsl_spline *p = NULL;
@@ -336,17 +335,6 @@ static VALUE rb_gsl_spline_min_size(VALUE obj)
   Data_Get_Struct(obj, rb_gsl_spline, sp);
   return UINT2NUM(gsl_spline_min_size(sp->s));
 }
-
-#else
-
-static VALUE rb_gsl_spline_name(VALUE obj)
-{
-  rb_gsl_spline *sp = NULL;
-  Data_Get_Struct(obj, rb_gsl_spline, sp);
-  return rb_str_new2(gsl_interp_name(sp->s->interp));
-}
-
-#endif
 
 void Init_gsl_spline(VALUE module)
 {
@@ -385,8 +373,5 @@ void Init_gsl_spline(VALUE module)
 
   rb_define_method(cgsl_spline, "info", rb_gsl_spline_info, 0);
 
-#ifdef GSL_1_8_LATER
   rb_define_method(cgsl_spline, "min_size", rb_gsl_spline_min_size, 0);
-#endif
-
 }

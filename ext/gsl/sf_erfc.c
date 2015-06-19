@@ -62,7 +62,6 @@ static VALUE rb_gsl_sf_erf_Q_e(VALUE obj, VALUE x)
   return rb_gsl_sf_eval_e(gsl_sf_erf_Q_e, x);
 }
 
-#ifdef GSL_1_4_LATER
 static VALUE rb_gsl_sf_hazard(VALUE obj, VALUE x)
 {
   return rb_gsl_sf_eval1(gsl_sf_hazard, x);
@@ -72,7 +71,6 @@ static VALUE rb_gsl_sf_hazard_e(VALUE obj, VALUE x)
 {
   return rb_gsl_sf_eval_e(gsl_sf_hazard_e, x);
 }
-#endif
 
 void Init_gsl_sf_erfc(VALUE module)
 {
@@ -86,8 +84,6 @@ void Init_gsl_sf_erfc(VALUE module)
   rb_define_module_function(module, "erf_Z_e",  rb_gsl_sf_erf_Z_e, 1);
   rb_define_module_function(module, "erf_Q",  rb_gsl_sf_erf_Q, 1);
   rb_define_module_function(module, "erf_Q_e",  rb_gsl_sf_erf_Q_e, 1);
-#ifdef GSL_1_4_LATER
   rb_define_module_function(module, "hazard",  rb_gsl_sf_hazard, 1);
   rb_define_module_function(module, "hazard_e",  rb_gsl_sf_hazard_e, 1);
-#endif
 }

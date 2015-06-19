@@ -9,7 +9,6 @@
   WITHOUT ANY WARRANTY.
 */
 
-#ifdef GSL_1_4_9_LATER
 #include "include/rb_gsl_common.h"
 #include "include/rb_gsl_function.h"
 #include <gsl/gsl_math.h>
@@ -186,5 +185,3 @@ void Init_gsl_deriv(VALUE module)
   rb_define_singleton_method(mgsl_deriv, "forward", rb_gsl_deriv_forward, -1);
   rb_define_singleton_method(mgsl_deriv, "backward", rb_gsl_deriv_backward, -1);
 }
-
-#endif

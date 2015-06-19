@@ -1,7 +1,5 @@
 #include "include/rb_gsl.h"
 
-#ifdef GSL_1_14_LATER
-
 VALUE cMultiset;
 
 VALUE rb_gsl_multiset_alloc(VALUE klass, VALUE nn, VALUE kk)
@@ -209,6 +207,4 @@ void Init_multiset(VALUE module)
   rb_define_method(cMultiset, "fprintf", rb_gsl_multiset_fprintf, 2);
   rb_define_method(cMultiset, "fscanf", rb_gsl_multiset_fscanf, 1);
 }
-
-#endif
 

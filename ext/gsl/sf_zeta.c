@@ -68,7 +68,6 @@ static VALUE rb_gsl_sf_eta_e(VALUE obj, VALUE x)
   return rb_gsl_sf_eval_e(gsl_sf_eta_e, x);
 }
 
-#ifdef GSL_1_4_9_LATER
 static VALUE rb_gsl_sf_zetam1_int(VALUE obj, VALUE n)
 {
   VALUE nn;
@@ -94,7 +93,6 @@ static VALUE rb_gsl_sf_zetam1_e(VALUE obj, VALUE x)
 {
   return rb_gsl_sf_eval_e(gsl_sf_zetam1_e, x);
 }
-#endif
 
 void Init_gsl_sf_zeta(VALUE module)
 {
@@ -110,10 +108,8 @@ void Init_gsl_sf_zeta(VALUE module)
   rb_define_module_function(module, "eta",  rb_gsl_sf_eta, 1);
   rb_define_module_function(module, "eta_e",  rb_gsl_sf_eta_e, 1);
 
-#ifdef GSL_1_4_9_LATER
   rb_define_module_function(module, "zetam1_int",  rb_gsl_sf_zetam1_int, 1);
   rb_define_module_function(module, "zetam1_int_e",  rb_gsl_sf_zetam1_int_e, 1);
   rb_define_module_function(module, "zetam1",  rb_gsl_sf_zetam1, 1);
   rb_define_module_function(module, "zetam1_e",  rb_gsl_sf_zetam1_e, 1);
-#endif
 }

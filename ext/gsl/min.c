@@ -18,9 +18,7 @@ double rb_gsl_function_f(double x, void *p);
 enum {
   GSL_MIN_FMINIMIZER_GOLDENSECTION,
   GSL_MIN_FMINIMIZER_BRENT,
-#ifdef GSL_1_13_LATER
   GSL_MIN_FMINIMIZER_QUAD_GOLDEN,
-#endif
 };
 static const gsl_min_fminimizer_type* rb_gsl_min_fminimizer_type_get(VALUE t);
 
@@ -34,10 +32,8 @@ static const gsl_min_fminimizer_type* rb_gsl_min_fminimizer_type_get(VALUE t)
       return gsl_min_fminimizer_goldensection;
     else if (str_tail_grep(name, "brent") == 0)
       return gsl_min_fminimizer_brent;
-#ifdef GSL_1_13_LATER
     else if (str_tail_grep(name, "quad_golden") == 0)
       return gsl_min_fminimizer_quad_golden;
-#endif
     else
       rb_raise(rb_eTypeError, "unknown type %s (goldensection, brent or quad_golden expected)",
          name);
@@ -50,11 +46,9 @@ static const gsl_min_fminimizer_type* rb_gsl_min_fminimizer_type_get(VALUE t)
     case GSL_MIN_FMINIMIZER_BRENT:
       return gsl_min_fminimizer_brent;
       break;
-#ifdef GSL_1_13_LATER
     case GSL_MIN_FMINIMIZER_QUAD_GOLDEN:
       return gsl_min_fminimizer_quad_golden;
       break;
-#endif
     default:
       rb_raise(rb_eTypeError, "unknown type (GOLDENSECION or BRENT or QUAD_GOLDEN expected)");
       break;
@@ -135,29 +129,6 @@ static VALUE rb_gsl_min_fminimizer_x_upper(VALUE obj)
   return rb_float_new(gsl_min_fminimizer_x_upper(gmf));
 }
 
-#ifndef GSL_1_2_LATER
-static double gsl_min_fminimizer_x_minimum(const gsl_min_fminimizer * s)
-{
-  /*  return s->x_minimum;*/
-  return s->minimum;
-}
-
-static double gsl_min_fminimizer_f_minimum(const gsl_min_fminimizer * s)
-{
-  return s->f_minimum;
-}
-
-static double gsl_min_fminimizer_f_lower(const gsl_min_fminimizer * s)
-{
-  return s->f_lower;
-}
-
-static double gsl_min_fminimizer_f_upper(const gsl_min_fminimizer * s)
-{
-  return s->f_upper;
-}
-#endif
-
 static VALUE rb_gsl_min_fminimizer_x_minimum(VALUE obj)
 {
   gsl_min_fminimizer *gmf = NULL;
@@ -222,10 +193,8 @@ void Init_gsl_min(VALUE module)
       INT2FIX(GSL_MIN_FMINIMIZER_BRENT));
   rb_define_const(cgsl_fminimizer, "Brent",
       INT2FIX(GSL_MIN_FMINIMIZER_BRENT));
-#ifdef GSL_1_13_LATER
   rb_define_const(cgsl_fminimizer, "QUAD_GOLDEN",
       INT2FIX(GSL_MIN_FMINIMIZER_QUAD_GOLDEN));
-#endif
 
   rb_define_singleton_method(cgsl_fminimizer, "new", rb_gsl_min_fminimizer_new, 1);
   rb_define_singleton_method(cgsl_fminimizer, "alloc", rb_gsl_min_fminimizer_new, 1);

@@ -1,5 +1,4 @@
 #include "include/rb_gsl.h"
-#ifdef GSL_1_9_LATER
 
 static VALUE cWorkspace;
 
@@ -234,5 +233,3 @@ void Init_sf_mathieu(VALUE module)
   rb_define_module_function(module, "mathieu_Ms_e", rb_gsl_sf_mathieu_Ms_e, 4);
   rb_define_module_function(module, "mathieu_Ms_array", rb_gsl_sf_mathieu_Ms_array, -1);
 }
-
-#endif
