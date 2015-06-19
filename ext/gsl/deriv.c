@@ -15,9 +15,6 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_deriv.h>
 #define RB_GSL_DERIV_H_DEFAULT (1e-8)
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 static int get_func2(int argc, VALUE *argv, VALUE obj, VALUE *ff, VALUE *xx, VALUE *hh)
 {
@@ -74,11 +71,6 @@ static VALUE rb_gsl_deriv_eval(VALUE obj, VALUE xx, VALUE hh,
   gsl_matrix *m = NULL, *mnew = NULL, *merr = NULL;
   size_t n, i, j;
   int status;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2, *ptr3;
-  VALUE ary2, ary3;
-#endif
   Need_Float(hh);
   Data_Get_Struct(obj, gsl_function, f);
   h = NUM2DBL(hh);
@@ -107,6 +99,9 @@ static VALUE rb_gsl_deriv_eval(VALUE obj, VALUE xx, VALUE hh,
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2, *ptr3;
+      VALUE ary2, ary3;
       GetNArray(xx, na);
       n = na->total;
       ptr1 = (double*) na->ptr;

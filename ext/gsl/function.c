@@ -10,9 +10,6 @@
 */
 
 #include "include/rb_gsl_function.h"
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 VALUE cgsl_function;
 VALUE cgsl_function_fdf;
@@ -108,10 +105,6 @@ static VALUE rb_gsl_function_eval(VALUE obj, VALUE x)
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
   size_t i, j, n;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   Data_Get_Struct(obj, gsl_function, F);
   ary = (VALUE) F->params;
   proc = rb_ary_entry(ary, 0);
@@ -141,6 +134,8 @@ static VALUE rb_gsl_function_eval(VALUE obj, VALUE x)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(x)) {
+      double *ptr1, *ptr2;
+      struct NARRAY *na;
       GetNArray(x, na);
       ptr1 = (double *) na->ptr;
       n = na->total;

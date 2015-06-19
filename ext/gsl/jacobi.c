@@ -18,10 +18,6 @@ static VALUE jac_eval3(VALUE xx, VALUE aa, VALUE bb, double (*f)(double, double,
   double a, b;
   size_t i, len;
   VALUE ary;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   a = NUM2DBL(aa);
   b = NUM2DBL(bb);
   if (VECTOR_P(xx)) {
@@ -41,6 +37,8 @@ static VALUE jac_eval3(VALUE xx, VALUE aa, VALUE bb, double (*f)(double, double,
     return ary;
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(xx)) {
+    double *ptr1, *ptr2;
+    struct NARRAY *na;
     GetNArray(xx, na);
     len = na->total;
     ptr1 = (double*) na->ptr;
@@ -65,10 +63,6 @@ static VALUE rb_jac_jacobi_eval(int argc, VALUE *argv,
   VALUE ary;
   size_t len, i;
   int n, flag = 0;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2;
-  struct NARRAY *na;
-#endif
   if (argc < 4) rb_raise(rb_eArgError, "Too few arguments (%d for >= 4)", argc);
   if (VECTOR_P(argv[0])) {
     Data_Get_Struct(argv[0], gsl_vector, x);
@@ -103,6 +97,8 @@ static VALUE rb_jac_jacobi_eval(int argc, VALUE *argv,
     return ary;
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(argv[0])) {
+    double *ptr1, *ptr2;
+    struct NARRAY *na;
     GetNArray(argv[0], na);
     len = na->total;
     ptr1 = (double*) na->ptr;

@@ -210,13 +210,11 @@ VALUE FUNCTION(rb_gsl_vector,new)(int argc, VALUE *argv, VALUE klass)
   size_t n, i;
   BASE beg, en;
   int step;
-#ifdef HAVE_NARRAY_H
-  VALUE ary2;
-#endif
   switch (argc) {
   case 1:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv[0])) {
+      VALUE ary2;
       n = NA_TOTAL(argv[0]);
       v = FUNCTION(gsl_vector,alloc)(n);
       if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_alloc failed");

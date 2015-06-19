@@ -13,9 +13,6 @@
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_common.h"
 #include <gsl/gsl_dht.h>
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 static VALUE rb_gsl_dht_alloc(int argc, VALUE *argv, VALUE klass)
 {
@@ -52,9 +49,6 @@ static VALUE rb_gsl_dht_apply(int argc, VALUE *argv, VALUE obj)
   double *ptr1, *ptr2;
   gsl_vector *vin, *vout;
   size_t size, stride;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-#endif
   VALUE ary;
   switch (argc) {
   case 2:
@@ -73,6 +67,7 @@ static VALUE rb_gsl_dht_apply(int argc, VALUE *argv, VALUE obj)
       ary = Data_Wrap_Struct(VECTOR_ROW_COL(argv[0]), 0, gsl_vector_free, vout);
 #ifdef HAVE_NARRAY_H
     } else if (NA_IsNArray(argv[0])) {
+      struct NARRAY *na;
       GetNArray(argv[0], na);
       ptr1 = (double*)na->ptr;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(argv[0]));
@@ -102,11 +97,6 @@ static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n,
   int nn;
   VALUE ary;
   double val;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  int *ptr;
-  double *ptr2;
-#endif
   Data_Get_Struct(obj, gsl_dht, t);
   if (CLASS_OF(n) == rb_cRange) n = rb_gsl_range2ary(n);
   switch (TYPE(n)) {
@@ -136,6 +126,9 @@ static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n,
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, v);
 #ifdef HAVE_NARRAY_H
     } else if (NA_IsNArray(n)) {
+      struct NARRAY *na;
+      int *ptr;
+      double *ptr2;
       GetNArray(n, na);
       ptr = (int*) na->ptr;
       size = na->total;

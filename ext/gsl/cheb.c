@@ -15,9 +15,6 @@
 #include "include/rb_gsl_function.h"
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_chebyshev.h>
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 static VALUE cgsl_cheb;
 
@@ -98,10 +95,6 @@ static VALUE rb_gsl_cheb_eval(VALUE obj, VALUE xx)
   size_t i, j, n;
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-#endif
   Data_Get_Struct(obj, gsl_cheb_series, p);
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
   switch (TYPE(xx)) {
@@ -124,6 +117,8 @@ static VALUE rb_gsl_cheb_eval(VALUE obj, VALUE xx)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2;
       GetNArray(xx, na);
       ptr1 = (double*) na->ptr;
       n = na->total;
@@ -165,10 +160,6 @@ static VALUE rb_gsl_cheb_eval_err(VALUE obj, VALUE xx)
   size_t n, i, j;
   gsl_vector *v = NULL, *vnew = NULL, *verr = NULL;
   gsl_matrix *m = NULL, *mnew = NULL, *merr = NULL;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2, *ptr3;
-#endif
   Data_Get_Struct(obj, gsl_cheb_series, p);
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
   switch (TYPE(xx)) {
@@ -195,6 +186,8 @@ static VALUE rb_gsl_cheb_eval_err(VALUE obj, VALUE xx)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2, *ptr3;
       GetNArray(xx, na);
       ptr1 = (double*) na->ptr;
       n = na->total;
@@ -251,10 +244,6 @@ static VALUE rb_gsl_cheb_eval_n(VALUE obj, VALUE nn, VALUE xx)
   size_t n, order, i, j;
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-#endif
   CHECK_FIXNUM(nn);
   order = FIX2INT(nn);
   Data_Get_Struct(obj, gsl_cheb_series, p);
@@ -279,6 +268,8 @@ static VALUE rb_gsl_cheb_eval_n(VALUE obj, VALUE nn, VALUE xx)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2;
       GetNArray(xx, na);
       ptr1 = (double*) na->ptr;
       n = na->total;
@@ -321,10 +312,6 @@ static VALUE rb_gsl_cheb_eval_n_err(VALUE obj, VALUE nn, VALUE xx)
   size_t n, order, i, j;
   gsl_vector *v, *vnew, *verr;
   gsl_matrix *m, *mnew, *merr;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2, *ptr3;
-#endif
   CHECK_FIXNUM(nn);
   order = FIX2INT(nn);
   Data_Get_Struct(obj, gsl_cheb_series, p);
@@ -353,6 +340,8 @@ static VALUE rb_gsl_cheb_eval_n_err(VALUE obj, VALUE nn, VALUE xx)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2, *ptr3;
       GetNArray(xx, na);
       ptr1 = (double*) na->ptr;
       n = na->total;

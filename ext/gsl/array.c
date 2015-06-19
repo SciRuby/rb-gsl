@@ -12,9 +12,7 @@
 #include "include/rb_gsl_common.h"
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_complex.h"
-#ifdef HAVE_NARRAY_H
 #include "include/rb_gsl_with_narray.h"
-#endif
 
 /* global variables */
 VALUE cgsl_block, cgsl_block_int;
@@ -47,9 +45,6 @@ double* get_vector_ptr(VALUE ary, size_t *stride, size_t *n)
   gsl_vector *v = NULL;
   gsl_vector_complex *vc = NULL;
   gsl_matrix *m;
-#ifdef HAVE_NARRAY_H
-  VALUE ary2;
-#endif
   if (VECTOR_P(ary)) {
     Data_Get_Struct(ary, gsl_vector, v);
     *stride = v->stride;
@@ -67,6 +62,7 @@ double* get_vector_ptr(VALUE ary, size_t *stride, size_t *n)
     return m->data;
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(ary)) {
+    VALUE ary2;
     *n = NA_TOTAL(ary);
     *stride = 1;
     ary2 = na_change_type(ary, NA_DFLOAT);

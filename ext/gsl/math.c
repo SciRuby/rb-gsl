@@ -12,9 +12,6 @@
 
 #include "include/rb_gsl_math.h"
 #include "include/rb_gsl_complex.h"
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 static void rb_gsl_define_const(VALUE module);
 
@@ -140,10 +137,6 @@ static VALUE rb_gsl_math_eval(double (*func)(const double), VALUE xx)
 {
   VALUE x, ary;
   size_t i, size;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-#endif
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
   switch (TYPE(xx)) {
   case T_FIXNUM:
@@ -165,6 +158,8 @@ static VALUE rb_gsl_math_eval(double (*func)(const double), VALUE xx)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2;
       GetNArray(xx, na);
       ptr1 = (double*) na->ptr;
       size = na->total;
@@ -196,10 +191,6 @@ static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE
   size_t i, j, size;
   gsl_vector *v = NULL, *v2 = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *m2 = NULL, *mnew = NULL;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *nax, *nay;
-  double *ptr1, *ptr2, *ptr3;
-#endif
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
   switch (TYPE(xx)) {
   case T_FIXNUM:
@@ -226,6 +217,8 @@ static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *nax, *nay;
+      double *ptr1, *ptr2, *ptr3;
       GetNArray(xx, nax);
       GetNArray(yy, nay);
       ptr1 = (double*) nax->ptr;
@@ -328,10 +321,6 @@ VALUE rb_gsl_pow(VALUE obj, VALUE xx, VALUE nn)
   double n;
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-#endif
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
   switch (TYPE(xx)) {
   case T_FIXNUM:
@@ -353,6 +342,8 @@ VALUE rb_gsl_pow(VALUE obj, VALUE xx, VALUE nn)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2;
       n = NUM2DBL(nn);
       GetNArray(xx, na);
       ptr1 = (double*) na->ptr;
@@ -402,10 +393,6 @@ static VALUE rb_gsl_pow_int(VALUE obj, VALUE xx, VALUE nn)
   int n;
   gsl_vector *v = NULL, *vnew = NULL;
   gsl_matrix *m = NULL, *mnew = NULL;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-#endif
 
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
   switch (TYPE(xx)) {
@@ -430,6 +417,8 @@ static VALUE rb_gsl_pow_int(VALUE obj, VALUE xx, VALUE nn)
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2;
       CHECK_FIXNUM(nn);
       n = FIX2INT(nn);
       GetNArray(xx, na);

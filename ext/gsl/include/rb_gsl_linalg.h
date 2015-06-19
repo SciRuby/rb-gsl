@@ -14,7 +14,6 @@
 
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
-#include "rb_gsl_with_narray.h"
 
 VALUE rb_gsl_linalg_complex_LU_decomp(int argc, VALUE *argv, VALUE obj);
 VALUE rb_gsl_linalg_complex_LU_decomp2(int argc, VALUE *argv, VALUE obj);

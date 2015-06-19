@@ -14,9 +14,7 @@
 #include "include/rb_gsl_histogram.h"
 #include "include/rb_gsl_complex.h"
 #include "include/rb_gsl_poly.h"
-#ifdef HAVE_NARRAY_H
 #include "include/rb_gsl_with_narray.h"
-#endif
 
 VALUE rb_gsl_vector_inner_product(int argc, VALUE *argv, VALUE obj);
 static VALUE rb_gsl_vector_product_to_m(int argc, VALUE *argv, VALUE obj);
@@ -503,9 +501,21 @@ static void draw_hist(VALUE obj, FILE *fp);
 static void draw_vector(VALUE obj, FILE *fp);
 static void draw_vector2(VALUE xx, VALUE yy, FILE *fp);
 static void draw_vector_array(VALUE ary, FILE *fp);
+
 #ifdef HAVE_NARRAY_H
-static void draw_narray(VALUE obj, FILE *fp);
+static void draw_narray(VALUE obj, FILE *fp)
+{
+  struct NARRAY *na;
+  double *ptr;
+  size_t j;
+  GetNArray(obj, na);
+  ptr = (double *) na->ptr;
+  for (j = 0; j < na->total; j++)
+    fprintf(fp, "%d %g\n", (int) j, ptr[j]);
+  fflush(fp);
+}
 #endif // HAVE_NARRAY_H
+
 #endif // HAVE_GNU_GRAPH
 
 static VALUE rb_gsl_vector_graph2(int argc, VALUE *argv, VALUE obj)
@@ -636,9 +646,6 @@ static void draw_vector(VALUE obj, FILE *fp)
 
 static void draw_vector2(VALUE xx, VALUE yy, FILE *fp)
 {
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *nax, *nay;
-#endif // HAVE_NARRAY_H
   double *ptr1 = NULL, *ptr2 = NULL;
   gsl_vector *vx, *vy;
   size_t j, n, stridex = 1, stridey = 1;
@@ -649,6 +656,7 @@ static void draw_vector2(VALUE xx, VALUE yy, FILE *fp)
     stridex = vx->stride;
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(xx)) {
+    struct NARRAY *nax;
     GetNArray(xx, nax);
     ptr1 = (double *) nax->ptr;
     n = nax->total;
@@ -665,6 +673,7 @@ static void draw_vector2(VALUE xx, VALUE yy, FILE *fp)
     stridey = vy->stride;
 #ifdef HAVE_NARRAY_H
   } else if (NA_IsNArray(yy)) {
+    struct NARRAY *nay;
     GetNArray(yy, nay);
     ptr2 = (double *) nay->ptr;
     stridey = 1;
@@ -677,20 +686,6 @@ static void draw_vector2(VALUE xx, VALUE yy, FILE *fp)
     fprintf(fp, "%g %g\n", ptr1[j*stridex], ptr2[j*stridey]);
   fflush(fp);
 }
-
-#ifdef HAVE_NARRAY_H
-static void draw_narray(VALUE obj, FILE *fp)
-{
-  struct NARRAY *na;
-  double *ptr;
-  size_t j;
-  GetNArray(obj, na);
-  ptr = (double *) na->ptr;
-  for (j = 0; j < na->total; j++)
-    fprintf(fp, "%d %g\n", (int) j, ptr[j]);
-  fflush(fp);
-}
-#endif // HAVE_NARRAY_H
 
 static void draw_hist(VALUE obj, FILE *fp)
 {

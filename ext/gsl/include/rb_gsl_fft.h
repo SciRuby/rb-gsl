@@ -18,9 +18,6 @@
 #include <gsl/gsl_fft_real.h>
 #include <gsl/gsl_fft_halfcomplex.h>
 #include "rb_gsl.h"
-#ifdef HAVE_NARRAY_H
-#include "narray.h"
-#endif
 
 typedef struct
 {

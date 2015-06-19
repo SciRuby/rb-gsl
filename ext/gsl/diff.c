@@ -48,11 +48,6 @@ static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
   gsl_matrix *m = NULL, *mnew = NULL, *merr = NULL;
   size_t n, i, j;
   int status;
-#ifdef HAVE_NARRAY_H
-  double *ptr1, *ptr2, *ptr3;
-  struct NARRAY *na;
-  VALUE ary2, ary3;
-#endif
   Data_Get_Struct(obj, gsl_function, f);
   if (CLASS_OF(xx) == rb_cRange) xx = rb_gsl_range2ary(xx);
   switch (TYPE(xx)) {
@@ -79,6 +74,9 @@ static VALUE rb_gsl_diff_eval(VALUE obj, VALUE xx,
   default:
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      double *ptr1, *ptr2, *ptr3;
+      struct NARRAY *na;
+      VALUE ary2, ary3;
       GetNArray(xx, na);
       n = na->total;
       ptr1 = (double*) na->ptr;

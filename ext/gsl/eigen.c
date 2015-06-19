@@ -84,7 +84,59 @@ static VALUE rb_gsl_eigen_hermv_alloc(VALUE klass, VALUE nn)
 }
 
 #ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_eigen_symm_narray(int argc, VALUE *argv, VALUE obj);
+static VALUE rb_gsl_eigen_symm_narray(int argc, VALUE *argv, VALUE obj)
+{
+  struct NARRAY *na;
+  VALUE nary;
+  gsl_matrix *A = NULL;
+  gsl_eigen_symm_workspace *w = NULL;
+  gsl_vector_view vv;
+  int shape[1];
+  int flagw = 0;
+  switch (argc) {
+  case 2:
+    if (!NA_IsNArray(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
+         rb_class2name(CLASS_OF(argv[0])));
+    GetNArray(argv[0], na);
+    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+    if (na->shape[0] != na->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
+    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
+    if (CLASS_OF(argv[1]) != cgsl_eigen_symm_workspace)
+      rb_raise(rb_eTypeError,
+         "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
+         rb_class2name(CLASS_OF(argv[1])));
+    Data_Get_Struct(argv[1], gsl_eigen_symm_workspace, w);
+    flagw = 0;
+    break;
+  case 1:
+    if (!NA_IsNArray(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
+         rb_class2name(CLASS_OF(argv[0])));
+    GetNArray(argv[0], na);
+    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+    if (na->shape[0] != na->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
+    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
+    w = gsl_eigen_symm_alloc(A->size1);
+    flagw = 1;
+    break;
+  default:
+    rb_raise(rb_eArgError, "matrix not given");
+    break;
+  }
+  shape[0] = A->size1;
+  nary = na_make_object(NA_DFLOAT, 1, shape, cNVector);
+  vv = gsl_vector_view_array(NA_PTR_TYPE(nary,double*), A->size1);
+  gsl_eigen_symm(A, &vv.vector, w);
+  /*  gsl_sort_vector(v);*/
+  gsl_matrix_free(A);
+  if (flagw == 1) gsl_eigen_symm_free(w);
+  return nary;
+}
 #endif
 
 static VALUE rb_gsl_eigen_symm(int argc, VALUE *argv, VALUE obj)
@@ -154,14 +206,15 @@ static VALUE rb_gsl_eigen_symm(int argc, VALUE *argv, VALUE obj)
 }
 
 #ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_eigen_symm_narray(int argc, VALUE *argv, VALUE obj)
+static VALUE rb_gsl_eigen_symmv_narray(int argc, VALUE *argv, VALUE obj)
 {
   struct NARRAY *na;
-  VALUE nary;
+  VALUE eval, evec;
   gsl_matrix *A = NULL;
-  gsl_eigen_symm_workspace *w = NULL;
+  gsl_eigen_symmv_workspace *w = NULL;
+  gsl_matrix_view mv;
   gsl_vector_view vv;
-  int shape[1];
+  int shape1[1], shape2[2];
   int flagw = 0;
   switch (argc) {
   case 2:
@@ -174,11 +227,11 @@ static VALUE rb_gsl_eigen_symm_narray(int argc, VALUE *argv, VALUE obj)
       rb_raise(rb_eRuntimeError, "square matrix required");
     A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
     memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
-    if (CLASS_OF(argv[1]) != cgsl_eigen_symm_workspace)
+    if (CLASS_OF(argv[1]) != cgsl_eigen_symmv_workspace)
       rb_raise(rb_eTypeError,
          "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
          rb_class2name(CLASS_OF(argv[1])));
-    Data_Get_Struct(argv[1], gsl_eigen_symm_workspace, w);
+    Data_Get_Struct(argv[1], gsl_eigen_symmv_workspace, w);
     flagw = 0;
     break;
   case 1:
@@ -191,26 +244,26 @@ static VALUE rb_gsl_eigen_symm_narray(int argc, VALUE *argv, VALUE obj)
       rb_raise(rb_eRuntimeError, "square matrix required");
     A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
     memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
-    w = gsl_eigen_symm_alloc(A->size1);
+    w = gsl_eigen_symmv_alloc(A->size1);
     flagw = 1;
     break;
   default:
     rb_raise(rb_eArgError, "matrix not given");
     break;
   }
-  shape[0] = A->size1;
-  nary = na_make_object(NA_DFLOAT, 1, shape, cNVector);
-  vv = gsl_vector_view_array(NA_PTR_TYPE(nary,double*), A->size1);
-  gsl_eigen_symm(A, &vv.vector, w);
+  shape1[0] = A->size1;
+  shape2[0] = A->size1;
+  shape2[1] = A->size1;
+  eval = na_make_object(NA_DFLOAT, 1, shape1, cNVector);
+  evec = na_make_object(NA_DFLOAT, 2, shape2, CLASS_OF(argv[0]));
+  vv = gsl_vector_view_array(NA_PTR_TYPE(eval,double*), A->size1);
+  mv = gsl_matrix_view_array(NA_PTR_TYPE(evec,double*), A->size1, A->size2);
+  gsl_eigen_symmv(A, &vv.vector, &mv.matrix, w);
   /*  gsl_sort_vector(v);*/
   gsl_matrix_free(A);
-  if (flagw == 1) gsl_eigen_symm_free(w);
-  return nary;
+  if (flagw == 1) gsl_eigen_symmv_free(w);
+  return rb_ary_new3(2, eval, evec);
 }
-#endif
-
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_eigen_symmv_narray(int argc, VALUE *argv, VALUE obj);
 #endif
 
 static VALUE rb_gsl_eigen_symmv(int argc, VALUE *argv, VALUE obj)
@@ -282,67 +335,6 @@ static VALUE rb_gsl_eigen_symmv(int argc, VALUE *argv, VALUE obj)
   vvec = Data_Wrap_Struct(cgsl_eigen_vectors, 0, gsl_matrix_free, em);
   return rb_ary_new3(2, vval, vvec);
 }
-
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_eigen_symmv_narray(int argc, VALUE *argv, VALUE obj)
-{
-  struct NARRAY *na;
-  VALUE eval, evec;
-  gsl_matrix *A = NULL;
-  gsl_eigen_symmv_workspace *w = NULL;
-  gsl_matrix_view mv;
-  gsl_vector_view vv;
-  int shape1[1], shape2[2];
-  int flagw = 0;
-  switch (argc) {
-  case 2:
-    if (!NA_IsNArray(argv[0]))
-      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
-         rb_class2name(CLASS_OF(argv[0])));
-    GetNArray(argv[0], na);
-    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
-    if (na->shape[0] != na->shape[1])
-      rb_raise(rb_eRuntimeError, "square matrix required");
-    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
-    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
-    if (CLASS_OF(argv[1]) != cgsl_eigen_symmv_workspace)
-      rb_raise(rb_eTypeError,
-         "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
-         rb_class2name(CLASS_OF(argv[1])));
-    Data_Get_Struct(argv[1], gsl_eigen_symmv_workspace, w);
-    flagw = 0;
-    break;
-  case 1:
-    if (!NA_IsNArray(argv[0]))
-      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
-         rb_class2name(CLASS_OF(argv[0])));
-    GetNArray(argv[0], na);
-    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
-    if (na->shape[0] != na->shape[1])
-      rb_raise(rb_eRuntimeError, "square matrix required");
-    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
-    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
-    w = gsl_eigen_symmv_alloc(A->size1);
-    flagw = 1;
-    break;
-  default:
-    rb_raise(rb_eArgError, "matrix not given");
-    break;
-  }
-  shape1[0] = A->size1;
-  shape2[0] = A->size1;
-  shape2[1] = A->size1;
-  eval = na_make_object(NA_DFLOAT, 1, shape1, cNVector);
-  evec = na_make_object(NA_DFLOAT, 2, shape2, CLASS_OF(argv[0]));
-  vv = gsl_vector_view_array(NA_PTR_TYPE(eval,double*), A->size1);
-  mv = gsl_matrix_view_array(NA_PTR_TYPE(evec,double*), A->size1, A->size2);
-  gsl_eigen_symmv(A, &vv.vector, &mv.matrix, w);
-  /*  gsl_sort_vector(v);*/
-  gsl_matrix_free(A);
-  if (flagw == 1) gsl_eigen_symmv_free(w);
-  return rb_ary_new3(2, eval, evec);
-}
-#endif
 
 static VALUE rb_gsl_eigen_herm(int argc, VALUE *argv, VALUE obj)
 {
@@ -626,7 +618,59 @@ static VALUE rb_gsl_eigen_francis_T(int argc, VALUE *argv, VALUE obj)
 }
 
 #ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_eigen_francis_narray(int argc, VALUE *argv, VALUE obj);
+static VALUE rb_gsl_eigen_francis_narray(int argc, VALUE *argv, VALUE obj)
+{
+  struct NARRAY *na;
+  VALUE nary;
+  gsl_matrix *A = NULL;
+  gsl_eigen_francis_workspace *w = NULL;
+  gsl_vector_complex_view vv;
+  int shape[1];
+  int flagw = 0;
+  switch (argc) {
+  case 2:
+    if (!NA_IsNArray(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
+         rb_class2name(CLASS_OF(argv[0])));
+    GetNArray(argv[0], na);
+    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+    if (na->shape[0] != na->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
+    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
+    if (CLASS_OF(argv[1]) != cgsl_eigen_francis_workspace)
+      rb_raise(rb_eTypeError,
+         "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
+         rb_class2name(CLASS_OF(argv[1])));
+    Data_Get_Struct(argv[1], gsl_eigen_francis_workspace, w);
+    flagw = 0;
+    break;
+  case 1:
+    if (!NA_IsNArray(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
+         rb_class2name(CLASS_OF(argv[0])));
+    GetNArray(argv[0], na);
+    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+    if (na->shape[0] != na->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
+    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
+    w = gsl_eigen_francis_alloc();
+    flagw = 1;
+    break;
+  default:
+    rb_raise(rb_eArgError, "matrix not given");
+    break;
+  }
+  shape[0] = A->size1;
+  nary = na_make_object(NA_DCOMPLEX, 1, shape, cNVector);
+  vv = gsl_vector_complex_view_array(NA_PTR_TYPE(nary,double*), A->size1);
+  gsl_eigen_francis(A, &vv.vector, w);
+  /*  gsl_sort_vector(v);*/
+  gsl_matrix_free(A);
+  if (flagw == 1) gsl_eigen_francis_free(w);
+  return nary;
+}
 #endif
 
 static VALUE rb_gsl_eigen_francis(int argc, VALUE *argv, VALUE obj)
@@ -695,62 +739,6 @@ static VALUE rb_gsl_eigen_francis(int argc, VALUE *argv, VALUE obj)
   else
     return argv2[0];
 }
-
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_eigen_francis_narray(int argc, VALUE *argv, VALUE obj)
-{
-  struct NARRAY *na;
-  VALUE nary;
-  gsl_matrix *A = NULL;
-  gsl_eigen_francis_workspace *w = NULL;
-  gsl_vector_complex_view vv;
-  int shape[1];
-  int flagw = 0;
-  switch (argc) {
-  case 2:
-    if (!NA_IsNArray(argv[0]))
-      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
-         rb_class2name(CLASS_OF(argv[0])));
-    GetNArray(argv[0], na);
-    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
-    if (na->shape[0] != na->shape[1])
-      rb_raise(rb_eRuntimeError, "square matrix required");
-    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
-    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
-    if (CLASS_OF(argv[1]) != cgsl_eigen_francis_workspace)
-      rb_raise(rb_eTypeError,
-         "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
-         rb_class2name(CLASS_OF(argv[1])));
-    Data_Get_Struct(argv[1], gsl_eigen_francis_workspace, w);
-    flagw = 0;
-    break;
-  case 1:
-    if (!NA_IsNArray(argv[0]))
-      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
-         rb_class2name(CLASS_OF(argv[0])));
-    GetNArray(argv[0], na);
-    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
-    if (na->shape[0] != na->shape[1])
-      rb_raise(rb_eRuntimeError, "square matrix required");
-    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
-    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
-    w = gsl_eigen_francis_alloc();
-    flagw = 1;
-    break;
-  default:
-    rb_raise(rb_eArgError, "matrix not given");
-    break;
-  }
-  shape[0] = A->size1;
-  nary = na_make_object(NA_DCOMPLEX, 1, shape, cNVector);
-  vv = gsl_vector_complex_view_array(NA_PTR_TYPE(nary,double*), A->size1);
-  gsl_eigen_francis(A, &vv.vector, w);
-  /*  gsl_sort_vector(v);*/
-  gsl_matrix_free(A);
-  if (flagw == 1) gsl_eigen_francis_free(w);
-  return nary;
-}
-#endif
 
 static VALUE rb_gsl_eigen_francis_Z(int argc, VALUE *argv, VALUE obj)
 {
@@ -852,7 +840,59 @@ static VALUE rb_gsl_eigen_nonsymm_params(int argc, VALUE *argv, VALUE obj)
 }
 
 #ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_eigen_nonsymm_narray(int argc, VALUE *argv, VALUE obj);
+static VALUE rb_gsl_eigen_nonsymm_narray(int argc, VALUE *argv, VALUE obj)
+{
+  struct NARRAY *na;
+  VALUE nary;
+  gsl_matrix *A = NULL;
+  gsl_eigen_nonsymm_workspace *w = NULL;
+  gsl_vector_complex_view vv;
+  int shape[1];
+  int flagw = 0;
+  switch (argc) {
+  case 2:
+    if (!NA_IsNArray(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
+         rb_class2name(CLASS_OF(argv[0])));
+    GetNArray(argv[0], na);
+    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+    if (na->shape[0] != na->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
+    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
+    if (CLASS_OF(argv[1]) != cgsl_eigen_nonsymm_workspace)
+      rb_raise(rb_eTypeError,
+         "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
+         rb_class2name(CLASS_OF(argv[1])));
+    Data_Get_Struct(argv[1], gsl_eigen_nonsymm_workspace, w);
+    flagw = 0;
+    break;
+  case 1:
+    if (!NA_IsNArray(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
+         rb_class2name(CLASS_OF(argv[0])));
+    GetNArray(argv[0], na);
+    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+    if (na->shape[0] != na->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
+    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
+    w = gsl_eigen_nonsymm_alloc(A->size1);
+    flagw = 1;
+    break;
+  default:
+    rb_raise(rb_eArgError, "matrix not given");
+    break;
+  }
+  shape[0] = A->size1;
+  nary = na_make_object(NA_DCOMPLEX, 1, shape, cNVector);
+  vv = gsl_vector_complex_view_array(NA_PTR_TYPE(nary,double*), A->size1);
+  gsl_eigen_nonsymm(A, &vv.vector, w);
+  /*  gsl_sort_vector(v);*/
+  gsl_matrix_free(A);
+  if (flagw == 1) gsl_eigen_nonsymm_free(w);
+  return nary;
+}
 #endif
 
 static VALUE rb_gsl_eigen_nonsymm(int argc, VALUE *argv, VALUE obj)
@@ -921,62 +961,6 @@ static VALUE rb_gsl_eigen_nonsymm(int argc, VALUE *argv, VALUE obj)
   else
     return argv2[0];
 }
-
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_eigen_nonsymm_narray(int argc, VALUE *argv, VALUE obj)
-{
-  struct NARRAY *na;
-  VALUE nary;
-  gsl_matrix *A = NULL;
-  gsl_eigen_nonsymm_workspace *w = NULL;
-  gsl_vector_complex_view vv;
-  int shape[1];
-  int flagw = 0;
-  switch (argc) {
-  case 2:
-    if (!NA_IsNArray(argv[0]))
-      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
-         rb_class2name(CLASS_OF(argv[0])));
-    GetNArray(argv[0], na);
-    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
-    if (na->shape[0] != na->shape[1])
-      rb_raise(rb_eRuntimeError, "square matrix required");
-    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
-    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
-    if (CLASS_OF(argv[1]) != cgsl_eigen_nonsymm_workspace)
-      rb_raise(rb_eTypeError,
-         "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
-         rb_class2name(CLASS_OF(argv[1])));
-    Data_Get_Struct(argv[1], gsl_eigen_nonsymm_workspace, w);
-    flagw = 0;
-    break;
-  case 1:
-    if (!NA_IsNArray(argv[0]))
-      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
-         rb_class2name(CLASS_OF(argv[0])));
-    GetNArray(argv[0], na);
-    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
-    if (na->shape[0] != na->shape[1])
-      rb_raise(rb_eRuntimeError, "square matrix required");
-    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
-    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
-    w = gsl_eigen_nonsymm_alloc(A->size1);
-    flagw = 1;
-    break;
-  default:
-    rb_raise(rb_eArgError, "matrix not given");
-    break;
-  }
-  shape[0] = A->size1;
-  nary = na_make_object(NA_DCOMPLEX, 1, shape, cNVector);
-  vv = gsl_vector_complex_view_array(NA_PTR_TYPE(nary,double*), A->size1);
-  gsl_eigen_nonsymm(A, &vv.vector, w);
-  /*  gsl_sort_vector(v);*/
-  gsl_matrix_free(A);
-  if (flagw == 1) gsl_eigen_nonsymm_free(w);
-  return nary;
-}
-#endif
 
 static VALUE rb_gsl_eigen_nonsymm_Z(int argc, VALUE *argv, VALUE obj)
 {
@@ -1054,7 +1038,62 @@ static VALUE rb_gsl_eigen_nonsymmv_alloc(VALUE klass, VALUE nn)
 }
 
 #ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_eigen_nonsymmv_narray(int argc, VALUE *argv, VALUE obj);
+static VALUE rb_gsl_eigen_nonsymmv_narray(int argc, VALUE *argv, VALUE obj)
+{
+  struct NARRAY *na;
+  VALUE nary, nvec;
+  gsl_matrix *A = NULL;
+  gsl_eigen_nonsymmv_workspace *w = NULL;
+  gsl_vector_complex_view vv;
+  gsl_matrix_complex_view mm;
+  int shape[1], shape2[2];
+  int flagw = 0;
+  switch (argc) {
+  case 2:
+    if (!NA_IsNArray(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
+         rb_class2name(CLASS_OF(argv[0])));
+    GetNArray(argv[0], na);
+    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+    if (na->shape[0] != na->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
+    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
+    if (CLASS_OF(argv[1]) != cgsl_eigen_nonsymmv_workspace)
+      rb_raise(rb_eTypeError,
+         "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
+         rb_class2name(CLASS_OF(argv[1])));
+    Data_Get_Struct(argv[1], gsl_eigen_nonsymmv_workspace, w);
+    flagw = 0;
+    break;
+  case 1:
+    if (!NA_IsNArray(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
+         rb_class2name(CLASS_OF(argv[0])));
+    GetNArray(argv[0], na);
+    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+    if (na->shape[0] != na->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
+    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
+    w = gsl_eigen_nonsymmv_alloc(A->size1);
+    flagw = 1;
+    break;
+  default:
+    rb_raise(rb_eArgError, "matrix not given");
+    break;
+  }
+  shape[0] = A->size1; shape2[0] = A->size1; shape2[1] = A->size2;
+  nary = na_make_object(NA_DCOMPLEX, 1, shape, cNVector);
+  vv = gsl_vector_complex_view_array(NA_PTR_TYPE(nary,double*), A->size1);
+  nvec = na_make_object(NA_DCOMPLEX, 2, shape2, CLASS_OF(argv[0]));
+  mm = gsl_matrix_complex_view_array(NA_PTR_TYPE(nvec,double*), A->size1, A->size2);
+  gsl_eigen_nonsymmv(A, &vv.vector, &mm.matrix, w);
+  /*  gsl_sort_vector(v);*/
+  gsl_matrix_free(A);
+  if (flagw == 1) gsl_eigen_nonsymmv_free(w);
+  return rb_ary_new3(2, nary, nvec);
+}
 #endif
 
 static VALUE rb_gsl_eigen_nonsymmv(int argc, VALUE *argv, VALUE obj)
@@ -1134,65 +1173,6 @@ static VALUE rb_gsl_eigen_nonsymmv(int argc, VALUE *argv, VALUE obj)
     return rb_ary_new3(2, argv2[0], argv2[1]);
   }
 }
-
-#ifdef HAVE_NARRAY_H
-static VALUE rb_gsl_eigen_nonsymmv_narray(int argc, VALUE *argv, VALUE obj)
-{
-  struct NARRAY *na;
-  VALUE nary, nvec;
-  gsl_matrix *A = NULL;
-  gsl_eigen_nonsymmv_workspace *w = NULL;
-  gsl_vector_complex_view vv;
-  gsl_matrix_complex_view mm;
-  int shape[1], shape2[2];
-  int flagw = 0;
-  switch (argc) {
-  case 2:
-    if (!NA_IsNArray(argv[0]))
-      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
-         rb_class2name(CLASS_OF(argv[0])));
-    GetNArray(argv[0], na);
-    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
-    if (na->shape[0] != na->shape[1])
-      rb_raise(rb_eRuntimeError, "square matrix required");
-    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
-    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
-    if (CLASS_OF(argv[1]) != cgsl_eigen_nonsymmv_workspace)
-      rb_raise(rb_eTypeError,
-         "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
-         rb_class2name(CLASS_OF(argv[1])));
-    Data_Get_Struct(argv[1], gsl_eigen_nonsymmv_workspace, w);
-    flagw = 0;
-    break;
-  case 1:
-    if (!NA_IsNArray(argv[0]))
-      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
-         rb_class2name(CLASS_OF(argv[0])));
-    GetNArray(argv[0], na);
-    if (na->rank < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
-    if (na->shape[0] != na->shape[1])
-      rb_raise(rb_eRuntimeError, "square matrix required");
-    A = gsl_matrix_alloc(na->shape[1], na->shape[0]);
-    memcpy(A->data, (double*) na->ptr, sizeof(double)*A->size1*A->size2);
-    w = gsl_eigen_nonsymmv_alloc(A->size1);
-    flagw = 1;
-    break;
-  default:
-    rb_raise(rb_eArgError, "matrix not given");
-    break;
-  }
-  shape[0] = A->size1; shape2[0] = A->size1; shape2[1] = A->size2;
-  nary = na_make_object(NA_DCOMPLEX, 1, shape, cNVector);
-  vv = gsl_vector_complex_view_array(NA_PTR_TYPE(nary,double*), A->size1);
-  nvec = na_make_object(NA_DCOMPLEX, 2, shape2, CLASS_OF(argv[0]));
-  mm = gsl_matrix_complex_view_array(NA_PTR_TYPE(nvec,double*), A->size1, A->size2);
-  gsl_eigen_nonsymmv(A, &vv.vector, &mm.matrix, w);
-  /*  gsl_sort_vector(v);*/
-  gsl_matrix_free(A);
-  if (flagw == 1) gsl_eigen_nonsymmv_free(w);
-  return rb_ary_new3(2, nary, nvec);
-}
-#endif
 
 static VALUE rb_gsl_eigen_nonsymmv_Z(int argc, VALUE *argv, VALUE obj)
 {

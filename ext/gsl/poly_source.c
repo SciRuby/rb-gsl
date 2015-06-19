@@ -67,9 +67,6 @@ double gsl_poly_int_eval(const BASE c[], const int len, const double x)
 }
 #endif
 #ifdef BASE_DOUBLE
-#ifdef HAVE_NARRAY_H
-#include "include/rb_gsl_with_narray.h"
-#endif
 #ifdef GSL_1_11_LATER
 static VALUE rb_gsl_complex_poly_complex_eval(VALUE a, VALUE b);
 #endif
@@ -83,9 +80,6 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
   VALUE val;
   double *ptr0;
   double *ptr1, *ptr2;
-#ifdef HAVE_NARRAY_H
-  int shape[1];
-#endif
 #ifdef GSL_1_11_LATER
   gsl_complex *z, zz;
   gsl_vector_complex *vz, *vznew;
@@ -149,6 +143,7 @@ static VALUE rb_gsl_poly_eval_singleton(VALUE klass, VALUE a, VALUE x)
       ptr2 = mnew->data;
 #ifdef HAVE_NARRAY_H
     } else if (NA_IsNArray(x)) {
+      int shape[1];
       shape[0] = NA_TOTAL(x);
       n = shape[0];
       val = na_make_object(NA_DFLOAT, 1, shape, CLASS_OF(x));
@@ -261,11 +256,6 @@ static VALUE FUNCTION(rb_gsl_poly,eval)(VALUE obj, VALUE xx)
   VALUE x, ary;
   size_t i, j;
 #ifdef BASE_DOUBLE
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-  size_t n;
-#endif
 #ifdef GSL_1_11_LATER
   gsl_complex *z, zz;
   gsl_vector_complex *vz, *vznew;
@@ -293,6 +283,9 @@ static VALUE FUNCTION(rb_gsl_poly,eval)(VALUE obj, VALUE xx)
 #ifdef BASE_DOUBLE
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2;
+      size_t n;
       GetNArray(xx, na);
       ptr1 = (double*) na->ptr;
       n = na->total;
@@ -355,12 +348,6 @@ static VALUE FUNCTION(rb_gsl_poly,eval2)(int argc, VALUE *argv, VALUE obj)
   gsl_matrix  *mnew = NULL;
   VALUE xx, x, ary;
   size_t i, j, size;
-#ifdef BASE_DOUBLE
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-#endif
-#endif
   switch (argc) {
   case 2:
     Data_Get_Struct(argv[0], GSL_TYPE(gsl_poly), p);
@@ -396,6 +383,8 @@ static VALUE FUNCTION(rb_gsl_poly,eval2)(int argc, VALUE *argv, VALUE obj)
 #ifdef BASE_DOUBLE
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(xx)) {
+      struct NARRAY *na;
+      double *ptr1, *ptr2;
       GetNArray(xx, na);
       ptr1 = (double*) na->ptr;
       size = na->total;
@@ -1660,11 +1649,6 @@ static VALUE rb_gsl_poly_eval_derivs_singleton(int argc, VALUE *argv, VALUE klas
   VALUE ary;
   gsl_vector *v = NULL, *v2 = NULL;
   size_t i, lenc, lenres;
-#ifdef HAVE_NARRAY_H
-  struct NARRAY *na;
-  double *ptr1, *ptr2;
-  int shape[1];
-#endif
 
   if (argc < 2) rb_raise(rb_eArgError, "Wrong number of arguments (%d for >= 2)", argc);
   if (rb_obj_is_kind_of(argv[0], rb_cArray)) {
@@ -1696,6 +1680,9 @@ static VALUE rb_gsl_poly_eval_derivs_singleton(int argc, VALUE *argv, VALUE klas
   }
 #ifdef HAVE_NARRAY_H
   if (NA_IsNArray(argv[0])) {
+    struct NARRAY *na;
+    double *ptr1, *ptr2;
+    int shape[1];
     GetNArray(argv[0], na);
     ptr1 = (double*) na->ptr;
     lenc = na->total;

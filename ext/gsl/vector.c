@@ -18,9 +18,7 @@
 #include "include/rb_gsl_histogram.h"
 #include "include/rb_gsl_complex.h"
 #include "include/rb_gsl_poly.h"
-#ifdef HAVE_NARRAY_H
 #include "include/rb_gsl_with_narray.h"
-#endif
 
 #define BASE_DOUBLE
 #include "include/templates_on.h"

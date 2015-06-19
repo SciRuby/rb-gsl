@@ -588,9 +588,6 @@ static VALUE rb_fft_radix2(VALUE obj,
   gsl_vector_view vv;
   double *ptr1, *ptr2;
   int flag;
-#ifdef HAVE_NARRAY_H
-  int shape[1];
-#endif
   VALUE ary;
   get_ptr_stride_n(obj, &ptr1, &stride, &n, &flag);
   if (flag == 0) {
@@ -610,6 +607,7 @@ static VALUE rb_fft_radix2(VALUE obj,
 #ifdef HAVE_NARRAY_H
   } else if (flag == 1) {
     if (sss == RB_GSL_FFT_COPY) {
+      int shape[1];
       shape[0] = n;
       ary = na_make_object(NA_DFLOAT, 1, shape, cNArray);
       ptr2 = NA_PTR_TYPE(ary, double*);
@@ -678,9 +676,6 @@ static VALUE rb_fft_real_trans(int argc, VALUE *argv, VALUE obj,
   gsl_vector *vnew;
   gsl_vector_view vv;
   double *ptr1, *ptr2;
-#ifdef HAVE_NARRAY_H
-  int shape[1];
-#endif
   gsl_fft_real_wavetable *table = NULL;
   gsl_fft_real_workspace *space = NULL;
   VALUE ary;
@@ -702,6 +697,7 @@ static VALUE rb_fft_real_trans(int argc, VALUE *argv, VALUE obj,
 #ifdef HAVE_NARRAY_H
   } else if (naflag == 1) {
     if (sss == RB_GSL_FFT_COPY) {
+      int shape[1];
       shape[0] = n;
       ary = na_make_object(NA_DFLOAT, 1, shape, cNArray);
       ptr2 = NA_PTR_TYPE(ary, double*);
@@ -744,9 +740,6 @@ static VALUE rb_fft_halfcomplex_trans(int argc, VALUE *argv, VALUE obj,
   gsl_vector *vnew;
   gsl_vector_view vv;
   double *ptr1, *ptr2;
-#ifdef HAVE_NARRAY_H
-  int shape[1];
-#endif
   gsl_fft_halfcomplex_wavetable *table = NULL;
   gsl_fft_real_workspace *space = NULL;
   VALUE ary;
@@ -769,6 +762,7 @@ static VALUE rb_fft_halfcomplex_trans(int argc, VALUE *argv, VALUE obj,
 #ifdef HAVE_NARRAY_H
   } else if (naflag == 1) {
     if (sss == RB_GSL_FFT_COPY) {
+      int shape[1];
       shape[0] = n;
       ary = na_make_object(NA_DFLOAT, 1, shape, cNArray);
       ptr2 = NA_PTR_TYPE(ary, double*);
