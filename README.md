@@ -1,15 +1,15 @@
-= Ruby/GSL, a Ruby interface to GSL (GNU Scientific library)
+# Ruby/GSL, a Ruby interface to GSL (GNU Scientific library)
 
 Permission is granted to copy, distribute and/or modify this document under
 the terms of the GNU Free Documentation License.
 
-== Description
+## Description
 
 Ruby/GSL is a Ruby interface to the {GNU Scientific Library}[https://gnu.org/software/gsl/]
 (GSL), for numerical computing with {Ruby}[http://www.ruby-lang.org/].
 
 
-== Installation
+## Installation
 
 Ruby/GSL may be installed as a Ruby Gem by simply running
 
@@ -30,18 +30,18 @@ binaries of <tt>GNU plotutils</tt> and related packages are available
 {here}[http://gnuwin32.sourceforge.net/packages/plotutils.htm].
 
 
-== Reference
+## Reference
 
 The {Ruby/GSL reference manual}[link:rdoc/ref_rdoc.html] follows and borrows
 large parts of the GSL reference manual.
 
 
-== Examples
+## Examples
 
 See scripts in +examples/+ and +test/+ directories.
 
 
-== Related Projects
+## Related Projects
 
 * {gsl-nmatrix}[https://rubygems.org/gems/gsl-nmatrix]: A fork of Ruby/GSL
   with NMatrix support instead of NArray, developed by the
@@ -50,7 +50,7 @@ See scripts in +examples/+ and +test/+ directories.
   developed by Arno Erpenbeck.
 
 
-== Licence
+## Licence
 
 Ruby/GSL is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License.
@@ -58,13 +58,13 @@ This library is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY.
 
 
-== Bug Reports
+## Bug Reports
 
 Any bug reports are welcome. If you encounter bugs in Ruby/GSL, please
 report them on GitHub[https://github.com/blackwinter/rb-gsl/issues].
 
 
-== Links
+## Links
 
 Documentation:: https://blackwinter.github.com/rb-gsl
 Source code::   https://github.com/blackwinter/rb-gsl
@@ -73,7 +73,7 @@ Bug tracker::   https://github.com/blackwinter/rb-gsl/issues
 Travis CI::     https://travis-ci.org/blackwinter/rb-gsl
 
 
-== Authors
+## Authors
 
 * Yoshiki Tsunesada <y-tsunesada at mm dot em-net dot ne dot jp> (July, 2004)
 * David MacMahon <davidm@astro.berkeley.edu> (November, 2010)
