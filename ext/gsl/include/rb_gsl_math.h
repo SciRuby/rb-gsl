@@ -15,10 +15,6 @@
 
 #include "rb_gsl.h"
 
-#ifndef GSL_1_3_LATER
-int gsl_fcmp (const double x1, const double x2, const double epsilon);
-#endif
-
 VALUE rb_gsl_math_complex_eval(gsl_complex (*func)(gsl_complex), VALUE obj);
 
 #endif

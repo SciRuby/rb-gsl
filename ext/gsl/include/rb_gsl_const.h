@@ -14,13 +14,8 @@
 #define ___RB_GSL_CONST_H___
 
 #include "rb_gsl.h"
-#ifndef GSL_1_4_LATER
-#include <gsl/gsl_const_mks.h>
-#include <gsl/gsl_const_cgs.h>
-#else
 #include <gsl/gsl_const_mksa.h>
 #include <gsl/gsl_const_cgsm.h>
-#endif
 #include <gsl/gsl_const_num.h>
 
 EXTERN VALUE mgsl_const_mks, mgsl_const_cgs;

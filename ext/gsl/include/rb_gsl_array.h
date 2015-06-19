@@ -160,16 +160,6 @@ VALUE rb_gsl_vector_print(VALUE obj);
 void gsl_vector_print(const gsl_vector *v, VALUE klass);
 int rbgsl_vector_equal(const gsl_vector *v1, const gsl_vector *v2, double eps);
 
-#ifndef GSL_1_2_LATER
-int gsl_matrix_complex_add(gsl_matrix_complex * a, const gsl_matrix_complex * b);
-int gsl_matrix_complex_sub(gsl_matrix_complex * a, const gsl_matrix_complex * b);
-int gsl_matrix_complex_mul_elements(gsl_matrix_complex * a, const gsl_matrix_complex * b);
-int gsl_matrix_complex_div_elements(gsl_matrix_complex * a, const gsl_matrix_complex * b);
-int gsl_matrix_complex_scale(gsl_matrix_complex * a, const gsl_complex x);
-int gsl_matrix_complex_add_constant(gsl_matrix_complex * a, const gsl_complex x);
-int gsl_matrix_complex_add_diagonal(gsl_matrix_complex * a, const gsl_complex x);
-#endif
-
 void Init_gsl_vector_init(VALUE module);
 void Init_gsl_vector_int_init(VALUE module);
 void Init_gsl_matrix_init(VALUE module);

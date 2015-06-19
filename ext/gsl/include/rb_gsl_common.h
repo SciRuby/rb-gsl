@@ -336,10 +336,6 @@ gsl_vector_int* mygsl_vector_int_down(gsl_vector_int *p);
 void mygsl_vector_int_up2(gsl_vector_int *pnew, gsl_vector_int *p);
 gsl_vector_int* mygsl_vector_int_up(gsl_vector_int *p);
 
-#ifndef GSL_1_3_LATER
-int gsl_fcmp(const double x1, const double x2, const double epsilon);
-#endif
-
 size_t count_columns(const char *str);
 char* str_scan_double(const char *str, double *val);
 char* str_scan_int(const char *str, int *val);

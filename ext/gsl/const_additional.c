@@ -11,13 +11,6 @@
 
 #include "include/rb_gsl_const.h"
 
-#ifndef GSL_1_4_9_LATER
-#define MKS_STEFAN_BOLTZMANN_CONSTANT (5.6703993443638e-08)
-#define MKS_THOMSON_CROSS_SECTION (6.65245852869236e-29)
-#define CGS_STEFAN_BOLTZMANN_CONSTANT (5.6703993443638e-05)
-#define CGS_THOMSON_CROSS_SECTION (6.65245852869236e-25)
-#endif
-
 #define MKS_CLASSICAL_ELECTRON_RADIUS (2.81794028310825e-15)
 #define MKS_RADIATION_DENSITY_CONSTANT (7.56576650685962e-16)
 #define MKS_RADIATION_NUMBER_DENSITY_CONSTANT (20.2869161066108e-6)
@@ -54,13 +47,6 @@ static void rb_gsl_const_mks(VALUE module)
   rb_define_const(module, "PLANCK_MASS", rb_float_new(MKS_PLANCK_MASS));
   rb_define_const(module, "PLANCK_LENGTH", rb_float_new(MKS_PLANCK_LENGTH));
   rb_define_const(module, "PLANCK_TIME", rb_float_new(MKS_PLANCK_TIME));
-
-#ifndef GSL_1_4_9_LATER
-  rb_define_const(module, "STEFAN_BOLTZMANN_CONSTANT",
-      rb_float_new(MKS_STEFAN_BOLTZMANN_CONSTANT));
-  rb_define_const(module, "THOMSON_CROSS_SECTION",
-      rb_float_new(MKS_THOMSON_CROSS_SECTION));
-#endif
 }
 
 static void rb_gsl_const_cgs(VALUE module)
@@ -77,13 +63,6 @@ static void rb_gsl_const_cgs(VALUE module)
   rb_define_const(module, "PLANCK_MASS", rb_float_new(CGS_PLANCK_MASS));
   rb_define_const(module, "PLANCK_LENGTH", rb_float_new(CGS_PLANCK_LENGTH));
   rb_define_const(module, "PLANCK_TIME", rb_float_new(CGS_PLANCK_TIME));
-
-#ifndef GSL_1_4_9_LATER
-  rb_define_const(module, "STEFAN_BOLTZMANN_CONSTANT",
-      rb_float_new(CGS_STEFAN_BOLTZMANN_CONSTANT));
-  rb_define_const(module, "THOMSON_CROSS_SECTION",
-      rb_float_new(CGS_THOMSON_CROSS_SECTION));
-#endif
 }
 
 static void rb_gsl_const_num(VALUE module)
