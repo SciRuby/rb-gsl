@@ -882,6 +882,7 @@ static VALUE rb_gsl_eigen_nonsymm_narray(int argc, VALUE *argv, VALUE obj)
   if (flagw == 1) gsl_eigen_nonsymm_free(w);
   return nary;
 }
+#endif
 
 static VALUE rb_gsl_eigen_nonsymm(int argc, VALUE *argv, VALUE obj)
 {
@@ -1272,8 +1273,6 @@ static VALUE rb_gsl_eigen_nonsymmv_sort(int argc, VALUE *argv, VALUE obj)
 {
   return rb_gsl_eigen_complex_sort2(argc, argv, obj, gsl_eigen_nonsymmv_sort);
 }
-
-#endif
 
 static VALUE rb_gsl_eigen_gensymm_alloc(VALUE klass, VALUE nn)
 {

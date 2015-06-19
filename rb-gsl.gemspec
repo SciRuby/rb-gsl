@@ -18,26 +18,11 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/blackwinter/rb-gsl"
   s.licenses = ["GPL-2.0"]
   s.rdoc_options = ["--title", "Ruby/GSL (v1.16.0.4)", "--charset", "UTF-8", "--line-numbers", "--all", "--main", "index.rdoc", "--root", "rdoc"]
-  s.required_ruby_version = Gem::Requirement.new(">= 1.9.3")
+  s.required_ruby_version = ">= 1.9.3"
   s.requirements = ["GSL (http://www.gnu.org/software/gsl/)"]
   s.rubygems_version = "2.4.5"
   s.summary = "Ruby interface to the GNU Scientific Library"
 
-  if s.respond_to? :specification_version then
-    s.specification_version = 4
-
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_development_dependency(%q<rake>, [">= 0"])
-      s.add_development_dependency(%q<rake-compiler>, [">= 0"])
-      s.add_development_dependency(%q<test-unit>, [">= 0"])
-    else
-      s.add_dependency(%q<rake>, [">= 0"])
-      s.add_dependency(%q<rake-compiler>, [">= 0"])
-      s.add_dependency(%q<test-unit>, [">= 0"])
-    end
-  else
-    s.add_dependency(%q<rake>, [">= 0"])
-    s.add_dependency(%q<rake-compiler>, [">= 0"])
-    s.add_dependency(%q<test-unit>, [">= 0"])
-  end
+  s.add_development_dependency(%q<rake>, ">= 0")
+  s.add_development_dependency(%q<test-unit>, ">= 0")
 end

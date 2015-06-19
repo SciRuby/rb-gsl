@@ -15,7 +15,6 @@ rescue Bundler::BundlerError => e
 end
 
 require 'rake'
-require "rake/extensiontask"
 require 'rake/testtask'
 
 Rake::TestTask.new do |t|
@@ -24,13 +23,7 @@ Rake::TestTask.new do |t|
   t.test_files = FileList['test/*.rb', 'test/gsl/*.rb']
 end
 
-Rake::ExtensionTask.new do |ext|
-  ext.name = 'gsl_native'
-  ext.ext_dir = 'ext/gsl'
-  ext.lib_dir = 'lib/'
-  ext.source_pattern = "**/*.{c,cpp,h}"
-end
-
 gemspec = eval(IO.read("rb-gsl.gemspec"))
-
 Gem::PackageTask.new(gemspec).define
+
+task default: :test
