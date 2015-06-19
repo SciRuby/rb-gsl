@@ -5,8 +5,8 @@ the terms of the GNU Free Documentation License.
 
 ## Description
 
-Ruby/GSL is a Ruby interface to the (GNU Scientific Library)[https://gnu.org/software/gsl/]
-(GSL), for numerical computing with (Ruby)[http://www.ruby-lang.org/].
+Ruby/GSL is a Ruby interface to the [GNU Scientific Library](https://gnu.org/software/gsl/)
+(GSL), for numerical computing with [Ruby](http://www.ruby-lang.org/).
 
 
 ## Installation
@@ -23,16 +23,16 @@ Fedora/SuSE:   +gsl-devel+
 Gentoo:        +sci-libs/gsl+
 OS X:          <tt>brew install gsl</tt>
 
-It is recommended to install the (GNU plotutils)[https://gnu.org/software/plotutils/plotutils.html]
+It is recommended to install the [GNU plotutils](https://gnu.org/software/plotutils/plotutils.html)
 package. Some of the example scripts in the +examples/+ directory use the
 +graph+ utility included in the package to plot the results. Windows cygwin
 binaries of <tt>GNU plotutils</tt> and related packages are available
-(here)[http://gnuwin32.sourceforge.net/packages/plotutils.htm].
+[here](http://gnuwin32.sourceforge.net/packages/plotutils.htm).
 
 
 ## Reference
 
-The (Ruby/GSL reference manual)[link:rdoc/ref_rdoc.html] follows and borrows
+The [Ruby/GSL reference manual](link:rdoc/ref_rdoc.html) follows and borrows
 large parts of the GSL reference manual.
 
 
@@ -43,10 +43,10 @@ See scripts in +examples/+ and +test/+ directories.
 
 ## Related Projects
 
-* (gsl-nmatrix)[https://rubygems.org/gems/gsl-nmatrix]: A fork of Ruby/GSL
+* [gsl-nmatrix](https://rubygems.org/gems/gsl-nmatrix): A fork of Ruby/GSL
   with NMatrix support instead of NArray, developed by the
-  SciRuby[http://sciruby.com/] project.
-* (ruby-gsl)[http://ruby-gsl.sourceforge.net/]: Another Ruby binding,
+  SciRuby(http://sciruby.com/) project.
+* [ruby-gsl](http://ruby-gsl.sourceforge.net/): Another Ruby binding,
   developed by Arno Erpenbeck.
 
 
@@ -61,7 +61,7 @@ WITHOUT ANY WARRANTY.
 ## Bug Reports
 
 Any bug reports are welcome. If you encounter bugs in Ruby/GSL, please
-report them on GitHub[https://github.com/blackwinter/rb-gsl/issues].
+report them on GitHub(https://github.com/blackwinter/rb-gsl/issues).
 
 
 ## Links
