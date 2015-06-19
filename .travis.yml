@@ -15,12 +15,11 @@ matrix:
   fast_finish:
     true
 
-script:
-  rake test
+script: "bundle exec rake compile && bundle exec rake test"
 
 install:
-  - gem install nuggets power_assert
-  - gem install --prerelease --development rb-gsl
+  - gem install bundler nuggets power_assert
+  - bundle install
 
 before_install:
   - sudo apt-get update -qq

@@ -5,3 +5,6 @@ tmp
 .gh-pages
 Makefile
 mkmf.log
+*.so
+*.o
+Gemfile.lock
