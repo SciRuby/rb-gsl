@@ -115,5 +115,4 @@ unless arg_config('--disable-tamu-anova')
   gsl_have_header('tamuanova', 'tamu_anova/tamu_anova.h')
 end
 
-create_header
 create_makefile('gsl_native')
