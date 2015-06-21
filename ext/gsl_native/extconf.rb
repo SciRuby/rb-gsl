@@ -115,10 +115,5 @@ unless arg_config('--disable-tamu-anova')
   gsl_have_header('tamuanova', 'tamu_anova/tamu_anova.h')
 end
 
-#$srcs = Dir.glob("#{$srcdir}/*.c").map {|n| File.basename(n) }
-
-#$objs = Dir["#{File.dirname(__FILE__)}/*.c"].map { |f| File.basename(f, '.c') << '.o' }.
-#  sort - %w[block matrix poly tensor vector].map { |f| "#{f}_source.o" }
-
 create_header
 create_makefile('gsl_native')
