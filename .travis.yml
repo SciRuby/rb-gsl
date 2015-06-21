@@ -11,6 +11,7 @@ rvm:
 env:
   matrix:
     - "NARRAY=1"
+    - ""
 
 matrix:
   allow_failures:
