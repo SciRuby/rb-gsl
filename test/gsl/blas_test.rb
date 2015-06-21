@@ -59,7 +59,7 @@ class BlasTest < GSL::TestCase
   end
 
   def test_dnrm2
-    require 'narray'
+    return unless GSL.have_narray?
 
     e = Math.sqrt((0..4).inject { |m, x| m + x * x })
 

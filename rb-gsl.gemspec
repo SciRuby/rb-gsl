@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
 
   s.post_install_message = "#{s.name} can be installed with or without narray support. Please install narray before and reinstall #{s.name} if it is missing."
 
+  s.add_development_dependency 'rake-compiler', '>= 0'
   s.add_development_dependency 'rake', '>= 0'
   s.add_development_dependency 'test-unit', '>= 0'
 end
