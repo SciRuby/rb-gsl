@@ -22,13 +22,13 @@
 
 #define BASE_DOUBLE
 #include "include/templates_on.h"
-#include "vector_source.c"
+#include "vector_source.h"
 #include "include/templates_off.h"
 #undef  BASE_DOUBLE
 
 #define BASE_INT
 #include "include/templates_on.h"
-#include "vector_source.c"
+#include "vector_source.h"
 #include "include/templates_off.h"
 #undef  BASE_INT
 

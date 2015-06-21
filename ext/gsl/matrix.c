@@ -25,12 +25,12 @@ int gsl_linalg_matmult_int(const gsl_matrix_int *A,
 
 #define BASE_DOUBLE
 #include "include/templates_on.h"
-#include "matrix_source.c"
+#include "matrix_source.h"
 #include "include/templates_off.h"
 #undef  BASE_DOUBLE
 
 #define BASE_INT
 #include "include/templates_on.h"
-#include "matrix_source.c"
+#include "matrix_source.h"
 #include "include/templates_off.h"
 #undef  BASE_INT

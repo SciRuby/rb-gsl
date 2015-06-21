@@ -7,5 +7,6 @@ Makefile
 mkmf.log
 *.so
 *.o
+extconf.h
 Gemfile.lock
 *~

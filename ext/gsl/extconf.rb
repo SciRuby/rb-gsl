@@ -10,7 +10,8 @@ rescue => err
 end
 
 def gsl_def(const, value = nil)
-  $defs << "-D#{const}#{"=#{value}" if value}"
+  value = "=#{value}" if value
+  $defs << "-D#{const}#{value}"
 end
 
 def gsl_have_header(library, header)
@@ -63,14 +64,9 @@ gsl_config_arg(:version) { |version, check|
     gte && gsl_def("GSL_#{ary.join('_')}_LATER")
   }
 
-  raise 'Ruby/GSL requires gsl-0.9.4 or later.' unless later['0.9.4']
+  raise 'Ruby/GSL requires gsl-1.15 or later.' unless later['1.15']
 
-  gsl_def(:GSL_1_4_9_LATER) if later['1.4.90']
-
-  %w[
-    1.0 1.1 1.1.1 1.2 1.3 1.4 1.5.90 1.7.90
-    1.8.90 1.9.90 1.11 1.12.90 1.14 1.15
-  ].each { |v| later[v] }
+  %w[1.15 1.16].each { |v| later[v] }
 }
 
 gsl_config_arg(:cflags) { |cflags, check|
@@ -92,7 +88,6 @@ gsl_config_arg(:libs) { |libs, check|
   $LOCAL_LIBS += ' ' + check[libs]
 }
 
-have_header('ruby/io.h')
 have_func('round')
 
 %w[alf qrngextra rngextra tensor].each { |library|
@@ -120,7 +115,10 @@ unless arg_config('--disable-tamu-anova')
   gsl_have_header('tamuanova', 'tamu_anova/tamu_anova.h')
 end
 
-$objs = Dir["#{File.dirname(__FILE__)}/*.c"].map { |f| File.basename(f, '.c') << '.o' }.
-  sort - %w[block matrix poly tensor vector].map { |f| "#{f}_source.o" }
+#$srcs = Dir.glob("#{$srcdir}/*.c").map {|n| File.basename(n) }
 
-create_makefile('gsl/gsl_native')
+#$objs = Dir["#{File.dirname(__FILE__)}/*.c"].map { |f| File.basename(f, '.c') << '.o' }.
+#  sort - %w[block matrix poly tensor vector].map { |f| "#{f}_source.o" }
+
+create_header
+create_makefile('gsl_native')

@@ -22,19 +22,19 @@
 
 #define BASE_DOUBLE
 #include "include/templates_on.h"
-#include "block_source.c"
+#include "block_source.h"
 #include "include/templates_off.h"
 #undef  BASE_DOUBLE
 
 #define BASE_INT
 #include "include/templates_on.h"
-#include "block_source.c"
+#include "block_source.h"
 #include "include/templates_off.h"
 #undef  BASE_INT
 
 #define BASE_UCHAR
 #include "include/templates_on.h"
-#include "block_source.c"
+#include "block_source.h"
 #include "include/templates_off.h"
 #undef  BASE_UCHAR
 

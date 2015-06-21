@@ -19,7 +19,7 @@ void Init_gsl_poly2(VALUE module);
 
 #define BASE_DOUBLE
 #include "include/templates_on.h"
-#include "poly_source.c"
+#include "poly_source.h"
 #include "include/templates_off.h"
 void Init_gsl_poly(VALUE module)
 {
@@ -30,7 +30,7 @@ void Init_gsl_poly(VALUE module)
 
 #define BASE_INT
 #include "include/templates_on.h"
-#include "poly_source.c"
+#include "poly_source.h"
 #include "include/templates_off.h"
 void Init_gsl_poly_int(VALUE module)
 {

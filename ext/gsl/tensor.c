@@ -22,13 +22,13 @@
 
 #define BASE_DOUBLE
 #include "include/templates_on.h"
-#include "tensor_source.c"
+#include "tensor_source.h"
 #include "include/templates_off.h"
 #undef  BASE_DOUBLE
 
 #define BASE_INT
 #include "include/templates_on.h"
-#include "tensor_source.c"
+#include "tensor_source.h"
 #include "include/templates_off.h"
 #undef  BASE_INT
 
