@@ -43,9 +43,6 @@ See scripts in +examples/+ and +test/+ directories.
 
 ## Related Projects
 
-* [gsl-nmatrix](https://rubygems.org/gems/gsl-nmatrix): A fork of Ruby/GSL
-  with NMatrix support instead of NArray, developed by the
-  SciRuby(http://sciruby.com/) project.
 * [ruby-gsl](http://ruby-gsl.sourceforge.net/): Another Ruby binding,
   developed by Arno Erpenbeck.
 
