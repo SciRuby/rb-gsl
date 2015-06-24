@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.extensions  = Dir['ext/**/extconf.rb']
   s.extra_rdoc_files = Dir['**/*.rdoc']
   s.files = `git ls-files`.split("\n")
-  s.homepage = 'http://github.com/blackwinter/rb-gsl'
+  s.homepage = 'http://github.com/SciRuby/rb-gsl'
   s.licenses = ['GPL-2.0']
   s.rdoc_options = ['--title', "Ruby/GSL (#{GSL::RUBY_GSL_VERSION})", '--charset', 'UTF-8', '--line-numbers', '--all', '--main', 'index.rdoc', '--root', 'rdoc']
   s.required_ruby_version = ">= 1.9.3"

@@ -58,16 +58,16 @@ WITHOUT ANY WARRANTY.
 ## Bug Reports
 
 Any bug reports are welcome. If you encounter bugs in Ruby/GSL, please
-report them on GitHub(https://github.com/blackwinter/rb-gsl/issues).
+report them on GitHub(https://github.com/SciRuby/rb-gsl/issues).
 
 
 ## Links
 
-Documentation: https://blackwinter.github.com/rb-gsl
-Source code:   https://github.com/blackwinter/rb-gsl
+Documentation: https://sciruby.github.com/rb-gsl
+Source code:   https://github.com/SciRuby/rb-gsl
 RubyGem:       https://rubygems.org/gems/rb-gsl
-Bug tracker:   https://github.com/blackwinter/rb-gsl/issues
-Travis CI:     https://travis-ci.org/blackwinter/rb-gsl
+Bug tracker:   https://github.com/SciRuby/rb-gsl/issues
+Travis CI:     https://travis-ci.org/SciRuby/rb-gsl
 
 
 ## Authors

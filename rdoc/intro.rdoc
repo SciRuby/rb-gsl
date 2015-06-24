@@ -8,7 +8,7 @@
 # written for very  high level languages. The source code is distributed
 # under the GNU General Public License.
 #
-# {Ruby/GSL}[https://blackwinter.github.com/rb-gsl] is a Ruby
+# {Ruby/GSL}[https://sciruby.github.com/rb-gsl] is a Ruby
 # extension for GSL. This provides higher-level interfaces to the GSL functions.
 #
 # == Requirements
