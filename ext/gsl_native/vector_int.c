@@ -12,7 +12,7 @@
 
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_complex.h"
-#include "include/rb_gsl_with_narray.h"
+#include "include/rb_gsl_narray_nmatrix.h"
 
 VALUE rb_gsl_vector_int_inner_product(int argc, VALUE *argv, VALUE obj);
 VALUE rb_gsl_vector_int_do_something(VALUE obj, void (*func)(gsl_vector_int*));

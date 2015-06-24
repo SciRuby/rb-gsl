@@ -11,7 +11,7 @@
 
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_complex.h"
-#include "include/rb_gsl_with_narray.h"
+#include "include/rb_gsl_narray_nmatrix.h"
 
 enum {
   GSL_MATRIX_ADD,

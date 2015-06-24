@@ -18,7 +18,7 @@
 #include "include/rb_gsl_histogram.h"
 #include "include/rb_gsl_complex.h"
 #include "include/rb_gsl_poly.h"
-#include "include/rb_gsl_with_narray.h"
+#include "include/rb_gsl_narray_nmatrix.h"
 
 int gsl_linalg_matmult_int(const gsl_matrix_int *A,
                            const gsl_matrix_int *B, gsl_matrix_int *C);

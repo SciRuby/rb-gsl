@@ -12,7 +12,7 @@
 #include "include/rb_gsl_common.h"
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_complex.h"
-#include "include/rb_gsl_with_narray.h"
+#include "include/rb_gsl_narray_nmatrix.h"
 
 /* global variables */
 VALUE cgsl_block, cgsl_block_int;
@@ -200,41 +200,6 @@ void carray_set_from_rarray(double *a, VALUE ary)
     //    a[i] = RFLOAT(val)->value;
   }
 }
-
-#ifdef HAVE_NARRAY_H
-/* NArray -> CArray */
-void carray_set_from_narray(double *a, VALUE ary)
-{
-  int size;
-  VALUE ary2;
-  if (!NA_IsNArray(ary))
-    rb_raise(rb_eTypeError,
-             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
-  size = NA_TOTAL(ary);
-  if (size == 0) return;
-  ary2 = na_change_type(ary, NA_DFLOAT);
-  memcpy(a, NA_PTR_TYPE(ary2,double*), size*sizeof(double));
-}
-
-/* NArray -> GSL::Vector */
-gsl_vector* make_cvector_from_narray(VALUE ary)
-{
-  gsl_vector *v = NULL;
-  size_t size;
-  VALUE ary2;
-  if (!NA_IsNArray(ary))
-    rb_raise(rb_eTypeError,
-             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
-  size = NA_TOTAL(ary);
-  v = gsl_vector_alloc(size);
-  if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_alloc failed");
-  ary2 = na_change_type(ary, NA_DFLOAT);
-  memcpy(v->data, NA_PTR_TYPE(ary2,double*), size*sizeof(double));
-  /*  cvector_set_from_narray(v, ary);*/
-  return v;
-}
-
-#endif
 
 gsl_vector_complex* make_vector_complex_clone(const gsl_vector_complex *v)
 {

@@ -12,7 +12,7 @@
 #include "include/rb_gsl_array.h"
 #include "include/rb_gsl_complex.h"
 #ifdef HAVE_NARRAY_H
-#include "include/rb_gsl_with_narray.h"
+#include "include/rb_gsl_narray_nmatrix.h"
 #endif
 
 int gsl_linalg_matmult_int(const gsl_matrix_int *A,

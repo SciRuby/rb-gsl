@@ -7,7 +7,7 @@
 
 #ifdef HAVE_NARRAY_H
 #include "include/rb_gsl_array.h"
-#include "include/rb_gsl_with_narray.h"
+#include "include/rb_gsl_narray_nmatrix.h"
 
 static VALUE rb_gsl_na_to_gsl_matrix_method(VALUE nna);
 static VALUE rb_gsl_na_to_gsl_matrix_int_method(VALUE nna);
@@ -15,7 +15,37 @@ static VALUE rb_gsl_na_to_gsl_vector_int_method(VALUE na);
 static VALUE rb_gsl_vector_int_to_na(VALUE obj);
 static VALUE rb_gsl_na_to_gsl_vector_int(VALUE obj, VALUE na);
 
-/* GSL::Vector -> NArray */
+/* NArray -> CArray */
+void carray_set_from_narray(double *a, VALUE ary)
+{
+  int size;
+  VALUE ary2;
+  if (!NA_IsNArray(ary))
+    rb_raise(rb_eTypeError,
+             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
+  size = NA_TOTAL(ary);
+  if (size == 0) return;
+  ary2 = na_change_type(ary, NA_DFLOAT);
+  memcpy(a, NA_PTR_TYPE(ary2,double*), size*sizeof(double));
+}
+
+/* NArray -> GSL::Vector */
+gsl_vector* make_cvector_from_narray(VALUE ary)
+{
+  gsl_vector *v = NULL;
+  size_t size;
+  VALUE ary2;
+  if (!NA_IsNArray(ary))
+    rb_raise(rb_eTypeError,
+             "wrong argument type %s", rb_class2name(CLASS_OF(ary)));
+  size = NA_TOTAL(ary);
+  v = gsl_vector_alloc(size);
+  if (v == NULL) rb_raise(rb_eNoMemError, "gsl_vector_alloc failed");
+  ary2 = na_change_type(ary, NA_DFLOAT);
+  memcpy(v->data, NA_PTR_TYPE(ary2,double*), size*sizeof(double));
+  /*  cvector_set_from_narray(v, ary);*/
+  return v;
+}
 
 static VALUE rb_gsl_vector_to_narray(VALUE obj, VALUE klass)
 {
@@ -645,7 +675,6 @@ static VALUE rb_gsl_narray_histogram(int argc, VALUE *argv, VALUE obj)
   return Data_Wrap_Struct(cgsl_histogram, 0, gsl_histogram_free, h);
 }
 
-/*void rb_gsl_with_narray_define_methods()*/
 void Init_gsl_narray(VALUE module)
 {
   rb_define_method(cgsl_vector, "to_na", rb_gsl_vector_to_na, 0);

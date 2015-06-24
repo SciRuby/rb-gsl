@@ -18,7 +18,7 @@
 #include "include/rb_gsl_histogram.h"
 #include "include/rb_gsl_complex.h"
 #include "include/rb_gsl_poly.h"
-#include "include/rb_gsl_with_narray.h"
+#include "include/rb_gsl_narray_nmatrix.h"
 
 #define BASE_DOUBLE
 #include "include/templates_on.h"

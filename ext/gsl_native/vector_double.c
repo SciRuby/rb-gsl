@@ -14,7 +14,7 @@
 #include "include/rb_gsl_histogram.h"
 #include "include/rb_gsl_complex.h"
 #include "include/rb_gsl_poly.h"
-#include "include/rb_gsl_with_narray.h"
+#include "include/rb_gsl_narray_nmatrix.h"
 
 VALUE rb_gsl_vector_inner_product(int argc, VALUE *argv, VALUE obj);
 static VALUE rb_gsl_vector_product_to_m(int argc, VALUE *argv, VALUE obj);
