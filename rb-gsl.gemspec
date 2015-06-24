@@ -18,8 +18,8 @@ Gem::Specification.new do |s|
   s.homepage = 'http://github.com/SciRuby/rb-gsl'
   s.licenses = ['GPL-2.0']
   s.rdoc_options = ['--title', "Ruby/GSL (#{GSL::RUBY_GSL_VERSION})", '--charset', 'UTF-8', '--line-numbers', '--all', '--main', 'index.rdoc', '--root', 'rdoc']
-  s.required_ruby_version = ">= 1.9.3"
-  s.requirements = ["GSL (http://www.gnu.org/software/gsl/)"]
+  s.required_ruby_version = '>= 1.9.3'
+  s.requirements = ['GSL (http://www.gnu.org/software/gsl/)']
 
   s.post_install_message = "#{s.name} can be installed with or without narray support. Please install narray before and reinstall #{s.name} if it is missing."
 

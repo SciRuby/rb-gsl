@@ -1,5 +1,11 @@
 # markup: rd
 
+== Wed Jun 24 2015
+* Ruby/GSL 1.16.0.5
+  * Optional narray support
+  * Drop Ruby 1.8 support
+  * Drop support for GSL < 1.15
+
 == Fri Dec 19 2014
 * Ruby/GSL 1.16.0.4
   * Optimize and extract multiplication and division operations on Fixnum
