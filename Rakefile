@@ -13,7 +13,7 @@ Rake::TestTask.new do |t|
   t.test_files = FileList['test/*.rb', 'test/gsl/*.rb']
 end
 
-spec = eval(IO.read('rb-gsl.gemspec'))
+spec = eval(IO.read('gsl.gemspec'))
 Gem::PackageTask.new(spec).define
 Rake::ExtensionTask.new(:gsl_native, spec)
 
