@@ -13,7 +13,7 @@ Ruby/GSL is a Ruby interface to the [GNU Scientific Library](https://gnu.org/sof
 
 Ruby/GSL may be installed as a Ruby Gem by simply running
 
-  gem install rb-gsl
+  gem install gsl
 
 Note that the GSL libraries must already be installed before Ruby/GSL
 can be installed:
