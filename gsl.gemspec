@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
   s.date = Date.today.to_s
 
   s.require_paths = %w(lib)
-  s.authors = ['Yoshiki Tsunesada', 'David MacMahon', 'Jens Wille']
+  s.authors = ['Yoshiki Tsunesada', 'David MacMahon', 'Jens Wille', 'Daniel Mendler']
   s.summary = 'Ruby interface to the GNU Scientific Library'
   s.description = 'Ruby/GSL is a Ruby interface to the GNU Scientific Library, for numerical computing with Ruby'
-  s.email = 'jens.wille@gmail.com'
+  s.email = 'mail@daniel-mendler.de'
   s.extensions  = Dir['ext/**/extconf.rb']
   s.extra_rdoc_files = Dir['**/*.rdoc']
   s.files = `git ls-files`.split("\n")
