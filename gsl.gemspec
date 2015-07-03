@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/lib/gsl/version'
 require 'date'
 
 Gem::Specification.new do |s|
-  s.name = 'rb-gsl'
+  s.name = 'gsl'
   s.version = GSL::RUBY_GSL_VERSION
   s.date = Date.today.to_s
 

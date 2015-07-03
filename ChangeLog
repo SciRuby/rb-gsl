@@ -1,5 +1,9 @@
 # markup: rd
 
+== Thu Jul 03 2015
+* Ruby/GSL 1.16.0.6
+  * rb-gsl and gsl are now the same gem
+
 == Thu Jul 02 2015
 * Ruby/GSL 1.16.0.5
   * Optional narray support
