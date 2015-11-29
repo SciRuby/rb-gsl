@@ -18,14 +18,14 @@ Ruby/GSL may be installed as a Ruby Gem by simply running
 Note that the GSL libraries must already be installed before Ruby/GSL
 can be installed:
 
-Debian/Ubuntu: +libgsl0-dev+
-Fedora/SuSE:   +gsl-devel+
-Gentoo:        +sci-libs/gsl+
+Debian/Ubuntu: `libgsl0-dev`
+Fedora/SuSE:   `gsl-devel`
+Gentoo:        `sci-libs/gsl`
 OS X:          <tt>brew install gsl</tt>
 
 It is recommended to install the [GNU plotutils](https://gnu.org/software/plotutils/plotutils.html)
-package. Some of the example scripts in the +examples/+ directory use the
-+graph+ utility included in the package to plot the results. Windows cygwin
+package. Some of the example scripts in the `examples/` directory use the
+`graph` utility included in the package to plot the results. Windows cygwin
 binaries of <tt>GNU plotutils</tt> and related packages are available
 [here](http://gnuwin32.sourceforge.net/packages/plotutils.htm).
 
@@ -38,7 +38,7 @@ large parts of the GSL reference manual.
 
 ## Examples
 
-See scripts in +examples/+ and +test/+ directories.
+See scripts in `examples/` and `test/` directories.
 
 
 ## Related Projects
