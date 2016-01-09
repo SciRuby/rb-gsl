@@ -42,22 +42,25 @@ class BsplineTest < GSL::TestCase
   end
 
   def test_bspline_knots
-    1.upto(NMAX) { |order|
-      2.upto(BMAX) { |breakpoints|
+    1.upto(NMAX) do |order|
+      2.upto(BMAX) do |breakpoints|
         a, b = -1.23 * order, 45.6 * order
 
         bw = GSL::BSpline.alloc(order, breakpoints)
-        k = GSL::Vector.alloc(breakpoints)
+        [
+          GSL::Vector.alloc(breakpoints),
+          NMatrix.new([breakpoints], dtype: :float64)
+        ].each do |k|
+          breakpoints.times do |i|
+            f = GSL.sqrt(i.to_f / (breakpoints - 1.0))
+            k[i] = (1 - f) * a + f * b
+          end
 
-        breakpoints.times { |i|
-          f = GSL.sqrt(i.to_f / (breakpoints - 1.0))
-          k[i] = (1 - f) * a + f * b
-        }
-
-        bw.knots(k)
-        _test_bspline(bw)
-      }
-    }
+          bw.knots(k)
+          _test_bspline(bw)
+        end
+      end
+    end
   end
 
 end

@@ -1,5 +1,6 @@
 require 'test/unit'
 require 'gsl'
+require 'nmatrix/nmatrix'
 
 GSL::IEEE.env_setup
 GSL::Rng.env_setup
@@ -7,8 +8,9 @@ GSL::Rng.env_setup
 class GSL::TestCase < Test::Unit::TestCase
 
   def assert_factor(result, expected, factor, desc)
-    refute result == expected ? false : expected.zero? ? result != expected :
-      (u = result / expected; u > factor || u < 1.0 / factor),
+    refute result == expected ? false : (
+      expected.zero? ? result != expected :
+      (u = result / expected; u > factor || u < 1.0 / factor)),
       '%s (%.18g observed vs %.18g expected)' % [desc, result, expected]
   end
 
