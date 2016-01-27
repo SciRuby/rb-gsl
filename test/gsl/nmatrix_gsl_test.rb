@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class NmatrixGslTest < GSL::TestCase
+class NMatrixGslTest < GSL::TestCase
 
   def setup
     @gsl_vector = GSL::Vector.alloc(2.354, 4.443, 6.776)
