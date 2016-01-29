@@ -67,10 +67,29 @@ class NMatrixGslTest < GSL::TestCase
 
     u, v, s = GSL::Linalg::SV.decomp(@nmatrix)
 
-    assert u == u_answer, "GSL::Linalg::SV.decomp(nmatrix)"
-    assert v == v_answer, "GSL::Linalg::SV.decomp(nmatrix)"
-    assert s == s_answer, "GSL::Linalg::SV.decomp(nmatrix)"
+    assert u == u_answer, "GSL::Linalg::SV.decomp(nmatrix) -> u"
+    assert v == v_answer, "GSL::Linalg::SV.decomp(nmatrix) -> v"
+    assert s == s_answer, "GSL::Linalg::SV.decomp(nmatrix) -> s"
 
     assert @x_exp == GSL::Linalg::SV.solve(u, v, s, @b), "GSL::Linalg::SV.solve(u,v,s,b)"
+  end
+
+  def test_cholesky
+    m = NMatrix.new([2,2], [4.0, 2, 2, 3], dtype: :float64)
+    b = NMatrix.new([2], [1,2], dtype: :float64)
+
+    cholesky = NMatrix.new([2,2], [2.0, 1.0, 1.0, 1.41421], dtype: :float64)
+    x_exp = NMatrix.new([2], [-0.125, 0.75], dtype: :float64)
+
+    c = GSL::Linalg::Cholesky
+    assert c.decomp(m)          == cholesky, "GSL::Linalg::Cholesky.decomp"
+    assert c.solve(cholesky, b) == x_exp   , "GSL::Linalg::Cholesky.solve"
+    assert c.svx(cholesky, b)   == x_exp   , "GSL::Linalg::Cholesky.svx"
+  end
+
+  def test_hh
+    hh = GSL::Linalg::HH
+    assert @x_exp == hh.solve(@nmatrix, @b), "GSL::Linalg::HH.solve(m, b)"
+    assert @x_exp == hh.svx  (@nmatrix, @b), "GSL::Linalg::HH.svx(m, b)"
   end
 end
