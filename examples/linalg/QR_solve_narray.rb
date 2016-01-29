@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require("gsl")
+require 'narray'
 include GSL
 
 m = NMatrix[[0.18, 0.60, 0.57, 0.96], [0.41, 0.24, 0.99, 0.58],
