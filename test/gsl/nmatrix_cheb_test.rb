@@ -29,6 +29,6 @@ class NMatrixChebTest < GSL::TestCase
 
     assert r40.class, NMatrix
     assert_rel r40[5]   , 0.255682, 0.001
-    assert_rel r40.first, 0.25633, 0.001
+    assert_rel r40.first, 0.25633 , 0.001
   end
 end
