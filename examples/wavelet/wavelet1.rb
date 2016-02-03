@@ -5,7 +5,9 @@ n = 256
 nc = 20
 
 data = GSL::Vector.alloc(n)
-data.fscanf("ecg.dat")
+File.new(File.dirname(__FILE__) + '/ecg.dat').each_with_index do |l, i|
+  data[i] = l.to_f
+end
 
 w = GSL::Wavelet.alloc("daubechies", 4)
 work = GSL::Wavelet::Workspace.alloc(n)
@@ -46,5 +48,5 @@ data3 = w.transform(data2, GSL::Wavelet::BACKWARD, work)
 #data3 = GSL::Wavelet.transform_inverse(w, data2, work)
 #data3 = GSL::Wavelet.transform_inverse(w, data2)
 
-GSL::graph(nil, data, data3, "-T X -C -g 3 -x 0 #{data.size} -L 'Red: data, Green: DWT'")
+# GSL::graph(nil, data, data3, "-T X -C -g 3 -x 0 #{data.size} -L 'Red: data, Green: DWT'")
 
