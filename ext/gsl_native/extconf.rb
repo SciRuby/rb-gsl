@@ -9,6 +9,33 @@ rescue => err
   abort "*** ERROR: missing required library to compile this module: #{err}"
 end
 
+# Function derived from NArray's extconf.rb.
+def create_conf_h(file) #:nodoc:
+  print "creating #{file}\n"
+  File.open(file, 'w') do |hfile|
+    header_guard = file.upcase.sub(/\s|\./, '_')
+
+    hfile.puts "#ifndef #{header_guard}"
+    hfile.puts "#define #{header_guard}"
+    hfile.puts
+
+    # FIXME: Find a better way to do this:
+    hfile.puts "#define RUBY_2 1" if RUBY_VERSION >= '2.0'
+
+    for line in $defs
+      line =~ /^-D(.*)/
+      if $1 == 'GSL_VERSION'
+        hfile.printf "#define #{$1}\n"
+      else
+        hfile.printf "#define %s 1\n", $1
+      end
+    end
+
+    hfile.puts
+    hfile.puts "#endif"
+  end
+end
+
 def gsl_def(const, value = nil)
   value = "=#{value}" if value
   $defs << "-D#{const}#{value}"
@@ -110,9 +137,13 @@ gsl_gem_config('narray', 'src')
 have_header('narray.h')
 have_library('narray') if RUBY_PLATFORM =~ /cygwin|mingw/
 
+have_header('nmatrix.h')
+have_library('nmatrix') if RUBY_PLATFORM =~ /cygwin|mingw/
+
 unless arg_config('--disable-tamu-anova')
   gsl_dir_config('tamu_anova')
   gsl_have_header('tamuanova', 'tamu_anova/tamu_anova.h')
 end
 
+create_conf_h('gsl_config.h')
 create_makefile('gsl_native')

@@ -1,4 +1,4 @@
-require 'test_helper'
+require_relative '../../test_helper'
 
 class NMatrixGslTest < GSL::TestCase
 
@@ -61,15 +61,5 @@ class NMatrixGslTest < GSL::TestCase
     assert_equal @gsl_matrix        , @nm_matrix.to_gslm        , 'floating NMatrix to GSL::Matrix'
     assert_equal @gsl_int_matrix    , @nm_int_matrix.to_gslm    , 'int NMatrix to GSL::Matrix::Int'
     assert_equal @gsl_complex_matrix, @nm_complex_matrix.to_gslm, 'complex NMatrix to GSL::Matrix::Complex'
-  end
-
-  # NMatrix to GSL::Vector view functions
-  def test_views_nmatrix_to_gsl_vector
-    # TODO
-  end
-
-  # NMatrix to GSL::Matrix view functions
-  def test_views_nmatrix_to_gsl_matrix
-    # TODO
   end
 end

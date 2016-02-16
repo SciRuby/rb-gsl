@@ -65,7 +65,7 @@ class NMatrixGslTest < GSL::TestCase
        -0.668983,-0.573912 , 0.113712, 0.458427 ], dtype: :float64)
     s_answer = NMatrix.new([4], [2.24602,0.682566,0.423782,0.112813], dtype: :float64)
 
-    u, v, s = GSL::Linalg::SV.decomp(@nmatrix)
+    u, v, s = GSL::Linalg::SV.decomp(@nm)
 
     assert u == u_answer, "GSL::Linalg::SV.decomp(nmatrix) -> u"
     assert v == v_answer, "GSL::Linalg::SV.decomp(nmatrix) -> v"
@@ -89,7 +89,7 @@ class NMatrixGslTest < GSL::TestCase
 
   def test_hh
     hh = GSL::Linalg::HH
-    assert @x_exp == hh.solve(@nmatrix, @b), "GSL::Linalg::HH.solve(m, b)"
-    assert @x_exp == hh.svx  (@nmatrix, @b), "GSL::Linalg::HH.svx(m, b)"
+    assert @x_exp == hh.solve(@nm, @b), "GSL::Linalg::HH.solve(m, b)"
+    assert @x_exp == hh.svx(@nm, @b), "GSL::Linalg::HH.svx(m, b)"
   end
 end

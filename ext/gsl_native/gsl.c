@@ -9,6 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
+#include "gsl_config.h"
 #include "include/rb_gsl.h"
 #include <gsl/gsl_machine.h>
 
