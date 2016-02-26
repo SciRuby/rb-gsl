@@ -115,4 +115,6 @@ unless arg_config('--disable-tamu-anova')
   gsl_have_header('tamuanova', 'tamu_anova/tamu_anova.h')
 end
 
+have_struct_member('gsl_multifit_fdfsolver', 'J', 'gsl/gsl_multifit_nlin.h')
+
 create_makefile('gsl_native')
