@@ -1169,6 +1169,9 @@ static VALUE rb_gsl_histogram_fit_gaussian(int argc, VALUE *argv, VALUE obj)
   size_t n, dof;      /* # of data points */
   size_t p = 3;  /* # of fitting parameters */
   gsl_multifit_function_fdf f;
+#ifndef GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix *J = NULL;
+#endif
   gsl_matrix *covar = NULL;
   gsl_vector *x = NULL;
   double sigma, mean, height, errs, errm, errh, chi2;
@@ -1197,6 +1200,9 @@ static VALUE rb_gsl_histogram_fit_gaussian(int argc, VALUE *argv, VALUE obj)
   hh.binend = binend;
   n = binend - binstart + 1;
 
+#ifndef GSL_MULTIFIT_FDFSOLVER_J
+  J = gsl_matrix_alloc(n, p);
+#endif
   covar = gsl_matrix_alloc(p, p);
 
   f.f = Gaussian_f;
@@ -1219,7 +1225,12 @@ static VALUE rb_gsl_histogram_fit_gaussian(int argc, VALUE *argv, VALUE obj)
   sigma = sqrt(gsl_vector_get(s->x, 0));
   mean = gsl_vector_get(s->x, 1);
   height = gsl_vector_get(s->x, 2)*sigma*sqrt(2*M_PI);
+#ifdef GSL_MULTIFIT_FDFSOLVER_J
   gsl_multifit_covar(s->J, 0.0, covar);
+#else
+  gsl_multifit_fdfsolver_jac(s, J);
+  gsl_multifit_covar(J, 0.0, covar);
+#endif
   chi2 = gsl_pow_2(gsl_blas_dnrm2(s->f));   /* not reduced chi-square */
   dof = n - p;
   errs = sqrt(chi2/dof*gsl_matrix_get(covar, 0, 0))/sigma/2;
@@ -1228,6 +1239,9 @@ static VALUE rb_gsl_histogram_fit_gaussian(int argc, VALUE *argv, VALUE obj)
 
   gsl_multifit_fdfsolver_free(s);
   gsl_vector_free(x);
+#ifndef GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix_free(J);
+#endif
   gsl_matrix_free(covar);
   return rb_ary_new3(8, rb_float_new(sigma), rb_float_new(mean),
                      rb_float_new(height), rb_float_new(errs),
@@ -1305,6 +1319,9 @@ static VALUE rb_gsl_histogram_fit_rayleigh(int argc, VALUE *argv, VALUE obj)
   size_t n, dof;      /* # of data points */
   size_t p = 2;  /* # of fitting parameters */
   gsl_multifit_function_fdf f;
+#ifndef GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix *J = NULL;
+#endif
   gsl_matrix *covar = NULL;
   gsl_vector *x = NULL;
   double sigma, height, errs, errh, chi2;
@@ -1332,6 +1349,9 @@ static VALUE rb_gsl_histogram_fit_rayleigh(int argc, VALUE *argv, VALUE obj)
   hh.binend = binend;
   n = binend - binstart + 1;
 
+#ifndef GSL_MULTIFIT_FDFSOLVER_J
+  J = gsl_matrix_alloc(n, p);
+#endif
   covar = gsl_matrix_alloc(p, p);
 
   f.f = Rayleigh_f;
@@ -1353,7 +1373,12 @@ static VALUE rb_gsl_histogram_fit_rayleigh(int argc, VALUE *argv, VALUE obj)
   } while (status == GSL_CONTINUE);
   sigma = sqrt(gsl_vector_get(s->x, 0));
   height = gsl_vector_get(s->x, 1)*sigma*sigma;
+#ifdef GSL_MULTIFIT_FDFSOLVER_J
   gsl_multifit_covar(s->J, 0.0, covar);
+#else
+  gsl_multifit_fdfsolver_jac(s, J);
+  gsl_multifit_covar(J, 0.0, covar);
+#endif
   chi2 = gsl_pow_2(gsl_blas_dnrm2(s->f));   /* not reduced chi-square */
   dof = n - p;
   errs = sqrt(chi2/dof*gsl_matrix_get(covar, 0, 0))/sigma/2;
@@ -1361,6 +1386,9 @@ static VALUE rb_gsl_histogram_fit_rayleigh(int argc, VALUE *argv, VALUE obj)
 
   gsl_multifit_fdfsolver_free(s);
   gsl_vector_free(x);
+#ifndef GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix_free(J);
+#endif
   gsl_matrix_free(covar);
   return rb_ary_new3(6, rb_float_new(sigma),
                      rb_float_new(height), rb_float_new(errs),
@@ -1441,6 +1469,9 @@ static VALUE rb_gsl_histogram_fit_xexponential(int argc, VALUE *argv, VALUE obj)
   size_t n, dof;      /* # of data points */
   size_t p = 2;  /* # of fitting parameters */
   gsl_multifit_function_fdf f;
+#ifndef GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix *J = NULL;
+#endif
   gsl_matrix *covar = NULL;
   gsl_vector *x = NULL;
   double b, height, errs, errh, chi2;
@@ -1468,6 +1499,9 @@ static VALUE rb_gsl_histogram_fit_xexponential(int argc, VALUE *argv, VALUE obj)
   hh.binend = binend;
   n = binend - binstart + 1;
 
+#ifndef GSL_MULTIFIT_FDFSOLVER_J
+  J = gsl_matrix_alloc(n, p);
+#endif
   covar = gsl_matrix_alloc(p, p);
 
   f.f = xExponential_f;
@@ -1489,7 +1523,12 @@ static VALUE rb_gsl_histogram_fit_xexponential(int argc, VALUE *argv, VALUE obj)
   } while (status == GSL_CONTINUE);
   b = gsl_vector_get(s->x, 0);
   height = gsl_vector_get(s->x, 1);
+#ifdef GSL_MULTIFIT_FDFSOLVER_J
   gsl_multifit_covar(s->J, 0.0, covar);
+#else
+  gsl_multifit_fdfsolver_jac(s, J);
+  gsl_multifit_covar(J, 0.0, covar);
+#endif
   chi2 = gsl_pow_2(gsl_blas_dnrm2(s->f));   /* not reduced chi-square */
   dof = n - p;
   errs = sqrt(chi2/dof*gsl_matrix_get(covar, 0, 0));
@@ -1497,6 +1536,9 @@ static VALUE rb_gsl_histogram_fit_xexponential(int argc, VALUE *argv, VALUE obj)
 
   gsl_multifit_fdfsolver_free(s);
   gsl_vector_free(x);
+#ifndef GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix_free(J);
+#endif
   gsl_matrix_free(covar);
   return rb_ary_new3(6, rb_float_new(b),
                      rb_float_new(height), rb_float_new(errs),
