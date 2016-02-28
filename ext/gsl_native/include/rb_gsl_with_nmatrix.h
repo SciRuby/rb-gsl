@@ -8,7 +8,6 @@
 #include "nmatrix.h"
 #include "include/rb_gsl_array.h"
 extern VALUE cNMatrix;
-extern VALUE nm_eDataTypeError, nm_eStorageTypeError;
 
 // functions to convert GSL::Vectors to 1D NMatrix
 static VALUE rb_gsl_vector_to_nmatrix(VALUE obj);

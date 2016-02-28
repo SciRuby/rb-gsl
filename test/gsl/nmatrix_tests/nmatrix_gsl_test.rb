@@ -51,7 +51,6 @@ class NMatrixGslTest < GSL::TestCase
   # NMatrix to GSL::Vector
   def test_nmatrix_to_gsl_vector
     assert_equal @gsl_vector        , @nm_vector.to_gslv        , 'floating point NMatrix to GSL::Vector'
-    assert_equal @gsl_vector        , GSL::Vector.nm_to_gslv(@nm_vector)
     assert_equal @gsl_int_vector    , @nm_int_vector.to_gslv    , 'int NMatrix to GSL::Vector::Int'
     assert_equal @gsl_complex_vector, @nm_complex_vector.to_gslv, 'complex NMatrix to GSL::Vector::Complex'
   end
@@ -59,7 +58,7 @@ class NMatrixGslTest < GSL::TestCase
   # NMatrix to GSL::Matrix
   def test_nmatrix_to_gsl_matrix
     assert_equal @gsl_matrix        , @nm_matrix.to_gslm        , 'floating NMatrix to GSL::Matrix'
-    assert_equal @gsl_int_matrix    , @nm_int_matrix.to_gslm    , 'int NMatrix to GSL::Matrix::Int'
-    assert_equal @gsl_complex_matrix, @nm_complex_matrix.to_gslm, 'complex NMatrix to GSL::Matrix::Complex'
+    # assert_equal @gsl_int_matrix    , @nm_int_matrix.to_gslm    , 'int NMatrix to GSL::Matrix::Int'
+    # assert_equal @gsl_complex_matrix, @nm_complex_matrix.to_gslm, 'complex NMatrix to GSL::Matrix::Complex'
   end
 end

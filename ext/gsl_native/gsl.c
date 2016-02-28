@@ -141,6 +141,10 @@ void Init_gsl_native()
   Init_gsl_narray(mgsl);
 #endif
 
+#ifdef HAVE_NMATRIX_H
+  Init_gsl_nmatrix(mgsl);
+#endif
+
   Init_wavelet(mgsl);
 
   rb_gsl_define_const(mgsl);

@@ -67,7 +67,7 @@ def gsl_gem_config(target, dir = 'ext')
       File.join(spec.full_gem_path, dir) if spec
     else
       spec = Gem::Specification.find_all_by_name("#{target}").compact
-      File.join(spec[0].require_path)      
+      File.join(spec[0].require_path)
     end
 
   rescue LoadError
