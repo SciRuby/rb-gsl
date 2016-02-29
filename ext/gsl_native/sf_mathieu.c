@@ -133,11 +133,11 @@ static VALUE sf_mathieu_eval_e_int2_double2(VALUE n1, VALUE n2, VALUE qq, VALUE 
 /**********/
 static VALUE rb_gsl_sf_mathieu_a_e(VALUE module, VALUE order, VALUE qq)
 {
-  return rb_gsl_sf_eval_e_int_double(gsl_sf_mathieu_a, order, qq);
+  return rb_gsl_sf_eval_e_int_double(gsl_sf_mathieu_a_e, order, qq);
 }
 static VALUE rb_gsl_sf_mathieu_a(VALUE module, VALUE order, VALUE qq)
 {
-  return sf_mathieu_eval(order, qq, gsl_sf_mathieu_a);
+  return sf_mathieu_eval(order, qq, gsl_sf_mathieu_a_e);
 }
 static VALUE rb_gsl_sf_mathieu_a_array(VALUE module, int argc, VALUE *argv)
 {
@@ -145,11 +145,11 @@ static VALUE rb_gsl_sf_mathieu_a_array(VALUE module, int argc, VALUE *argv)
 }
 static VALUE rb_gsl_sf_mathieu_b_e(VALUE module, VALUE order, VALUE qq)
 {
-  return rb_gsl_sf_eval_e_int_double(gsl_sf_mathieu_b, order, qq);
+  return rb_gsl_sf_eval_e_int_double(gsl_sf_mathieu_b_e, order, qq);
 }
 static VALUE rb_gsl_sf_mathieu_b(VALUE module, VALUE order, VALUE qq)
 {
-  return sf_mathieu_eval(order, qq, gsl_sf_mathieu_b);
+  return sf_mathieu_eval(order, qq, gsl_sf_mathieu_b_e);
 }
 static VALUE rb_gsl_sf_mathieu_b_array(VALUE module, int argc, VALUE *argv)
 {
@@ -157,11 +157,11 @@ static VALUE rb_gsl_sf_mathieu_b_array(VALUE module, int argc, VALUE *argv)
 }
 static VALUE rb_gsl_sf_mathieu_ce_e(VALUE module, VALUE order, VALUE qq, VALUE zz)
 {
-  return sf_mathieu_eval_e_int_double2(order, qq, zz, gsl_sf_mathieu_ce);
+  return sf_mathieu_eval_e_int_double2(order, qq, zz, gsl_sf_mathieu_ce_e);
 }
 static VALUE rb_gsl_sf_mathieu_ce(VALUE module, VALUE order, VALUE qq, VALUE zz)
 {
-  return sf_mathieu_eval_int_double2(order, qq, zz, gsl_sf_mathieu_ce);
+  return sf_mathieu_eval_int_double2(order, qq, zz, gsl_sf_mathieu_ce_e);
 }
 static VALUE rb_gsl_sf_mathieu_ce_array(VALUE module, int argc, VALUE *argv)
 {
@@ -169,11 +169,11 @@ static VALUE rb_gsl_sf_mathieu_ce_array(VALUE module, int argc, VALUE *argv)
 }
 static VALUE rb_gsl_sf_mathieu_se_e(VALUE module, VALUE order, VALUE qq, VALUE zz)
 {
-  return sf_mathieu_eval_e_int_double2(order, qq, zz, gsl_sf_mathieu_se);
+  return sf_mathieu_eval_e_int_double2(order, qq, zz, gsl_sf_mathieu_se_e);
 }
 static VALUE rb_gsl_sf_mathieu_se(VALUE module, VALUE order, VALUE qq, VALUE zz)
 {
-  return sf_mathieu_eval_int_double2(order, qq, zz, gsl_sf_mathieu_se);
+  return sf_mathieu_eval_int_double2(order, qq, zz, gsl_sf_mathieu_se_e);
 }
 static VALUE rb_gsl_sf_mathieu_se_array(VALUE module, int argc, VALUE *argv)
 {
@@ -183,11 +183,11 @@ static VALUE rb_gsl_sf_mathieu_se_array(VALUE module, int argc, VALUE *argv)
 /*****/
 static VALUE rb_gsl_sf_mathieu_Mc_e(VALUE module, VALUE n1, VALUE n2, VALUE q, VALUE x)
 {
-  return sf_mathieu_eval_e_int2_double2(n1, n2, q, x, gsl_sf_mathieu_Mc);
+  return sf_mathieu_eval_e_int2_double2(n1, n2, q, x, gsl_sf_mathieu_Mc_e);
 }
 static VALUE rb_gsl_sf_mathieu_Mc(VALUE module, VALUE n1, VALUE n2, VALUE q, VALUE x)
 {
-  return sf_mathieu_eval2(n1, n2, q, x, gsl_sf_mathieu_Mc);
+  return sf_mathieu_eval2(n1, n2, q, x, gsl_sf_mathieu_Mc_e);
 }
 static VALUE rb_gsl_sf_mathieu_Mc_array(VALUE module, int argc, VALUE *argv)
 {
@@ -195,11 +195,11 @@ static VALUE rb_gsl_sf_mathieu_Mc_array(VALUE module, int argc, VALUE *argv)
 }
 static VALUE rb_gsl_sf_mathieu_Ms_e(VALUE module, VALUE n1, VALUE n2, VALUE q, VALUE x)
 {
-  return sf_mathieu_eval_e_int2_double2(n1, n2, q, x, gsl_sf_mathieu_Ms);
+  return sf_mathieu_eval_e_int2_double2(n1, n2, q, x, gsl_sf_mathieu_Ms_e);
 }
 static VALUE rb_gsl_sf_mathieu_Ms(VALUE module, VALUE n1, VALUE n2, VALUE q, VALUE x)
 {
-  return sf_mathieu_eval2(n1, n2, q, x, gsl_sf_mathieu_Ms);
+  return sf_mathieu_eval2(n1, n2, q, x, gsl_sf_mathieu_Ms_e);
 }
 static VALUE rb_gsl_sf_mathieu_Ms_array(VALUE module, int argc, VALUE *argv)
 {
