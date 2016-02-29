@@ -290,6 +290,43 @@ static VALUE rb_gsl_linalg_LU_solve_narray(int argc, VALUE *argv, VALUE obj)
 }
 #endif
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_LU_solve_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  VALUE ret;
+  NM_DENSE_STORAGE *input_nmatrix, *b;
+  gsl_permutation *p;
+  gsl_matrix_view mv;
+  gsl_vector_view bv, xv;
+  double *x;
+  unsigned int shape[1];
+
+  if (argc < 3) {
+    rb_raise(rb_eArgError,
+             "wrong number of arguments %d(NMatrix, GSL::Permutation and NMatrix expected)",
+             argc);
+  }
+  input_nmatrix = NM_STORAGE_DENSE(argv[0]);
+  mv = gsl_matrix_view_array((double*) input_nmatrix->elements, 
+    input_nmatrix->shape[0], input_nmatrix->shape[1]);
+  CHECK_PERMUTATION(argv[1]);
+  Data_Get_Struct(argv[1], gsl_permutation, p);
+  b = NM_STORAGE_DENSE(argv[2]);
+  printf(">>>> COUNT :: %d\n", b->count);
+  bv = gsl_vector_view_array((double*) b->elements, b->shape[0]);
+  if (argc == 3) {
+    shape[0] = b->shape[0];
+    ret = rb_nmatrix_dense_create(FLOAT64, shape, 1, b->elements, shape[0]);
+  } else {
+    ret = argv[3];
+  }
+  x = (double*)NM_DENSE_ELEMENTS(ret);
+  xv = gsl_vector_view_array(x, b->shape[0]);
+  gsl_linalg_LU_solve(&mv.matrix, p, &bv.vector, &xv.vector);
+  return ret;
+}
+#endif
+
 VALUE rb_gsl_linalg_LU_solve(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *m = NULL;
@@ -305,6 +342,11 @@ VALUE rb_gsl_linalg_LU_solve(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv[0]))
       return rb_gsl_linalg_LU_solve_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv[0]))
+      return rb_gsl_linalg_LU_solve_nmatrix(argc, argv, obj);
 #endif
     m = get_matrix(argv[0], cgsl_matrix_LU, &flagm);
     itmp = 1;

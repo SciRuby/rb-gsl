@@ -7,9 +7,6 @@
 
 #include "include/rb_gsl_with_nmatrix.h"
 
-// nmatrix external API
-extern VALUE rb_nmatrix_dense_create(nm_dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t length);
-extern VALUE rb_nvector_dense_create(nm_dtype_t dtype, void* elements, size_t length);
 // functions to convert GSL::Vectors to 1D NMatrix
 static VALUE rb_gsl_vector_to_nmatrix(VALUE obj);
 static VALUE rb_gsl_vector_int_to_nmatrix(VALUE obj);

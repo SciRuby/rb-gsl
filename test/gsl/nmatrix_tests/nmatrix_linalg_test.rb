@@ -24,7 +24,7 @@ class NMatrixGslTest < GSL::TestCase
       dtype: :float64)
 
     assert_enum_abs lu, lu_exp, 0.0001, "GSL::Linalg::LU.decomp(A) with NMatrix"
-    assert GSL::Linalg::LU.solve(lu, @b) == @x_exp, "GSL::Linalg::LU.solve(lu, b) with NMatrix"
+    assert_enum_abs GSL::Linalg::LU.solve(lu, perm, @b), @x_exp, 0.0001, "GSL::Linalg::LU.solve(lu, perm, b) with NMatrix"
 
     ##########################################################################
 
