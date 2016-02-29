@@ -4,10 +4,10 @@ class NMatrixGslTest < GSL::TestCase
   def setup
     @nm = NMatrix.new([4,4], 
       [
-        [0.18, 0.60, 0.57, 0.96], 
-        [0.41, 0.24, 0.99, 0.58],
-        [0.14, 0.30, 0.97, 0.66], 
-        [0.51, 0.13, 0.19, 0.85]
+        0.18, 0.60, 0.57, 0.96, 
+        0.41, 0.24, 0.99, 0.58,
+        0.14, 0.30, 0.97, 0.66, 
+        0.51, 0.13, 0.19, 0.85
       ], dtype: :float64)
     @b = NMatrix.new([4], [1,2,3,4], dtype: :float64)
     @x_exp = NMatrix.new([4], [-4.05205022957397, -12.6056113959069, 1.66091162670884, 8.69376692879523], dtype: :float64)   
@@ -23,7 +23,7 @@ class NMatrixGslTest < GSL::TestCase
       0.274509803921569, 0.476999292285916, 0.949126848480345, 0.363093705877982],
       dtype: :float64)
 
-    assert lu == lu_exp, "GSL::Linalg::LU.decomp(A) with NMatrix"
+    assert_enum_abs lu, lu_exp, 0.0001, "GSL::Linalg::LU.decomp(A) with NMatrix"
     assert GSL::Linalg::LU.solve(lu, @b) == @x_exp, "GSL::Linalg::LU.solve(lu, b) with NMatrix"
 
     ##########################################################################

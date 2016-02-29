@@ -1,6 +1,6 @@
 require 'test/unit'
-require 'gsl'
 require 'nmatrix/nmatrix'
+require 'gsl'
 
 GSL::IEEE.env_setup
 GSL::Rng.env_setup
@@ -39,6 +39,24 @@ class GSL::TestCase < Test::Unit::TestCase
 
   def assert_tol(a, b, msg)
     assert((a - b).abs < (self.class::EPSREL * GSL.MIN(a.abs, b.abs) + self.class::EPSABS), msg)
+  end
+
+  # Assert each element in an enumerable with absolute error.
+  def assert_enum_abs(result, expected, abserr, desc)
+    assert result.size == expected.size, 'size mismatch.'
+
+    r_enum = result.each
+    e_enum = expected.each
+
+    while true
+      begin
+        res_value = r_enum.next
+        exp_value = e_enum.next
+        assert_abs res_value, exp_value, abserr, "value mismatch. #{res_value} should be #{exp_value}"
+      rescue StopIteration
+        break
+      end
+    end
   end
 
 end

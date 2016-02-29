@@ -8,12 +8,12 @@ require 'rake/testtask'
 Bundler::GemHelper.install_tasks
 
 Rake::TestTask.new do |t|
-  # t.libs << 'test'
-  # t.libs << 'test/gsl'
-  # t.libs << 'test/gsl/nmatrix_tests'
+  t.libs << 'test'
+  t.libs << 'test/gsl'
+  t.libs << 'test/gsl/nmatrix_tests'
   t.test_files = FileList[
-    # 'test/*.rb', 
-    # 'test/gsl/*.rb', 
+    'test/*.rb', 
+    'test/gsl/*.rb', 
     'test/gsl/nmatrix_tests/nmatrix_gsl_test.rb']
 end
 

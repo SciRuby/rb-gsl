@@ -10,6 +10,15 @@
 // nmatrix external API
 extern VALUE rb_nmatrix_dense_create(nm_dtype_t dtype, size_t* shape, size_t rank, void* elements, size_t length);
 extern VALUE rb_nvector_dense_create(nm_dtype_t dtype, void* elements, size_t length);
+// functions to convert GSL::Vectors to 1D NMatrix
+static VALUE rb_gsl_vector_to_nmatrix(VALUE obj);
+static VALUE rb_gsl_vector_int_to_nmatrix(VALUE obj);
+static VALUE rb_gsl_vector_complex_to_nmatrix(VALUE obj);
+
+// functions to convert GSL::Matrix to 2D NMatrix
+static VALUE rb_gsl_matrix_to_nmatrix(VALUE obj);
+static VALUE rb_gsl_matrix_int_to_nmatrix(VALUE obj);
+static VALUE rb_gsl_matrix_complex_to_nmatrix(VALUE obj);
 
 /* GSL::Vector -> NMatrix */
 static VALUE rb_gsl_vector_to_nmatrix(VALUE obj) {
@@ -178,40 +187,8 @@ VALUE rb_gsl_nmatrix_to_gsl_matrix_method(VALUE nmatrix) {
   }
 }
 
-// VALUE rb_gsl_nmatrix_to_gsl_vector(VALUE obj, VALUE n) {
-//   return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free,
-//     rb_gsl_nmatrix_to_gv(n));
-// }
-
-// VALUE rb_gsl_nmatrix_to_gsl_vector_int(VALUE obj, VALUE n) {
-//   return Data_Wrap_Struct(cgsl_vector_int, 0, gsl_vector_int_free,
-//     rb_gsl_nmatrix_to_gv_int(n));
-// }
-
-// VALUE rb_gsl_nmatrix_to_gsl_vector_complex(VALUE obj, VALUE n) {
-//   return Data_Wrap_Struct(cgsl_vector_complex, 0, gsl_vector_complex_free,
-//     rb_gsl_nmatrix_to_gv_complex(n));
-// }
-
-// VALUE rb_gsl_nmatrix_to_gsl_matrix(VALUE obj, VALUE n) {
-//   return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free,
-//     rb_gsl_nmatrix_to_gm(n));
-// }
-
-// VALUE rb_gsl_nmatrix_to_gsl_matrix_int(VALUE obj, VALUE n) {
-//   return Data_Wrap_Struct(cgsl_matrix_int, 0, gsl_matrix_int_free,
-//     rb_gsl_nmatrix_to_gm_int(n));
-// }
-
-// VALUE rb_gsl_nmatrix_to_gsl_matrix_complex(VALUE obj, VALUE n) {
-//   return Data_Wrap_Struct(cgsl_matrix_complex, 0, gsl_matrix_complex_free,
-//     rb_gsl_nmatrix_to_gm_complex(n));
-// }
-
 void Init_gsl_nmatrix(VALUE module)
 {
-  VALUE cNMatrix = rb_define_class("NMatrix", rb_cObject);
-
   // functions to convert GSL::Vector to 1D NMatrix.
   rb_define_method(cgsl_vector, "to_nm", rb_gsl_vector_to_nmatrix, 0);
   rb_define_method(cgsl_vector_int, "to_nm", rb_gsl_vector_int_to_nmatrix, 0);
@@ -222,6 +199,7 @@ void Init_gsl_nmatrix(VALUE module)
   rb_define_method(cgsl_matrix_int, "to_nm", rb_gsl_matrix_int_to_nmatrix, 0);
   rb_define_method(cgsl_matrix_complex, "to_nm", rb_gsl_matrix_complex_to_nmatrix, 0);
 
+  // functions on NMatrix to convert to GSL::Vector and GSL::Matrix
   rb_define_method(cNMatrix, "to_gslv", rb_gsl_nmatrix_to_gsl_vector_method, 0);
   rb_define_method(cNMatrix, "to_gslm", rb_gsl_nmatrix_to_gsl_matrix_method, 0);
 }

@@ -74,6 +74,50 @@ static VALUE rb_gsl_linalg_LU_decomp_narray(int argc, VALUE *argv, VALUE obj,
 }
 #endif
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_LU_decomp_nmatrix(int argc, VALUE *argv, VALUE obj,
+                                            int flag)
+{
+  NM_DENSE_STORAGE *input_nmatrix, *temp_nmatrix;
+  VALUE m;
+  gsl_matrix_view mv;
+  gsl_permutation *p;
+  int signum;
+
+  if (argc != 1)
+    rb_raise(rb_eArgError, "wrong number of arguments (%d for 1)", argc);
+
+  input_nmatrix = NM_STORAGE_DENSE(argv[0]);
+  if (input_nmatrix->shape[0] != input_nmatrix->shape[1])
+    rb_raise(rb_eRuntimeError, "square matrix required");
+
+  if (flag == LINALG_DECOMP) {
+    m = rb_nmatrix_dense_create(FLOAT64, input_nmatrix->shape, 2, 
+      input_nmatrix->elements, input_nmatrix->shape[0] * input_nmatrix->shape[1]);
+    temp_nmatrix = NM_STORAGE_DENSE(m);
+
+    memcpy((double*)temp_nmatrix->elements, (double*)input_nmatrix->elements, 
+      sizeof(double)*input_nmatrix->shape[0]*input_nmatrix->shape[1]);
+    mv = gsl_matrix_view_array((double*)temp_nmatrix->elements, 
+      temp_nmatrix->shape[0], temp_nmatrix->shape[1]);
+  } else {
+    mv = gsl_matrix_view_array((double*)input_nmatrix->elements, 
+      input_nmatrix->shape[0], input_nmatrix->shape[1]);
+  }
+  p = gsl_permutation_alloc(mv.matrix.size1);
+  gsl_linalg_LU_decomp(&mv.matrix, p, &signum);
+  if (flag == LINALG_DECOMP) {
+    return rb_ary_new3(3, m,
+                       Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p),
+                       INT2FIX(signum));
+  } else {
+    return rb_ary_new3(3, argv[0],
+                       Data_Wrap_Struct(cgsl_permutation, 0, gsl_permutation_free, p),
+                       INT2FIX(signum));
+  }
+}
+#endif
+
 static VALUE rb_gsl_linalg_LU_decomposition(int argc, VALUE *argv, VALUE obj, int flag)
 {
   gsl_matrix *mtmp = NULL, *m = NULL;
@@ -84,8 +128,15 @@ static VALUE rb_gsl_linalg_LU_decomposition(int argc, VALUE *argv, VALUE obj, in
   switch (TYPE(obj)) {
   case T_MODULE:  case T_CLASS:  case T_OBJECT:
 #ifdef HAVE_NARRAY_H
-    if (NA_IsNArray(argv[0]))
+    if (NA_IsNArray(argv[0])) {
       return rb_gsl_linalg_LU_decomp_narray(argc, argv, obj, flag);
+    }
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv[0])) {
+      return rb_gsl_linalg_LU_decomp_nmatrix(argc, argv, obj, flag);
+    }
 #endif
     if (MATRIX_COMPLEX_P(argv[0]))
       return rb_gsl_linalg_complex_LU_decomp2(argc, argv, obj);
