@@ -116,5 +116,11 @@ unless arg_config('--disable-tamu-anova')
 end
 
 have_struct_member('gsl_multifit_fdfsolver', 'J', 'gsl/gsl_multifit_nlin.h')
+have_func('gsl_sf_mathieu_a_e',  'gsl/gsl_sf_mathieu.h');
+have_func('gsl_sf_mathieu_b_e',  'gsl/gsl_sf_mathieu.h');
+have_func('gsl_sf_mathieu_ce_e', 'gsl/gsl_sf_mathieu.h');
+have_func('gsl_sf_mathieu_se_e', 'gsl/gsl_sf_mathieu.h');
+have_func('gsl_sf_mathieu_Mc_e', 'gsl/gsl_sf_mathieu.h');
+have_func('gsl_sf_mathieu_Ms_e', 'gsl/gsl_sf_mathieu.h');
 
 create_makefile('gsl_native')
