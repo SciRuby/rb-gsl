@@ -76,10 +76,11 @@ class NMatrixStatsTest < GSL::TestCase
 
     rawa_sorted = NMatrix.new([@rawa.size], @rawa.sort, dtype: :float64)
 
-    assert_rel GSL::Stats.median_from_sorted_data(@rawa), 0.07505,
+    sorted = NMatrix.new([@rawa.size], @rawa.to_a.sort, dtype: :float64)
+    assert_rel GSL::Stats.median_from_sorted_data(sorted), 0.07505,
       rel, 'gsl_stats_median_from_sorted_data'
 
-    assert_rel GSL::Stats.median_from_sorted_data(@rawa[0..rawa.size - 1]), 0.0728,
+    assert_rel GSL::Stats.median_from_sorted_data(sorted[0..(sorted.size - 2)]), 0.0728,
       rel, 'gsl_stats_median_from_sorted_data'
 
     #TODO: Expose quantile_from_sorted_data

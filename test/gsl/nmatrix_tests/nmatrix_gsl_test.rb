@@ -1,10 +1,9 @@
 require 'test_helper'
 
 class NMatrixGslTest < GSL::TestCase
-
   def setup
     @gsl_vector = GSL::Vector.alloc(2.354, 4.443, 6.776)
-    @nm_vector  = NMatrix.new([3], [2.354, 4.443, 6.776])
+    @nm_vector  = NMatrix.new([3], [2.354, 4.443, 6.776], dtype: :float64)
 
     @gsl_int_vector = GSL::Vector::Int[1,2,3,4,5]
     @nm_int_vector  = NMatrix.new([5], [1,2,3,4,5], dtype: :int32)

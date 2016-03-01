@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class NMatrixGslTest < GSL::TestCase
+class NMatrixLinalgTest < GSL::TestCase
   def setup
     @nm = NMatrix.new([4,4], 
       [
