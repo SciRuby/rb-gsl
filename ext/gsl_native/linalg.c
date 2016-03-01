@@ -2754,7 +2754,23 @@ static VALUE rb_gsl_linalg_cholesky_svx_narray(int argc, VALUE *argv, VALUE obj)
   gsl_linalg_cholesky_svx(&mv.matrix, &bv.vector);
   return argv[1];
 }
+#endif
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_cholesky_decomp_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *nm;
+  VALUE chol;
+  gsl_matrix_view mv;
+  nm = NM_STORAGE_DENSE(argv[0]);
+
+  chol = rb_nmatrix_dense_create(FLOAT64, nm->shape, 2, nm->elements,
+    nm->shape[0]*nm->shape[1]);
+  mv   = gsl_matrix_view_array((double*)NM_DENSE_ELEMENTS(chol), nm->shape[0],
+    nm->shape[1]);
+  gsl_linalg_cholesky_decomp(&mv.matrix);
+  return chol;
+}
 #endif
 
 static VALUE rb_gsl_linalg_cholesky_decomp(int argc, VALUE *argv, VALUE obj)
@@ -2767,6 +2783,11 @@ static VALUE rb_gsl_linalg_cholesky_decomp(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv[0]))
       return rb_gsl_linalg_cholesky_decomp_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv[0]))
+      return rb_gsl_linalg_cholesky_decomp_nmatrix(argc, argv, obj);
 #endif
     CHECK_MATRIX(argv[0]);
     Data_Get_Struct(argv[0], gsl_matrix, Atmp);
@@ -2781,6 +2802,36 @@ static VALUE rb_gsl_linalg_cholesky_decomp(int argc, VALUE *argv, VALUE obj)
   return Data_Wrap_Struct(cgsl_matrix_C, 0, gsl_matrix_free, A);
 }
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_cholesky_solve_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *nm, *nb;
+  VALUE x;
+  gsl_matrix_view mv;
+  gsl_vector_view bv, xv;
+
+  nm = NM_STORAGE_DENSE(argv[0]);
+  nb = NM_STORAGE_DENSE(argv[1]);
+  switch (argc) {
+  case 2:
+    x = rb_nvector_dense_create(FLOAT64, nb->elements, nb->shape[0]);
+    break;
+  case 3:
+    x = argv[2];
+    break;
+  default:
+    rb_raise(rb_eArgError,
+             "Usage: Cholesky.solve(chol, b) or Cholesky.solve(chol, b, x)");
+    break;
+  }
+  mv = gsl_matrix_view_array((double*)nm->elements, nm->shape[0], nm->shape[1]);
+  bv = gsl_vector_view_array((double*)nb->elements, nb->shape[0]);
+  xv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(x), nb->shape[0]);
+  gsl_linalg_cholesky_solve(&mv.matrix, &bv.vector, &xv.vector);
+  return x;
+}
+#endif
+
 static VALUE rb_gsl_linalg_cholesky_solve(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *A = NULL, *Atmp = NULL;
@@ -2794,6 +2845,11 @@ static VALUE rb_gsl_linalg_cholesky_solve(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv[0]))
       return rb_gsl_linalg_cholesky_solve_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv[0]))
+      return rb_gsl_linalg_cholesky_solve_nmatrix(argc, argv, obj);
 #endif
     vA = argv[0];
     vb = argv[1];
@@ -2828,6 +2884,22 @@ static VALUE rb_gsl_linalg_cholesky_solve(int argc, VALUE *argv, VALUE obj)
   return Data_Wrap_Struct(cgsl_vector_col, 0, gsl_vector_free, x);
 }
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_cholesky_svx_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *nm, *nb;
+  gsl_matrix_view mv;
+  gsl_vector_view bv;
+  nm = NM_STORAGE_DENSE(argv[0]);
+  nb = NM_STORAGE_DENSE(argv[1]);
+
+  mv = gsl_matrix_view_array((double*)nm->elements, nm->shape[0], nm->shape[1]);
+  bv = gsl_vector_view_array((double*)nb->elements, nb->shape[0]);
+  gsl_linalg_cholesky_svx(&mv.matrix, &bv.vector);
+
+  return argv[1];
+}
+#endif
 
 static VALUE rb_gsl_linalg_cholesky_svx(int argc, VALUE *argv, VALUE obj)
 {
@@ -2842,6 +2914,11 @@ static VALUE rb_gsl_linalg_cholesky_svx(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv[0]))
       return rb_gsl_linalg_cholesky_svx_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv[0]))
+      return rb_gsl_linalg_cholesky_svx_nmatrix(argc, argv, obj);
 #endif
     vA = argv[0];
     vb = argv[1];

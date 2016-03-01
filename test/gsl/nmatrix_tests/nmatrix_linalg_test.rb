@@ -87,14 +87,14 @@ class NMatrixGslTest < GSL::TestCase
     x_exp = NMatrix.new([2], [-0.125, 0.75], dtype: :float64)
 
     c = GSL::Linalg::Cholesky
-    assert c.decomp(m)          == cholesky, "GSL::Linalg::Cholesky.decomp"
-    assert c.solve(cholesky, b) == x_exp   , "GSL::Linalg::Cholesky.solve"
-    assert c.svx(cholesky, b)   == x_exp   , "GSL::Linalg::Cholesky.svx"
+    assert_enum_abs c.decomp(m)         , cholesky, 0.001, "GSL::Linalg::Cholesky.decomp"
+    assert_enum_abs c.solve(cholesky, b), x_exp   , 0.001, "GSL::Linalg::Cholesky.solve"
+    assert_enum_abs c.svx(cholesky, b)  , x_exp   , 0.001, "GSL::Linalg::Cholesky.svx"
   end
 
   def test_hh
     hh = GSL::Linalg::HH
-    assert @x_exp == hh.solve(@nm, @b), "GSL::Linalg::HH.solve(m, b)"
-    assert @x_exp == hh.svx(@nm, @b), "GSL::Linalg::HH.svx(m, b)"
+    assert_enum_abs hh.solve(@nm, @b), @x_exp, 0.001, "GSL::Linalg::HH.solve(m, b)"
+    assert_enum_abs hh.svx(@nm, @b)  , @x_exp, 0.001, "GSL::Linalg::HH.svx(m, b)"
   end
 end
