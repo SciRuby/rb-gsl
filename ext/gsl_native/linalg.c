@@ -312,7 +312,6 @@ static VALUE rb_gsl_linalg_LU_solve_nmatrix(int argc, VALUE *argv, VALUE obj)
   CHECK_PERMUTATION(argv[1]);
   Data_Get_Struct(argv[1], gsl_permutation, p);
   b = NM_STORAGE_DENSE(argv[2]);
-  printf(">>>> COUNT :: %d\n", b->count);
   bv = gsl_vector_view_array((double*) b->elements, b->shape[0]);
   if (argc == 3) {
     shape[0] = b->shape[0];
@@ -610,6 +609,31 @@ static VALUE rb_gsl_linalg_LU_invert(int argc, VALUE *argv, VALUE obj)
   if (argc-1 == itmp) return argv[itmp];
   else return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, inverse);
 }
+
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_LU_det_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *input_nmatrix;
+  gsl_matrix_view mv;
+  int signum = 1;
+
+  switch (argc) {
+  case 2:
+    signum = FIX2INT(argv[1]);
+  /* no break */
+  case 1:
+    input_nmatrix = NM_STORAGE_DENSE(argv[0]);
+    mv = gsl_matrix_view_array((double*)input_nmatrix->elements, 
+      input_nmatrix->shape[0], input_nmatrix->shape[1]);
+    break;
+  default:
+    rb_raise(rb_eArgError, "Usage: LU.det(lu, perm)");
+    break;
+  }
+  return rb_float_new(gsl_linalg_LU_det(&mv.matrix, signum));
+}
+#endif
+
 static VALUE rb_gsl_linalg_LU_det(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *m = NULL;
@@ -626,6 +650,11 @@ static VALUE rb_gsl_linalg_LU_det(int argc, VALUE *argv, VALUE obj)
       return rb_gsl_linalg_LU_det_narray(argc, argv, obj);
 #endif
 
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv[0])) {
+      return rb_gsl_linalg_LU_det_nmatrix(argc, argv, obj);
+    }
+#endif
     m = get_matrix(argv[0], cgsl_matrix_LU, &flagm);
     itmp = 1;
     break;

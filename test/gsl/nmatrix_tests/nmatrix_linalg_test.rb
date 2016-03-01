@@ -37,7 +37,7 @@ class NMatrixGslTest < GSL::TestCase
       ], dtype: :float64)
 
     assert_enum_abs GSL::Linalg::LU.invert(lu, perm), inverted, 0.001, "GSL::Linalg::LU.invert(lu, perm) with NMatrix"
-    assert GSL::Linalg::LU.det(lu, sign)    == -13, "GSL::Linalg::LU.det(lu, sign) with NMatrix"
+    assert GSL::Linalg::LU.det(lu, sign) == -13, "GSL::Linalg::LU.det(lu, sign) with NMatrix"
   end
 
   def test_qr
