@@ -49,8 +49,8 @@ class NMatrixGslTest < GSL::TestCase
     tau_answer = NMatrix.new([4], [1.25975, 1.45217, 1.80113, 0.0], dtype: :float64)
     qr, tau = GSL::Linalg::QR.decomp(@nm)
     
-    assert qr_answer  == qr , "GSL::Linalg::QR.decomp(nmatrix)"
-    assert tau_answer == tau, "GSL::Linalg::QR.decomp(nmatrix)"
+    assert_enum_abs qr_answer , qr , 0.001, "GSL::Linalg::QR.decomp(nmatrix)"
+    assert_enum_abs tau_answer, tau, 0.001, "GSL::Linalg::QR.decomp(nmatrix)"
 
     assert @x_exp == GSL::Linalg::QR.solve(qr, tau, @b), "GSL::Linalg::QR.solve(qr, tau, b)"
   end

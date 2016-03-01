@@ -953,7 +953,33 @@ static VALUE rb_gsl_linalg_QR_svx_narray(int argc, VALUE *argv, VALUE obj)
   gsl_linalg_QR_svx(&mv.matrix, &tv.vector, &bv.vector);
   return argv[2];
 }
+#endif
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_QR_decomp_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *nm;
+  gsl_matrix_view mv;
+  gsl_vector_view vv;
+  unsigned shapem[2], shapev[1];
+  VALUE qr, tau;
+
+  if (argc < 1) rb_raise(rb_eArgError, "too few arguments.");
+  nm = NM_STORAGE_DENSE(argv[0]);
+  shapem[0] = nm->shape[0];
+  shapem[1] = nm->shape[1];
+  shapev[0] = shapem[0];
+  qr = rb_nmatrix_dense_create(FLOAT64, shapem, 2, nm->elements, 
+    shapem[0]*shapem[1]);
+  tau = rb_nmatrix_dense_create(FLOAT64, shapev, 1, nm->elements, shapev[0]);
+
+  memcpy((double*)NM_DENSE_ELEMENTS(qr),nm->elements,
+    sizeof(double)*shapem[0]*shapem[1]);
+  mv = gsl_matrix_view_array((double*)NM_DENSE_ELEMENTS(qr), shapem[0], shapem[1]);
+  vv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(tau), shapev[0]);
+  gsl_linalg_QR_decomp(&mv.matrix, &vv.vector);
+  return rb_ary_new3(2, qr, tau);
+}
 #endif
 
 static VALUE rb_gsl_linalg_QR_decomp(int argc, VALUE *argv, VALUE obj)
@@ -962,6 +988,12 @@ static VALUE rb_gsl_linalg_QR_decomp(int argc, VALUE *argv, VALUE obj)
   if (argc >= 1 && NA_IsNArray(argv[0]))
     return rb_gsl_linalg_QR_decomp_narray(argc, argv, obj);
 #endif
+
+#ifdef HAVE_NMATRIX_H
+  if (argc >= 1 && NM_IsNMatrix(argv[0]))
+    return rb_gsl_linalg_QR_decomp_nmatrix(argc, argv, obj);
+#endif
+
   return rb_gsl_linalg_QR_LQ_decomposition(argc, argv, obj, LINALG_QR_DECOMP);
 }
 
