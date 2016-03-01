@@ -3414,6 +3414,26 @@ static VALUE rb_gsl_linalg_HH_svx_narray(int argc, VALUE *argv, VALUE obj)
 }
 #endif
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_HH_solve_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *nm;
+  gsl_vector_view bv, xv;
+  VALUE x;
+  gsl_matrix *mtmp;
+
+  nm = NM_STORAGE_DENSE(argv[0]);
+  bv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(argv[1]), nm->shape[0]);
+  x = rb_nvector_dense_create(FLOAT64, nm->elements, nm->shape[0]);
+  xv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(x), nm->shape[0]);
+  mtmp = gsl_matrix_alloc(nm->shape[0], nm->shape[1]);
+  memcpy(mtmp->data, (double*)nm->elements, sizeof(double)*nm->shape[0]*nm->shape[1]);
+  gsl_linalg_HH_solve(mtmp, &bv.vector, &xv.vector);
+  gsl_matrix_free(mtmp);
+  return x;
+}
+#endif
+
 /* 17.Apr.2004 */
 static VALUE rb_gsl_linalg_HH_solve(int argc, VALUE *argv, VALUE obj)
 {
@@ -3428,6 +3448,11 @@ static VALUE rb_gsl_linalg_HH_solve(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv[0]))
       return rb_gsl_linalg_HH_solve_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv[0]))
+      return rb_gsl_linalg_HH_solve_nmatrix(argc, argv, obj);
 #endif
     vA = argv[0];
     vb = argv[1];
@@ -3491,6 +3516,23 @@ static VALUE rb_gsl_linalg_HH_solve_bang(int argc, VALUE *argv, VALUE obj)
   return Data_Wrap_Struct(cgsl_vector_col, 0, gsl_vector_free, x);
 }
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_HH_svx_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *nm;
+  gsl_matrix *mtmp;
+  gsl_vector_view bv;
+
+  nm = NM_STORAGE_DENSE(argv[0]);
+  bv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(argv[1]), nm->shape[0]);
+  mtmp = gsl_matrix_alloc(nm->shape[0], nm->shape[1]);
+  memcpy(mtmp->data, (double*)nm->elements, sizeof(double)*nm->shape[0]*nm->shape[1]);
+  gsl_linalg_HH_svx(mtmp, &bv.vector);
+  gsl_matrix_free(mtmp);
+  return argv[1];
+}
+#endif
+
 static VALUE rb_gsl_linalg_HH_svx(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *A = NULL, *Atmp = NULL;
@@ -3503,6 +3545,11 @@ static VALUE rb_gsl_linalg_HH_svx(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv[0]))
       return rb_gsl_linalg_HH_svx_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv[0]))
+      return rb_gsl_linalg_HH_svx_nmatrix(argc, argv, obj);
 #endif
     vA = argv[0];
     vb = argv[1];
