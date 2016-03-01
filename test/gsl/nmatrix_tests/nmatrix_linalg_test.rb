@@ -71,11 +71,12 @@ class NMatrixGslTest < GSL::TestCase
 
     u, v, s = GSL::Linalg::SV.decomp(@nm)
 
-    assert u == u_answer, "GSL::Linalg::SV.decomp(nmatrix) -> u"
-    assert v == v_answer, "GSL::Linalg::SV.decomp(nmatrix) -> v"
-    assert s == s_answer, "GSL::Linalg::SV.decomp(nmatrix) -> s"
+    assert_enum_abs u, u_answer, 0.001, "GSL::Linalg::SV.decomp(nmatrix) -> u"
+    assert_enum_abs v, v_answer, 0.001, "GSL::Linalg::SV.decomp(nmatrix) -> v"
+    assert_enum_abs s, s_answer, 0.001, "GSL::Linalg::SV.decomp(nmatrix) -> s"
 
-    assert @x_exp == GSL::Linalg::SV.solve(u, v, s, @b), "GSL::Linalg::SV.solve(u,v,s,b)"
+    assert_enum_abs GSL::Linalg::SV.solve(u, v, s, @b), @x_exp, 0.001, 
+      "GSL::Linalg::SV.solve(u,v,s,b)"
   end
 
   def test_cholesky

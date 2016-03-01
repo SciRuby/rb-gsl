@@ -2440,6 +2440,32 @@ static VALUE rb_gsl_linalg_SV_solve_narray(int argc, VALUE *argv, VALUE obj)
 
 #endif
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_SV_decomp_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *A;
+  gsl_matrix_view uv, vv;
+  gsl_vector_view sv;
+  gsl_vector *work;
+  VALUE u, s, v;
+  unsigned shape[2];
+
+  A = NM_STORAGE_DENSE(argv[0]);
+  shape[0] = A->shape[0];
+  shape[1] = A->shape[1];
+  u = rb_nmatrix_dense_create(FLOAT64, A->shape, 2, A->elements, shape[0]*shape[1]);
+  v = rb_nmatrix_dense_create(FLOAT64, shape, 2, A->elements, shape[0]*shape[0]);
+  s = rb_nvector_dense_create(FLOAT64, A->elements, shape[0]);
+  uv = gsl_matrix_view_array((double*)NM_DENSE_ELEMENTS(u), shape[1], shape[0]);
+  vv = gsl_matrix_view_array((double*)NM_DENSE_ELEMENTS(v), shape[0], shape[0]);
+  sv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(s), shape[0]);
+  work = gsl_vector_alloc(shape[0]);
+  gsl_linalg_SV_decomp(&uv.matrix, &vv.matrix, &sv.vector, work);
+  gsl_vector_free(work);
+  return rb_ary_new3(3, u, v, s);
+}
+#endif
+
 static VALUE rb_gsl_linalg_SV_decomp(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *A = NULL, *V = NULL, *U = NULL;
@@ -2458,6 +2484,12 @@ static VALUE rb_gsl_linalg_SV_decomp(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
       if (NA_IsNArray(argv[0]))
         return rb_gsl_linalg_SV_decomp_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+      if (NM_IsNMatrix(argv[0])) {
+        return rb_gsl_linalg_SV_decomp_nmatrix(argc, argv, obj);
+      }
 #endif
       CHECK_MATRIX(argv[0]);
       Data_Get_Struct(argv[0], gsl_matrix, A);
@@ -2556,6 +2588,28 @@ static VALUE rb_gsl_linalg_SV_decomp_jacobi(int argc, VALUE *argv, VALUE obj)
   return rb_ary_new3(3, vu, vv, vs);
 }
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_SV_solve_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *A;
+  gsl_matrix_view uv, vv;
+  gsl_vector_view sv, bv, xv;
+  VALUE x;
+  if (argc != 4){
+    rb_raise(rb_eArgError, "Usage: SV.solve(u, v, s, b)");
+  }
+  A = NM_STORAGE_DENSE(argv[0]);
+  uv = gsl_matrix_view_array((double*)NM_DENSE_ELEMENTS(argv[0]), A->shape[0], A->shape[1]);
+  vv = gsl_matrix_view_array((double*)NM_DENSE_ELEMENTS(argv[1]), A->shape[0], A->shape[0]);
+  sv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(argv[2]), A->shape[0]);
+  bv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(argv[3]), A->shape[0]);
+  x = rb_nvector_dense_create(FLOAT64, (double*)NM_DENSE_ELEMENTS(argv[3]), A->shape[0]);
+  xv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(x), A->shape[0]);
+  gsl_linalg_SV_solve(&uv.matrix, &vv.matrix, &sv.vector, &bv.vector, &xv.vector);
+  return x;
+}
+#endif
+
 static VALUE rb_gsl_linalg_SV_solve(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *A = NULL, *U = NULL, *V = NULL;
@@ -2568,6 +2622,11 @@ static VALUE rb_gsl_linalg_SV_solve(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv[0]))
       return rb_gsl_linalg_SV_solve_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv[0]))
+      return rb_gsl_linalg_SV_solve_nmatrix(argc, argv, obj);
 #endif
 
     CHECK_MATRIX(argv[0]);
