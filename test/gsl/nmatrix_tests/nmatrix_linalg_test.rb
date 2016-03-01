@@ -31,9 +31,12 @@ class NMatrixGslTest < GSL::TestCase
     nm = NMatrix.new([2,2], [1,1,14,1], dtype: :float64)
     lu, perm, sign = GSL::Linalg::LU.decomp(nm)
     inverted  = NMatrix.new([2,2], 
-      [-0.076923, 0.076923, 1.076923, -0.076923], dtype: :float64)
+      [
+        -0.076923,  0.076923,
+         1.076923, -0.076923
+      ], dtype: :float64)
 
-    assert GSL::Linalg::LU.invert(lu, perm) == inverted, "GSL::Linalg::LU.invert(lu, perm) with NMatrix"
+    assert_enum_abs GSL::Linalg::LU.invert(lu, perm), inverted, 0.001, "GSL::Linalg::LU.invert(lu, perm) with NMatrix"
     assert GSL::Linalg::LU.det(lu, sign)    == -13, "GSL::Linalg::LU.det(lu, sign) with NMatrix"
   end
 

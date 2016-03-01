@@ -532,6 +532,33 @@ static VALUE rb_gsl_linalg_LU_lndet_narray(int argc, VALUE *argv, VALUE obj)
 
 #endif
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_LU_invert_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE* lu_nmatrix;
+  VALUE inv;
+  gsl_permutation *p;
+  gsl_matrix_view mv1, mv2;
+
+  if (argc != 2) {
+    rb_raise(rb_eArgError, "Usage: LU.invert(lu, perm)");
+  }
+
+  CHECK_PERMUTATION(argv[1]);
+  lu_nmatrix = NM_STORAGE_DENSE(argv[0]);
+  inv = rb_nmatrix_dense_create(FLOAT64, lu_nmatrix->shape, 2, 
+    lu_nmatrix->elements, NM_DENSE_COUNT(argv[0]));
+  mv1 = gsl_matrix_view_array((double*)lu_nmatrix->elements, 
+    lu_nmatrix->shape[0], lu_nmatrix->shape[1]);
+  mv2 = gsl_matrix_view_array((double*)NM_DENSE_ELEMENTS(inv), 
+    lu_nmatrix->shape[0], lu_nmatrix->shape[1]);
+
+  Data_Get_Struct(argv[1], gsl_permutation, p);
+  gsl_linalg_LU_invert(&mv1.matrix, p, &mv2.matrix);
+  return inv;
+}
+#endif
+
 static VALUE rb_gsl_linalg_LU_invert(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *m = NULL, *inverse = NULL;
@@ -543,6 +570,12 @@ static VALUE rb_gsl_linalg_LU_invert(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
     if (NA_IsNArray(argv[0]))
       return rb_gsl_linalg_LU_invert_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv[0])) {
+      return rb_gsl_linalg_LU_invert_nmatrix(argc, argv, obj);
+    }
 #endif
     m = get_matrix(argv[0], cgsl_matrix_LU, &flagm);
     itmp = 1;
