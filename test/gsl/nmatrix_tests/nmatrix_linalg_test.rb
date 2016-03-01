@@ -52,7 +52,8 @@ class NMatrixGslTest < GSL::TestCase
     assert_enum_abs qr_answer , qr , 0.001, "GSL::Linalg::QR.decomp(nmatrix)"
     assert_enum_abs tau_answer, tau, 0.001, "GSL::Linalg::QR.decomp(nmatrix)"
 
-    assert @x_exp == GSL::Linalg::QR.solve(qr, tau, @b), "GSL::Linalg::QR.solve(qr, tau, b)"
+    assert_enum_abs GSL::Linalg::QR.solve(qr, tau, @b), @x_exp, 0.001, 
+      "GSL::Linalg::QR.solve(qr, tau, b)"
   end
 
   def test_sv

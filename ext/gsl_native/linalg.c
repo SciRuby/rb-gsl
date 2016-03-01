@@ -1249,11 +1249,40 @@ static VALUE rb_gsl_linalg_QR_LQ_lssolve(int argc, VALUE *argv, VALUE obj, int f
   return Qnil;
 }
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_linalg_QR_solve_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *qr, *tau, *b;
+  VALUE x;
+  gsl_matrix_view mv;
+  gsl_vector_view tv, bv, xv;
+
+  if (argc != 3) rb_raise(rb_eArgError, "Usage: QR.solve(qr, tau, b)");
+  qr = NM_STORAGE_DENSE(argv[0]);
+  tau = NM_STORAGE_DENSE(argv[1]);
+  b = NM_STORAGE_DENSE(argv[2]);
+
+  x = rb_nmatrix_dense_create(FLOAT64, b->shape, 1, b->elements, b->shape[0]);
+  mv = gsl_matrix_view_array((double*)qr->elements, qr->shape[0], qr->shape[1]);
+  tv = gsl_vector_view_array((double*)tau->elements, tau->shape[0]);
+  bv = gsl_vector_view_array((double*)b->elements, b->shape[0]);
+  xv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(x), b->shape[0]);
+  gsl_linalg_QR_solve(&mv.matrix, &tv.vector, &bv.vector, &xv.vector);
+  return x;
+}
+#endif
+
 static VALUE rb_gsl_linalg_QR_solve(int argc, VALUE *argv, VALUE obj)
 {
 #ifdef HAVE_NARRAY_H
   if (argc == 3 && NA_IsNArray(argv[0]))
     return rb_gsl_linalg_QR_solve_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+  if (argc == 3 && NM_IsNMatrix(argv[0])) {
+    return rb_gsl_linalg_QR_solve_nmatrix(argc, argv, obj);
+  }
 #endif
   return rb_gsl_linalg_QR_LQ_solve(argc, argv, obj, LINALG_QR_SOLVE);
 }
