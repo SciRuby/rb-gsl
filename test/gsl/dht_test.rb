@@ -29,7 +29,7 @@ class DhtTest < GSL::TestCase
       assert_in_delta  0.0446799251438404,  vout[2], 0.001
 
       vin2 = dht.apply(vout)
-      vin2.scale!(13.323691936314223 ** 2)
+      vin2 = vin2 * (13.323691936314223 ** 2)
 
       assert_in_delta 1.0000119186762644, vin2[0], 0.001
       assert_in_delta 1.9999790476647084, vin2[1], 0.001

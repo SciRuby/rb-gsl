@@ -1316,6 +1316,20 @@ VALUE rb_gsl_eval_pdf_cdf(VALUE xx, double (*f)(double))
       return ary;
     }
 #endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptr1, *ptr2;
+      nm = NM_STORAGE_DENSE(xx);
+      n = NM_DENSE_COUNT(xx);
+      ptr1 = (double *) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      for (i = 0; i < n; i++) ptr2[i] = (*f)(ptr1[i]);
+      return ary;
+    }
+#endif
     if (VECTOR_P(xx)) {
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
@@ -1384,6 +1398,20 @@ VALUE rb_gsl_eval_pdf_cdf2(VALUE xx, VALUE aa,
       return ary;
     }
 #endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptr1, *ptr2;
+      nm = NM_STORAGE_DENSE(xx);
+      n = NM_DENSE_COUNT(xx);
+      ptr1 = (double*) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      for (i = 0; i < n; i++) ptr2[i] = (*f)(ptr1[i], a);
+      return ary;
+    }
+#endif
     if (VECTOR_P(xx)) {
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
@@ -1448,6 +1476,20 @@ VALUE rb_gsl_eval_pdf_cdf3(VALUE xx, VALUE aa, VALUE bb,
       n = na->total;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(xx));
       ptr2 = NA_PTR_TYPE(ary, double*);
+      for (i = 0; i < n; i++) ptr2[i] = (*f)(ptr1[i], a, b);
+      return ary;
+    }
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptr1, *ptr2;
+      nm = NM_STORAGE_DENSE(xx);
+      n = NM_DENSE_COUNT(xx);
+      ptr1 = (double *) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      ptr2 = (double*) NM_DENSE_ELEMENTS(ary);
       for (i = 0; i < n; i++) ptr2[i] = (*f)(ptr1[i], a, b);
       return ary;
     }
