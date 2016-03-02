@@ -17,6 +17,10 @@
 #include <gsl/gsl_interp.h>
 #include <gsl/gsl_spline.h>
 
+#ifdef HAVE_NMATRIX_H
+#include "include/rb_gsl_with_nmatrix.h"
+#endif
+
 typedef struct {
   gsl_interp *p;
   gsl_interp_accel *a;

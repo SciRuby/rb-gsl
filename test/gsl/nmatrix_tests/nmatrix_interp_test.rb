@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class NMatrixEigenTest < GSL::TestCase
+class NMatrixInterpTest < GSL::TestCase
   def test_interp_init_eval
     n = 10
     x = NMatrix.new([n], dtype: :float64)
@@ -12,22 +12,21 @@ class NMatrixEigenTest < GSL::TestCase
       y[i] = i + Math::cos(a*a)
     end
 
-    interp = Interp.alloc("akima", n)
+    interp = GSL::Interp.alloc("akima", n)
     interp.init(x, y)
 
-    xi = []
     yi = []
-
-    xi << x[0]
-    i = 0
+    xi = x[0]
+    r = []
     while xi < x[9]
-      yi << interp.eval(x, y, xi)
-      xi[i] = xi[i + 1] + 0.5
-      i += 1
+      r << xi
+      xi += 0.01
     end
 
-    assert_rel yi[1] , 1.2685, 0.001
-    assert_rel yi[19], 9.2816, 0.001
+    yi = interp.eval(x,y,NMatrix.new([r.size], r, dtype: :float64))
+
+    assert_rel yi[1] , 1.0066, 0.001, 'yi[1]'
+    assert_rel yi.to_a.last, 9.7618, 0.001, 'yi.last'
   end
 
   def test_spline_init_eval
@@ -40,7 +39,7 @@ class NMatrixEigenTest < GSL::TestCase
     xi = NMatrix.new([n], (1..9).map { |a| a += 0.5 }, dtype: :float64)
     yi = spline.eval(xi)
 
-    assert yi.class, NMatrix
-    assert_rel yi[0], 1.5, 0.0001
+    assert yi.class == NMatrix
+    assert_rel yi[0], 1.5, 0.0001, 'yi[0]'
   end
 end
