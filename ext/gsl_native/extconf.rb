@@ -63,9 +63,11 @@ def gsl_gem_config(target, dir = 'ext')
     # functions only. Might need to fix nmatrix/narray to place headers in correct
     # locations?
     if target == 'narray'
-      spec = Gem::Specification.find_by_path("#{target}.h")
+      gem 'narray'
+      spec = Gem::Specification.find_by_path("#{target}")
       File.join(spec.full_gem_path, dir) if spec
     else
+      gem 'nmatrix'
       spec = Gem::Specification.find_all_by_name("#{target}").compact
       File.join(spec[0].require_path)
     end
@@ -143,7 +145,11 @@ gsl_have_library('gsl_poly_solve_quartic')
 
 gsl_def(:HAVE_GNU_GRAPH) if find_executable('graph')
 
-['narray', 'nmatrix'].each do |library|
+external_libs = []
+external_libs << 'narray' if ENV['NARRAY']
+external_libs << 'nmatrix' if ENV['NMATRIX']
+
+external_libs.each do |library|
   gsl_gem_config(library)
   have_header("#{library}.h")
   have_library(library) if RUBY_PLATFORM =~ /cygwin|mingw/  

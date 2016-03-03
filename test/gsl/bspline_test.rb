@@ -47,10 +47,9 @@ class BsplineTest < GSL::TestCase
         a, b = -1.23 * order, 45.6 * order
 
         bw = GSL::BSpline.alloc(order, breakpoints)
-        [
-          GSL::Vector.alloc(breakpoints),
-          NMatrix.new([breakpoints], dtype: :float64)
-        ].each do |k|
+        test_data = [GSL::Vector.alloc(breakpoints)]
+        test_data << NMatrix.new([breakpoints], dtype: :float64) if ENV['NMATRIX']
+        test_data.each do |k|
           breakpoints.times do |i|
             f = GSL.sqrt(i.to_f / (breakpoints - 1.0))
             k[i] = (1 - f) * a + f * b
@@ -62,5 +61,4 @@ class BsplineTest < GSL::TestCase
       end
     end
   end
-
 end

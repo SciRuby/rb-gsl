@@ -134,7 +134,9 @@ class RandistTest < GSL::TestCase
     @@use_nmatrix = false
     _test_randist
 
-    @@use_nmatrix = true
-    _test_randist
+    if ENV['NMATRIX']
+      @@use_nmatrix = true
+      _test_randist; 
+    end
   end
 end

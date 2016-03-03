@@ -618,6 +618,20 @@ static VALUE rb_fft_radix2(VALUE obj,
       ptr2 = NA_PTR_TYPE(ary, double*);
     }
 #endif
+
+#ifdef HAVE_NMATRIX_H
+  } else if (flag == 1) {
+    if (sss == RB_GSL_FFT_COPY) {
+      int shape[1];
+      shape[0] = n;
+      ary = rb_nvector_dense_create(FLOAT64, ptr1, shape[0]);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      stride = 1;
+    } else {
+      ary = obj;
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+    }
+#endif
   } else {
     rb_raise(rb_eRuntimeError, "something wrong");
   }
@@ -708,6 +722,20 @@ static VALUE rb_fft_real_trans(int argc, VALUE *argv, VALUE obj,
       ary = obj;
     }
 #endif
+
+#ifdef HAVE_NMATRIX_H
+  } else if (naflag == 1) {
+    if (sss == RB_GSL_FFT_COPY) {
+      int shape[1];
+      shape[0] = n;
+      ary = rb_nvector_dense_create(FLOAT64, ptr1, shape[0]);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      stride = 1;
+    } else {
+      ptr2 = ptr1;
+      ary = obj;
+    }
+#endif
   } else {
     rb_raise(rb_eRuntimeError, "something wrong");
   }
@@ -767,6 +795,20 @@ static VALUE rb_fft_halfcomplex_trans(int argc, VALUE *argv, VALUE obj,
       ary = na_make_object(NA_DFLOAT, 1, shape, cNArray);
       ptr2 = NA_PTR_TYPE(ary, double*);
       memcpy(ptr2, ptr1, sizeof(double)*n);
+      stride = 1;
+    } else {
+      ptr2 = ptr1;
+      ary = obj;
+    }
+#endif
+
+#ifdef HAVE_NMATRIX_H
+  } else if (naflag == 1) {
+    if (sss == RB_GSL_FFT_COPY) {
+      int shape[1];
+      shape[0] = n;
+      ary = rb_nvector_dense_create(FLOAT64, ptr1, shape[0]);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
       stride = 1;
     } else {
       ptr2 = ptr1;

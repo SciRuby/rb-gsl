@@ -345,5 +345,9 @@ VALUE rb_gsl_ary_eval1(VALUE ary, double (*f)(double));
 VALUE rb_gsl_nary_eval1(VALUE ary, double (*f)(double));
 #endif
 
+#ifdef HAVE_NMATRIX_H
+VALUE rb_gsl_nmatrix_eval1(VALUE ary, double (*f)(double));
+#endif
+
 EXTERN VALUE cGSL_Object;
 #endif

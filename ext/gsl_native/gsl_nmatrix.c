@@ -50,7 +50,7 @@ static VALUE rb_gsl_matrix_int_to_nmatrix(VALUE obj) {
   gsl_matrix_int *m = NULL;
   Data_Get_Struct(obj, gsl_matrix_int, m);
 
-  return rb_nmatrix_dense_create(INT64, &(m->size1), 2, m->data, m->size1 * m->size2);
+  return rb_nmatrix_dense_create(INT32, &(m->size1), 2, m->data, m->size1 * m->size2);
 }
 
 static VALUE rb_gsl_matrix_complex_to_nmatrix(VALUE obj) {

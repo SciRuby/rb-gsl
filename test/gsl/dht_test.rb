@@ -5,10 +5,9 @@ class DhtTest < GSL::TestCase
   N = 128
 
   def test_dht
-    [
-      GSL::Vector.alloc(N), 
-      NMatrix.new([N], dtype: :float64)
-    ].each do |vin|
+    test_data = [GSL::Vector.alloc(N)]
+    test_data << NMatrix.new([N], dtype: :float64) if ENV['NMATRIX']
+    test_data.each do |vin|
       dht2 vin
       dht3 vin
       dht4 vin
@@ -16,10 +15,9 @@ class DhtTest < GSL::TestCase
   end
   
   def test_dht1
-    [
-      GSL::Vector.alloc(1, 2, 3), 
-      NMatrix.new([3], [1,2,3], dtype: :float64)
-    ].each do |vin|
+    test_data = [GSL::Vector.alloc(1, 2, 3)]
+    test_data << NMatrix.new([3], [1,2,3], dtype: :float64) if ENV['NMATRIX']
+    test_data.each do |vin|
       dht = GSL::Dht.alloc(3, 1.0, 1.0)
 
       vout = dht.apply(vin)

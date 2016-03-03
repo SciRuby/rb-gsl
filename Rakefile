@@ -10,11 +10,13 @@ Bundler::GemHelper.install_tasks
 Rake::TestTask.new do |t|
   t.libs << 'test'
   t.libs << 'test/gsl'
-  t.libs << 'test/gsl/nmatrix_tests'
-  t.test_files = FileList[
-    'test/*.rb',
-    'test/gsl/*.rb',
-    'test/gsl/nmatrix_tests/*_test.rb']
+  file_list = [ 'test/*.rb', 'test/gsl/*.rb']  
+  if ENV['NMATRIX']
+    t.libs    << 'test/gsl/nmatrix_tests' 
+    file_list << 'test/gsl/nmatrix_tests/*_test.rb'
+  end
+ 
+  t.test_files = FileList[*file_list]
 end
 
 spec = eval(IO.read('gsl.gemspec'))

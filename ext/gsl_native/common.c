@@ -203,6 +203,19 @@ double* get_ptr_double3(VALUE obj, size_t *size, size_t *stride, int *flag)
     return ptr;
   }
 #endif
+
+#ifdef HAVE_NMATRIX_H
+  double *ptr;
+  NM_DENSE_STORAGE *nm;
+  if (NM_IsNMatrix(obj)) {
+    nm = NM_STORAGE_DENSE(obj);
+    *size = NM_DENSE_COUNT(obj);
+    ptr = (double *) nm->elements;
+    *stride = 1;
+    *flag = 1;
+    return ptr;
+  }
+#endif
   CHECK_VECTOR(obj);
   Data_Get_Struct(obj, gsl_vector, v);
   *size = v->size;
@@ -287,6 +300,26 @@ VALUE rb_gsl_nary_eval1(VALUE ary, double (*f)(double))
   n = na->total;
   ary2 = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(ary));
   ptr2 = NA_PTR_TYPE(ary2, double*);
+  for (i = 0; i < n; i++) ptr2[i] = (*f)(ptr1[i]);
+  return ary2;
+}
+#endif
+
+#ifdef HAVE_NMATRIX_H
+VALUE rb_gsl_nmatrix_eval1(VALUE ary, double (*f)(double))
+{
+  VALUE ary2;
+  NM_DENSE_STORAGE *nm;
+  double *ptr1, *ptr2;
+  size_t i, n;
+  if (NM_DTYPE(ary) != FLOAT64) {
+    rb_raise(rb_eTypeError, "only accept :float64 dtype NMatrix");
+  }
+  nm = NM_STORAGE_DENSE(ary);
+  n = NM_DENSE_COUNT(ary);
+  ptr1 = (double *) nm->elements;
+  ary2 = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+  ptr2 = (double*)NM_DENSE_ELEMENTS(ary2);
   for (i = 0; i < n; i++) ptr2[i] = (*f)(ptr1[i]);
   return ary2;
 }

@@ -131,6 +131,12 @@ VALUE rb_gsl_sf_eval1(double (*func)(double), VALUE argv)
       return rb_gsl_nary_eval1(argv, func);
     }
 #endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(argv)) {
+      return rb_gsl_nmatrix_eval1(argv, func);
+    }
+#endif
     if (MATRIX_P(argv)) {
       return matrix_eval_create(argv, func);
     } else if (VECTOR_P(argv)) {

@@ -160,7 +160,6 @@ static VALUE rb_gsl_cheb_eval(VALUE obj, VALUE xx)
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
     }
     else {
-      printf(">>>> %d\n", NM_SHAPE0(xx));
       rb_raise(rb_eTypeError, "wrong argument type");
     }
     break;

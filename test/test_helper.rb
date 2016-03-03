@@ -1,5 +1,13 @@
 require 'test/unit'
-require 'nmatrix/nmatrix'
+begin
+  require 'narray'
+rescue LoadError => e
+end
+
+begin
+  require 'nmatrix/nmatrix'
+rescue LoadError => e
+end
 require 'gsl'
 
 GSL::IEEE.env_setup

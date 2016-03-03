@@ -169,6 +169,21 @@ static VALUE rb_gsl_math_eval(double (*func)(const double), VALUE xx)
       return ary;
     }
 #endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptr1, *ptr2;
+      nm = NM_STORAGE_DENSE(xx);
+      size = NM_ELEMENTS_COUNT(xx);
+      ptr1 = (double*) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, 
+        size);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      for (i = 0; i < size; i++) ptr2[i] = (*func)(ptr1[i]);
+      return ary;
+    }
+#endif
     if (VECTOR_P(xx)) {
       return vector_eval_create(xx, func);
     } else if (MATRIX_P(xx)) {
@@ -226,6 +241,23 @@ static VALUE rb_gsl_math_eval2(double (*func)(const double, const double), VALUE
       size = nax->total;
       ary = na_make_object(NA_DFLOAT, nax->rank, nax->shape, CLASS_OF(xx));
       ptr3 = NA_PTR_TYPE(ary, double*);
+      for (i = 0; i < size; i++) ptr3[i] = (*func)(ptr1[i], ptr2[i]);
+      return ary;
+    }
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nmx, *nmy;
+      double *ptr1, *ptr2, *ptr3;
+      nmx = NM_STORAGE_DENSE(xx);
+      size = NM_ELEMENTS_COUNT(xx);
+      nmy = NM_STORAGE_DENSE(yy);
+      ptr1 = (double*) nmx->elements;
+      ptr2 = (double*) nmy->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nmx->shape, nmx->dim, nmx->elements, 
+        size);
+      ptr3 = (double*)NM_DENSE_ELEMENTS(ary);
       for (i = 0; i < size; i++) ptr3[i] = (*func)(ptr1[i], ptr2[i]);
       return ary;
     }
@@ -354,6 +386,21 @@ VALUE rb_gsl_pow(VALUE obj, VALUE xx, VALUE nn)
       return ary;
     }
 #endif
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptr1, *ptr2;
+      n = NUM2DBL(nn);
+      nm = NM_STORAGE_DENSE(xx);
+      size = NM_ELEMENTS_COUNT(xx);
+      ptr1 = (double*) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, 
+        size);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      for (i = 0; i < size; i++) ptr2[i] = pow(ptr1[i], n);
+      return ary;
+    }
+#endif
     if (VECTOR_P(xx)) {
       n = NUM2DBL(nn);
       Data_Get_Struct(xx, gsl_vector, v);
@@ -426,6 +473,23 @@ static VALUE rb_gsl_pow_int(VALUE obj, VALUE xx, VALUE nn)
       size = na->total;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(xx));
       ptr2 = NA_PTR_TYPE(ary, double*);
+      for (i = 0; i < size; i++) ptr2[i] = gsl_pow_int(ptr1[i], n);
+      return ary;
+    }
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptr1, *ptr2;
+      CHECK_FIXNUM(nn);
+      n = FIX2INT(nn);
+      nm = NM_STORAGE_DENSE(xx);
+      size = NM_ELEMENTS_COUNT(xx);
+      ptr1 = (double*) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, 
+        size);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
       for (i = 0; i < size; i++) ptr2[i] = gsl_pow_int(ptr1[i], n);
       return ary;
     }
