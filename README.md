@@ -119,6 +119,14 @@ WITHOUT ANY WARRANTY.
 Any bug reports are welcome. If you encounter bugs in Ruby/GSL, please
 report them on GitHub(https://github.com/SciRuby/rb-gsl/issues).
 
+## Testing and Contributing
+
+If you wish to make contributions, run the following commands to clone and test the gem on your local machine:
+  git clone https://github.com/SciRuby/rb-gsl.git
+  cd rb-gsl
+  bash test.sh
+
+This will run tests with and without NMatrix/NArray.
 
 ## Links
 
