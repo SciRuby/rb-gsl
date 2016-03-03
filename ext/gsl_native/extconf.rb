@@ -33,6 +33,8 @@ def create_conf_h(file) #:nodoc:
       end
     end
 
+    hfile.printf "#define HAVE_RB_ARRAY_CONST_PTR 1"
+
     hfile.puts
     hfile.puts "#endif"
   end

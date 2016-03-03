@@ -332,18 +332,17 @@ static VALUE rb_gsl_eigen_symmv_nmatrix(int argc, VALUE *argv, VALUE obj)
   gsl_vector_view vv;
   unsigned int shape1[1], shape2[2];
   int flagw = 0;
-
-  if (!NM_IsNMatrix(argv[0]))
-    rb_raise(rb_eTypeError, "wrong argument type %s (NMatrix expected)",
-             rb_class2name(CLASS_OF(argv[0])));
-  nm = NM_STORAGE_DENSE(argv[0]);
-  if (nm->shape[0] != nm->shape[1])
-    rb_raise(rb_eRuntimeError, "square matrix required");
-  A = gsl_matrix_alloc(nm->shape[0], nm->shape[1]);
-  memcpy(A->data, (double*) nm->elements, sizeof(double)*A->size1*A->size2);
-
   switch (argc) {
   case 2:
+    if (!NM_IsNMatrix(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NMatrix expected)",
+               rb_class2name(CLASS_OF(argv[0])));
+    nm = NM_STORAGE_DENSE(argv[0]);
+    if (nm->dim < 2) rb_raise(rb_eRuntimeError, "dim >= 2 required");
+    if (nm->shape[0] != nm->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(nm->shape[1], nm->shape[0]);
+    memcpy(A->data, (double*) nm->elements, sizeof(double)*A->size1*A->size2);
     if (CLASS_OF(argv[1]) != cgsl_eigen_symmv_workspace)
       rb_raise(rb_eTypeError,
                "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
@@ -352,6 +351,15 @@ static VALUE rb_gsl_eigen_symmv_nmatrix(int argc, VALUE *argv, VALUE obj)
     flagw = 0;
     break;
   case 1:
+    if (!NM_IsNMatrix(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
+               rb_class2name(CLASS_OF(argv[0])));
+    nm = NM_STORAGE_DENSE(argv[0]);
+    if (nm->dim < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+    if (nm->shape[0] != nm->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(nm->shape[1], nm->shape[0]);
+    memcpy(A->data, (double*) nm->elements, sizeof(double)*A->size1*A->size2);
     w = gsl_eigen_symmv_alloc(A->size1);
     flagw = 1;
     break;
@@ -361,7 +369,7 @@ static VALUE rb_gsl_eigen_symmv_nmatrix(int argc, VALUE *argv, VALUE obj)
   }
   shape1[0] = A->size1;
   shape2[0] = A->size1;
-  shape2[1] = A->size2;
+  shape2[1] = A->size1;
   eval = rb_nvector_dense_create(FLOAT64, nm->elements, shape1[0]);
   evec = rb_nmatrix_dense_create(FLOAT64, shape2, 2, nm->elements, shape2[0]*shape2[1]);
   vv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(eval), A->size1);
