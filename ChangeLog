@@ -1,5 +1,11 @@
 # markup: rd
 
+== Fri March 4 2016
+* Added compatibility for NMatrix interconversion with GSL::Vector and GSL::Matrix
+* Added NMatrix compatibility to various to make them compatible with NMatrix data types.
+* Gem is now compatible with GSL 2.1.
+* Version bump to 2.1.0
+
 == Thu Jul 03 2015
 * Ruby/GSL 1.16.0.6
   * rb-gsl and gsl are now the same gem

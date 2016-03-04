@@ -8,6 +8,15 @@ the terms of the GNU Free Documentation License.
 Ruby/GSL is a Ruby interface to the [GNU Scientific Library](https://gnu.org/software/gsl/)
 (GSL), for numerical computing with [Ruby](http://www.ruby-lang.org/).
 
+Ruby/GSL is compatible with GSL versions upto 2.1.
+
+## Usage with GSL 2.1
+
+As of this release, GSL 2.1 has not made it's way into the Debian stable repositories. Hence, after compiling GSL 2.1 from source, you will need to set the installation location in your `LD_LIBRARY_PATH` variable. After following standard GSL 2.1 installation procedures, you should do:
+  export LD_LIBRARY_PATH=/usr/local/lib
+
+The need to do this should not arise if GSL has been installed from `apt-get`.
+
 ## Installation
 
 Ruby/GSL may be installed as a Ruby Gem by simply running
