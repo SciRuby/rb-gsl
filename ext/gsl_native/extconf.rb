@@ -33,8 +33,6 @@ def create_conf_h(file) #:nodoc:
       end
     end
 
-    hfile.printf "#define HAVE_RB_ARRAY_CONST_PTR 1"
-
     hfile.puts
     hfile.puts "#endif"
   end
@@ -108,7 +106,7 @@ gsl_config_arg(:version) { |version, check|
 
   raise 'Ruby/GSL requires gsl-1.15 or later.' unless later['1.15']
 
-  %w[1.15 1.16].each { |v| later[v] }
+  %w[1.15 1.16 2.0 2.1].each { |v| later[v] }
 }
 
 gsl_config_arg(:cflags) { |cflags, check|
