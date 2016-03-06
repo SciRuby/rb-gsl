@@ -324,6 +324,9 @@ static VALUE rb_gsl_multifit_fdfsolver_test_gradient(int argc, VALUE *argv, VALU
 {
   gsl_multifit_fdfsolver *solver = NULL;
   gsl_vector *g = NULL;
+#ifndef HAVE_GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix *J = NULL;
+#endif
   int status;
   double epsabs;
   Data_Get_Struct(obj, gsl_multifit_fdfsolver, solver);
@@ -331,7 +334,14 @@ static VALUE rb_gsl_multifit_fdfsolver_test_gradient(int argc, VALUE *argv, VALU
   case 1:
     Need_Float(argv[0]);
     g = gsl_vector_alloc(solver->x->size);
+#ifdef HAVE_GSL_MULTIFIT_FDFSOLVER_J
     gsl_multifit_gradient(solver->J, solver->f, g);
+#else
+    J = gsl_matrix_alloc(solver->fdf->n, solver->fdf->p);
+    gsl_multifit_fdfsolver_jac(solver, J);
+    gsl_multifit_gradient(J, solver->f, g);
+    gsl_matrix_free(J);
+#endif
     epsabs = NUM2DBL(argv[0]);
     status = gsl_multifit_test_gradient(g, epsabs);
     gsl_vector_free(g);
@@ -352,16 +362,37 @@ static VALUE rb_gsl_multifit_fdfsolver_test_gradient(int argc, VALUE *argv, VALU
 static VALUE rb_gsl_multifit_fdfsolver_gradient(int argc, VALUE *argv, VALUE obj)
 {
   gsl_multifit_fdfsolver *solver = NULL;
+#ifndef HAVE_GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix *J = NULL;
+#endif
   gsl_vector *g = NULL;
   // local variable "status" declared and set, but never used
   //int status;
   Data_Get_Struct(obj, gsl_multifit_fdfsolver, solver);
+#ifndef HAVE_GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix_alloc(solver->fdf->n, solver->fdf->p);
+  gsl_multifit_fdfsolver_jac(solver, J);
+#endif
   if (argc == 1) {
+#ifndef HAVE_GSL_MULTIFIT_FDFSOLVER_J
+    int retval = 0;
+#endif
     Data_Get_Vector(argv[0], g);
+#ifdef HAVE_GSL_MULTIFIT_FDFSOLVER_J
     return INT2FIX(gsl_multifit_gradient(solver->J, solver->f, g));
+#else
+    retval = gsl_multifit_gradient(J, solver->f, g);
+    gsl_matrix_free(J);
+    return INT2FIX(retval);
+#endif
   } else {
     g = gsl_vector_alloc(solver->x->size);
+#ifdef HAVE_GSL_MULTIFIT_FDFSOLVER_J
     /*status =*/ gsl_multifit_gradient(solver->J, solver->f, g);
+#else
+    /*status =*/ gsl_multifit_gradient(J, solver->f, g);
+    gsl_matrix_free(J);
+#endif
     return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, g);
   }
 }
@@ -369,6 +400,9 @@ static VALUE rb_gsl_multifit_fdfsolver_gradient(int argc, VALUE *argv, VALUE obj
 static VALUE rb_gsl_multifit_fdfsolver_covar(int argc, VALUE *argv, VALUE obj)
 {
   gsl_multifit_fdfsolver *solver = NULL;
+#ifndef HAVE_GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix *J = NULL;
+#endif
   gsl_matrix *covar = NULL;
   double epsrel;
   // local variable "status" declared and set, but never used
@@ -378,14 +412,32 @@ static VALUE rb_gsl_multifit_fdfsolver_covar(int argc, VALUE *argv, VALUE obj)
   Data_Get_Struct(obj, gsl_multifit_fdfsolver, solver);
   epsrel = NUM2DBL(argv[0]);
   switch (argc) {
+#ifndef HAVE_GSL_MULTIFIT_FDFSOLVER_J
+    int retval = 0;
+#endif
   case 1:
     covar = gsl_matrix_alloc(solver->x->size, solver->x->size);
+#ifdef HAVE_GSL_MULTIFIT_FDFSOLVER_J
     /*status =*/ gsl_multifit_covar(solver->J, epsrel, covar);
+#else
+    J = gsl_matrix_alloc(solver->fdf->n, solver->fdf->p);
+    gsl_multifit_fdfsolver_jac(solver, J);
+    /*status =*/ gsl_multifit_covar(J, epsrel, covar);
+    gsl_matrix_free(J);
+#endif
     return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, covar);
     break;
   case 2:
     Data_Get_Matrix(argv[1], covar);
+#ifdef HAVE_GSL_MULTIFIT_FDFSOLVER_J
     return INT2FIX(gsl_multifit_covar(solver->J, epsrel, covar));
+#else
+    J = gsl_matrix_alloc(solver->fdf->n, solver->fdf->p);
+    gsl_multifit_fdfsolver_jac(solver, J);
+    retval = gsl_multifit_covar(J, epsrel, covar);
+    gsl_matrix_free(J);
+    return INT2FIX(retval);
+#endif
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments");
@@ -417,8 +469,17 @@ static VALUE rb_gsl_multifit_fdfsolver_f(VALUE obj)
 static VALUE rb_gsl_multifit_fdfsolver_J(VALUE obj)
 {
   gsl_multifit_fdfsolver *solver = NULL;
+#ifndef HAVE_GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix *J = NULL;
+#endif
   Data_Get_Struct(obj, gsl_multifit_fdfsolver, solver);
+#ifdef HAVE_GSL_MULTIFIT_FDFSOLVER_J
   return Data_Wrap_Struct(cgsl_matrix_view_ro, 0, NULL, solver->J);
+#else
+  J = gsl_matrix_alloc(solver->fdf->n, solver->fdf->p);
+  gsl_multifit_fdfsolver_jac(solver, J);
+  return Data_Wrap_Struct(cgsl_matrix_view_ro, 0, gsl_matrix_free, J);
+#endif
 }
 
 /* singleton */
@@ -1626,6 +1687,9 @@ static VALUE rb_gsl_multifit_fit(int argc, VALUE *argv, VALUE klass)
   size_t n, dof;      /* # of data points */
   size_t p;           /* # of fitting parameters */
   gsl_multifit_function_fdf f;
+#ifndef HAVE_GSL_MULTIFIT_FDFSOLVER_J
+  gsl_matrix *J = NULL;
+#endif
   gsl_matrix *covar = NULL;
   gsl_vector *v = NULL;
   gsl_vector *x, *y, *w = NULL;
@@ -1699,7 +1763,14 @@ static VALUE rb_gsl_multifit_fit(int argc, VALUE *argv, VALUE klass)
   covar = gsl_matrix_alloc(p, p);
   chi2 = gsl_pow_2(gsl_blas_dnrm2(solver->f));   /* not reduced chi-square */
   dof = n - p;
+#ifdef HAVE_GSL_MULTIFIT_FDFSOLVER_J
   gsl_multifit_covar(solver->J, 0.0, covar);
+#else
+  J = gsl_matrix_alloc(n, p);
+  gsl_multifit_fdfsolver_jac(solver, J);
+  gsl_multifit_covar(J, 0.0, covar);
+  gsl_matrix_free(J);
+#endif
   for (i = 0; i < p; i++)
     gsl_vector_set(verr, i, sqrt(chi2/dof*gsl_matrix_get(covar, i, i)));
   gsl_matrix_free(covar);
