@@ -82,10 +82,18 @@ static VALUE rb_gsl_sf_ellint_P_e(VALUE obj, VALUE phi, VALUE k,
 static VALUE rb_gsl_sf_ellint_D(int argc, VALUE *argv, VALUE obj)
 {
   if (argc == 3)
+#if GSL_MAJOR_VERSION > 1
     return rb_gsl_sf_eval_double2_m(gsl_sf_ellint_D, argv[0], argv[1],
+#else
+    return rb_gsl_sf_eval_double3_m(gsl_sf_ellint_D, argv[0], argv[1], argv[2],
+#endif
                                     INT2FIX(GSL_PREC_DOUBLE));
   else
+#if GSL_MAJOR_VERSION > 1
     return rb_gsl_sf_eval_double2_m(gsl_sf_ellint_D, argv[0], argv[1],
+#else
+    return rb_gsl_sf_eval_double3_m(gsl_sf_ellint_D, argv[0], argv[1], argv[2],
+#endif
                                     argv[3]);
 }
 
