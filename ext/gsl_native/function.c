@@ -150,6 +150,24 @@ static VALUE rb_gsl_function_eval(VALUE obj, VALUE x)
       return ary;
     }
 #endif
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(x)) {
+      double *ptr1, *ptr2;
+      NM_DENSE_STORAGE *nm;
+      nm = NM_STORAGE_DENSE(x);
+      ptr1 = (double *) nm->elements;
+      n = NM_DENSE_COUNT(x);
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      for (i = 0; i < n; i++) {
+        x2 = rb_float_new(ptr1[i]);
+        if (NIL_P(params)) result = rb_funcall(proc, RBGSL_ID_call, 1, x2);
+        else result = rb_funcall(proc, RBGSL_ID_call, 2, x2, params);
+        ptr2[i] = NUM2DBL(result);
+      }
+      return ary;
+    }
+#endif
     if (VECTOR_P(x)) {
       Data_Get_Struct(x, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);

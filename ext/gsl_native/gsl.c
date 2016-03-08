@@ -9,6 +9,7 @@
   WITHOUT ANY WARRANTY.
 */
 
+#include "gsl_config.h"
 #include "include/rb_gsl.h"
 #include <gsl/gsl_machine.h>
 
@@ -138,6 +139,10 @@ void Init_gsl_native()
 
 #ifdef HAVE_NARRAY_H
   Init_gsl_narray(mgsl);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+  Init_gsl_nmatrix(mgsl);
 #endif
 
   Init_wavelet(mgsl);

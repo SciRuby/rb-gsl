@@ -68,6 +68,16 @@ double* get_vector_ptr(VALUE ary, size_t *stride, size_t *n)
     ary2 = na_change_type(ary, NA_DFLOAT);
     return NA_PTR_TYPE(ary2,double*);
 #endif
+
+#ifdef HAVE_NMATRIX_H
+  } else if (NM_IsNMatrix(ary)) {
+    *n = NM_DENSE_COUNT(ary);
+    *stride = 1;
+    if (NM_STORAGE(ary)->dtype != FLOAT64) {
+      rb_raise(rb_eTypeError, "NMatrix must be :float64");
+    }
+    return (double*)NM_DENSE_ELEMENTS(ary);
+#endif
   } else {
     rb_raise(rb_eTypeError,
              "wrong argument type %s", rb_class2name(CLASS_OF(ary)));

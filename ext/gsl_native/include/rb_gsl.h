@@ -88,6 +88,10 @@ void Init_gsl_ieee(VALUE module);
 void Init_gsl_narray(VALUE module);
 #endif
 
+#ifdef HAVE_NMATRIX_H
+void Init_gsl_nmatrix(VALUE module);
+#endif
+
 void Init_wavelet(VALUE module);
 
 void Init_gsl_graph(VALUE module);

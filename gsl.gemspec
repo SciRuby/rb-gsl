@@ -21,9 +21,16 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.9.3'
   s.requirements = ['GSL (http://www.gnu.org/software/gsl/)']
 
-  s.post_install_message = "#{s.name} can be installed with or without narray support. Please install narray before and reinstall #{s.name} if it is missing."
+  s.post_install_message = %{
+    #{s.name} can be installed with or without narray support. Please install
+    narray before and reinstall #{s.name} if it is missing.
+
+    #{s.name} is also now compatible with NMatrix. Please install nmatrix before
+    installing #{s.name}.
+  }
 
   s.add_development_dependency 'rake-compiler', '>= 0'
   s.add_development_dependency 'rake', '>= 0'
   s.add_development_dependency 'test-unit', '>= 0'
+  s.add_development_dependency 'bundler', '~> 1.11'
 end

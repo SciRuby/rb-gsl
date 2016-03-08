@@ -32,6 +32,10 @@ typedef gsl_permutation gsl_index;
 EXTERN VALUE cNArray;
 #endif
 
+#ifdef HAVE_NMATRIX_H
+EXTERN VALUE cNMatrix;
+#endif
+
 EXTERN VALUE cgsl_block, cgsl_block_int;
 EXTERN VALUE cgsl_block_uchar;
 EXTERN VALUE cgsl_block_complex;

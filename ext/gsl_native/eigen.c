@@ -19,6 +19,10 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_eigen.h>
 
+#ifdef HAVE_NMATRIX_H
+#include "include/rb_gsl_with_nmatrix.h"
+#endif
+
 static VALUE cgsl_eigen_symm_workspace;
 static VALUE cgsl_eigen_symmv_workspace;
 static VALUE cgsl_eigen_herm_workspace;
@@ -135,6 +139,54 @@ static VALUE rb_gsl_eigen_symm_narray(int argc, VALUE *argv, VALUE obj)
 }
 #endif
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_eigen_symm_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *nm;
+  VALUE nmatrix;
+  gsl_matrix *A = NULL;
+  gsl_eigen_symm_workspace *w = NULL;
+  gsl_vector_view vv;
+  unsigned int shape[1];
+  int flagw = 0;
+
+  if (!NM_IsNMatrix(argv[0]))
+    rb_raise(rb_eTypeError, "wrong argument type %s (NMatrix expected)",
+             rb_class2name(CLASS_OF(argv[0])));
+  nm = NM_STORAGE_DENSE(argv[0]);
+  if (nm->shape[0] != nm->shape[1])
+    rb_raise(rb_eRuntimeError, "square matrix required");
+  A = gsl_matrix_alloc(nm->shape[0], nm->shape[1]);
+  memcpy(A->data, (double*) nm->elements, sizeof(double)*A->size1*A->size2);
+
+  switch (argc) {
+  case 2:
+    if (CLASS_OF(argv[1]) != cgsl_eigen_symm_workspace)
+      rb_raise(rb_eTypeError,
+               "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
+               rb_class2name(CLASS_OF(argv[1])));
+    Data_Get_Struct(argv[1], gsl_eigen_symm_workspace, w);
+    flagw = 0;
+    break;
+  case 1:
+    w = gsl_eigen_symm_alloc(A->size1);
+    flagw = 1;
+    break;
+  default:
+    rb_raise(rb_eArgError, "matrix not given");
+    break;
+  }
+  shape[0] = A->size1;
+  nmatrix = rb_nvector_dense_create(FLOAT64, nm->elements, shape[0]);
+  vv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(nmatrix), A->size1);
+  gsl_eigen_symm(A, &vv.vector, w);
+  /*  gsl_sort_vector(v);*/
+  gsl_matrix_free(A);
+  if (flagw == 1) gsl_eigen_symm_free(w);
+  return nmatrix;
+}
+#endif
+
 static VALUE rb_gsl_eigen_symm(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *Atmp = NULL, *A = NULL;
@@ -150,6 +202,10 @@ static VALUE rb_gsl_eigen_symm(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
       if (NA_IsNArray(argv[0])) return rb_gsl_eigen_symm_narray(argc, argv, obj);
 #endif
+
+#ifdef HAVE_NMATRIX_H
+      if (NM_IsNMatrix(argv[0])) return rb_gsl_eigen_symm_nmatrix(argc, argv, obj);
+#endif
       CHECK_MATRIX(argv[0]);
       Data_Get_Struct(argv[0], gsl_matrix, Atmp);
       if (CLASS_OF(argv[1]) != cgsl_eigen_symm_workspace)
@@ -161,6 +217,10 @@ static VALUE rb_gsl_eigen_symm(int argc, VALUE *argv, VALUE obj)
     case 1:
 #ifdef HAVE_NARRAY_H
       if (NA_IsNArray(argv[0])) return rb_gsl_eigen_symm_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+      if (NM_IsNMatrix(argv[0])) return rb_gsl_eigen_symm_nmatrix(argc, argv, obj);
 #endif
       CHECK_MATRIX(argv[0]);
       Data_Get_Struct(argv[0], gsl_matrix, Atmp);
@@ -261,6 +321,67 @@ static VALUE rb_gsl_eigen_symmv_narray(int argc, VALUE *argv, VALUE obj)
 }
 #endif
 
+#ifdef HAVE_NMATRIX_H
+static VALUE rb_gsl_eigen_symmv_nmatrix(int argc, VALUE *argv, VALUE obj)
+{
+  NM_DENSE_STORAGE *nm;
+  VALUE eval, evec;
+  gsl_matrix *A = NULL;
+  gsl_eigen_symmv_workspace *w = NULL;
+  gsl_matrix_view mv;
+  gsl_vector_view vv;
+  unsigned int shape1[1], shape2[2];
+  int flagw = 0;
+  switch (argc) {
+  case 2:
+    if (!NM_IsNMatrix(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NMatrix expected)",
+               rb_class2name(CLASS_OF(argv[0])));
+    nm = NM_STORAGE_DENSE(argv[0]);
+    if (nm->dim < 2) rb_raise(rb_eRuntimeError, "dim >= 2 required");
+    if (nm->shape[0] != nm->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(nm->shape[1], nm->shape[0]);
+    memcpy(A->data, (double*) nm->elements, sizeof(double)*A->size1*A->size2);
+    if (CLASS_OF(argv[1]) != cgsl_eigen_symmv_workspace)
+      rb_raise(rb_eTypeError,
+               "argv[1]:  wrong argument type %s (Eigen::Symm::Workspace expected",
+               rb_class2name(CLASS_OF(argv[1])));
+    Data_Get_Struct(argv[1], gsl_eigen_symmv_workspace, w);
+    flagw = 0;
+    break;
+  case 1:
+    if (!NM_IsNMatrix(argv[0]))
+      rb_raise(rb_eTypeError, "wrong argument type %s (NArray expected)",
+               rb_class2name(CLASS_OF(argv[0])));
+    nm = NM_STORAGE_DENSE(argv[0]);
+    if (nm->dim < 2) rb_raise(rb_eRuntimeError, "rank >= 2 required");
+    if (nm->shape[0] != nm->shape[1])
+      rb_raise(rb_eRuntimeError, "square matrix required");
+    A = gsl_matrix_alloc(nm->shape[1], nm->shape[0]);
+    memcpy(A->data, (double*) nm->elements, sizeof(double)*A->size1*A->size2);
+    w = gsl_eigen_symmv_alloc(A->size1);
+    flagw = 1;
+    break;
+  default:
+    rb_raise(rb_eArgError, "matrix not given");
+    break;
+  }
+  shape1[0] = A->size1;
+  shape2[0] = A->size1;
+  shape2[1] = A->size1;
+  eval = rb_nvector_dense_create(FLOAT64, nm->elements, shape1[0]);
+  evec = rb_nmatrix_dense_create(FLOAT64, shape2, 2, nm->elements, shape2[0]*shape2[1]);
+  vv = gsl_vector_view_array((double*)NM_DENSE_ELEMENTS(eval), A->size1);
+  mv = gsl_matrix_view_array((double*)NM_DENSE_ELEMENTS(evec), A->size1, A->size2);
+  gsl_eigen_symmv(A, &vv.vector, &mv.matrix, w);
+  /*  gsl_sort_vector(v);*/
+  gsl_matrix_free(A);
+  if (flagw == 1) gsl_eigen_symmv_free(w);
+  return rb_ary_new3(2, eval, evec);
+}
+#endif
+
 static VALUE rb_gsl_eigen_symmv(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix *Atmp = NULL, *A = NULL, *em = NULL;
@@ -277,6 +398,10 @@ static VALUE rb_gsl_eigen_symmv(int argc, VALUE *argv, VALUE obj)
 #ifdef HAVE_NARRAY_H
       if (NA_IsNArray(argv[0])) return rb_gsl_eigen_symmv_narray(argc, argv, obj);
 #endif
+
+#ifdef HAVE_NMATRIX_H
+      if (NM_IsNMatrix(argv[0])) return rb_gsl_eigen_symmv_nmatrix(argc, argv, obj);
+#endif
       CHECK_MATRIX(argv[0]);
       Data_Get_Struct(argv[0], gsl_matrix, Atmp);
       if (CLASS_OF(argv[1]) != cgsl_eigen_symmv_workspace)
@@ -288,6 +413,10 @@ static VALUE rb_gsl_eigen_symmv(int argc, VALUE *argv, VALUE obj)
     case 1:
 #ifdef HAVE_NARRAY_H
       if (NA_IsNArray(argv[0])) return rb_gsl_eigen_symmv_narray(argc, argv, obj);
+#endif
+
+#ifdef HAVE_NMATRIX_H
+      if (NM_IsNMatrix(argv[0])) return rb_gsl_eigen_symmv_nmatrix(argc, argv, obj);
 #endif
       CHECK_MATRIX(argv[0]);
       Data_Get_Struct(argv[0], gsl_matrix, Atmp);

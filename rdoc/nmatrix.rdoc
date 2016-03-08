@@ -1,0 +1,129 @@
+#
+# = NMatrix compatibilities
+# === Contents:
+# 1. {Data type conversions}[link:rdoc/nmatrix_rdoc.html#label-Data+type+conversions]
+# 1. {Methods which accepts NArray}[link:rdoc/narray_rdoc.html#label-Methods+which+accepts+NArray]
+#
+# == Data type conversions
+# === GSL to NMatrix
+#
+# ---
+# * GSL::Vector#to_nm
+# * GSL::Vector::Complex#to_nm
+# * GSL::Vector::Int#to_nm
+# * GSL::Matrix#to_nm
+# * GSL::Matrix::Complex#to_nm
+# * GSL::Matrix::Int#to_nm
+#
+#   Convert GSL objects to NMatrix. The data contained by the GSL objects
+#   are copied to a newly allocated memory block of the NMatrix objects created.
+#
+# === NMatrix to GSL
+# ---
+# * NMatrix#to_gslv
+# * NMatrix#to_gslm
+#
+#   <tt>NMatrix#to_gslv</tt> converts NMatrix objects to <tt>GSL::Vector</tt>,
+#   <tt>GSL::Vector::Complex</tt> or <tt>GSL::Vector::Int</tt>.  
+#   <tt>NMatrix#to_gslm</tt> converts NMatrix objects to <tt>GSL::Matrix</tt>,
+#   <tt>GSL::Matrix::Int</tt> or <tt>GSL::Matrix::Complex</tt>.
+#
+#   The data contained by the NMatrix objects are copied to a newly allocated
+#   memory block of the GSL objects created.
+#
+# == Methods which accepts NMatrix
+# === <tt>GSL</tt> module
+# ---
+# * GSL::graph()
+# * GSL::log1p(x)
+# * GSL::expm1(x)
+# * GSL::hypot(x, y)
+# * GSL::acosh(x)
+# * GSL::asinh(x)
+# * GSL::atanh(x)
+# * GSL::pow(x, a)
+# * GSL::pow_int(x, n)
+# * GSL::pow_2(x), ..., GSL::pow_9(x)
+#
+#
+# === <tt>Sf</tt> module
+# ---
+# * {Any}[link:rdoc/sf_rdoc.html]
+#
+# === <tt>Linalg</tt> module
+# ---
+# * GSL::Linalg::LU.decomp(na)
+# * GSL::Linalg::LU.solve(lu, b)
+# * GSL::Linalg::LU.svx(lu, bx)
+# * GSL::Linalg::LU.det(lu, sign)
+# * GSL::Linalg::LU.invert(lu, perm)
+# * GSL::Linalg::QR.decomp(m)
+# * GSL::Linalg::QR.solve(qr, tau, b)
+# * GSL::Linalg::QR.svx(qr, tau, bx)
+# * GSL::Linalg::SV.decomp(m)
+# * GSL::Linalg::SV.solve(u, v, s, b)
+# * GSL::Linalg::SV.svx(u, v, s, bx)
+# * GSL::Linalg::Cholesky.decomp(m)
+# * GSL::Linalg::Cholesky.solve(u, v, s, b)
+# * GSL::Linalg::Cholesky.svx(u, v, s, bx)
+# * GSL::Linalg::HH.solve(m, b)
+# * GSL::Linalg::HH.svx(m, bx)
+#
+#
+# === <tt>Eigen</tt> module
+# ---
+# * GSL::Eigen::symm(na)
+# * GSL::Eigen::symmv(na)
+#
+#
+# === <tt>FFT</tt> module
+# ---
+# * {Many}[link:rdoc/fft_rdoc.html]
+#
+# === <tt>Function</tt> class
+# ---
+# * GSL::Function#eval
+# * GSL::Function#deriv_central(x, h)
+# * GSL::Function#deriv_forward(x, h)
+# * GSL::Function#deriv_backward(x, h)
+# * GSL::Function#diff_central(x, h)
+# * GSL::Function#diff_forward(x, h)
+# * GSL::Function#diff_backward(x, h)
+#
+#
+# === <tt>Ran</tt> and <tt>Cdf</tt> module
+# ---
+# * {Many}[link:rdoc/randist_rdoc.html]
+#
+# === <tt>Stats</tt> module
+# ---
+# * {Any}[link:rdoc/stats_rdoc.html]
+#
+# === <tt>Interp</tt> and <tt>Spline</tt> class
+# ---
+# * GSL::Interp#init
+# * GSL::Interp#eval
+# * GSL::Spline#init
+# * GSL::Spline#eval
+#
+#
+# === <tt>Deriv</tt> and <tt>Diff</tt> module
+# ---
+# TODO
+#
+#
+# === <tt>Cheb</tt> class
+# ---
+# * GSL::Cheb#eval(x)
+# * GSL::Cheb#eval_n(n, x)
+#
+#
+# === <tt>Wavelet</tt> class
+# ---
+# TODO
+#
+# {prev}[link:rdoc/tensor_rdoc.html]
+#
+# {Reference index}[link:rdoc/ref_rdoc.html]
+# {top}[link:index.html]
+#

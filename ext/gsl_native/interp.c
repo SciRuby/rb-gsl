@@ -222,6 +222,20 @@ static VALUE rb_gsl_interp_evaluate(VALUE obj, VALUE xxa, VALUE yya, VALUE xx,
       return ary;
     }
 #endif
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptrz = NULL, *ptr = NULL;
+      size_t n = NM_DENSE_COUNT(xx);
+      nm = NM_STORAGE_DENSE(xx);
+      ptrz = (double*) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      ptr = (double*)NM_DENSE_ELEMENTS(ary);
+      for (i = 0; (int) i < n; i++)
+        ptr[i] = (*eval)(rgi->p, ptrx, ptry, ptrz[i], rgi->a);
+      return ary;
+    }
+#endif
     if (VECTOR_P(xx)) {
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);

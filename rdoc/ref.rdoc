@@ -84,6 +84,7 @@
 #    1. {NDLINEAR: multi-linear, multi-parameter least squares fitting}[link:rdoc/ndlinear_rdoc.html]
 #    1. {ALF: associated Legendre polynomials}[link:rdoc/alf_rdoc.html]
 # 1. {NArray compatibilities}[link:rdoc/narray_rdoc.html]
+# 1. {NMatrix compatibilities}[link:rdoc/nmatrix_rdoc.html]
 # 1. {Changes since Ruby/GSL 1.10.3}[link:rdoc/changes_rdoc.html]
 # 1. {GNU Free Documentation Licence}[https://gnu.org/software/gsl/manual/html_node/GNU-Free-Documentation-License.html]
 #

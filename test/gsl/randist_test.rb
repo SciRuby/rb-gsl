@@ -10,28 +10,34 @@ class RandistTest < GSL::TestCase
 
   R_GLOBAL = GSL::Rng.alloc
 
+  @@use_nmatrix = false
+
   def test_shuffle
     n = 10
 
-    count = GSL::Matrix.calloc(n, n)
-    x = GSL::Permutation.alloc(n)
+    input = [GSL::Matrix.calloc(n, n)]
+    input << NMatrix.new([n,n], 0, dtype: :float64) if @@use_nmatrix
 
-    N.times { |i|
-      n.times { |j| x[j] = j }
-      GSL::Ran.shuffle(R_GLOBAL, x)
-      n.times { |j| count.set(x[j], j, count[x[j], j] + 1) }
-    }
+    input.each do |count|
+      x = GSL::Permutation.alloc(n)
 
-    expected = N / 10.0
-
-    n.times { |i|
-      n.times { |j|
-        d = (count[i, j] - expected).abs
-
-        refute d > 1 && d / Math.sqrt(expected) > 5,
-          "gsl_ran_shuffle #{i},#{j} (#{count[i, j] / N} observed vs 0.1 expected)"
+      N.times { |i|
+        n.times { |j| x[j] = j }
+        GSL::Ran.shuffle(R_GLOBAL, x)
+        n.times { |j| count[x[j], j] += 1 }
       }
-    }
+
+      expected = N / 10.0
+
+      n.times { |i|
+        n.times { |j|
+          d = (count[i, j] - expected).abs
+
+          refute d > 1 && d / Math.sqrt(expected) > 5,
+            "gsl_ran_shuffle #{i},#{j} (#{count[i, j] / N} observed vs 0.1 expected)"
+        }
+      }
+    end
   end
 
   def _test_moments(name, arg, a, b, pp)
@@ -54,8 +60,9 @@ class RandistTest < GSL::TestCase
 
     status = status_i = 0
 
-    count = GSL::Vector.calloc(BINS)
-    pp = GSL::Vector.calloc(BINS)
+    count = @@use_nmatrix ? NMatrix.new([BINS], 0 ,dtype: :float64) : 
+      GSL::Vector.calloc(BINS)
+    pp = @@use_nmatrix ? NMatrix.new([BINS], 0 ,dtype: :float64) : GSL::Vector.calloc(BINS)
 
     N.times { |i|
       r = R_GLOBAL.send(name, *args)
@@ -85,13 +92,13 @@ class RandistTest < GSL::TestCase
       status |= status_i
 
       refute status_i == 1,
-        "#{name} [#{x},#{x + dx}) (#{count[i]}/#{N}=#{count.to_f / N} observed vs #{pp[i]} expected)"
+        "#{name} [#{x},#{x + dx}) (#{count[i]}/#{N}=#{count[i].to_f / N} observed vs #{pp[i]} expected)"
     }
 
     assert status.zero?, "#{name}, sampling against pdf over range [#{a},#{b})"
   end
 
-  def test_randist
+  def _test_randist
     _test_moments(:ugaussian,      nil,  0.0,   100.0, 0.5)
     _test_moments(:ugaussian,      nil, -1.0,     1.0, 0.6826895)
     _test_moments(:ugaussian,      nil,  3.0,     3.5, 0.0011172689)
@@ -99,12 +106,16 @@ class RandistTest < GSL::TestCase
     _test_moments(:exponential,    2.0,  0.0,     1.0, 1 - Math.exp(-0.5))
     _test_moments(:cauchy,         2.0,  0.0, 10000.0, 0.5)
 
-    _test_moments(:discrete, GSL::Ran::Discrete.alloc(GSL::Vector.alloc(0.59, 0.4, 0.01)), -0.5, 0.5, 0.59)
-    _test_moments(:discrete, GSL::Ran::Discrete.alloc(GSL::Vector.alloc(0.59, 0.4, 0.01)),  0.5, 1.5, 0.40)
-    _test_moments(:discrete, GSL::Ran::Discrete.alloc(GSL::Vector.alloc(0.59, 0.4, 0.01)),  1.5, 3.5, 0.01)
+    v = GSL::Vector.alloc(0.59, 0.4, 0.01)
 
-    _test_moments(:discrete, GSL::Ran::Discrete.alloc(GSL::Vector.alloc(1, 9, 3, 4, 5, 8, 6, 7, 2, 0)), -0.5,  0.5, 1.0 / 45.0)
-    _test_moments(:discrete, GSL::Ran::Discrete.alloc(GSL::Vector.alloc(1, 9, 3, 4, 5, 8, 6, 7, 2, 0)),  8.5,  9.5, 0)
+    _test_moments(:discrete, GSL::Ran::Discrete.alloc(v), -0.5, 0.5, 0.59)
+    _test_moments(:discrete, GSL::Ran::Discrete.alloc(v),  0.5, 1.5, 0.40)
+    _test_moments(:discrete, GSL::Ran::Discrete.alloc(v),  1.5, 3.5, 0.01)
+
+    v = GSL::Vector.alloc(1, 9, 3, 4, 5, 8, 6, 7, 2, 0)
+
+    _test_moments(:discrete, GSL::Ran::Discrete.alloc(v), -0.5,  0.5, 1.0 / 45.0)
+    _test_moments(:discrete, GSL::Ran::Discrete.alloc(v),  8.5,  9.5, 0)
 
     _test_pdf(:beta,   2.0, 3.0)
     _test_pdf(:cauchy, 2.0)
@@ -119,4 +130,13 @@ class RandistTest < GSL::TestCase
     _test_pdf(:ugaussian_tail, 0.1, 2.0)
   end
 
+  def test_randist
+    @@use_nmatrix = false
+    _test_randist
+
+    if ENV['NMATRIX']
+      @@use_nmatrix = true
+      _test_randist; 
+    end
+  end
 end

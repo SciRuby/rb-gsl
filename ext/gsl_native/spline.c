@@ -85,6 +85,14 @@ static VALUE rb_gsl_spline_init(VALUE obj, VALUE xxa, VALUE yya)
     size = nax->total;
     ptr1 = (double *) nax->ptr;
 #endif
+#ifdef HAVE_NARRAY_H
+  } else if (NM_IsNMatrix(xxa)) {
+    NM_DENSE_STORAGE *nmx = NULL;
+    nmx = NM_STORAGE_DENSE(xxa);
+    size = NM_DENSE_COUNT(xxa);
+    ptr1 = (double *) nmx->elements;
+#endif
+
   } else {
     rb_raise(rb_eTypeError, "not a vector");
   }
@@ -98,6 +106,13 @@ static VALUE rb_gsl_spline_init(VALUE obj, VALUE xxa, VALUE yya)
     struct NARRAY *nay = NULL;
     GetNArray(yya, nay);
     ptr2 = (double *) nay->ptr;
+#endif
+
+#ifdef HAVE_NARRAY_H
+  } else if (NM_IsNMatrix(yya)) {
+    NM_DENSE_STORAGE *nmy;
+    nmy = NM_STORAGE_DENSE(yya);
+    ptr2 = (double *) nmy->elements;
 #endif
   } else if (VECTOR_P(yya)) {
     Data_Get_Struct(yya, gsl_vector, ya);
@@ -157,6 +172,21 @@ static VALUE rb_gsl_spline_evaluate(VALUE obj, VALUE xx,
       n = na->total;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(xx));
       ptr2 = NA_PTR_TYPE(ary, double*);
+      for (i = 0; i < n; i++)
+        ptr2[i] = (*eval)(rgs->s, ptr1[i], rgs->a);
+      return ary;
+    }
+#endif
+
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      double *ptr1 = NULL, *ptr2 = NULL;
+      NM_DENSE_STORAGE *nm = NULL;
+      nm = NM_STORAGE_DENSE(xx);
+      n = NM_DENSE_COUNT(xx);
+      ptr1 = (double *) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
       for (i = 0; i < n; i++)
         ptr2[i] = (*eval)(rgs->s, ptr1[i], rgs->a);
       return ary;

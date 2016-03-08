@@ -37,12 +37,25 @@ static VALUE rb_gsl_bspline_breakpoint(VALUE obj, VALUE i)
 static VALUE rb_gsl_bspline_knots(VALUE obj, VALUE b)
 {
   gsl_bspline_workspace *w;
+  Data_Get_Struct(obj, gsl_bspline_workspace, w);
+
+#ifdef HAVE_NMATRIX_H
+  if (NM_IsNMatrix(b)) {
+    NM_DENSE_STORAGE *nm_bpts;
+    gsl_vector_view v;
+
+    nm_bpts = NM_STORAGE_DENSE(b);
+    v = gsl_vector_view_array((double*) nm_bpts->elements, NM_DENSE_COUNT(b));
+    gsl_bspline_knots(&v.vector, w);
+    return Data_Wrap_Struct(cgsl_vector_view_ro, 0, NULL, w->knots);    
+  }
+#endif
+  
   gsl_vector *bpts;
   CHECK_VECTOR(b);
-  Data_Get_Struct(obj, gsl_bspline_workspace, w);
   Data_Get_Struct(b, gsl_vector, bpts);
   gsl_bspline_knots(bpts, w);
-  return Data_Wrap_Struct(cgsl_vector_view_ro, 0, NULL, w->knots);
+  return Data_Wrap_Struct(cgsl_vector_view_ro, 0, NULL, w->knots);    
 }
 static VALUE rb_gsl_bspline_knots_uniform(int argc, VALUE *argv, VALUE obj)
 {

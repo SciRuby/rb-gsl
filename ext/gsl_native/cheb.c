@@ -115,8 +115,29 @@ static VALUE rb_gsl_cheb_eval(VALUE obj, VALUE xx)
     return ary;
     break;
   default:
+    if (VECTOR_P(xx)) {
+      Data_Get_Struct(xx, gsl_vector, v);
+      vnew = gsl_vector_alloc(v->size);
+      for (i = 0; i < v->size; i++) {
+        gsl_vector_set(vnew, i, gsl_cheb_eval(p, gsl_vector_get(v, i)));
+      }
+      return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
+    } 
+#ifdef HAVE_NMATRIX_H
+    else if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptr1, *ptr2;
+      nm = NM_STORAGE_DENSE(xx);
+      ptr1 = (double*) nm->elements;
+      n = NM_DENSE_COUNT(xx);
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      for (i = 0; i < n; i++) ptr2[i] = gsl_cheb_eval(p, ptr1[i]);
+      return ary;
+    }
+#endif
 #ifdef HAVE_NARRAY_H
-    if (NA_IsNArray(xx)) {
+    else if (NA_IsNArray(xx)) {
       struct NARRAY *na;
       double *ptr1, *ptr2;
       GetNArray(xx, na);
@@ -128,14 +149,7 @@ static VALUE rb_gsl_cheb_eval(VALUE obj, VALUE xx)
       return ary;
     }
 #endif
-    if (VECTOR_P(xx)) {
-      Data_Get_Struct(xx, gsl_vector, v);
-      vnew = gsl_vector_alloc(v->size);
-      for (i = 0; i < v->size; i++) {
-        gsl_vector_set(vnew, i, gsl_cheb_eval(p, gsl_vector_get(v, i)));
-      }
-      return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
-    } else if (MATRIX_P(xx)) {
+    else if (MATRIX_P(xx)) {
       Data_Get_Struct(xx, gsl_matrix, m);
       mnew = gsl_matrix_alloc(m->size1, m->size2);
       for (i = 0; i < m->size1; i++) {
@@ -144,7 +158,8 @@ static VALUE rb_gsl_cheb_eval(VALUE obj, VALUE xx)
         }
       }
       return Data_Wrap_Struct(cgsl_matrix, 0, gsl_matrix_free, mnew);
-    } else {
+    }
+    else {
       rb_raise(rb_eTypeError, "wrong argument type");
     }
     break;
@@ -195,6 +210,25 @@ static VALUE rb_gsl_cheb_eval_err(VALUE obj, VALUE xx)
       aerr = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(xx));
       ptr2 = NA_PTR_TYPE(ary,double*);
       ptr3 = NA_PTR_TYPE(aerr,double*);
+      for (i = 0; i < n; i++) {
+        gsl_cheb_eval_err(p, ptr1[i], &result, &err);
+        ptr2[i] = result;
+        ptr3[i] = err;
+      }
+      return rb_ary_new3(2, ary, aerr);
+    }
+#endif
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptr1, *ptr2, *ptr3;
+      nm = NM_STORAGE_DENSE(xx);
+      n = NM_DENSE_COUNT(xx);
+      ptr1 = (double*) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      aerr = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      ptr3 = (double*)NM_DENSE_ELEMENTS(aerr);
       for (i = 0; i < n; i++) {
         gsl_cheb_eval_err(p, ptr1[i], &result, &err);
         ptr2[i] = result;
@@ -279,6 +313,19 @@ static VALUE rb_gsl_cheb_eval_n(VALUE obj, VALUE nn, VALUE xx)
       return ary;
     }
 #endif
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptr1, *ptr2;
+      nm = NM_STORAGE_DENSE(xx);
+      n = NM_DENSE_COUNT(xx);
+      ptr1 = (double*) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      for (i = 0; i < n; i++) ptr2[i] = gsl_cheb_eval_n(p, order, ptr1[i]);
+      return ary;
+    }
+#endif
     if (VECTOR_P(xx)) {
       Data_Get_Struct(xx, gsl_vector, v);
       vnew = gsl_vector_alloc(v->size);
@@ -349,6 +396,25 @@ static VALUE rb_gsl_cheb_eval_n_err(VALUE obj, VALUE nn, VALUE xx)
       aerr = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(xx));
       ptr2 = NA_PTR_TYPE(ary,double*);
       ptr3 = NA_PTR_TYPE(aerr,double*);
+      for (i = 0; i < n; i++) {
+        gsl_cheb_eval_n_err(p, order, ptr1[i], &result, &err);
+        ptr2[i] = result;
+        ptr3[i] = err;
+      }
+      return rb_ary_new3(2, ary, aerr);
+    }
+#endif
+#ifdef HAVE_NMATRIX_H
+    if (NM_IsNMatrix(xx)) {
+      NM_DENSE_STORAGE *nm;
+      double *ptr1, *ptr2, *ptr3;
+      nm = NM_STORAGE_DENSE(xx);
+      n = NM_DENSE_COUNT(xx);
+      ptr1 = (double*) nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      aerr = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, n);
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      ptr3 = (double*)NM_DENSE_ELEMENTS(aerr);
       for (i = 0; i < n; i++) {
         gsl_cheb_eval_n_err(p, order, ptr1[i], &result, &err);
         ptr2[i] = result;

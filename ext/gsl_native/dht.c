@@ -73,6 +73,15 @@ static VALUE rb_gsl_dht_apply(int argc, VALUE *argv, VALUE obj)
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(argv[0]));
       ptr2 = NA_PTR_TYPE(ary, double*);
 #endif
+#ifdef HAVE_NMATRIX_H
+    } else if (NM_IsNMatrix(argv[0])) {
+      NM_DENSE_STORAGE *nm;
+      nm = NM_STORAGE_DENSE(argv[0]);
+      ptr1 = (double*)nm->elements;
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, 
+        NM_DENSE_COUNT(argv[0]));
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+#endif
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector expected)",
                rb_class2name(CLASS_OF(argv[0])));
@@ -139,6 +148,23 @@ static VALUE rb_gsl_dht_xk_sample(VALUE obj, VALUE n,
       }
       return ary;
 #endif
+#ifdef HAVE_NARRAY_H
+    } else if (NM_IsNMatrix(n)) {
+      NM_DENSE_STORAGE *nm;
+      int *ptr;
+      double *ptr2;
+      nm = NM_STORAGE_DENSE(n);
+      ptr = (int*) nm->elements;
+      size = NM_DENSE_COUNT(n);
+      ary = rb_nmatrix_dense_create(FLOAT64, nm->shape, nm->dim, nm->elements, 
+        NM_DENSE_COUNT(n));
+      ptr2 = (double*)NM_DENSE_ELEMENTS(ary);
+      for (i = 0; i < size; i++) {
+        ptr2[i] = (*sample)(t, ptr[i]);
+      }
+      return ary;
+#endif
+
     } else {
       rb_raise(rb_eTypeError, "wrong argument type %s (Vector::Int expected)",
                rb_class2name(CLASS_OF(n)));

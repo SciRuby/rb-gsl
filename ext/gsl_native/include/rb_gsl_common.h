@@ -24,6 +24,7 @@
 #include <gsl/gsl_permutation.h>
 #include <gsl/gsl_ieee_utils.h>
 #include "rb_gsl_with_narray.h"
+#include "rb_gsl_with_nmatrix.h"
 
 EXTERN ID rb_gsl_id_beg, rb_gsl_id_end, rb_gsl_id_excl, rb_gsl_id_to_a;
 
@@ -342,6 +343,10 @@ VALUE matrix_eval_create(VALUE obj, double (*func)(double));
 VALUE rb_gsl_ary_eval1(VALUE ary, double (*f)(double));
 #ifdef HAVE_NARRAY_H
 VALUE rb_gsl_nary_eval1(VALUE ary, double (*f)(double));
+#endif
+
+#ifdef HAVE_NMATRIX_H
+VALUE rb_gsl_nmatrix_eval1(VALUE ary, double (*f)(double));
 #endif
 
 EXTERN VALUE cGSL_Object;
