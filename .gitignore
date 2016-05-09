@@ -10,3 +10,4 @@ mkmf.log
 extconf.h
 Gemfile.lock
 *~
+*.gem
