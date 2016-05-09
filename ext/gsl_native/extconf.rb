@@ -152,6 +152,7 @@ external_libs << 'nmatrix' if ENV['NMATRIX']
 external_libs.each do |library|
   gsl_gem_config(library)
   have_header("#{library}.h")
+  have_header("nmatrix_config.h") if library == 'nmatrix'
   have_library(library) if RUBY_PLATFORM =~ /cygwin|mingw/  
 end
 

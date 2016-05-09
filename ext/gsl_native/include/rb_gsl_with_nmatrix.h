@@ -5,6 +5,7 @@
 
 #ifdef HAVE_NMATRIX_H
 
+#include "nmatrix_config.h"
 #include "nmatrix.h"
 #include "include/rb_gsl_array.h"
 extern VALUE cNMatrix;
