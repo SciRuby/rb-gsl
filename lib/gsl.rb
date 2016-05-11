@@ -1,10 +1,10 @@
 begin
-  require 'narray'
+  require 'narray' if ENV['NARRAY']
 rescue LoadError
 end
 
 begin
-  require 'nmatrix/nmatrix'
+  require 'nmatrix/nmatrix' if ENV['NMATRIX']
 rescue LoadError
 end
 
