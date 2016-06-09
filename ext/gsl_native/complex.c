@@ -77,8 +77,8 @@ static VALUE rb_gsl_complex_new(int argc, VALUE *argv, VALUE klass)
       *c = ary2complex(argv[0]);
       break;
     case T_COMPLEX:
-      vre = rb_funcall(obj, rb_intern("real"), 0);
-      vim = rb_funcall(obj, rb_intern("imag"), 0);
+      vre = rb_funcall(argv[0], rb_intern("real"), 0);
+      vim = rb_funcall(argv[0], rb_intern("imag"), 0);
       *c = gsl_complex_rect(NUM2DBL(vre), NUM2DBL(vim));
       break;
     case T_FLOAT:
