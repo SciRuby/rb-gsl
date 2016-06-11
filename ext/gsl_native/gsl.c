@@ -118,7 +118,9 @@ void Init_gsl_native()
 
   Init_gsl_odeiv(mgsl);
   Init_gsl_interp(mgsl);
+  Init_gsl_interp2d(mgsl);
   Init_gsl_spline(mgsl);
+  Init_gsl_spline2d(mgsl);
   Init_gsl_diff(mgsl);
   Init_gsl_deriv(mgsl);
 
