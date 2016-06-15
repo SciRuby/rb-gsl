@@ -10,7 +10,7 @@
   WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or INTERPOLATIONNESS FOR A PARTICULAR PURPOSE.
 */
-
+#ifdef GSL_2_0_LATER
 #ifndef ___RB_GSL_INTERP2D_H___
 #define ___RB_GSL_INTERP2D_H___
 
@@ -36,4 +36,5 @@ enum {
 const gsl_interp2d_type* get_interp2d_type(VALUE);
 static void rb_gsl_interp2d_free(rb_gsl_interp2d*);
 
+#endif
 #endif

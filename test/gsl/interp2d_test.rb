@@ -105,4 +105,4 @@ ysize:       41
       end
     end
   end
-end
+end if GSL::GSL_VERSION >= '2.0'

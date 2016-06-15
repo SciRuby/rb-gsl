@@ -8,7 +8,7 @@
   This library is distributed in the hope that it will be useful, but
   WITHOUT ANY WARRANTY.
 */
-
+#ifdef GSL_2_0_LATER
 #include "include/rb_gsl_interp2d.h"
 
 EXTERN VALUE cgsl_interp2d_accel;  /* defined in interp2d.c */
@@ -208,3 +208,4 @@ void Init_gsl_spline2d(VALUE module)
   rb_define_alias(cgsl_spline2d, "[]", "eval");
   rb_define_method(cgsl_spline2d, "info", rb_gsl_spline2d_info, 0);
 }
+#endif
