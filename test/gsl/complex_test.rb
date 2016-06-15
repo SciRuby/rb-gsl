@@ -16,5 +16,16 @@ class ComplexTest < GSL::TestCase
         'gsl_complex_polar imag part at (r=%g,t=%g)' % [r, t]
     }
   end
-
+  
+  # Test if it is possible to create a GSL::Complex from ::Complex
+  def test_rb_complex_creation
+    rb_comp = Complex(rand, rand)
+    
+    z = GSL::Complex.alloc(rb_comp)
+    
+    assert_rel z.real, rb_comp.real, GSL::DBL_EPSILON,
+      "gsl_complex real part.  Re(#{rb_comp}) = #{z.real}"
+    assert_rel z.imag, rb_comp.imag, GSL::DBL_EPSILON,
+      "gsl_complex imag part.  Im(#{rb_comp}) = #{z.imag}"
+  end
 end

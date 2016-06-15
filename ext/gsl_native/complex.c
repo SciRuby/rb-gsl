@@ -41,6 +41,11 @@ gsl_complex rb_gsl_obj_to_gsl_complex(VALUE obj, gsl_complex *z)
     if (!NIL_P(vre)) GSL_SET_REAL(z, NUM2DBL(vre));
     if (!NIL_P(vim)) GSL_SET_IMAG(z, NUM2DBL(vim));
     break;
+  case T_COMPLEX:
+    vre = rb_funcall(obj, rb_intern("real"), 0);
+    vim = rb_funcall(obj, rb_intern("imag"), 0);
+    *z = gsl_complex_rect(NUM2DBL(vre), NUM2DBL(vim));
+    break;
   case T_FLOAT:
   case T_FIXNUM:
   case T_BIGNUM:
@@ -63,13 +68,18 @@ gsl_complex rb_gsl_obj_to_gsl_complex(VALUE obj, gsl_complex *z)
 static VALUE rb_gsl_complex_new(int argc, VALUE *argv, VALUE klass)
 {
   gsl_complex *c = NULL;
-  VALUE obj;
+  VALUE obj, vre, vim;
   obj = Data_Make_Struct(klass, gsl_complex, 0, free, c);
   switch (argc) {
   case 1:
     switch (TYPE(argv[0])) {
     case T_ARRAY:
       *c = ary2complex(argv[0]);
+      break;
+    case T_COMPLEX:
+      vre = rb_funcall(argv[0], rb_intern("real"), 0);
+      vim = rb_funcall(argv[0], rb_intern("imag"), 0);
+      *c = gsl_complex_rect(NUM2DBL(vre), NUM2DBL(vim));
       break;
     case T_FLOAT:
     case T_FIXNUM:
