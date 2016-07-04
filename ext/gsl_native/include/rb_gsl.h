@@ -66,6 +66,12 @@ void Init_gsl_siman(VALUE module);
 void Init_gsl_odeiv(VALUE module);
 void Init_gsl_interp(VALUE module);
 void Init_gsl_spline(VALUE module);
+
+#ifdef GSL_2_0_LATER
+void Init_gsl_interp2d(VALUE module);
+void Init_gsl_spline2d(VALUE module);
+#endif
+
 void Init_gsl_diff(VALUE module);
 void Init_gsl_deriv(VALUE module);
 
