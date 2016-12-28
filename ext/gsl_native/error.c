@@ -80,9 +80,9 @@ static void rb_gsl_define_exceptions(VALUE module)
   VALUE mgsl_error;
   mgsl_error = rb_define_module_under(module, "ERROR");
   pgsl_error = &cgsl_error[2];
-  pgsl_error[-2] = rb_define_class_under(mgsl_error, "CONTINUE", rb_cFixnum);
+  pgsl_error[-2] = rb_define_class_under(mgsl_error, "CONTINUE", rb_cInteger);
   pgsl_error[-1] = rb_define_class_under(mgsl_error, "FAILURE", rb_eRuntimeError);
-  pgsl_error[0] = rb_define_class_under(mgsl_error, "SUCCESS", rb_cFixnum);
+  pgsl_error[0] = rb_define_class_under(mgsl_error, "SUCCESS", rb_cInteger);
   pgsl_error[1] = rb_define_class_under(mgsl_error, "EDOM", rb_eRangeError);
   pgsl_error[2] = rb_define_class_under(mgsl_error, "ERANGE", rb_eRangeError);
   pgsl_error[3] = rb_define_class_under(mgsl_error, "EFAULT", rb_eRuntimeError);
