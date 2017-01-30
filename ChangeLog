@@ -1,5 +1,13 @@
 # markup: rd
 
+== Mon January 30 2017
+- Enhancements
+  * Support for assigning Ruby Complex types to GSL::Matrix::Complex. (@v0dro)
+  * Support for 2D interpolation by exposing GSLs interp2d and spline2d. (@v0dro)
+  * Support for Ruby 2.4. (@badlamer)
+- Fixes
+  * Fix NArray superclass mismatch problem. (@v0dro)
+
 == Fri March 4 2016
 * Added compatibility for NMatrix interconversion with GSL::Vector and GSL::Matrix
 * Added NMatrix compatibility to various to make them compatible with NMatrix data types.
