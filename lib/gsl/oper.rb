@@ -40,4 +40,4 @@ module GSL::Oper
 
 end
 
-[Fixnum, Float].each { |klass| klass.send(:include, GSL::Oper) }
+[Integer, Float].each { |klass| klass.send(:include, GSL::Oper) }
