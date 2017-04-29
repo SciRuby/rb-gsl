@@ -1,5 +1,9 @@
 # markup: rd
 
+== Sat April 29 2017
+- Enhancements
+  * Suppress warnings in Ruby 2.4 by suppressing use of Fixnum.
+
 == Mon January 30 2017
 - Enhancements
   * Support for assigning Ruby Complex types to GSL::Matrix::Complex. (@v0dro)
