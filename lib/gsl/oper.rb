@@ -40,4 +40,4 @@ module GSL::Oper
 
 end
 
-[Fixnum, Float].each { |klass| klass.send(:include, GSL::Oper) }
+[RUBY_VERSION > "2.4" ? Integer : Fixnum, Float].each { |klass| klass.send(:include, GSL::Oper) }
