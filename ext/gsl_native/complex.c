@@ -173,7 +173,8 @@ static VALUE rb_gsl_complex_printf(VALUE obj, VALUE s)
 
   vals[0] = rb_float_new(GSL_REAL(*c));
   vals[1] = rb_float_new(GSL_IMAG(*c));
-  format = rb_sprintf("%"PRIsVALUE" %"PRIsVALUE"\n", s, s);
+  format = rb_sprintf("%s %s\n", STR2CSTR(s), STR2CSTR(s));
+  RB_GC_GUARD(s);
   out = rb_str_format(2, vals, format);
   fwrite(StringValuePtr(out), 1, RSTRING_LEN(out), stdout);
   return obj;
