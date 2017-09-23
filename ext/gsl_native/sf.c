@@ -113,6 +113,27 @@ static VALUE rb_gsl_sf_result_e10_to_s(VALUE obj)
   return rb_str_new2(str);
 }
 
+static gsl_mode_t rb_gsl_sf_get_mode(VALUE m) {
+  gsl_mode_t mode;
+  char c;
+  switch (TYPE(m)) {
+  case T_STRING:
+    c = tolower(NUM2CHR(m));
+    if (c == 'd') mode = GSL_PREC_DOUBLE;
+    else if (c == 's') mode = GSL_PREC_SINGLE;
+    else if (c == 'a') mode = GSL_PREC_APPROX;
+    else mode = GSL_PREC_DOUBLE;
+    break;
+  case T_FIXNUM:
+    mode = FIX2INT(m);
+    break;
+  default:
+    rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
+             rb_class2name(CLASS_OF(m)));
+  }
+  return mode;
+}
+
 VALUE rb_gsl_sf_eval1(double (*func)(double), VALUE argv)
 {
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
@@ -760,29 +781,13 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
   VALUE ary, xx;
   size_t i, k, n;
   double val;
-  /*gsl_mode_t mode;
-  char c;*/
-  switch (TYPE(m)) {
-  case T_STRING:
-    /*c = tolower(NUM2CHR(m));
-    if (c == 'd') mode = GSL_PREC_DOUBLE;
-    else if (c == 's') mode = GSL_PREC_SINGLE;
-    else if (c == 'a') mode = GSL_PREC_APPROX;
-    else mode = GSL_PREC_DOUBLE;*/
-    break;
-  case T_FIXNUM:
-    /*mode = FIX2INT(m);*/
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
-             rb_class2name(CLASS_OF(m)));
-  }
+  gsl_mode_t mode = rb_gsl_sf_get_mode(m);
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
   switch (TYPE(argv)) {
   case T_FLOAT:
   case T_FIXNUM:
   case T_BIGNUM:
-    return rb_float_new((*func)(NUM2DBL(argv), m));
+    return rb_float_new((*func)(NUM2DBL(argv), mode));
     break;
   case T_ARRAY:
     n = RARRAY_LEN(argv);
@@ -790,7 +795,7 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
       Need_Float(xx);
-      val = (*func)(NUM2DBL(xx), m);
+      val = (*func)(NUM2DBL(xx), mode);
       rb_ary_store(ary, i, rb_float_new(val));
     }
     return ary;
@@ -805,7 +810,7 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
       n = na->total;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(argv));
       ptr2 = NA_PTR_TYPE(ary, double*);
-      for (i = 0; i < n; i++) ptr2[i] = (*func)(ptr1[i], m);
+      for (i = 0; i < n; i++) ptr2[i] = (*func)(ptr1[i], mode);
       return ary;
     }
 #endif
@@ -814,7 +819,7 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
       mnew = gsl_matrix_alloc(mm->size1, mm->size2);
       for (i = 0; i < mm->size1; i++) {
         for (k = 0; k < mm->size2; k++) {
-          val = (*func)(gsl_matrix_get(mm, i, k), m);
+          val = (*func)(gsl_matrix_get(mm, i, k), mode);
           gsl_matrix_set(mnew, i, k, val);
         }
       }
@@ -825,7 +830,7 @@ VALUE rb_gsl_sf_eval_double_m(double (*func)(double, gsl_mode_t), VALUE argv, VA
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-        val = (*func)(gsl_vector_get(v, i), m);
+        val = (*func)(gsl_vector_get(v, i), mode);
         gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
@@ -842,21 +847,15 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
   VALUE ary, xx;
   size_t i, k, n;
   double val, xx2;
-  /*gsl_mode_t mode;
-  char c;*/
+  gsl_mode_t mode = rb_gsl_sf_get_mode(m);
   Need_Float(x2);
   xx2 = NUM2DBL(x2);
-  /*c = tolower(NUM2CHR(m));
-  if (c == 'd') mode = GSL_PREC_DOUBLE;
-  else if (c == 's') mode = GSL_PREC_SINGLE;
-  else if (c == 'a') mode = GSL_PREC_APPROX;
-  else mode = GSL_PREC_DOUBLE;*/
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
   switch (TYPE(argv)) {
   case T_FLOAT:
   case T_FIXNUM:
   case T_BIGNUM:
-    return rb_float_new((*func)(NUM2DBL(argv), xx2, m));
+    return rb_float_new((*func)(NUM2DBL(argv), xx2, mode));
     break;
   case T_ARRAY:
     n = RARRAY_LEN(argv);
@@ -864,7 +863,7 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
       Need_Float(xx);
-      val = (*func)(NUM2DBL(xx), xx2, m);
+      val = (*func)(NUM2DBL(xx), xx2, mode);
       rb_ary_store(ary, i, rb_float_new(val));
     }
     return ary;
@@ -879,7 +878,7 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
       n = na->total;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(argv));
       ptr2 = NA_PTR_TYPE(ary, double*);
-      for (i = 0; i < n; i++) ptr2[i] = (*func)(ptr1[i], xx2, m);
+      for (i = 0; i < n; i++) ptr2[i] = (*func)(ptr1[i], xx2, mode);
       return ary;
     }
 #endif
@@ -888,7 +887,7 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
       mnew = gsl_matrix_alloc(mm->size1, mm->size2);
       for (i = 0; i < mm->size1; i++) {
         for (k = 0; k < mm->size2; k++) {
-          val = (*func)(gsl_matrix_get(mm, i, k), xx2, m);
+          val = (*func)(gsl_matrix_get(mm, i, k), xx2, mode);
           gsl_matrix_set(mnew, i, k, val);
         }
       }
@@ -899,7 +898,7 @@ VALUE rb_gsl_sf_eval_double2_m(double (*func)(double, double, gsl_mode_t),
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-        val = (*func)(gsl_vector_get(v, i), xx2, m);
+        val = (*func)(gsl_vector_get(v, i), xx2, mode);
         gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
@@ -916,22 +915,16 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
   VALUE ary, xx;
   size_t i, k, n;
   double val, xx2, xx3;
-  /*gsl_mode_t mode;
-  char c;*/
+  gsl_mode_t mode = rb_gsl_sf_get_mode(m);
   Need_Float(x2); Need_Float(x3);
   xx2 = NUM2DBL(x2);
   xx3 = NUM2DBL(x3);
-  /*c = tolower(NUM2CHR(m));
-  if (c == 'd') mode = GSL_PREC_DOUBLE;
-  else if (c == 's') mode = GSL_PREC_SINGLE;
-  else if (c == 'a') mode = GSL_PREC_APPROX;
-  else mode = GSL_PREC_DOUBLE;*/
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
   switch (TYPE(argv)) {
   case T_FLOAT:
   case T_FIXNUM:
   case T_BIGNUM:
-    return rb_float_new((*func)(NUM2DBL(argv), xx2, xx3, m));
+    return rb_float_new((*func)(NUM2DBL(argv), xx2, xx3, mode));
     break;
   case T_ARRAY:
     n = RARRAY_LEN(argv);
@@ -939,7 +932,7 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
       Need_Float(xx);
-      val = (*func)(NUM2DBL(xx), xx2, xx3, m);
+      val = (*func)(NUM2DBL(xx), xx2, xx3, mode);
       rb_ary_store(ary, i, rb_float_new(val));
     }
     return ary;
@@ -954,7 +947,7 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
       n = na->total;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(argv));
       ptr2 = NA_PTR_TYPE(ary, double*);
-      for (i = 0; i < n; i++) ptr2[i] = (*func)(ptr1[i], xx2, xx3, m);
+      for (i = 0; i < n; i++) ptr2[i] = (*func)(ptr1[i], xx2, xx3, mode);
       return ary;
     }
 #endif
@@ -963,7 +956,7 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
       mnew = gsl_matrix_alloc(mm->size1, mm->size2);
       for (i = 0; i < mm->size1; i++) {
         for (k = 0; k < mm->size2; k++) {
-          val = (*func)(gsl_matrix_get(mm, i, k), xx2, xx3, m);
+          val = (*func)(gsl_matrix_get(mm, i, k), xx2, xx3, mode);
           gsl_matrix_set(mnew, i, k, val);
         }
       }
@@ -974,7 +967,7 @@ VALUE rb_gsl_sf_eval_double3_m(double (*func)(double, double, double, gsl_mode_t
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-        val = (*func)(gsl_vector_get(v, i), xx2, xx3, m);
+        val = (*func)(gsl_vector_get(v, i), xx2, xx3, mode);
         gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
@@ -992,22 +985,16 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
   VALUE ary, xx;
   size_t i, k, n;
   double val, xx2, xx3, xx4;
-  /*gsl_mode_t mode;
-  char c;*/
+  gsl_mode_t mode = rb_gsl_sf_get_mode(m);
   Need_Float(x2); Need_Float(x3); Need_Float(x4);
   xx2 = NUM2DBL(x2);  xx3 = NUM2DBL(x3); xx4 = NUM2DBL(x4);
-  /*c = tolower(NUM2CHR(m));
-  if (c == 'd') mode = GSL_PREC_DOUBLE;
-  else if (c == 's') mode = GSL_PREC_SINGLE;
-  else if (c == 'a') mode = GSL_PREC_APPROX;
-  else mode = GSL_PREC_DOUBLE;*/
   if (CLASS_OF(argv) == rb_cRange) argv = rb_gsl_range2ary(argv);
   switch (TYPE(argv)) {
   case T_FLOAT:
   case T_FIXNUM:
   case T_BIGNUM:
     return rb_float_new((*func)(NUM2DBL(argv), NUM2DBL(x2), NUM2DBL(x3),
-                                NUM2DBL(x4), m));
+                                NUM2DBL(x4), mode));
     break;
   case T_ARRAY:
     n = RARRAY_LEN(argv);
@@ -1015,7 +1002,7 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
     for (i = 0; i < n; i++) {
       xx = rb_ary_entry(argv, i);
       Need_Float(xx);
-      val = (*func)(NUM2DBL(xx), xx2, xx3, xx4, m);
+      val = (*func)(NUM2DBL(xx), xx2, xx3, xx4, mode);
       rb_ary_store(ary, i, rb_float_new(val));
     }
     return ary;
@@ -1030,7 +1017,7 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
       n = na->total;
       ary = na_make_object(NA_DFLOAT, na->rank, na->shape, CLASS_OF(argv));
       ptr2 = NA_PTR_TYPE(ary, double*);
-      for (i = 0; i < n; i++) ptr2[i] = (*func)(ptr1[i], xx2, xx3, xx4, m);
+      for (i = 0; i < n; i++) ptr2[i] = (*func)(ptr1[i], xx2, xx3, xx4, mode);
       return ary;
     }
 #endif
@@ -1039,7 +1026,7 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
       mnew = gsl_matrix_alloc(mm->size1, mm->size2);
       for (i = 0; i < mm->size1; i++) {
         for (k = 0; k < mm->size2; k++) {
-          val = (*func)(gsl_matrix_get(mm, i, k), xx2, xx3, xx4, m);
+          val = (*func)(gsl_matrix_get(mm, i, k), xx2, xx3, xx4, mode);
           gsl_matrix_set(mnew, i, k, val);
         }
       }
@@ -1050,7 +1037,7 @@ VALUE rb_gsl_sf_eval_double4_m(double (*func)(double, double, double, double,
       n = v->size;
       vnew = gsl_vector_alloc(n);
       for (i = 0; i < n; i++) {
-        val = (*func)(gsl_vector_get(v, i),  xx2, xx3, xx4, m);
+        val = (*func)(gsl_vector_get(v, i),  xx2, xx3, xx4, mode);
         gsl_vector_set(vnew, i, val);
       }
       return Data_Wrap_Struct(cgsl_vector, 0, gsl_vector_free, vnew);
@@ -1173,27 +1160,10 @@ VALUE rb_gsl_sf_eval_e_double3(int (*func)(double, double, double, gsl_sf_result
 VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*),
                          VALUE x, VALUE m)
 {
-  gsl_mode_t mode;
-  char c;
+  gsl_mode_t mode = rb_gsl_sf_get_mode(m);
   gsl_sf_result *rslt = NULL;
   VALUE v;
   Need_Float(x);
-  switch (TYPE(m)) {
-  case T_STRING:
-    c = tolower(NUM2CHR(m));
-    if (c == 'd') mode = GSL_PREC_DOUBLE;
-    else if (c == 's') mode = GSL_PREC_SINGLE;
-    else if (c == 'a') mode = GSL_PREC_APPROX;
-    else mode = GSL_PREC_DOUBLE;
-    break;
-  case T_FIXNUM:
-    mode = FIX2INT(m);
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
-             rb_class2name(CLASS_OF(m)));
-    break;
-  }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
   (*func)(NUM2DBL(x), mode, rslt);
   return v;
@@ -1203,27 +1173,10 @@ VALUE rb_gsl_sf_eval_e_m(int (*func)(double, gsl_mode_t, gsl_sf_result*),
 VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_result*),
                                  VALUE x1, VALUE x2, VALUE m)
 {
-  gsl_mode_t mode;
-  char c;
+  gsl_mode_t mode = rb_gsl_sf_get_mode(m);
   gsl_sf_result *rslt = NULL;
   VALUE v;
   Need_Float(x1);  Need_Float(x2);
-  switch (TYPE(m)) {
-  case T_STRING:
-    c = tolower(NUM2CHR(m));
-    if (c == 'd') mode = GSL_PREC_DOUBLE;
-    else if (c == 's') mode = GSL_PREC_SINGLE;
-    else if (c == 'a') mode = GSL_PREC_APPROX;
-    else mode = GSL_PREC_DOUBLE;
-    break;
-  case T_FIXNUM:
-    mode = FIX2INT(m);
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
-             rb_class2name(CLASS_OF(m)));
-    break;
-  }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
   (*func)(NUM2DBL(x1), NUM2DBL(x2), mode, rslt);
   return v;
@@ -1232,27 +1185,10 @@ VALUE rb_gsl_sf_eval_e_double2_m(int (*func)(double, double, gsl_mode_t, gsl_sf_
 VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t, gsl_sf_result*),
                                  VALUE x1, VALUE x2, VALUE x3, VALUE m)
 {
-  gsl_mode_t mode;
-  char c;
+  gsl_mode_t mode = rb_gsl_sf_get_mode(m);
   gsl_sf_result *rslt = NULL;
   VALUE v;
   Need_Float(x1); Need_Float(x2); Need_Float(x3);
-  switch (TYPE(m)) {
-  case T_STRING:
-    c = tolower(NUM2CHR(m));
-    if (c == 'd') mode = GSL_PREC_DOUBLE;
-    else if (c == 's') mode = GSL_PREC_SINGLE;
-    else if (c == 'a') mode = GSL_PREC_APPROX;
-    else mode = GSL_PREC_DOUBLE;
-    break;
-  case T_FIXNUM:
-    mode = FIX2INT(m);
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
-             rb_class2name(CLASS_OF(m)));
-    break;
-  }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
   (*func)(NUM2DBL(x1), NUM2DBL(x2),NUM2DBL(x3), mode, rslt);
   return v;
@@ -1262,27 +1198,10 @@ VALUE rb_gsl_sf_eval_e_double3_m(int (*func)(double, double, double, gsl_mode_t,
 VALUE rb_gsl_sf_eval_e_double4_m(int (*func)(double, double, double, double, gsl_mode_t, gsl_sf_result*),
                                  VALUE x1, VALUE x2, VALUE x3, VALUE x4, VALUE m)
 {
-  gsl_mode_t mode;
-  char c;
+  gsl_mode_t mode = rb_gsl_sf_get_mode(m);
   gsl_sf_result *rslt = NULL;
   VALUE v;
   Need_Float(x1); Need_Float(x2); Need_Float(x3); Need_Float(x4);
-  switch (TYPE(m)) {
-  case T_STRING:
-    c = tolower(NUM2CHR(m));
-    if (c == 'd') mode = GSL_PREC_DOUBLE;
-    else if (c == 's') mode = GSL_PREC_SINGLE;
-    else if (c == 'a') mode = GSL_PREC_APPROX;
-    else mode = GSL_PREC_DOUBLE;
-    break;
-  case T_FIXNUM:
-    mode = FIX2INT(m);
-    break;
-  default:
-    rb_raise(rb_eArgError, "wrong type argument %s (String or Fixnum expected)",
-             rb_class2name(CLASS_OF(m)));
-    break;
-  }
   v = Data_Make_Struct(cgsl_sf_result, gsl_sf_result, 0, free, rslt);
   (*func)(NUM2DBL(x1), NUM2DBL(x2),NUM2DBL(x3), NUM2DBL(x4), mode, rslt);
   return v;
