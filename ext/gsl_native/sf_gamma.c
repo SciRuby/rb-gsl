@@ -239,7 +239,7 @@ static VALUE rb_gsl_sf_gamma_inc_P_e(VALUE obj, VALUE a, VALUE x)
 
 static VALUE rb_gsl_sf_gamma_inc(VALUE obj, VALUE a, VALUE x)
 {
-  return rb_gsl_sf_eval_double_double(gsl_sf_gamma_inc_P, a, x);
+  return rb_gsl_sf_eval_double_double(gsl_sf_gamma_inc, a, x);
 }
 
 static VALUE rb_gsl_sf_gamma_inc_e(VALUE obj, VALUE a, VALUE x)

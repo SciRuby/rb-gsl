@@ -47,6 +47,33 @@ class SfTest < GSL::TestCase
     end
   end
 
+  # Test the 'natural form' variant of func that does not return error estimates
+  # The func parameter is actually the name of the error-handling variant and
+  # the name of the function to be tested is derived inside.
+  def _test_sf_no_e(func, args, expected_val, tol)
+    func = func.to_s.sub(/_e$/, '').to_sym
+    return unless GSL::Sf.methods.include? func  # the variant may not exist
+
+    r_val = GSL::Sf.send(func, *args)
+
+    desc = '%s(%p): %20.16g %22.18g: ' % [
+      func, args, expected_val, r_val
+    ]
+
+    if GSL.isnan?(r_val) || GSL.isnan?(expected_val)
+      assert GSL.isnan(r_val) == GSL.isnan(expected_val), desc + ERR_INCONS
+    elsif GSL.isinf?(r_val) || GSL.isinf?(expected_val)
+      assert GSL.isinf(r_val) == GSL.isinf(expected_val), desc + ERR_INCONS
+    else
+      tol = TEST_TOL[tol] * GSL::DBL_EPSILON if tol.integer?
+
+      refute(((expected_val.zero? && r_val.zero?) ? 0.0 :
+        (expected_val <= GSL::DBL_MAX && r_val < GSL::DBL_MAX && expected_val + r_val != 0) ?
+        ((expected_val - r_val) / (expected_val + r_val)).abs : 1.0) > TEST_FACTOR * tol,
+        desc + 'value not within tolerance of expected value')
+    end
+  end
+
   {
     :airy => [
       [:airy_Ai_e, [-500.0, GSL::MODE_DEFAULT],              0.0725901201040411396, 4],
@@ -2071,7 +2098,7 @@ class SfTest < GSL::TestCase
   }.each { |k, v|
     define_method("test_#{k}") {
       GSL.set_error_handler_off if k == :sf
-      v.each { |a| _test_sf(*a) }
+      v.each { |a| _test_sf(*a); _test_sf_no_e(*a) }
       GSL.set_error_handler if k == :sf
     }
   }
