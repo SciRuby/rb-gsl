@@ -342,15 +342,15 @@ static VALUE rb_gsl_spline_eval_integ_e(VALUE obj, VALUE a, VALUE b)
 static VALUE rb_gsl_spline_info(VALUE obj)
 {
   rb_gsl_spline *p = NULL;
-  char buf[256];
+  VALUE buf;
   Data_Get_Struct(obj, rb_gsl_spline, p);
-  sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
-  sprintf(buf, "%sType:       %s\n", buf, gsl_interp_name(p->s->interp));
-  sprintf(buf, "%sxmin:       %f\n", buf, p->s->interp->xmin);
-  sprintf(buf, "%sxmax:       %f\n", buf, p->s->interp->xmax);
-  sprintf(buf, "%sSize:       %d\n", buf, (int) p->s->size);
-  return rb_str_new2(buf);
+  buf = rb_sprintf("Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+  rb_str_catf(buf, "SuperClass: %s\n", rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+  rb_str_catf(buf, "Type:       %s\n", gsl_interp_name(p->s->interp));
+  rb_str_catf(buf, "xmin:       %f\n", p->s->interp->xmin);
+  rb_str_catf(buf, "xmax:       %f\n", p->s->interp->xmax);
+  rb_str_catf(buf, "Size:       %d\n", (int) p->s->size);
+  return buf;
 }
 
 static VALUE rb_gsl_spline_name(VALUE obj)

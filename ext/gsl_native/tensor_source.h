@@ -766,7 +766,6 @@ static VALUE FUNCTION(rb_tensor,to_s)(VALUE obj)
   QUALIFIED_VIEW(gsl_vector,view) vector;
   GSL_TYPE(gsl_matrix) *m;
   GSL_TYPE(gsl_vector) *v;
-  char buf[16];
   size_t i, j;
   VALUE str;
   Data_Get_Struct(obj, GSL_TYPE(rbgsl_tensor), t);
@@ -782,29 +781,23 @@ static VALUE FUNCTION(rb_tensor,to_s)(VALUE obj)
     m = &(matrix.matrix);
     for (i = 0; i < m->size1; i++) {
       if (i != 0) {
-        strcpy(buf, "  ");
-        rb_str_cat(str, buf, strlen(buf));
+        rb_str_cat2(str, "  ");
       }
       for (j = 0; j < m->size2; j++) {
-        sprintf(buf, PRINTF_FORMAT, FUNCTION(gsl_matrix,get)(m, i, j));
-        rb_str_cat(str, buf, strlen(buf));
+        rb_str_catf(str, PRINTF_FORMAT, FUNCTION(gsl_matrix,get)(m, i, j));
         if (j == SHOW_ELM) {
-          strcpy(buf, "... ");
-          rb_str_cat(str, buf, strlen(buf));
+          rb_str_cat2(str, "... ");
           break;
         }
       }
       if (i == 6) {
-        strcpy(buf, "\n  ... ]");
-        rb_str_cat(str, buf, strlen(buf));
+        rb_str_cat2(str, "\n  ... ]");
         break;
       }
       if (i == m->size1 - 1) {
-        strcpy(buf, "]");
-        rb_str_cat(str, buf, strlen(buf));
+        rb_str_cat2(str, "]");
       } else {
-        strcpy(buf, "\n");
-        rb_str_cat(str, buf, strlen(buf));
+        rb_str_cat2(str, "\n");
       }
     }
     return str;
@@ -816,19 +809,15 @@ static VALUE FUNCTION(rb_tensor,to_s)(VALUE obj)
     vector.vector.owner = 0;
     vector.vector.block = 0;
     v = &(vector.vector);
-    sprintf(buf,  PRINTF_FORMAT, FUNCTION(gsl_vector,get)(v, 0));
-    rb_str_cat(str, buf, strlen(buf));
+    rb_str_catf(str,  PRINTF_FORMAT, FUNCTION(gsl_vector,get)(v, 0));
     for (i = 1; i < v->size; i++) {
-      sprintf(buf,  PRINTF_FORMAT, FUNCTION(gsl_vector,get)(v, i));
-      rb_str_cat(str, buf, strlen(buf));
+      rb_str_catf(str, PRINTF_FORMAT, FUNCTION(gsl_vector,get)(v, i));
       if (i == SHOW_ELM && i != v->size-1) {
-        strcpy(buf, "... ");
-        rb_str_cat(str, buf, strlen(buf));
+        rb_str_cat2(str, "... ");
         break;
       }
     }
-    sprintf(buf, "]");
-    rb_str_cat(str, buf, strlen(buf));
+    rb_str_cat2(str, "]");
     return str;
     break;
   }
@@ -838,10 +827,7 @@ static VALUE FUNCTION(rb_tensor,to_s)(VALUE obj)
 
 static VALUE FUNCTION(rb_tensor,inspect)(VALUE obj)
 {
-  VALUE str;
-  char buf[64];
-  sprintf(buf, "%s\n", rb_class2name(CLASS_OF(obj)));
-  str = rb_str_new2(buf);
+  VALUE str = rb_sprintf("%s\n", rb_class2name(CLASS_OF(obj)));
   return rb_str_concat(str, FUNCTION(rb_tensor,to_s)(obj));
 }
 
@@ -936,14 +922,14 @@ static VALUE FUNCTION(rb_tensor,coerce)(VALUE obj, VALUE other)
 static VALUE FUNCTION(rb_tensor,info)(VALUE obj)
 {
   GSL_TYPE(rbgsl_tensor) *t;
-  char buf[256];
+  VALUE buf;
   Data_Get_Struct(obj, GSL_TYPE(rbgsl_tensor), t);
-  sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
-  sprintf(buf, "%sRank:       %d\n", buf, (int) t->tensor->rank);
-  sprintf(buf, "%sDimension:  %d\n", buf, (int) t->tensor->dimension);
-  sprintf(buf, "%sSize:       %d\n", buf, (int) t->tensor->size);
-  return rb_str_new2(buf);
+  buf = rb_sprintf("Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+  rb_str_catf(buf, "SuperClass: %s\n", rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+  rb_str_catf(buf, "Rank:       %d\n", (int) t->tensor->rank);
+  rb_str_catf(buf, "Dimension:  %d\n", (int) t->tensor->dimension);
+  rb_str_catf(buf, "Size:       %d\n", (int) t->tensor->size);
+  return buf;
 }
 
 void FUNCTION(Init_tensor,init)(VALUE module)

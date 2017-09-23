@@ -205,12 +205,12 @@ static VALUE rb_gsl_multifit_fdfsolver_new(int argc, VALUE *argv, VALUE klass)
   const gsl_multifit_fdfsolver_type *T;
   gsl_multifit_fdfsolver *solver = NULL;
   size_t n, p;
-  char name[64];
+  char *name;
   switch (argc) {
   case 3:
     switch (TYPE(argv[0])) {
     case T_STRING:
-      strcpy(name, STR2CSTR(argv[0]));
+      name = STR2CSTR(argv[0]);
       if (str_tail_grep(name, "lmsder") == 0) {
         T = gsl_multifit_fdfsolver_lmsder;
       } else if (str_tail_grep(name, "lmder") == 0) {
@@ -253,6 +253,7 @@ static VALUE rb_gsl_multifit_fdfsolver_new(int argc, VALUE *argv, VALUE klass)
     rb_raise(rb_eArgError, "wrong number of arguments");
     break;
   }
+  RB_GC_GUARD(argv[0]);  /* paranoia? */
   solver = gsl_multifit_fdfsolver_alloc(T, n, p);
   return Data_Wrap_Struct(klass, 0, gsl_multifit_fdfsolver_free, solver);
 }
@@ -1687,7 +1688,7 @@ static VALUE rb_gsl_multifit_fit(int argc, VALUE *argv, VALUE klass)
   gsl_vector *vout, *verr;
   int flag = 0;
   double chi2;
-  char fittype[256];
+  VALUE fittype;
   struct fitting_xydata xydata;
   if (argc < 3) rb_raise(rb_eArgError, "too few arguments");
   switch (TYPE(argv[argc-1])) {
@@ -1713,13 +1714,13 @@ static VALUE rb_gsl_multifit_fit(int argc, VALUE *argv, VALUE klass)
     Data_Get_Vector(argv[0], x);
     Data_Get_Vector(argv[1], y);
     w = NULL;
-    strcpy(fittype, STR2CSTR(argv[2]));
+    fittype = argv[2];
     break;
   case 4:
     Data_Get_Vector(argv[0], x);
     Data_Get_Vector(argv[1], w);
     Data_Get_Vector(argv[2], y);
-    strcpy(fittype, STR2CSTR(argv[3]));
+    fittype = argv[3];
     break;
   default:
     rb_raise(rb_eArgError, "wrong number of arguments");
@@ -1731,7 +1732,8 @@ static VALUE rb_gsl_multifit_fit(int argc, VALUE *argv, VALUE klass)
   xydata.w = w;
   n = x->size;
 
-  set_fittype(&f, fittype, &p, &v, &flag);
+  set_fittype(&f, STR2CSTR(fittype), &p, &v, &flag);
+  RB_GC_GUARD(fittype);
 
   f.n = n;
   f.p = p;

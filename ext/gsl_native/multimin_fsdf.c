@@ -13,10 +13,10 @@ extern VALUE cgsl_multimin_function_fdf;
 
 static const gsl_multimin_fsdfminimizer_type* get_fsdfminimizer_type(VALUE t)
 {
-  char name[64];
+  char *name;
   switch (TYPE(t)) {
   case T_STRING:
-    strcpy(name, STR2CSTR(t));
+    name = STR2CSTR(t);
     if (strcmp(name, "bundle") == 0 || strcmp(name, "bundle_method") == 0)
       return gsl_multimin_fsdfminimizer_bundle_method;
     else
@@ -26,6 +26,7 @@ static const gsl_multimin_fsdfminimizer_type* get_fsdfminimizer_type(VALUE t)
     rb_raise(rb_eTypeError, "type is given by a String or a Fixnum");
     break;
   }
+  RB_GC_GUARD(t);
 }
 
 static VALUE rb_gsl_fsdfminimizer_alloc(VALUE klass, VALUE t, VALUE n)

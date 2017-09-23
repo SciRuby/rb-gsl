@@ -33,10 +33,7 @@ static VALUE rb_gsl_sf_result_to_s(VALUE obj);
 
 static VALUE rb_gsl_sf_result_inspect(VALUE obj)
 {
-  char buf[64];
-  VALUE str;
-  sprintf(buf, "%s\n", rb_class2name(CLASS_OF(obj)));
-  str = rb_str_new2(buf);
+  VALUE str = rb_sprintf("%s\n", rb_class2name(CLASS_OF(obj)));
   return rb_str_concat(str, rb_gsl_sf_result_to_s(obj));
 }
 
@@ -64,10 +61,8 @@ static VALUE rb_gsl_sf_result_to_a(VALUE obj)
 static VALUE rb_gsl_sf_result_to_s(VALUE obj)
 {
   gsl_sf_result *rslt = NULL;
-  char str[32];
   Data_Get_Struct(obj, gsl_sf_result, rslt);
-  sprintf(str, "%10.9e %10.9e", rslt->val, rslt->err);
-  return rb_str_new2(str);
+  return rb_sprintf("%10.9e %10.9e", rslt->val, rslt->err);
 }
 
 static VALUE rb_gsl_sf_result_e10_new(VALUE klass)
@@ -107,10 +102,8 @@ static VALUE rb_gsl_sf_result_e10_to_a(VALUE obj)
 static VALUE rb_gsl_sf_result_e10_to_s(VALUE obj)
 {
   gsl_sf_result_e10 *rslt = NULL;
-  char str[32];
   Data_Get_Struct(obj, gsl_sf_result_e10, rslt);
-  sprintf(str, "%10.9e %10.9e\n", rslt->val, rslt->err);
-  return rb_str_new2(str);
+  return rb_sprintf("%10.9e %10.9e\n", rslt->val, rslt->err);
 }
 
 VALUE rb_gsl_sf_eval1(double (*func)(double), VALUE argv)
