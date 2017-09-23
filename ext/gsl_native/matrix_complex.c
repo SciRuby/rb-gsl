@@ -600,7 +600,6 @@ static VALUE rb_gsl_matrix_complex_print(VALUE obj)
 static VALUE rb_gsl_matrix_complex_to_s(int argc, VALUE *argv, VALUE obj)
 {
   gsl_matrix_complex *m = NULL;
-  char buf[64];
   size_t i, j;
   VALUE str;
   gsl_complex z;
@@ -624,9 +623,8 @@ static VALUE rb_gsl_matrix_complex_to_s(int argc, VALUE *argv, VALUE obj)
     }
     for (j = 0; j < m->size2; j++) {
       z = gsl_matrix_complex_get(m, i, j);
-      sprintf(buf,
-              "%s[ %4.3e %4.3e ]", (j==0) ? "" : " ", GSL_REAL(z), GSL_IMAG(z));
-      rb_str_cat(str, buf, strlen(buf));
+      rb_str_catf(str,
+                  "%s[ %4.3e %4.3e ]", (j==0) ? "" : " ", GSL_REAL(z), GSL_IMAG(z));
       // if too many cols
       if ((int) j >= max_cols-1 && j != m->size2-1) {
         rb_str_cat(str, " ...", 4);
@@ -646,12 +644,11 @@ static VALUE rb_gsl_matrix_complex_to_s(int argc, VALUE *argv, VALUE obj)
 static VALUE rb_gsl_matrix_complex_inspect(int argc, VALUE *argv, VALUE obj)
 {
   VALUE str;
-  char buf[128];
   gsl_matrix_complex *m;
 
   Data_Get_Struct(obj, gsl_matrix_complex, m);
-  sprintf(buf, "#<%s[%lu,%lu]:%#lx>\n", rb_class2name(CLASS_OF(obj)), m->size1, m->size2, NUM2ULONG(rb_obj_id(obj)));
-  str = rb_str_new2(buf);
+  str = rb_sprintf("#<%s[%lu,%lu]:%#lx>\n", rb_class2name(CLASS_OF(obj)),
+                   m->size1, m->size2, NUM2ULONG(rb_obj_id(obj)));
   return rb_str_concat(str, rb_gsl_matrix_complex_to_s(argc, argv, obj));
 }
 

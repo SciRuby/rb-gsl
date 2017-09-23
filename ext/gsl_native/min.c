@@ -24,10 +24,10 @@ static const gsl_min_fminimizer_type* rb_gsl_min_fminimizer_type_get(VALUE t);
 
 static const gsl_min_fminimizer_type* rb_gsl_min_fminimizer_type_get(VALUE t)
 {
-  char name[32];
+  char *name;
   switch (TYPE(t)) {
   case T_STRING:
-    strcpy(name, STR2CSTR(t));
+    name = STR2CSTR(t);
     if (str_tail_grep(name, "goldensection") == 0)
       return gsl_min_fminimizer_goldensection;
     else if (str_tail_grep(name, "brent") == 0)
@@ -59,6 +59,7 @@ static const gsl_min_fminimizer_type* rb_gsl_min_fminimizer_type_get(VALUE t)
              rb_class2name(CLASS_OF(t)));
     break;
   }
+  RB_GC_GUARD(t);
 }
 
 static VALUE rb_gsl_min_fminimizer_new(VALUE klass, VALUE t)

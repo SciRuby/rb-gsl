@@ -323,7 +323,7 @@ static const gsl_odeiv_step_type* rb_gsl_odeiv_step_type_get(VALUE tt)
 {
   const gsl_odeiv_step_type *T;
   int type;
-  char name[64];
+  char *name;
   switch (TYPE(tt)) {
   case T_FIXNUM:
     type = FIX2INT(tt);
@@ -345,7 +345,7 @@ static const gsl_odeiv_step_type* rb_gsl_odeiv_step_type_get(VALUE tt)
     }
     break;
   case T_STRING:
-    strcpy(name, STR2CSTR(tt));
+    name = STR2CSTR(tt);
     if (str_tail_grep(name, "rk2") == 0) T = gsl_odeiv_step_rk2;
     else if (str_tail_grep(name, "rk4") == 0) T = gsl_odeiv_step_rk4;
     else if (str_tail_grep(name, "rkf45") == 0) T = gsl_odeiv_step_rkf45;
@@ -366,6 +366,7 @@ static const gsl_odeiv_step_type* rb_gsl_odeiv_step_type_get(VALUE tt)
              rb_class2name(CLASS_OF(tt)));
     break;
   }
+  RB_GC_GUARD(tt);
   return T;
 }
 
@@ -440,13 +441,13 @@ static VALUE rb_gsl_odeiv_step_apply(int argc, VALUE *argv, VALUE obj)
 static VALUE rb_gsl_odeiv_step_info(VALUE obj)
 {
   gsl_odeiv_step *s;
-  char buf[256];
+  VALUE buf;
   Data_Get_Struct(obj, gsl_odeiv_step, s);
-  sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
-  sprintf(buf, "%sType:       %s\n", buf, gsl_odeiv_step_name(s));
-  sprintf(buf, "%sDimension:  %d\n", buf, (int) s->dimension);
-  return rb_str_new2(buf);
+  buf = rb_sprintf("Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+  rb_str_catf(buf, "SuperClass: %s\n", rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+  rb_str_catf(buf, "Type:       %s\n", gsl_odeiv_step_name(s));
+  rb_str_catf(buf, "Dimension:  %d\n", (int) s->dimension);
+  return buf;
 }
 
 static gsl_odeiv_control* make_control_standard(VALUE epsabs,

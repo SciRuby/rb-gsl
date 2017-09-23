@@ -175,7 +175,6 @@ static VALUE rb_gsl_complex_printf(VALUE obj, VALUE s)
   return obj;
 }
 
-static VALUE rb_gsl_complex_return_double(double (*func)(gsl_complex), VALUE obj);
 static VALUE rb_gsl_complex_return_double(double (*func)(gsl_complex), VALUE obj)
 {
   gsl_complex *c = NULL;
@@ -862,19 +861,14 @@ static VALUE rb_gsl_complex_zero(VALUE obj)
 
 static VALUE rb_gsl_complex_to_s(VALUE obj)
 {
-  char buf[256];
   gsl_complex *z;
   Data_Get_Struct(obj, gsl_complex, z);
-  sprintf(buf, "[ %4.3e %4.3e ]", GSL_REAL(*z), GSL_IMAG(*z));
-  return rb_str_new2(buf);
+  return rb_sprintf("[ %4.3e %4.3e ]", GSL_REAL(*z), GSL_IMAG(*z));
 }
 
 static VALUE rb_gsl_complex_inspect(VALUE obj)
 {
-  char buf[256];
-  VALUE str;
-  sprintf(buf, "%s\n", rb_class2name(CLASS_OF(obj)));
-  str = rb_str_new2(buf);
+  VALUE str = rb_sprintf("%s\n", rb_class2name(CLASS_OF(obj)));
   return rb_str_concat(str, rb_gsl_complex_to_s(obj));
 }
 

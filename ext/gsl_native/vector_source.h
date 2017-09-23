@@ -1288,7 +1288,7 @@ VALUE FUNCTION(rb_gsl_vector,print)(VALUE obj)
 VALUE FUNCTION(rb_gsl_vector,to_s)(VALUE obj)
 {
   GSL_TYPE(gsl_vector) *v = NULL;
-  char buf[32], format[32], format2[32];
+  char format[32], format2[32];
   size_t i;
   VALUE str;
   BASE x;
@@ -1317,45 +1317,35 @@ VALUE FUNCTION(rb_gsl_vector,to_s)(VALUE obj)
 #endif
     for (i = 0; i < v->size; i++) {
       if (i != 0) {
-        strcpy(buf, "  ");
-        rb_str_cat(str, buf, strlen(buf));
+        rb_str_cat2(str, "  ");
       }
       x = FUNCTION(gsl_vector,get)(v, i);
-      if (x < 0) sprintf(buf, format, x);
-      else sprintf(buf, format2, x);
-      if (i != v->size-1) strcat(buf, "\n");
-      rb_str_cat(str, buf, strlen(buf));
+      if (x < 0) rb_str_catf(str, format, x);
+      else rb_str_catf(str, format2, x);
+      if (i != v->size-1) rb_str_cat2(str, "\n");
       if (i >= 20 && i != v->size-1) {
-        strcpy(buf, "  ...");
-        rb_str_cat(str, buf, strlen(buf));
+        rb_str_cat2(str, "  ...");
         break;
       }
     }
   } else {
-    sprintf(buf,  PRINTF_FORMAT, FUNCTION(gsl_vector,get)(v, 0));
-    rb_str_cat(str, buf, strlen(buf));
+    rb_str_catf(str, PRINTF_FORMAT, FUNCTION(gsl_vector,get)(v, 0));
     for (i = 1; i < v->size; i++) {
-      sprintf(buf,  PRINTF_FORMAT, FUNCTION(gsl_vector,get)(v, i));
-      rb_str_cat(str, buf, strlen(buf));
+      rb_str_catf(str,  PRINTF_FORMAT, FUNCTION(gsl_vector,get)(v, i));
       if ((int) i >= (55/dig) && i != v->size-1) {
-        strcpy(buf, "... ");
-        rb_str_cat(str, buf, strlen(buf));
+        rb_str_cat2(str, "... ");
         break;
       }
     }
   }
-  sprintf(buf, "]");
-  rb_str_cat(str, buf, strlen(buf));
+  rb_str_cat2(str, "]");
   return str;
 }
 #undef SHOW_ELM
 
 static VALUE FUNCTION(rb_gsl_vector,inspect)(VALUE obj)
 {
-  VALUE str;
-  char buf[64];
-  sprintf(buf, "%s\n", rb_class2name(CLASS_OF(obj)));
-  str = rb_str_new2(buf);
+  VALUE str = rb_sprintf("%s\n", rb_class2name(CLASS_OF(obj)));
   return rb_str_concat(str, FUNCTION(rb_gsl_vector,to_s)(obj));
 }
 
@@ -1587,7 +1577,6 @@ static VALUE FUNCTION(rb_gsl_vector,to_tensor)(int argc, VALUE *argv, VALUE obj)
 #endif
 static VALUE FUNCTION(rb_gsl_vector,to_gplot)(int argc, VALUE *argv, VALUE obj)
 {
-  char buf[1024] = "";
   size_t i, j, len = 0, nv, istart;
   VALUE str, tmp;
   GSL_TYPE(gsl_vector) *v, **vp;
@@ -1619,15 +1608,14 @@ static VALUE FUNCTION(rb_gsl_vector,to_gplot)(int argc, VALUE *argv, VALUE obj)
       rb_raise(rb_eRuntimeError, "vectors must have equal lengths");
     vp[i+istart] = v;
   }
-  str = rb_str_new2(buf);
+  str = rb_str_new2("");
   for (j = 0; j < len; j++) {
     for (i = 0; i < nv; i++) {
-      sprintf(buf, PRINTF_FORMAT2, FUNCTION(gsl_vector,get)(vp[i], j));
-      rb_str_buf_cat(str, buf, strlen(buf));
+      rb_str_catf(str, PRINTF_FORMAT2, FUNCTION(gsl_vector,get)(vp[i], j));
     }
-    rb_str_buf_cat2(str, "\n");
+    rb_str_cat2(str, "\n");
   }
-  rb_str_buf_cat2(str, "\n");
+  rb_str_cat2(str, "\n");
   free((GSL_TYPE(gsl_vector)**)vp);
   return str;
 }
@@ -2894,7 +2882,7 @@ static VALUE FUNCTION(rb_gsl_vector,join)(int argc, VALUE *argv, VALUE obj)
 {
   GSL_TYPE(gsl_vector) *v;
   VALUE str, sep;
-  char *p, buf[16];
+  char *p;
   size_t i;
   switch (argc) {
   case 0:
@@ -2912,11 +2900,10 @@ static VALUE FUNCTION(rb_gsl_vector,join)(int argc, VALUE *argv, VALUE obj)
   str = rb_str_new2(p);
   for (i = 0; i < v->size; i++) {
 #ifdef BASE_DOUBLE
-    sprintf(buf, "%4.3e", FUNCTION(gsl_vector,get)(v, i));
+    rb_str_catf(str, "%4.3e", FUNCTION(gsl_vector,get)(v, i));
 #else
-    sprintf(buf, "%d", FUNCTION(gsl_vector,get)(v, i));
+    rb_str_catf(str, "%d", FUNCTION(gsl_vector,get)(v, i));
 #endif
-    rb_str_concat(str, rb_str_new2(buf));
     if (i != v->size-1) rb_str_concat(str, sep);
   }
   return str;

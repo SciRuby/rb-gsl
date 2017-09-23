@@ -432,7 +432,7 @@ static VALUE rb_gsl_monte_vegas_integrate(int argc, VALUE *argv, VALUE obj)
 
 static int get_monte_type(VALUE vt)
 {
-  char name[32];
+  char *name;
   if (rb_obj_is_kind_of(vt, cgsl_monte_plain)) return GSL_MONTE_PLAIN_STATE;
   else if (rb_obj_is_kind_of(vt, cgsl_monte_miser)) return GSL_MONTE_MISER_STATE;
   else if (rb_obj_is_kind_of(vt, cgsl_monte_vegas)) return GSL_MONTE_VEGAS_STATE;
@@ -441,7 +441,7 @@ static int get_monte_type(VALUE vt)
   }
   switch(TYPE(vt)) {
   case T_STRING:
-    strcpy(name, STR2CSTR(vt));
+    name = STR2CSTR(vt);
     if (str_tail_grep(name, "plain") == 0) {
       return GSL_MONTE_PLAIN_STATE + 100;
     } else if (str_tail_grep(name, "miser") == 0) {
@@ -459,6 +459,7 @@ static int get_monte_type(VALUE vt)
     rb_raise(rb_eTypeError, "String or Fixnum expected");
     break;
   }
+  RB_GC_GUARD(vt);
   /* wrong argument if reach here */
   rb_raise(rb_eArgError, "wrong argument");
 }

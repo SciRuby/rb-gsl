@@ -1548,10 +1548,10 @@ static VALUE rb_gsl_histogram_fit_xexponential(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_histogram_fit(int argc, VALUE *argv, VALUE obj)
 {
-  char fittype[32];
+  char *fittype;
   if (argc < 1) rb_raise(rb_eArgError, "too few arguments");
   Check_Type(argv[0], T_STRING);
-  strcpy(fittype, STR2CSTR(argv[0]));
+  fittype = STR2CSTR(argv[0]);
   if (str_head_grep(fittype, "exp") == 0) {
     return rb_gsl_histogram_fit_exponential(argc-1, argv+1, obj);
   } else if (str_head_grep(fittype, "power") == 0) {
@@ -1566,6 +1566,7 @@ static VALUE rb_gsl_histogram_fit(int argc, VALUE *argv, VALUE obj)
     rb_raise(rb_eRuntimeError,
              "unknown fitting type %s (exp, power, gaus expected)", fittype);
   }
+  RB_GC_GUARD(argv[0]);
   return Qnil;
 }
 

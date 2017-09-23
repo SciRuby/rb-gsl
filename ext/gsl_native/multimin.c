@@ -443,10 +443,10 @@ static void define_const(VALUE klass1, VALUE klass2)
 
 static const gsl_multimin_fdfminimizer_type* get_fdfminimizer_type(VALUE t)
 {
-  char name[64];
+  char *name;
   switch (TYPE(t)) {
   case T_STRING:
-    strcpy(name, STR2CSTR(t));
+    name = STR2CSTR(t);
     if (str_tail_grep(name, "conjugate_fr") == 0)
       return gsl_multimin_fdfminimizer_conjugate_fr;
     else if (str_tail_grep(name, "conjugate_pr") == 0)
@@ -481,6 +481,7 @@ static const gsl_multimin_fdfminimizer_type* get_fdfminimizer_type(VALUE t)
     rb_raise(rb_eTypeError, "type is given by a String or a Fixnum");
     break;
   }
+  RB_GC_GUARD(t);
 }
 
 static VALUE rb_gsl_fdfminimizer_new(VALUE klass, VALUE t, VALUE n)
@@ -587,11 +588,11 @@ static VALUE rb_gsl_multimin_test_gradient(VALUE obj, VALUE gg, VALUE ea)
 /*****/
 static const gsl_multimin_fminimizer_type* get_fminimizer_type(VALUE t)
 {
-  char name[64];
+  char *name;
 
   switch (TYPE(t)) {
   case T_STRING:
-    strcpy(name, STR2CSTR(t));
+    name = STR2CSTR(t);
     if (str_tail_grep(name, "nmsimplex") == 0)
       return gsl_multimin_fminimizer_nmsimplex;
     if (str_tail_grep(name, "nmsimplex2rand") == 0)
@@ -615,6 +616,7 @@ static const gsl_multimin_fminimizer_type* get_fminimizer_type(VALUE t)
              rb_class2name(CLASS_OF(t)));
     break;
   }
+  RB_GC_GUARD(t);
 }
 
 static VALUE rb_gsl_fminimizer_new(VALUE klass, VALUE t, VALUE n)
@@ -775,4 +777,3 @@ void Init_gsl_multimin(VALUE module)
 #ifdef CHECK_MULTIMIN_FUNCTION_FDF
 #undef CHECK_MULTIMIN_FUNCTION_FDF
 #endif
-

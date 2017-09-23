@@ -1526,12 +1526,12 @@ static VALUE FUNCTION(rb_gsl_poly,companion_matrix)(VALUE obj)
 static VALUE FUNCTION(rb_gsl_poly,info)(VALUE obj)
 {
   GSL_TYPE(gsl_poly) *v;
-  char buf[256];
+  VALUE buf;
   Data_Get_Struct(obj, GSL_TYPE(gsl_poly), v);
-  sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
-  sprintf(buf, "%sOrder:      %d\n", buf, (int) v->size-1);
-  return rb_str_new2(buf);
+  buf = rb_sprintf("Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+  rb_str_catf(buf, "SuperClass: %s\n", rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+  rb_str_catf(buf, "Order:      %d\n", (int) v->size-1);
+  return buf;
 }
 
 #ifdef BASE_DOUBLE

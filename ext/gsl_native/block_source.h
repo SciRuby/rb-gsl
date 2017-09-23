@@ -138,7 +138,6 @@ static VALUE FUNCTION(rb_gsl_block,fscanf)(VALUE obj, VALUE io)
 static VALUE FUNCTION(rb_gsl_block,to_s)(VALUE obj)
 {
   GSL_TYPE(gsl_block) *v = NULL;
-  char buf[32];
   size_t i, n;
   VALUE str;
   Data_Get_Struct(obj, GSL_TYPE(gsl_block), v);
@@ -146,16 +145,13 @@ static VALUE FUNCTION(rb_gsl_block,to_s)(VALUE obj)
   n = v->size;
   if (rb_obj_is_kind_of(obj, cgsl_block_complex)) n *= 2;
   for (i = 0; i < n; i++) {
-    sprintf(buf,  PRINTF_FORMAT, (TYPE2) v->data[i]);
-    rb_str_cat(str, buf, strlen(buf));
+    rb_str_catf(str, PRINTF_FORMAT, (TYPE2) v->data[i]);
     if (i == SHOW_ELM && i != v->size-1) {
-      strcpy(buf, "... ");
-      rb_str_cat(str, buf, strlen(buf));
+      rb_str_cat2(str, "... ");
       break;
     }
   }
-  sprintf(buf, "]");
-  rb_str_cat(str, buf, strlen(buf));
+  rb_str_cat2(str, "]");
   return str;
 }
 #undef SHOW_ELM
@@ -164,9 +160,7 @@ static VALUE FUNCTION(rb_gsl_block,to_s)(VALUE obj)
 static VALUE FUNCTION(rb_gsl_block,inspect)(VALUE obj)
 {
   VALUE str;
-  char buf[64];
-  sprintf(buf, "%s\n", rb_class2name(CLASS_OF(obj)));
-  str = rb_str_new2(buf);
+  str = rb_sprintf("%s\n", rb_class2name(CLASS_OF(obj)));
   return rb_str_concat(str, FUNCTION(rb_gsl_block,to_s)(obj));
 }
 

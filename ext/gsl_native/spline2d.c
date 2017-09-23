@@ -83,9 +83,9 @@ static VALUE rb_gsl_spline2d_accel(VALUE self)
 }
 
 static VALUE rb_gsl_spline2d_evaluate(VALUE self, VALUE xx, VALUE yy,
-  double (*eval)(const gsl_spline2d *, double, double, gsl_interp_accel *, 
+  double (*eval)(const gsl_spline2d *, double, double, gsl_interp_accel *,
     gsl_interp_accel *))
-{ 
+{
   VALUE is_swapped = rb_cvar_get(CLASS_OF(self), rb_intern("@@swapped"));
   VALUE temp;
 
@@ -94,7 +94,7 @@ static VALUE rb_gsl_spline2d_evaluate(VALUE self, VALUE xx, VALUE yy,
     xx = yy;
     yy = temp;
   }
-  
+
   rb_gsl_spline2d *rgs = NULL;
   gsl_vector *vx = NULL, *vy = NULL, *vnew = NULL;
   gsl_matrix *mx = NULL, *my = NULL, *mnew = NULL;
@@ -143,7 +143,7 @@ static VALUE rb_gsl_spline2d_evaluate(VALUE self, VALUE xx, VALUE yy,
       vnew = gsl_vector_alloc(vx->size);
 
       for (i = 0; i < vx->size; i++) {
-        val = (*eval)(rgs->s, gsl_vector_get(vx, i), gsl_vector_get(vy, i), 
+        val = (*eval)(rgs->s, gsl_vector_get(vx, i), gsl_vector_get(vy, i),
           rgs->xacc, rgs->yacc);
         gsl_vector_set(vnew, i, val);
       }
@@ -171,25 +171,25 @@ static VALUE rb_gsl_spline2d_evaluate(VALUE self, VALUE xx, VALUE yy,
 }
 
 static VALUE rb_gsl_spline2d_eval(VALUE self, VALUE xx, VALUE yy)
-{ 
+{
   return rb_gsl_spline2d_evaluate(self, xx, yy, gsl_spline2d_eval);
 }
 
 static VALUE rb_gsl_spline2d_info(VALUE self)
 {
   rb_gsl_spline2d *p = NULL;
-  char buf[256];
+  VALUE buf;
   Data_Get_Struct(self, rb_gsl_spline2d, p);
-  sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(self)));
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(self))));
-  sprintf(buf, "%sType:       %s\n", buf, gsl_interp2d_name(&p->s->interp_object));
-  sprintf(buf, "%sxmin:       %f\n", buf, p->s->interp_object.xmin);
-  sprintf(buf, "%sxmax:       %f\n", buf, p->s->interp_object.xmax);
-  sprintf(buf, "%symin:       %f\n", buf, p->s->interp_object.ymin);
-  sprintf(buf, "%symax:       %f\n", buf, p->s->interp_object.ymax);
-  sprintf(buf, "%sxSize:       %d\n", buf, (int) p->s->interp_object.xsize);
-  sprintf(buf, "%sySize:       %d\n", buf, (int) p->s->interp_object.ysize);
-  return rb_str_new2(buf);
+  buf = rb_sprintf("Class:      %s\n", rb_class2name(CLASS_OF(self)));
+  rb_str_catf(buf, "SuperClass: %s\n", rb_class2name(RCLASS_SUPER(CLASS_OF(self))));
+  rb_str_catf(buf, "Type:       %s\n", gsl_interp2d_name(&p->s->interp_object));
+  rb_str_catf(buf, "xmin:       %f\n", p->s->interp_object.xmin);
+  rb_str_catf(buf, "xmax:       %f\n", p->s->interp_object.xmax);
+  rb_str_catf(buf, "ymin:       %f\n", p->s->interp_object.ymin);
+  rb_str_catf(buf, "ymax:       %f\n", p->s->interp_object.ymax);
+  rb_str_catf(buf, "xSize:       %d\n", (int) p->s->interp_object.xsize);
+  rb_str_catf(buf, "ySize:       %d\n", (int) p->s->interp_object.ysize);
+  return buf;
 }
 
 void Init_gsl_spline2d(VALUE module)

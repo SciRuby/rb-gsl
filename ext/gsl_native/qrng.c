@@ -31,11 +31,11 @@ static const gsl_qrng_type* get_gsl_qrng_type(VALUE t);
 static const gsl_qrng_type* get_gsl_qrng_type(VALUE t)
 {
   const gsl_qrng_type *T;
-  char name[32];
+  char *name;
 
   switch (TYPE(t)) {
   case T_STRING:
-    strcpy(name, STR2CSTR(t));
+    name = STR2CSTR(t);
     if (strstr(name, "niederreiter_2")) return T = gsl_qrng_niederreiter_2;
 #ifdef HAVE_QRNGEXTRA_QRNGEXTRA_H
     else if (strstr(name, "hdsobol")) return T = qrngextra_hdsobol;
@@ -62,6 +62,7 @@ static const gsl_qrng_type* get_gsl_qrng_type(VALUE t)
     rb_raise(rb_eTypeError, "wrong argument type %s (String or Fixnum expected)",
              rb_class2name(CLASS_OF(t)));
   }
+  RB_GC_GUARD(t);
   return T;
 }
 

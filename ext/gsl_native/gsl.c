@@ -22,9 +22,7 @@ static void rb_gsl_define_methods(VALUE module);
 
 static VALUE rb_gsl_object_inspect(VALUE obj)
 {
-  char buf[256];
-  sprintf(buf, "%s", rb_class2name(CLASS_OF(obj)));
-  return rb_str_new2(buf);
+  return rb_sprintf("%s", rb_class2name(CLASS_OF(obj)));
 }
 
 static VALUE rb_gsl_call_rescue(VALUE obj)
@@ -44,15 +42,15 @@ static VALUE rb_gsl_call_size(VALUE obj)
 
 static VALUE rb_gsl_object_info(VALUE obj)
 {
-  char buf[256];
-  VALUE s;
-  sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+  VALUE buf, s;
+  buf = rb_sprintf("Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+  rb_str_catf(buf, "SuperClass: %s\n", rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
   s = rb_rescue(rb_gsl_call_name, obj, rb_gsl_call_rescue, obj);
-  if (s) sprintf(buf, "%sType:       %s\n", buf, STR2CSTR(s));
+  if (s) rb_str_catf(buf, "Type:       %s\n", STR2CSTR(s));
+  RB_GC_GUARD(s);
   s = rb_rescue(rb_gsl_call_size, obj, rb_gsl_call_rescue, obj);
-  if (s) sprintf(buf, "%sSize:       %d\n", buf, (int) FIX2INT(s));
-  return rb_str_new2(buf);
+  if (s) rb_str_catf(buf, "Size:       %d\n", (int) FIX2INT(s));
+  return buf;
 }
 
 static VALUE rb_gsl_not_implemeted(VALUE obj)

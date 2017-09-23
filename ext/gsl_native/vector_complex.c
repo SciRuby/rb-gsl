@@ -414,7 +414,6 @@ static VALUE rb_gsl_vector_complex_set_basis(VALUE obj, VALUE ii)
 static VALUE rb_gsl_vector_complex_to_s(VALUE obj)
 {
   gsl_vector_complex *v = NULL;
-  char buf[64];
   size_t i;
   VALUE str;
   gsl_complex * z;
@@ -425,44 +424,42 @@ static VALUE rb_gsl_vector_complex_to_s(VALUE obj)
   if (VECTOR_COMPLEX_COL_P(obj)) {
     for (i = 0; i < v->size; i++) {
       if (i != 0) {
-        rb_str_cat(str, "  ", 2);
+        rb_str_cat2(str, "  ");
       }
       z = GSL_COMPLEX_AT(v, i);
-      sprintf(buf, "[%4.3e %4.3e]", GSL_REAL(*z), GSL_IMAG(*z));
-      if (i != v->size-1) strcat(buf, "\n");
-      rb_str_cat(str, buf, strlen(buf));
+      rb_str_catf(str, "[%4.3e %4.3e]", GSL_REAL(*z), GSL_IMAG(*z));
+      if (i != v->size-1) rb_str_cat2(str, "\n");
       if (i >= 10 && i != v->size-1) {
-        rb_str_cat(str, "  ...", 5);
+        rb_str_cat2(str, "  ...");
         break;
       }
     }
   } else {
     z = GSL_COMPLEX_AT(v, 0);
-    sprintf(buf, "[%4.3e %4.3e]", GSL_REAL(*z), GSL_IMAG(*z));
-    rb_str_cat(str, buf, strlen(buf));
+    rb_str_catf(str, "[%4.3e %4.3e]", GSL_REAL(*z), GSL_IMAG(*z));
     for (i = 1; i < v->size; i++) {
       z = GSL_COMPLEX_AT(v, i);
-      sprintf(buf, " [%4.3e %4.3e]", GSL_REAL(*z), GSL_IMAG(*z));
-      rb_str_cat(str, buf, strlen(buf));
+      rb_str_catf(str, " [%4.3e %4.3e]", GSL_REAL(*z), GSL_IMAG(*z));
       if (i >= 10 && i != v->size-1) {
-        rb_str_cat(str, " ...", 4);
+        rb_str_cat2(str, " ...");
         break;
       }
     }
   }
-  rb_str_cat(str, " ]", 2);
+  rb_str_cat2(str, " ]");
   return str;
 }
 
 static VALUE rb_gsl_vector_complex_inspect(VALUE obj)
 {
   VALUE str;
-  char buf[128];
   gsl_vector_complex *v;
 
   Data_Get_Struct(obj, gsl_vector_complex, v);
-  sprintf(buf, "#<%s[%lu]:%#lx>\n", rb_class2name(CLASS_OF(obj)), v->size, NUM2ULONG(rb_obj_id(obj)));
-  str = rb_str_new2(buf);
+  str = rb_sprintf("#<%s[%lu]:%#lx>\n",
+                   rb_class2name(CLASS_OF(obj)),
+                   v->size,
+                   NUM2ULONG(rb_obj_id(obj)));
   return rb_str_concat(str, rb_gsl_vector_complex_to_s(obj));
 }
 
@@ -2238,4 +2235,3 @@ void Init_gsl_vector_complex(VALUE module)
   rb_define_method(cgsl_vector_complex, "not_equal?", rb_gsl_vector_complex_not_equal, -1);
   rb_define_alias(cgsl_vector_complex, "!=", "not_equal?");
 }
-
