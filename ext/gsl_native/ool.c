@@ -448,6 +448,7 @@ static VALUE rb_ool_conmin_function_alloc(int argc, VALUE *argv, VALUE klass)
   rb_ary_store(ary, 4, Qnil);  /* params */
 //  set_functions(argc, argv, F);
   obj = Data_Wrap_Struct(klass, rb_ool_conmin_function_mark, free, F);
+  RB_GC_GUARD(ary);
   rb_ool_conmin_function_set(argc, argv, obj);
   return obj;
 }

@@ -94,6 +94,7 @@ static VALUE rb_gsl_multifit_ndlinear_alloc(int argc, VALUE *argv, VALUE klass)
   free((size_t*) N);
 
   wspace = Data_Wrap_Struct(cWorkspace, multifit_ndlinear_mark, gsl_multifit_ndlinear_free, w);
+  RB_GC_GUARD(params);
 
   return wspace;
 }
@@ -317,4 +318,3 @@ void Init_ndlinear(VALUE module)
 }
 
 #endif
-
