@@ -91,13 +91,16 @@ static void gsl_monte_function_mark(gsl_monte_function *f)
 static VALUE rb_gsl_monte_function_new(int argc, VALUE *argv, VALUE klass)
 {
   gsl_monte_function *f;
-  VALUE obj;
+  VALUE obj, params;
   f = ALLOC(gsl_monte_function);
   f->f = &rb_gsl_monte_function_f;
-  /*  (VALUE) f->params = rb_ary_new2(2);*/
-  f->params = (void *) rb_ary_new2(2);
-  rb_ary_store((VALUE) f->params, 1, Qnil);
+
+  params = rb_ary_new2(2);
+  rb_ary_store(params, 1, Qnil);
+  f->params = (void *) params;
+
   obj = Data_Wrap_Struct(klass, gsl_monte_function_mark, gsl_monte_function_free, f);
+  RB_GC_GUARD(params);
   rb_gsl_monte_function_set_f(argc, argv, obj);
   return obj;
 }

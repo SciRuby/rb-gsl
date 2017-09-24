@@ -133,21 +133,25 @@ VALUE rb_gsl_ntuple_data(VALUE obj)
 
 /***** select_fn *****/
 
-static gsl_ntuple_select_fn* gsl_ntuple_select_fn_alloc();
 static void gsl_ntuple_select_fn_free(gsl_ntuple_select_fn *ptr);
 int rb_gsl_ntuple_select_fn_f(void *data, void *p);
 static void gsl_ntuple_select_fn_mark(gsl_ntuple_select_fn *ptr);
 
-static gsl_ntuple_select_fn* gsl_ntuple_select_fn_alloc()
+static VALUE gsl_ntuple_select_fn_alloc(VALUE klass)
 {
+  VALUE params, ret;
   gsl_ntuple_select_fn *ptr = NULL;
   ptr = ALLOC(gsl_ntuple_select_fn);
   if (ptr == NULL) rb_raise(rb_eRuntimeError, "malloc failed");
   ptr->function = &rb_gsl_ntuple_select_fn_f;
-  /*  (VALUE) ptr->params = rb_ary_new2(3);*/
-  ptr->params = (void *) rb_ary_new2(3);
-  rb_ary_store((VALUE) ptr->params, 1, Qnil);
-  return ptr;
+
+  params = rb_ary_new2(3);
+  rb_ary_store(params, 1, Qnil);
+  ptr->params = (void *) params;
+
+  ret = Data_Wrap_Struct(klass, gsl_ntuple_select_fn_mark, gsl_ntuple_select_fn_free, ptr);
+  RB_GC_GUARD(params);
+  return ret;
 }
 
 static void gsl_ntuple_select_fn_free(gsl_ntuple_select_fn *ptr)
@@ -244,30 +248,32 @@ static VALUE rb_gsl_ntuple_select_fn_set_params(int argc, VALUE *argv, VALUE obj
 
 static VALUE rb_gsl_ntuple_select_fn_new(int argc, VALUE *argv, VALUE klass)
 {
-  gsl_ntuple_select_fn *F = NULL;
-  VALUE ff;
-  F = gsl_ntuple_select_fn_alloc();
-  ff = Data_Wrap_Struct(klass, gsl_ntuple_select_fn_mark, gsl_ntuple_select_fn_free, F);
-  rb_gsl_ntuple_select_fn_set_f(argc, argv, ff);
-  return ff;
+  VALUE F;
+  F = gsl_ntuple_select_fn_alloc(klass);
+  rb_gsl_ntuple_select_fn_set_f(argc, argv, F);
+  return F;
 }
 
 /***** value_fn *****/
-static gsl_ntuple_value_fn* gsl_ntuple_value_fn_alloc();
 static void gsl_ntuple_value_fn_free(gsl_ntuple_value_fn *ptr);
 static double rb_gsl_ntuple_value_fn_f(void *data, void *p);
 static void gsl_ntuple_value_fn_mark(gsl_ntuple_value_fn *ptr);
 
-static gsl_ntuple_value_fn* gsl_ntuple_value_fn_alloc()
+static VALUE gsl_ntuple_value_fn_alloc(VALUE klass)
 {
+  VALUE params, ret;
   gsl_ntuple_value_fn *ptr = NULL;
   ptr = ALLOC(gsl_ntuple_value_fn);
   if (ptr == NULL) rb_raise(rb_eRuntimeError, "malloc failed");
   ptr->function = &rb_gsl_ntuple_value_fn_f;
-  /*  (VALUE) ptr->params = rb_ary_new2(3);*/
-  ptr->params = (void *) rb_ary_new2(3);
+
+  params = rb_ary_new2(3);
+  ptr->params = (void *) params;
   rb_ary_store((VALUE) ptr->params, 1, Qnil);
-  return ptr;
+
+  ret = Data_Wrap_Struct(klass, gsl_ntuple_value_fn_mark, gsl_ntuple_value_fn_free, ptr);
+  RB_GC_GUARD(params);
+  return ret;
 }
 
 static void gsl_ntuple_value_fn_mark(gsl_ntuple_value_fn *ptr)
@@ -362,12 +368,10 @@ static VALUE rb_gsl_ntuple_value_fn_set_params(int argc, VALUE *argv, VALUE obj)
 
 static VALUE rb_gsl_ntuple_value_fn_new(int argc, VALUE *argv, VALUE klass)
 {
-  gsl_ntuple_value_fn *F = NULL;
-  VALUE ff;
-  F = gsl_ntuple_value_fn_alloc();
-  ff = Data_Wrap_Struct(klass, gsl_ntuple_value_fn_mark, gsl_ntuple_value_fn_free, F);
-  rb_gsl_ntuple_value_fn_set_f(argc, argv, ff);
-  return ff;
+  VALUE F;
+  F = gsl_ntuple_value_fn_alloc(klass);
+  rb_gsl_ntuple_value_fn_set_f(argc, argv, F);
+  return F;
 }
 
 /* singleton method */
