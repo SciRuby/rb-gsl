@@ -235,15 +235,26 @@ static VALUE rb_gsl_interp2d_info(VALUE self)
   rb_gsl_interp2d *p;
   char buf[256];
   Data_Get_Struct(self, rb_gsl_interp2d, p);
-  sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(self)));
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(self))));
-  sprintf(buf, "%sType:       %s\n", buf, gsl_interp2d_name(p->p));
-  sprintf(buf, "%sxmin:       %f\n", buf, p->p->xmin);
-  sprintf(buf, "%sxmax:       %f\n", buf, p->p->xmax);
-  sprintf(buf, "%symin:       %f\n", buf, p->p->ymin);
-  sprintf(buf, "%symax:       %f\n", buf, p->p->ymax);
-  sprintf(buf, "%sxsize:       %d\n", buf, (int) p->p->xsize);
-  sprintf(buf, "%sysize:       %d\n", buf, (int) p->p->ysize);
+  snprintf(buf, sizeof(buf)-1,
+           "Class:      %s\n"
+           "SuperClass: %s\n"
+           "Type:       %s\n"
+           "xmin:       %f\n"
+           "xmax:       %f\n"
+           "ymin:       %f\n"
+           "ymax:       %f\n"
+           "xsize:       %d\n"
+           "ysize:       %d\n",
+           rb_class2name(CLASS_OF(self)),
+           rb_class2name(RCLASS_SUPER(CLASS_OF(self))),
+           gsl_interp2d_name(p->p),
+           p->p->xmin,
+           p->p->xmax,
+           p->p->ymin,
+           p->p->ymax,
+           (int) p->p->xsize,
+           (int) p->p->ysize);
+  buf[sizeof(buf) - 1] = '\0';
 
   return rb_str_new2(buf);
 }
