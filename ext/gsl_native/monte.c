@@ -25,7 +25,7 @@ static VALUE cgsl_monte_miser;
 static VALUE cgsl_monte_vegas;
 static VALUE cgsl_monte_function;
 static VALUE cgsl_monte_miser_params, cgsl_monte_vegas_params;
-EXTERN VALUE cgsl_vector;
+extern VALUE cgsl_vector;
 
 enum {
   GSL_MONTE_PLAIN_STATE = 1,

@@ -18,11 +18,11 @@
 #include <gsl/gsl_histogram2d.h>
 #include "rb_gsl.h"
 
-EXTERN VALUE cgsl_histogram;
-EXTERN VALUE cgsl_histogram_range;
-EXTERN VALUE cgsl_histogram_bin;
-EXTERN VALUE cgsl_histogram2d;
-EXTERN VALUE cgsl_histogram2d_view;
+extern VALUE cgsl_histogram;
+extern VALUE cgsl_histogram_range;
+extern VALUE cgsl_histogram_bin;
+extern VALUE cgsl_histogram2d;
+extern VALUE cgsl_histogram2d_view;
 
 typedef struct {
   gsl_histogram h;

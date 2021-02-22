@@ -36,6 +36,11 @@
 #define VEC_VIEW_P VECTOR_INT_VIEW_P
 #endif
 
+// Ruby 3 redefines memcpy as ruby_nonempty_memcpy, breaking everything if memcpy is used in preprocessor
+#ifdef RUBY_3
+#define memcpy memcpy
+#endif
+
 void FUNCTION(get_range,beg_en_n)(VALUE range, BASE *beg, BASE *en, size_t *n, int *step);
 
 void get_range_beg_en_n_for_size(VALUE range,
@@ -687,7 +692,7 @@ static VALUE FUNCTION(rb_gsl_vector,uplus)(VALUE obj)
   return obj;
 }
 
-EXTERN VALUE cgsl_poly;
+extern VALUE cgsl_poly;
 
 VALUE FUNCTION(rb_gsl_vector,uminus)(VALUE obj)
 {
@@ -1009,7 +1014,7 @@ int FUNCTION(rbgsl_vector,equal)(const GSL_TYPE(gsl_vector) *v1, const GSL_TYPE(
 }
 
 #ifdef HAVE_TENSOR_TENSOR_H
-EXTERN VALUE cgsl_tensor, cgsl_tensor_int;
+extern VALUE cgsl_tensor, cgsl_tensor_int;
 VALUE rb_gsl_tensor_equal(int argc, VALUE *argv, VALUE obj);
 VALUE rb_gsl_tensor_int_equal(int argc, VALUE *argv, VALUE obj);
 #ifdef BASE_DOUBLE
@@ -3319,3 +3324,7 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
 #undef VEC_ROW_P
 #undef CHECK_VEC
 #undef VEC_VIEW_P
+
+#ifdef RUBY_3
+#define memcpy ruby_nonempty_memcpy
+#endif

@@ -18,7 +18,7 @@
 #include <gsl/gsl_complex.h>
 #include <gsl/gsl_complex_math.h>
 
-EXTERN VALUE cgsl_complex;
+extern VALUE cgsl_complex;
 VALUE rb_gsl_complex_pow(int argc, VALUE *argv, VALUE obj);
 VALUE rb_gsl_complex_pow_real(int argc, VALUE *argv, VALUE obj);
 
