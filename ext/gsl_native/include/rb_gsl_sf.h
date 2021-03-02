@@ -16,7 +16,7 @@
 #include <gsl/gsl_sf_mathieu.h>
 #include "rb_gsl.h"
 
-EXTERN VALUE cgsl_sf_result, cgsl_sf_result_e10;
+extern VALUE cgsl_sf_result, cgsl_sf_result_e10;
 
 VALUE rb_gsl_sf_result_new(VALUE klass);
 

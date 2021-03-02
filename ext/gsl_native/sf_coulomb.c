@@ -11,7 +11,7 @@
 */
 
 #include "include/rb_gsl_sf.h"
-EXTERN VALUE cgsl_vector;
+extern VALUE cgsl_vector;
 
 static VALUE rb_gsl_sf_hydrogenicR_1(VALUE obj, VALUE Z, VALUE r)
 {

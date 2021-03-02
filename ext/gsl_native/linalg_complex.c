@@ -14,8 +14,8 @@
 #include "include/rb_gsl_common.h"
 #include "include/rb_gsl_linalg.h"
 
-EXTERN VALUE mgsl_linalg;
-EXTERN VALUE cgsl_complex;
+extern VALUE mgsl_linalg;
+extern VALUE cgsl_complex;
 
 static VALUE cgsl_matrix_complex_LU;
 static VALUE cgsl_matrix_complex_C;

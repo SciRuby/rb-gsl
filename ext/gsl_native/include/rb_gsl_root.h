@@ -16,7 +16,7 @@
 #include <gsl/gsl_roots.h>
 #include "rb_gsl.h"
 
-EXTERN VALUE cgsl_fsolver;
-EXTERN VALUE cgsl_fdfsolver;
+extern VALUE cgsl_fsolver;
+extern VALUE cgsl_fdfsolver;
 
 #endif

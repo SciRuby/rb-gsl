@@ -21,6 +21,7 @@ def create_conf_h(file) #:nodoc:
 
     # FIXME: Find a better way to do this:
     hfile.puts "#define RUBY_2 1" if RUBY_VERSION >= '2.0'
+    hfile.puts "#define RUBY_3 1" if RUBY_VERSION >= '3.0'
 
     for line in $defs
       line =~ /^-D(.*)/

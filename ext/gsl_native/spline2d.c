@@ -11,7 +11,7 @@
 #ifdef GSL_2_0_LATER
 #include "include/rb_gsl_interp2d.h"
 
-EXTERN VALUE cgsl_interp2d_accel;  /* defined in interp2d.c */
+extern VALUE cgsl_interp2d_accel;  /* defined in interp2d.c */
 static void rb_gsl_spline2d_free(rb_gsl_spline2d *fr);
 
 static VALUE rb_gsl_spline2d_alloc(int argc, VALUE *argv, VALUE self)

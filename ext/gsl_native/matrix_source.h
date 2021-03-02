@@ -1536,7 +1536,7 @@ static int FUNCTION(mygsl_matrix,equal)(GSL_TYPE(gsl_matrix) *a, GSL_TYPE(gsl_ma
 }
 
 #ifdef HAVE_TENSOR_TENSOR_H
-EXTERN VALUE cgsl_tensor, cgsl_tensor_int;
+extern VALUE cgsl_tensor, cgsl_tensor_int;
 VALUE rb_gsl_tensor_equal(int argc, VALUE *argv, VALUE obj);
 VALUE rb_gsl_tensor_int_equal(int argc, VALUE *argv, VALUE obj);
 #ifdef BASE_DOUBLE

@@ -29,41 +29,41 @@
 typedef gsl_permutation gsl_index;
 
 #ifdef HAVE_NARRAY_H
-EXTERN VALUE cNArray;
+extern VALUE cNArray;
 #endif
 
 #ifdef HAVE_NMATRIX_H
-EXTERN VALUE cNMatrix;
+extern VALUE cNMatrix;
 #endif
 
-EXTERN VALUE cgsl_block, cgsl_block_int;
-EXTERN VALUE cgsl_block_uchar;
-EXTERN VALUE cgsl_block_complex;
-EXTERN VALUE cgsl_vector, cgsl_vector_complex;
-EXTERN VALUE cgsl_vector_col;
-EXTERN VALUE cgsl_vector_col_view;
-EXTERN VALUE cgsl_vector_complex_col;
-EXTERN VALUE cgsl_vector_complex_col_view;
-EXTERN VALUE cgsl_vector_view, cgsl_vector_complex_view;
-EXTERN VALUE cgsl_vector_view_ro, cgsl_vector_col_view_ro;
-EXTERN VALUE cgsl_vector_complex_view_ro;
+extern VALUE cgsl_block, cgsl_block_int;
+extern VALUE cgsl_block_uchar;
+extern VALUE cgsl_block_complex;
+extern VALUE cgsl_vector, cgsl_vector_complex;
+extern VALUE cgsl_vector_col;
+extern VALUE cgsl_vector_col_view;
+extern VALUE cgsl_vector_complex_col;
+extern VALUE cgsl_vector_complex_col_view;
+extern VALUE cgsl_vector_view, cgsl_vector_complex_view;
+extern VALUE cgsl_vector_view_ro, cgsl_vector_col_view_ro;
+extern VALUE cgsl_vector_complex_view_ro;
 
-EXTERN VALUE cgsl_vector_int, cgsl_vector_int_col;
-EXTERN VALUE cgsl_vector_int_view, cgsl_vector_int_col_view;
-EXTERN VALUE cgsl_vector_int_view_ro, cgsl_vector_int_col_view_ro;
+extern VALUE cgsl_vector_int, cgsl_vector_int_col;
+extern VALUE cgsl_vector_int_view, cgsl_vector_int_col_view;
+extern VALUE cgsl_vector_int_view_ro, cgsl_vector_int_col_view_ro;
 
-EXTERN VALUE cgsl_matrix, cgsl_matrix_complex;
-EXTERN VALUE cgsl_matrix_view_ro;
-EXTERN VALUE cgsl_matrix_complex_view_ro;
-EXTERN VALUE cgsl_matrix_view, cgsl_matrix_complex_view;
-EXTERN VALUE cgsl_matrix_int, cgsl_matrix_int_view;
-EXTERN VALUE cgsl_matrix_int_view_ro;
-EXTERN VALUE cgsl_permutation;
-EXTERN VALUE cgsl_index;
-EXTERN VALUE cgsl_function;
-EXTERN VALUE mgsl_narray;
+extern VALUE cgsl_matrix, cgsl_matrix_complex;
+extern VALUE cgsl_matrix_view_ro;
+extern VALUE cgsl_matrix_complex_view_ro;
+extern VALUE cgsl_matrix_view, cgsl_matrix_complex_view;
+extern VALUE cgsl_matrix_int, cgsl_matrix_int_view;
+extern VALUE cgsl_matrix_int_view_ro;
+extern VALUE cgsl_permutation;
+extern VALUE cgsl_index;
+extern VALUE cgsl_function;
+extern VALUE mgsl_narray;
 
-EXTERN VALUE mDirac;
+extern VALUE mDirac;
 
 gsl_matrix_view* gsl_matrix_view_alloc();
 void gsl_matrix_view_free(gsl_matrix_view * mv);

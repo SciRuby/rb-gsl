@@ -12,7 +12,7 @@
 #include "include/rb_gsl_interp2d.h"
 
 VALUE cgsl_interp2d_accel; /* this is used also in spline2d.c */
-EXTERN VALUE cgsl_vector, cgsl_matrix;
+extern VALUE cgsl_vector, cgsl_matrix;
 
 static VALUE rb_gsl_interp2d_alloc(int argc, VALUE *argv, VALUE self)
 { 

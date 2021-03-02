@@ -17,12 +17,12 @@
 #include "rb_gsl_complex.h"
 #include "rb_gsl_array.h"
 
-EXTERN VALUE cgsl_poly;
-EXTERN VALUE cgsl_poly_int;
-EXTERN VALUE cgsl_poly_dd;
-EXTERN VALUE cgsl_poly_taylor;
-EXTERN VALUE cgsl_poly_workspace;
-EXTERN VALUE cgsl_rational;
+extern VALUE cgsl_poly;
+extern VALUE cgsl_poly_int;
+extern VALUE cgsl_poly_dd;
+extern VALUE cgsl_poly_taylor;
+extern VALUE cgsl_poly_workspace;
+extern VALUE cgsl_rational;
 
 typedef gsl_vector gsl_poly;
 typedef gsl_vector_int gsl_poly_int;

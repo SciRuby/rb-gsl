@@ -570,7 +570,7 @@ gsl_matrix_int_view* na_to_gm_int_view(VALUE nna)
 }
 
 #include <gsl/gsl_histogram.h>
-EXTERN VALUE cgsl_histogram;
+extern VALUE cgsl_histogram;
 static VALUE rb_gsl_narray_histogram(int argc, VALUE *argv, VALUE obj)
 {
   double *ptr, *ptr_range;

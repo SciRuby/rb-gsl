@@ -85,3 +85,8 @@
 #undef NAME
 #undef STRING
 #undef EXPAND
+
+#ifdef RUBY_3
+#undef memcpy
+#define memcpy ruby_nonempty_memcpy
+#endif

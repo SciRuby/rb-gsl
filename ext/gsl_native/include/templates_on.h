@@ -239,3 +239,9 @@
 #define STRING(x) #x
 #define EXPAND(x) STRING(x)
 #define NAME(x) EXPAND(GSL_TYPE(x))
+
+// Ruby 3 redefines memcpy as ruby_nonempty_memcpy, breaking everything if memcpy is used in preprocessor
+#ifdef RUBY_3
+#undef memcpy
+#define memcpy memcpy
+#endif

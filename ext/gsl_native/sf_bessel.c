@@ -11,7 +11,7 @@
 */
 
 #include "include/rb_gsl_sf.h"
-EXTERN VALUE cgsl_vector;
+extern VALUE cgsl_vector;
 
 /* Cylindrical Bessel Functions */
 static VALUE rb_gsl_sf_bessel_J0(VALUE obj, VALUE x)

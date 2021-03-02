@@ -39,11 +39,11 @@ enum {
   RB_GSL_FFT_COPY,
 };
 
-EXTERN VALUE mgsl_fft;
-EXTERN VALUE cgsl_fft_wavetable;
-EXTERN VALUE cgsl_fft_wavetable_factor;
-EXTERN VALUE cgsl_fft_complex_wavetable, cgsl_fft_complex_workspace;
-EXTERN VALUE cgsl_fft_real_wavetable, cgsl_fft_halfcomplex_wavetable;
-EXTERN VALUE cgsl_fft_real_workspace;
+extern VALUE mgsl_fft;
+extern VALUE cgsl_fft_wavetable;
+extern VALUE cgsl_fft_wavetable_factor;
+extern VALUE cgsl_fft_complex_wavetable, cgsl_fft_complex_workspace;
+extern VALUE cgsl_fft_real_wavetable, cgsl_fft_halfcomplex_wavetable;
+extern VALUE cgsl_fft_real_workspace;
 
 #endif

@@ -687,7 +687,7 @@ static VALUE FUNCTION(rb_gsl_vector,uplus)(VALUE obj)
   return obj;
 }
 
-EXTERN VALUE cgsl_poly;
+extern VALUE cgsl_poly;
 
 VALUE FUNCTION(rb_gsl_vector,uminus)(VALUE obj)
 {
@@ -1009,7 +1009,7 @@ int FUNCTION(rbgsl_vector,equal)(const GSL_TYPE(gsl_vector) *v1, const GSL_TYPE(
 }
 
 #ifdef HAVE_TENSOR_TENSOR_H
-EXTERN VALUE cgsl_tensor, cgsl_tensor_int;
+extern VALUE cgsl_tensor, cgsl_tensor_int;
 VALUE rb_gsl_tensor_equal(int argc, VALUE *argv, VALUE obj);
 VALUE rb_gsl_tensor_int_equal(int argc, VALUE *argv, VALUE obj);
 #ifdef BASE_DOUBLE
