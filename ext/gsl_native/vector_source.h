@@ -36,11 +36,6 @@
 #define VEC_VIEW_P VECTOR_INT_VIEW_P
 #endif
 
-// Ruby 3 redefines memcpy as ruby_nonempty_memcpy, breaking everything if memcpy is used in preprocessor
-#ifdef RUBY_3
-#define memcpy memcpy
-#endif
-
 void FUNCTION(get_range,beg_en_n)(VALUE range, BASE *beg, BASE *en, size_t *n, int *step);
 
 void get_range_beg_en_n_for_size(VALUE range,
@@ -3324,7 +3319,3 @@ void FUNCTION(Init_gsl_vector,init)(VALUE module)
 #undef VEC_ROW_P
 #undef CHECK_VEC
 #undef VEC_VIEW_P
-
-#ifdef RUBY_3
-#define memcpy ruby_nonempty_memcpy
-#endif
