@@ -15,8 +15,8 @@
 
 #include "rb_gsl.h"
 
-EXTERN VALUE cgsl_function;
-EXTERN VALUE cgsl_function_fdf;
+extern VALUE cgsl_function;
+extern VALUE cgsl_function_fdf;
 extern ID RBGSL_ID_call, RBGSL_ID_arity;
 void gsl_function_mark(gsl_function *f);
 void gsl_function_free(gsl_function *f);

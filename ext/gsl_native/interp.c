@@ -12,7 +12,7 @@
 #include "include/rb_gsl_interp.h"
 
 VALUE cgsl_interp_accel; /* this is used also in spline.c */
-EXTERN VALUE cgsl_vector, cgsl_matrix;
+extern VALUE cgsl_vector, cgsl_matrix;
 
 static void rb_gsl_interp_free(rb_gsl_interp *sp);
 
