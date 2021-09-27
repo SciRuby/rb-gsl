@@ -31,10 +31,10 @@ static VALUE rb_gsl_fsolver_new(VALUE klass, VALUE t)
 {
   gsl_root_fsolver *s = NULL;
   const gsl_root_fsolver_type *T;
-  char name[32];
+  char *name;
   switch (TYPE(t)) {
   case T_STRING:
-    strcpy(name, STR2CSTR(t));
+    name = STR2CSTR(t);
     if (!str_tail_grep(name, "bisection")) {
       T = gsl_root_fsolver_bisection;
     } else if (!str_tail_grep(name, "falsepos")) {
@@ -67,6 +67,7 @@ static VALUE rb_gsl_fsolver_new(VALUE klass, VALUE t)
              rb_class2name(CLASS_OF(t)));
     break;
   }
+  RB_GC_GUARD(t);
   s = gsl_root_fsolver_alloc(T);
   return Data_Wrap_Struct(klass, 0, gsl_root_fsolver_free, s);
 }
@@ -196,10 +197,10 @@ static VALUE rb_gsl_fdfsolver_new(VALUE klass, VALUE t)
 {
   gsl_root_fdfsolver *s = NULL;
   const gsl_root_fdfsolver_type *T;
-  char name[32];
+  char *name;
   switch (TYPE(t)) {
   case T_STRING:
-    strcpy(name, STR2CSTR(t));
+    name = STR2CSTR(t);
     if (!str_tail_grep(name, "newton")) {
       T = gsl_root_fdfsolver_newton;
     } else if (!str_tail_grep(name, "secant")) {
@@ -231,6 +232,7 @@ static VALUE rb_gsl_fdfsolver_new(VALUE klass, VALUE t)
              rb_class2name(CLASS_OF(t)));
     break;
   }
+  RB_GC_GUARD(t);
   s = gsl_root_fdfsolver_alloc(T);
   return Data_Wrap_Struct(klass, 0, gsl_root_fdfsolver_free, s);
 }

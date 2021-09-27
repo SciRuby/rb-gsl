@@ -427,10 +427,10 @@ static void multiroot_define_const(VALUE klass1, VALUE klass2)
 #include <string.h>
 static const gsl_multiroot_fsolver_type* get_fsolver_type(VALUE t)
 {
-  char name[32];
+  char *name;
   switch (TYPE(t)) {
   case T_STRING:
-    strcpy(name,STR2CSTR(t));
+    name = STR2CSTR(t);
     if (str_tail_grep(name, "hybrids") == 0) return gsl_multiroot_fsolver_hybrids;
     else if (str_tail_grep(name, "hybrid") == 0) return gsl_multiroot_fsolver_hybrid;
     else if (str_tail_grep(name, "dnewton") == 0) return gsl_multiroot_fsolver_dnewton;
@@ -452,14 +452,15 @@ static const gsl_multiroot_fsolver_type* get_fsolver_type(VALUE t)
     rb_raise(rb_eTypeError, "wrong type argument (Fixnum or String expected)");
     break;
   }
+  RB_GC_GUARD(t);
 }
 
 static const gsl_multiroot_fdfsolver_type* get_fdfsolver_type(VALUE t)
 {
-  char name[32];
+  char *name;
   switch (TYPE(t)) {
   case T_STRING:
-    strcpy(name,STR2CSTR(t));
+    name = STR2CSTR(t);
     if (str_tail_grep(name, "hybridsj") == 0) return gsl_multiroot_fdfsolver_hybridsj;
     else if (str_tail_grep(name, "hybridj") == 0) return gsl_multiroot_fdfsolver_hybridj;
     else if (str_tail_grep(name, "gnewton") == 0) return gsl_multiroot_fdfsolver_gnewton;
@@ -481,6 +482,7 @@ static const gsl_multiroot_fdfsolver_type* get_fdfsolver_type(VALUE t)
     rb_raise(rb_eTypeError, "wrong type argument (Fixnum or String expected)");
     break;
   }
+  RB_GC_GUARD(t);
 }
 
 static VALUE rb_gsl_multiroot_fsolver_new(VALUE klass, VALUE t, VALUE n)

@@ -865,7 +865,7 @@ static VALUE FUNCTION(rb_gsl_matrix,print)(VALUE obj)
 static VALUE FUNCTION(rb_gsl_matrix,to_s)(VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m = NULL;
-  char buf[32], format[32], format2[32];
+  char format[32], format2[32];
   size_t i, j;
   VALUE str;
   BASE x;
@@ -891,33 +891,27 @@ static VALUE FUNCTION(rb_gsl_matrix,to_s)(VALUE obj)
   str = rb_str_new2("[ ");
   for (i = 0; i < m->size1; i++) {
     if (i != 0) {
-      strcpy(buf, "  ");
-      rb_str_cat(str, buf, strlen(buf));
+      rb_str_cat2(str, "  ");
     }
     for (j = 0; j < m->size2; j++) {
       x = FUNCTION(gsl_matrix,get)(m, i, j);
       if (x < 0)
-        sprintf(buf, format, x);
+        rb_str_catf(str, format, x);
       else
-        sprintf(buf, format2, x);
-      rb_str_cat(str, buf, strlen(buf));
+        rb_str_catf(str, format2, x);
       if ((int) j >= (55/dig)) {
-        strcpy(buf, "... ");
-        rb_str_cat(str, buf, strlen(buf));
+        rb_str_cat2(str, "... ");
         break;
       }
     }
     if (i >= 20) {
-      strcpy(buf, "\n  ... ]");
-      rb_str_cat(str, buf, strlen(buf));
+      rb_str_cat2(str, "\n  ... ]");
       break;
     }
     if (i == m->size1 - 1) {
-      strcpy(buf, "]");
-      rb_str_cat(str, buf, strlen(buf));
+      rb_str_cat2(str, "]");
     } else {
-      strcpy(buf, "\n");
-      rb_str_cat(str, buf, strlen(buf));
+      rb_str_cat2(str, "\n");
     }
   }
   return str;
@@ -926,10 +920,7 @@ static VALUE FUNCTION(rb_gsl_matrix,to_s)(VALUE obj)
 
 static VALUE FUNCTION(rb_gsl_matrix,inspect)(VALUE obj)
 {
-  VALUE str;
-  char buf[64];
-  sprintf(buf, "%s\n", rb_class2name(CLASS_OF(obj)));
-  str = rb_str_new2(buf);
+  VALUE str = rb_sprintf("%s\n", rb_class2name(CLASS_OF(obj)));
   return rb_str_concat(str, FUNCTION(rb_gsl_matrix,to_s)(obj));
 }
 
@@ -2061,13 +2052,13 @@ static VALUE FUNCTION(rb_gsl_matrix,block)(VALUE obj)
 static VALUE FUNCTION(rb_gsl_matrix,info)(VALUE obj)
 {
   GSL_TYPE(gsl_matrix) *m;
-  char buf[256];
+  VALUE buf;
   Data_Get_Struct(obj, GSL_TYPE(gsl_matrix), m);
-  sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
-  sprintf(buf, "%sDimension:  %dx%d\n", buf, (int) m->size1, (int) m->size2);
-  sprintf(buf, "%sSize:       %d\n", buf, (int) (m->size1*m->size2));
-  return rb_str_new2(buf);
+  buf = rb_sprintf("Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+  rb_str_catf(buf, "SuperClass: %s\n", rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+  rb_str_catf(buf, "Dimension:  %dx%d\n", (int) m->size1, (int) m->size2);
+  rb_str_catf(buf, "Size:       %d\n", (int) (m->size1*m->size2));
+  return buf;
 }
 
 static VALUE FUNCTION(rb_gsl_matrix,any)(VALUE obj)

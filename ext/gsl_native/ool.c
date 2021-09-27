@@ -27,11 +27,11 @@ enum enum_ool_conmin_minimizer_type {
 
 static const ool_conmin_minimizer_type* get_minimizer_type(VALUE t)
 {
-  char name[64];
+  char *name;
 
   switch (TYPE(t)) {
   case T_STRING:
-    strcpy(name, STR2CSTR(t));
+    name = STR2CSTR(t);
     if (str_tail_grep(name, "pgrad") == 0) {
       return ool_conmin_minimizer_pgrad;
     } else if (str_tail_grep(name, "spg") == 0) {
@@ -65,6 +65,7 @@ static const ool_conmin_minimizer_type* get_minimizer_type(VALUE t)
     else rb_raise(rb_eTypeError, "type is given by a String or a Fixnum");
     break;
   }
+  RB_GC_GUARD(t);
 }
 
 static void def_const(VALUE module)

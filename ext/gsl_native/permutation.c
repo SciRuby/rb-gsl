@@ -317,26 +317,20 @@ static VALUE rb_gsl_permutation_print(VALUE obj)
 static VALUE rb_gsl_permutation_to_s(VALUE obj)
 {
   gsl_permutation *v = NULL;
-  char buf[16];
   size_t i;
   VALUE str;
   Data_Get_Struct(obj, gsl_permutation, v);
   str = rb_str_new2("[");
   for (i = 0; i < v->size; i++) {
-    sprintf(buf,  " %d", (int) gsl_permutation_get(v, i));
-    rb_str_cat(str, buf, strlen(buf));
+    rb_str_catf(str, "%d", (int) gsl_permutation_get(v, i));
   }
-  sprintf(buf, " ]");
-  rb_str_cat(str, buf, strlen(buf));
+  rb_str_cat2(str, " ]");
   return str;
 }
 
 static VALUE rb_gsl_permutation_inspect(VALUE obj)
 {
-  VALUE str;
-  char buf[64];
-  sprintf(buf, "%s\n", rb_class2name(CLASS_OF(obj)));
-  str = rb_str_new2(buf);
+  VALUE str = rb_sprintf("%s\n", rb_class2name(CLASS_OF(obj)));
   return rb_str_concat(str, rb_gsl_permutation_to_s(obj));
 }
 

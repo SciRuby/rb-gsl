@@ -398,7 +398,7 @@ static VALUE rb_gsl_interp_eval_integ_e(VALUE obj, VALUE xxa, VALUE yya,
 const gsl_interp_type* get_interp_type(VALUE t)
 {
   int type;
-  char name[32];
+  char *name;
   switch (TYPE(t)) {
   case T_FIXNUM:
     type = FIX2INT(t);
@@ -415,7 +415,7 @@ const gsl_interp_type* get_interp_type(VALUE t)
     }
     break;
   case T_STRING:
-    strcpy(name, STR2CSTR(t));
+    name = STR2CSTR(t);
     if (str_tail_grep(name, "linear") == 0) {
       return gsl_interp_linear;
     } else if (str_tail_grep(name, "polynomial") == 0) {
@@ -436,20 +436,21 @@ const gsl_interp_type* get_interp_type(VALUE t)
     rb_raise(rb_eTypeError, "Unknown type");
     break;
   }
+  RB_GC_GUARD(t);
 }
 
 static VALUE rb_gsl_interp_info(VALUE obj)
 {
   rb_gsl_interp *p;
-  char buf[256];
+  VALUE buf;
   Data_Get_Struct(obj, rb_gsl_interp, p);
-  sprintf(buf, "Class:      %s\n", rb_class2name(CLASS_OF(obj)));
-  sprintf(buf, "%sSuperClass: %s\n", buf, rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
-  sprintf(buf, "%sType:       %s\n", buf, gsl_interp_name(p->p));
-  sprintf(buf, "%sxmin:       %f\n", buf, p->p->xmin);
-  sprintf(buf, "%sxmax:       %f\n", buf, p->p->xmax);
-  sprintf(buf, "%sSize:       %d\n", buf, (int) p->p->size);
-  return rb_str_new2(buf);
+  buf = rb_sprintf("Class:      %s\n", rb_class2name(CLASS_OF(obj)));
+  rb_str_catf(buf, "SuperClass: %s\n", rb_class2name(RCLASS_SUPER(CLASS_OF(obj))));
+  rb_str_catf(buf, "Type:       %s\n", gsl_interp_name(p->p));
+  rb_str_catf(buf, "xmin:       %f\n", p->p->xmin);
+  rb_str_catf(buf, "xmax:       %f\n", p->p->xmax);
+  rb_str_catf(buf, "Size:       %d\n", (int) p->p->size);
+  return buf;
 }
 
 static void rb_gsl_interp_define_const(VALUE klass)

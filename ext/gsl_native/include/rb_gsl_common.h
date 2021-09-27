@@ -318,7 +318,7 @@ int str_tail_grep(const char *s0, const char *s1);
 int str_head_grep(const char *s0, const char *s1);
 
 #ifndef STR2CSTR
-#define STR2CSTR StringValuePtr
+#define STR2CSTR StringValueCStr
 #endif
 
 #ifndef RCLASS_SUPER
