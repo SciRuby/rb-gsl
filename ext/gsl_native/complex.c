@@ -166,12 +166,17 @@ static VALUE rb_gsl_complex_print(VALUE obj)
 static VALUE rb_gsl_complex_printf(VALUE obj, VALUE s)
 {
   gsl_complex *c = NULL;
-  char tmp[32], format[64];
+  VALUE format, out;
+  VALUE vals[2];
   Check_Type(s, T_STRING);
   Data_Get_Struct(obj, gsl_complex, c);
-  strcpy(tmp, STR2CSTR(s));
-  sprintf(format, "%s %s\n", tmp, tmp);
-  fprintf(stdout, format, GSL_REAL(*c), GSL_IMAG(*c));
+
+  vals[0] = rb_float_new(GSL_REAL(*c));
+  vals[1] = rb_float_new(GSL_IMAG(*c));
+  format = rb_sprintf("%s %s\n", STR2CSTR(s), STR2CSTR(s));
+  RB_GC_GUARD(s);
+  out = rb_str_format(2, vals, format);
+  fwrite(StringValuePtr(out), 1, RSTRING_LEN(out), stdout);
   return obj;
 }
 
