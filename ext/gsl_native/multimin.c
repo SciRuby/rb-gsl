@@ -75,7 +75,7 @@ static void gsl_multimin_function_fdf_mark(gsl_multimin_function_fdf *F)
 static VALUE rb_gsl_multimin_function_new(int argc, VALUE *argv, VALUE klass)
 {
   gsl_multimin_function *F = NULL;
-  VALUE ary;
+  VALUE ary, ret;
   size_t i;
   F = ALLOC(gsl_multimin_function);
   F->f = &rb_gsl_multimin_function_f;
@@ -98,7 +98,9 @@ static VALUE rb_gsl_multimin_function_new(int argc, VALUE *argv, VALUE klass)
   default:
     rb_raise(rb_eArgError, "wrong number of arguments");
   }
-  return Data_Wrap_Struct(klass, gsl_multimin_function_mark, gsl_multimin_function_free, F);
+  ret = Data_Wrap_Struct(klass, gsl_multimin_function_mark, gsl_multimin_function_free, F);
+  RB_GC_GUARD(ary);
+  return ret;
 }
 
 static void gsl_multimin_function_free(gsl_multimin_function *f)
@@ -209,7 +211,7 @@ static void set_function_fdf(int argc, VALUE *argv, gsl_multimin_function_fdf *F
 static VALUE rb_gsl_multimin_function_fdf_new(int argc, VALUE *argv, VALUE klass)
 {
   gsl_multimin_function_fdf *F = NULL;
-  VALUE ary;
+  VALUE ary, ret;
   F = ALLOC(gsl_multimin_function_fdf);
   F->f = &rb_gsl_multimin_function_fdf_f;
   F->df = &rb_gsl_multimin_function_fdf_df;
@@ -220,7 +222,9 @@ static VALUE rb_gsl_multimin_function_fdf_new(int argc, VALUE *argv, VALUE klass
   rb_ary_store(ary, 2, Qnil);
   rb_ary_store(ary, 3, Qnil);
   set_function_fdf(argc, argv, F);
-  return Data_Wrap_Struct(klass, gsl_multimin_function_fdf_mark, gsl_multimin_function_fdf_free, F);
+  ret = Data_Wrap_Struct(klass, gsl_multimin_function_fdf_mark, gsl_multimin_function_fdf_free, F);
+  RB_GC_GUARD(ary);
+  return ret;
 }
 
 static void gsl_multimin_function_fdf_free(gsl_multimin_function_fdf *f)
