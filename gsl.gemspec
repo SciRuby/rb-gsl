@@ -33,4 +33,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake', '>= 0'
   s.add_development_dependency 'test-unit', '>= 0'
   s.add_development_dependency 'bundler', '~> 1.11'
+  s.metadata["msys2_mingw_dependencies"] = "gsl"
 end
